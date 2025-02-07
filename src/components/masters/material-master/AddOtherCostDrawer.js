@@ -5,7 +5,7 @@ import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../src/com
 import { useForm, Controller } from 'react-hook-form'
 import NoContentFound from '../../../../src/components/common/NoContentFound'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull, hashValidation } from "../../../../src/helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull, hashValidation, maxLength80 } from "../../../../src/helper/validation";
 import { useDispatch, useSelector } from 'react-redux'
 import { COMMODITYCOST, EMPTY_DATA, RAWMATERIALCOST } from '../../../../src/config/constants'
 import Toaster from '../../../../src/components/common/Toaster';
@@ -339,6 +339,12 @@ function AddOtherCostDrawer(props) {
         const remark = getValues('Remark');
         const costDescription = getValues('CostDescription');
 
+         // Check for form errors first
+    if (Object.keys(errors).length > 0) {
+        Toaster.warning('Please fix all validation errors before adding.');
+        return false;
+    }
+
 
         // If 'Type' is not provided, return false
         if (!type || !cost || !remark || !costDescription) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
@@ -502,7 +508,7 @@ function AddOtherCostDrawer(props) {
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.Condition}
+                                                errors={errors.Cost}
                                                 disabled={props.ViewMode || isEditMode}
                                             />
                                         </Col>
@@ -516,14 +522,14 @@ function AddOtherCostDrawer(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    validate: { checkWhiteSpaces, hashValidation },
-                                                    maxLength: 80
+                                                    validate: { checkWhiteSpaces, hashValidation,maxLength80 },
+                                                    
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={""}
                                                 className=""
                                                 customClassName={"withBorder"}
-                                                errors={errors.OtherCostDescription}
+                                                errors={errors.CostDescription}
                                                 disabled={props.ViewMode}
                                             />
                                         </Col>
@@ -693,14 +699,14 @@ function AddOtherCostDrawer(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    validate: { checkWhiteSpaces, hashValidation },
-                                                    maxLength: 80
+                                                    validate: { checkWhiteSpaces, hashValidation ,maxLength80}
+                                                    
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={""}
                                                 className=""
                                                 customClassName={"withBorder"}
-                                                errors={errors.OtherCostDescription}
+                                                errors={errors.Remark}
                                                 disabled={props.ViewMode}
                                             />
                                         </Col>
