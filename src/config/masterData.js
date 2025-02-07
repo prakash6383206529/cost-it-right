@@ -217,7 +217,7 @@ export const RMDomesticVBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName"}, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI,*
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
     { label: "Source", value: "Source" },
@@ -361,7 +361,7 @@ export const RMImportZBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "DestinationPlantCode" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "HasDifferentSource", value: "HasDifferentSource" },
@@ -610,7 +610,7 @@ export const RMDomesticCBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
@@ -640,7 +640,7 @@ export const RMImportVBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
     { label: "Source", value: "Source" },
@@ -785,7 +785,7 @@ export const RMImportCBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
@@ -2388,7 +2388,7 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
+    { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2600,7 +2600,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
+    { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
@@ -3107,7 +3107,7 @@ export const Bought_Out_Parts = [
     { label: 'Quantity', value: 'Quantity', },
     { label: 'NetLandedCost', value: 'NetLandedCost', },
     { label: 'PartNumber', value: 'PartNumber', },
-    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" },
+    { label: 'TechnologyName', value: 'TechnologyName' },
     { label: 'CategoryName', value: 'CategoryName', },
     { label: 'CategoryTypeName', value: 'CategoryTypeName', },
     { label: 'Specification', value: 'Specification', },
@@ -3147,7 +3147,7 @@ export const OtherOperation = [
     { label: 'OtherOperationName', value: 'OtherOperationName', },
     { label: 'OperationProcessCode', value: 'OperationProcessCode', },
     { label: 'Description', value: 'Description', },
-    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "TechnologyName", value: 'TechnologyName' },
     { label: 'SupplierName', value: 'SupplierName', },
     { label: 'OperationName', value: 'OperationName', },
     { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
