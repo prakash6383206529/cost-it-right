@@ -712,11 +712,12 @@ const MachineRateListing = (props) => {
     
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
-        if (item.MachineProcessRateId === props.node.data.MachineProcessRateId) {
-          props.node.setSelected(true)
+        if (item?.MachineProcessRateId === props?.node?.data?.MachineProcessRateId) {
+          props?.node?.setSelected(true)
         }
         return null
       })
+
       return cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC' ? 'Vendor Based' : 'Zero Based';
     } else {
       return cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC' ? 'Vendor Based' : 'Zero Based';
