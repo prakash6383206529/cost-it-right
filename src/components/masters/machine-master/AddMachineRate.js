@@ -1857,7 +1857,7 @@ class AddMachineRate extends Component {
                               <>
                                 <button id="AddMachineRate_addmore"
                                   type="button"
-                                  className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                  className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr15`}
                                   disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated) || isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                                   onClick={this.processTableHandler}>
                                   <div className={'plus'}></div>ADD</button>

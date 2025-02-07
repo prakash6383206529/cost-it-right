@@ -689,7 +689,7 @@ class AddSpecification extends Component {
                       <div className="text-right ">
                         <Button
                           id="rm-specification-cancel"
-                          className="mr-2"
+                          className="mr15"
                           variant={"cancel-btn"}
                           disabled={setDisable}
                           onClick={this.cancelHandler}

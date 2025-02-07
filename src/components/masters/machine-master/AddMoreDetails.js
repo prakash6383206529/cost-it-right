@@ -4175,7 +4175,7 @@ class AddMoreDetails extends Component {
                                   <button
                                     type="button"
                                     disabled={disableAllForm}
-                                    className={'btn btn-primary mt30 pull-left mr5'}
+                                    className={'btn btn-primary mt30 pull-left mr10'}
                                     onClick={this.updateLabourGrid}
                                   >Update</button>
 
@@ -4191,7 +4191,7 @@ class AddMoreDetails extends Component {
                                   <button id="AddMoreDetails_Labour_Add"
                                     type="button"
                                     disabled={disableAllForm}
-                                    className={'user-btn mt30 pull-left mr5'}
+                                    className={'user-btn mt30 pull-left mr15'}
                                     onClick={this.labourTableHandler}>
                                     <div className={'plus'}></div>ADD</button>
                                   <button
@@ -4404,7 +4404,7 @@ class AddMoreDetails extends Component {
                                   <>
                                     <button id="AddMoreDetails_Process_Add"
                                       type="button"
-                                      className={'user-btn pull-left'}
+                                      className={'user-btn pull-left mr10'}
                                       disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
                                       onClick={this.processTableHandler}>
                                       <div className={'plus'}></div>ADD</button>

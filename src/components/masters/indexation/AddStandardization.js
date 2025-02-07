@@ -352,7 +352,7 @@ const AddStandardization = (props) => {
                                     <Col md="3" >
                                         <button
                                             type="button"
-                                            className={"user-btn  pull-left mt-1"}
+                                            className={"user-btn  pull-left mt-1 mr10"}
                                             onClick={addData}
                                             disabled={props.ViewMode}
                                         >
@@ -421,7 +421,7 @@ const AddStandardization = (props) => {
 
                                         <Button
                                             id="addStandardization_cancel"
-                                            className="mr5 mt-0"
+                                            className="mr15 mt-0"
                                             onClick={cancelHandler}
                                             disabled={false}
                                             variant="cancel-btn"

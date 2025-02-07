@@ -1172,7 +1172,7 @@ class AddFuel extends Component {
                                 <>
                                   <button id="AddFuel_AddData"
                                     type="button"
-                                    className={"user-btn pull-left"}
+                                    className={"user-btn pull-left mr10"}
                                     disabled={isViewMode}
                                     onClick={this.rateTableHandler}
                                   >

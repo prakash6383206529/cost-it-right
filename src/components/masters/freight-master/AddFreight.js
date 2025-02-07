@@ -1219,7 +1219,7 @@ class AddFreight extends Component {
                                   <button
                                     type="button"
                                     disabled={isViewMode}
-                                    className={"user-btn mt30 pull-left"}
+                                    className={"user-btn mt30 pull-left mr10"}
                                     onClick={this.gridHandler}
                                   >
                                     <div className={"plus"}></div>
