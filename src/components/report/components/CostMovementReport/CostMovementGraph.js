@@ -15,6 +15,7 @@ import { colorArray } from '../../../dashboard/ChartsDashboard';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { useLabels } from '../../../../helper/core';
+import { filterParams } from '../../../common/DateFilter';
 
 function CostMovementGraph(props) {
     const { ModeId, importEntry } = props
@@ -74,7 +75,7 @@ function CostMovementGraph(props) {
                 res?.data?.Data && res?.data?.Data?.map((item, index) => {
                     item?.Data?.map((ele) => {
                         ele.PlantNameWithCode = `${ele?.PlantName} (${ele?.PlantCode})`
-                        ele.VendorNameWithCode = (ele?.VendorName && ele?.VendorCode && ele?.VendorCode !== 0) ? `${ele?.VendorName} (${ele?.VendorCode})`: null
+                        ele.VendorNameWithCode = (ele?.VendorName && ele?.VendorCode && ele?.VendorCode !== 0) ? `${ele?.VendorName} (${ele?.VendorCode})` : null
                         grid.push(ele)
                         allEffectiveDates.push((ele?.EffectiveDate))       //SETTING ALL DATES IN ALLEFFECTIVEDATE ARRAY
                     })
@@ -537,7 +538,7 @@ function CostMovementGraph(props) {
                                                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" headerName="Basic Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NetPOPrice" headerName="Net Cost" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NetPOPriceCurrency" headerName="Net Cost (Currency)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' floatingFilter={true}></AgGridColumn>}
+                                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
                                         </div>
