@@ -381,10 +381,10 @@ class AddFuel extends Component {
       })
       this.setState({
         rateGrid: tempArray,
-        // StateName: [],
+        StateName: [],
         effectiveDate: '',
-        country: {},
-        city: {},
+        country: [],
+        city: [],
       }, () => {
         this.props.change("RateConversion", '')
         this.props.change("RateLocalConversion", '')
@@ -392,7 +392,6 @@ class AddFuel extends Component {
         this.props.change('CountryId', {})
         this.props.change('StateId', {})
         this.props.change('CityId', {})
-
       }
       );
       this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
@@ -1227,7 +1226,8 @@ class AddFuel extends Component {
                                   type="text"
                                   label="UOM"
                                   component={searchableSelect}
-                                  placeholder={isEditFlag ? '-' : "Select"}
+                                  // placeholder={isEditFlag ? '-' : "Select"}
+                                  placeholder={'-'} // Here value of "disabled" is set to true so no need to conditionally set the placeholder
                                   options={this.renderListing("uom")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={

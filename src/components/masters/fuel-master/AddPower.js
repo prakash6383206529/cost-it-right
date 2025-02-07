@@ -2134,7 +2134,7 @@ class AddPower extends Component {
 
                         <Col md="6" className={(costingTypeId === ZBCTypeId || isDetailEntry) ? "" : "mt30 pt-1"}>
                           <label id="AddPower_AddMoreDetails"
-                            className={`custom-checkbox w-auto ${isDetailEntry ? 'mb-3' : ''}`}
+                            className={`custom-checkbox w-auto mt35 ${isDetailEntry ? 'mb-3' : ''}`}
                             onChange={this.isDetailEntryChange}
                           >
                             Add More Details
@@ -2644,35 +2644,43 @@ class AddPower extends Component {
                                 </tbody>
 
                                 <tfoot>
-
                                   <tr className="bluefooter-butn">
-                                    <td></td>
-                                    <td></td>
-
                                     {this.state.isImport && (
                                       <>
-                                        <th>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
-                                        <td>
-                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
-                                        </td>
+                                      <td
+                                      colSpan={(this.state.isImport && !this.state.hidePlantCurrency) ? "2" : (this.state.isImport && this.state.hidePlantCurrency) ? "4" : "0"}
+                                      >
+                                        <div className='d-flex justify-content-around align-items-center'>
+                                          <strong>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
+                                          <label className='w-auto'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
+                                        </div>
+                                      </td>
                                       </>
                                     )}
-                                    <th>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
-                                    <td>
-                                      <label>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label>
-                                    </td>
+                                      <td
+                                      colSpan={(this.state.isImport && !this.state.hidePlantCurrency) ? "2" : (!this.state.isImport && !this.state.hidePlantCurrency) ? "2" : "0"}
+                                      >
+                                        <div className='d-flex justify-content-around align-items-center'>
+                                          <strong>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
+                                          <label className='w-auto'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label>
+                                        </div>
+                                      </td>
+                                      {(!this.state.isImport && !this.state.hidePlantCurrency) &&
+                                        <td></td>
+                                      }
                                     {!this.state.hidePlantCurrency && (
                                       <>
-                                        <th>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</th>
-                                        <td>
-                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
-                                        </td>
+                                      <td
+                                      colSpan={(!this.state.isImport && !this.state.hidePlantCurrency) ? "2" : "0"}
+                                      >
+                                        <div className='d-flex justify-content-around align-items-center'>
+                                          <strong>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</strong>
+                                          <label className='w-auto'>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
+                                        </div>
+                                      </td>
                                       </>
                                     )}
-
-                                    <td></td>
                                   </tr>
-
                                 </tfoot>
 
                                 {this.state.powerGrid.length === 0 && <tbody>
