@@ -239,3 +239,30 @@ div[class$="MenuList"] {
 .rm-master-form {
   min-height: calc(100vh - 232px);
 }
+
+.extra-approver {
+  position: absolute;
+  top: 31%;
+  right: -17px;
+  width: fit-content;
+  color: $colorPrimary;
+  font-size: 16px;
+  font-weight: 600;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.plant-currency {
+  min-height: auto !important;
+
+  .text-help {
+    position: absolute;
+    bottom: 1px;
+  }
+}
+
+.cursor-allowed {
+  pointer-events: auto !important;
+}
