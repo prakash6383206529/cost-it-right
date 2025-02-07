@@ -1543,7 +1543,28 @@ function Simulation(props) {
             Toaster.warning("Please select at least one record.")
             return false
         }
-
+        if(String(master?.value) === EXCHNAGERATE){
+            if (tableData?.length > 1) {
+                const pairCounts = tableData?.reduce((acc, item) => {
+                    const pair = `${item?.FromCurrency}-${item?.ToCurrency}`
+                    acc[pair] = (acc[pair] || 0) + 1
+                    return acc
+                }, {})
+    
+                const duplicatePairs = Object?.entries(pairCounts)
+                    .filter(([_, count]) => count > 1)
+                    .map(([pair, _]) => {
+                        const [fromCurr, toCurr] = pair?.split('-')
+                        return `${fromCurr} to ${toCurr}`
+                    })
+    
+                if (duplicatePairs.length > 0) {
+                    const message = `Cannot proceed with same currency pairs (${duplicatePairs?.join(', ')}) for multiple rows`
+                    Toaster.warning(message)
+                    return false
+                }
+            }
+        }
         setShowEditTable(true)
         setShowMasterList(false)
     }
