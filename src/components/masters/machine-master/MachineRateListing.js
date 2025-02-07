@@ -113,7 +113,7 @@ const MachineRateListing = (props) => {
     return () => {
       dispatch(setSelectedRowForPagination([]));
       dispatch(resetStatePagination());
-
+      reactLocalStorage.setObject('selectedRow', {});
     };
     // eslint-disable-next-line
   }, []);
@@ -281,6 +281,7 @@ const MachineRateListing = (props) => {
       //  globalTake: 10, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
     }));
     setSearchText(''); // Assuming this state is bound to the input value
+    reactLocalStorage.setObject('selectedRow', {});
   };
 
   const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
@@ -660,6 +661,8 @@ const MachineRateListing = (props) => {
   };
 
   const onRowSelect = (event) => {
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+
     var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {
       selectedRows = selectedRowForPagination;
@@ -681,9 +684,10 @@ const MachineRateListing = (props) => {
       selectedRows = [...selectedRows, ...finalData];
     }
 
-    let uniqeArray = _.uniqBy(selectedRows, "MachineProcessRateId"); //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    dispatch(setSelectedRowForPagination(uniqeArray));
-    setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length })); //SETTING CHECKBOX STATE DATA IN REDUCER
+    let uniqeArray = _.uniqBy(selectedRows, "MachineProcessRateId")          
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) 
+    setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length }))
+    dispatch(setSelectedRowForPagination(uniqeArray))
     let finalArr = selectedRows;
     let length = finalArr?.length;
     let uniqueArray = _.uniqBy(finalArr, "MachineProcessRateId");
@@ -697,10 +701,28 @@ const MachineRateListing = (props) => {
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]));
         state.gridApi.deselectAll();
-        Toaster.warning("Please select multiple machinr rate's with same category");
+        Toaster.warning("Please select multiple machine rate's with same category")
       }
     }
   };
+
+  const checkBoxRenderer = (props) => {
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
+        if (item.MachineProcessRateId === props.node.data.MachineProcessRateId) {
+          props.node.setSelected(true)
+        }
+        return null
+      })
+      return cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC' ? 'Vendor Based' : 'Zero Based';
+    } else {
+      return cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC' ? 'Vendor Based' : 'Zero Based';
+    }
+  }
+
 
   return (
     <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
@@ -776,7 +798,7 @@ const MachineRateListing = (props) => {
                 enableBrowserTooltips={true}
               >
                 { }
-                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                <AgGridColumn field="CostingHead" cellClass="has-checkbox" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                 {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
