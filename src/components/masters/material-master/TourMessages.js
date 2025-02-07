@@ -436,6 +436,14 @@ export function Steps(t, config) {
                 intro: t("addMaterial.AddMaterialType_CalculatedDensityValue"),
             },
             {
+                element: "#CommodityStandardName",
+                intro: t("addMaterial.AddMaterialType_CommodityStandardName"),
+            },
+            {
+                element: "#Percentage_container",
+                intro: t("addMaterial.AddMaterialType_Percentage"),
+            },
+            {
                 element: "#AddMaterialType_Cancel",
                 intro: t("addMaterial.AddMaterialType_Cancel"),
             },
