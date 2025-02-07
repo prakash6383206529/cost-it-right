@@ -32,8 +32,8 @@ import { getRawMaterialDataBySourceVendor, setCommodityDetails, setOtherCostDeta
 import { useLabels } from "../../../helper/core";
 
 function AddRMMaster(props) {
-    const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
-    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
+    const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE,isRMAssociated } = props
+    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -465,13 +465,15 @@ function AddRMMaster(props) {
         let freightCost = state.isImport ? checkForNull(values?.FreightChargeSelectedCurrency) : checkForNull(values.FreightChargeBaseCurrency)
         let machiningScrapCost = state.isImport ? checkForNull(values?.MachiningScrapSelectedCurrency) : checkForNull(values.MachiningScrapBaseCurrency)
         let circleScrapCost = state.isImport ? checkForNull(values?.CircleScrapCostSelectedCurrency) : checkForNull(values.CircleScrapCostBaseCurrency)
+        let JaliScrapCostBaseCurrency = state.isImport ? checkForNull(values?.JaliScrapCostBaseCurrency) : checkForNull(values.JaliScrapCostBaseCurrency)
+
         let otherCost = state.isImport ? checkForNull(values?.OtherCostSelectedCurrency) : checkForNull(values.OtherCostBaseCurrency)
 
 
 
         let financialDataNotChanged = (cuttOffPrice === checkForNull(DataToChange?.CutOffPrice)) && (basicRate === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
             && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (freightCost === checkForNull(DataToChange?.RMFreightCost) && otherCost === checkForNull(DataToChange?.OtherNetCost))
-            && (shearingCost === checkForNull(DataToChange?.RMShearingCost)) && (circleScrapCost === checkForNull(DataToChange?.JaliScrapCost)) && (machiningScrapCost === checkForNull(DataToChange?.MachiningScrapRate))
+            && (shearingCost === checkForNull(DataToChange?.RMShearingCost)) && (circleScrapCost === checkForNull(DataToChange?.JaliScrapCost)) && (machiningScrapCost === checkForNull(DataToChange?.MachiningScrapRate)) && (JaliScrapCostBaseCurrency === checkForNull(DataToChange?.ScrapRate))
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
         if (state.isEditFlag) {
             if (!isRMAssociated) {
@@ -485,8 +487,14 @@ function AddRMMaster(props) {
                     setState(prevState => ({ ...prevState, isDateChanged: true }))
                     return false
                 }
-                formData.IsFinancialDataChanged = false
+                formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
             } else {
+                if (financialDataNotChanged && nonFinancialDataNotChanged) {
+                    if (!state.isFinalApprovar && getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+                        Toaster.warning('Please change data to send RM for approval')
+                        return false
+                    }
+                }
                 formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
             }
 
