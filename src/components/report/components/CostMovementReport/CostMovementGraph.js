@@ -71,12 +71,12 @@ function CostMovementGraph(props) {
                 let barDataSet = []
                 let lineDataSet = []
 
-                res.data.Data && res.data.Data.map((item, index) => {
-                    item.Data.map((ele) => {
-                        ele.PlantNameWithCode = `${ele.PlantName} (${ele.PlantCode})`
-                        ele.VendorNameWithCode = `${ele.VendorName} (${ele.VendorCode})`
+                res?.data?.Data && res?.data?.Data?.map((item, index) => {
+                    item?.Data?.map((ele) => {
+                        ele.PlantNameWithCode = `${ele?.PlantName} (${ele?.PlantCode})`
+                        ele.VendorNameWithCode = (ele?.VendorName && ele?.VendorCode && ele?.VendorCode !== 0) ? `${ele?.VendorName} (${ele?.VendorCode})`: null
                         grid.push(ele)
-                        allEffectiveDates.push((ele.EffectiveDate))       //SETTING ALL DATES IN ALLEFFECTIVEDATE ARRAY
+                        allEffectiveDates.push((ele?.EffectiveDate))       //SETTING ALL DATES IN ALLEFFECTIVEDATE ARRAY
                     })
 
                 })
@@ -248,14 +248,32 @@ function CostMovementGraph(props) {
 
     const state = {
         labels: dateRangeArray,
-        datasets: lineDataSets
+        datasets: lineDataSets.map(dataset => ({
+            ...dataset,
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                font: {
+                    weight: 'bold'
+                }
+            }
+        }))
+    };
 
-    }
 
 
     const data1 = {
         labels: [...dateRangeArray],
-        datasets: barDataSets
+        datasets: barDataSets?.map(dataset => ({
+            ...dataset,
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                font: {
+                    weight: 'bold'
+                }
+            }
+        }))
     };
 
     const effectiveDateFormatter = (props) => {
@@ -365,6 +383,11 @@ function CostMovementGraph(props) {
             //         left: 15
             //     }
             // },
+            datalabels: {
+                display: true,
+                color: '#000',
+                offset: 5
+            },
         },
 
         scales: {
@@ -410,6 +433,11 @@ function CostMovementGraph(props) {
                         weight: 500
                     }
                 }
+            },
+            datalabels: {
+                display: true,
+                color: '#000',
+                offset: 5
             },
             tooltip: {
                 callbacks: {
