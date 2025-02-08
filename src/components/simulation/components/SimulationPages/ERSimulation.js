@@ -630,6 +630,8 @@ function ERSimulation(props) {
                 cancelImportList={cancelImportList}
                 vendorLabel={props?.vendor}
                 FromExchangeRate={true}
+                minDate={minDate}
+
 
             />}
             {showBOPMasterList &&
@@ -653,6 +655,8 @@ function ERSimulation(props) {
                     cancelImportList={cancelImportList}
                     vendorLabel={props?.vendor}
                     FromExchangeRate={true}
+                    minDate={minDate}
+
 
                 />}
             {(showOperationsList || showSurfaceTreatmentList) && (
@@ -669,6 +673,8 @@ function ERSimulation(props) {
                     toListData={toListData}
                     vendorLabel={props?.vendor}
                     FromExchangeRate={true}
+                    minDate={minDate}
+
 
 
                 />
@@ -687,6 +693,8 @@ function ERSimulation(props) {
                     toListData={toListData}
                     vendorLabel={props?.vendor}
                     FromExchangeRate={true}
+                    minDate={minDate}
+
 
 
 

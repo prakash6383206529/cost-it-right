@@ -193,6 +193,7 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
             MachineEntryType: data.MachineEntryType,
             Currency: data.Currency !== undefined ? data.Currency : "",
             LocalCurrency: data.LocalCurrency !== undefined ? data.LocalCurrency : "",
+            EffectiveDate: data?.EffectiveDate !== undefined ? data?.EffectiveDate : "",
             listFor:data?.ListFor?data?.ListFor:''
         });
         const queryParamsSecond = encodeQueryParamsAndLog({

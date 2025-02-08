@@ -268,6 +268,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             Currency: filterData.Currency !== undefined ? filterData.Currency : "",
             LocalCurrency: filterData.LocalCurrency !== undefined ? filterData.LocalCurrency : "",
             Vendor_id: filterData.vendor_id !== undefined ? filterData.vendor_id : EMPTY_GUID,
+            EffectiveDate: filterData?.EffectiveDate !== undefined ? filterData?.EffectiveDate : "",
         });
         const queryParamsSecond = encodeQueryParamsAndLog({
             CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : "",

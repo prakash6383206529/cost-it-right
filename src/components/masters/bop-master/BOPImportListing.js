@@ -240,6 +240,7 @@ const BOPImportListing = (props) => {
       IsBOPAssociated: !props?.isSimulation ? props?.isBOPAssociated : (isMasterAssociatedWithCosting? true : false),
       Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
       LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+      EffectiveDate: props?.isSimulation &&props?.minDate ? props?.minDate : '',
     };
     if (isPagination === true) {
       setState((prevState) => ({ ...prevState, isLoader: true }));
