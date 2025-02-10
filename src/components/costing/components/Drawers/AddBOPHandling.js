@@ -313,6 +313,14 @@ function AddBOPHandling(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn">
                   <button
+                    id="AddBopHandlingCharge_Cancel"
+                    type={'button'}
+                    className="reset mr15 cancel-btn"
+                    onClick={props.closeDrawer} >
+                    <div className={'cancel-icon'}></div> {'Cancel'}
+                  </button>
+                  
+                  <button
                     id="AddBopHandlingCharge_Save"
                     type={'button'}
                     disabled={(CostingViewMode || IsLocked) ? true : false}
@@ -322,13 +330,6 @@ function AddBOPHandling(props) {
                     {'Save'}
                   </button>
 
-                  <button
-                    id="AddBopHandlingCharge_Cancel"
-                    type={'button'}
-                    className="reset mr15 cancel-btn"
-                    onClick={props.closeDrawer} >
-                    <div className={'cancel-icon'}></div> {'Cancel'}
-                  </button>
                 </div>
               </Row>
             </div>
