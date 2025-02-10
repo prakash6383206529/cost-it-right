@@ -479,6 +479,9 @@ function AddRMMaster(props) {
             if (!isRMAssociated) {
                 if (financialDataNotChanged && nonFinancialDataNotChanged) {
                     if (!state.isFinalApprovar && getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+                        Toaster.warning('Please change data to save RM')
+                        return false
+                    }else{
                         Toaster.warning('Please change data to send RM for approval')
                         return false
                     }
@@ -491,6 +494,9 @@ function AddRMMaster(props) {
             } else {
                 if (financialDataNotChanged && nonFinancialDataNotChanged) {
                     if (!state.isFinalApprovar && getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+                        Toaster.warning('Please change data to save RM')
+                        return false
+                    }else{
                         Toaster.warning('Please change data to send RM for approval')
                         return false
                     }
