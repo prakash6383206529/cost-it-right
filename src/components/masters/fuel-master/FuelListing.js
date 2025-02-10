@@ -243,7 +243,7 @@ const FuelListing = (props) => {
     var thisIsFirstColumn = displayedColumns[0] === params.column;
     return thisIsFirstColumn;
   };
-  const defaultColDef = { resizable: true, filter: true, sortable: false, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: isFirstColumn, };
+  const defaultColDef = { resizable: true, filter: true, sortable: false, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: isFirstColumn, tooltipShowDelay: 0 };
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
@@ -330,13 +330,15 @@ const FuelListing = (props) => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn field="FuelName" headerName="Fuel" initialWidth={300} cellRenderer={"costingHeadFormatter"}></AgGridColumn>
+                <AgGridColumn field="FuelName" headerName="Fuel" minWidth={150} cellRenderer={"costingHeadFormatter"} tooltipValueGetter={(params) => params.value}></AgGridColumn>
                 <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
+                <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+                <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
-                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
+                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"} tooltipValueGetter={(params) => params.value}></AgGridColumn>
                 <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (<AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateRenderer"}></AgGridColumn>

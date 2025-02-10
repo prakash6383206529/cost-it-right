@@ -2617,8 +2617,8 @@ class AddPower extends Component {
                                     <th>{`Source`}</th>
                                     <th>{`Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Contribution (%)`}</th>
-                                    <th>{`Contribution Value`}</th>
-                                    <th>{`Action`}</th>
+                                    <th className={`${this.state.isImport && 'text-end'}`}>{`Contribution Value`}</th>
+                                    <th className="text-end">{`Action`}</th>
                                   </tr>
                                 </thead>
                                 <tbody >
@@ -2652,7 +2652,7 @@ class AddPower extends Component {
                                       >
                                         <div className='d-flex justify-content-around align-items-center'>
                                           <strong>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
-                                          <label className='w-auto'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
+                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
                                         </div>
                                       </td>
                                       </>
@@ -2662,7 +2662,7 @@ class AddPower extends Component {
                                       >
                                         <div className='d-flex justify-content-around align-items-center'>
                                           <strong>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
-                                          <label className='w-auto'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label>
+                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label>
                                         </div>
                                       </td>
                                       {(!this.state.isImport && !this.state.hidePlantCurrency) &&
@@ -2675,7 +2675,7 @@ class AddPower extends Component {
                                       >
                                         <div className='d-flex justify-content-around align-items-center'>
                                           <strong>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</strong>
-                                          <label className='w-auto'>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
+                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
                                         </div>
                                       </td>
                                       </>

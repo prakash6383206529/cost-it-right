@@ -235,8 +235,13 @@ const FreightListing = (props) => {
     }
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll()
-    gridOptions.columnApi.resetColumnState();
+    gridOptions.columnApi.resetColumnState(null);
     gridOptions.api.setFilterModel(null);
+    state.gridApi.sizeColumnsToFit();
+    !props.stopApiCallOnCancel && setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0 }))
+    setTimeout(() => {
+      getDataList(null, null, null, null, state.isImport)
+    }, 500);
   }
 
 

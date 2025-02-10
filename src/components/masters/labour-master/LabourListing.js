@@ -200,7 +200,7 @@ function LabourListing(props) {
   const customerFormatter = (props) => {
     const cellValue = props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? `${cellValue}` : '-';
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== "NA") ? `${cellValue}` : '-';
   }
 
 
@@ -437,6 +437,7 @@ function LabourListing(props) {
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
               <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
               <AgGridColumn field="State" headerName="State"></AgGridColumn>
+              <AgGridColumn field="Country" headerName="Country" cellRenderer={'customerFormatter'}></AgGridColumn>
               <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
               <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
               {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
