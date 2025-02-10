@@ -22,7 +22,8 @@ import {
   setOtherDiscountData,
   setCostingtype,
   setCurrencySource,
-  setExchangeRateSourceValue
+  setExchangeRateSourceValue,
+  exchangeRateReducer
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1699,6 +1700,7 @@ function CostingDetails(props) {
       dispatch(setSurfaceCostInOverheadProfit(false, () => { }))
       dispatch(setSurfaceCostInOverheadProfitRejection(false, () => { }))
       dispatch(setToolCostInOverheadProfit(false, () => { }))
+      dispatch(exchangeRateReducer({}))
     }
   }
 

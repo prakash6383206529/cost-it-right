@@ -40,11 +40,11 @@ function AssemblyPart(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
-  const { DiscountCostData, CostingEffectiveDate, bomLevel, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, getAssemBOPCharge, openAllTabs, currencySource } = useSelector(state => state.costing)
+  const { DiscountCostData, CostingEffectiveDate, bomLevel, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, getAssemBOPCharge, openAllTabs, currencySource,exchangeRateData } = useSelector(state => state.costing)
   const isNFR = useContext(IsNFR);
   const dispatch = useDispatch()
   const toggle = (BOMLevel, PartNumber) => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     dispatch(openCloseStatus({ bopHandling: isBOPExists && !IsOpen, }))
     if (isNFR && !openAllTabs) {
       Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
@@ -116,7 +116,7 @@ function AssemblyPart(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
@@ -131,12 +131,12 @@ function AssemblyPart(props) {
   //THSI IS FOR BOP HANDLING DRAWER
 
   const bopHandlingDrawer = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setIsOpenBOPDrawer(true)
   }
 
   const labourHandlingDrawer = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setIsOpenLabourDrawer(true)
   }
 
@@ -241,7 +241,7 @@ function AssemblyPart(props) {
   * @description TOGGLE DRAWER
   */
   const ProcessDrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setIsProcessDrawerOpen(true)
   }
 

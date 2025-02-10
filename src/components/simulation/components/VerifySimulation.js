@@ -65,7 +65,7 @@ function VerifySimulation(props) {
     const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
-
+console.log("simulationApplicability",simulationApplicability)
     const gridRef = useRef();
     const { vendorLabel } = useLabels()
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
@@ -942,7 +942,7 @@ function VerifySimulation(props) {
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={185} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Material Rate/kg"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
-                                            {/* !isExchangeRate &&  */<AgGridColumn field='Currency' headerName='Master Currency' />}
+                                            {simulationApplicability?.value!==APPLICABILITY_PART_SIMULATION && <AgGridColumn field='Currency' headerName='Master Currency' />}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 

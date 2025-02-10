@@ -136,6 +136,7 @@ const MachineRateListing = (props) => {
     let statusString = [props?.approvalStatus].join(",")
     const filterData = {      costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType: !isSimulation ? (MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC) : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
       LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '', ListFor: props?.ListFor ? props?.ListFor : '',
+      EffectiveDate: isSimulation &&props?.minDate ? props?.minDate : '',
     }
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
     dataObj.IsCustomerDataShow = cbc

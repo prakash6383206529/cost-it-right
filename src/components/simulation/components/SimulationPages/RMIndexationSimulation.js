@@ -1433,16 +1433,16 @@ function RMIndexationSimulation(props) {
                                                     <AgGridColumn width={columnWidths.NewNetLandedCost} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.NetLandedCost' : "NewNetLandedCost"} editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
-                                                
-                                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
-                                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(Currency)`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>}
-
-                                                {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
-                                                {(String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}>
-                                                    <AgGridColumn width={120} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
+                                                {(String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)||isApprovalSummary) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (Plant Currency)`}>
+                                                    <AgGridColumn width={120} field="OldNetLandedCostLocalConversion"  editable='false' headerName="Existing" colId='OldNetLandedCostLocalConversion'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewNetLandedCostLocalConversion'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
+                                                {!isImpactedMaster &&String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
+                                                {!isImpactedMaster &&String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(Currency)`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>}
+
+                                                {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
+                                                
                                                 {props.children}
                                                 <AgGridColumn width={columnWidths.OldEffectiveDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.EffectiveDate' : "OldEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={isIndexedRM ? props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old Effective Date" : "Effective Date"} ></AgGridColumn>
                                                 {isIndexedRM && <AgGridColumn width={columnWidths.NewEffectiveDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.EffectiveDate' : "NewEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New Effective Date"} ></AgGridColumn>}

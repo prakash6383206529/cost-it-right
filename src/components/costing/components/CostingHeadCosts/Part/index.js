@@ -51,7 +51,7 @@ function PartCompoment(props) {
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
   const previousTab = useContext(PreviousTabData) || 0;
-  const { currencySource } = useSelector((state) => state?.costing);
+  const { currencySource,exchangeRateData } = useSelector((state) => state?.costing);
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
@@ -59,7 +59,8 @@ function PartCompoment(props) {
       return false;
     }
     let isOpen = IsOpen
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     dispatch(openCloseStatus({ RMC: !IsOpen }))
 
     if (isNFR && !openAllTabs) {

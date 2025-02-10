@@ -65,8 +65,7 @@ const ExchangeRateListing = (props) => {
     useEffect(() => {
         applyPermission(topAndLeftMenuData);
         setState((prevState) => ({ ...prevState, isLoader: true }));
-
-        const fetchData = async () => {
+       const fetchData = async () => {
             if (props.isSimulation) {
                 if (props.selectionForListingMasterAPI === 'Combined') {
                     props?.changeSetLoader(true);
@@ -127,7 +126,7 @@ const ExchangeRateListing = (props) => {
     * @description Get list data
     */
     const getTableListData = (currencyId = 0) => {
-        let filterData = { currencyId: currencyId, costingHeadId: currencyId, vendorId: filteredRMData?.VendorId ? filteredRMData?.VendorId : '', customerId: filteredRMData?.CustomerId ? filteredRMData?.CustomerId : '', isBudgeting: currencyId, currency: '', isRequestForSimulation: props.isSimulation ? true : false, }
+        let filterData = { currencyId: currencyId, costingHeadId: currencyId, vendorId: props.isSimulation ? filteredRMData?.VendorId ? filteredRMData?.VendorId : '' : '', customerId: props.isSimulation ? filteredRMData?.CustomerId ? filteredRMData?.CustomerId : '' : '', isBudgeting: currencyId, currency: '', isRequestForSimulation: props.isSimulation ? true : false, }
         if (props.isSimulation) {
             props?.changeTokenCheckBox(false)
             dispatch(getExchangeRateDataListForSimulation(true, filterData, res => {
