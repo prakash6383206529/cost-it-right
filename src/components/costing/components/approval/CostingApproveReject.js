@@ -95,7 +95,7 @@ function CostingApproveReject(props) {
             setValue('dept', { label: updateList && updateList[0].Text, value: updateList && updateList[0].Value })
           }
 
-          if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
+          if (initialConfiguration?.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
             setDisableReleaseStrategy(true)
 
             approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId, dataInFieldTemp)
@@ -228,7 +228,7 @@ function CostingApproveReject(props) {
 
         setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
-        if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
+        if (initialConfiguration?.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
 
           setDisableReleaseStrategy(true)
 
@@ -331,7 +331,7 @@ function CostingApproveReject(props) {
         ApproverDepartmentId: dept && dept.value ? dept.value : '',
         ApproverDepartmentName: dept && dept.label ? dept.label : '',
         // Approver: approver && approver.value ? approver.value : '',
-        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+        ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
         ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
         ApproverLevel: approver && approver.levelName ? approver.levelName : '',
         Remark: remark,

@@ -1182,7 +1182,7 @@ const BOPImportListing = (props) => {
                   {state.showPopup && (
                     <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                   )}
-                  {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && !props.isMasterSummaryDrawer && (<WarningMessage dClass={"w-100 justify-content-end"} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />)}
+                  {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration?.IsMasterApprovalAppliedConfigure && !props.isMasterSummaryDrawer && (<WarningMessage dClass={"w-100 justify-content-end"} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />)}
                 </Col>
               </Row>
               {props.isSimulation && props.isFromVerifyPage && (

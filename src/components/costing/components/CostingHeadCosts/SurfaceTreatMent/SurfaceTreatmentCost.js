@@ -311,11 +311,11 @@ function SurfaceTreatmentCost(props) {
                     <th>{`UOM`}</th>
                     <th>{`Rate/UOM`}</th>
                     {initialConfiguration &&
-                      initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Rate/UOM`}</th>}
+                      initialConfiguration?.IsOperationLabourRateConfigure && <th>{`Labour Rate/UOM`}</th>}
                     {initialConfiguration &&
-                      initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
+                      initialConfiguration?.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
                     <th>{`Cost`}</th>
-                    {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                    {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                     <th style={{ textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
@@ -353,9 +353,9 @@ function SurfaceTreatmentCost(props) {
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                              initialConfiguration?.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure && <td style={{ width: 200 }}>
+                              initialConfiguration?.IsOperationLabourRateConfigure && <td style={{ width: 200 }}>
                                 {
                                   item.IsLabourRateExist ?
                                     <TextFieldHookForm
@@ -382,8 +382,8 @@ function SurfaceTreatmentCost(props) {
                                     '-'
                                 }
                               </td>}
-                            <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-                            {initialConfiguration.IsShowCRMHead && <td width={220}>
+                            <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+                            {initialConfiguration?.IsShowCRMHead && <td width={220}>
                               <SearchableSelectHookForm
                                 name={`crmHeadSurface${index}`}
                                 type="text"
@@ -420,11 +420,11 @@ function SurfaceTreatmentCost(props) {
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure && <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                              initialConfiguration?.IsOperationLabourRateConfigure && <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
-                            <td><div className='w-fit' id={`surface-cost${index}`}><TooltipCustom disabledIcon={true} customClass="header-tooltip" id={`surface-cost${index}`} tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Quantity * Rate) + (Labour Rate * Labour Quantity)" : "Net Cost = (Quantity * Rate)"} />{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
-                            {initialConfiguration.IsShowCRMHead && <td width={220}>
+                              initialConfiguration?.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
+                            <td><div className='w-fit' id={`surface-cost${index}`}><TooltipCustom disabledIcon={true} customClass="header-tooltip" id={`surface-cost${index}`} tooltipText={initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? "Net Cost = (Quantity * Rate) + (Labour Rate * Labour Quantity)" : "Net Cost = (Quantity * Rate)"} />{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                            {initialConfiguration?.IsShowCRMHead && <td width={220}>
                               <SearchableSelectHookForm
                                 name={`crmHeadSurface${index}`}
                                 type="text"

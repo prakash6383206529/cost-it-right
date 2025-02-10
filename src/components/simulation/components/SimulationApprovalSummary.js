@@ -274,7 +274,7 @@ function SimulationApprovalSummary(props) {
                 // }
                 setdataForAssemblyImpactForFg(SimulatedCostingList)
 
-                // if (initialConfiguration.IsReleaseStrategyConfigured) {
+                // if (initialConfiguration?.IsReleaseStrategyConfigured) {
                 //     let requestObject = {
                 //         "RequestFor": "SIMULATION",
                 //         "TechnologyId": SimulationTechnologyId,

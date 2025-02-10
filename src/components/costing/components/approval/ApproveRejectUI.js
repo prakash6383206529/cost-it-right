@@ -412,7 +412,7 @@ function ApproveRejectUI(props) {
                       />
                     </div>}
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                      {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField
                           label="Approver"
                           approverList={approvalDropDown}
@@ -434,7 +434,7 @@ function ApproveRejectUI(props) {
                           disabled={(disableReleaseStrategy)}
                           errors={errors.approver}
                         />}
-                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : initialConfiguration.IsMultipleUserAllowForApproval ? "There are no further highest level users associated with this company. Kindly contact the admin team for support." : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
+                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : initialConfiguration?.IsMultipleUserAllowForApproval ? "There are no further highest level users associated with this company. Kindly contact the admin team for support." : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
                     </div>
                   </>
                 )}
@@ -478,7 +478,7 @@ function ApproveRejectUI(props) {
                       />
                     </div>}
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                      {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField
                           label="Approver"
                           approverList={getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown ? getValues('ApprovalType') ? approvalDropDown : [] : approvalDropDown}

@@ -851,10 +851,10 @@ const closeDrawerViewRfq = () => {
                                                     <AgGridColumn field="VendorName" tooltipField="VendorName" headerName={vendorLabel + " (Code)"} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
                                                     <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                     <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
-                                                    {initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>}
+                                                    {initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>}
                                                     <AgGridColumn field="RaisedBy" headerName='Raised By' cellRenderer='dashFormatter' ></AgGridColumn>
                                                     <AgGridColumn field="RaisedOn" headerName="Raised On" cellRenderer="dateFormatter" filter="agDateColumnFilter" filterParams={raisedOnFilterParams} />
-                                                    {initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn field="PartDataSentDate" headerName="RFI Date" cellRenderer="dateFormatter" filter="agDateColumnFilter" filterParams={partDataSentFilterParams} />}
+                                                    {initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn field="PartDataSentDate" headerName="RFI Date" cellRenderer="dateFormatter" filter="agDateColumnFilter" filterParams={partDataSentFilterParams} />}
                                                     <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
                                                     <AgGridColumn field="VisibilityDate" headerName="Visibility Date" cellRenderer="dateFormatter" filter="agDateColumnFilter" filterParams={visibilityDateFilterParams} />
                                                     <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>

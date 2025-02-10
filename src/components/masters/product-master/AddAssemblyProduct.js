@@ -721,7 +721,7 @@
 //                           />
 //                         </Col>
 //                         {initialConfiguration &&
-//                           initialConfiguration.IsGroupCodeDisplay && (
+//                           initialConfiguration?.IsGroupCodeDisplay && (
 //                             <Col md="3">
 //                               <Field
 //                                 label={`Group Code`}

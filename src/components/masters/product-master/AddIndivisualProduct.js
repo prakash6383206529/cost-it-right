@@ -355,7 +355,7 @@ class AddIndivisualProduct extends Component {
                             />
                           </Col>
                           {/* {initialConfiguration &&
-                            initialConfiguration.IsBOMNumberDisplay && (
+                            initialConfiguration?.IsBOMNumberDisplay && (
                               <Col md="3">
                                 <Field
                                   label={`BOM No.`}
@@ -386,7 +386,7 @@ class AddIndivisualProduct extends Component {
                           </Col>
 
                           {initialConfiguration &&
-                            initialConfiguration.IsGroupCodeDisplay && (
+                            initialConfiguration?.IsGroupCodeDisplay && (
                               <Col md="3">
                                 <Field
                                   label={`Group Code`}

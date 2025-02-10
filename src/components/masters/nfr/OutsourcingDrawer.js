@@ -321,7 +321,7 @@ function OutsourcingDrawer(props) {
                         return (
                           <tr key={index}>
                             <td>{item?.Description?.label}</td>
-                            <td>{checkForDecimalAndNull(item?.Cost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            <td>{checkForDecimalAndNull(item?.Cost, initialConfiguration?.NoOfDecimalForPrice)}</td>
 
                             <td className='text-right'>
                               <button
@@ -354,7 +354,7 @@ function OutsourcingDrawer(props) {
                           Total
                         </td>
                         <td colSpan={"2"}>
-                          <div className="total-cost">{checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice)}</div>
+                          <div className="total-cost">{checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice)}</div>
                         </td>
                       </tr>
                       }

@@ -102,13 +102,13 @@ export function Fgwiseimactdata(props) {
                                                 <td><span>{'-'}</span></td>
                                                 <td><span>{'-'}</span></td>
                                                 <td><span>{'-'}</span></td>
-                                                <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                                <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                                 <td><span>{'-'}</span></td>
                                                 {/* //Impact/Pc(with SOB) */}
-                                                <td><span>{checkForDecimalAndNull(item?.VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                                <td><span>{item.VolumePerYear == null ? "" : checkForDecimalAndNull(item.VolumePerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                                <td><span>{checkForDecimalAndNull(item.VendorSOBImpactPerQuater, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                                <td colSpan="2"><span> {checkForDecimalAndNull(item.VendorSOBImpactPerYear, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                                <td><span>{checkForDecimalAndNull(item?.VendorSOBImpactPerPiece, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
+                                                <td><span>{item.VolumePerYear == null ? "" : checkForDecimalAndNull(item.VolumePerYear, initialConfiguration?.NoOfDecimalForInputOutput)}</span></td>
+                                                <td><span>{checkForDecimalAndNull(item.VendorSOBImpactPerQuater, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
+                                                <td colSpan="2"><span> {checkForDecimalAndNull(item.VendorSOBImpactPerYear, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                                 {/* <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
 
                                             </tr >
@@ -122,12 +122,12 @@ export function Fgwiseimactdata(props) {
                                                             <td><span>{item.PartNumber}</span></td>
                                                             <td className="text-center"><span>{item.RevisionNumber}</span></td>
                                                             <td className='text-overflow'><span title={item.PartName}>{item.PartName}</span></td>
-                                                            <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                                            <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                                            <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
+                                                            <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                                             <td><span>{item.Quantity}</span></td>
-                                                            <td ><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                                            <td ><span>{checkForDecimalAndNull(item.VendorSOBPercentage, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                                            <td ><span>{checkForDecimalAndNull(VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                                            <td ><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
+                                                            <td ><span>{checkForDecimalAndNull(item.VendorSOBPercentage, initialConfiguration?.NoOfDecimalForInputOutput)}</span></td>
+                                                            <td ><span>{checkForDecimalAndNull(VendorSOBImpactPerPiece, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                                             {(isVerifyImpactDrawer ? false : true) && item.BaseCostingId !== null && <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId, item.BaseCostingId) }} /></Link></span></td>}
 
                                                         </tr>)

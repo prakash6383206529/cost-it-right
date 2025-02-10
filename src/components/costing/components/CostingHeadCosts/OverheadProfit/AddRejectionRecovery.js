@@ -95,10 +95,10 @@ function AddRejectionRecovery(props) {
     useEffect(() => {
         if (Object.keys(rejectionRecovery).length > 0) {
             setValue('RejectionRecoveryApplicability', rejectionRecovery?.ApplicabilityType ? { label: rejectionRecovery?.ApplicabilityType, value: rejectionRecovery?.ApplicabilityIdRef } : '')
-            setValue('RejectionRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.Value, initialConfiguration.NoOfDecimalForPrice))
-            setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('NetRejectionRecovery', checkForDecimalAndNull(rejectionRecovery?.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RejectionRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.Value, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.EffectiveRecoveryPercentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('NetRejectionRecovery', checkForDecimalAndNull(rejectionRecovery?.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice))
         }
     }, [rejectionRecovery])
 
@@ -108,9 +108,9 @@ function AddRejectionRecovery(props) {
         CostingPartDetails.CostingRawMaterialsCost?.map(item => {
             CostApplicability += checkForNull(item.ScrapRate) * checkForNull(item.FinishWeight)
         })
-        setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(EffectiveRecovery, initialConfiguration.NoOfDecimalForPrice))
-        setValue('RecoveryCostApplicability', checkForDecimalAndNull(CostApplicability, initialConfiguration.NoOfDecimalForPrice))
-        setValue('NetRejectionRecovery', checkForDecimalAndNull(CostApplicability * EffectiveRecovery / 100, initialConfiguration.NoOfDecimalForPrice))
+        setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(EffectiveRecovery, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('RecoveryCostApplicability', checkForDecimalAndNull(CostApplicability, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('NetRejectionRecovery', checkForDecimalAndNull(CostApplicability * EffectiveRecovery / 100, initialConfiguration?.NoOfDecimalForPrice))
 
         setState({
             ...state,

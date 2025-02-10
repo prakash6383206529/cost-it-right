@@ -1843,7 +1843,7 @@ function CostingDetails(props) {
             ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
-            VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+            VendorPlantId: initialConfiguration && initialConfiguration?.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
             CostingTypeId: VBCTypeId
           }
           tempArr.push(data)
@@ -1878,7 +1878,7 @@ function CostingDetails(props) {
               ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
-              VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+              VendorPlantId: initialConfiguration && initialConfiguration?.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
               CostingTypeId: VBCTypeId
             }
             tempArr.push(data)
