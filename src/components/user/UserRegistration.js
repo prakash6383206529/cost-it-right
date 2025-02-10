@@ -3132,6 +3132,11 @@ function UserRegistration(props) {
                           validate: { postiveNumber, number, maxLength6 }
                         }}
                         handleChange={() => { }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+                            e.preventDefault();
+                          }
+                        }}
                         placeholder={'Enter'}
                         //validate={[postiveNumber, maxLength6]}
                         //component={renderText}
