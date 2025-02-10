@@ -1146,6 +1146,7 @@ function RMIndexationSimulationListing(props) {
                     effectiveDate={props?.effectiveDate}
                     isEffectiveDateSelected={props?.isEffectiveDateSelected}
                     minDate={props?.minDate}
+                    masterId={props?.FromExchangeRate?props?.masterId:master?.value} 
                 />
             )}
         </div>

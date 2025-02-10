@@ -1745,6 +1745,7 @@ export const GET_TCO_DATA = 'GET_TCO_DATA'
 export const SET_RFQ_COSTING_TYPE = 'SET_RFQ_COSTING_TYPE'
 export const SET_EXCHANGE_RATE_SOURCE = 'SET_EXCHANGE_RATE_SOURCE'
 export const SET_CURRENCY_SOURCE = 'SET_CURRENCY_SOURCE'
+export const SET_EXCHANGE_RATE_DATA = 'SET_EXCHANGE_RATE_DATA'
 
 //WEIGHT CALCULATION COSTING
 
@@ -3296,7 +3297,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.70";
+export const VERSION = "V3.1.73";
 
 
 

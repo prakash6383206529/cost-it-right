@@ -105,8 +105,8 @@ const MachineRateListing = (props) => {
               }));
             }
           }
-if (props.selectionForListingMasterAPI === 'Master') {
-getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
+          if (props.selectionForListingMasterAPI === 'Master') {
+            getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
           }
         }
 
@@ -134,13 +134,15 @@ getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilter
       }
     }
     let statusString = [props?.approvalStatus].join(",")
-    const filterData = { costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: !isSimulation ? vendor_id : props?.vendorLabel?.value, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType:!isSimulation ? (MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC) : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
-        LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',}
+    const filterData = {      costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType: !isSimulation ? (MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC) : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+      LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '', ListFor: props?.ListFor ? props?.ListFor : '',
+      EffectiveDate: isSimulation &&props?.minDate ? props?.minDate : '',
+    }
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
     dataObj.IsCustomerDataShow = cbc
     dataObj.IsVendorDataShow = vbc
     dataObj.IsZeroDataShow = zbc
-    if (props?.isSimulation&& !props?.isFromVerifyPage) {
+    if (props?.isSimulation && !props?.isFromVerifyPage) {
       dataObj.TechnologyId = props?.technology?.value
       dataObj.Technologies = props?.technology?.label
     }
@@ -153,7 +155,7 @@ getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilter
       dataObj.Currency = state.floatingFilterData?.Currency
       dataObj.ExchangeRateSourceName = state.floatingFilterData?.ExchangeRateSourceName
       dispatch(getMachineDataList(filterData, skip, take, isPagination, dataObj, (res) => {
-setState((prevState) => ({ ...prevState, noData: false }))
+        setState((prevState) => ({ ...prevState, noData: false }))
         if (props.isSimulation && !props?.isFromVerifyPage) { props?.changeTokenCheckBox(true) }
         setState((prevState) => ({ ...prevState, isLoader: false }))
         if (res && isPagination === false) {
@@ -396,7 +398,7 @@ setState((prevState) => ({ ...prevState, noData: false }))
         isDeleteButton = true
       }
     }
-return (
+    return (
       <>
         <button className="cost-movement Tour_List_Cost_Movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
 
@@ -810,7 +812,7 @@ return (
                   <button type="button" className={"apply"} onClick={cancel}                        >
                     <div className={"back-icon"}></div>Back
                   </button>
-                
+
                 )}
               </Col>
             </Row>

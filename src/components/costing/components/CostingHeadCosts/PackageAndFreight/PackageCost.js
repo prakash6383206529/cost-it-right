@@ -23,7 +23,7 @@ function PackageCost(props) {
 
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, costingData, currencySource } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, costingData, currencySource,exchangeRateData } = useSelector(state => state.costing)
 
   useEffect(() => {
     props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(props?.data && props?.data?.length > 0 ? props?.data : []) ? true : false)
@@ -37,7 +37,7 @@ function PackageCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setIsEditFlag(false)
     setDrawerOpen(true)
   }

@@ -19,6 +19,7 @@ import {
     GET_ALL_OPERATION_COMBINED_DATA_LIST,
     SET_OPERATION_DATA,
     GET_OPERATION_SELECTLIST,
+    EMPTY_GUID,
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -266,6 +267,8 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             OperationEntryType: filterData.OperationEntryType,
             Currency: filterData.Currency !== undefined ? filterData.Currency : "",
             LocalCurrency: filterData.LocalCurrency !== undefined ? filterData.LocalCurrency : "",
+            Vendor_id: filterData.vendor_id !== undefined ? filterData.vendor_id : EMPTY_GUID,
+            EffectiveDate: filterData?.EffectiveDate !== undefined ? filterData?.EffectiveDate : "",
         });
         const queryParamsSecond = encodeQueryParamsAndLog({
             CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : "",

@@ -80,6 +80,9 @@ const {vendorLabel} = useLabels()
         ProcessNumber: showCompressedColumns ? 100 : 190,
         Plant: showCompressedColumns ? 100 : 190,
         EffectiveDate: showCompressedColumns ? 90 : 190,
+        LocalCurrency: showCompressedColumns ? 100 : 190,
+        NetLandedCost: showCompressedColumns ? 100 : 190,
+        NewNetLandedCost: showCompressedColumns ? 100 : 190,
     };
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
@@ -548,10 +551,18 @@ const {vendorLabel} = useLabels()
                                                 }
                                                  {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                  <AgGridColumn field="Currency" width={120}cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                 {(isImpactedMaster || props?.lastRevision ) && <AgGridColumn field="LocalCurrency" width={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
+
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
+                                                {(isImpactedMaster || props?.lastRevision || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                    "Net Machine Rate (Plant Currency)"                                                }>
+                                                    <AgGridColumn width={columnWidths.NetLandedCost} field="OldMachineRateLocalConversion" editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='OldMachineRateLocalConversion'></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewMachineRateLocalConversion" editable='false' cellRenderer={'costFormatter'} headerName="Revised" colId='NewMachineRateLocalConversion'></AgGridColumn>
+                                                </AgGridColumn>
+                                                }
                                                 {props.children}
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>

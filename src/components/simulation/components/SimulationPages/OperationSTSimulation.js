@@ -100,8 +100,8 @@ function OperationSTSimulation(props) {
         }
     }, [])
     useEffect(() => {
-        if (list && list.length >= 0) {
-            gridRef.current.api.sizeColumnsToFit();
+        if (list && list?.length >= 0) {
+            gridRef?.current?.api.sizeColumnsToFit();
             let maxDate = getMaxDate(list)
             setMaxDate(maxDate?.EffectiveDate)
         }
@@ -622,17 +622,24 @@ function OperationSTSimulation(props) {
                                                 {operationTypes.includes('Welding') && <AgGridColumn field="OperationConsumption" editable='false' headerName="Consumption" minWidth={190} cellRenderer='consumptionFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                 <AgGridColumn field="Currency" minWidth={150} cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                {(isImpactedMaster || lastRevision ) && <AgGridColumn field="LocalCurrency" width={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
+
                                                 {operationTypes.includes('Welding') && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={320} headerName="Welding Material Rate/Kg" marryChildren={true} >
                                                     <AgGridColumn minWidth={150} field="" editable={false} headerName="Existing" colId="oldOperationBasicRate" cellRenderer='oldBasicRateFormatter'></AgGridColumn>
                                                     <AgGridColumn minWidth={150} field="NewOperationBasicRate" editable={isImpactedMaster ? false : true} headerName="Revised" colId='newOperationBasicRate' headerComponent={'revisedRateHeader'} cellRenderer='newWeldingRateFormatter'></AgGridColumn>
                                                 </AgGridColumn>}
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate (Currency)" marryChildren={true} >
                                                     <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer='oldRateFormatter'></AgGridColumn>
                                                     <AgGridColumn minWidth={120} editable={operationTypes.includes('Welding') || isImpactedMaster ? false : true} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedRateHeader'} cellRenderer='rateFormatter' valueGetter={ageValueGetterRate}
                                                     >
 
                                                     </AgGridColumn>
                                                 </AgGridColumn>
+                                                {(isImpactedMaster || lastRevision )&& String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Rate (Plant Currency)`}>
+                                                    <AgGridColumn width={120} field="OldOperationBasicRateLocalConversion"  editable='false' headerName="Existing" colId='OldOperationNetLandedCostConversion'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="NewOperationBasicRateLocalConversion" editable='false' headerName="Revised" colId='NewOperationNetLandedCostConversion'></AgGridColumn>
+                                                </AgGridColumn>
+                                                }
                                                 {props.children}
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>

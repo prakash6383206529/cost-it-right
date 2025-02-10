@@ -74,6 +74,7 @@ import {
   GET_SAP_EVALUATIONTYPE,
   SET_EXCHANGE_RATE_SOURCE,
   SET_CURRENCY_SOURCE,
+  SET_EXCHANGE_RATE_DATA,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -3123,6 +3124,14 @@ export function setCurrencySource(value) {
   return (dispatch) => {
     dispatch({
       type: SET_CURRENCY_SOURCE,
+      payload: value
+    });
+  }
+}
+export function exchangeRateReducer(value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_EXCHANGE_RATE_DATA,
       payload: value
     });
   }

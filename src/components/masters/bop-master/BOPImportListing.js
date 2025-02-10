@@ -233,13 +233,14 @@ const BOPImportListing = (props) => {
       ...floatingFilterData,
       bop_for: bopFor,
       category_id: CategoryId,
-      vendor_id: !props?.isSimulation ? vendorId : props?.vendorLabel?.value,
+      vendor_id: props?.isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : vendorId,
       plant_id: plantId,
       ListFor: props?.isSimulation && !props?.isBOPAssociated ?"" : props.ListFor,
       StatusId: statusString,
       IsBOPAssociated: !props?.isSimulation ? props?.isBOPAssociated : (isMasterAssociatedWithCosting? true : false),
       Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
       LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+      EffectiveDate: props?.isSimulation &&props?.minDate ? props?.minDate : '',
     };
     if (isPagination === true) {
       setState((prevState) => ({ ...prevState, isLoader: true }));

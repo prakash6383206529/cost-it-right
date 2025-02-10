@@ -70,7 +70,8 @@ function ERSimulation(props) {
     const [showRawMaterialsList, setShowRawMaterialsList] = useState(false);
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const [minDate, setMinDate] = useState('')
-    
+    const [hasUserMadeEdits, setHasUserMadeEdits] = useState(false);
+
     const dispatch = useDispatch()
     const columnWidths = {
 
@@ -91,9 +92,11 @@ function ERSimulation(props) {
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
-            item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
-            return null
-        })
+            if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
+                item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
+                return null
+            }
+})
     }, [])
     useEffect(() => {
         if (handleEditMasterPage) {
@@ -271,7 +274,13 @@ function ERSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewCurrencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newCurrencyExchangeRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell ? Number(cell) : Number(row.CurrencyExchangeRate)} >{cell ? Number(cell) : Number(row.CurrencyExchangeRate)}</span>
+                        <span
+                            id={`newCurrencyExchangeRate-${props.rowIndex}`}
+                            className={`${!isbulkUpload ? 'form-control' : ''}`}
+                            title={cell ? Number(cell) : Number(row.NewCurrencyExchangeRate)}
+                        >
+                            {cell ? Number(cell) : Number(row.NewCurrencyExchangeRate)}
+                        </span>
                 }
             </>
         )
@@ -290,10 +299,10 @@ function ERSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        
+
         setSelectedRowData(selectedRows);
-        
-        
+
+
     }
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
@@ -320,7 +329,7 @@ function ERSimulation(props) {
         setShowTooltip(false)
 
         if (count === 0) {
-            Toaster.warning("Please change the basic rate and proceed to the next page.")
+            Toaster.warning("Please change the Exchange rate and proceed to the next page.")
             return false
         }
 
@@ -352,6 +361,15 @@ function ERSimulation(props) {
     }, 500)
 
     const selectRM = debounce(() => {
+        if (simulationApplicability?.value === 'RM' && !isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
+          // Check if user has made any edits
+    if (!hasUserMadeEdits) {
+        Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
+        return false;
+    }
         let count = 0
         let listData = []
         let fromListData = ''
@@ -370,10 +388,11 @@ function ERSimulation(props) {
 
         setShowTooltip(false)
 
-        if (count === 0) {
-            Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`)
-            return false
-        }
+        // if (count === 0) {
+        //     Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`)
+        //     return false
+        // }
+        
         dispatch(setExchangeRateListBeforeDraft(listData))
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(listData, 'Currency') }))
         switch (simulationApplicability?.value) {
@@ -403,7 +422,13 @@ function ERSimulation(props) {
     const onBtExport = () => {
         return returnExcelColumn(EXCHANGE_IMPACT_DOWNLOAD_EXCEl, list)
     };
-
+    const onCellValueChanged = (params) => {
+        
+        if (params.column.colId === 'NewCurrencyExchangeRate') {
+            setHasUserMadeEdits(true);
+        }
+    };
+    
     const returnExcelColumn = (data = [], TempData) => {
 
         let temp = []
@@ -477,6 +502,8 @@ function ERSimulation(props) {
                                             suppressRowClickSelection={true}
                                             onFilterModified={onFloatingFilterChanged}
                                             enableBrowserTooltips={true}
+                                            onCellValueChanged={onCellValueChanged}
+
 
                                         >
                                             <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
@@ -602,6 +629,9 @@ function ERSimulation(props) {
                 isFromVerifyPage={true}
                 cancelImportList={cancelImportList}
                 vendorLabel={props?.vendor}
+                FromExchangeRate={true}
+                minDate={minDate}
+
 
             />}
             {showBOPMasterList &&
@@ -624,6 +654,9 @@ function ERSimulation(props) {
                     isFromVerifyPage={true}
                     cancelImportList={cancelImportList}
                     vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+                    minDate={minDate}
+
 
                 />}
             {(showOperationsList || showSurfaceTreatmentList) && (
@@ -639,6 +672,10 @@ function ERSimulation(props) {
                     fromListData={fromListData}
                     toListData={toListData}
                     vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+                    minDate={minDate}
+
+
 
                 />
             )}
@@ -655,6 +692,10 @@ function ERSimulation(props) {
                     fromListData={fromListData}
                     toListData={toListData}
                     vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+                    minDate={minDate}
+
+
 
 
                 />
@@ -673,6 +714,9 @@ function ERSimulation(props) {
                     isEffectiveDateSelected={isEffectiveDateSelected}
                     minDate={minDate}
                     vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+                    masterId={props?.masterId}
+
 
                 />
             )}

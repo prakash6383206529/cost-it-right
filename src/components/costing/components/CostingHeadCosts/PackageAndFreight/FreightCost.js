@@ -23,7 +23,7 @@ function FreightCost(props) {
 
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
-  const { CostingEffectiveDate, costingData, currencySource } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, costingData, currencySource,exchangeRateData } = useSelector(state => state.costing)
 
   useEffect(() => {
     props.setFreightCost(gridData, JSON.stringify(gridData) !== JSON.stringify((props?.data && props?.data?.length > 0 ? props?.data : [])) ? true : false)
@@ -37,7 +37,7 @@ function FreightCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setRowObjData({})
     setDrawerOpen(true)
     setIsAddFlag(true)
