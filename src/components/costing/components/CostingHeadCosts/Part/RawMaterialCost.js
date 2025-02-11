@@ -70,7 +70,7 @@ function RawMaterialCost(props) {
   const [rmNameList, setRMNameList] = useState([])
   const [inputValue, setInputValue] = useState('');
   const [deleteIndex, setDeleteIndex] = useState('');
-  const [calculatorTypeStore, setCalculatorTypeStore] = useState(costData.TechnologyId === CORRUGATEDBOX ? item?.CostingPartDetails?.CalculatorType : '')
+  const [calculatorTypeStore, setCalculatorTypeStore] = useState(costData.TechnologyId === CORRUGATEDBOX ? item?.CostingPartDetails?.CalculatorType ?? item?.CalculatorType ?? '' : '')
   const [isMultiCalculatorData, setIsMultiCalculatorData] = useState(false);
   const [headerPinned, setHeaderPinned] = useState(true)
   const [tourState, setTourState] = useState({
@@ -887,7 +887,7 @@ function RawMaterialCost(props) {
         BurningLossWeight: weightData?.BurningValue,
         ScrapWeight: scrapWeight,
         IsCalculaterAvailable: true,
-        CalculatorType: weightData?.CalculatorType
+        CalculatorType: weightData?.CalculatorType ?? calculatorTypeStore
         // IsScrapRecoveryPercentageApplied: true
       }
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
@@ -903,7 +903,7 @@ function RawMaterialCost(props) {
       }, 400)
       errors.rmGridFields = []
       if (tempArr) {
-        tempArr[0].CalculatorType = weightData?.CalculatorType
+        tempArr[0].CalculatorType = weightData?.CalculatorType ?? calculatorTypeStore
       }
       setGridData(tempArr)
 
@@ -928,7 +928,7 @@ function RawMaterialCost(props) {
                 ScrapRecoveryPercentage: weightData.RecoveryPercentage,
                 ScrapWeight: weightData?.ScrapWeight || 0,
                 Percentage: calculatedRM?.Percentage || 0,
-                CalculatorType: weightData.CalculatorType
+                CalculatorType: weightData.CalculatorType ?? calculatorTypeStore
               };
             }
             return null;
