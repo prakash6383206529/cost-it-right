@@ -12,5 +12,21 @@
     "spacerPackingInsertRecovery": "Spacer/packing/insert recovery %",
     "spacerPackingInsertRecoveryCostPerKg": "Spacer/packing/insert recovery cost per kg",
     "costOfSpacerPackingInsert": "Cost of spacer/packing/insert",
-    "packingCost": "Packing Cost"
+    "packingCost": "Packing Cost",
+    "carrierType": "Carrier Type",
+    "truckDimensions": "Truck Dimensions",
+    "length": "Length (mm)",
+    "width": "Width (mm)",
+    "height": "Height (mm)",
+    "binAlignment": "Bin Alignment",
+    "trolleyAlignment": "Trolley Alignment",
+    "noOfBinsRequiredPerVehicle": "No of bins required per vehicle (Qty)",
+    "noOfTrolleysRequiredPerVehicle": "No of trolleys required per vehicle (Qty)",
+    "noOfComponentsRequiredPerDay": "No of components required per day",
+    "utilization": "Utilization",
+    "tripRate": "Trip rate",
+    "totalCostOfTrip": "Total cost of trip",
+    "totalCost": "Total cost",
+    "noOfBinsPerTrolley": "No of bins per trolley",
+    "totalNoOfBins": "Total no of bins"
 }

@@ -60,16 +60,7 @@ const {rowObjData} = props
             setState((prevState) => ({ ...prevState, volumePerDay: data?.VolumePerDay, volumePerAnnum: data?.VolumePerAnnum }))
         }))
         }
-        const tempData = rowObjData?.SimulationTempData
-        // const index = props?.viewPackaingData?.findIndex(item => item.PackagingDetailId === rowObjData?.PackagingDetailId)
-        // if (props.simulationMode && tempData?.map(item => item?.CostingHeading)?.includes("New Costing") && tempData?.map(item => Number(item?.SimulationStatusId)).some(id => [REJECTEDID, PENDING_FOR_APPROVAL_ID, AWAITING_APPROVAL_ID, DRAFTID].includes(id)) && props?.viewPackaingData[index]?.Applicability === 'Crate/Trolley') {
-        //     const simulationId = tempData.find(item => item?.CostingHeading === "New Costing")?.SimulationId
-        //     dispatch(getSimulationPackagingCalculation(simulationId, costingId, (res) => {
-            //         let data = res?.data?.Data
-            //         setFormValues(data)
-            //      }))
-            // }
-            // else{
+            const tempData = rowObjData?.SimulationTempData
             const costingId = costingData?.CostingId??tempData.find(item => item?.CostingHeading === "Old Costing")?.costingId
             let calculatorId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.CostingPackagingCalculationDetailsId:props?.costingPackagingCalculationDetailsId??null
             let packagingDetailId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.PackagingDetailId:null

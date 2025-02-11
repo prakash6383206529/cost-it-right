@@ -5,8 +5,8 @@ import TooltipCustom from '../common/Tooltip';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../layout/HookFormInputs';
 import { number, checkWhiteSpaces, decimalIntegerNumberLimit, nonZero } from '../../helper';
 
-const FormFieldsRenderer = ({ fieldProps, buttonProps }) => {
-    const { fields, control, register, errors, containerClassName = "", colSize = "4" } = fieldProps;
+const FormFieldsRenderer = ({fields, fieldProps, buttonProps }) => {
+    const {  control, register, errors, containerClassName = "", colSize = "4" } = fieldProps;
     // const { buttonProps } = buttonProps;
     return (
         <Row className={containerClassName}>
@@ -14,16 +14,16 @@ const FormFieldsRenderer = ({ fieldProps, buttonProps }) => {
                 const { tooltip, name, label } = item || {};
                 return (
                     <Col md={colSize} key={name}>
-                        {item.tooltip && (
+                        {item?.tooltip && (
                             <TooltipCustom
-                                width={tooltip.width}
-                                tooltipClass={tooltip.className ?? ''}
+                                width={tooltip?.width}
+                                tooltipClass={tooltip?.className ?? ''}
                                 disabledIcon={tooltip?.disabled ?? true}
                                 id={item.name}
                                 tooltipText={!tooltip?.disabled ? tooltip.text : `${item.label} = ${tooltip.text ?? ''}`}
                             />
                         )}
-                        {item.searchable ? (
+                        {item?.searchable ? (
                             <SearchableSelectHookForm
                                 label={label}
                                 id={name}
@@ -51,7 +51,7 @@ const FormFieldsRenderer = ({ fieldProps, buttonProps }) => {
                                 mandatory={item.mandatory}  
                                 rules={{
                                     required: item.mandatory,
-                                    validate: { nonZero, number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(5,3), ...(item.disabled ? {} : {}) },
+                                    validate: item.mandatory ? { nonZero, number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(5,2), ...(item.disabled ? {} : {}) } : {},
                                     max: item.percentageLimit ? {
                                         value: 100,
                                         message: 'Percentage value should be equal to 100'

@@ -10,6 +10,7 @@ import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/C
 import { checkForDecimalAndNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { LOGISTICS, PACK_AND_FREIGHT_PER_KG } from '../../../../../config/masterData';
 import Button from '../../../../layout/Button';
+import { setFreightCalculatorAvailable } from '../../../actions/CostWorking';
 
 function FreightCost(props) {
 
@@ -49,6 +50,10 @@ function FreightCost(props) {
    * @description HIDE FREIGHT DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
+    if (rowData?.IsFreightDetailedBreakup === true && rowData?.CostingFreightCalculationDetailsId) {
+      dispatch(setFreightCalculatorAvailable(true));
+  }
+
     if (Object.keys(rowData).length > 0) {
       if (editIndex !== '' && isEditFlag) {
         let tempArr = Object.assign([...gridData], { [editIndex]: rowData })
@@ -71,12 +76,23 @@ function FreightCost(props) {
   }
 
   const deleteItem = (index) => {
+    // Remove item at index
+    const updatedGridData = gridData.filter((_, i) => i !== index);
+    
+    // Check if any remaining items have CostingFreightCalculationDetailsId
+    const itemsWithCalculation = updatedGridData.filter(
+      item => item?.CostingFreightCalculationDetailsId != null
+    );
+
+    // Set calculator availability based on remaining items
+    dispatch(setFreightCalculatorAvailable(itemsWithCalculation.length > 0));
     let tempArr = gridData && gridData.filter((el, i) => {
       if (i === index) return false;
       return true;
     })
     setGridData(tempArr)
   }
+
 
   const editItem = (index) => {
     let tempArr = gridData && gridData.find((el, i) => i === index)

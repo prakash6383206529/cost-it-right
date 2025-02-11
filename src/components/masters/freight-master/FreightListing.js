@@ -213,16 +213,16 @@ const FreightListing = (props) => {
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
     // Map TempData to replace "NA" with "-"
-    let temp = [];
+    let temp = [];  
     temp = TempData && TempData.map((item) => {
         const newItem = { ...item }; // Create a copy of the object to avoid mutating original data
-        if (newItem.VendorName === '-') {
-          newItem.VendorName = ' '
-         }
         for (let key in newItem) {
-         if (newItem[key] === 'NA') {
+         if (newItem[key] === 'NA'||newItem[key] === ' '||newItem[key] === null||newItem[key] === undefined) {
                 newItem[key] = '-';
             }
+          }
+          if (item?.EffectiveDate?.includes('T')) {
+            item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
         }
         return newItem;
     });

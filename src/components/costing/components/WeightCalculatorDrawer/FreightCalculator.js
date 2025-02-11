@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Row, Col, Container, } from 'reactstrap'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { number, checkWhiteSpaces, maxLength7, checkForNull, checkForDecimalAndNull, loggedInUserId } from '../../../../helper'
@@ -7,31 +7,42 @@ import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
 import Button from '../../../layout/Button'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
-import { getPackagingCalculation, getSimulationPackagingCalculation, getVolumePerDayForPackagingCalculator, savePackagingCalculation } from '../../actions/CostWorking'
+import { getCarrierTypeList, getFreightCalculation, getPackagingCalculation, getSimulationPackagingCalculation, getVolumePerDayForPackagingCalculator, saveFreightCalculation, savePackagingCalculation } from '../../actions/CostWorking'
 import { Drawer } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
 import { ViewCostingContext } from '../CostingDetails'
-import { AWAITING_APPROVAL_ID, DRAFT, DRAFTID, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants'
+import { FullTruckLoad } from '../../../../config/constants'
+import FormFieldsRenderer from '../../../common/FormFieldsRenderer'
+import HeaderTitle from '../../../common/HeaderTitle'
 function FreightCalculator(props) {
-const {rowObjData} = props
+    const { rowObjData, truckDimensions, freightType, noOfComponentsPerCrate, rate } = props
     const [state, setState] = useState({
-        volumePerDay:0,
-        volumePerAnnum:0,
-        packingCost: 0,
-        noOfCratesRequiredPerDay:0,
-        totalCostOfCrate:0,
-        spacerPackingInsertRecoveryCost:0,
-        totalCostOfSpacerPackingInsert:0,
+        carrierType: [],
+        isShowAlignment: false,
+        binAlignment: null,
+        trolleyAlignment: null,
+        hideUtilization: false,
+        truckLength: 0,
+        truckBreadth: 0,
+        truckHeight: 0,
+        noOfBins: 0,
+        noOfTrolleys: 0,
+        noOfBinsPerTrolley: 0,
+        totalNoOfBins: 0,
+        noOfbinOrTrolleypertruck: 0,
+        totalCost: 0
     })
-    const { costingData, CostingEffectiveDate} = useSelector(state => state.costing)
+    const { costingData } = useSelector(state => state.costing)
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
     const costingViewMode = useContext(ViewCostingContext);
-    const CostingViewMode = costingViewMode??props?.CostingViewMode
+    const CostingViewMode = costingViewMode ?? props?.CostingViewMode
+    const carrierTypeList = useSelector(state => state.costWorking.carrierTypeList)
     const dispatch = useDispatch()
     const {
         register,
         handleSubmit,
         control,
+        reset,
         setValue,
         getValues,
         formState: { errors },
@@ -41,193 +52,458 @@ const {rowObjData} = props
     });
 
     const { t } = useTranslation('CostingLabels');
-    const calclulationFieldValues = useWatch({
-        control: control, 
-        name: ['NoOfComponentsPerCrate','StockNormDays','WeightOfCover', 'CostOfCrate','CostOfCoverPerKg', 'AmortizedNoOfYears', 'NoOfPartsPerCover', 'SpacerPackingInsertCost', 'NoOfSpacerPackingInsert'],
-        defaultValue: [] 
+    const lengthWarningRef = useRef(false);
+    const breadthWarningRef = useRef(false);
+    const heightWarningRef = useRef(false);
+    const dimensionsFieldsValues = useWatch({
+        control: control,
+        name: ['BinLength', 'BinBreadth', 'BinHeight', 'TrolleyLength', 'TrolleyBreadth', 'TrolleyHeight'],
+        defaultValue: []
     })
-    useEffect(() => {
-        if (!CostingViewMode && calclulationFieldValues.some(value => value !== undefined)) {
-            calculateAllValues();
-        }
-    }, [calclulationFieldValues,state?.spacerPackingInsertRecoveryCostPerKg]);
-    useEffect(() => {
-        if(!CostingViewMode){
-        dispatch(getVolumePerDayForPackagingCalculator(costingData?.PartId, costingData?.PlantId, CostingEffectiveDate, costingData?.VendorId, (res) => {
-            let data = res?.data?.Data
-            setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
-            setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
-            setState((prevState) => ({ ...prevState, volumePerDay: data?.VolumePerDay, volumePerAnnum: data?.VolumePerAnnum }))
-        }))
-        }
-        const tempData = rowObjData?.SimulationTempData
-        // const index = props?.viewPackaingData?.findIndex(item => item.PackagingDetailId === rowObjData?.PackagingDetailId)
-        // if (props.simulationMode && tempData?.map(item => item?.CostingHeading)?.includes("New Costing") && tempData?.map(item => Number(item?.SimulationStatusId)).some(id => [REJECTEDID, PENDING_FOR_APPROVAL_ID, AWAITING_APPROVAL_ID, DRAFTID].includes(id)) && props?.viewPackaingData[index]?.Applicability === 'Crate/Trolley') {
-        //     const simulationId = tempData.find(item => item?.CostingHeading === "New Costing")?.SimulationId
-        //     dispatch(getSimulationPackagingCalculation(simulationId, costingId, (res) => {
-            //         let data = res?.data?.Data
-            //         setFormValues(data)
-            //      }))
-            // }
-            // else{
-            const costingId = costingData?.CostingId??tempData.find(item => item?.CostingHeading === "Old Costing")?.costingId
-            let calculatorId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.CostingPackagingCalculationDetailsId:props?.costingPackagingCalculationDetailsId??null
-            let packagingDetailId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.PackagingDetailId:null
-        dispatch(getPackagingCalculation(costingId, packagingDetailId, calculatorId, (res) => {
-            let data = res?.data?.Data
-            setFormValues(data)
-           
-        }))
-    // }
-    }, [])
+    const showWarning = (message) => {
+        Toaster.warning(message);
+    };
 
-const setFormValues=(data)=>{
-    setValue('NoOfComponentsPerCrate', checkForDecimalAndNull(data?.NoOfComponentsPerCrate, NoOfDecimalForInputOutput))
-    setValue('NoOfCratesRequiredPerDay', checkForDecimalAndNull(data?.NoOfCratesRequiredPerDay, NoOfDecimalForInputOutput))
-    setValue('StockNormDays', checkForDecimalAndNull(data?.StockNormDays, NoOfDecimalForInputOutput))
-    setValue('CostOfCrate', checkForDecimalAndNull(data?.CostOfCrate, NoOfDecimalForPrice))
-    setValue('TotalCostOfCrate', checkForDecimalAndNull(data?.TotalCostOfCrate, NoOfDecimalForPrice))
-    setValue('AmortizedNoOfYears', checkForDecimalAndNull(data?.AmortizedNoOfYears, NoOfDecimalForInputOutput))
-    setValue('WeightOfCover', checkForDecimalAndNull(data?.WeightOfCoverPerKg, NoOfDecimalForInputOutput))
-    setValue('CostOfCoverPerKg', checkForDecimalAndNull(data?.CostOfCoverPerKg, NoOfDecimalForPrice))
-    setValue('NoOfPartsPerCover', checkForDecimalAndNull(data?.NoOfPartsPerCover, NoOfDecimalForInputOutput))
-    setValue('SpacerPackingInsertCost', checkForDecimalAndNull(data?.SpacerPackingInsertCostIfAny, NoOfDecimalForPrice))
-    setValue('NoOfSpacerPackingInsert', checkForDecimalAndNull(data?.NoOfSpacersPackingInsert, NoOfDecimalForInputOutput))
-    setValue('SpacerPackingInsertRecovery', checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryPercentage, NoOfDecimalForInputOutput))
-    setValue('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryCostPerKg, NoOfDecimalForPrice))
-    setValue('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(data?.CostOfSpacersPackingInsert, NoOfDecimalForPrice))
-    setValue('PackingCost', checkForDecimalAndNull(data?.PackingCost, NoOfDecimalForPrice))
-    setState((prevState) => ({ ...prevState, 
-        noOfCratesRequiredPerDay: data?.NoOfCratesRequiredPerDay,
-        totalCostOfCrate: data?.TotalCostOfCrate,
-        spacerPackingInsertRecoveryCostPerKg: data?.SpacersPackingInsertRecoveryCostPerKg, 
-        totalCostOfSpacerPackingInsert: data?.CostOfSpacersPackingInsert, 
-        packingCost: data?.PackingCost,
-        volumePerDay: data?.VolumePerDay,
-        volumePerAnnum: data?.VolumePerAnnum,
-     }))
-     if(CostingViewMode){
-        setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
-        setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
-        setState((prevState) => ({ ...prevState, 
-            volumePerDay: data?.VolumePerDay,
-            volumePerAnnum: data?.VolumePerAnnum,
-         }))
-     }
-}
-    const packagingCalculatorFields = [
-        { label: t('noOfComponentsPerCrate', { defaultValue: 'No of components per crate/trolley' }), name: 'NoOfComponentsPerCrate', mandatory: true, searchable: false, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('volumePerDay', { defaultValue: 'Volume per day' }), name: 'VolumePerDay', mandatory: false, disabled: true ,tooltip: { text: `Coming from volume master`, width: '250px' ,disabledIcon: false} },
-        { label: t('volumePerAnnum', { defaultValue: 'Volume per annum' }), name: 'VolumePerAnnum', mandatory: false, disabled: true, tooltip: { text: `Coming from volume master`, width: '250px' ,disabledIcon: false} },
-        { label: t('noOfCratesRequiredPerDay', { defaultValue: 'No of crates/trolley required per day' }), name: 'NoOfCratesRequiredPerDay', mandatory: false, disabled: true, tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} / ${t('noOfComponentsPerCrate', { defaultValue: 'No of components per crate/trolley' })}`, width: '250px',disabledIcon: true } },
-        { label: t('stockNormDays', { defaultValue: 'Stock Norm days' }), name: 'StockNormDays', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('costOfCrate', { defaultValue: 'Cost of crate/trolley' }), name: 'CostOfCrate', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' }), name: 'TotalCostOfCrate', mandatory: false, disabled: true, tooltip: { text: `${t('noOfCratesRequiredPerDay', { defaultValue: 'No of crates/trolley required per day' })} * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })} * ${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })}`, width: '250px',disabledIcon: true } },
-        { label: t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' }), name: 'AmortizedNoOfYears', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('weightOfCover', { defaultValue: 'Weight of cover (kg)' }), name: 'WeightOfCover', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' }), name: 'CostOfCoverPerKg', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('noOfPartsPerCover', { defaultValue: 'No. of parts per cover' }), name: 'NoOfPartsPerCover', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' }), name: 'SpacerPackingInsertCost', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' }), name: 'NoOfSpacerPackingInsert', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('spacerPackingInsertRecovery', { defaultValue: 'Spacer/packing/insert recovery %' }), name: 'SpacerPackingInsertRecovery',  handleChange: (e) => { calculateSpacerPackingInsertRecoveryCost(e.target.value) },mandatory: true, percentageLimit: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('spacerPackingInsertRecoveryCostPerKg', { defaultValue: 'Spacer/packing/insert recovery cost per kg' }), name: 'SpacerPackingInsertRecoveryCostPerKg', mandatory: false, disabled: true, tooltip: { text: `${t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' })} * ${t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' })} * (${t('spacerPackingInsertRecovery', { defaultValue: 'Spacer/packing/insert recovery %' })} / 100)`, width: '250px',disabledIcon: true } },
-        { label: t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' }), name: 'TotalCostOfSpacerPackingInsert', mandatory: false, disabled: true, tooltip: { text: `${t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' })} * ${t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' })} - ${t('spacerPackingInsertRecoveryCostPerKg', { defaultValue: 'Spacer/packing/insert recovery cost per kg' })}`, width: '250px',disabledIcon: true } },
-        {
-            label: t('packingCost', { defaultValue: 'Packing Cost' }), name: 'PackingCost', mandatory: false, disabled: true, tooltip: {
-                text: `(${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} / (${t('volumePerAnnum', { defaultValue: 'Volume per annum' })} * ${t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' })})) + 
-            ((${t('weightOfCover', { defaultValue: 'Weight of cover (kg)' })} * ${t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' })}) / ${t('noOfPartsPerCover', { defaultValue: 'No. of parts per cover' })}) + 
-            ${t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' })}`,
-                width: '250px',disabledIcon: true
+    useEffect(() => {
+        const binLength = checkForNull(getValues("BinLength"));
+        const binBreadth = checkForNull(getValues("BinBreadth"));
+        const binHeight = checkForNull(getValues("BinHeight"));
+        const trolleyLength = checkForNull(getValues("TrolleyLength"));
+        const trolleyBreadth = checkForNull(getValues("TrolleyBreadth"));
+        const trolleyHeight = checkForNull(getValues("TrolleyHeight"));
+
+        let warningMessage = "";
+
+        // **Length Validation**
+        if (trolleyLength && state.truckLength && trolleyLength > state.truckLength) {
+            if (!lengthWarningRef.current) {
+                warningMessage = "Trolley length cannot be greater than truck length";
+                lengthWarningRef.current = true;
+            }
+        } else if (binLength && (trolleyLength || state.truckLength) && binLength > (trolleyLength || state.truckLength)) {
+            if (!lengthWarningRef.current) {
+                warningMessage = `Bin length cannot be greater than ${state?.carrierType?.label === 'Bin And Trolley' ? 'truck/trolley' : 'truck'} length`;
+                lengthWarningRef.current = true;
+            }
+        } else {
+            lengthWarningRef.current = false; // Reset if no warning
+        }
+
+        // **Breadth Validation**
+        if (trolleyBreadth && state.truckBreadth && trolleyBreadth > state.truckBreadth) {
+            if (!breadthWarningRef.current) {
+                warningMessage = "Trolley breadth cannot be greater than truck breadth";
+                breadthWarningRef.current = true;
+            }
+        } else if (binBreadth && (trolleyBreadth || state.truckBreadth) && binBreadth > (trolleyBreadth || state.truckBreadth)) {
+            if (!breadthWarningRef.current) {
+                warningMessage = `Bin breadth cannot be greater than ${state?.carrierType?.label === 'Bin And Trolley' ? 'truck/trolley' : 'truck'} breadth`;
+                breadthWarningRef.current = true;
+            }
+        } else {
+            breadthWarningRef.current = false; // Reset if no warning
+        }
+
+        // **Height Validation**
+        if (trolleyHeight && state.truckHeight && trolleyHeight > state.truckHeight) {
+            if (!heightWarningRef.current) {
+                warningMessage = "Trolley height cannot be greater than truck height";
+                heightWarningRef.current = true;
+            }
+        } else if (binHeight && (trolleyHeight || state.truckHeight) && binHeight > (trolleyHeight || state.truckHeight)) {
+            if (!heightWarningRef.current) {
+                warningMessage = `Bin height cannot be greater than ${state?.carrierType?.label === 'Bin And Trolley' ? 'truck/trolley' : 'truck'} height`;
+                heightWarningRef.current = true;
+            }
+        } else {
+            heightWarningRef.current = false; // Reset if no warning
+        }
+
+        // **Show the warning message (only one at a time)**
+        if (warningMessage) {
+            showWarning(warningMessage);
+        } else {
+            // **Reset state if no warnings**
+            setState((prevState) => ({
+                ...prevState,
+                warningShown: false,
+                binWarningShown: false,
+            }));
+        }
+    }, [dimensionsFieldsValues, state.truckLength, state.truckBreadth, state.truckHeight]);
+
+    useEffect(() => {
+        dispatch(getCarrierTypeList(res => { }))
+        setValue('TruckDimensions', truckDimensions?.label)
+        setValue('NoOfComponentsPerBinOrTrolley', noOfComponentsPerCrate)
+        setValue('TripRate', rate)
+        if (truckDimensions?.label) {
+            const dimensions = truckDimensions?.label?.match(/L\((\d+)\),\s*B\((\d+)\),\s*H\((\d+)\)/);
+            if (dimensions) {
+                setState(prevState => ({
+                    ...prevState,
+                    truckLength: parseFloat(dimensions[1]),
+                    truckBreadth: parseFloat(dimensions[2]),
+                    truckHeight: parseFloat(dimensions[3])
+                }))
             }
         }
-    ]
-    const calculateAllValues = () => {
-        const noOfComponentsPerCrate = checkForNull(getValues('NoOfComponentsPerCrate'))
-        // Calculate all values
-        const noOfCratesRequiredPerDay = state.volumePerDay / noOfComponentsPerCrate
-        const stockNormDays = checkForNull(getValues('StockNormDays'))
-        const costOfCrate = checkForNull(getValues('CostOfCrate'))
-        const totalCostOfCrate = noOfCratesRequiredPerDay * stockNormDays * costOfCrate
-        
-        const spacerPackingInsertCost = checkForNull(getValues('SpacerPackingInsertCost'))
-        const noOfSpacerPackingInsert = checkForNull(getValues('NoOfSpacerPackingInsert'))
-        const costOfSpacerPackingInsert = (spacerPackingInsertCost * noOfSpacerPackingInsert) - state.spacerPackingInsertRecoveryCostPerKg
-        
-        const amortizedNoOfYears = checkForNull(getValues('AmortizedNoOfYears'))
-        const weightOfCover = checkForNull(getValues('WeightOfCover'))
-        const costOfCoverPerKg = checkForNull(getValues('CostOfCoverPerKg'))
-        const noOfPartsPerCover = checkForNull(getValues('NoOfPartsPerCover'))
-        
-        const packingCost = (
-            (totalCostOfCrate / (state.volumePerAnnum * amortizedNoOfYears)) + 
-            ((weightOfCover * costOfCoverPerKg) / noOfPartsPerCover) + 
-            costOfSpacerPackingInsert
-        )
-    
-        // Update state
+        if (freightType === FullTruckLoad) {
+            setValue('Utilization', 100)
+            setState(prevState => ({
+                ...prevState,
+                hideUtilization: true
+            }))
+        } else {
+            setState(prevState => ({
+                ...prevState,
+                hideUtilization: false
+            }))
+        }
+        const tempData = rowObjData?.SimulationTempData
+        const costingId = costingData?.CostingId ?? tempData.find(item => item?.CostingHeading === "Old Costing")?.costingId
+        let calculatorId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingFreightCalculationDetailsId : props?.costingFreightCalculationDetailsId ?? null
+        let freightDetailId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.FreightDetailId : null
+        if(calculatorId!==null){
+            dispatch(getFreightCalculation(costingId, freightDetailId, calculatorId, (res) => {
+                let data = res?.data?.Data
+                setFormValues(data)
+
+            }))
+        }
+    }, [])
+    useEffect(() => {
+        calculateTotalCost()
+    }, [state.noOfBins, state.totalNoOfBins, getValues('Utilization')])
+    const setFormValues = (data) => {
+        setValue('CarrierType', data?.CarrierType?{label: data?.CarrierType, value: data?.CarrierTypeId}:[])
+        setValue('TrolleyLength', checkForDecimalAndNull(data?.TrolleyLength, NoOfDecimalForInputOutput))
+        setValue('TrolleyBreadth', checkForDecimalAndNull(data?.TrolleyBreadth, NoOfDecimalForInputOutput))
+        setValue('TrolleyHeight', checkForDecimalAndNull(data?.TrolleyHeight, NoOfDecimalForInputOutput))
+        setValue('BinLength', checkForDecimalAndNull(data?.BinLength, NoOfDecimalForInputOutput))
+        setValue('BinBreadth', checkForDecimalAndNull(data?.BinBreadth, NoOfDecimalForInputOutput))
+        setValue('BinHeight', checkForDecimalAndNull(data?.BinHeight, NoOfDecimalForInputOutput))
+        setValue('BinAlignment', {label: data?.BinAlignment, value: data?.BinAlignment})
+        setValue('TrolleyAlignment', {label: data?.TrolleyAlignment, value: data?.TrolleyAlignment})
+        setValue('NoOfTrolleys', checkForDecimalAndNull(data?.NoOfTrolleys, NoOfDecimalForInputOutput))
+        setValue('NoOfBins', data?.NumberOfBins)
+        setValue('NoOfBinsPerTrolley', checkForDecimalAndNull(data?.NoOfBinPerTrolley, NoOfDecimalForInputOutput))
+        setValue('TotalNoOfBins', checkForDecimalAndNull(data?.TotalNoOfBins, NoOfDecimalForInputOutput))
+        setValue('NoOfComponentsPerBinOrTrolley', data?.NumberOfPartsPerBinOrTrolley)
+        setValue('NoOfBinsRequiredPerVehicle', data?.NumberOfPartsPerBinOrTrolleyPerVehicle)
+        console.log("data?.NumberOfPartsPerBinOrTrolley", data?.NumberOfPartsPerBinOrTrolley)
+        setValue('TotalCost', checkForDecimalAndNull(data?.TotalCost, NoOfDecimalForPrice))
+        setValue('Utilization', freightType === FullTruckLoad ? 100 : checkForDecimalAndNull(data?.Utilization, NoOfDecimalForInputOutput))
         setState(prevState => ({
             ...prevState,
-            noOfCratesRequiredPerDay,
-            totalCostOfCrate,
-            totalCostOfSpacerPackingInsert: costOfSpacerPackingInsert,
-            packingCost
+            carrierType: {label: data?.CarrierType, value: data?.CarrierTypeId},
+            isShowAlignment: data?.IsAlignment,
+            binAlignment: {label: data?.BinAlignment, value: data?.BinAlignment},
+            trolleyAlignment: {label: data?.TrolleyAlignment, value: data?.TrolleyAlignment},
+            noOfBins: data?.NumberOfBins,
+            noOfTrolleys: data?.NoOfTrolleys,
+            noOfBinsPerTrolley: data?.NoOfBinsPerTrolley,
+            totalNoOfBins: data?.TotalNoOfBins,
+            noOfbinOrTrolleypertruck: data?.NoOfBinsRequiredPerVehicle,
+            totalCost: data?.TotalCost,
+            hideUtilization: freightType === FullTruckLoad ? true : false
         }))
-    
-        // Set form values
-        setValue('NoOfCratesRequiredPerDay', checkForDecimalAndNull(noOfCratesRequiredPerDay, NoOfDecimalForInputOutput));
-        setValue('TotalCostOfCrate', checkForDecimalAndNull(totalCostOfCrate, NoOfDecimalForPrice));
-        setValue('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(costOfSpacerPackingInsert, NoOfDecimalForPrice));
-        setValue('PackingCost', checkForDecimalAndNull(packingCost, NoOfDecimalForPrice));
+        if (CostingViewMode) {
+            setValue('NoOfComponentsPerBinOrTrolley', checkForDecimalAndNull(data?.NoOfComponentsPerBinOrTrolley, NoOfDecimalForInputOutput))
+            setValue('TripRate', checkForDecimalAndNull(data?.TripRate, NoOfDecimalForPrice))
+            setState(prevState => ({
+                ...prevState,
+                noOfComponentsPerBinOrTrolley: data?.NoOfComponentsPerBinOrTrolley,
+                tripRate: data?.TripRate
+            }))
+        }
+        
     }
-    const calculateSpacerPackingInsertRecoveryCost = (value) => {
-        const spacerPackingInsertCost = checkForNull(getValues('SpacerPackingInsertCost'))
-        const noOfSpacerPackingInsert = checkForNull(getValues('NoOfSpacerPackingInsert'))
-        const spacerPackingInsertRecovery = checkForNull(value)
-        const recoveryCost = spacerPackingInsertCost * noOfSpacerPackingInsert * (spacerPackingInsertRecovery / 100)
-        setValue('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(recoveryCost, NoOfDecimalForPrice));
-        setState((prevState) => ({ ...prevState, spacerPackingInsertRecoveryCostPerKg: recoveryCost }))
+    /**
+* @method renderListing
+* @description Used to show type of listing
+*/
+    const renderListing = (label) => {
+        const temp = [];
+
+        if (label === 'CarrierType') {
+            carrierTypeList && carrierTypeList.map((item) => {
+                temp.push({ label: item?.Text, value: item?.Value });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'Alignment') {
+            return [{ label: 'Horizontal', value: 1 }, { label: 'Vertical', value: 2 }]
+        }
+    };
+
+    const handleCarrierTypeChange = (e) => {
+        setState(prevState => ({
+            ...prevState,
+            carrierType: e
+        }))
+        setValue('TrolleyLength', '')
+        setValue('TrolleyBreadth', '')
+        setValue('TrolleyHeight', '')
+        setValue('BinLength', '')
+        setValue('BinBreadth', '')
+        setValue('BinHeight', '')
     }
+
     const onSubmit = (value) => {
 
         let formData = {
-            "CostingPackagingCalculationDetailsId": rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.CostingPackagingCalculationDetailsId:props?.costingPackagingCalculationDetailsId??null,
-            "CostingPackagingDetailsId": rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.PackagingDetailId:null,
             "BaseCostingId": costingData?.CostingId,
+            "BinAlignment": state?.binAlignment,
+            "BinBreadth": checkForNull(getValues('BinBreadth')),
+            "BinHeight": checkForNull(getValues('BinHeight')),
+            "BinLength": checkForNull(getValues('BinLength')),
+            "CarrierType": state?.carrierType?.label,
+            "CostingFreightCalculationDetailsId": rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingFreightCalculationDetailsId : props?.CostingFreightCalculationDetailsId ?? null,
+            "CostingFreightDetailsId": rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingFreightDetailsId : null,
+            "IsAlignment": state?.isShowAlignment,
             "LoggedInUserId": loggedInUserId(),
-            "NoOfComponentsPerCrate": value?.NoOfComponentsPerCrate,
-            "VolumePerDay": state?.volumePerDay,
-            "VolumePerAnnum": state?.volumePerAnnum,
-            "NoOfCratesRequiredPerDay": state?.noOfCratesRequiredPerDay,
-            "StockNormDays": value?.StockNormDays,
-            "CostOfCrate": value?.CostOfCrate,
-            "TotalCostOfCrate": state?.totalCostOfCrate,
-            "AmortizedNoOfYears": value?.AmortizedNoOfYears,
-            "WeightOfCoverPerKg": value?.WeightOfCover,
-            "CostOfCoverPerKg": value?.CostOfCoverPerKg,
-            "NoOfPartsPerCover": value?.NoOfPartsPerCover,
-            "SpacerPackingInsertCostIfAny": value?.SpacerPackingInsertCost,
-            "NoOfSpacersPackingInsert": value?.NoOfSpacerPackingInsert,
-            "SpacersPackingInsertRecoveryPercentage": value?.SpacerPackingInsertRecovery,
-            "SpacersPackingInsertRecoveryCostPerKg": state?.spacerPackingInsertRecoveryCostPerKg,
-            "CostOfSpacersPackingInsert": state?.totalCostOfSpacerPackingInsert,
-            "PackingCost": state?.packingCost
-          }
-        dispatch(savePackagingCalculation(formData, (res) => {
+            "NoOfBinPerTrolley": state?.noOfBinsPerTrolley,
+            "NumberOfBins": state?.carrierType?.label === 'Bin' ? state?.noOfBins : state?.totalNoOfBins,
+            "NumberOfPartsPerBinOrTrolley": noOfComponentsPerCrate,
+            "NumberOfPartsPerBinOrTrolleyPerVehicle": state?.noOfbinOrTrolleypertruck,
+            "NumberOfTrolleys": state?.noOfTrolleys,
+            "TotalCost": state?.totalCost,
+            "TripRate": rate,
+            "TrolleyAlignment": state?.carrierType?.label === 'Bin' ? null : state?.trolleyAlignment,
+            "TrolleyBreadth": checkForNull(getValues('TrolleyBreadth')),
+            "TrolleyHeight": checkForNull(getValues('TrolleyHeight')),
+            "TrolleyLength": checkForNull(getValues('TrolleyLength')),
+
+            "Utilization": checkForNull(getValues('Utilization'))
+        }
+        dispatch(saveFreightCalculation(formData, (res) => {
             if (res?.data?.Result) {
                 formData.CalculationId = res?.data?.Identity
                 Toaster.success("Calculation saved successfully")
-                props.closeCalculator(formData,state?.packingCost)
+                props.closeCalculator(formData, state?.totalCost)
             }
         }))
     }
     const cancelHandler = () => {
-        props.closeCalculator('',state?.packingCost)
+        props.closeCalculator('',state?.totalCost )
+    }
+    const onShowAlignment = () => {
+        setState(prevState => ({
+            ...prevState,
+            isShowAlignment: !prevState.isShowAlignment
+        }))
+    }
+    const calculateBinsAndTrolleys = (alignmentType, alignmentValue) => {
+        const binLength = checkForNull(getValues('BinLength'))
+        const binBreadth = checkForNull(getValues('BinBreadth'))
+        const binHeight = checkForNull(getValues('BinHeight'))
+        const trolleyLength = checkForNull(getValues('TrolleyLength'))
+        const trolleyBreadth = checkForNull(getValues('TrolleyBreadth'))
+        const trolleyHeight = checkForNull(getValues('TrolleyHeight'))
+        const truckLength = checkForNull(state.truckLength)
+        const truckBreadth = checkForNull(state.truckBreadth)
+        const truckHeight = checkForNull(state.truckHeight)
+
+        let noOfBins = 0
+        let noOfTrolleys = 0
+        let noOfBinsPerTrolley = 0
+        let totalNoOfBins = 0
+
+        // Calculate bins per trolley based on alignments
+        const calculateBinsPerTrolley = (binAlign) => {
+            if (binAlign === 'Horizontal') {
+                return parseInt(trolleyLength / binBreadth) * parseInt(trolleyBreadth / binLength) * parseInt(trolleyHeight / binHeight)
+            } else {
+                return parseInt(trolleyLength / binLength) * parseInt(trolleyBreadth / binBreadth) * parseInt(trolleyHeight / binHeight)
+            }
+        }
+
+        switch (alignmentType) {
+            case 'bin':
+                if (state?.carrierType?.label === 'Bin And Trolley') {
+                    noOfBinsPerTrolley = calculateBinsPerTrolley(alignmentValue)
+                }
+                if (alignmentValue === 'Horizontal') {
+                    noOfBins = parseInt(truckLength / binBreadth) * parseInt(truckBreadth / binLength) * parseInt(truckHeight / binHeight)
+                    console.log("noOfBins", noOfBins)
+                } else {
+                    noOfBins = parseInt(truckLength / binLength) * parseInt(truckBreadth / binBreadth) * parseInt(truckHeight / binHeight)
+                }
+                // Calculate total bins based on trolleys and bins per trolley
+                totalNoOfBins = state.noOfTrolleys * noOfBinsPerTrolley
+                setValue('NoOfBins', checkForDecimalAndNull(noOfBins, NoOfDecimalForInputOutput))
+                setValue('NoOfBinsPerTrolley', checkForDecimalAndNull(noOfBinsPerTrolley, NoOfDecimalForInputOutput))
+                setValue('TotalNoOfBins', checkForDecimalAndNull(totalNoOfBins, NoOfDecimalForInputOutput))
+                setState(prevState => ({
+                    ...prevState,
+                    noOfBins: noOfBins,
+                    noOfBinsPerTrolley: noOfBinsPerTrolley,
+                    totalNoOfBins: totalNoOfBins,
+                    binAlignment: alignmentValue
+                }))
+                break;
+
+            case 'trolley':
+                if (alignmentValue === "Horizontal") {
+                    noOfTrolleys = parseInt(truckLength / trolleyBreadth) * parseInt(truckBreadth / trolleyLength) * parseInt(truckHeight / trolleyHeight)
+                } else {
+                    noOfTrolleys = parseInt(truckLength / trolleyLength) * parseInt(truckBreadth / trolleyBreadth) * parseInt(truckHeight / trolleyHeight)
+                }
+
+                if (state?.carrierType?.label === 'Bin And Trolley') {
+                    noOfBinsPerTrolley = calculateBinsPerTrolley(state?.binAlignment)
+                }
+
+                // Calculate total bins based on trolleys and bins per trolley
+                totalNoOfBins = noOfTrolleys * noOfBinsPerTrolley
+                setValue('NoOfTrolleys', checkForDecimalAndNull(noOfTrolleys, NoOfDecimalForInputOutput))
+                setValue('NoOfBinsPerTrolley', checkForDecimalAndNull(noOfBinsPerTrolley, NoOfDecimalForInputOutput))
+                setValue('TotalNoOfBins', checkForDecimalAndNull(totalNoOfBins, NoOfDecimalForInputOutput))
+                setState(prevState => ({
+                    ...prevState,
+                    noOfTrolleys,
+                    noOfBinsPerTrolley,
+                    totalNoOfBins,
+                    trolleyAlignment: alignmentValue
+                }))
+                break;
+
+            default:
+                break;
+        }
+    }
+    const calculateTotalCost = () => {
+        const utilization = checkForNull(getValues('Utilization'))
+        const noOfComponentsPerBinOrTrolley = checkForNull(noOfComponentsPerCrate)
+        const totalNoOfBins = state?.carrierType?.label === 'Bin And Trolley' ? checkForNull(state.totalNoOfBins) : state?.carrierType?.label === 'Bin' ? checkForNull(state.noOfBins) : checkForNull(state.noOfTrolleys)
+        const noOfbinOrTrolleypertruck = checkForNull(totalNoOfBins * utilization) / 100
+        const totalCost = rate / (noOfComponentsPerBinOrTrolley * totalNoOfBins)
+        setValue('NoOfBinsRequiredPerVehicle', checkForDecimalAndNull(noOfbinOrTrolleypertruck, NoOfDecimalForInputOutput))
+        setValue('TotalCost', checkForDecimalAndNull(totalCost, NoOfDecimalForPrice))
+        setState(prevState => ({
+            ...prevState,
+            noOfbinOrTrolleypertruck,
+            totalCost
+        }))
     }
 
-    
+    const handleBinAlignmentChange = (e) => {
+        setState(prevState => ({
+            ...prevState,
+            binAlignment: e?.label
+        }))
+        calculateBinsAndTrolleys('bin', e?.label)
+    }
+
+    const handleTrolleyAlignmentChange = (e) => {
+        setState(prevState => ({
+            ...prevState,
+            trolleyAlignment: e?.label
+        }))
+        calculateBinsAndTrolleys('trolley', e?.label)
+    }
+    const fieldProps = {
+        control: control,
+        register: register,
+        errors: errors,
+    }
+    const dimensionAndCarrierType = [
+        { label: t('truckDimensions', { defaultValue: 'Truck Dimensions' }), name: 'TruckDimensions', mandatory: false, searchable: false, disabled: true },
+        { label: t('carrierType', { defaultValue: 'Carrier Type' }), name: 'CarrierType', handleChange: handleCarrierTypeChange, options: renderListing('CarrierType'), searchable: true, mandatory: true, disabled: false, },
+    ]
+    const binDimensionFields = [
+        {
+            label: t('length', { defaultValue: 'Length (mm)' }),
+            name: 'BinLength',
+            mandatory: true,
+            disabled: false,
+            handleChange: (e) => {
+                setValue('BinLength', e.target.value);
+            },
+            defaultValue: 0
+        },
+        {
+            label: t('breadth', { defaultValue: 'Breadth (mm)' }),
+            name: 'BinBreadth',
+            mandatory: true,
+            disabled: false,
+            handleChange: (e) => {
+                setValue('BinBreadth', e.target.value);
+            },
+            defaultValue: 0
+        },
+        {
+            label: t('height', { defaultValue: 'Height (mm)' }),
+            name: 'BinHeight',
+            mandatory: true,
+            disabled: false,
+            handleChange: (e) => {
+                setValue('BinHeight', e.target.value);
+            },
+            defaultValue: 0
+        }
+    ];
+    const trolleyDimensionFields = [
+        {
+            label: t('length', { defaultValue: 'Length (mm)' }),
+            name: 'TrolleyLength',
+            mandatory: true,
+            disabled: false,
+            handleChange: (e) => {
+                setValue('TrolleyLength', e.target.value);
+            },
+            defaultValue: 0
+        },
+        {
+            label: t('breadth', { defaultValue: 'Breadth (mm)' }),
+            name: 'TrolleyBreadth',
+            mandatory: true,
+            disabled: false,
+            handleChange: (e) => {
+                setValue('TrolleyBreadth', e.target.value);
+            },
+            defaultValue: 0
+        },
+        {
+            label: t('height', { defaultValue: 'Height (mm)' }),
+            name: 'TrolleyHeight',
+            mandatory: true,
+            disabled: false,
+            handleChange: (e) => {
+                setValue('TrolleyHeight', e.target.value);
+            },
+            defaultValue: 0
+        }
+    ]
+    const alignmentFields = [
+        ...(state.carrierType?.label === 'Trolley' || state.carrierType?.label === "Bin And Trolley" ? [
+            { label: t('trolleyAlignment', { defaultValue: 'Trolley Alignment' }), name: 'TrolleyAlignment', options: renderListing('Alignment'), handleChange: handleTrolleyAlignmentChange, mandatory: true, searchable: true, disabled: CostingViewMode ? CostingViewMode : false }
+        ] : []),
+        ...(state.carrierType?.label === 'Bin' || state.carrierType?.label === "Bin And Trolley" ? [
+            { label: t('binAlignment', { defaultValue: 'Bin Alignment' }), name: 'BinAlignment', options: renderListing('Alignment'), handleChange: handleBinAlignmentChange, mandatory: true, searchable: true, disabled: CostingViewMode ? CostingViewMode : false }
+        ] : []),
+        ...(state.carrierType?.label === 'Trolley' || state.carrierType?.label === "Bin And Trolley" ? [
+            { label: t('noOfTrolleys', { defaultValue: 'No of trolleys' }), name: 'NoOfTrolleys', mandatory: true, searchable: false, disabled: true }
+        ] : []),
+        ...(state.carrierType?.label === 'Bin' ? [
+            { label: t('noOfBins', { defaultValue: 'No of bins' }), name: 'NoOfBins', mandatory: true, searchable: false, disabled: true }
+        ] : []),
+        ...(state.carrierType?.label === "Bin And Trolley" ? [
+            { label: t('noOfBinsPerTrolley', { defaultValue: 'No of bins per trolley' }), name: 'NoOfBinsPerTrolley', mandatory: true, searchable: false, disabled: true }
+        ] : []),
+        ...(state.carrierType?.label === "Bin And Trolley" ? [
+            { label: t('totalNoOfBins', { defaultValue: 'Total no of bins' }), name: 'TotalNoOfBins', mandatory: true, searchable: false, disabled: true }
+        ] : []),
+        { label: t('noOfComponentsPerBinOrTrolley', { defaultValue: 'No of components per bin/trolley' }), name: 'NoOfComponentsPerBinOrTrolley', mandatory: true, searchable: false, disabled: true },
+        { label: t('utilization', { defaultValue: 'Utilization' }), name: 'Utilization', percentageLimit: true, mandatory: true, searchable: false, disabled: state.hideUtilization },
+        { label: t('noOfBinsRequiredPerVehicle', { defaultValue: 'No of bins required per vehicle (Qty)' }), name: 'NoOfBinsRequiredPerVehicle', mandatory: false, searchable: false, disabled: true },
+        { label: t('tripRate', { defaultValue: 'Trip rate' }), name: 'TripRate', mandatory: false, searchable: false, disabled: true },
+        { label: t('totalCost', { defaultValue: 'Total cost' }), name: 'TotalCost', mandatory: false, searchable: false, disabled: true },
+    ]
     return (
         <Drawer anchor={props.anchor} open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
         >
             <Container>
                 <div className={`drawer-wrapper layout-min-width-860px`}>
@@ -240,43 +516,81 @@ const setFormValues=(data)=>{
                     </Row>
                     <Row>
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <Row className="packaging-cost-calculator-warpper">
-                                {packagingCalculatorFields.map(item => {
-                                    const { tooltip, name, label } = item ?? {};
-                                    return <Col md="3">
-                                        {item.tooltip && <TooltipCustom 
-                                            width={tooltip.width} 
-                                            tooltipClass={tooltip.className ?? ''} 
-                                            disabledIcon={tooltip?.disabledIcon??false} 
-                                            id={item.name} 
-                                            tooltipText={!tooltip?.disabledIcon ? tooltip.text : `${item.label} = ${tooltip.text ?? ''}`} 
-                                        />}
-                                        <TextFieldHookForm
-                                            label={label}
-                                            id={name}
-                                            name={name}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={item.mandatory}
-                                            rules={{
-                                                required: item.mandatory,
-                                                validate: { number, checkWhiteSpaces, maxLength7, ...(item.disabled ? {} : {}) },
-                                                max: item.percentageLimit ? {
-                                                    value: 100,
-                                                    message: 'Percentage value should be equal to 100'
-                                                } : {},
-                                            }}
-                                            handleChange={item.handleChange ? item.handleChange : () => { }}
-                                            defaultValue={item.disabled ? 0 : ''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors[name]}
-                                            disabled={item.disabled} />
-                                    </Col>
-                                })}
+                            <Row className="freight-cost-calculator-warpper">
+                                <FormFieldsRenderer
+                                    fieldProps={fieldProps}
+                                    fields={dimensionAndCarrierType}
+                                />
                             </Row>
-                             <Row className={"sticky-footer pr-0"}>
+                            {(state.carrierType?.label === 'Trolley' || state.carrierType?.label === "Bin And Trolley") && <Row>
+                                <Col md="12" className={'mt25'}>
+                                    <HeaderTitle className="border-bottom"
+                                        title={'Trolley Dimension'}
+                                        customClass={'underLine-title'}
+                                    />
+                                </Col>
+                                <Col md="12">
+                                    <FormFieldsRenderer
+                                        fieldProps={fieldProps}
+                                        fields={trolleyDimensionFields}
+                                        truckLength={state.truckLength}
+                                        truckBreadth={state.truckBreadth}
+                                        truckHeight={state.truckHeight}
+                                        fromCalculator={true}
+                                        getFormValues={getValues}
+                                        isTrolley={true}
+                                    />
+                                </Col>
+                            </Row>}
+                            {(state.carrierType?.label === 'Bin' || state.carrierType?.label === "Bin And Trolley") && <Row>
+                                <Col md="12" className={'mt25'}>
+                                    <HeaderTitle className="border-bottom"
+                                        title={'Bin Dimension'}
+                                        customClass={'underLine-title'}
+                                    />
+                                </Col>
+                                <Col md="12">
+                                    <FormFieldsRenderer
+                                        fieldProps={fieldProps}
+                                        fields={binDimensionFields}
+                                        truckLength={state.truckLength}
+                                        truckBreadth={state.truckBreadth}
+                                        truckHeight={state.truckHeight}
+                                        fromCalculator={true}
+                                        getFormValues={getValues}
+                                        isBin={true}
+                                    />
+                                </Col>
+                            </Row>}
+                            <Row>
+                                <Col md="12" className='mt-2'>
+                                    <label id="AddFreight_TruckDimensions"
+                                        className={`custom-checkbox w-auto mb-0 mt-4 `}
+                                        onChange={onShowAlignment}
+                                    >
+                                        Alignment
+                                        <input
+                                            type="checkbox"
+                                            checked={state.isShowAlignment}
+                                            disabled={false}
+                                        />
+                                        <span
+                                            className=" before-box p-0"
+                                            checked={state.isShowAlignment}
+                                            onChange={onShowAlignment}
+                                        />
+                                    </label>
+                                </Col>
+                            </Row>
+                            {state.isShowAlignment && <Row>
+                                <Col md="12" className='mt-2'>
+                                    <FormFieldsRenderer
+                                        fieldProps={fieldProps}
+                                        fields={alignmentFields}
+                                    />
+                                </Col>
+                            </Row>}
+                            <Row className={"sticky-footer pr-0"}>
                                 <Col md="12" className={"text-right bluefooter-butn d-flex align-items-center justify-content-end"}>
                                     <Button
                                         id="packagingCalculator_cancel"
@@ -286,7 +600,7 @@ const setFormValues=(data)=>{
                                         onClick={cancelHandler}
                                         icon={"cancel-icon"}
                                         buttonName={"Cancel"} />
-                                    {!CostingViewMode &&<Button
+                                    {!CostingViewMode && <Button
                                         id="packagingCalculator_submit"
                                         type="submit"
                                         disabled={CostingViewMode}

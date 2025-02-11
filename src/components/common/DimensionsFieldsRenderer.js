@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import { Controller, useForm } from 'react-hook-form';
 import TooltipCustom from '../common/Tooltip';
@@ -12,6 +12,7 @@ import { getTruckDimensionsById, handleTruckDimensions, saveAndUpdateTruckDimens
 import { useDispatch } from 'react-redux';
 import { MESSAGES } from '../../config/message';
 import Toaster from './Toaster';
+import LoaderCustom from './LoaderCustom';
 
 const DimensionsFieldsRenderer = ({
     cancelHandler,
@@ -26,6 +27,9 @@ const DimensionsFieldsRenderer = ({
     const { t } = useTranslation('MasterLabels');
     const dispatch = useDispatch();
     const isSubmitting = React.useRef(false);
+    const [state, setState] = useState({
+        isLoader: false
+    });
     const dimensionFields = [
         {
             label: t('LengthLabel', { defaultValue: 'Length (mm)' }),
@@ -60,7 +64,9 @@ const DimensionsFieldsRenderer = ({
     ];
     useEffect(() => {
         if (isEditDimension && truckDimensionId) {
+            setState(prev => ({ ...prev, isLoader: true }));
             dispatch(getTruckDimensionsById(truckDimensionId, (res) => {
+                setState(prev => ({ ...prev, isLoader: false }));
                 let data = res?.data?.DataList[0];
                 setValue('Length', data?.Length);
                 setValue('Breadth', data?.Breadth);
@@ -81,17 +87,21 @@ const DimensionsFieldsRenderer = ({
             Height: data?.Height,
             DimensionsId: isEditDimension ? truckDimensionId : null
         }
+        setState(prev => ({ ...prev, isLoader: true }));
         dispatch(saveAndUpdateTruckDimensions(formData, (res) => {
-            if (res.data.Result) {
+            if (res?.data?.Result) {
+                formData.Id = res.data.Identity
                 Toaster.success(isEditDimension ? MESSAGES.TRUCK_DIMENSIONS_UPDATE_SUCCESS : MESSAGES.TRUCK_DIMENSIONS_ADD_SUCCESS);
                 cancelHandler('Save',formData);
+            }else{
+                Toaster.warning(res?.data?.Message)
             }
+            setState(prev => ({ ...prev, isLoader: false }));
             isSubmitting.current = false;
         }));
     }
 
     const fieldProps = {
-        fields: dimensionFields,
         control: control,
         register: register,
         errors: errors,
@@ -105,6 +115,7 @@ const DimensionsFieldsRenderer = ({
             anchor={'right'}
             open={isOpen}
         >
+            {state.isLoader && <LoaderCustom customClass={"loader-center"} />}
             <Container>
                 <div className={"drawer-wrapper drawer-700px"}>
                     <form
@@ -115,7 +126,7 @@ const DimensionsFieldsRenderer = ({
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={"header-wrapper left"}>
-                                    <h3> {isEditDimension ? 'Edit' : 'Add'} Dimensions</h3>
+                                    <h3> {isEditDimension ? 'Update' : 'Add'} Truck Dimensions</h3>
                                 </div>
                                 <div
                                     onClick={() => cancelHandler('Cancel')}
@@ -127,6 +138,7 @@ const DimensionsFieldsRenderer = ({
                         <Row className={"mb-3"}>
                             <FormFieldsRenderer
                                 fieldProps={fieldProps}
+                                fields={dimensionFields}
                                 buttonProps={buttonProps}
                             />
                         </Row>

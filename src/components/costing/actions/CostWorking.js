@@ -5,7 +5,9 @@ import {
   UPDATE_COSTING_RM_SUCCESS, GET_BOP_LIST_SUCCESS, ADD_BOP_COSTING_SUCCESS, GET_OTHER_OPERATION_LIST_SUCCESS, ADD_OTHER_OPERATION_COSTING_SUCCESS, ADD_UNIT_OTHER_OPERATION_COSTING_DATA,
   GET_MHR_LIST_SUCCESS, ADD_MHR_FOR_PROCESS_GRID_DATA, GET_PROCESSES_LIST_SUCCESS, SAVE_PROCESS_COSTING_SUCCESS, GET_OTHER_OPERATION_SELECT_LIST_SUCCESS, SAVE_OTHER_OPERATION_COSTING_SUCCESS,
   ADD_PROCESS_COSTING_SUCCESS, SET_COSTING_DETAIL_ROW_DATA, UPDATE_COSTING_OTHER_OPERATION_SUCCESS, SAVE_COSTING_AS_DRAFT_SUCCESS, ADD_BOP_GRID_COSTING_SUCCESS,
-  SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET,
+  SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET, GET_CARRIER_TYPE_LIST_SUCCESS,
+  SET_PACKAGING_CALCULATOR_AVAILABLE,
+  SET_FREIGHT_CALCULATOR_AVAILABLE
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -1774,13 +1776,11 @@ export function saveFreightCalculation(data, callback) {
 */
 export function getNoOfComponentsPerCrateFromPackaging(costingId, callback) {
   return (dispatch) => {
-    const queryParams = `costingId=${costingId}`
+    const queryParams = `CostingId=${costingId}`
     const request = axios.get(`${API.getNoOfComponentsPerCrateFromPackaging}?${queryParams}`, config());
     request.then((response) => {
-      if (response.data.Result) {
+      if (response) {
         callback(response);
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -1788,4 +1788,51 @@ export function getNoOfComponentsPerCrateFromPackaging(costingId, callback) {
       apiErrors(error);
     });
     };
+}
+/**
+ * @method getCarrierTypeList
+ * @description Get carrier type dropdown list
+*/
+export function getCarrierTypeList(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(API.getCarrierTypeList, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_CARRIER_TYPE_LIST_SUCCESS,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+    });
+  };
+}
+/**
+ * @method setPackagingCalculatorAvailable
+ * @description Set packaging calculator availability flag
+ */
+
+export function setPackagingCalculatorAvailable(isAvailable) {
+  return {
+    type: SET_PACKAGING_CALCULATOR_AVAILABLE,
+    payload: isAvailable
+  };
+}
+
+/**
+ * @method setFreightCalculatorAvailable
+ * @description Set freight calculator availability flag
+ */
+
+export function setFreightCalculatorAvailable(data) {
+  return {
+    type: SET_FREIGHT_CALCULATOR_AVAILABLE,
+    payload: data
+  };
 }

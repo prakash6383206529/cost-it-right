@@ -354,13 +354,8 @@ export function saveAndUpdateTruckDimensions(requestData, callback) {
         dispatch({ type: API_REQUEST });
         axios.post(API.saveTruckDimensions, requestData, config())
             .then((response) => {
-                if (response.data.Result) {
+                if (response) {
                     callback(response);
-                } else {
-                    dispatch({ type: API_FAILURE });
-                    if (response.data.Message) {
-                        Toaster.warning(response.data.Message);
-                    }
                 }
             }).catch((error) => {
                 apiErrors(error);

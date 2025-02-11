@@ -10,6 +10,8 @@ import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/C
 import { LOGISTICS } from '../../../../../config/masterData';
 import Button from '../../../../layout/Button';
 import PackagingCalculator from '../../WeightCalculatorDrawer/PackagingCalculator';
+import { setPackagingCalculatorAvailable } from '../../../actions/CostWorking';
+import Toaster from '../../../../common/Toaster';
 
 function PackageCost(props) {
 
@@ -20,8 +22,8 @@ function PackageCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [packagingCalculatorDrawer, setPackagingCalculatorDrawer] = useState(false)
   const [calculatorRowObjData, setCalculatorRowObjData] = useState({
-    PackagingDetailId:null,
-    CostingPackagingCalculationDetailsId:null
+    PackagingDetailId: null,
+    CostingPackagingCalculationDetailsId: null
   })
 
 
@@ -29,12 +31,19 @@ function PackageCost(props) {
 
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, costingData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, costingData, } = useSelector(state => state.costing)
+  const { packagingCalculatorAvailable,freightCalculatorAvailable } = useSelector(state => state.costWorking)
 
   useEffect(() => {
     props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(props?.data && props?.data?.length > 0 ? props?.data : []) ? true : false)
     if (JSON.stringify(gridData) !== JSON.stringify(props?.data && props?.data?.length > 0 ? props?.data : [])) {
       dispatch(isPackageAndFreightDataChange(true))
+    }
+    if(props?.data?.length>0 && props?.data?.some(rowData => rowData?.Applicability === 'Crate/Trolley' && rowData?.CostingPackagingCalculationDetailsId)) {
+      let obj = {
+        isAvailable: true,
+      }
+      dispatch(setPackagingCalculatorAvailable(obj));
     }
   }, [gridData]);
 
@@ -53,6 +62,12 @@ function PackageCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
+    if (rowData?.Applicability === 'Crate/Trolley' && rowData?.CostingPackagingCalculationDetailsId) {
+      let obj = {
+        isAvailable: true,
+      }
+       dispatch(setPackagingCalculatorAvailable(obj));
+    }
     if (Object.keys(rowData).length > 0) {
       if (editIndex !== '' && isEditFlag) {
         let tempArr = Object.assign([...gridData], { [editIndex]: rowData })
@@ -67,14 +82,24 @@ function PackageCost(props) {
   }
 
   const deleteItem = (index) => {
+    if (gridData[index]?.Applicability === 'Crate/Trolley' && gridData[index]?.CostingPackagingCalculationDetailsId) {
+      dispatch(setPackagingCalculatorAvailable(false));
+    }
+    if(freightCalculatorAvailable===true){
+      Toaster.warning('Freight calculator is available');
+      return false;
+    }
     let tempArr = gridData && gridData.filter((el, i) => {
       if (i === index) return false;
       return true;
     })
     setGridData(tempArr)
   }
-
   const editItem = (index) => {
+    if(freightCalculatorAvailable===true){
+      Toaster.warning('Freight calculator is available');
+      return false;
+    }
     let tempArr = gridData && gridData.find((el, i) => i === index)
     setEditIndex(index)
     setIsEditFlag(true)
@@ -84,8 +109,8 @@ function PackageCost(props) {
   const getPackagingCalculator = (index) => {
     setPackagingCalculatorDrawer(true)
     setCalculatorRowObjData({
-      PackagingDetailId:gridData[index]?.PackagingDetailId,
-      CostingPackagingCalculationDetailsId:gridData[index]?.CostingPackagingCalculationDetailsId
+      PackagingDetailId: gridData[index]?.PackagingDetailId,
+      CostingPackagingCalculationDetailsId: gridData[index]?.CostingPackagingCalculationDetailsId
     })
   }
   const closePackagingCalculatorDrawer = () => {
@@ -145,10 +170,10 @@ function PackageCost(props) {
                             <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             {costingData.TechnologyId !== LOGISTICS && <td>{item.IsPackagingCostFixed === false ? '-' : (item.PackagingCostPercentage ? item.PackagingCostPercentage : '-')}</td>}
                             <td><div className='d-flex align-items-center'>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}
-                              {CostingViewMode &&(item?.CostingPackagingCalculationDetailsId !== 0 && item?.CostingPackagingCalculationDetailsId !== null)&& <button title='Calculator' 
-                              className="CalculatorIcon cr-cl-icon ml-1"
-                              type={'button'}  
-                              onClick={() => { getPackagingCalculator(index) }} />}
+                              {CostingViewMode && (item?.CostingPackagingCalculationDetailsId !== 0 && item?.CostingPackagingCalculationDetailsId !== null) && <button title='Calculator'
+                                className="CalculatorIcon cr-cl-icon ml-1"
+                                type={'button'}
+                                onClick={() => { getPackagingCalculator(index) }} />}
                             </div>
                             </td>
                             {initialConfiguration.IsShowCRMHead && <td>{item?.PackagingCRMHead}</td>}
