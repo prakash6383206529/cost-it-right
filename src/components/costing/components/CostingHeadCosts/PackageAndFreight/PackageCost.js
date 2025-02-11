@@ -114,7 +114,7 @@ function PackageCost(props) {
                       {costingData.TechnologyId !== LOGISTICS && <th>{`Quantity`}</th>}
                       {costingData.TechnologyId !== LOGISTICS && <th>{`Percentage`}</th>}
                       <th>{`Cost`}</th>
-                      {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                      {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                       <th style={{ textAlign: "right" }} className="costing-border-right"  >{`Action`}</th>
                     </tr>
                   </thead>
@@ -125,11 +125,11 @@ function PackageCost(props) {
                           <tr key={index}>
                             <td>{item.PackagingDescription}</td>
                             {costingData.TechnologyId !== LOGISTICS && <td>{item.Applicability ? item.Applicability : '-'}</td>}
-                            <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                            <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                            <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                            <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                             {costingData.TechnologyId !== LOGISTICS && <td>{item.IsPackagingCostFixed === false ? '-' : (item.PackagingCostPercentage ? item.PackagingCostPercentage : '-')}</td>}
-                            <td>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                            {initialConfiguration.IsShowCRMHead && <td>{item?.PackagingCRMHead}</td>}
+                            <td>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                            {initialConfiguration?.IsShowCRMHead && <td>{item?.PackagingCRMHead}</td>}
                             <td style={{ textAlign: "right" }}>
                               {!CostingViewMode && <>
                                 <button title='Edit' className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />

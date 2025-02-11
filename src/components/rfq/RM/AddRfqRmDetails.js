@@ -352,7 +352,7 @@ const AddRfqRmDetails = (props) => {
                         // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
                         variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
 
-                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}></Button>
+                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid||dataProps?.isViewFlag  || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}></Button>
 
                 </Col>
             </Row>

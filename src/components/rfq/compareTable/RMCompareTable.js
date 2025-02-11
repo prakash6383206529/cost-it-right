@@ -10,7 +10,6 @@ import _, { isNumber } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import { useLabels } from '../../../helper/core';
 import AddOtherCostDrawer from '../../masters/material-master/AddOtherCostDrawer';
-
 const RMCompareTable = (props) => {
     const { RfqMasterApprovalDrawer = false } = props
     const dispatch = useDispatch()
@@ -33,7 +32,13 @@ const RMCompareTable = (props) => {
     const handleConvertedCurrencyChange = (value) => {
         setShowConvertedCurrency(value);
     }
-
+    const tableDataClass = (data) => {
+    
+        
+        
+        // return props?.isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
+      }
+    
 
     useEffect(() => {
         //if(!RfqMasterApprovalDrawer){
@@ -87,7 +92,7 @@ const RMCompareTable = (props) => {
             let sectionTwo = [];
             let sectionThree = []
             let sectionFour = []
-            let sectionOneHeader = [`${technologyLabel}`, 'Plant (Code)', 'RM Code', 'RM Name-Grade', 'RM Specification', 'Category', 'Currency', 'Effective Date',
+            let sectionOneHeader = ['Costing Version' , `${technologyLabel}`, 'Plant (Code)', 'RM Code', 'RM Name-Grade', 'RM Specification', 'Category', 'Currency', 'Effective Date',
             showConvertedCurrency ? `Basic Rate (${getConfigurationKey().BaseCurrency})` : 'Basic Rate'
             ]
             let sectionTwoHeader = [showConvertedCurrency ? `Other Net Cost (${getConfigurationKey().BaseCurrency})` : 'Other Net Cost'
@@ -110,10 +115,11 @@ const RMCompareTable = (props) => {
                 //section one data start
                 const RMNameGrade = `${item?.RawMaterialName}-${item?.RawMaterialGradeName}`;
                 const effectiveDate = item?.EffectiveDate ? (item?.EffectiveDate !== "-" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
-                // ... existing code ...
-                const formattedDataOne = [
+                const plantCode = item?.Plant && item?.Plant[0] ? 
+                `${item.Plant[0].PlantName}` : '-';                const formattedDataOne = [
+                    tableDataClass(item),
                     item?.TechnologyName,
-                    item?.DestinationPlantName,
+                    plantCode, // Updated plant code here
                     item?.RawMaterialCode,
                     RMNameGrade,
                     item?.RawMaterialSpecificationName,

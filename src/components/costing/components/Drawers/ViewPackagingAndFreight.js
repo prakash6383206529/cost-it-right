@@ -47,8 +47,8 @@ function ViewPackagingAndFreight(props) {
                 <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
-                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
-                {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
+                <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
+                {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
               {packagingData &&
                 packagingData.map((item, index) => {
@@ -61,10 +61,10 @@ function ViewPackagingAndFreight(props) {
                       {!isLogisticsTechnology && <td>
                         {item.IsPackagingCostFixed ? (item.PackagingCostPercentage ? item.PackagingCostPercentage : '-') : 'Fixed'}
                       </td>}
-                      <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      {initialConfiguration.IsShowCRMHead && <td>{item.PackagingCRMHead ? item.PackagingCRMHead : '-'}</td>}
+                      <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      {initialConfiguration?.IsShowCRMHead && <td>{item.PackagingCRMHead ? item.PackagingCRMHead : '-'}</td>}
                     </tr>
                   )
                 })}
@@ -100,8 +100,8 @@ function ViewPackagingAndFreight(props) {
                 <th>{`Capacity`}</th>
                 <th>{`Rate/Percentage`}</th>
                 <th>{`Quantity`}</th>
-                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
-                {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
+                <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
+                {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
               {freightData &&
                 freightData.map((item, index) => {
@@ -110,12 +110,12 @@ function ViewPackagingAndFreight(props) {
                       <td>{item.FreightType ? item.FreightType : '-'}</td>
                       <td>{item.Criteria ? item.Criteria : '-'}</td>
                       <td>{item.Capacity ? item.Capacity : '-'}</td>
-                      <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
                       <td>
-                        {item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                        {item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
-                      {initialConfiguration.IsShowCRMHead && <td>{item.FreightCRMHead ? item.FreightCRMHead : '-'}</td>}
+                      {initialConfiguration?.IsShowCRMHead && <td>{item.FreightCRMHead ? item.FreightCRMHead : '-'}</td>}
                     </tr>
                   )
                 })}

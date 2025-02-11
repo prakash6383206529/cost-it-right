@@ -96,8 +96,8 @@ function Icc(props) {
                 plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData?.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData?.DestinationPlantId : EMPTY_GUID,
                 customerId: costData?.CostingTypeId === CBCTypeId ? costData?.CustomerId : EMPTY_GUID,
                 effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : '',
-                rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
-                rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
+                rawMaterialGradeId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
+                rawMaterialChildId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
                 technologyId: null,
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
@@ -177,8 +177,8 @@ function Icc(props) {
                 case 'RM':
                 case 'Part Cost':
                     if ((partType && Text === 'Part Cost') || (!partType && Text === 'RM')) {
-                        setValue('CostApplicability', checkForDecimalAndNull(NetRawMaterialsCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0), initialConfiguration.NoOfDecimalForPrice))
-                        setValue('NetICCTotal', checkForDecimalAndNull((NetRawMaterialsCost + checkForNull((includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0))) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('CostApplicability', checkForDecimalAndNull(NetRawMaterialsCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0), initialConfiguration?.NoOfDecimalForPrice))
+                        setValue('NetICCTotal', checkForDecimalAndNull((NetRawMaterialsCost + checkForNull((includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0))) * calculatePercentage(InterestRatePercentage), initialConfiguration?.NoOfDecimalForPrice))
                         setTempInventoryObj({
                             ...tempInventoryObj,
                             CostApplicability: checkForNull(NetRawMaterialsCost) + checkForNull((includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)),
@@ -188,8 +188,8 @@ function Icc(props) {
                     break;
 
                 case 'BOP':
-                    setValue('CostApplicability', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('CostApplicability', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration?.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(headerCosts.NetBoughtOutPartCost) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0),
@@ -198,8 +198,8 @@ function Icc(props) {
                     break;
 
                 case 'CC':
-                    setValue('CostApplicability', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((checkForNull(ConversionCostForCalculation) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('CostApplicability', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration?.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((checkForNull(ConversionCostForCalculation) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration?.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(ConversionCostForCalculation) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0),
@@ -210,8 +210,8 @@ function Icc(props) {
                 case 'RM + CC':
                 case 'Part Cost + CC':
                     if ((partType && Text === 'Part Cost + CC') || (!partType && Text === 'RM + CC')) {
-                        setValue('CostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
-                        setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('CostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration?.NoOfDecimalForPrice))
+                        setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration?.NoOfDecimalForPrice))
                         setTempInventoryObj({
                             ...tempInventoryObj,
                             CostApplicability: checkForNull(RMCC),
@@ -224,8 +224,8 @@ function Icc(props) {
                 case 'Part Cost + BOP':
 
                     if ((partType && Text === 'Part Cost + BOP') || (!partType && Text === 'RM + BOP')) {
-                        setValue('CostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
-                        setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('CostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration?.NoOfDecimalForPrice))
+                        setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration?.NoOfDecimalForPrice))
                         setTempInventoryObj({
                             ...tempInventoryObj,
                             CostApplicability: checkForNull(RMBOP),
@@ -235,8 +235,8 @@ function Icc(props) {
                     break;
 
                 case 'BOP + CC':
-                    setValue('CostApplicability', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((BOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('CostApplicability', checkForDecimalAndNull(BOPCC, initialConfiguration?.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((BOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration?.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(BOPCC),
@@ -247,8 +247,8 @@ function Icc(props) {
                 case 'RM + CC + BOP':
                 case 'Part Cost + CC + BOP':
                     if ((partType && Text === 'Part Cost + CC + BOP') || (!partType && Text === 'RM + CC + BOP')) {
-                        setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
-                        setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration?.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
+                        setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration?.NoOfDecimalForPrice))
                         setTempInventoryObj({
                             ...tempInventoryObj,
                             CostApplicability: checkForNull(RMBOPCC),
@@ -259,7 +259,7 @@ function Icc(props) {
 
                 case 'Fixed':
                     setValue('CostApplicability', '-')
-                    setValue('NetICCTotal', checkForDecimalAndNull(checkForNull(InterestRatePercentage) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull(checkForNull(InterestRatePercentage) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0), initialConfiguration?.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: '-',
@@ -268,8 +268,8 @@ function Icc(props) {
                     break;
 
                 case 'Annual ICC (%)':
-                    setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) // NEED TO ASK HERE ALSO
-                    setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration?.NoOfDecimalForPrice)) // NEED TO ASK HERE ALSO
+                    setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration?.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(RMBOPCC),
@@ -278,8 +278,8 @@ function Icc(props) {
                     break;
 
                 case 'Net Cost':
-                    setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
-                    setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration?.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
+                    setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration?.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(RMBOPCC),
@@ -314,7 +314,7 @@ function Icc(props) {
                 "ICCCRMHead": tempInventoryObj.ICCCRMHead ? tempInventoryObj.ICCCRMHead : '',
                 "Remark": tempInventoryObj.Remark ? tempInventoryObj.Remark : ''
             }
-            setValue('CostApplicability', IsInventoryApplicable ? checkForDecimalAndNull(tempInventoryObj.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '')
+            setValue('CostApplicability', IsInventoryApplicable ? checkForDecimalAndNull(tempInventoryObj.CostApplicability, initialConfiguration?.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
 
                 props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
@@ -407,7 +407,7 @@ function Icc(props) {
 
             {IsInventoryApplicable &&
                 <>
-                    {initialConfiguration.IsShowCRMHead && <Col md="3">
+                    {initialConfiguration?.IsShowCRMHead && <Col md="3">
                         <SearchableSelectHookForm
                             name={`crmHeadIcc`}
                             type="text"

@@ -74,23 +74,23 @@ function AddMoreOperation(props) {
     let defaultValues = {
         remark: detailObject && detailObject.Remark ? detailObject.Remark : '',
         crmHeadWireRate: detailObject && detailObject.MaterialWireCRMHead && { label: detailObject.MaterialWireCRMHead, value: 1 },
-        wireRate: detailObject && detailObject.MaterialWireRate ? checkForDecimalAndNull(detailObject.MaterialWireRate, initialConfiguration.NoOfDecimalForPrice) : '',
-        consumptionWire: detailObject && detailObject.MaterialWireConsumption ? checkForDecimalAndNull(detailObject.MaterialWireConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
-        wireCost: detailObject && detailObject.MaterialWireCost ? checkForDecimalAndNull(detailObject.MaterialWireCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        wireRate: detailObject && detailObject.MaterialWireRate ? checkForDecimalAndNull(detailObject.MaterialWireRate, initialConfiguration?.NoOfDecimalForPrice) : '',
+        consumptionWire: detailObject && detailObject.MaterialWireConsumption ? checkForDecimalAndNull(detailObject.MaterialWireConsumption, initialConfiguration?.NoOfDecimalForPrice) : '',
+        wireCost: detailObject && detailObject.MaterialWireCost ? checkForDecimalAndNull(detailObject.MaterialWireCost, initialConfiguration?.NoOfDecimalForPrice) : '',
         crmHeadGasRate: detailObject && detailObject.MaterialGasCRMHead && { label: detailObject.MaterialGasCRMHead, value: 1 },
-        gasRate: detailObject && detailObject.MaterialGasRate ? checkForDecimalAndNull(detailObject.MaterialGasRate, initialConfiguration.NoOfDecimalForPrice) : '',
-        consumptionGas: detailObject && detailObject.MaterialGasConsumption ? checkForDecimalAndNull(detailObject.MaterialGasConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
-        gasCostWelding: detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        gasRate: detailObject && detailObject.MaterialGasRate ? checkForDecimalAndNull(detailObject.MaterialGasRate, initialConfiguration?.NoOfDecimalForPrice) : '',
+        consumptionGas: detailObject && detailObject.MaterialGasConsumption ? checkForDecimalAndNull(detailObject.MaterialGasConsumption, initialConfiguration?.NoOfDecimalForPrice) : '',
+        gasCostWelding: detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration?.NoOfDecimalForPrice) : '',
         //////////////////////////
         crmHeadPowerWelding: detailObject && detailObject.PowerCRMHead && { label: detailObject.PowerCRMHead, value: 1 },
-        electricityRate: detailObject && detailObject.PowerElectricityRate ? checkForDecimalAndNull(detailObject.PowerElectricityRate, initialConfiguration.NoOfDecimalForPrice) : '',
-        consumptionPower: detailObject && detailObject.PowerElectricityConsumption ? checkForDecimalAndNull(detailObject.PowerElectricityConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
-        electricityCostWelding: detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        electricityRate: detailObject && detailObject.PowerElectricityRate ? checkForDecimalAndNull(detailObject.PowerElectricityRate, initialConfiguration?.NoOfDecimalForPrice) : '',
+        consumptionPower: detailObject && detailObject.PowerElectricityConsumption ? checkForDecimalAndNull(detailObject.PowerElectricityConsumption, initialConfiguration?.NoOfDecimalForPrice) : '',
+        electricityCostWelding: detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration?.NoOfDecimalForPrice) : '',
         //////////////////////////
         crmHeadLabourWelding: detailObject && detailObject.LabourCRMHead && { label: detailObject.LabourCRMHead, value: 1 },
-        labourRate: detailObject && detailObject.LabourManPowerRate ? checkForDecimalAndNull(detailObject.LabourManPowerRate, initialConfiguration.NoOfDecimalForPrice) : '',
-        weldingShift: detailObject && detailObject.LabourManPowerConsumption ? checkForDecimalAndNull(detailObject.LabourManPowerConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
-        labourCost: detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        labourRate: detailObject && detailObject.LabourManPowerRate ? checkForDecimalAndNull(detailObject.LabourManPowerRate, initialConfiguration?.NoOfDecimalForPrice) : '',
+        weldingShift: detailObject && detailObject.LabourManPowerConsumption ? checkForDecimalAndNull(detailObject.LabourManPowerConsumption, initialConfiguration?.NoOfDecimalForPrice) : '',
+        labourCost: detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration?.NoOfDecimalForPrice) : '',
         //////////////////////////
         crmHeadConsumableMachineCost: detailObject && detailObject.ConsumableMachineCRMHead && { label: detailObject.ConsumableMachineCRMHead, value: 1 },
 
@@ -264,12 +264,12 @@ function AddMoreOperation(props) {
         let gasCost
         if (wireRate && consumptionWire) {
             wireCost = checkForNull(wireRate) * checkForNull(consumptionWire)
-            setValue('wireCost', checkForDecimalAndNull(wireCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('wireCost', checkForDecimalAndNull(wireCost, initialConfiguration?.NoOfDecimalForPrice))
         }
 
         if (gasRate && consumptionGas) {
             gasCost = checkForNull(gasRate) * checkForNull(consumptionGas)
-            setValue('gasCostWelding', checkForDecimalAndNull(gasCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('gasCostWelding', checkForDecimalAndNull(gasCost, initialConfiguration?.NoOfDecimalForPrice))
         }
         return { wireCost: wireCost, gasCost: gasCost }
     }
@@ -282,7 +282,7 @@ function AddMoreOperation(props) {
         let electricityCost
         if (electricityRate && consumptionPower) {
             electricityCost = checkForNull(electricityRate) * checkForNull(consumptionPower)
-            setValue('electricityCostWelding', checkForDecimalAndNull(electricityCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('electricityCostWelding', checkForDecimalAndNull(electricityCost, initialConfiguration?.NoOfDecimalForPrice))
         }
         return { electricityCost: electricityCost }
     }
@@ -294,7 +294,7 @@ function AddMoreOperation(props) {
         let labourCost
         if (labourRate && weldingShift) {
             labourCost = checkForNull(labourRate / weldingShift)
-            setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
         }
         return { labourCost: labourCost }
     }
@@ -314,13 +314,13 @@ function AddMoreOperation(props) {
             const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(totalCost)
             const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
 
-            setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
         } else {
             const rateConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
-            setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
         }
     }
 
@@ -353,8 +353,8 @@ function AddMoreOperation(props) {
         let rejectionReworkCost = RateLocalConversion * rejnReworkPercent
         let profitCost = RateLocalConversion * profitPercent
         setDataToSend(prevState => ({ ...prevState, rejectionReworkCostState: rejectionReworkCost, profitCostState: profitCost }))
-        setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
-        setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration?.NoOfDecimalForPrice))
 
         //SETTING NET COST NOW
         let profitCostState = checkForNull(profitCost)
@@ -364,13 +364,13 @@ function AddMoreOperation(props) {
         if (state.isImport) {
             const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(totalCost)
             const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
-            setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
         } else {
             const rateConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
-            setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
         }
     }
 
@@ -393,8 +393,8 @@ function AddMoreOperation(props) {
         let profitCost = RateLocalConversion * profitPercent
 
         setDataToSend(prevState => ({ ...prevState, rejectionReworkCostState: rejectionReworkCost, profitCostState: profitCost }))
-        setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
-        setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration?.NoOfDecimalForPrice))
 
         setNetCostPlating(obj)
     }
@@ -417,13 +417,13 @@ function AddMoreOperation(props) {
         if (state.isImport) {
             const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(Rate)
             const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(Rate)
-            setValue('Rate', checkForDecimalAndNull(Rate, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('Rate', checkForDecimalAndNull(Rate, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
         } else {
             const rateConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(Rate)
-            setValue('RateLocalConversion', checkForDecimalAndNull(Rate, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(Rate, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
         }
 
     }
@@ -476,65 +476,65 @@ function AddMoreOperation(props) {
             if (String(props?.addMoreDetailObj?.operationType?.label) === "Welding") {
                 setDataToSend(prevState => ({ ...prevState, netCostWelding: detailObject && detailObject.Rate ? detailObject.Rate : '', wireCostWelding: detailObject && detailObject.MaterialWireCost ? detailObject.MaterialWireCost : '', gasCostWelding: detailObject && detailObject.MaterialGasCost ? detailObject.MaterialGasCost : '', electricityCostWelding: detailObject && detailObject.PowerElectricityCost ? detailObject.PowerElectricityCost : '', labourCostWelding: detailObject && detailObject.LabourManPowerCost ? detailObject.LabourManPowerCost : '' }))
                 setFiles(detailObject?.Attachements)
-                setValue('machineConsumableCost', detailObject && detailObject.MachineConsumptionCost ? checkForDecimalAndNull(detailObject.MachineConsumptionCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('machineConsumableCost', detailObject && detailObject.MachineConsumptionCost ? checkForDecimalAndNull(detailObject.MachineConsumptionCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadConsumableWelderCost', detailObject && detailObject.ConsumableWelderCRMHead && { label: detailObject.ConsumableWelderCRMHead, value: 1 })
-                setValue('welderCost', detailObject && detailObject.WelderCost ? checkForDecimalAndNull(detailObject.WelderCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('welderCost', detailObject && detailObject.WelderCost ? checkForDecimalAndNull(detailObject.WelderCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadInterestDepriciationWelding', detailObject && detailObject.InterestAndDepriciationCRMHead && { label: detailObject.InterestAndDepriciationCRMHead, value: 1 })
-                setValue('interestDepriciationCost', detailObject && detailObject.InterestAndDepriciationCost ? checkForDecimalAndNull(detailObject.InterestAndDepriciationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('interestDepriciationCost', detailObject && detailObject.InterestAndDepriciationCost ? checkForDecimalAndNull(detailObject.InterestAndDepriciationCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadAdditionalOtherCostWelding', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
                 setValue('otherCostDescriptionWelding', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
-                setValue('otherCostWelding', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCostWelding', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
 
             } else {
                 setDataToSend(prevState => ({ ...prevState, RateLocalConversion: detailObject && detailObject.Rate ? detailObject.Rate : '', rejectionReworkCostState: detailObject && detailObject.RejectionAndReworkCost ? detailObject.RejectionAndReworkCost : '', profitCostState: detailObject && detailObject.ProfitCRMCost ? detailObject.ProfitCRMCost : '' }))
                 setIncludeInterestInRejection(detailObject?.IsIncludeInterestRateAndDepriciationInRejectionAndProfit)
                 setValue('crmHeadMaterialCost', detailObject && detailObject.MaterialGasCRMHead && { label: detailObject.MaterialGasCRMHead, value: 1 })
-                setValue('gasCost', detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('gasCost', detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadPower', detailObject && detailObject.PowerCRMHead && { label: detailObject.PowerCRMHead, value: 1 })
-                setValue('electricityCost', detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('electricityCost', detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 //////////
                 setValue('crmHeadLabour', detailObject && detailObject.LabourCRMHead && { label: detailObject.LabourCRMHead, value: 1 })
-                setValue('manPowerCost', detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('manPowerCost', detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadLabourStaffCost', detailObject && detailObject.LabourStaffCRMHead && { label: detailObject.LabourStaffCRMHead, value: 1 })
-                setValue('staffCost', detailObject && detailObject.LabourStaffCost ? checkForDecimalAndNull(detailObject.LabourStaffCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('staffCost', detailObject && detailObject.LabourStaffCost ? checkForDecimalAndNull(detailObject.LabourStaffCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 //////////
                 setValue('crmHeadConsumableMaintenanceCost', detailObject && detailObject.ConsumableMaintenanceCRMHead && { label: detailObject.ConsumableMaintenanceCRMHead, value: 1 })
-                setValue('maintenanceCost', detailObject && detailObject.ConsumableMaintenanceCost ? checkForDecimalAndNull(detailObject.ConsumableMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('maintenanceCost', detailObject && detailObject.ConsumableMaintenanceCost ? checkForDecimalAndNull(detailObject.ConsumableMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadConsumableCost', detailObject && detailObject.ConsumableCRMHead && { label: detailObject.ConsumableCRMHead, value: 1 })
-                setValue('consumablesCost', detailObject && detailObject.ConsumableCost ? checkForDecimalAndNull(detailObject.ConsumableCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('consumablesCost', detailObject && detailObject.ConsumableCost ? checkForDecimalAndNull(detailObject.ConsumableCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadWaterCost', detailObject && detailObject.ConsumableWaterCRMHead && { label: detailObject.ConsumableWaterCRMHead, value: 1 })
-                setValue('waterCost', detailObject && detailObject.ConsumableWaterCost ? checkForDecimalAndNull(detailObject.ConsumableWaterCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('waterCost', detailObject && detailObject.ConsumableWaterCost ? checkForDecimalAndNull(detailObject.ConsumableWaterCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadJigStripping', detailObject && detailObject.ConsumableJigStrippingCRMHead && { label: detailObject.ConsumableJigStrippingCRMHead, value: 1 })
-                setValue('jigStripping', detailObject && detailObject.ConsumableJigStrippingCost ? checkForDecimalAndNull(detailObject.ConsumableJigStrippingCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('jigStripping', detailObject && detailObject.ConsumableJigStrippingCost ? checkForDecimalAndNull(detailObject.ConsumableJigStrippingCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadInterest', detailObject && detailObject.InterestCRMHead && { label: detailObject.InterestCRMHead, value: 1 })
-                setValue('interestCost', detailObject && detailObject.InterestCost ? checkForDecimalAndNull(detailObject.InterestCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('interestCost', detailObject && detailObject.InterestCost ? checkForDecimalAndNull(detailObject.InterestCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadDepriciation', detailObject && detailObject.DepriciationCRMHead && { label: detailObject.DepriciationCRMHead, value: 1 })
-                setValue('depriciationCost', detailObject && detailObject.DepriciationCost ? checkForDecimalAndNull(detailObject.DepriciationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('depriciationCost', detailObject && detailObject.DepriciationCost ? checkForDecimalAndNull(detailObject.DepriciationCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadOtherOperation', detailObject && detailObject.OtherOperationCRMHead && { label: detailObject.OtherOperationCRMHead, value: 1 })
                 setValue('OtherOperationName', detailObject && detailObject.OtherOperationName && { label: detailObject.OtherOperationName, value: detailObject.OtherOperationIdRef })
-                setValue('rateOperation', detailObject && detailObject.OtherOperationCost ? checkForDecimalAndNull(detailObject.OtherOperationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('rateOperation', detailObject && detailObject.OtherOperationCost ? checkForDecimalAndNull(detailObject.OtherOperationCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadStatuaryLicense', detailObject && detailObject.StatuatoryAndLicenseCRMHead && { label: detailObject.StatuatoryAndLicenseCRMHead, value: 1 })
-                setValue('statuatoryLicense', detailObject && detailObject.StatuatoryAndLicenseCost ? checkForDecimalAndNull(detailObject.StatuatoryAndLicenseCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('statuatoryLicense', detailObject && detailObject.StatuatoryAndLicenseCost ? checkForDecimalAndNull(detailObject.StatuatoryAndLicenseCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadRejoinRework', detailObject && detailObject.RejectionAndReworkCRMHead && { label: detailObject.RejectionAndReworkCRMHead, value: 1 })
-                setValue('rejnReworkPercent', detailObject && detailObject.RejectionAndReworkPercentage ? checkForDecimalAndNull(detailObject.RejectionAndReworkPercentage, initialConfiguration.NoOfDecimalForPrice) : '',)
-                setValue('rejoinReworkCost', detailObject && detailObject.RejectionAndReworkCost ? checkForDecimalAndNull(detailObject.RejectionAndReworkCost, initialConfiguration.NoOfDecimalForPrice) : '')
+                setValue('rejnReworkPercent', detailObject && detailObject.RejectionAndReworkPercentage ? checkForDecimalAndNull(detailObject.RejectionAndReworkPercentage, initialConfiguration?.NoOfDecimalForPrice) : '',)
+                setValue('rejoinReworkCost', detailObject && detailObject.RejectionAndReworkCost ? checkForDecimalAndNull(detailObject.RejectionAndReworkCost, initialConfiguration?.NoOfDecimalForPrice) : '')
                 setValue('crmHeadProfit', detailObject && detailObject.ProfitCRMHead && { label: detailObject.ProfitCRMHead, value: 1 })
-                setValue('profitPercent', detailObject && detailObject.ProfitCRMPercentage ? checkForDecimalAndNull(detailObject.ProfitCRMPercentage, initialConfiguration.NoOfDecimalForPrice) : '')
-                setValue('profitCost', detailObject && detailObject.ProfitCRMCost ? checkForDecimalAndNull(detailObject.ProfitCRMCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('profitPercent', detailObject && detailObject.ProfitCRMPercentage ? checkForDecimalAndNull(detailObject.ProfitCRMPercentage, initialConfiguration?.NoOfDecimalForPrice) : '')
+                setValue('profitCost', detailObject && detailObject.ProfitCRMCost ? checkForDecimalAndNull(detailObject.ProfitCRMCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadOtherCost', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
-                setValue('otherCost', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCost', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('otherCostDescription', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
             }
 
             setTimeout(() => {
                 if (detailObject?.OperationEntryType === ENTRY_TYPE_IMPORT) {
-                    setValue('Rate', detailObject && detailObject?.Rate ? checkForDecimalAndNull(detailObject?.Rate, initialConfiguration.NoOfDecimalForPrice) : '',)
+                    setValue('Rate', detailObject && detailObject?.Rate ? checkForDecimalAndNull(detailObject?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 }
-                setValue('RateLocalConversion', detailObject && detailObject.RateLocalConversion ? checkForDecimalAndNull(detailObject.RateLocalConversion, initialConfiguration.NoOfDecimalForPrice) : '',)
-                setValue('RateConversion', detailObject && detailObject.RateConversion ? checkForDecimalAndNull(detailObject.RateConversion, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('RateLocalConversion', detailObject && detailObject.RateLocalConversion ? checkForDecimalAndNull(detailObject.RateLocalConversion, initialConfiguration?.NoOfDecimalForPrice) : '',)
+                setValue('RateConversion', detailObject && detailObject.RateConversion ? checkForDecimalAndNull(detailObject.RateConversion, initialConfiguration?.NoOfDecimalForPrice) : '',)
             }, 600);
 
         } else {
@@ -625,7 +625,7 @@ function AddMoreOperation(props) {
             Rate: isWelding ? dataToSend.netCostWelding : (values.Rate ? values?.Rate : values?.RateLocalConversion),
             RateLocalConversion: values?.RateLocalConversion,
             RateConversion: values?.RateConversion,
-            LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
+            LabourRatePerUOM: initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
             Technology: technologyArray,
             Remark: values.remark ? values.remark : '',
             Plant: plantArray ? plantArray : [],
@@ -3152,11 +3152,11 @@ function AddMoreOperation(props) {
                                     />
                                 </Col>
                                 <Col md="4">
-                                    <label>Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)</label>
-                                    <div className={`alert alert-danger mt-2 ${files.length === initialConfiguration.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
+                                    <label>Upload Files (upload up to {initialConfiguration?.MaxMasterFilesToUpload} files)</label>
+                                    <div className={`alert alert-danger mt-2 ${files.length === initialConfiguration?.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit reached.
                                     </div>
-                                    <div className={`${files.length >= initialConfiguration.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                                    <div className={`${files.length >= initialConfiguration?.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                                         <Dropzone
                                             ref={dropzone}
                                             onChangeStatus={handleChangeStatus}
@@ -3164,7 +3164,7 @@ function AddMoreOperation(props) {
                                             disabled={isViewMode}
                                             accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                             initialFiles={[]}
-                                            maxFiles={initialConfiguration.MaxMasterFilesToUpload}
+                                            maxFiles={initialConfiguration?.MaxMasterFilesToUpload}
                                             maxSizeBytes={2000000}
                                             inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
                                                 <i className="text-primary fa fa-cloud-upload"></i>

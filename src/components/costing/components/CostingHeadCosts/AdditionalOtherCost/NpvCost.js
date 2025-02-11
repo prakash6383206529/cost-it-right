@@ -17,7 +17,7 @@ function NpvCost(props) {
 
     useEffect(() => {
         const sum = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
-        setTotalCost(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+        setTotalCost(checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
     }, [props?.tableData])
 
     return (

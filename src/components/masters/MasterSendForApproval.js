@@ -718,9 +718,9 @@ function MasterSendForApproval(props) {
                     }))
                 }
                
-               
+
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
-                const processedApprovalObjects = approvalObjects.map(item => ({
+                const processedApprovalObjects = approvalObjects?.map(item => ({
 
 
                     ApprovalProcessSummaryId: (item?.MasterApprovalProcessSummaryId ?? item?.ApprovalProcessSummaryId) ?? 0,
@@ -1383,7 +1383,7 @@ function MasterSendForApproval(props) {
                                         disabled={isDisable}
                                     >
                                         <div className={'save-icon'}></div>
-                                        {isFinalApprover || type === 'Approve' || type === 'Reject' ? 'Submit' : 'Send For Approval'}
+                                        {isFinalApprover || type === 'Approve' || type === 'Reject' || type === 'Return' ? 'Submit' : 'Send For Approval'}
                                     </button>
                                 </div>
                             </Row>

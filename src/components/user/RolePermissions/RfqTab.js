@@ -303,7 +303,7 @@ class RFQTab extends Component {
 
     render() {
         const { actionSelectList, initialConfiguration } = this.state;
-        const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
+        const showOnlyFirstModule = initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
 
         return (
             <div>

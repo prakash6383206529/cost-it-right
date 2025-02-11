@@ -173,13 +173,13 @@ function ViewDrawer(props) {
                     // }
                     // if (nfrId && nfrId.value !== null) {
                     //     if (index === 0) {
-                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //         newObjTemp.YearName = Data.FirstYear
                     //     } else if (index === 1) {
-                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //         newObjTemp.YearName = Data.SecondYear
                     //     } else if (index === 2) {
-                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //         newObjTemp.YearName = Data.ThirdYear
                     //     } else if (index === 3) {
                     //         newObjTemp.Quantity = 0;

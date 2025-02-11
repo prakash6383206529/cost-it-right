@@ -363,7 +363,7 @@ const BOPCompareTable = (props) => {
                     anchor={"right"}
                     closeDrawer={() => setOtherCostDrawer(false)}
                     rawMaterial={true}
-                    rmBasicRate={selectedItem?.BasicRatePerUOM}
+                    rmBasicRate={selectedItem?.BasicRate}
                     ViewMode={true}
                     rmTableData={selectedItem?.BoughtOutPartOtherCostDetailsSchema}
                     RowData={selectedItem}
@@ -371,6 +371,8 @@ const BOPCompareTable = (props) => {
                     settlementCurrency={selectedItem?.Currency}
                     isImpactedMaster={true}
                     disabled={true}
+                    isBOP={true}
+
 
                 />
             }

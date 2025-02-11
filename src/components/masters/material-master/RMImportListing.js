@@ -171,7 +171,7 @@ function RMImportListing(props) {
     obj.OtherNetCost = floatingFilterData?.OtherNetCost
     obj.Currency = isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : floatingFilterData?.Currency
     obj.LocalCurrency = isSimulation && props?.toListData && props?.toListData ? props?.toListData : floatingFilterData?.LocalCurrency
-
+    obj.StatusId = [props?.approvalStatus].join(",")
     return {
       data: { technologyId: props?.technology ?? null },
       skip: 0,
@@ -289,8 +289,12 @@ function RMImportListing(props) {
       dataObj.Currency = filteredRMData?.Currency
       dataObj.ExchangeRateSourceName = filteredRMData?.ExchangeRateSourceName
       dataObj.OtherNetCost = filteredRMData?.OtherNetCost
+      dataObj.StatusId = statusString
 
     }
+    // dataObj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_IMPORT) : ''
+    dataObj.StatusId = statusString
+    //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
    //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props?.isMasterSummaryDrawer) {
@@ -513,7 +517,8 @@ function RMImportListing(props) {
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
-    let IsRFQRawMaterial = rowData?.IsRFQRawMaterial !== null && rowData?.IsRFQRawMaterial !== undefined ? true : false
+    // let IsRFQRawMaterial = rowData?.IsRFQRawMaterial !== null && rowData?.IsRFQRawMaterial !== undefined ? true : false
+    const IsRFQRawMaterial = Boolean(rowData?.IsRFQRawMaterial);
     let isEditbale = false
     let isDeleteButton = false
 

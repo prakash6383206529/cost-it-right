@@ -305,7 +305,7 @@ class AddRMImport extends Component {
 
   finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
     const { initialConfiguration } = this.props
-    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+    if (!this.state.isViewFlag && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
 
         this.commonFunction(plantId)
@@ -327,7 +327,7 @@ class AddRMImport extends Component {
       plantId: plantId
     }
 
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -363,7 +363,7 @@ class AddRMImport extends Component {
         this.setInStateToolTip()
         this.handleNetCost()
       }
-      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
         this.commonFunction()
       }
 
@@ -732,53 +732,53 @@ class AddRMImport extends Component {
     const { FinalConditionCostSelectedCurrency, DataToChange, isEditFlag, costingTypeId, showScrapKeys } = this.state
 
     let scrapRatePerScrapUOMBaseCurrencyTemp = this.convertIntoBase(fieldsObj?.ScrapRatePerScrapUOM)
-    this.props.change('ScrapRatePerScrapUOMBaseCurrency', checkForDecimalAndNull(scrapRatePerScrapUOMBaseCurrencyTemp, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('ScrapRatePerScrapUOMBaseCurrency', checkForDecimalAndNull(scrapRatePerScrapUOMBaseCurrencyTemp, initialConfiguration?.NoOfDecimalForPrice));
 
     let obj = {}
     if (this.state.IsApplyHasDifferentUOM) {
       const conversionFactorTemp = 1 / fieldsObj?.UOMToScrapUOMRatio
-      this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration.NoOfDecimalForPrice));
+      this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration?.NoOfDecimalForPrice));
       const scrapRateTemp = checkForNull(fieldsObj?.ScrapRatePerScrapUOM) * checkForNull(conversionFactorTemp)
       if (showScrapKeys?.showCircleJali) {
         obj.FinalJaliScrapCostSelectedCurrency = scrapRateTemp
-        this.props.change('JaliScrapCostSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+        this.props.change('JaliScrapCostSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration?.NoOfDecimalForPrice));
       } else if (showScrapKeys?.showForging) {
         obj.FinalForgingScrapCostSelectedCurrency = scrapRateTemp
-        this.props.change('ForgingScrapSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+        this.props.change('ForgingScrapSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration?.NoOfDecimalForPrice));
       } else if (showScrapKeys?.showScrap) {
         obj.FinalScrapRateSelectedCurrency = scrapRateTemp
-        this.props.change('ScrapRateSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+        this.props.change('ScrapRateSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration?.NoOfDecimalForPrice));
       }
       obj.ScrapRateSelectedCurrency = scrapRateTemp
       obj.CalculatedFactor = conversionFactorTemp
     }
 
     const cutOffPriceBaseCurrency = this.convertIntoBase(fieldsObj?.cutOffPriceSelectedCurrency)
-    this.props.change('cutOffPriceBaseCurrency', checkForDecimalAndNull(cutOffPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('cutOffPriceBaseCurrency', checkForDecimalAndNull(cutOffPriceBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     const basicRateBaseCurrency = this.convertIntoBase(fieldsObj?.BasicRateSelectedCurrency)
-    this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(basicRateBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(basicRateBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     const scrapRateBaseCurrency = this.convertIntoBase(fieldsObj?.ScrapRateSelectedCurrency)
-    this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(scrapRateBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(scrapRateBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     const forgingScrapBaseCurrency = this.convertIntoBase(fieldsObj?.ForgingScrapSelectedCurrency)
-    this.props.change('ForgingScrapBaseCurrency', checkForDecimalAndNull(forgingScrapBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('ForgingScrapBaseCurrency', checkForDecimalAndNull(forgingScrapBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     const machiningScrapBaseCurrency = this.convertIntoBase(fieldsObj?.MachiningScrapSelectedCurrency)
-    this.props.change('MachiningScrapBaseCurrency', checkForDecimalAndNull(machiningScrapBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('MachiningScrapBaseCurrency', checkForDecimalAndNull(machiningScrapBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     const circleScrapCostBaseCurrency = this.convertIntoBase(fieldsObj?.CircleScrapCostSelectedCurrency)
-    this.props.change('CircleScrapCostBaseCurrency', checkForDecimalAndNull(circleScrapCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('CircleScrapCostBaseCurrency', checkForDecimalAndNull(circleScrapCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     const jaliScrapCostBaseCurrency = this.convertIntoBase(fieldsObj?.JaliScrapCostSelectedCurrency)
-    this.props.change('JaliScrapCostBaseCurrency', checkForDecimalAndNull(jaliScrapCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('JaliScrapCostBaseCurrency', checkForDecimalAndNull(jaliScrapCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     const freightChargeBaseCurrency = this.convertIntoBase(fieldsObj?.FreightChargeSelectedCurrency)
-    this.props.change('FreightChargeBaseCurrency', checkForDecimalAndNull(freightChargeBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('FreightChargeBaseCurrency', checkForDecimalAndNull(freightChargeBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     const shearingCostSelectedCurrency = this.convertIntoBase(fieldsObj?.ShearingCostSelectedCurrency)
-    this.props.change('ShearingCostBaseCurrency', checkForDecimalAndNull(shearingCostSelectedCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('ShearingCostBaseCurrency', checkForDecimalAndNull(shearingCostSelectedCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     const basicPriceSelectedCurrencyTemp = checkForNull(fieldsObj?.BasicRateSelectedCurrency) + checkForNull(fieldsObj?.FreightChargeSelectedCurrency) + checkForNull(fieldsObj?.ShearingCostSelectedCurrency)
     const basicPriceBaseCurrencyTemp = this.convertIntoBase(basicPriceSelectedCurrencyTemp)
@@ -791,21 +791,21 @@ class AddRMImport extends Component {
       basicPriceBaseCurrency = basicPriceBaseCurrencyTemp
     }
 
-    this.props.change('BasicPriceSelectedCurrency', checkForDecimalAndNull(basicPriceSelectedCurrency, initialConfiguration.NoOfDecimalForPrice));
-    this.props.change('BasicPriceBaseCurrency', checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('BasicPriceSelectedCurrency', checkForDecimalAndNull(basicPriceSelectedCurrency, initialConfiguration?.NoOfDecimalForPrice));
+    this.props.change('BasicPriceBaseCurrency', checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     let conditionList = this.recalculateConditions(basicPriceSelectedCurrency, basicPriceBaseCurrency)
 
     const sumBaseCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
-    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
 
     const sumSelectedCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    this.props.change('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(sumSelectedCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(sumSelectedCurrency, initialConfiguration?.NoOfDecimalForPrice))
 
     const netLandedCostSelectedCurrency = checkForNull(basicPriceSelectedCurrencyTemp) + checkForNull(sumSelectedCurrency)
     const netLandedCostBaseCurrency = checkForNull(basicPriceBaseCurrencyTemp) + checkForNull(sumBaseCurrency)
-    this.props.change('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, initialConfiguration.NoOfDecimalForPrice));
-    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, initialConfiguration?.NoOfDecimalForPrice));
+    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     if (isEditFlag && checkForNull(fieldsObj?.BasicRateSelectedCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateSelectedCurrency) === checkForNull(DataToChange?.ScrapRate)
       && checkForNull(fieldsObj?.ForgingScrapSelectedCurrency) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrapSelectedCurrency) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCostSelectedCurrency) === checkForNull(DataToChange?.JaliScrapCostSelectedCurrency)
@@ -901,48 +901,48 @@ class AddRMImport extends Component {
           setTimeout(() => {
             this.finalUserCheckAndMasterLevelCheckFunction(Data.DestinationPlantId)
 
-            this.props.change('cutOffPriceSelectedCurrency', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('cutOffPriceBaseCurrency', checkForDecimalAndNull(Data?.CutOffPriceInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('cutOffPriceSelectedCurrency', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('cutOffPriceBaseCurrency', checkForDecimalAndNull(Data?.CutOffPriceInINR, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('BasicRateSelectedCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOMConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('BasicRateSelectedCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOMConversion, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('ScrapRateSelectedCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ScrapRateSelectedCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('ForgingScrapSelectedCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ForgingScrapBaseCurrency', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ForgingScrapSelectedCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('ForgingScrapBaseCurrency', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('MachiningScrapSelectedCurrency', checkForDecimalAndNull(Data?.MachiningScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('MachiningScrapBaseCurrency', checkForDecimalAndNull(Data?.MachiningScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('MachiningScrapSelectedCurrency', checkForDecimalAndNull(Data?.MachiningScrapRate, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('MachiningScrapBaseCurrency', checkForDecimalAndNull(Data?.MachiningScrapRateInINR, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('CircleScrapCostSelectedCurrency', checkForDecimalAndNull(Data?.JaliScrapCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('CircleScrapCostBaseCurrency', checkForDecimalAndNull(Data?.JaliScrapCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('CircleScrapCostSelectedCurrency', checkForDecimalAndNull(Data?.JaliScrapCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('CircleScrapCostBaseCurrency', checkForDecimalAndNull(Data?.JaliScrapCostConversion, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('JaliScrapCostSelectedCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('JaliScrapCostBaseCurrency', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('JaliScrapCostSelectedCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('JaliScrapCostBaseCurrency', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('FreightChargeSelectedCurrency', checkForDecimalAndNull(Data?.RMFreightCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('FreightChargeBaseCurrency', checkForDecimalAndNull(Data?.RawMaterialFreightCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('FreightChargeSelectedCurrency', checkForDecimalAndNull(Data?.RMFreightCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('FreightChargeBaseCurrency', checkForDecimalAndNull(Data?.RawMaterialFreightCostConversion, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('ShearingCostSelectedCurrency', checkForDecimalAndNull(Data?.RMShearingCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ShearingCostBaseCurrency', checkForDecimalAndNull(Data?.RawMaterialShearingCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ShearingCostSelectedCurrency', checkForDecimalAndNull(Data?.RMShearingCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('ShearingCostBaseCurrency', checkForDecimalAndNull(Data?.RawMaterialShearingCostConversion, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('BasicPriceSelectedCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('BasicPriceBaseCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('BasicPriceSelectedCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('BasicPriceBaseCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCostConversion, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(Data?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(Data?.NetConditionCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(Data?.NetConditionCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(Data?.NetConditionCostConversion, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('NetLandedCostSelectedCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(Data?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('NetLandedCostSelectedCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(Data?.NetLandedCostConversion, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('UOMToScrapUOMRatio', checkForDecimalAndNull(Data?.UOMToScrapUOMRatio, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ScrapRatePerScrapUOM', checkForDecimalAndNull(Data?.ScrapRatePerScrapUOM, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('UOMToScrapUOMRatio', checkForDecimalAndNull(Data?.UOMToScrapUOMRatio, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('ScrapRatePerScrapUOM', checkForDecimalAndNull(Data?.ScrapRatePerScrapUOM, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('ScrapRatePerScrapUOMBaseCurrency', checkForDecimalAndNull(Data?.ScrapRatePerScrapUOMConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ScrapRatePerScrapUOMBaseCurrency', checkForDecimalAndNull(Data?.ScrapRatePerScrapUOMConversion, initialConfiguration?.NoOfDecimalForPrice));
 
-            this.props.change('CalculatedFactor', checkForDecimalAndNull(Data?.CalculatedFactor, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('CalculatedFactor', checkForDecimalAndNull(Data?.CalculatedFactor, initialConfiguration?.NoOfDecimalForPrice));
 
             this.setState({
 
@@ -1028,7 +1028,7 @@ class AddRMImport extends Component {
               this.setInStateToolTip()
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
-                if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+                if (this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
                   this.allFieldsInfoIcon(true)
                   // this.commonFunction()
                 }
@@ -1763,10 +1763,10 @@ class AddRMImport extends Component {
     const sumSelectedCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     let netLandedCostINR = checkForNull(sumBaseCurrency) + checkForNull(this.state.FinalBasicPriceBaseCurrency)
     let netLandedCostSelectedCurrency = checkForNull(sumSelectedCurrency) + checkForNull(this.state.FinalBasicPriceSelectedCurrency)
-    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(sumSelectedCurrency, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostINR, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(sumSelectedCurrency, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostINR, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.setState({
       isOpenConditionDrawer: false,
       conditionTableData: data,
@@ -2064,7 +2064,7 @@ class AddRMImport extends Component {
                             />
                           </Col>
 
-                          {((costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
+                          {((costingTypeId === ZBCTypeId && !initialConfiguration?.IsMultipleUserAllowForApproval) && (
                             <Col md="3">
                               <Field
                                 label="Plant (Code)"
@@ -2088,7 +2088,7 @@ class AddRMImport extends Component {
                             </Col>)
                           )}
                           {
-                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration.IsMultipleUserAllowForApproval) &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration?.IsMultipleUserAllowForApproval) &&
                             <Col md="3">
                               <Field
                                 label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
@@ -2959,7 +2959,7 @@ class AddRMImport extends Component {
                             buttonName={"Cancel"}
                           />
                           {!isViewFlag && <>
-                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !CostingTypePermission) ?
+                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !CostingTypePermission) ?
                               <Button
                                 id="addRMImport_sendForApproval"
                                 type="submit"

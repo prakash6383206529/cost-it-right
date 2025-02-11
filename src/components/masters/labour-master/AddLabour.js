@@ -952,7 +952,7 @@ class AddLabour extends Component {
 
 
     const LabourRateConversion = checkForNull(fieldsObj?.LabourRate) * checkForNull(currencyValue)
-    this.props.change('LabourRateConversion', checkForDecimalAndNull(LabourRateConversion, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('LabourRateConversion', checkForDecimalAndNull(LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice));
 
   }
   handleExchangeRateSource = (newValue) => {
@@ -1527,10 +1527,10 @@ class AddLabour extends Component {
                                     <tr key={index}>
                                       <td>{item.MachineType}</td>
                                       <td>{item.LabourType}</td>
-                                      <td>{checkForDecimalAndNull(item?.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                      {!this?.state?.hidePlantCurrency && <td>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration.NoOfDecimalForPrice)}</td>}
-                                      <td>{checkForDecimalAndNull(item?.WorkingTime, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                                      <td>{checkForDecimalAndNull(item?.Efficiency, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                                      <td>{checkForDecimalAndNull(item?.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                      {!this?.state?.hidePlantCurrency && <td>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                      <td>{checkForDecimalAndNull(item?.WorkingTime, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                                      <td>{checkForDecimalAndNull(item?.Efficiency, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                       <td>
                                         {item.EffectiveDate ? DayTime(item.EffectiveDate).format(
                                           "DD/MM/YYYY"

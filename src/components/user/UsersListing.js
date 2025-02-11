@@ -453,7 +453,7 @@ const UsersListing = (props) => {
 						>
 							{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 							<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>
-							{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
+							{initialConfiguration && !initialConfiguration?.IsLoginEmailConfigure ? (
 								<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
 							) : null}
 							{props?.RFQUser && <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
@@ -479,7 +479,7 @@ const UsersListing = (props) => {
 					</div>
 				</div>}
 
-				{state.isOpen && (<ViewUserDetails UserId={state.UserId} isOpen={state.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props.RFQUser} />)}
+				{state.isOpen && (<ViewUserDetails UserId={state.UserId} isOpen={state.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration?.IsLoginEmailConfigure} RFQUser={props.RFQUser} />)}
 
 			</>
 			{state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />}
