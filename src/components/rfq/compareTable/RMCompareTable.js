@@ -33,8 +33,7 @@ const RMCompareTable = (props) => {
         setShowConvertedCurrency(value);
     }
     const tableDataClass = (data) => {
-        console.log(data);
-        console.log(props);
+    
         
         
         // return props?.isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
