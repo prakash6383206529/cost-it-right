@@ -136,7 +136,7 @@ function CostMovementGraph(props) {
                                     }
                                 })
 
-                                perPartData = Object.assign([...perPartData], { [dateIndex]: checkForDecimalAndNull(ele.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) })  //SETTING VALUE AT DATE INDEX
+                                perPartData = Object.assign([...perPartData], { [dateIndex]: checkForDecimalAndNull(ele.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) })  //SETTING VALUE AT DATE INDEX
                             }
                         })
                     })

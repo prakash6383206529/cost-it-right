@@ -751,7 +751,7 @@ function AddFreight(props) {
                     />
                   </Col>
 
-                  {initialConfiguration.IsShowCRMHead && <Col md="12">
+                  {initialConfiguration?.IsShowCRMHead && <Col md="12">
                     <SearchableSelectHookForm
                       name={`crmHeadFreight`}
                       type="text"

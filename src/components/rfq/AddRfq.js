@@ -171,7 +171,7 @@ function AddRfq(props) {
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
     const showSendButton = dataProps?.rowData?.Status || ''
-    const isDropdownDisabled = (initialConfiguration.IsCriticalVendorConfigured && isViewFlag) || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === 'PreDraft' || showSendButton === ''));
+    const isDropdownDisabled = (initialConfiguration?.IsCriticalVendorConfigured && isViewFlag) || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === 'PreDraft' || showSendButton === ''));
 
 
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
@@ -223,7 +223,7 @@ function AddRfq(props) {
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
     const isQuotationReceived = () => dataProps?.rowData?.Status === 'Received' || dataProps?.rowData?.Status === 'Sent'
     const disableUOMFiled = (Object.keys(prNumber).length !== 0 || dataProps?.isViewFlag || isQuotationReceived() || disabledPartUid)
-    const showTcoFields = initialConfiguration.IsShowTCO
+    const showTcoFields = initialConfiguration?.IsShowTCO
 
 
 
@@ -365,7 +365,7 @@ const isVendorSectionDisabled = !hasAnyParts();
             dispatch(getPurchaseRequisitionSelectList((/* filterObj */) => { }))
         }
         dispatch(getRawMaterialNameChild(() => { }))
-        if (initialConfiguration.IsNFRConfigured) {
+        if (initialConfiguration?.IsNFRConfigured) {
             dispatch(getNfrSelectList(() => { }))
         }
         let tempArr = [];
@@ -1786,13 +1786,13 @@ const isVendorSectionDisabled = !hasAnyParts();
                     //     }
                     //     if (nfrId && nfrId.value !== null) {
                     //         if (index === 0) {
-                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //             newObjTemp.YearName = Data.FirstYear
                     //         } else if (index === 1) {
-                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //             newObjTemp.YearName = Data.SecondYear
                     //         } else if (index === 2) {
-                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //             newObjTemp.YearName = Data.ThirdYear
                     //         } else if (index === 3) {
                     //             newObjTemp.Quantity = 0;
@@ -2028,13 +2028,13 @@ const isVendorSectionDisabled = !hasAnyParts();
 
                 //     if (nfrId) {
                 //         if (index === 0) {
-                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                 //             newObjTemp.YearName = Data.FirstYear
                 //         } else if (index === 1) {
-                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                 //             newObjTemp.YearName = Data.SecondYear
                 //         } else if (index === 2) {
-                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                 //             newObjTemp.YearName = Data.ThirdYear
                 //         } else if (index === 3) {
                 //             newObjTemp.Quantity = 0;

@@ -554,7 +554,7 @@ function SimulationApprovalListing(props) {
             return null
         })
         selectedRows && dispatch(setMasterForSimulation({ label: selectedRows[0]?.SimulationTechnologyHead, value: selectedRows[0]?.SimulationTechnologyId }))
-        if (!allEqual(plantIds) && initialConfiguration.IsMultipleUserAllowForApproval) {
+        if (!allEqual(plantIds) && initialConfiguration?.IsMultipleUserAllowForApproval) {
             Toaster.warning('Plant should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         }

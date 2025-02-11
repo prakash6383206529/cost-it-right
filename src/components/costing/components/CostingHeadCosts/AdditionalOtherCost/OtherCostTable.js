@@ -17,7 +17,7 @@ const OtherCostTable = (props) => {
             <Table className="table mb-0 forging-cal-table" size="sm">
                 <thead>
                     <tr>
-                        {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                        {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                         <th>{`Other Cost Description`}</th>
                         {/* <th>{`Other Cost Type`}</th> */}
                         <th>{`Other Cost Applicability`}</th>
@@ -31,13 +31,13 @@ const OtherCostTable = (props) => {
                     {gridData && gridData.map((item, index) => {
                         return (
                             <tr key={index} >
-                                {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
+                                {initialConfiguration?.IsShowCRMHead && <td>{item.CRMHead}</td>}
                                 <td>{item.OtherCostDescription}</td>
                                 {/* <td>{item.OtherCostType}</td> */}
                                 <td>{item?.OtherCostApplicability}</td>
-                                <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                 <td>{item?.PercentageOtherCost}</td>
-                                <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                 {!CostingViewMode && <td className='text-right'>
                                     <button
                                         className="Edit"
@@ -66,11 +66,11 @@ const OtherCostTable = (props) => {
                         </tr>
                     ) : (
                         <tr className='table-footer'>
-                            <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4} className='text-right'>
+                            <td colSpan={initialConfiguration?.IsShowCRMHead ? 5 : 4} className='text-right'>
                                 Total Other Cost ({currencySource?.label ?? initialConfiguration?.BaseCurrency}):
                             </td>
                             <td colSpan={3}>
-                                {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
+                                {checkForDecimalAndNull(otherCostTotal, initialConfiguration?.NoOfDecimalForPrice)}
                             </td>
                         </tr>
                     )}

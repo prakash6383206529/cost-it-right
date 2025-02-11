@@ -97,7 +97,7 @@ class PlantMaster extends Component {
                                     ZBC
                                 </NavLink>
                             </NavItem>
-                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <NavItem>
+                            {initialConfiguration && initialConfiguration?.IsVendorPlantConfigurable && <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                     VBC
                                 </NavLink>
@@ -121,7 +121,7 @@ class PlantMaster extends Component {
                                         />
                                     }
                                 </TabPane>}
-                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.activeTab === '2' &&
+                            {initialConfiguration && initialConfiguration?.IsVendorPlantConfigurable && this.state.activeTab === '2' &&
                                 <TabPane tabId="2">
                                     {this.state.stateUpdated &&
                                         <VBCPlantListing

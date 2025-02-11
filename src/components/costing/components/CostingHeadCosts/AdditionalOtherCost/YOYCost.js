@@ -47,9 +47,9 @@ function YOYCost(props) {
             dispatch(getYOYCostList(requestObject, (res) => {
                 setLoader(false)
                 _.map(res?.data?.Data?.yoyResponseDetails, (item, index) => {
-                    yearName[`Y${index + 1}`] = item.YearName ? item.YearName : 0
-                    tempDataYear1_5_One[`Y${index + 1}`] = item.Quantity ? item.Quantity : 0
-                    tempDataYear1_5_Two[`Y${index + 1}`] = item.DiscountPercent ? item.DiscountPercent : 0
+                    yearName[`Y${index + 1}`] = item?.YearName ? item?.YearName : 0
+                    tempDataYear1_5_One[`Y${index + 1}`] = item?.Quantity ? item?.Quantity : 0
+                    tempDataYear1_5_Two[`Y${index + 1}`] = item?.DiscountPercent ? item?.DiscountPercent : 0
                     tempDataYear1_5_Four[`Y${index + 1}`] = item.NetCostPerPiece ? item.NetCostPerPiece : 0
                     // tempDataYear1_5_Four[`Y${index + 1}`] = item.RemainingCost ? item.RemainingCost : 0
                     tempDataYear1_5_Five[`Y${index + 1}`] = item.Discount ? item.Discount : 0
@@ -298,7 +298,7 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
                                                             errors={errors.Y2}
                                                             disabled={outside || Number(getValues("Y1")) === 0 ? true : false}
                                                         /></td>
@@ -323,7 +323,7 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
                                                             errors={errors.Y3}
                                                             disabled={outside || Number(getValues("Y2")) === 0 ? true : false}
                                                         /></td>
@@ -348,7 +348,7 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
                                                             errors={errors.Y4}
                                                             disabled={outside || Number(getValues("Y3")) === 0 ? true : false}
                                                         /></td>
@@ -373,7 +373,7 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
                                                             errors={errors.Y5}
                                                             disabled={outside || Number(getValues("Y4")) === 0 ? true : false}
                                                         /></td>

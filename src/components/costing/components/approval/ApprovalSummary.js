@@ -543,7 +543,7 @@ function ApprovalSummary(props) {
               </Col>
             </Row>
             {/* Code for approval workflow */}
-            <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} approverData={dataForFetchingAllApprover} />
+            <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} approverData={dataForFetchingAllApprover} viewAll={() => setViewButton(true)} />
 
             <Row>
               <Col md="12">
@@ -835,7 +835,7 @@ function ApprovalSummary(props) {
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
 
-                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} selectedTechnology={partDetail?.Technology}showAddToComparison={true} />}
+                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} selectedTechnology={partDetail?.Technology} showAddToComparison={true} />}
 
               </Col>
             </Row>

@@ -49,7 +49,7 @@ function TransportationCost(props) {
       setValue('Quantity', data && data.Quantity !== undefined ? data.Quantity : 0)
       setValue('Rate', data && data.Rate !== undefined ? data.Rate : 0)
       setValue('crmHeadTransportation', data && data.TransportationCRMHead !== undefined ? { label: data.TransportationCRMHead, value: 1 } : '')
-      setValue('TransportationCost', data && data.TransportationCost !== undefined ? checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0)
+      setValue('TransportationCost', data && data.TransportationCost !== undefined ? checkForDecimalAndNull(data.TransportationCost, initialConfiguration?.NoOfDecimalForPrice) : 0)
       // setRate(data && data.Rate !== undefined ? data.Rate : 0)
       // setUOM(data && data.UOMId !== undefined ? { label: data.UOM, value: data.UOMId } : [])
       // setQuantity(data && data.Quantity !== undefined ? data.Quantity : 0)
@@ -128,13 +128,13 @@ function TransportationCost(props) {
 
       if (TransportationType === 'Percentage') {
         setTransportCost(checkForNull(props.surfaceCost * calculatePercentage(event.target.value)))
-        setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
+        setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(event.target.value), initialConfiguration?.NoOfDecimalForPrice))
         setRate(event.target.value)
       } else {
         if (Quantity !== '') {
           const cost = Quantity * event.target.value;
           setTransportCost(checkForNull(cost))
-          setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
+          setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice))
           setRate(event.target.value)
         } else {
           setTransportCost(0)
@@ -153,7 +153,7 @@ function TransportationCost(props) {
       if (Rate !== '') {
         const cost = Rate * event.target.value;
         setTransportCost(cost)
-        setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice));
+        setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice));
         setQuantity(event.target.value);
       } else {
         setTransportCost(0)
@@ -195,25 +195,25 @@ function TransportationCost(props) {
       // If UOM is Rate, calculate the cost as Rate * Quantity and set newTransportCost accordingly
       case 'Rate':
         cost = checkForNull(data.Rate) * checkForNull(data.Quantity);
-        newTransportCost = checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+        newTransportCost = checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice);
         break;
 
       // If UOM is Fixed, set newTransportCost to the value provided in the data
       case 'Fixed':
-        newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice);
+        newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration?.NoOfDecimalForPrice);
         break;
 
       // If UOM is Percentage, calculate the cost as surfaceCost * Rate * (percentage/100) and set newTransportCost accordingly.
       // Also, set Rate value and check if surfaceCost is provided, if not, set cost to 0
       case 'Percentage':
         cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate)));
-        newTransportCost = checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+        newTransportCost = checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice);
         setRate((props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : data.Rate);
         break;
 
       // If UOM is not Rate, Fixed or Percentage, set newTransportCost to the value provided in the data
       default:
-        newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice);
+        newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration?.NoOfDecimalForPrice);
         break;
     }
 
@@ -278,7 +278,7 @@ function TransportationCost(props) {
             </Row>
 
             <Row>
-              {initialConfiguration.IsShowCRMHead && <Col md="3">
+              {initialConfiguration?.IsShowCRMHead && <Col md="3">
                 <SearchableSelectHookForm
                   name={`crmHeadTransportation`}
                   type="text"

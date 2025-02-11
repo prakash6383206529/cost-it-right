@@ -444,7 +444,6 @@ export const swappingLogicCommon = (givenArray, dragStart, dragEnd, e) => {
 };
 
 export const NetLandedCostToolTip = (item, technologyId, IsApplyMasterBatch = false) => {
-  console.log(item, IsApplyMasterBatch)
   const { UOM, IsCalculatorAvailable } = item || {};
   const baseFormula = 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)';
 

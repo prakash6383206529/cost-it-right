@@ -283,7 +283,7 @@ class AddRMDomestic extends Component {
 
   finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
     const { initialConfiguration } = this.props
-    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+    if (!this.state.isViewFlag && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId)
@@ -308,7 +308,7 @@ class AddRMDomestic extends Component {
       this.setInStateToolTip()
       this.calculateNetCost()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
     }
   }
@@ -328,7 +328,7 @@ class AddRMDomestic extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -630,17 +630,17 @@ class AddRMDomestic extends Component {
     let obj = {}
     if (this.state.IsApplyHasDifferentUOM) {
       const conversionFactorTemp = 1 / fieldsObj?.ConversionRatio
-      this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration.NoOfDecimalForPrice));
+      this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration?.NoOfDecimalForPrice));
       const scrapRateTemp = checkForNull(fieldsObj?.ScrapRatePerScrapUOM) * checkForNull(conversionFactorTemp)
       if (showScrapKeys?.showCircleJali) {
         obj.FinalJaliScrapCostBaseCurrency = scrapRateTemp
-        this.props.change('JaliScrapCost', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+        this.props.change('JaliScrapCost', checkForDecimalAndNull(scrapRateTemp, initialConfiguration?.NoOfDecimalForPrice));
       } else if (showScrapKeys?.showForging) {
         obj.FinalForgingScrapCostBaseCurrency = scrapRateTemp
-        this.props.change('ForgingScrap', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+        this.props.change('ForgingScrap', checkForDecimalAndNull(scrapRateTemp, initialConfiguration?.NoOfDecimalForPrice));
       } else if (showScrapKeys?.showScrap) {
         obj.FinalScrapRateBaseCurrency = scrapRateTemp
-        this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+        this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration?.NoOfDecimalForPrice));
       }
       obj.ScrapRateBaseCurrency = scrapRateTemp
       obj.CalculatedFactor = conversionFactorTemp
@@ -657,9 +657,9 @@ class AddRMDomestic extends Component {
     const sumBaseCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     let netLandedCostBaseCurrency = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
-    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration?.NoOfDecimalForPrice));
 
     if (isEditFlag && checkForNull(fieldsObj?.BasicRateBaseCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateBaseCurrency) === checkForNull(DataToChange?.ScrapRate)
       && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
@@ -751,20 +751,20 @@ class AddRMDomestic extends Component {
           this.setState({ DataToChange: Data })
 
           setTimeout(() => {
-            this.props.change('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ForgingScrap', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('MachiningScrap', checkForDecimalAndNull(Data?.MachiningScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('CircleScrapCost', checkForDecimalAndNull(Data?.JaliScrapCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('JaliScrapCost', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('FreightCharge', checkForDecimalAndNull(Data?.RMFreightCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ShearingCost', checkForDecimalAndNull(Data?.RMShearingCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('BasicPriceCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(Data?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ConversionRatio', checkForDecimalAndNull(Data?.UOMToScrapUOMRatio, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ScrapRatePerScrapUOM', checkForDecimalAndNull(Data?.ScrapRatePerScrapUOM, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('ForgingScrap', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('MachiningScrap', checkForDecimalAndNull(Data?.MachiningScrapRate, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('CircleScrapCost', checkForDecimalAndNull(Data?.JaliScrapCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('JaliScrapCost', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('FreightCharge', checkForDecimalAndNull(Data?.RMFreightCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('ShearingCost', checkForDecimalAndNull(Data?.RMShearingCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('BasicPriceCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(Data?.NetConditionCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('ConversionRatio', checkForDecimalAndNull(Data?.UOMToScrapUOMRatio, initialConfiguration?.NoOfDecimalForPrice));
+            this.props.change('ScrapRatePerScrapUOM', checkForDecimalAndNull(Data?.ScrapRatePerScrapUOM, initialConfiguration?.NoOfDecimalForPrice));
 
             this.setState({
               FinalCutOffBaseCurrency: Data?.CutOffPrice,
@@ -1374,7 +1374,7 @@ class AddRMDomestic extends Component {
     this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
-    if (costingTypeId === VBCTypeId || this.props.initialConfiguration.IsMultipleUserAllowForApproval) {
+    if (costingTypeId === VBCTypeId || this.props.initialConfiguration?.IsMultipleUserAllowForApproval) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
     } else if (costingTypeId === ZBCTypeId) {
       selectedPlants && selectedPlants.map((item) => {
@@ -1532,8 +1532,8 @@ class AddRMDomestic extends Component {
     }
     const sumBaseCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     let netLandedCostBaseCurrency = checkForNull(sumBaseCurrency) + checkForNull(this.state.FinalBasicPriceBaseCurrency)
-    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.setState({
       isOpenConditionDrawer: false,
       conditionTableData: data,
@@ -1832,7 +1832,7 @@ class AddRMDomestic extends Component {
                               valueDescription={this.state.rmCode}
                             />
                           </Col>
-                          {((costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
+                          {((costingTypeId === ZBCTypeId && !initialConfiguration?.IsMultipleUserAllowForApproval) && (
                             <Col md="3">
                               <Field
                                 label="Plant (Code)"
@@ -1856,7 +1856,7 @@ class AddRMDomestic extends Component {
                             </Col>)
                           )}
                           {
-                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration.IsMultipleUserAllowForApproval) &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration?.IsMultipleUserAllowForApproval) &&
                             <Col md="3">
                               <Field
                                 label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
@@ -2465,7 +2465,7 @@ class AddRMDomestic extends Component {
                             buttonName={"Cancel"}
                           />
                           {!isViewFlag && <>
-                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !CostingTypePermission) ?
+                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !CostingTypePermission) ?
                               <Button
                                 id="addRMDomestic_sendForApproval"
                                 type="submit"

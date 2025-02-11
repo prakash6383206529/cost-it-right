@@ -157,7 +157,7 @@ function AddBudget(props) {
             approvalTypeId: costingTypeId,
             plantId: plantId,
         }
-        if (initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             dispatch(checkFinalUser(obj, res => {
                 if (res.data?.Result) {
                     setIsFinalApprover(res.data?.Data?.IsFinalApprover)
@@ -858,7 +858,7 @@ function AddBudget(props) {
 
             }
 
-            if (isFinalApprover || (userDetails().Role === 'SuperAdmin') || (!initialConfiguration.IsMasterApprovalAppliedConfigure)) {
+            if (isFinalApprover || (userDetails().Role === 'SuperAdmin') || (!initialConfiguration?.IsMasterApprovalAppliedConfigure)) {
                 dispatch(createBudget(formData, (res) => {
                     setSetDisable(false)
                     if (res?.data?.Result) {
@@ -1624,7 +1624,7 @@ function AddBudget(props) {
                                                         <div className={"cancel-icon"}></div>{" "}
                                                         {"Cancel"}
                                                     </button>
-                                                    {!userDetails().Role === 'SuperAdmin' && !isFinalApprover && initialConfiguration.IsMasterApprovalAppliedConfigure ?
+                                                    {!userDetails().Role === 'SuperAdmin' && !isFinalApprover && initialConfiguration?.IsMasterApprovalAppliedConfigure ?
                                                         <button type="submit"
                                                             id='AddBudget_SendForApproval'
                                                             className="user-btn approval-btn save-btn mr5"

@@ -708,7 +708,7 @@ function ApprovalListing(props) {
       return false
     }
     // MINDA
-    if (initialConfiguration.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
+    if (initialConfiguration?.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
       let dataList = costingIdObj(selectedRowData)
       let requestObject = {
         "RequestFor": "COSTING",

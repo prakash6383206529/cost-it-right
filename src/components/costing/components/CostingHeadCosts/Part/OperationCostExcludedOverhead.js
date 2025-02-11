@@ -111,7 +111,7 @@ function OperationCostExcludedOverhead(props) {
       })
       let tempArr = [...GridArray, ...rowArray]
       tempArr && tempArr.map((el, index) => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
+        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration?.NoOfDecimalForInputOutput))
         return null
       })
       setGridData(tempArr)
@@ -284,7 +284,7 @@ function OperationCostExcludedOverhead(props) {
 
   const netCost = (item) => {
     const cost = (checkForNull(item.Rate) * checkForNull(item.Quantity)) + (checkForNull(item.LabourRate) * checkForNull(item.LabourQuantity));
-    return checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+    return checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice);
   }
 
   /**
@@ -361,7 +361,7 @@ function OperationCostExcludedOverhead(props) {
 
             <Col md="12">
               <Table className="table cr-brdr-main costing-operation-cost-section p-relative" size="sm" onDragOver={onMouseLeave} onDragEnd={onDragComplete} >
-                <thead className={`${initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'} ${headerPinned ? 'sticky-headers' : ''}`}>
+                <thead className={`${initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'} ${headerPinned ? 'sticky-headers' : ''}`}>
                   <tr>
                     <th>{`Operation Name`}</th>
                     <th>{`Operation Code`}</th>
@@ -369,13 +369,13 @@ function OperationCostExcludedOverhead(props) {
                     <th>{`Rate`}</th>
                     <th >{`Quantity`}</th>
                     {initialConfiguration &&
-                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      initialConfiguration?.IsOperationLabourRateConfigure &&
                       <th>{`Labour Rate`}</th>}
                     {initialConfiguration &&
-                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      initialConfiguration?.IsOperationLabourRateConfigure &&
                       <th>{`Labour Quantity`}</th>}
                     <th>{`Net Cost`}</th>
-                    {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                    {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                     <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -403,7 +403,7 @@ function OperationCostExcludedOverhead(props) {
                                     required: true,
                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
-                                  defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
+                                  defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder error-label mb-0'}
                                   handleChange={(e) => {
@@ -416,10 +416,10 @@ function OperationCostExcludedOverhead(props) {
                               }
                             </td>
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
-                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
+                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
                               <td>
                                 {
                                   item.IsLabourRateExist ?
@@ -448,7 +448,7 @@ function OperationCostExcludedOverhead(props) {
                                 }
                               </td>}
                             <td>{netCost(item)}</td>
-                            {initialConfiguration.IsShowCRMHead && <td>
+                            {initialConfiguration?.IsShowCRMHead && <td>
                               <SearchableSelectHookForm
                                 name={`crmHeadOtherOperation${index}`}
                                 type="text"
@@ -483,15 +483,15 @@ function OperationCostExcludedOverhead(props) {
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
-                            <td>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            <td>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
-                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
+                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
-                            <td><div className='w-fit' id={`other-operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`other-operation-cost${index}`} customClass="header-tooltip" tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />  {netCost(item)}</div></td>
-                            {initialConfiguration.IsShowCRMHead && <td>
+                            <td><div className='w-fit' id={`other-operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`other-operation-cost${index}`} customClass="header-tooltip" tooltipText={initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />  {netCost(item)}</div></td>
+                            {initialConfiguration?.IsShowCRMHead && <td>
                               <SearchableSelectHookForm
                                 name={`crmHeadOtherOperation${index}`}
                                 type="text"

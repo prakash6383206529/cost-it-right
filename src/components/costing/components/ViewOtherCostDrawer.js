@@ -96,7 +96,7 @@ function ViewOtherCostDrawer(props) {
                 <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
                     <thead>
                         <tr>
-                            {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                            {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                             <th className='custom-max-width-220px'>{`Discount Description/Remark`}</th>
                             <th>{`Discount Applicability`}</th>
                             <th>{`Discount Applicability Cost (${showCurrency})`}</th>
@@ -108,20 +108,20 @@ function ViewOtherCostDrawer(props) {
                         {discountData && discountData.map((item, index) => {
                             return (
                                 <tr key={index} >
-                                    {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
+                                    {initialConfiguration?.IsShowCRMHead && <td>{item.CRMHead}</td>}
                                     <td className='custom-max-width-220px'>{item?.DiscountDescription}</td>
                                     <td>{item?.DiscountApplicability}</td>
                                     <td>{item?.dicountApplicabilityValue}</td>
                                     <td>{String(item?.DiscountApplicability) === String('Fixed') ? '-' : item.Percentage}</td>
-                                    <td>{checkForDecimalAndNull(item.Value, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                    <td>{checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                 </tr>
                             );
                         })}
                         {discountData.length === 0 ? <tr>
-                            <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}> <NoContentFound title={EMPTY_DATA} /></td>
+                            <td colSpan={initialConfiguration?.IsShowCRMHead ? 5 : 4}> <NoContentFound title={EMPTY_DATA} /></td>
                         </tr> : <tr className='table-footer'>
-                            <td className='text-right' colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}>Total Other Cost ({showCurrency}):</td>
-                            <td colSpan={2}>{checkForDecimalAndNull(totalDiscountCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            <td className='text-right' colSpan={initialConfiguration?.IsShowCRMHead ? 5 : 4}>Total Other Cost ({showCurrency}):</td>
+                            <td colSpan={2}>{checkForDecimalAndNull(totalDiscountCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                         </tr>}
                     </tbody>
                 </Table>
@@ -141,7 +141,7 @@ function ViewOtherCostDrawer(props) {
                 <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
                     <thead>
                         <tr>
-                            {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                            {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                             <th>{`Other Cost Description`}</th>
                             <th>{`Other Cost Applicability`}</th>
                             {<th>{`Cost Applicability (${showCurrency})`}</th>}
@@ -153,21 +153,21 @@ function ViewOtherCostDrawer(props) {
                         {gridData && gridData.map((item, index) => {
                             return (
                                 <tr key={index} >
-                                    {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
+                                    {initialConfiguration?.IsShowCRMHead && <td>{item.CRMHead}</td>}
                                     <td>{item.OtherCostDescription}</td>
                                     <td>{item?.OtherCostApplicability}</td>
-                                    <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                    <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                     <td>{String(item?.OtherCostApplicability) === String('Fixed') ? '-' : item.PercentageOtherCost}</td>
-                                    <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                    <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                 </tr>
                             );
                         })}
                         {gridData.length === 0 ? <tr>
-                            <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}> <NoContentFound title={EMPTY_DATA} /></td>
+                            <td colSpan={initialConfiguration?.IsShowCRMHead ? 5 : 4}> <NoContentFound title={EMPTY_DATA} /></td>
                         </tr> :
                             <tr className='table-footer'>
-                                <td className='text-right' colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}>Total Other Cost ({showCurrency}):</td>
-                                <td colSpan={2}>{checkForDecimalAndNull(totalOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td className='text-right' colSpan={initialConfiguration?.IsShowCRMHead ? 5 : 4}>Total Other Cost ({showCurrency}):</td>
+                                <td colSpan={2}>{checkForDecimalAndNull(totalOtherCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                             </tr>}
                     </tbody>
                 </Table>
@@ -193,7 +193,7 @@ function ViewOtherCostDrawer(props) {
                                 <th>{`Repayment Period (No. of days)`}</th>
                                 <th>{`Interest Rate ${CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                                 <th>{`Cost`}</th>
-                                {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                                {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                                 <th>{`Remark`}</th>
                             </tr>
                         </thead>
@@ -207,10 +207,10 @@ function ViewOtherCostDrawer(props) {
                                     </tr> :
                                     <tr>
                                         <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability ? CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability : '-'}</td>
-                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '-' : CostingPaymentTermDetails?.PaymentTermDetail?.RepaymentPeriod ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.InterestRate ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.NetCost ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                        {initialConfiguration.IsShowCRMHead && <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermCRMHead}</td>}
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '-' : CostingPaymentTermDetails?.PaymentTermDetail?.RepaymentPeriod ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.RepaymentPeriod, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.InterestRate ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.InterestRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.NetCost ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                        {initialConfiguration?.IsShowCRMHead && <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermCRMHead}</td>}
                                         <td>{CostingPaymentTermDetails?.PaymentTermDetail?.Remark ? CostingPaymentTermDetails?.PaymentTermDetail?.Remark : '-'}</td>
                                     </tr>
                             }

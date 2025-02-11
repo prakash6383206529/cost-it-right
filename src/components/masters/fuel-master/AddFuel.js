@@ -1451,9 +1451,9 @@ class AddFuel extends Component {
                                         <td>{item.country}</td>
                                         <td>{item.city}</td>
                                         <td>{item.StateLabel ? item.StateLabel : '-'}</td>
-                                        {this.state.isImport && <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
-                                        <td>{item?.RateLocalConversion ? checkForDecimalAndNull(item?.RateLocalConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                        {!this.state?.hidePlantCurrency && <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                                        {this.state.isImport && <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                        <td>{item?.RateLocalConversion ? checkForDecimalAndNull(item?.RateLocalConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                        {!this.state?.hidePlantCurrency && <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                                         {/* <td>{item.effectiveDate}</td> */}
                                         <td>
                                           {DayTime(item.effectiveDate).format(

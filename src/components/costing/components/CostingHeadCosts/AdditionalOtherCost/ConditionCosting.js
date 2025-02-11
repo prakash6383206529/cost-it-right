@@ -20,11 +20,11 @@ function ConditionCosting(props) {
     useEffect(() => {
         const sum = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantityConversion), 0);
 
-        setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+        setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
 
         const sumCurrency = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantity), 0);
 
-        setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
+        setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration?.NoOfDecimalForPrice))
     }, [props?.tableData])
 
     return (
@@ -77,7 +77,7 @@ function ConditionCosting(props) {
                             {<tr className='table-footer'>
 
                                 <td colSpan={7} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${isFromImport ? currency?.label : PlantCurrency ?? initialConfiguration?.BaseCurrency}):`}`}</td>
-                                <td colSpan={5}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : PlantCurrency ?? initialConfiguration?.BaseCurrency})` : ''}</div></td>
+                                <td colSpan={5}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : PlantCurrency ?? initialConfiguration?.BaseCurrency})` : ''}</div></td>
                             </tr>}
                         </tbody>
                     </Table>

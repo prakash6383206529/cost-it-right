@@ -105,7 +105,7 @@ function RMApproval(props) {
         return (
             <>
 
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration?.NoOfDecimalForPrice) : ''}
             </>
         )
     }
@@ -116,7 +116,7 @@ function RMApproval(props) {
         return (
             <>
 
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration?.NoOfDecimalForPrice) : ''}
             </>
         )
     }
