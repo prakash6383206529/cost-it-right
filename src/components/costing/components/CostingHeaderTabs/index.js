@@ -18,6 +18,7 @@ import {
   getExchangeRateByCurrency,
   setCurrencySource,
   setExchangeRateSourceValue,
+  exchangeRateReducer,
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { customHavellsChanges, LEVEL1, WACTypeId, ZBCTypeId } from '../../../../config/constants';
@@ -78,7 +79,7 @@ function CostingHeaderTabs(props) {
   const isNFR = useContext(IsNFR);
 
   const costingApprovalStatus = useContext(CostingStatusContext);
-  const { nfrDetailsForDiscount } = useSelector(state => state.costing)
+  const { nfrDetailsForDiscount,exchangeRateData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
@@ -96,6 +97,13 @@ function CostingHeaderTabs(props) {
     dispatch(setExchangeRateSourceValue({ label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName }))
     setCurrency({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
     dispatch(setCurrencySource({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId }))
+    dispatch(exchangeRateReducer({  
+      plantExchangeRate: costData?.LocalCurrencyExchangeRate,
+       baseExchangeRate: costData?.BaseCurrencyExchangeRate,
+       plantFromCurrency: costData?.CostingCurrency,
+       plantToCurrency: costData?.LocalCurrency,
+     baseFromCurrency: costData?.CostingCurrency,
+       baseToCurrency: initialConfiguration?.BaseCurrency,}))
     setValue('Currency', { label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
     setValue('ExchangeSource', { label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
   }, [costingData, costData])
@@ -117,8 +125,20 @@ function CostingHeaderTabs(props) {
     if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && (costData?.TechnologyId === ASSEMBLY ? true : !costData?.CostingCurrencyId)) {
       let arr = []
       callExchangeRateAPI(costData?.LocalCurrency).then(res => { //plant
+        const exchangeData = {
+          plantExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? Boolean(res?.data?.Data) : false,
+          baseExchangeRate: null,
+          plantToCurrency: costData?.LocalCurrency,
+          plantFromCurrency: currency?.label,
+          baseToCurrency: initialConfiguration?.BaseCurrency,
+          baseFromCurrency: currency?.label
+        };
         arr.push(res?.data?.Data)
         callExchangeRateAPI(initialConfiguration?.BaseCurrency).then(resp => {
+          exchangeData.baseExchangeRate = resp?.data?.Data && Object.keys(resp?.data?.Data).length > 0 ? Boolean(resp?.data?.Data) : false;
+          dispatch(exchangeRateReducer(exchangeData));
+
+
           arr.push(resp?.data?.Data)
 
           let obj = {
@@ -406,8 +426,11 @@ function CostingHeaderTabs(props) {
       Toaster.warning("Please add RM detail before adding the data in this tab.")
       return false
     }
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currency)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currency,exchangeRateData)) return false;
+   
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
+    
+    
     delete tempErrorObjRMCC?.bopGridFields
     // tourStartRef()
     if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;

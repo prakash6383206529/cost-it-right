@@ -1838,16 +1838,17 @@ function CostingSimulation(props) {
                                                     {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NetProcessCostVariance" tooltipField='NetProcessCostVariance' headerName='Variance (Proc. Cost)' cellRenderer={decimalFormatter} ></AgGridColumn>}
 
 
-                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={130} field="Currency" tooltipField='Currency' headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>}
-                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="OldPOPrice" tooltipField='OldPOPrice' headerName='Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={130} field="LocalCurrency" tooltipField='LocalCurrency' headerName='Local Currency' cellRenderer='revisionFormatter'></AgGridColumn>}
 
 
                                                     {/* <AgGridColumn width={140} field="NewPOPrice" headerName='Net Cost New' cellRenderer='newPOFormatter'></AgGridColumn> */}
 
 
-                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" tooltipField='OldNetPOPriceOtherCurrency' headerName='Existing Net Cost(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
-                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" tooltipField='NewNetPOPriceOtherCurrency' headerName='Revised Net Cost (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
-                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="POVariance" tooltipField='POVariance' headerName='Variance (w.r.t. Existing)' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldPOPrice" tooltipField='OldPOPrice' headerName='Existing Net Cost(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewPOPrice" tooltipField='NewPOPrice' headerName='Revised Net Cost (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldPOPriceLocalConversion" tooltipField='OldPOPriceLocalConversion' headerName='Existing Net Cost(in Plant Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewPOPriceLocalConversion" tooltipField='NewPOPriceLocalConversion' headerName='Revised Net Cost (in Plant Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="Variance" tooltipField='Variance' headerName='Variance (w.r.t. Existing in Plant Currency)' cellRenderer={decimalFormatter}></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="BudgetedPriceVariance" tooltipField='BudgetedPriceVariance' headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="OldExchangeRate" tooltipField='OldExchangeRate' headerName='Existing Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="NewExchangeRate" tooltipField='NewExchangeRate' headerName='Revised Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>}

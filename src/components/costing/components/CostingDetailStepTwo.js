@@ -9,7 +9,8 @@ import {
   setRejectionRecoveryData,
   setOverheadProfitData,
   setCurrencySource,
-  setExchangeRateSourceValue
+  setExchangeRateSourceValue,
+  exchangeRateReducer
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, showBopLabel } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -504,6 +505,7 @@ function CostingDetailStepTwo(props) {
       dispatch(setCostingtype({}))
       dispatch(setCurrencySource(''))
       dispatch(setExchangeRateSourceValue(''))
+      dispatch(exchangeRateReducer({}))
       props.backBtn()
     }
   }

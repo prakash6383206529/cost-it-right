@@ -412,12 +412,25 @@ export const checkPercentageValue = (value, msg = "Percentage value should not b
 }
 
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
-export const CheckIsCostingDateSelected = (costingDate, currency) => {
+export const CheckIsCostingDateSelected = (costingDate, currency, exchangeRateData={}) => {
+    
     const IsSelected = DayTime(costingDate).isValid() ? true : false;
     if (!IsSelected || currency?.label === null || currency?.label === undefined) {
         Toaster.warning('Please select Costing effective date and Currency.')
+        return true;
     }
-    return (!IsSelected || currency?.label === null || currency?.label === undefined);
+    if (!exchangeRateData?.plantExchangeRate && !exchangeRateData?.baseExchangeRate) {
+        let message = "Data does not exist in the Exchange Rate Master";
+        const plantPair = exchangeRateData?.plantFromCurrency !== exchangeRateData?.plantToCurrency 
+            ? ` for ${exchangeRateData.plantFromCurrency} to ${exchangeRateData.plantToCurrency}` : '';
+        const basePair = exchangeRateData?.baseFromCurrency !== exchangeRateData?.baseToCurrency 
+            ? `${plantPair ? ' and' : ' for'} ${exchangeRateData.baseFromCurrency} to ${exchangeRateData.baseToCurrency}` : '';
+        
+        Toaster.warning(`${message}${plantPair}${basePair}. Please add it first and try again.`);
+        return true;
+    }
+
+    return false;
 }
 
 export const percentageOfNumber = (num, percentage) => {
@@ -518,27 +531,26 @@ export const integerOnly = value =>
     value && !/^\d*$/.test(value)
         ? 'Only integer values are allowed'
         : undefined;
-        export const validateFileName = (fileName) => {
-            // Check for spaces, special characters, and multiple extensions
-            const hasSpacesOrSpecialChars = /[\s@!#$%^&*(),?":{}|<>]/.test(fileName);
-            const hasMultipleExtensions = /\..*\./.test(fileName);
-            const allowedExtensions = /\.(pdf|doc|docx|xls|xlsx|jpg|jpeg|png|gif)$/i;
-        
-            let validationMessage = '';
-        
-            if (hasSpacesOrSpecialChars) {
-                validationMessage = "File name should not contain spaces or special characters.";
-            } else if (hasMultipleExtensions) {
-                validationMessage = "File name should not contain multiple extensions.";
-            } else if (!allowedExtensions.test(fileName)) {
-                validationMessage = "File format is not supported. Allowed formats: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG, GIF.";
-            }
-        
-            if (validationMessage) {
-                Toaster.warning(validationMessage);
-                return false;
-            }
-        
-            return true;
-        };
-        
+export const validateFileName = (fileName) => {
+    // Check for spaces, special characters, and multiple extensions
+    const hasSpacesOrSpecialChars = /[\s@!#$%^&*(),?":{}|<>]/.test(fileName);
+    const hasMultipleExtensions = /\..*\./.test(fileName);
+    const allowedExtensions = /\.(pdf|doc|docx|xls|xlsx|jpg|jpeg|png|gif)$/i;
+
+    let validationMessage = '';
+
+    if (hasSpacesOrSpecialChars) {
+        validationMessage = "File name should not contain spaces or special characters.";
+    } else if (hasMultipleExtensions) {
+        validationMessage = "File name should not contain multiple extensions.";
+    } else if (!allowedExtensions.test(fileName)) {
+        validationMessage = "File format is not supported. Allowed formats: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG, GIF.";
+    }
+
+    if (validationMessage) {
+        Toaster.warning(validationMessage);
+        return false;
+    }
+
+    return true;
+};

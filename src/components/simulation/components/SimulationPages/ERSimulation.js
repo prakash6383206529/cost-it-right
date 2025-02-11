@@ -70,6 +70,7 @@ function ERSimulation(props) {
     const [showRawMaterialsList, setShowRawMaterialsList] = useState(false);
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const [minDate, setMinDate] = useState('')
+    const [hasUserMadeEdits, setHasUserMadeEdits] = useState(false);
 
     const dispatch = useDispatch()
     const columnWidths = {
@@ -328,7 +329,7 @@ function ERSimulation(props) {
         setShowTooltip(false)
 
         if (count === 0) {
-            Toaster.warning("Please change the basic rate and proceed to the next page.")
+            Toaster.warning("Please change the Exchange rate and proceed to the next page.")
             return false
         }
 
@@ -360,6 +361,15 @@ function ERSimulation(props) {
     }, 500)
 
     const selectRM = debounce(() => {
+        if (simulationApplicability?.value === 'RM' && !isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
+          // Check if user has made any edits
+    if (!hasUserMadeEdits) {
+        Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
+        return false;
+    }
         let count = 0
         let listData = []
         let fromListData = ''
@@ -378,10 +388,11 @@ function ERSimulation(props) {
 
         setShowTooltip(false)
 
-        if (count === 0) {
-            Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`)
-            return false
-        }
+        // if (count === 0) {
+        //     Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`)
+        //     return false
+        // }
+        
         dispatch(setExchangeRateListBeforeDraft(listData))
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(listData, 'Currency') }))
         switch (simulationApplicability?.value) {
@@ -411,7 +422,13 @@ function ERSimulation(props) {
     const onBtExport = () => {
         return returnExcelColumn(EXCHANGE_IMPACT_DOWNLOAD_EXCEl, list)
     };
-
+    const onCellValueChanged = (params) => {
+        
+        if (params.column.colId === 'NewCurrencyExchangeRate') {
+            setHasUserMadeEdits(true);
+        }
+    };
+    
     const returnExcelColumn = (data = [], TempData) => {
 
         let temp = []
@@ -485,6 +502,8 @@ function ERSimulation(props) {
                                             suppressRowClickSelection={true}
                                             onFilterModified={onFloatingFilterChanged}
                                             enableBrowserTooltips={true}
+                                            onCellValueChanged={onCellValueChanged}
+
 
                                         >
                                             <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
@@ -611,6 +630,8 @@ function ERSimulation(props) {
                 cancelImportList={cancelImportList}
                 vendorLabel={props?.vendor}
                 FromExchangeRate={true}
+                minDate={minDate}
+
 
             />}
             {showBOPMasterList &&
@@ -634,6 +655,8 @@ function ERSimulation(props) {
                     cancelImportList={cancelImportList}
                     vendorLabel={props?.vendor}
                     FromExchangeRate={true}
+                    minDate={minDate}
+
 
                 />}
             {(showOperationsList || showSurfaceTreatmentList) && (
@@ -650,6 +673,8 @@ function ERSimulation(props) {
                     toListData={toListData}
                     vendorLabel={props?.vendor}
                     FromExchangeRate={true}
+                    minDate={minDate}
+
 
 
                 />
@@ -668,6 +693,8 @@ function ERSimulation(props) {
                     toListData={toListData}
                     vendorLabel={props?.vendor}
                     FromExchangeRate={true}
+                    minDate={minDate}
+
 
 
 
@@ -688,6 +715,7 @@ function ERSimulation(props) {
                     minDate={minDate}
                     vendorLabel={props?.vendor}
                     FromExchangeRate={true}
+                    masterId={props?.masterId}
 
 
                 />
