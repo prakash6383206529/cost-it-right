@@ -10,7 +10,7 @@ function ApprovalWorkFlow(props) {
   const { approvalLevelStep, approverData } = props
   const { initialConfiguration } = useSelector(state => state.auth)
   const [approverList, setApproverList] = useState([])
-  const [ loading, setLoading ] = useState(true) // Set loading to true by default, will be set to false after the data is fetched [set setLoading]
+  const [loading, setLoading] = useState(true) // Set loading to true by default, will be set to false after the data is fetched [set setLoading]
   // const [approval, setApproval] = useState([])
   const dispatch = useDispatch()
   useEffect(() => {
@@ -56,6 +56,7 @@ function ApprovalWorkFlow(props) {
   if (!approvalLevelStep || !props.approvalNo || !approverData) {
     return null;
   }
+  const extraCount = approvalLevelStep && approvalLevelStep.length > 4 ? approvalLevelStep.length - 4 : 0
   /* TODO SORTING OF LEVEL ACC TO DATA*/
   return approvalLevelStep &&
     <div className="row process workflow-row">
@@ -118,6 +119,9 @@ function ApprovalWorkFlow(props) {
             </>
           )
         })}
+      {extraCount > 0 && <div className="extra-approver" onClick={() => props.viewAll ? props.viewAll() : null}>
+        <p>+{extraCount}</p>
+      </div>}
     </div> /*row*/
 
 }
