@@ -1210,7 +1210,7 @@ function SimulationApprovalSummary(props) {
                         </Row >
 
                         {/* Code for approval workflow */}
-                        < ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={simulationDetail?.Token} approverData={dataForFetchingAllApprover} />
+                        <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={simulationDetail?.Token} approverData={dataForFetchingAllApprover} viewAll={() => setViewButton(true)} />
 
                         <Row>
                             <Col md="10"><div className="left-border">{'Amendment Details:'}</div></Col>
