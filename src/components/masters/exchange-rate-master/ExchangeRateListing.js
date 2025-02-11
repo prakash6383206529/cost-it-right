@@ -55,8 +55,8 @@ const ExchangeRateListing = (props) => {
         deletedId: '',
         selectedRowData: false,
         noData: false,
-        dataCount: 0
-
+        dataCount: 0,
+        globalTake: defaultPageSize,
     });
     const { exchangeRateDataList } = useSelector((state) => state.exchangeRate);
     const { topAndLeftMenuData } = useSelector((state) => state.auth);
@@ -65,27 +65,6 @@ const ExchangeRateListing = (props) => {
     useEffect(() => {
         applyPermission(topAndLeftMenuData);
         setState((prevState) => ({ ...prevState, isLoader: true }));
-       const fetchData = async () => {
-            if (props.isSimulation) {
-                if (props.selectionForListingMasterAPI === 'Combined') {
-                    props?.changeSetLoader(true);
-                    dispatch(getListingForSimulationCombined(
-                        props.objectForMultipleSimulation,
-                        EXCHNAGERATE,
-                        (res) => {
-                            props?.changeSetLoader(false);
-                        }
-                    ));
-                }
-                setState((prevState) => ({ ...prevState, isLoader: false }));
-                if (props.selectionForListingMasterAPI === 'Master') {
-                    getTableListData();
-                }
-            } else {
-                getTableListData();
-            }
-        };
-
         const timer = setTimeout(() => {
             fetchData();
         }, 500);
@@ -98,6 +77,27 @@ const ExchangeRateListing = (props) => {
             applyPermission(topAndLeftMenuData);
         }
     }, [topAndLeftMenuData]);
+
+    const fetchData = async () => {
+        if (props.isSimulation) {
+            if (props.selectionForListingMasterAPI === 'Combined') {
+                props?.changeSetLoader(true);
+                dispatch(getListingForSimulationCombined(
+                    props.objectForMultipleSimulation,
+                    EXCHNAGERATE,
+                    (res) => {
+                        props?.changeSetLoader(false);
+                    }
+                ));
+            }
+            setState((prevState) => ({ ...prevState, isLoader: false }));
+            if (props.selectionForListingMasterAPI === 'Master') {
+                getTableListData();
+            }
+        } else {
+            getTableListData();
+        }
+    };
 
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
@@ -264,6 +264,7 @@ const ExchangeRateListing = (props) => {
 
     const onPageSizeChanged = (newPageSize) => {
         state.gridApi.paginationSetPageSize(Number(newPageSize));
+        setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
     };
 
     const onRowSelect = () => {
@@ -320,11 +321,14 @@ const ExchangeRateListing = (props) => {
         if (searchBox) {
             searchBox.value = ""; // Reset the input field's value
         }
+    
+        state.gridApi.sizeColumnsToFit();
         state.gridApi.setQuickFilter(null)
-        setState((prevState) => ({ ...prevState, isExchangeForm: false, isPowerForm: false, currency: [], data: {}, selectedRowData: [], dataCount: 0, stopApiCallOnCancel: false, noData: false }))
         state?.gridApi?.deselectAll()
-        gridOptions.columnApi.resetColumnState();
+        gridOptions.columnApi.resetColumnState(null);
         gridOptions.api.setFilterModel(null);
+        setState((prevState) => ({ ...prevState, isLoader: true, isExchangeForm: false, isPowerForm: false, currency: [], data: {}, selectedRowData: [], dataCount: 0, stopApiCallOnCancel: false, noData: false, globalTake: defaultPageSize }))
+        fetchData();
     }
 
     const frameworkComponents = {
@@ -429,7 +433,7 @@ const ExchangeRateListing = (props) => {
                                 <AgGridColumn field="IsBudgeting" headerName="Is Budgeting" minWidth={135}></AgGridColumn>
                                 {!props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
                             </AgGridReact>}
-                            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+                            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
                         </div>
                     </div>
                 </div>

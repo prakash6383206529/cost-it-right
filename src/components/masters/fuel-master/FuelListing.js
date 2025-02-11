@@ -49,7 +49,8 @@ const FuelListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    isImport: false
+    isImport: false,
+    globalTake: defaultPageSize,
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -193,6 +194,7 @@ const FuelListing = (props) => {
   };
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
   const onRowSelect = () => {
     const selectedRows = state.gridApi?.getSelectedRows();
@@ -222,10 +224,12 @@ const FuelListing = (props) => {
       searchBox.value = ""; // Reset the input field's value
     }
     state.gridApi.setQuickFilter(null)
-    setState((prevState) => ({ ...prevState, isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false, dataCount: 0, }));
     state.gridApi.deselectAll();
+    state.gridApi.sizeColumnsToFit();
     gridOptions.columnApi.resetColumnState(null);
     gridOptions.api.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, isLoader: true, isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false, dataCount: 0, globalTake: defaultPageSize, }));
+    getDataList(null, null);
   };
 
   const commonCostFormatter = (props) => {
@@ -313,6 +317,7 @@ const FuelListing = (props) => {
             </Row>
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
               {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
+              {!state.isLoader &&
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -345,7 +350,8 @@ const FuelListing = (props) => {
                 <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={"effectiveDateRenderer"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn field="FuelDetailId" minWidth={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" pinned="right" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
-              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+              }
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
             </div>
           </div>
         </Col>
