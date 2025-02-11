@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.1.102:2002/api/v1`;
 
 
 
@@ -631,6 +631,8 @@ export const API = {
   saveRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-box-calculation-details`,
   saveRawMaterialCalculationForMonoCartonCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-and-mono-carton-box-calculation-details`,
   getRawMaterialCalculationForMonoCartonCorrugatedBox: `${BASE_URL}/costing/get-raw-material-corrugated-and-mono-carton-box-calculation-details`,
+  saveRawMaterialCalculationForLamination: `${BASE_URL}/costing/save-raw-material-corrugated-laminate-calculation-details`,
+  getRawMaterialCalculationForLamination: `${BASE_URL}/costing/get-raw-material-corrugated-laminate-calculation-details`,
   getRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/get-raw-material-die-casting-calculation-details`,
   saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
@@ -642,6 +644,7 @@ export const API = {
   getRawMaterialCalculationForMachining: `${BASE_URL}/costing/get-raw-material-machining-calculation-details`,
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
   getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
+  getSimulationLaminationCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-laminate-calculation-details`,
   getPackagingCalculation: `${BASE_URL}/costing/get-costing-packaging-calculation-details`,
   savePackagingCalculation: `${BASE_URL}/costing/save-costing-packaging-calculation-details`,
   getVolumePerDayForPackagingCalculator: `${BASE_URL}/costing/get-volume-per-day-for-packaging-calculator`,
@@ -2904,7 +2907,7 @@ export const DIE_CASTING = 7
 //changed the sheet metal to 8 bcz the version 3 code is not working or deployed
 export const SHEETMETAL = 8
 export const MONOCARTON = 13
-
+export const PLASTIC_RUBBER_WITH_EXTRUSION = 14
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
@@ -3311,5 +3314,5 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.31.1";
+export const VERSION = "V3.1.31.2";
 

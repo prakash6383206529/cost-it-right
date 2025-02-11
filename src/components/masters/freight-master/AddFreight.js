@@ -202,7 +202,6 @@ const AddFreight = (props) => {
     }
   }
 
-
   /**
    * @method handleClient
    * @description called
@@ -655,10 +654,11 @@ const AddFreight = (props) => {
    * @method checkDuplicateEntry
    * @description Check for duplicate entries in grid
    */
-  const checkDuplicateEntry = (load, truckDimensions, grid) => {
-    return grid?.some(el => el?.EFreightLoadType === load?.value &&
-      el?.DimensionsName === truckDimensions?.label &&
-      el?.DimensionId === truckDimensions?.value
+  const checkDuplicateEntry = (capacity, criteria, load, grid) => {
+    return grid.some(el =>
+      (el.Capacity ? el.Capacity : undefined) === (capacity?.value ? capacity?.value : undefined) &&
+      el.RateCriteria === criteria?.value &&
+      el.EFreightLoadType === load?.value
     );
   };
   /**

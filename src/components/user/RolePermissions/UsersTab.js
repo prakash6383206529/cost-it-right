@@ -10,6 +10,9 @@ import { USERS, } from "../../../config/constants";
 import { renderActionCommon } from "../userUtil"
 import { getConfigurationKey } from '../../../helper';
 
+const SELF_DELEGATION = "Self Delegation";
+const BEHALF_DELEGATION = "On Behalf Delegation";
+
 class UsersTab extends Component {
   constructor(props) {
     super(props);
@@ -114,33 +117,61 @@ class UsersTab extends Component {
   * @description used to checked module
   */
   moduleHandler = (index) => {
-    //alert('hi')
     const { Modules } = this.state;
     const isModuleChecked = Modules[index].IsChecked;
-
     let actionArray = [];
     let tempArray = [];
 
     let actionRow = (Modules && Modules !== undefined) ? Modules[index].Actions : [];
     if (isModuleChecked) {
-      actionArray = actionRow && actionRow.map((item, index) => {
+      actionArray = actionRow && actionRow.map((item) => {
         item.IsChecked = false;
         return item;
       })
-
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
-
-      this.setState({ Modules: tempArray, checkBox: false })
     } else {
-      actionArray = actionRow && actionRow.map((item, index) => {
+      actionArray = actionRow && actionRow.map((item) => {
         item.IsChecked = true;
         return item;
       })
-
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
-
-      this.setState({ Modules: tempArray, checkBox: false })
     }
+    
+    this.setState({ Modules: tempArray, checkBox: false }, () => {
+      // Check delegation dependency
+      this.checkDelegationDependency(index, tempArray);
+    })
+  }
+
+  checkDelegationDependency = (parentIndex, Module) => {
+    let tempModule = [...Module];
+    let tempArray = [...Module];
+
+    const commonLogic = (ModuleName, value) => {
+      let index = tempModule.findIndex((x) => x.PageName === ModuleName);
+      if (index !== -1) {
+        let actionList = tempModule[index].Actions || [];
+        let actions = actionList.map((item) => {
+          item.IsChecked = value;
+          return item;
+        });
+        tempArray = Object.assign([...tempModule], { 
+          [index]: Object.assign({}, tempModule[index], { IsChecked: value, Actions: actions }) 
+        });
+      }
+    }
+
+    // When On Behalf Delegation is selected, select Self Delegation
+    if (tempModule[parentIndex]?.PageName === BEHALF_DELEGATION && tempModule[parentIndex]?.IsChecked === true) {
+      commonLogic(SELF_DELEGATION, true);
+    }
+    
+    // When Self Delegation is deselected, deselect On Behalf Delegation
+    if (tempModule[parentIndex]?.PageName === SELF_DELEGATION && tempModule[parentIndex]?.IsChecked === false) {
+      commonLogic(BEHALF_DELEGATION, false);
+    }
+
+    this.setState({ Modules: tempArray });
   }
 
   /**
@@ -228,23 +259,99 @@ class UsersTab extends Component {
   */
   actionCheckHandler = (parentIndex, childIndex) => {
     const { Modules } = this.state;
+    
+    // When On Behalf Delegation action is selected, select same action in Self Delegation
+    if (Modules[parentIndex]?.PageName === BEHALF_DELEGATION) {
+      let selfDelegationIndex = Modules.findIndex(x => x.PageName === SELF_DELEGATION);
+      if (selfDelegationIndex !== -1) {
+        let tempModules = [...Modules];
+        tempModules[selfDelegationIndex].Actions[childIndex].IsChecked = true;
 
+        // If Add is selected, automatically select Edit for Self Delegation
+        if (tempModules[parentIndex].Actions[childIndex].ActionName === 'Add') {
+          let editActionIndex = tempModules[selfDelegationIndex].Actions.findIndex(x => x.ActionName === 'Edit');
+          if (editActionIndex !== -1) {
+            tempModules[selfDelegationIndex].Actions[editActionIndex].IsChecked = true;
+          }
+        }
+
+        // If Edit is selected, automatically select Add for Self Delegation  
+        if (tempModules[parentIndex].Actions[childIndex].ActionName === 'Edit') {
+          let addActionIndex = tempModules[selfDelegationIndex].Actions.findIndex(x => x.ActionName === 'Add');
+          if (addActionIndex !== -1) {
+            tempModules[selfDelegationIndex].Actions[addActionIndex].IsChecked = true;
+          }
+        }
+
+        this.setState({ Modules: tempModules });
+      }
+    }
+
+    // When Self Delegation action is deselected, deselect same action in On Behalf Delegation
+    if (Modules[parentIndex]?.PageName === SELF_DELEGATION) {
+      let behalfDelegationIndex = Modules.findIndex(x => x.PageName === BEHALF_DELEGATION);
+      if (behalfDelegationIndex !== -1) {
+        let tempModules = [...Modules];
+        
+        // If deselecting Add or Edit in Self Delegation, deselect both Add and Edit in On Behalf
+        if (tempModules[parentIndex].Actions[childIndex].ActionName === 'Add' || 
+            tempModules[parentIndex].Actions[childIndex].ActionName === 'Edit') {
+          let addActionIndex = tempModules[behalfDelegationIndex].Actions.findIndex(x => x.ActionName === 'Add');
+          let editActionIndex = tempModules[behalfDelegationIndex].Actions.findIndex(x => x.ActionName === 'Edit');
+          
+          if (addActionIndex !== -1) {
+            tempModules[behalfDelegationIndex].Actions[addActionIndex].IsChecked = false;
+          }
+          if (editActionIndex !== -1) {
+            tempModules[behalfDelegationIndex].Actions[editActionIndex].IsChecked = false;
+          }
+        } else {
+          tempModules[behalfDelegationIndex].Actions[childIndex].IsChecked = false;
+        }
+        
+        this.setState({ Modules: tempModules });
+      }
+    }
+
+    // Original action check handler logic
     let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
     let actionArray = actionRow && actionRow.map((el, index) => {
       if (childIndex === index) {
-        el.IsChecked = !el.IsChecked
+        el.IsChecked = !el.IsChecked;
+
+        // If Add is selected/deselected, automatically select/deselect Edit
+        if (el.ActionName === 'Add') {
+          let editAction = actionRow.find(action => action.ActionName === 'Edit');
+          if (editAction) {
+            editAction.IsChecked = el.IsChecked;
+          }
+        }
+
+        // If Edit is selected/deselected, automatically select/deselect Add
+        if (el.ActionName === 'Edit') {
+          let addAction = actionRow.find(action => action.ActionName === 'Add');
+          if (addAction) {
+            addAction.IsChecked = el.IsChecked;
+          }
+        }
       }
       return el;
-    })
-    let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+    });
+    
+    let tempArray = Object.assign([...Modules], { 
+      [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) 
+    });
+
     this.setState({ Modules: tempArray }, () => {
       const { Modules } = this.state;
-      let aa = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
-      let checkedActions = aa.filter(item => item.IsChecked === true)
-      let abcd = checkedActions && checkedActions.length !== 0 ? true : false;
-      let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
-      this.setState({ Modules: tempArray1 })
-    })
+      let actions = Modules[parentIndex].Actions || [];
+      let checkedActions = actions.filter(item => item.IsChecked === true);
+      let isChecked = checkedActions.length !== 0;
+      let tempArray1 = Object.assign([...Modules], { 
+        [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: isChecked, Actions: actionArray }) 
+      });
+      this.setState({ Modules: tempArray1 });
+    });
   }
 
   componentDidUpdate(prevState) {

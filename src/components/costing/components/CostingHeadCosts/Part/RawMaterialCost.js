@@ -10,7 +10,7 @@ import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '.
 import Toaster from '../../../../common/Toaster'
 import { calculateNetLandedCost, calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, corrugatedBoxPermission, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
-import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getRawMaterialCalculationForInsulation } from '../../../actions/CostWorking'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getRawMaterialCalculationForInsulation, getRawMaterialCalculationForLamination } from '../../../actions/CostWorking'
 import { IsNFR, ViewCostingContext } from '../../CostingDetails'
 import { DISPLAY_G, DISPLAY_KG, DISPLAY_MG } from '../../../../../config/constants'
 import TooltipCustom from '../../../../common/Tooltip'
@@ -102,7 +102,6 @@ function RawMaterialCost(props) {
   ])
   const [isScrapRateUOMApplied, setIsScrapRateUOMApplied] = useState(false)
   const [dataInNFRAPI, setDataInNFRAPI] = useState(false)
-
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
   const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
@@ -400,12 +399,17 @@ function RawMaterialCost(props) {
         }))
         break;
       case CORRUGATEDBOX:
-        if (calculatorType === 'CorrugatedAndMonoCartonBox') {
+        if (calculatorType === 'CorrugatedAndMonoCartonBox' || calculatorType === 'Laminate') {
           setCalculatorTypeStore(calculatorType)
-          dispatch(getRawMaterialCalculationForMonoCartonCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
-            setCalculatorData(res, index, 'CorrugatedAndMonoCartonBox')
-
-          }))
+          if (calculatorType === 'Laminate') {
+            dispatch(getRawMaterialCalculationForLamination(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+              setCalculatorData(res, index, 'Laminate')
+            }))
+          } else {
+            dispatch(getRawMaterialCalculationForMonoCartonCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+              setCalculatorData(res, index, 'CorrugatedAndMonoCartonBox')
+            }))
+          }
         } else {
           if (tempData?.LayoutType === 'Plastic' || tempData?.CalculatorType === "Plastic") {
             dispatch(getRawMaterialCalculationForPlastic(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
@@ -462,12 +466,10 @@ function RawMaterialCost(props) {
    * @description HIDE WEIGHT CALCULATOR DRAWER
    */
   const closeWeightDrawer = (e = '', weightData = {}, originalWeight = {}) => {
-
-
     setCalculatorTypeStore(e)
     dispatch(setFerrousCalculatorReset(false))
 
-    if (String(e) === String('rubber') || String(e) === String('ferrous') || String(e) === String('CorrugatedBox') || String(e) === String('CorrugatedAndMonoCartonBox')) {
+    if (String(e) === String('rubber') || String(e) === String('ferrous') || String(e) === String('CorrugatedBox') || String(e) === String('CorrugatedAndMonoCartonBox') || String(e) === String('Laminate')) {
       setIsMultiCalculatorData(true)
     }
     if (Number(costData?.TechnologyId) === MACHINING) {
@@ -975,7 +977,7 @@ function RawMaterialCost(props) {
           })
         }, 500)
       }
-      if (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && calculatorTypeStore === 'CorrugatedAndMonoCartonBox') {
+      if (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && (calculatorTypeStore === 'CorrugatedAndMonoCartonBox' || calculatorTypeStore === 'Laminate')) {
         if (weightData.WeightCalculationId) {
           gridData && gridData.map((item, index) => {
             if (index !== 0) {
@@ -1396,7 +1398,7 @@ function RawMaterialCost(props) {
     return true
   }
 
-  const disabledForMonoCartonCorrugated = (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedAndMonoCartonBox')
+  const disabledForMonoCartonCorrugated = (costData?.TechnologyId === CORRUGATEDBOX && (calculatorTypeStore === 'CorrugatedAndMonoCartonBox' || calculatorTypeStore === 'Laminate'))
   /**
    * @method render
    * @description Renders the component
@@ -1430,7 +1432,7 @@ function RawMaterialCost(props) {
               {((costData?.TechnologyId === Ferrous_Casting || costData?.TechnologyId === RUBBER || (costData?.TechnologyId === CORRUGATEDBOX && corrugatedBoxPermission().CorrugatedAndMonoCartonBox)) && gridData?.length !== 0) && <button
                 className="secondary-btn"
                 type={'button'}
-                onClick={() => toggleWeightCalculator(0, 'CorrugatedAndMonoCartonBox')}
+                onClick={() => toggleWeightCalculator(0, calculatorTypeStore === '' || calculatorTypeStore === 'CorrugatedBox' || calculatorTypeStore === null ? 'CorrugatedAndMonoCartonBox' : calculatorTypeStore)}
                 disabled={(CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedBox')}><div className={`CalculatorIcon cr-cl-icon ${((CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedBox')) ? 'disabled' : ''}`}></div>Weight Calculator</button>}
 
 

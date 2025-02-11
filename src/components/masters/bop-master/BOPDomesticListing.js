@@ -19,7 +19,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
-import { hyphenFormatter } from '../masterUtil';
+import { divisionApplicableFilter, hyphenFormatter } from '../masterUtil';
 import { TourStartAction, disabledClass, isResetClick, setResetCostingHead } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
@@ -677,7 +677,7 @@ const BOPDomesticListing = (props) => {
       getDataList("", 0, "", "", 0, defaultPageSize, false, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   }
-  const BOP_DOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_DOMESTIC_DOWNLOAD_EXCEl, "MasterLabels")
+  const BOP_DOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(divisionApplicableFilter(BOP_DOMESTIC_DOWNLOAD_EXCEl, "Division"), "MasterLabels")
 
   const onBtExport = () => {
     const bopMasterName = showBopLabel();
@@ -964,6 +964,7 @@ const BOPDomesticListing = (props) => {
                 <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                 {props?.isMasterSummaryDrawer && <AgGridColumn field="IncoSummary" headerName="Inco Terms"></AgGridColumn>}
                 {props?.isMasterSummaryDrawer && getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>}
                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}

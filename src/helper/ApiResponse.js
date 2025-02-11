@@ -54,7 +54,8 @@ export function formatLoginResult(res) {
             LoggedInSimulationLevelId: res.LoggedInSimulationLevelId,
             LoggedInMasterLevel: res.LoggedInMasterLevel,
             LoggedInMasterLevelId: res.LoggedInMasterLevelId,
-            Role: res.Role
+            Role: res.Role,
+            IsUserDelegatee: res.IsUserDelegatee,
         };
         return userObj;
     }

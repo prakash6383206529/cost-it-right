@@ -28,7 +28,7 @@ import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears, isLeap
 import { TestHeadless } from "ag-grid-community"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
-import { getEffectiveDateMinDate } from "../../common/CommonFunctions"
+import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -130,7 +130,7 @@ function AddRMFinancialDetails(props) {
         control,
         name: ['JaliScrapCostSelectedCurrency', 'ForgingScrapSelectedCurrency', 'ScrapRateSelectedCurrency', 'cutOffPriceSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency']
     })
-    
+
     useEffect(() => {
         rawMaterailDetailsRef.current = rawMaterailDetails
     }, [rawMaterailDetails])
@@ -205,7 +205,7 @@ function AddRMFinancialDetails(props) {
             setValue('ScrapRatePerScrapUOM', Data?.ScrapRatePerScrapUOM)
             setValue('ScrapRatePerScrapUOMBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.ScrapRatePerScrapUOMConversion : Data?.ScrapRatePerScrapUOM)
             setValue('ScrapRateSelectedCurrency', Data?.ScrapRate)
-            setValue('ScrapRateBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT? Data?.ScrapRateInINR : Data?.ScrapRate)
+            setValue('ScrapRateBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.ScrapRateInINR : Data?.ScrapRate)
             setValue('ShearingCostSelectedCurrency', Data?.RMShearingCost)
             setValue('ShearingCostBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.RawMaterialShearingCostConversion : Data?.RMShearingCost)
             setValue('FreightChargeSelectedCurrency', Data?.RMFreightCost)
@@ -225,13 +225,13 @@ function AddRMFinancialDetails(props) {
             setValue('CircleScrapCostBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.JaliScrapCostConversion : Data?.JaliScrapCost)
             setValue('currency', { label: Data?.Currency, value: Data?.CurrencyId })
             setValue('MachiningScrapSelectedCurrency', Data?.MachiningScrapRate)
-            setValue('MachiningScrapBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT? Data?.MachiningScrapRateInINR : Data?.MachiningScrapRate)
+            setValue('MachiningScrapBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.MachiningScrapRateInINR : Data?.MachiningScrapRate)
             setValue('JaliScrapCostBaseCurrency', Data?.ScrapRate)
             setValue('ForgingScrapBaseCurrency', Data?.ScrapRate)
             setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
             setValue('fromDate', DayTime(Data?.FromDate).$d)
             setValue('toDate', DayTime(Data?.ToDate).$d)
-            setValue('OtherCostBaseCurrency',  Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT?Data?.OtherCostBaseCurrency:Data?.OtherNetCostConversion)
+            setValue('OtherCostBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.OtherCostBaseCurrency : Data?.OtherNetCostConversion)
             setValue('OtherCost', Data?.OtherNetCost)
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
@@ -245,7 +245,7 @@ function AddRMFinancialDetails(props) {
                 IsApplyHasDifferentUOM: Data?.IsScrapUOMApply,
                 ScrapRateUOM: { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId },
                 FinalConditionCostSelectedCurrency: Data?.NetConditionCost,
-                FinalConditionCostBaseCurrency: Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT? Data?.NetConditionCostConversion : Data?.NetConditionCost,
+                FinalConditionCostBaseCurrency: Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.NetConditionCostConversion : Data?.NetConditionCost,
                 conditionTableData: Data?.RawMaterialConditionsDetails,
                 currency: Data?.Currency !== undefined ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
                 showCurrency: true,
@@ -510,7 +510,7 @@ function AddRMFinancialDetails(props) {
         const otherCostBaseCurrency = convertIntoBase(state?.totalOtherCost)
         setValue('OtherCostBaseCurrency', checkForDecimalAndNull(otherCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         const basicRateBaseCurrency = convertIntoBase(getValues('BasicRateSelectedCurrency'))
- setValue('BasicRateBaseCurrency', checkForDecimalAndNull(basicRateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('BasicRateBaseCurrency', checkForDecimalAndNull(basicRateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
         // setValue('OtherCost', checkForDecimalAndNull(totalBase, getConfigurationKey().NoOfDecimalForPrice))
 
         if (state.IsApplyHasDifferentUOM) {
@@ -531,7 +531,7 @@ function AddRMFinancialDetails(props) {
         const basicPriceSelectedCurrencyTemp = checkForNull(getValues('BasicRateSelectedCurrency')) + checkForNull(getValues('FreightChargeSelectedCurrency')) + checkForNull(getValues('ShearingCostSelectedCurrency')) + checkForNull(state?.totalOtherCost ?? 0)
 
         const basicPriceBaseCurrencyTemp = convertIntoBase(basicPriceSelectedCurrencyTemp)
-        
+
         let basicPriceBaseCurrency
         if (states.costingTypeId === ZBCTypeId) {
             basicPriceBaseCurrency = basicPriceBaseCurrencyTemp
@@ -552,7 +552,7 @@ function AddRMFinancialDetails(props) {
         const netLandedCostSelectedCurrency = checkForNull(basicPriceSelectedCurrencyTemp) + checkForNull(sumSelectedCurrency)
 
         const netLandedCostBaseCurrency = checkForNull(basicPriceBaseCurrencyTemp) + checkForNull(sumBaseCurrency)
-        
+
         setValue('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice));
         setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
         let netCostChanged = false
@@ -735,11 +735,11 @@ function AddRMFinancialDetails(props) {
                 validToDate = addYears(date, 1);
                 break;
             case 'As and When':
-                validToDate = null; // Allow user to select any date
+                validToDate = getValues('toDate');; // Allow user to select any date
                 break;
             default:
                 validToDate = date;
-                break;
+                break
         }
 
         setState(prevState => ({
@@ -828,7 +828,7 @@ function AddRMFinancialDetails(props) {
             const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCost), 0);
 
             const sumSelectedCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCostConversion), 0);
-        
+
             const finalBasicPriceBaseCurrency = checkForNull(state.FinalBasicPriceBaseCurrency);
 
             const netLandedCostINR = (states.isImport ? sumBaseCurrency : sumSelectedCurrency) + finalBasicPriceBaseCurrency;
@@ -1953,6 +1953,7 @@ function AddRMFinancialDetails(props) {
                                         mandatory={true}
                                         errors={errors && errors.effectiveDate}
                                         minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : isEditFlag ? state.minDate : getEffectiveDateMinDate()}
+                                        maxDate={getEffectiveDateMaxDate()}
                                     />
                                 </div>
                             </Col>

@@ -110,7 +110,7 @@ function AddBudget(props) {
 
         getDetail()
         commonFunction();
-        dispatch(getUsersMasterLevelAPI(loggedInUserId(), BUDGET_ID, (res) => { }))
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), BUDGET_ID,null, (res) => { }))
         dispatch(getSelectListPartType((res) => {
             setPartTypeList(res?.data?.SelectList)
         }))

@@ -36,6 +36,7 @@ import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
+import { divisionApplicableFilter } from "../masterUtil";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -117,7 +118,7 @@ const BOPImportListing = (props) => {
 
   const { initialConfiguration } = useSelector((state) => state.auth);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-  const { technologyLabel, vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   const { selectedRowForPagination, tokenForSimulation } = useSelector(
     (state) => state.simulation
   );
@@ -582,11 +583,11 @@ const BOPImportListing = (props) => {
   const combinedCostingHeadRenderer = (props) => {
     // Call the existing checkBoxRenderer
     costingHeadFormatter(props);
-  
+
     // Get and localize the cell value
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-  
+
     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
     return localizedValue;
   };
@@ -728,7 +729,7 @@ const BOPImportListing = (props) => {
     }
   };
 
-  const BOP_IMPORT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_IMPORT_DOWNLOAD_EXCEl, "MasterLabels")
+  const BOP_IMPORT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(divisionApplicableFilter(BOP_IMPORT_DOWNLOAD_EXCEl, "Division"), "MasterLabels")
   const onBtExport = () => {
     let tempArr = [];
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
@@ -907,11 +908,11 @@ const BOPImportListing = (props) => {
     suppressFilterButton: true,
     component: CostingHeadDropdownFilter,
     onFilterChange: (originalValue, value) => {
-        setState((prevState) => ({ ...prevState, disableFilter: false }));
-        setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
-    
+      setState((prevState) => ({ ...prevState, disableFilter: false }));
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+
     }
-};
+  };
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
@@ -920,7 +921,7 @@ const BOPImportListing = (props) => {
     effectiveDateFormatter: effectiveDateFormatter,
     commonCostFormatter: commonCostFormatter,
     attachmentFormatter: attachmentFormatter,
-    statusFilter : CostingHeadDropdownFilter
+    statusFilter: CostingHeadDropdownFilter
   };
 
   const onRowSelect = (event) => {
@@ -1097,8 +1098,8 @@ const BOPImportListing = (props) => {
                         onFilterModified={onFloatingFilterChanged}
                       >
                         {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                        <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"}  floatingFilterComponentParams={floatingFilterStatus} 
-                                            floatingFilterComponent="statusFilter"></AgGridColumn>
+                        <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"} floatingFilterComponentParams={floatingFilterStatus}
+                          floatingFilterComponent="statusFilter"></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} No.`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Name`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
@@ -1108,6 +1109,7 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="Plants" cellRenderer={"hyphenFormatter"} headerName="Plant (Code)"></AgGridColumn>
                         <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                         {reactLocalStorage.getObject('CostingTypePermission').cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
+                        {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                         <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms"></AgGridColumn>
                         {getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn>}
                         {getConfigurationKey().IsMinimumOrderQuantityVisible && (<AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>)}

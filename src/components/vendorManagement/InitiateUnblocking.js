@@ -185,7 +185,7 @@ const {vendorLabel} = useLabels()
 
     const handleNext = () => {
         if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
-            dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
+            dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), null,(res) => {
 
                 //When user is not in any approval flow
                 if (res.status === 204 && res?.data === '') {

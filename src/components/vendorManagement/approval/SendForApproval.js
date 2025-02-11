@@ -80,7 +80,7 @@ const SendForApproval = (props) => {
 
   useEffect(() => {
     setIsLoader(true)
-    dispatch(getAllMasterApprovalDepartment((res) => {
+    dispatch(getAllMasterApprovalDepartment(deviationData?.ReceiverId,(res) => {
 
       setIsLoader(false)
       const Data = res?.data?.SelectList;
@@ -137,7 +137,8 @@ const SendForApproval = (props) => {
             MasterId: 0,
             ReasonId: 0,
             PlantId: deviationData?.PlantId ?? EMPTY_GUID,
-            OnboardingMasterId: 1
+            OnboardingMasterId: 1,
+            ReceiverId:deviationData?.ReceiverId??null
           };
 
           const handleApiResponse = (res, deptKey, approverKey) => {
@@ -215,7 +216,7 @@ const SendForApproval = (props) => {
   }, [isOpen]);
 
   useEffect(() => {
-    dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
+    dispatch(getUsersOnboardingLevelAPI(loggedInUserId(),deviationData?.ReceiverId, (res) => {
 
       userTechnology(isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID, res.data.Data)
 
@@ -519,7 +520,8 @@ const SendForApproval = (props) => {
       PlantId: deviationData?.PlantId ?? EMPTY_GUID,
       OnboardingMasterId: 1,
       ApprovalTypeId: approvalId,
-      DivisionId: divisionId ?? null
+      DivisionId: divisionId ?? null,
+      ReceiverId:deviationData?.ReceiverId??null
     }
 
     let obj = {
@@ -529,7 +531,8 @@ const SendForApproval = (props) => {
       Mode: 'onboarding',
       approvalTypeId: approvalId,
       plantId: deviationData.PlantId ?? EMPTY_GUID,
-      divisionId: divisionId ?? null
+      divisionId: divisionId ?? null,
+      ReceiverId:deviationData?.ReceiverId??null
     }
 
     dispatch(checkFinalUser(obj, (res) => {

@@ -269,6 +269,25 @@ export function getRawMaterialCalculationForMonoCartonCorrugatedBox(costingId, r
     });
   };
 }
+
+export function getRawMaterialCalculationForLamination(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForLamination}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  }
+}
+
 /**
  * @method saveRawMaterialCalculationForCorrugatedBox
  * @description save raw materical calculator data for Corrugated Box
@@ -1101,7 +1120,7 @@ export function bulkUploadCosting(data, costingVersion, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1254,7 +1273,7 @@ export function plasticBulkUploadCosting(data, costingVersion, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1278,7 +1297,7 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1297,7 +1316,7 @@ export function corrugatedBoxBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1315,7 +1334,7 @@ export function assemblyBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1399,7 +1418,7 @@ export function wiringHarnessBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1416,7 +1435,7 @@ export function diecastingBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1500,6 +1519,23 @@ export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, co
   };
 }
 
+export function getSimulationLaminationCalculation(simulationId, costingId, rawMaterialId, callback) {
+  return (dispatch) => {
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}`
+    const request = axios.get(`${API.getSimulationLaminationCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  }
+}
 
 /**
  * @method saveRawMaterialCalculationForInsulation
@@ -1558,7 +1594,7 @@ export function InsulationBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1579,7 +1615,7 @@ export function ElectricalStampingCostingBulkImport(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1599,7 +1635,7 @@ export function MonocartonBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });

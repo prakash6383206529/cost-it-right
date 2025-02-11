@@ -72,13 +72,13 @@ function AddRMMaster(props) {
     })
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
-    
+
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { otherCostDetailsArray } = useSelector((state) => state.indexation)
 
     const avgValues = useWatch({
         control,
-        name: ['Index', 'ExchangeSource', 'fromDate']
+        name: ['Index', 'ExchangeSource', 'fromDate', 'toDate']
     })
     const sourceVendorValues = useWatch({
         control,
@@ -130,7 +130,7 @@ function AddRMMaster(props) {
     }, [sourceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId])
 
     useEffect(() => {
-        if (!isViewFlag && state.callAvgApi === true && getValues('Index')?.value !== null && getValues('fromDate') && !state?.isSourceVendorApiCalled) {
+        if (!isViewFlag && state.callAvgApi === true && getValues('Index')?.value !== null && getValues('fromDate') && !state?.isSourceVendorApiCalled && getValues('toDate')) {
             dispatch(getCommodityIndexRateAverage(
                 getValues('Material')?.value,
                 getValues('Index').value,
@@ -205,7 +205,7 @@ function AddRMMaster(props) {
 
     const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
         if (!isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, null, (res) => {
                 setState(prevState => ({ ...prevState, masterLevels: res?.data?.Data?.MasterLevels }))
                 setTimeout(() => {
                     commonFunction(plantId, isDivision, res?.data?.Data?.MasterLevels)
@@ -234,19 +234,19 @@ function AddRMMaster(props) {
         dispatch(fetchSpecificationDataAPI(0, () => { }))
         props?.hideForm(type)
     }
-    const commonFunction = (requestObject, masterLevels = []) => {
+    const commonFunction = (plantId, isDivision=false, masterLevels = []) => {
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(state.costingTypeId, RM_MASTER_ID, masterLevels)
         setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
-        fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+        // fetchDivisionId(requestObject, dispatch).then((divisionId) => {
             let obj = {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: RM_MASTER_ID,
                 Mode: 'master',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
-                plantId: (getConfigurationKey().IsMultipleUserAllowForApproval && requestObject?.PlantId) ? requestObject?.PlantId : EMPTY_GUID,
-                divisionId: divisionId
+                plantId: (getConfigurationKey().IsMultipleUserAllowForApproval && plantId) ? plantId : EMPTY_GUID,
+                divisionId: null
             }
             if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
                 dispatch(checkFinalUser(obj, (res) => {
@@ -262,9 +262,9 @@ function AddRMMaster(props) {
                 }))
             }
             setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
-        }).catch((error) => {
-            setState(prevState => ({ ...prevState, disableSendForApproval: true }))
-        })
+        // }).catch((error) => {
+        //     setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+        // })
     }
     /**
     * @method getDetails
