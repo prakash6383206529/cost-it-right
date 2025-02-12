@@ -33,7 +33,6 @@ import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import SAPApproval from '../../../SAPApproval'
 import { useLabels } from '../../../../helper/core'
 import { AttachmentValidationInfo } from '../../../../config/message'
-import { fetchDivisionId } from '../../CostingUtil'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -136,7 +135,7 @@ const SendForApproval = (props) => {
         ReasonId: 0, // key only for minda
         ApprovalTypeId: ApprovalTypeId,
         plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
-        DivisionId: divisionId ?? null,
+        DivisionId: dataSelected[0]?.DivisionId ?? null,
         ReceiverId: receiverId
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
@@ -578,7 +577,7 @@ const SendForApproval = (props) => {
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
         tempObj.ApprovalTypeId = approvalType
-        tempObj.DivisionId = division ?? null
+        tempObj.DivisionId = dataSelected[0]?.DivisionId ?? null
         tempObj.ReceiverId = receiverId
         temp.push(tempObj)
         return null
@@ -708,7 +707,7 @@ const SendForApproval = (props) => {
       obj.DecimalOption = SAPData.DecimalOption?.value
       obj.ApprovalTypeId = approvalType
       obj.PlannedDelTime = data?.leadTime
-      obj.DivisionId = division ?? null
+      obj.DivisionId = dataSelected[0]?.DivisionId ?? null
       obj.ReceiverId = receiverId
       // debounce_fun()
       // 
@@ -1237,7 +1236,7 @@ const SendForApproval = (props) => {
                       <Col md="6">
                         {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                           <AllApprovalField
-                            label="Approver1"
+                            label="Approver"
                             approverList={approvalDropDown}
                             popupButton="View all"
                           />
