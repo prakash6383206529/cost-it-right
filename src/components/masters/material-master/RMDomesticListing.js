@@ -138,6 +138,7 @@ function RMDomesticListing(props) {
         obj.Currency = floatingFilterData?.Currency
         obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         obj.OtherNetCost = floatingFilterData?.OtherNetCost
+        obj.StatusId = [props?.approvalStatus].join(",")
         let data = {
             StatusId: [props?.approvalStatus].join(","),
             net_landed_min_range: value.min,
@@ -224,7 +225,8 @@ function RMDomesticListing(props) {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [props?.approvalStatus].join(",")
+        let statusString = [props?.approvalStatus]
+        
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
             plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
@@ -247,7 +249,7 @@ function RMDomesticListing(props) {
         dataObj.Currency = floatingFilterData?.Currency
         dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
-
+        dataObj.StatusId = statusString
         if (!props.isMasterSummaryDrawer) {
 
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
@@ -507,7 +509,7 @@ function RMDomesticListing(props) {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
         let isDeleteButton = false
-        let IsRFQRawMaterial = rowData?.IsRFQRawMaterial !== null && rowData?.IsRFQRawMaterial !== undefined ? true : false
+        const IsRFQRawMaterial = Boolean(rowData?.IsRFQRawMaterial);
         if (EditAccessibility) {
             isEditbale = true
         } else {
@@ -539,7 +541,7 @@ function RMDomesticListing(props) {
                     title={"Cost Movement"}
                 />
 
-                {(!benchMark) && (
+                {(!benchMark ) && (
                     <>
                         {ViewRMAccessibility && <Button
                             id={`rmDomesticListing_view${props.rowIndex}`}

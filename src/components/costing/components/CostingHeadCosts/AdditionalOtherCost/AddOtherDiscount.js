@@ -278,98 +278,98 @@ function AddOtherDiscount(props) {
             case 'Part Cost':
                 totalCost = headerCosts.NetRawMaterialsCost * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetRawMaterialsCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'BOP':
                 totalCost = headerCosts.NetBoughtOutPartCost * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBoughtOutPartCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'RM + CC':
             case 'Part Cost + CC':
                 totalCost = (RMCC) * calculatePercentage(percent)
                 setApplicabilityCost(RMCC)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(RMCC, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'BOP + CC':
                 totalCost = BOPCC * calculatePercentage(percent)
                 setApplicabilityCost(BOPCC)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(BOPCC, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'CC':
                 totalCost = (ConversionCostForCalculation) * calculatePercentage(percent)
                 setApplicabilityCost(ConversionCostForCalculation)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'RM + CC + BOP':
             case 'Part Cost + CC + BOP':
                 totalCost = (RMBOPCC) * calculatePercentage(percent)
                 setApplicabilityCost(RMBOPCC)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'RM + BOP':
             case 'Part Cost + BOP':
                 totalCost = (RMBOP) * calculatePercentage(percent)
                 setApplicabilityCost(RMBOP)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(RMBOP, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Net Cost':
                 totalCost = (totalTabCost) * calculatePercentage(percent)
                 setApplicabilityCost(totalTabCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(totalTabCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(totalTabCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Surface Treatment Cost':
                 totalCost = (dataList?.NetSurfaceTreatmentCost) * calculatePercentage(percent)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(dataList?.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(dataList?.NetSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice))
                 setApplicabilityCost(dataList?.NetSurfaceTreatmentCost)
                 break;
             case 'Overhead Cost':
                 totalCost = (overheadAndProfitTabDataValue?.OverheadCost) * calculatePercentage(percent)
                 setApplicabilityCost(overheadAndProfitTabDataValue?.OverheadCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.OverheadCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.OverheadCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Profit Cost':
                 totalCost = (overheadAndProfitTabDataValue?.ProfitCost) * calculatePercentage(percent)
                 setApplicabilityCost(overheadAndProfitTabDataValue?.ProfitCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.ProfitCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.ProfitCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Rejection Cost':
                 totalCost = (overheadAndProfitTabDataValue?.RejectionCost) * calculatePercentage(percent)
                 setApplicabilityCost(overheadAndProfitTabDataValue?.RejectionCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.RejectionCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.RejectionCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'ICC Cost':
                 totalCost = (overheadAndProfitTabDataValue?.ICCCost) * calculatePercentage(percent)
                 setApplicabilityCost(overheadAndProfitTabDataValue?.ICCCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.ICCCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.ICCCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Payment terms Cost':
                 totalCost = (overheadAndProfitTabDataValue?.PaymentTermCost) * calculatePercentage(percent)
                 setApplicabilityCost(overheadAndProfitTabDataValue?.PaymentTermCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.PaymentTermCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.PaymentTermCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Packaging Cost':
                 totalCost = (packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost) * calculatePercentage(percent)
                 setApplicabilityCost(packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Freight Cost':
                 totalCost = (packageAndFreightTabData?.CostingPartDetails?.FreightNetCost) * calculatePercentage(percent)
                 setApplicabilityCost(packageAndFreightTabData?.CostingPartDetails?.FreightNetCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(packageAndFreightTabData?.CostingPartDetails?.FreightNetCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(packageAndFreightTabData?.CostingPartDetails?.FreightNetCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Tool Cost':
                 totalCost = (dataList?.ToolCost) * calculatePercentage(percent)
                 setApplicabilityCost(dataList?.ToolCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(dataList?.ToolCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('ApplicabilityCost', checkForDecimalAndNull(dataList?.ToolCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             default:
                 totalCost = getValues('ApplicabilityCost')
                 setApplicabilityCost(totalCost)
-                setValue('AnyOtherCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+                setValue('AnyOtherCost', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
         }
-        setValue('AnyOtherCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('AnyOtherCost', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
         setOtherCost(totalCost)
     }
     const onFinalSubmit = () => {
@@ -400,7 +400,7 @@ function AddOtherDiscount(props) {
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className='hidepage-size'>
                                 <Row>
-                                    {initialConfiguration.IsShowCRMHead && <Col md="4">
+                                    {initialConfiguration?.IsShowCRMHead && <Col md="4">
                                         <SearchableSelectHookForm
                                             name={`crmHeadOtherCost`}
                                             type="text"
@@ -537,19 +537,19 @@ function AddOtherDiscount(props) {
                                         />
 
                                     </Col>
-                                    <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
+                                    <Col md="4" className={`${initialConfiguration?.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
                                         {state.isEdit ? (
                                             <>
                                                 <button
                                                     type="submit"
-                                                    className={`btn btn-primary ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} pull-left mr5`}
+                                                    className={`btn btn-primary ${initialConfiguration?.IsShowCRMHead ? '' : 'mt30'} pull-left mr5`}
                                                     disabled={CostingViewMode}
                                                 >
                                                     Update
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className={`mr15 ml-1 ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} add-cancel-btn cancel-btn`}
+                                                    className={`mr15 ml-1 ${initialConfiguration?.IsShowCRMHead ? '' : 'mt30'} add-cancel-btn cancel-btn`}
                                                     onClick={() => resetData()}
                                                     disabled={CostingViewMode}
                                                 >
@@ -560,14 +560,14 @@ function AddOtherDiscount(props) {
                                             <>
                                                 <button
                                                     type="submit"
-                                                    className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} pull-left`}
+                                                    className={`user-btn ${initialConfiguration?.IsShowCRMHead ? '' : 'mt30'} pull-left`}
                                                     disabled={CostingViewMode}
                                                 >
                                                     <div className={"plus"}></div>ADD
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className={`mr15 ml-1 ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} reset-btn`}
+                                                    className={`mr15 ml-1 ${initialConfiguration?.IsShowCRMHead ? '' : 'mt30'} reset-btn`}
                                                     disabled={CostingViewMode}
                                                     onClick={() => resetData()}
                                                 >

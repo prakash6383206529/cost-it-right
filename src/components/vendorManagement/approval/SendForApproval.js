@@ -244,7 +244,7 @@ const SendForApproval = (props) => {
 
       }
       else {
-        if (initialConfiguration.IsMultipleUserAllowForApproval && !dept?.label) {
+        if (initialConfiguration?.IsMultipleUserAllowForApproval && !dept?.label) {
           Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.');
           return false;
         }
@@ -258,7 +258,7 @@ const SendForApproval = (props) => {
           // ApproverDepartmentId: dept?.value || '',
           ApproverLevel: approver?.levelName || '',
           // ApproverDepartmentName: dept?.label || '',
-          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval
             ? approverIdList
             : [approver?.value || ''],
           SenderLevelId: levelDetails?.LevelId,
@@ -280,7 +280,7 @@ const SendForApproval = (props) => {
           ReasonId: getValues('reason')?.value || '',
           Reason: getValues('reason')?.label || '',
           ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID,
-          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval
             ? classificationApproverIdList
             : [approver?.value || ''],
           ApproverDepartmentName: getValues('dept')?.label ?? '',
@@ -320,7 +320,7 @@ const SendForApproval = (props) => {
           ApproverDepartmentId: getValues('dept1')?.value ?? '',
           SenderRemark: getValues('remarks1'),
           ApprovalTypeId: LPSAPPROVALTYPEID,
-          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval
             ? lpsApproverIdList
             : [approver?.value || ''],
           FinalApprover: isFinalApproverLps,
@@ -737,7 +737,7 @@ const SendForApproval = (props) => {
                         options={departmentDropdown}
                         disabled={disableRS || (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
 
-                        // disabled={(disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))) && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
+                        // disabled={(disableRS || (!(userData.Department.length > 1) || (initialConfiguration?.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))) && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
                         mandatory={true}
                         handleChange={(e) => handleDepartmentChange(e, CLASSIFICATIONAPPROVALTYPEID)}
                         errors={errors.dept}
@@ -884,7 +884,7 @@ const SendForApproval = (props) => {
                         defaultValue={""}
                         options={departmentDropdown}
                         disabled={disableRS || (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
-                        // disabled={(disableRS || (!(userData?.department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured ))) || !getConfigurationKey().IsDivisionAllowedForDepartment}
+                        // disabled={(disableRS || (!(userData?.department.length > 1) || (initialConfiguration?.IsReleaseStrategyConfigured ))) || !getConfigurationKey().IsDivisionAllowedForDepartment}
                         mandatory={true}
                         handleChange={(e) => handleDepartmentChange(e, LPSAPPROVALTYPEID)}
                         errors={errors.dept1}
@@ -910,7 +910,7 @@ const SendForApproval = (props) => {
                       />
                     </Col>}
                   {!isFinalApproverLps && (<Col md="6">
-                    {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                    {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                       <AllApprovalField
                         label="Approver"
                         approverList={lpsApprovalDropDown}

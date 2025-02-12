@@ -482,7 +482,7 @@ function GotGivenListing(props) {
                             <td className={leftHeaderClass}>{row.label}</td>
                             {row.fields.map((field, fieldIndex) => (
                                 <td key={fieldIndex}>
-                                    {row.label === 'Raw Material Effective Date' ? checkValidData(field, DATE_TYPE) : checkForDecimalAndNull(field, initialConfiguration.NoOfDecimalForPrice)}
+                                    {row.label === 'Raw Material Effective Date' ? checkValidData(field, DATE_TYPE) : checkForDecimalAndNull(field, initialConfiguration?.NoOfDecimalForPrice)}
                                 </td>
                             ))}
                         </tr>

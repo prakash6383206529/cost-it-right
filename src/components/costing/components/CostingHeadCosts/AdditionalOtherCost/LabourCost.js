@@ -18,7 +18,7 @@ function LabourCost(props) {
 
     useEffect(() => {
         const sum = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.LabourCost), 0);
-        setTotalCost(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+        setTotalCost(checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
     }, [props?.tableData])
 
     return (

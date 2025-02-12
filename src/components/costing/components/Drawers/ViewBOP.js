@@ -49,8 +49,8 @@ function ViewBOP(props) {
 
                 <th>{`Landed Cost `}</th>
                 <th>{`Quantity`}</th>
-                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net ${showBopLabel()} Cost`}</th>
-                {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
+                <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net ${showBopLabel()} Cost`}</th>
+                {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
             </thead>
             <tbody>
@@ -63,13 +63,13 @@ function ViewBOP(props) {
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                       {checkTechnologyIdAndRfq(viewCostingData) && <td><div className={getChangeHighlightClass(item?.BOPPartName, item?.UpdatedBoughtOutPartPartName)}><span title={item?.UpdatedBoughtOutPartPartName}>{item?.UpdatedBoughtOutPartPartName}</span></div></td>}
                       <td>
-                        {checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}
+                        {checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}
                       </td>
-                      <td> {checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                      <td> {checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                       <td>
-                        {checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice)}
+                        {checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice)}
                       </td>
-                      {initialConfiguration.IsShowCRMHead && <td>{item.BoughtOutPartCRMHead}</td>}
+                      {initialConfiguration?.IsShowCRMHead && <td>{item.BoughtOutPartCRMHead}</td>}
                     </tr>
                   )
                 })}
@@ -109,7 +109,7 @@ function ViewBOP(props) {
                   <tr>
                     <td>{bopHandlingChargeType}</td>
                     <td>{bopHandlingChargeType === 'Fixed' ? '-' : bopHandlingPercentage ?? 0}</td>
-                    <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
+                    <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
                   </tr> :
 
                   <tr>
@@ -150,8 +150,8 @@ function ViewBOP(props) {
                       <tr key={index}>
                         {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                         <td>{item.BOPHandlingChargeType}</td>
-                        <td>{checkForDecimalAndNull(item?.BOPHandlingChargeType === 'Fixed' ? '-' : item?.BOPHandlingPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
-                        <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item?.BOPHandlingChargeType === 'Fixed' ? '-' : item?.BOPHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       </tr>
                     )
                   })}

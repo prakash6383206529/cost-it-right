@@ -66,9 +66,9 @@ function AddVendorDrawer(props) {
     props.closeDrawer('',
       {
         ...data,
-        DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantCode : '',
-        DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.label : '',                 //PlantName
+        DestinationPlantCode: initialConfiguration && initialConfiguration?.IsDestinationPlantConfigure ? DestinationPlant.PlantCode : '',
+        DestinationPlantId: initialConfiguration && initialConfiguration?.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration && initialConfiguration?.IsDestinationPlantConfigure ? DestinationPlant.label : '',                 //PlantName
         DestinationPlant: DestinationPlant,
         VendorName: `${data.VendorName} (${data.VendorCode})`,
         InfoCategory: isInfoCategorySelected === true ? infoCategory[1]?.Text : infoCategory[0]?.Text,

@@ -22,26 +22,26 @@ function MeshCalculation(props) {
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const defaultValues = {
-        no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfPly, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        gsm: WeightCalculatorRequest && WeightCalculatorRequest.GSM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GSM, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        bursting_strength: WeightCalculatorRequest && WeightCalculatorRequest.BurstingStrength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        length_box: WeightCalculatorRequest && WeightCalculatorRequest.LengthBox !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthBox, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        width_box: WeightCalculatorRequest && WeightCalculatorRequest.WidthBox !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthBox, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        height_box: WeightCalculatorRequest && WeightCalculatorRequest.HeightBox !== null ? checkForDecimalAndNull(WeightCalculatorRequest.HeightBox, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
-        cuttingAllowanceForWidth: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowanceWidth, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfPly, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        gsm: WeightCalculatorRequest && WeightCalculatorRequest.GSM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GSM, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        bursting_strength: WeightCalculatorRequest && WeightCalculatorRequest.BurstingStrength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        length_box: WeightCalculatorRequest && WeightCalculatorRequest.LengthBox !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthBox, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        width_box: WeightCalculatorRequest && WeightCalculatorRequest.WidthBox !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthBox, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        height_box: WeightCalculatorRequest && WeightCalculatorRequest.HeightBox !== null ? checkForDecimalAndNull(WeightCalculatorRequest.HeightBox, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration?.NoOfDecimalForInputOutput) : '', //
+        cuttingAllowanceForWidth: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowanceWidth, initialConfiguration?.NoOfDecimalForInputOutput) : '',
         width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
-        length_sheet: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        cuttingAllowanceForLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowanceLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        noOfMeshLength: WeightCalculatorRequest && WeightCalculatorRequest.NosOfMeshInLength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NosOfMeshInLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        noOfMeshWidth: WeightCalculatorRequest && WeightCalculatorRequest.NosOfMeshInWidth !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NosOfMeshInWidth, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        length_sheet: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheet, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        cuttingAllowanceForLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowanceLength, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        noOfMeshLength: WeightCalculatorRequest && WeightCalculatorRequest.NosOfMeshInLength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NosOfMeshInLength, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        noOfMeshWidth: WeightCalculatorRequest && WeightCalculatorRequest.NosOfMeshInWidth !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NosOfMeshInWidth, initialConfiguration?.NoOfDecimalForInputOutput) : '',
         meshArrangement: WeightCalculatorRequest && WeightCalculatorRequest.MeshArrangement !== null ? { label: WeightCalculatorRequest.MeshArrangement, value: 2 } : '',
-        fluteTypePercent: WeightCalculatorRequest && WeightCalculatorRequest.FluteTypePercentage ? checkForDecimalAndNull(WeightCalculatorRequest.FluteTypePercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        width_RoundOff: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        length_RoundOff: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        fluteTypePercent: WeightCalculatorRequest && WeightCalculatorRequest.FluteTypePercentage ? checkForDecimalAndNull(WeightCalculatorRequest.FluteTypePercentage, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        width_RoundOff: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        length_RoundOff: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance, initialConfiguration?.NoOfDecimalForInputOutput) : '',
     }
     const {
         register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({

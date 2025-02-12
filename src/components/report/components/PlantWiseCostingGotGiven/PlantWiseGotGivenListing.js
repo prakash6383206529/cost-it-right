@@ -62,7 +62,7 @@ function PlantWiseGotGivenListing(props) {
             if (res.status === 200) {
                 let obj = {
                     PlantName: Data.Plant,
-                    NetSales: checkForDecimalAndNull(Data.NetSales.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                    NetSales: checkForDecimalAndNull(Data.NetSales.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                     EffectiveDate: Data.SelectedEffectiveDate ? DayTime(Data.SelectedEffectiveDate).format('DD/MM/YYYY') : '-',
                     Month: Data.Month,
                     PlantAddress: Data.PlantAddress,
@@ -72,47 +72,47 @@ function PlantWiseGotGivenListing(props) {
                 const TemplateData = [
                     {
                         label: 'Consumption',
-                        NetCost: checkForDecimalAndNull(Data.Consumption.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        NetCost: checkForDecimalAndNull(Data.Consumption.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                         Percentage: Data.Consumption.Percentage,
                     },
                     {
                         label: 'Labour Cost',
-                        NetCost: checkForDecimalAndNull(Data.LabourCost.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        NetCost: checkForDecimalAndNull(Data.LabourCost.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                         Percentage: Data.LabourCost.Percentage,
                     },
                     {
                         label: 'Manufacturing Expenses',
-                        NetCost: checkForDecimalAndNull(Data.ManufacturingExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        NetCost: checkForDecimalAndNull(Data.ManufacturingExpenses.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                         Percentage: Data.ManufacturingExpenses.Percentage,
                     },
                     {
                         label: 'Office Expenses',
-                        NetCost: checkForDecimalAndNull(Data.OfficeExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        NetCost: checkForDecimalAndNull(Data.OfficeExpenses.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                         Percentage: Data.OfficeExpenses.Percentage,
                     },
                     {
                         label: 'Repairs Expenses',
-                        NetCost: checkForDecimalAndNull(Data.RepairsExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        NetCost: checkForDecimalAndNull(Data.RepairsExpenses.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                         Percentage: Data.RepairsExpenses.Percentage,
                     },
                     {
                         label: 'Selling and Distribution Expenses',
-                        NetCost: checkForDecimalAndNull(Data.SellingAndDistributionExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        NetCost: checkForDecimalAndNull(Data.SellingAndDistributionExpenses.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                         Percentage: Data.SellingAndDistributionExpenses.Percentage,
                     },
                     {
                         label: 'Common Expenses',
-                        NetCost: checkForDecimalAndNull(Data.CommonExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        NetCost: checkForDecimalAndNull(Data.CommonExpenses.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                         Percentage: Data.CommonExpenses.Percentage,
                     },
                     {
                         label: 'Staff Cost',
-                        NetCost: checkForDecimalAndNull(Data.StaffCost.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        NetCost: checkForDecimalAndNull(Data.StaffCost.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                         Percentage: Data.StaffCost.Percentage,
                     },
                     {
                         label: 'EBIDTA',
-                        NetCost: checkForDecimalAndNull(Data.EBIDTA.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        NetCost: checkForDecimalAndNull(Data.EBIDTA.NetCost, initialConfiguration?.NoOfDecimalForPrice),
                         Percentage: Data.EBIDTA.Percentage,
                     },
                 ]

@@ -2129,6 +2129,8 @@ export const WAITING_FOR_APPROVAL = 'AwaitingApproval'
 export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
 export const RETURNED = 'Returned'
+export const NON_AWARDED = 'Non Awarded'
+export const Awarded = 'Awarded'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
@@ -3297,7 +3299,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.73";
+export const VERSION = "V3.1.75";
 
 
 

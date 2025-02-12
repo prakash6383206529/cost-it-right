@@ -197,7 +197,7 @@ const AddMaterialTypeDetail = (props) => {
                         disabled={isViewFlag}
                     />
                 </Col>
-                <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
+                <Col md="4" className={`${initialConfiguration?.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
                     {isEditMode ? (
                         <>
                             <button
@@ -221,7 +221,7 @@ const AddMaterialTypeDetail = (props) => {
                         <>
                             <button
                                 type="button"
-                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} pull-left`}
+                                className={`user-btn ${initialConfiguration?.IsShowCRMHead ? '' : 'mt30'} pull-left`}
                                 onClick={handleAddUpdateButtonClick}
                                 disabled={isViewFlag}
                             >
@@ -229,7 +229,7 @@ const AddMaterialTypeDetail = (props) => {
                             </button>
                             <button
                                 type="button"
-                                className={`ml-1 ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} reset-btn`}
+                                className={`ml-1 ${initialConfiguration?.IsShowCRMHead ? '' : 'mt30'} reset-btn`}
                                 onClick={() => resetData()}
                                 disabled={isViewFlag}
                             >
@@ -280,7 +280,7 @@ const AddMaterialTypeDetail = (props) => {
                                     Total Percentage:
                                 </td>
                                 <td colSpan={3}>
-                                    {checkForDecimalAndNull(percentageTotal, initialConfiguration.NoOfDecimalForPrice)}
+                                    {checkForDecimalAndNull(percentageTotal, initialConfiguration?.NoOfDecimalForPrice)}
                                 </td>
                             </tr>
                         </>

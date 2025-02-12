@@ -263,7 +263,7 @@ function ViewRM(props) {
               {viewCostingData[0]?.technologyId === DIE_CASTING && <th>Casting Weight</th>}
               {viewCostingData[0]?.technologyId === DIE_CASTING && <th>Melting Loss (Loss%)</th>}
               <th >{`Net RM Cost ${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''}`}</th>
-              {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+              {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
               <th className="costing-border-right">{`Remark`}</th>
 
             </tr>
@@ -277,12 +277,12 @@ function ViewRM(props) {
                   {checkTechnologyIdAndRfq(viewCostingData) && (<td><div className={getChangeHighlightClass(item?.RMName, item?.UpdatedRawMaterialName)}>{item?.UpdatedRawMaterialName ? item?.UpdatedRawMaterialName : '-'}</div></td>)}
 
                   <td>{item?.RMCode ? item?.RMCode : '-'}</td>
-                  <td>{checkForDecimalAndNull(item?.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  <td>{checkForDecimalAndNull(item?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  {isScrapRecoveryApplied && <td>{checkForDecimalAndNull(item?.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
-                  <td>{checkForDecimalAndNull(item?.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                  <td>{checkForDecimalAndNull(item?.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                  <td>{checkForDecimalAndNull(item?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                  <td>{checkForDecimalAndNull(item?.RMRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                  <td>{checkForDecimalAndNull(item?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                  {isScrapRecoveryApplied && <td>{checkForDecimalAndNull(item?.ScrapRecoveryPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                  <td>{checkForDecimalAndNull(item?.GrossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                  <td>{checkForDecimalAndNull(item?.FinishWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                  <td>{checkForDecimalAndNull(item?.ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                   {!isPDFShow && viewCostingData[props.index]?.technologyId !== Ferrous_Casting && viewCostingData[props.index]?.technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index]?.technologyId)) &&
                     <td>{!(viewCostingData[props.index]?.technologyId === MACHINING && item?.UOM !== "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) ?
                       <button
@@ -291,15 +291,15 @@ function ViewRM(props) {
                         disabled={(item?.RawMaterialCalculatorId === 0 || item?.RawMaterialCalculatorId === null || disabledForMonoCartonCorrugated) ? true : false}
                         onClick={() => { getWeightData(index) }}
                       /> : '-'}</td>}
-                  {IsShowFreightAndShearingCostFields() && <td>{item?.FreightCost ? checkForDecimalAndNull(item?.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
-                  {IsShowFreightAndShearingCostFields() && <td>{item?.ShearingCost ? checkForDecimalAndNull(item?.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
-                  {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && <td>{item?.BurningLossWeight ? checkForDecimalAndNull(item?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
-                  {viewCostingData[0]?.technologyId === DIE_CASTING && <td>{item?.CastingWeight ? checkForDecimalAndNull(item?.CastingWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
-                  {viewCostingData[0]?.technologyId === DIE_CASTING && <td>{item?.MeltingLoss ? `${checkForDecimalAndNull(item?.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput)} (${item?.LossPercentage}%)` : '-'}</td>}
-                  <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}{
+                  {IsShowFreightAndShearingCostFields() && <td>{item?.FreightCost ? checkForDecimalAndNull(item?.FreightCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                  {IsShowFreightAndShearingCostFields() && <td>{item?.ShearingCost ? checkForDecimalAndNull(item?.ShearingCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                  {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && <td>{item?.BurningLossWeight ? checkForDecimalAndNull(item?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>}
+                  {viewCostingData[0]?.technologyId === DIE_CASTING && <td>{item?.CastingWeight ? checkForDecimalAndNull(item?.CastingWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>}
+                  {viewCostingData[0]?.technologyId === DIE_CASTING && <td>{item?.MeltingLoss ? `${checkForDecimalAndNull(item?.MeltingLoss, initialConfiguration?.NoOfDecimalForInputOutput)} (${item?.LossPercentage}%)` : '-'}</td>}
+                  <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice)}{
                     viewCostingData[props.index]?.technologyId !== INSULATION &&
                     <TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : `Net RM Cost =((RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate${isScrapRecoveryApplied ? ' * Scrap Recovery/100' : ''})${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''})`} />}</div>{item?.RawMaterialCalculatorId === null && item?.GrossWeight !== null && viewCostingData[props.index]?.technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
-                  {initialConfiguration.IsShowCRMHead && <td>{item?.RawMaterialCRMHead}</td>}
+                  {initialConfiguration?.IsShowCRMHead && <td>{item?.RawMaterialCRMHead}</td>}
                   <td>
                     <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item?.Remark}>
                       <span>{item?.Remark ? item?.Remark : "-"}</span></div>
@@ -337,9 +337,9 @@ function ViewRM(props) {
               <tbody>
                 <tr key={index}>
                   <td>{viewCostingData[props?.index]?.masterBatchRMName}</td>
-                  <td>{checkForDecimalAndNull(viewCostingData[props?.index]?.masterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  <td>{checkForDecimalAndNull(viewCostingData[props?.index]?.masterBatchPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  <td>{checkForDecimalAndNull(viewCostingData[props?.index]?.masterBatchTotal, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                  <td>{checkForDecimalAndNull(viewCostingData[props?.index]?.masterBatchRMPrice, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                  <td>{checkForDecimalAndNull(viewCostingData[props?.index]?.masterBatchPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                  <td>{checkForDecimalAndNull(viewCostingData[props?.index]?.masterBatchTotal, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                 </tr>
                 {viewRM?.length === 0 && (
                   <tr>
@@ -379,9 +379,9 @@ function ViewRM(props) {
                     < tr key={indexMB}>
                       <td>{item?.PartNumber}</td>
                       <td>{item?.MasterBatchRMName}</td>
-                      <td>{checkForDecimalAndNull(item?.MasterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                      <td>{checkForDecimalAndNull(item?.MasterBatchPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
-                      <td>{checkForDecimalAndNull(item?.MasterBatchTotal, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                      <td>{checkForDecimalAndNull(item?.MasterBatchRMPrice, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                      <td>{checkForDecimalAndNull(item?.MasterBatchPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                      <td>{checkForDecimalAndNull(item?.MasterBatchTotal, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                     </tr>
                   )
                 })

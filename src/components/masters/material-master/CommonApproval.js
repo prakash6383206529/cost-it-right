@@ -307,7 +307,7 @@ function CommonApproval(props) {
         return (
             <>
 
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration?.NoOfDecimalForPrice) : ''}
             </>
         )
     }
@@ -316,7 +316,7 @@ function CommonApproval(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (
             <>
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration?.NoOfDecimalForPrice) : ''}
             </>
         )
     }
@@ -688,7 +688,7 @@ function CommonApproval(props) {
             if (!checkCostingHeadSame && props?.OnboardingApprovalId !== ONBOARDINGID) {
                 Toaster.warning('Please select token with same costing head.')
                 return;
-            } else if (!(initialConfiguration.IsMultipleUserAllowForApproval ? checkPlantIdSame : true)) {
+            } else if (!(initialConfiguration?.IsMultipleUserAllowForApproval ? checkPlantIdSame : true)) {
                 Toaster.warning('Please select token with same plant.')
                 return;
             } else if (!checkApprovalTypeOfSupplier && props?.OnboardingApprovalId === ONBOARDINGID) {

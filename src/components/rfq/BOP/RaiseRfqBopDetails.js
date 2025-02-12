@@ -98,10 +98,10 @@ const RaiseRfqBopDetails = (props) => {
 
     }
     const setBopData = () => {
-        if (bopCategory.length !== 0 && bopNumber.length !== 0 && bopName.length !== 0) {
+        if (bopCategory?.length !== 0 && bopNumber?.length !== 0 && bopName?.length !== 0) {
             let obj = {
-                BoughtOutPartChildId: bopNumber.value,
-                BoughtOutPartCategoryId: bopCategory.value,
+                BoughtOutPartChildId: bopNumber?.value,
+                BoughtOutPartCategoryId: bopCategory?.value,
                 BopAttachments: bopAttchment,
                 BopReamrk: bopRemark,
                 BopSpecification: bopSpecificationList,
@@ -144,10 +144,10 @@ const RaiseRfqBopDetails = (props) => {
 
         if (newValue && newValue !== '') {
 
-            delete errors.RawMaterialCode
+            delete errors?.BOPNo
             setBopNumber({ label: newValue?.label, value: newValue?.value })
-            const selectedBop = SelectBopNumber.find(item => item.Value === newValue.value);
-            const name = selectedBop.Text.split(' (')[0].trim();
+            const selectedBop = SelectBopNumber?.find(item => item?.Value === newValue?.value);
+            const name = selectedBop?.Text?.split(' (')[0]?.trim();
 
 
             setBopName(name);
@@ -229,7 +229,7 @@ const RaiseRfqBopDetails = (props) => {
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}
-                            options={renderListing("category")}
+                            options={bopNumber?.value ? renderListing("category") : []}
                             mandatory={true}
                             handleChange={handleBopCategory}
                             // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}

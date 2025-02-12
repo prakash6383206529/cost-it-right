@@ -279,7 +279,7 @@ class AddPower extends Component {
         ...power, minMonthlyCharge: power.minMonthlyCharge
       }
     })
-    this.props.change('MinMonthlyCharge', minMonthlyCharge === 0 ? '' : checkForDecimalAndNull(minMonthlyCharge, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('MinMonthlyCharge', minMonthlyCharge === 0 ? '' : checkForDecimalAndNull(minMonthlyCharge, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -304,7 +304,7 @@ class AddPower extends Component {
       this.setState({
         power: { ...power, AvgUnitConsumptionPerMonth: power.AvgUnitConsumptionPerMonth }
       })
-      this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration.NoOfDecimalForInputOutput))
+      this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration?.NoOfDecimalForInputOutput))
     }
 
     //Formula for SEB COST PER UNIT calculation
@@ -316,7 +316,7 @@ class AddPower extends Component {
         this.setState({
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
-        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
       } else {
         const SEBCostPerUnit = checkForNull(((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth);
 
@@ -325,7 +325,7 @@ class AddPower extends Component {
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
         this.setState({ costPerUnitTooltipText: 'Cost per Unit = (Min Monthly Charge + (Avg. Unit Consumption per Month - Min Demand kW per Month) * Max Demand Charges per kW) / Avg. Unit Consumption per Month' })
-        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
       }
 
     }
@@ -339,7 +339,7 @@ class AddPower extends Component {
     this.setState({
       power: { ...power, TotalUnitCharges: power.TotalUnitCharges }
     })
-    this.props.change('TotalUnitCharges', checkForDecimalAndNull(TotalUnitCharges, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('TotalUnitCharges', checkForDecimalAndNull(TotalUnitCharges, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -362,7 +362,7 @@ class AddPower extends Component {
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
       })
-      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
     } else {
       const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
       const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
@@ -374,7 +374,7 @@ class AddPower extends Component {
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
       })
-      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
     }
 
   }
@@ -2617,8 +2617,8 @@ class AddPower extends Component {
                                     <th>{`Source`}</th>
                                     <th>{`Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Contribution (%)`}</th>
-                                    <th className={`${this.state.isImport && 'text-end'}`}>{`Contribution Value`}</th>
-                                    <th className="text-end">{`Action`}</th>
+                                    <th>{`Contribution Value`}</th>
+                                    <th>{`Action`}</th>
                                   </tr>
                                 </thead>
                                 <tbody >
@@ -2629,10 +2629,10 @@ class AddPower extends Component {
                                       return (
                                         <tr key={index}>
                                           <td>{item.SourcePowerType}</td>
-                                          <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                          <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
                                           <td>{item.PowerContributionPercentage}</td>
                                           {/* Ask which value to use for trim */}
-                                          <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForPrice)}</td>
+                                          <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration?.NoOfDecimalForPrice)}</td>
                                           <td>
                                             <button title='Edit' className="Edit mr-2" type={'button'} disabled={isViewMode} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
                                             <button title='Delete' className="Delete" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
@@ -2645,41 +2645,29 @@ class AddPower extends Component {
 
                                 <tfoot>
                                   <tr className="bluefooter-butn">
+                                    <td></td>
+                                    <td></td>
                                     {this.state.isImport && (
                                       <>
-                                      <td
-                                      colSpan={(this.state.isImport && !this.state.hidePlantCurrency) ? "2" : (this.state.isImport && this.state.hidePlantCurrency) ? "4" : "0"}
-                                      >
-                                        <div className='d-flex justify-content-around align-items-center'>
-                                          <strong>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
-                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
-                                        </div>
-                                      </td>
+                                        <th>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
+                                        <td>
+                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        </td>
                                       </>
                                     )}
-                                      <td
-                                      colSpan={(this.state.isImport && !this.state.hidePlantCurrency) ? "2" : (!this.state.isImport && !this.state.hidePlantCurrency) ? "2" : "0"}
-                                      >
-                                        <div className='d-flex justify-content-around align-items-center'>
-                                          <strong>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
-                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label>
-                                        </div>
-                                      </td>
-                                      {(!this.state.isImport && !this.state.hidePlantCurrency) &&
-                                        <td></td>
-                                      }
+                                    <th>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
+                                    <td>
+                                      <label>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                    </td>
                                     {!this.state.hidePlantCurrency && (
                                       <>
-                                      <td
-                                      colSpan={(!this.state.isImport && !this.state.hidePlantCurrency) ? "2" : "0"}
-                                      >
-                                        <div className='d-flex justify-content-around align-items-center'>
-                                          <strong>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</strong>
-                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
-                                        </div>
-                                      </td>
+                                        <th>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</th>
+                                        <td>
+                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        </td>
                                       </>
                                     )}
+                                    <td></td>
                                   </tr>
                                 </tfoot>
 

@@ -114,7 +114,7 @@ export default function RFQReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                SelectBopCategory: action.payload,
+                SelectBopCategory: action?.payload || [],
             }
         case SET_BOP_SPECIFIC_ROW_DATA:
 
