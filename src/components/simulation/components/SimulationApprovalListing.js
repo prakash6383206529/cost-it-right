@@ -8,7 +8,7 @@ import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE, LINKED } from '../../../conf
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination, setTechnologyForSimulation, setIsMasterAssociatedWithCosting } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination, setTechnologyForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -475,6 +475,7 @@ function SimulationApprovalListing(props) {
         dispatch(setIsMasterAssociatedWithCosting(!rowObj?.IsSimulationWithOutCosting))
         setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
+        dispatch(setSimulationApplicability({label:rowObj?.ExchangeRateSimulationTechnology,value:rowObj?.ExchangeRateSimulationTechnologyId}))
         // dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))                //RE
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
             setStatusForLinkedToken(rowObj?.Status === 'Linked')
