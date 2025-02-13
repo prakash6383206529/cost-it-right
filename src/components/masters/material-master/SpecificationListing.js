@@ -334,7 +334,7 @@ const SpecificationListing = (props) => {
     getSpecificationListData("", "");
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState(null);
+    gridOptions.columnApi.resetColumnState();
     state.gridApi.setFilterModel(null);
     setState((prevState) => ({ ...prevState, noData: false }));
     if (searchRef.current) {

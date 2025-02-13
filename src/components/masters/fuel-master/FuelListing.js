@@ -188,7 +188,7 @@ const FuelListing = (props) => {
 
   const onGridReady = (params) => {
     state.gridApi = params.api;
-    window.screen.width >= 1600 && params.api.sizeColumnsToFit();
+    // window.screen.width >= 1600 && params.api.sizeColumnsToFit();
     setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
     params.api.paginationGoToPage(0);
   };
@@ -225,8 +225,8 @@ const FuelListing = (props) => {
     }
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
-    state.gridApi.sizeColumnsToFit();
-    gridOptions.columnApi.resetColumnState(null);
+    // state.gridApi.sizeColumnsToFit();
+    gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
     setState((prevState) => ({ ...prevState, isLoader: true, isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false, dataCount: 0, globalTake: defaultPageSize, }));
     getDataList(null, null);
@@ -334,8 +334,9 @@ const FuelListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
+                enableBrowserTooltips={true}
               >
-                <AgGridColumn field="FuelName" headerName="Fuel" minWidth={150} cellRenderer={"costingHeadFormatter"} tooltipValueGetter={(params) => params.value}></AgGridColumn>
+                <AgGridColumn field="FuelName" headerName="Fuel" width={250} cellRenderer={"costingHeadFormatter"} tooltipField="FuelName"></AgGridColumn>
                 <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
@@ -343,12 +344,12 @@ const FuelListing = (props) => {
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
-                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"} tooltipValueGetter={(params) => params.value}></AgGridColumn>
+                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"}tooltipField="PlantWithCode"></AgGridColumn>
                 <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (<AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateRenderer"}></AgGridColumn>
                 <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={"effectiveDateRenderer"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn field="FuelDetailId" minWidth={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" pinned="right" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+                <AgGridColumn field="FuelDetailId" width={300} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" pinned="right" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
               }
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}

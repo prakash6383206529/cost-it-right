@@ -325,7 +325,7 @@ const ExchangeRateListing = (props) => {
         state.gridApi.sizeColumnsToFit();
         state.gridApi.setQuickFilter(null)
         state?.gridApi?.deselectAll()
-        gridOptions.columnApi.resetColumnState(null);
+        gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
         setState((prevState) => ({ ...prevState, isLoader: true, isExchangeForm: false, isPowerForm: false, currency: [], data: {}, selectedRowData: [], dataCount: 0, stopApiCallOnCancel: false, noData: false, globalTake: defaultPageSize }))
         fetchData();

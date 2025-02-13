@@ -436,8 +436,9 @@ function LabourListing(props) {
               <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
               <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
-              <AgGridColumn field="State" headerName="State"></AgGridColumn>
               <AgGridColumn field="Country" headerName="Country" cellRenderer={'customerFormatter'}></AgGridColumn>
+              <AgGridColumn field="State" headerName="State"></AgGridColumn>
+              <AgGridColumn field="City" headerName="City" cellRenderer={'customerFormatter'}></AgGridColumn>
               <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
               <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
               {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
