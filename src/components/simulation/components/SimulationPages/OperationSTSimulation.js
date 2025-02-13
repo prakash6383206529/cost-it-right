@@ -618,11 +618,11 @@ function OperationSTSimulation(props) {
                                                 {!isImpactedMaster && <><AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
                                                 {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName={vendorLabel + " (Code)"} minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
                                                 {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn></>}
-                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn minWidth={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {operationTypes.includes('Welding') && <AgGridColumn field="OperationConsumption" editable='false' headerName="Consumption" minWidth={190} cellRenderer='consumptionFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                 <AgGridColumn field="Currency" minWidth={150} cellRenderer={"currencyFormatter"}></AgGridColumn>
-                                                {(isImpactedMaster || lastRevision ) && <AgGridColumn field="LocalCurrency" width={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
+                                                {(isImpactedMaster || lastRevision ) && <AgGridColumn field="LocalCurrency" minWidth={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
 
                                                 {operationTypes.includes('Welding') && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={320} headerName="Welding Material Rate/Kg" marryChildren={true} >
                                                     <AgGridColumn minWidth={150} field="" editable={false} headerName="Existing" colId="oldOperationBasicRate" cellRenderer='oldBasicRateFormatter'></AgGridColumn>
@@ -635,9 +635,9 @@ function OperationSTSimulation(props) {
 
                                                     </AgGridColumn>
                                                 </AgGridColumn>
-                                                {(isImpactedMaster || lastRevision )&& String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Rate (Plant Currency)`}>
-                                                    <AgGridColumn width={120} field="OldOperationBasicRateLocalConversion"  editable='false' headerName="Existing" colId='OldOperationNetLandedCostConversion'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="NewOperationBasicRateLocalConversion" editable='false' headerName="Revised" colId='NewOperationNetLandedCostConversion'></AgGridColumn>
+                                                {(isImpactedMaster || lastRevision )&& String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Rate (Plant Currency)`}>
+                                                    <AgGridColumn minWidth={120} field="OldOperationBasicRateLocalConversion"  editable='false' headerName="Existing" colId='OldOperationNetLandedCostConversion'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="NewOperationBasicRateLocalConversion" editable='false' headerName="Revised" colId='NewOperationNetLandedCostConversion'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
                                                 {props.children}
