@@ -92,12 +92,17 @@ function ERSimulation(props) {
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
-            if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
+            if(!getConfigurationKey().IsExchangeRateEditableForSimulation){
+                if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
+                    item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
+                    return null
+                }
+            }else{
                 item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
                 return null
             }
 })
-    }, [])
+    }, [list])
     useEffect(() => {
         if (handleEditMasterPage) {
             handleEditMasterPage(showEditMaster, showverifyPage)
