@@ -431,7 +431,9 @@ const toggleWeightCalculator = (packingCost) => {
   setOpenCalculator(true)
 }
 const closeCalculator = (formData,packingCost) => {
-  setCostingPackagingCalculationDetailsId(formData?.CalculationId)
+  if(formData?.CalculationId){
+    setCostingPackagingCalculationDetailsId(formData?.CalculationId)
+  }
   setValue('PackagingCost', checkForDecimalAndNull(packingCost, getConfigurationKey().NoOfDecimalForPrice))
   setPackagingCost(packingCost)
   setOpenCalculator(false)

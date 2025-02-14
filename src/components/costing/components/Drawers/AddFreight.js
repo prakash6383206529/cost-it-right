@@ -22,8 +22,6 @@ import TooltipCustom from '../../../common/Tooltip';
 function AddFreight(props) {
 
   const { rowObjData, isEditFlag, gridData } = props;
-  console.log("props", props)
-
   const defaultValues = {
     FreightDetailId: rowObjData && rowObjData.FreightDetailId !== undefined ? rowObjData.FreightDetailId : '',
     FreightId: rowObjData && rowObjData.FreightId !== undefined ? rowObjData.FreightId : '',
@@ -34,7 +32,7 @@ function AddFreight(props) {
     FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
     crmHeadFreight: rowObjData && rowObjData.FreightCRMHead !== undefined ? { label: rowObjData.FreightCRMHead, value: 1 } : '',
     IsFreightDetailedBreakup: rowObjData && rowObjData.IsFreightDetailedBreakup !== undefined ? rowObjData.IsFreightDetailedBreakup : false,
-    TruckDimensions: rowObjData && rowObjData.DimensionName !== undefined ? {label: rowObjData.DimensionName, value: rowObjData.DimensionId} : [],
+    TruckDimensions: rowObjData && rowObjData.DimensionName !== undefined ? { label: rowObjData.DimensionName, value: rowObjData.DimensionId } : [],
     CostingFreightCalculationDetailsId: rowObjData && rowObjData.CostingFreightCalculationDetailsId !== undefined ? rowObjData.CostingFreightCalculationDetailsId : '',
   }
 
@@ -51,8 +49,8 @@ function AddFreight(props) {
   const costData = useContext(costingInfoContext);
 
   const costingHead = useSelector(state => state.comman.costingHead)
-  const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI} = useSelector(state => state.costing)
-  const {packagingCalculatorAvailable,freightCalculatorAvailable} = useSelector(state => state.costWorking)
+  const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+  const { packagingCalculatorAvailable, freightCalculatorAvailable } = useSelector(state => state.costWorking)
 
   const [capacity, setCapacity] = useState(isEditFlag ? { label: rowObjData.Capacity, value: rowObjData.Capacity } : []);
   const [criteria, setCriteria] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
@@ -63,19 +61,20 @@ function AddFreight(props) {
   const [showFields, setShowFields] = useState({});
   const [fullTruckLoadId, setFullTruckLoadId] = useState('');
 
-  const { RMCCTabData, CostingEffectiveDate ,PackageAndFreightTabData} = useSelector(state => state.costing)
+  const { RMCCTabData, CostingEffectiveDate, PackageAndFreightTabData } = useSelector(state => state.costing)
   const truckDimensionsSelectList = useSelector(state => state.freight.truckDimensionsSelectList);
   const [freightCost, setFreightCost] = useState(rowObjData.Rate ? rowObjData.Rate : '')
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
-  const [costingFreightCalculationDetailsId, setCostingFreightCalculationDetailsId] = useState(rowObjData?.CostingFreightCalculationDetailsId??null)
+  const [costingFreightCalculationDetailsId, setCostingFreightCalculationDetailsId] = useState(rowObjData?.CostingFreightCalculationDetailsId ?? null)
   const [state, setState] = useState({
     isShowDetailedBreakup: isEditFlag ? rowObjData?.IsFreightDetailedBreakup : false,
     disableAll: false,
     openCalculator: false,
     truckDimensions: isEditFlag ? { label: rowObjData.DimensionName, value: rowObjData.DimensionId } : [],
     noOfComponentsPerCrate: 0,
-    hideDetailedBreakup:isEditFlag?rowObjData?.IsFreightDetailedBreakup:false
+    hideDetailedBreakup: false,
+    truckDimensionRes: {},
   })
   const { costingData } = useSelector(state => state.costing)
 
@@ -123,12 +122,12 @@ function AddFreight(props) {
   }, [])
 
   useEffect(() => {
-    if (gridData && gridData.length > 0) {
-      const hasDetailedBreakup = gridData?.some(item => 
-        item?.CostingFreightCalculationDetailsId && 
+    if (gridData && gridData.length > 0 && !isEditFlag) {
+      const hasDetailedBreakup = gridData?.some(item =>
+        item?.CostingFreightCalculationDetailsId &&
         item?.IsFreightDetailedBreakup === true
       );
-      
+
       setState(prevState => ({
         ...prevState,
         hideDetailedBreakup: hasDetailedBreakup
@@ -153,12 +152,12 @@ function AddFreight(props) {
   }, [fieldValues]);
 
   useEffect(() => {
-    if ((freightType === FullTruckLoad || freightType === PartTruckLoad)&&!state?.isShowDetailedBreakup) {
+    if ((freightType === FullTruckLoad || freightType === PartTruckLoad) && !state?.isShowDetailedBreakup) {
       calculateCostForPerKg()
     } else {
       calculateCost(applicability.label)
     }
-  }, [RateFieldValue,state?.isShowDetailedBreakup]);
+  }, [RateFieldValue, state?.isShowDetailedBreakup]);
 
   const freightFullTruckCapacitySelectList = useSelector(state => state.freight.freightFullTruckCapacitySelectList)
   const rateCriteriaByCapacitySelectList = useSelector(state => state.costing.rateCriteriaByCapacitySelectList)
@@ -302,7 +301,7 @@ function AddFreight(props) {
           let Data = res?.data?.Data;
           setValue('Rate', Data?.Rate)
           setFullTruckLoadId(Data?.FullTruckLoadId)
-          if(!state?.isShowDetailedBreakup){
+          if (!state?.isShowDetailedBreakup) {
             calculateCostValue(getValues('Quantity'), Data?.Rate)
           }
           errors.Rate = {}
@@ -491,6 +490,12 @@ function AddFreight(props) {
     setValue('Capacity', '')
     setApplicability([])
     setCapacity('')
+    setState((prevState) => ({
+      ...prevState,
+      isShowDetailedBreakup: false,
+      truckDimensions: null
+    }));
+    setValue('TruckDimensions', ''  )
     errors.FreightCost = {}
     errors.Rate = {}
   }
@@ -573,18 +578,16 @@ function AddFreight(props) {
     toggleDrawer('', formData)
   }
   const onShowDetailedBreakup = () => {
-  
-    if (packagingCalculatorAvailable?.isAvailable === undefined||!packagingCalculatorAvailable?.isAvailable) {
+    if (packagingCalculatorAvailable?.isAvailable === undefined || !packagingCalculatorAvailable?.isAvailable) {
       setState((prevState) => ({
         ...prevState,
         isShowDetailedBreakup: false
-
       }));
-      Toaster.warning("Packaging calculator data is not available");
+      Toaster.warning("Freight calculation requires 'No. of Parts per Crate' from Packaging Costing not found.");
       return;
     }
-  
-  
+
+
     setState((prevState) => ({
       ...prevState,
       isShowDetailedBreakup: !prevState.isShowDetailedBreakup
@@ -592,7 +595,7 @@ function AddFreight(props) {
   };
   const toggleWeightCalculator = (packingCost) => {
     dispatch(getNoOfComponentsPerCrateFromPackaging(costingData?.CostingId, res => {
-      if (res?.status === 200&&res?.data?.Result===true) {
+      if (res?.status === 200 && res?.data?.Result === true) {
         setState(prevState => ({
           ...prevState,
           noOfComponentsPerCrate: res?.data?.Data?.NoOfComponentsPerCrate,
@@ -611,7 +614,7 @@ function AddFreight(props) {
     })
   }
   const closeCalculator = (formData, freightCost) => {
-    if(formData?.CalculationId){
+    if (formData?.CalculationId) {
       setCostingFreightCalculationDetailsId(formData?.CalculationId)
     }
     setValue('FreightCost', checkForDecimalAndNull(freightCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -730,39 +733,39 @@ function AddFreight(props) {
                   </Col>
                   {state.isShowDetailedBreakup}
                   {(freightType !== Percentage && freightType !== Fixed) && <Col md='12'>
-                    
+
                     <div className="d-flex align-items-center">
                       <label id="AddFreight_TruckDimensions"
-                      className={`custom-checkbox w-auto mb-4 mt-4 ${isEditFlag || state?.hideDetailedBreakup ? 'disabled' : ''}`}
-                      onChange={onShowDetailedBreakup}
-                    >
-                      Detailed Breakup
-                     
-                      <input
-                        type="checkbox"
-                        checked={state.isShowDetailedBreakup}
-                        disabled={isEditFlag || state?.hideDetailedBreakup}
-                      />
-                      <span
-                        className=" before-box p-0"
-                        checked={state.isShowDetailedBreakup}
+                        className={`custom-checkbox w-auto mb-4 mt-4 ${isEditFlag || state?.hideDetailedBreakup ? 'disabled' : ''}`}
                         onChange={onShowDetailedBreakup}
-                      />
-                     
-                    </label>
-                    {state?.hideDetailedBreakup && <TooltipCustom
-                      disabledIcon={false}
-                      id={`detailedBreakup`}
-                      customClass="mb-2 pb-4 ml-5"
-                      tooltipText={ `Already added in the grid`}
-                    />}
-                    </div>    
-                   
+                      >
+                        Detailed Breakup
+
+                        <input
+                          type="checkbox"
+                          checked={state.isShowDetailedBreakup}
+                          disabled={isEditFlag || state?.hideDetailedBreakup}
+                        />
+                        <span
+                          className=" before-box p-0"
+                          checked={state.isShowDetailedBreakup}
+                          onChange={onShowDetailedBreakup}
+                        />
+
+                      </label>
+                      {state?.hideDetailedBreakup && <TooltipCustom
+                        disabledIcon={false}
+                        id={`detailedBreakup`}
+                        customClass="mb-2 pb-4 ml-5"
+                        tooltipText={`Detailed Breakup Freight Costing already exists.`}
+                      />}
+                    </div>
+
                   </Col>}
                   {state.isShowDetailedBreakup && <Col md="12">
                     <SearchableSelectHookForm
                       name="TruckDimensions"
-                      label="Truck Dimensions"
+                      label="Truck Dimensions (mm)"
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -776,7 +779,7 @@ function AddFreight(props) {
                       errors={errors?.TruckDimensions}
                     />
                   </Col>}
-                  {showFields?.Capacity && <Col md="12">
+                  {(showFields?.Capacity || state?.isShowDetailedBreakup) && <Col md="12">
                     <SearchableSelectHookForm
                       label={'Capacity'}
                       name={'Capacity'}
@@ -896,7 +899,7 @@ function AddFreight(props) {
                         errors={errors.FreightCost}
                         disabled={freightType !== Fixed ? true : false}
                       />
-                      {state.isShowDetailedBreakup &&  <button
+                      {state.isShowDetailedBreakup && <button
                         id={`RM_calculator`}
                         className={`CalculatorIcon mb-0 mt-1 ml-2 cr-cl-icon RM_calculator`}
                         type={'button'}

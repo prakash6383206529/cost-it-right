@@ -1181,7 +1181,7 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
             } else if (!allEqual(plantArray)) {
               Toaster.warning('Plant should be same for sending multiple costing for approval')
             } else {
-              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId, (res) => {
+              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId??null, (res) => {
                 if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
                   setShowApproval(false)
                   Toaster.warning('User is not in the approval flow')
@@ -1219,7 +1219,7 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
       } else if (!allEqual(plantArray)) {
         Toaster.warning('Plant should be same for sending multiple costing for approval')
       } else {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId,receiverId, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId,receiverId??null, (res) => {
           if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')
@@ -1414,7 +1414,7 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
     if (data) {
       let temp = moduleHandler(data[0]?.costingId, 'down', data)
       if (!temp) {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId,receiverId, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId,receiverId??null, (res) => {
           if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')

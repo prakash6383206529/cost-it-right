@@ -32,18 +32,20 @@ function PackageCost(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const { CostingEffectiveDate, costingData, } = useSelector(state => state.costing)
-  const { packagingCalculatorAvailable,freightCalculatorAvailable } = useSelector(state => state.costWorking)
+  const { freightCalculatorAvailable } = useSelector(state => state.costWorking)
 
   useEffect(() => {
     props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(props?.data && props?.data?.length > 0 ? props?.data : []) ? true : false)
     if (JSON.stringify(gridData) !== JSON.stringify(props?.data && props?.data?.length > 0 ? props?.data : [])) {
       dispatch(isPackageAndFreightDataChange(true))
     }
-    if(props?.data?.length>0 && props?.data?.some(rowData => rowData?.Applicability === 'Crate/Trolley' && rowData?.CostingPackagingCalculationDetailsId)) {
+    if(gridData?.length>0 && gridData?.some(rowData => rowData?.Applicability === 'Crate/Trolley' && rowData?.CostingPackagingCalculationDetailsId)) {
       let obj = {
         isAvailable: true,
       }
       dispatch(setPackagingCalculatorAvailable(obj));
+    }else{
+      dispatch(setPackagingCalculatorAvailable({}));
     }
   }, [gridData]);
 
@@ -83,10 +85,13 @@ function PackageCost(props) {
 
   const deleteItem = (index) => {
     if (gridData[index]?.Applicability === 'Crate/Trolley' && gridData[index]?.CostingPackagingCalculationDetailsId) {
-      dispatch(setPackagingCalculatorAvailable(false));
+      let obj = {
+        isAvailable: false,
+      }
+      dispatch(setPackagingCalculatorAvailable(obj));
     }
     if(freightCalculatorAvailable===true){
-      Toaster.warning('Freight calculator is available');
+      Toaster.warning('Packaging entry is currently mapped to Freight Costing.');
       return false;
     }
     let tempArr = gridData && gridData.filter((el, i) => {
@@ -97,7 +102,7 @@ function PackageCost(props) {
   }
   const editItem = (index) => {
     if(freightCalculatorAvailable===true){
-      Toaster.warning('Freight calculator is available');
+      Toaster.warning('Packaging entry is currently mapped to Freight Costing.');
       return false;
     }
     let tempArr = gridData && gridData.find((el, i) => i === index)

@@ -5753,7 +5753,7 @@ export const FREIGHT_DOWNLOAD_EXCEl = [
     // { label: "Source City", value: "SourceCity" },
     // { label: "Destination City", value: "DestinationCity" },
     { label: "Load", value: "FreightLoadType" }, 
-    {label:'Truck Dimensions',value:'DimensionsName'}, 
+    {label:'Truck Dimensions (mm)',value:'DimensionsName'}, 
     { label: "Capacity", value: "Capacity" }, 
     { label: "Criteria", value: "RateCriteria"}, 
     { label: "Rate", value: "Rate" }, 

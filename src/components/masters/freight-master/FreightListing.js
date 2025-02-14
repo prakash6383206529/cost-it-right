@@ -221,9 +221,6 @@ const FreightListing = (props) => {
                 newItem[key] = '-';
             }
           }
-          if (item?.EffectiveDate?.includes('T')) {
-            item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-        }
         return newItem;
     });
     
@@ -234,6 +231,7 @@ const FreightListing = (props) => {
   }
 
 
+  
   const onGridReady = (params) => {
     state.gridApi = params.api;
     state.gridApi.sizeColumnsToFit();
@@ -425,7 +423,7 @@ const FreightListing = (props) => {
                 ></AgGridColumn>
                 <AgGridColumn
                   field="DimensionsName"
-                  headerName="Truck Dimensions"
+                  headerName="Truck Dimensions (mm)"
                   valueGetter={(params) => params.data?.DimensionsName || "-"}
                 ></AgGridColumn>
                 <AgGridColumn
