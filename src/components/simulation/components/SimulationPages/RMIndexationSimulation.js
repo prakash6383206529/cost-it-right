@@ -1222,7 +1222,10 @@ let PercentageCalc = 0
             {/* <button title='Discard' className="CancelIcon" type={'button'} onClick={() => discardBasicRate(props)} /> */}
         </div>
     }
-
+    const localConversionFormatter = (props) => {
+        const cellValue = checkForNull(props?.value);
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
     const saveBasicRate = (props) => {
 
 
@@ -1280,9 +1283,9 @@ let PercentageCalc = 0
         newBasicRateFormatterForNonIndexedRM: newBasicRateFormatterForNonIndexedRM,
         actionCellRenderer: actionCellRenderer,
         existingConditionCostFormatter: existingConditionCostFormatter,
-        revisedConditionCostFormatter: revisedConditionCostFormatter
+        revisedConditionCostFormatter: revisedConditionCostFormatter,
+        localConversionFormatter: localConversionFormatter
     };
-
 
     const ageValueGetterScrapRate = (params) => {
         let row = params.data
@@ -1493,8 +1496,8 @@ let PercentageCalc = 0
                                                 </AgGridColumn>
                                                 }
                                                 {(String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE) || isApprovalSummary) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Cost (Plant Currency)`}>
-                                                    <AgGridColumn minWidth={120} field="OldNetLandedCostLocalConversion" editable='false' headerName="Existing" colId='OldNetLandedCostLocalConversion'></AgGridColumn>
-                                                    <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewNetLandedCostLocalConversion'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="OldNetLandedCostLocalConversion" editable='false' headerName="Existing" colId='OldNetLandedCostLocalConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewNetLandedCostLocalConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
                                                 {!isImpactedMaster && String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}

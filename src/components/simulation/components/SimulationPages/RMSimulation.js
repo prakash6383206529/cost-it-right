@@ -1025,6 +1025,11 @@ function RMSimulation(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '0';
     }
 
+    const localConversionFormatter = (props) => {
+        const cellValue = checkForNull(props?.value);
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -1053,7 +1058,8 @@ function RMSimulation(props) {
         revisedOtherCostFormatter: revisedOtherCostFormatter,
         existingConditionCostFormatter: existingConditionCostFormatter,
         revisedConditionCostFormatter: revisedConditionCostFormatter,
-        zeroFormatter: zeroFormatter
+        zeroFormatter: zeroFormatter,
+        localConversionFormatter: localConversionFormatter
 
     };
 
@@ -1325,8 +1331,8 @@ function RMSimulation(props) {
                                                 }
           {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
                                                 {(isImpactedMaster || props?.lastRevision || (String(props?.masterId) === String(EXCHNAGERATE) ||  String(props?.masterId) === String(RMIMPORT))) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Cost (Plant Currency)`}>
-                                                    <AgGridColumn minWidth={120} field="OldNetLandedCostLocalConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
-                                                    <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="OldNetLandedCostLocalConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
                                                 {props.children}

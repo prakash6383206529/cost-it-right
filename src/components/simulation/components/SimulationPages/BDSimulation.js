@@ -792,7 +792,10 @@ function BDSimulation(props) {
             </div>
         );
     };
-
+    const localConversionFormatter = (props) => {
+        const cellValue = checkForNull(props?.value);
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -814,7 +817,8 @@ function BDSimulation(props) {
         revisedOtherCostFormatter: revisedOtherCostFormatter,
         existingConditionCostFormatter: existingConditionCostFormatter,
         revisedConditionCostFormatter: revisedConditionCostFormatter,
-        basicPriceRevisedFormatter: basicPriceRevisedFormatter
+        basicPriceRevisedFormatter: basicPriceRevisedFormatter,
+        localConversionFormatter: localConversionFormatter
     };
 
     const basicRatetooltipToggle = () => {
@@ -1003,8 +1007,8 @@ function BDSimulation(props) {
                                                 </AgGridColumn>
                                                 {
                                                     (String(props?.masterId) === String(BOPIMPORT) || String(props?.masterId) === String(EXCHNAGERATE))&&(isImpactedMaster || props?.lastRevision)  && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`Net Cost (Plant Currency)`} marryChildren={true} >
-                                                        <AgGridColumn minWidth={120} field="OldBoughtOutPartNetLandedCostLocalConversion" tooltipField='OldBoughtOutPartNetLandedCostConversion' editable='false' headerName="Existing" colId='OldBoughtOutPartNetLandedCostConversion'></AgGridColumn>
-                                                        <AgGridColumn minWidth={120} field="NewBoughtOutPartNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewBoughtOutPartNetLandedCostConversion'></AgGridColumn>
+                                                        <AgGridColumn minWidth={120} field="OldBoughtOutPartNetLandedCostLocalConversion" tooltipField='OldBoughtOutPartNetLandedCostConversion' editable='false' headerName="Existing" colId='OldBoughtOutPartNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                        <AgGridColumn minWidth={120} field="NewBoughtOutPartNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewBoughtOutPartNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                     </AgGridColumn>
                                                 }
                                                 {props?.children}

@@ -309,7 +309,10 @@ const {vendorLabel} = useLabels()
             </>
         )
     }
-
+    const localConversionFormatter = (props) => {
+        const cellValue = checkForNull(props?.value);
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
         setIsEffectiveDateSelected(true)
@@ -330,6 +333,7 @@ const {vendorLabel} = useLabels()
         plantFormatter: plantFormatter,
         customerFormatter: customerFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
+        localConversionFormatter: localConversionFormatter,
         nullHandler: props.nullHandler && props.nullHandler
     };
     const verifySimulation = debounce(() => {
@@ -559,8 +563,8 @@ const {vendorLabel} = useLabels()
                                                 </AgGridColumn>
                                                 {(isImpactedMaster || props?.lastRevision || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
                                                     "Net Machine Rate (Plant Currency)"                                                }>
-                                                    <AgGridColumn minWidth={columnWidths.NetLandedCost} field="OldMachineRateLocalConversion" editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='OldMachineRateLocalConversion'></AgGridColumn>
-                                                    <AgGridColumn minWidth={columnWidths.NewNetLandedCost} field="NewMachineRateLocalConversion" editable='false' cellRenderer={'costFormatter'} headerName="Revised" colId='NewMachineRateLocalConversion'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.NetLandedCost} field="OldMachineRateLocalConversion" editable='false' cellRenderer='localConversionFormatter' headerName="Existing" colId='OldMachineRateLocalConversion'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.NewNetLandedCost} field="NewMachineRateLocalConversion" editable='false' cellRenderer='localConversionFormatter' headerName="Revised" colId='NewMachineRateLocalConversion'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
                                                 {props.children}
