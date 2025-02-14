@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, CBCTypeId, FORGINGNAME } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting, getAllSimulatedBoughtOutPart, setTechnologyForSimulation } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting, getAllSimulatedBoughtOutPart, setTechnologyForSimulation, setSimulationApplicability } from '../actions/Simulation';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, showSaLineNumber, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -476,7 +476,7 @@ function CostingSimulation(props) {
             tempObj.BudgetedPriceImpactPerQuarter = simulationList[0]?.BudgetedPriceImpactPerQuarter
             tempObj.IsExchangeRateSimulation = Data?.IsExchangeRateSimulation
             setAmendmentDetails(tempObj)
-
+            dispatch(setSimulationApplicability({label:Data?.ExchangeRateSimulationTechnology,value:Data?.ExchangeRateSimulationTechnologyId}))
             //LISTING
             // SECOND PARAMETER TRUE | TO SAVE UNIQUE LIST OF NON REQUIRED COSTING(COMPONENT COSTING OF ASSEMBLY'S CHILD)  
             const list = getListMultipleAndAssembly(uniqeArray, true)
@@ -506,13 +506,24 @@ function CostingSimulation(props) {
             }))
         } else {
             let masterTemp = selectedMasterForSimulation?.value
-            if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
-                masterTemp = RMIMPORT
-            } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION || simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)) {
-                masterTemp = BOPIMPORT
-            } else {
-                masterTemp = selectedMasterForSimulation?.value
+            if (Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_RM_SIMULATION)||Number(simulationApplicability?.value)===Number(RMIMPORT))) {
+                masterTemp = Number(RMIMPORT)
+            } else if (Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_BOP_SIMULATION) || Number(simulationApplicability?.value) === Number(APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)||Number(simulationApplicability?.value)===Number(BOPIMPORT)    )) {
+                masterTemp = Number(BOPIMPORT)
+            } else if(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_OPERATIONS_SIMULATION) || Number(simulationApplicability?.value) === Number(OPERATIONS))) {
+                masterTemp = Number(OPERATIONS)
+            } else if(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_SURFACE_TREATMENT_SIMULATION) || Number(simulationApplicability?.value) === Number(SURFACETREATMENT))) {
+                masterTemp = Number(SURFACETREATMENT)
+            } else if(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_MACHINE_RATES_SIMULATION) || Number(simulationApplicability?.value) === Number(MACHINERATE))) {
+                masterTemp = Number(MACHINERATE)
             }
+            else {
+                masterTemp = Number(selectedMasterForSimulation?.value)
+            }
+            
+
+
+            
             switch (Number(masterTemp)) {
                 //  ***** WHEN SAME BLOCK OF CODE IS FOR TWO DIFFERENT CASES | WE WRITE TWO CASES TOGETHER *****
                 case Number(RMDOMESTIC):
@@ -537,24 +548,26 @@ function CostingSimulation(props) {
                     setMasterLoader(true)
                     switch (simulationApplicability?.value) {
                         case APPLICABILITY_RM_SIMULATION:
+                            case Number(RMIMPORT):
 
                             handleRawMaterialCase(plantId, rawMatrialId);
                             break;
+                        case Number(BOPIMPORT):
                         case APPLICABILITY_BOP_SIMULATION:
                         case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
 
                             handleBopCase();
                             break;
                         case APPLICABILITY_OPERATIONS_SIMULATION:
-
+                            case Number(OPERATIONS):
                             handleSurfaceTreatmentCase();
                             break;
                         case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
-
+                            case Number(SURFACETREATMENT):
                             handleSurfaceTreatmentCase();
                             break;
                         case APPLICABILITY_MACHINE_RATES_SIMULATION:
-
+                            case Number(MACHINERATE):
                             handleMachineRateCase();
                             break;
                         default:
@@ -624,7 +637,7 @@ function CostingSimulation(props) {
             setMasterLoader(false)
             setCommonStateForList(res)
             if (res?.data?.Result) {
-                setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
+                setPlantId(res?.data?.Data?.SimulatedCostingList[0]?.PlantId)
             }
         }))
     }
