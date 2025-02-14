@@ -972,8 +972,8 @@ class AddFreight extends Component {
     const baseCurrency = reactLocalStorage.getObject("baseCurrency");
 
     // Check the exchange rates or provide a default placeholder if undefined
-    const plantCurrencyRate = plantCurrency ?? '-';
-    const settlementCurrencyRate = settlementCurrency ?? '-';
+    const plantCurrencyRate = plantCurrency ?? '0';
+    const settlementCurrencyRate = settlementCurrency ?? '0';
 
     // Generate tooltip text based on the condition
     return <>
