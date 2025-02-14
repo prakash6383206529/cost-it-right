@@ -162,7 +162,10 @@ function OperationSTSimulation(props) {
     }
     const ageValueGetterRate = (params) => {
         let row = params.data
-        row.NewRate = row.ForType === 'Welding' ? row?.NewOperationBasicRate * row?.OperationConsumption : row.NewRate
+        if (row.ForType === 'Welding') {
+            const consumption = row?.OperationConsumption || 1
+            row.NewRate = row?.NewOperationBasicRate * consumption
+        }
         return row.NewRate
     }
 
@@ -369,6 +372,10 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return isImpactedMaster ? row?.OldOperationConsumption : row?.OperationConsumption
     }
+    const localConversionFormatter = (props) => {
+        const cellValue = checkForNull(props?.value);
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
@@ -386,9 +393,9 @@ function OperationSTSimulation(props) {
         nullHandler: props.nullHandler && props.nullHandler,
         rateFormatter: rateFormatter,
         oldBasicRateFormatter: oldBasicRateFormatter,
-        consumptionFormatter: consumptionFormatter
+        consumptionFormatter: consumptionFormatter,
+        localConversionFormatter: localConversionFormatter
     };
-
 
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
@@ -636,8 +643,8 @@ function OperationSTSimulation(props) {
                                                     </AgGridColumn>
                                                 </AgGridColumn>
                                                 {(isImpactedMaster || lastRevision )&& String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Rate (Plant Currency)`}>
-                                                    <AgGridColumn minWidth={120} field="OldOperationBasicRateLocalConversion"  editable='false' headerName="Existing" colId='OldOperationNetLandedCostConversion'></AgGridColumn>
-                                                    <AgGridColumn minWidth={120} field="NewOperationBasicRateLocalConversion" editable='false' headerName="Revised" colId='NewOperationNetLandedCostConversion'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="OldOperationBasicRateLocalConversion"  editable='false' headerName="Existing" colId='OldOperationNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="NewOperationBasicRateLocalConversion" editable='false' headerName="Revised" colId='NewOperationNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
                                                 {props.children}
