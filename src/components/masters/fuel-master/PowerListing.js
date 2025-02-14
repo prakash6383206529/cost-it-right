@@ -49,7 +49,7 @@ const PowerListing = (props) => {
     noData: false,
     dataCount: 0,
     isImport: false,
-    globalTake: defaultPageSize,
+    globalTake: defaultPageSize
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);

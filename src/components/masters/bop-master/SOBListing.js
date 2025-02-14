@@ -532,7 +532,8 @@ const SOBListing = (props) => {
     reactLocalStorage.setObject('selectedRow', {})
 
     // Fetch fresh data
-    getDataList(0, globalTakes, true, floatingFilterData, true)
+    // getDataList(0, globalTakes, true, floatingFilterData, true)
+    getDataList();
   }
   const handleShown = () => {
     setState((prevState) => ({ ...prevState, shown: !state.shown }))
@@ -676,6 +677,7 @@ const SOBListing = (props) => {
             </div>
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+              {!state.isLoader &&
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -716,6 +718,7 @@ const SOBListing = (props) => {
 
                 <AgGridColumn field="BoughtOutPartNumber" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
+              }
               {/* {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />} */}
               <div className='button-wrapper'>
                 {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="SOB" />}
