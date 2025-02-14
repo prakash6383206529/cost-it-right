@@ -536,7 +536,7 @@ const {vendorLabel} = useLabels()
                                                 {!isImpactedMaster && <AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName={technologyLabel} minWidth={columnWidths.Technology}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNo" tooltipField='PartNo' editable='false' headerName="Part No" minWidth={columnWidths.PartNo}></AgGridColumn>}
-                                                {/* props?.isImpactedMaster&& */<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                                                {/* props?.isImpactedMaster&& */<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="MachineName" tooltipField='MachineName' editable='false' headerName="Machine Name" minWidth={columnWidths.MachineName}></AgGridColumn>
                                                 <AgGridColumn field="MachineNumber" tooltipField='MachineNumber' editable='false' headerName="Machine Number" minWidth={columnWidths.MachineNumber}></AgGridColumn>
                                                 <AgGridColumn field="ProcessName" tooltipField='ProcessName' editable='false' headerName="Process Name" minWidth={columnWidths.ProcessName}></AgGridColumn>

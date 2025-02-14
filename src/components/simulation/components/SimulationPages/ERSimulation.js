@@ -215,6 +215,7 @@ function ERSimulation(props) {
         setShowOperationsList(false)
         setShowMachineRatesList(false)
         setShowRawMaterialsList(false)
+        setShowSurfaceTreatmentList(false)
     }
 
     const closeDrawer = (e = '') => {
