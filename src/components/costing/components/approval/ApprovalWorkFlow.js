@@ -1,6 +1,6 @@
 import DayTime from '../../../common/DayTimeWrapper'
 import React, { useCallback, useEffect, useState } from 'react'
-import { APPROVED, REJECTED, PENDING } from '../../../../config/constants'
+import { APPROVED, REJECTED, PENDING, RETURNED } from '../../../../config/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import Popup from 'reactjs-popup'
 import { getAllApproverList } from '../../../../actions/auth/AuthActions'
@@ -91,7 +91,7 @@ function ApprovalWorkFlow(props) {
           return (
             <>
               <div key={index} className="col-lg-3 col-md-6 col-sm-12 mb-4">
-                <div className={`card-border  ${item?.Title?.split(' ')[0] === REJECTED ? 'card-red' : item?.Title?.split(' ')[0] === APPROVED ? 'card-green' : item?.Status === PENDING ? 'card-yellow' : ''}`}>
+                <div className={`card-border  ${(item?.Title?.split(' ')[0] === REJECTED || item?.Status === RETURNED) ? 'card-red' : item?.Title?.split(' ')[0] === APPROVED ? 'card-green' : item?.Status === PENDING ? 'card-yellow' : ''}`}>
                   <div className="top d-flex">
                     <div className="left text-center">
                       <b>{item?.Level ? item?.Level?.split('-')[1] : 0}</b>
