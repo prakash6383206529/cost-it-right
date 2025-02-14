@@ -92,12 +92,17 @@ function ERSimulation(props) {
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
-            if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
+            if(!getConfigurationKey().IsExchangeRateEditableForSimulation){
+                if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
+                    item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
+                    return null
+                }
+            }else{
                 item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
                 return null
             }
 })
-    }, [])
+    }, [list])
     useEffect(() => {
         if (handleEditMasterPage) {
             handleEditMasterPage(showEditMaster, showverifyPage)
@@ -517,7 +522,7 @@ function ERSimulation(props) {
                                             {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate" marryChildren={true} >
                                                 <AgGridColumn width={columnWidths.CurrencyExchangeRate} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.NewCurrencyExchangeRate} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={(!isImpactedMaster || getConfigurationKey()?.IsExchangeRateEditableForSimulation)} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn width={columnWidths.NewCurrencyExchangeRate} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={(!isImpactedMaster && getConfigurationKey()?.IsExchangeRateEditableForSimulation)} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                             </AgGridColumn>}
 
                                             {isImpactedMaster && <>
