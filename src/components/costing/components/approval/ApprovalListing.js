@@ -43,7 +43,7 @@ const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 function ApprovalListing(props) {
-  const { isDashboard ,delegation} = props
+  const { isDashboard, delegation } = props
   const loggedUser = loggedInUserId()
   const [loader, setloader] = useState(false);
   const [approvalData, setApprovalData] = useState('')
@@ -107,7 +107,7 @@ function ApprovalListing(props) {
   useEffect(() => {
     setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
     return () => {
-      reactLocalStorage.setObject('receiverId',null);
+      reactLocalStorage.setObject('receiverId', null);
     }
   }, [])
 
@@ -491,7 +491,7 @@ function ApprovalListing(props) {
     }
     return (
       <Fragment>
-        {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div id={`Costing_Approval_No_${props?.rowIndex}`} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId,row?.ReceiverId)} className={'link'}>{cell}</div>}
+        {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div id={`Costing_Approval_No_${props?.rowIndex}`} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId, row?.ReceiverId)} className={'link'}>{cell}</div>}
       </Fragment >
     )
   }
@@ -600,8 +600,8 @@ function ApprovalListing(props) {
   }
 
 
-  const viewDetails = (approvalNumber, approvalProcessId,receiverId=null) => {
-    setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber,receiverId:receiverId})
+  const viewDetails = (approvalNumber, approvalProcessId, receiverId = null) => {
+    setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber, receiverId: receiverId })
     setShowApprovalSummary(true)
     // props.closeDashboard()
     return (
@@ -974,7 +974,7 @@ function ApprovalListing(props) {
         divisionId: divisionId,
         ReceiverId: selectedRowData[0]?.ReceiverId
       }
-      
+
       dispatch(checkFinalUser(obj, res => {
         if (res && res.data && res.data.Result) {
           if (selectedRowData[0].Status === DRAFT) {
@@ -1149,14 +1149,14 @@ function ApprovalListing(props) {
     return rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === DRAFT) : false;
   }
   if (showApprovalSumary === true) {
-    
+
     return <Redirect
       to={{
         pathname: "/approval-summary",
         state: {
           approvalNumber: approvalData.approvalNumber,
           approvalProcessId: approvalData.approvalProcessId,
-          receiverId:approvalData.receiverId,
+          receiverId: approvalData.receiverId,
           fromDashboard: isDashboard // Add this flag
         }
       }}
@@ -1271,7 +1271,7 @@ function ApprovalListing(props) {
                         </AgGridReact>}
 
                         <div className='button-wrapper'>
-                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                          {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                           <div className="d-flex pagination-button-container">
                             <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
                             {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
@@ -1329,6 +1329,7 @@ function ApprovalListing(props) {
           anchor={'right'}
           isApprovalisting={true}
           dataSelected={selectedRowData}
+          selectedRows={selectedRowData}
           technologyId={selectedRowData[0].TechnologyId}
           callSapCheckAPI={false}
         />
