@@ -390,7 +390,10 @@ function ERSimulation(props) {
                 listData.push(item);
                 fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
                 toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
+            }else{
+                listData.push(item);
             }
+
             return null;
         });
         if (/* !hasUserMadeEdits ||  */hasValidEdits) {
