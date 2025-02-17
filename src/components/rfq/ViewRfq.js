@@ -475,7 +475,6 @@ function RfqListing(props) {
             //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
             //     plantId: plantId
             // };
-console.log(getConfigurationKey().IsMasterApprovalAppliedConfigure);
 
             // if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
             //     dispatch(checkFinalUser(obj, (res) => {

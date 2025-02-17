@@ -19,7 +19,7 @@ class RFQTab extends Component {
             Modules: [],
             actionData: [],
             actionSelectList: [],
-            initialConfiguration: props.initialConfiguration || {},
+            initialConfiguration: props?.initialConfiguration || {},
 
         }
     }
