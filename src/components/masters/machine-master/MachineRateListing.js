@@ -267,9 +267,7 @@ const MachineRateListing = (props) => {
 
 
   const resetState = () => {
-    setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
     dispatch(isResetClick(true, "Operation"));
-    setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
     setSearchText(''); // Clear the search text state
     if (state.gridApi) { state.gridApi.setQuickFilter(''); }
     state.gridApi.deselectAll();
@@ -279,16 +277,11 @@ const MachineRateListing = (props) => {
       state.floatingFilterData[prop] = "";
     }
     dispatch(resetStatePagination());
-    setState((prevState) => ({
-      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false,
-      // pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
-    }));
-    getDataList("", 0, 0, "", '', 10, true, state.floatingFilterData);
+    dispatch(updateCurrentRowIndex(10))
+    setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, dataCount: 0, isFilterButtonClicked: false, floatingFilterData: state.floatingFilterData, warningMessage: false }));
+    // getDataList("", 0, 0, "", '', 10, true, state.floatingFilterData);
+    getDataList();
     dispatch(setSelectedRowForPagination([]));
-    setState((prevState) => ({
-      ...prevState, dataCount: 0,
-      //  globalTake: 10, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
-    }));
     setSearchText(''); // Assuming this state is bound to the input value
   };
 

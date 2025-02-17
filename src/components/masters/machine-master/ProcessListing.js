@@ -48,6 +48,7 @@ const ProcessListing = (props) => {
     dataCount: 0,
     render: false,
     showExtraData: false,
+    globalTake: defaultPageSize,
   });
   const permissions = useContext(ApplyPermission);
 
@@ -216,6 +217,7 @@ const ProcessListing = (props) => {
   };
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
   const onRowSelect = () => {
     const selectedRows = state.gridApi?.getSelectedRows();
@@ -255,6 +257,8 @@ const ProcessListing = (props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize, }));
+    getDataList();
   };
 
   const { isOpenProcessDrawer, isEditFlag, noData } = state;
@@ -383,6 +387,7 @@ const ProcessListing = (props) => {
                   customClassName="no-content-found"
                 />
               )}
+              {!state.isLoader &&
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -422,10 +427,12 @@ const ProcessListing = (props) => {
                   cellRenderer={"totalValueRenderer"}
                 ></AgGridColumn>
               </AgGridReact>
+              }
               {
                 <PaginationWrapper
                   gridApi={state.gridApi}
                   setPage={onPageSizeChanged}
+                  globalTake={state.globalTake}
                 />
               }
             </div>

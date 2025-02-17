@@ -566,7 +566,7 @@ const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPAR
             {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found"
             />
             )}
-            {(!state.render) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+            {state.isLoader ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
 
               style={{ height: '100%', width: '100%' }}
               defaultColDef={defaultColDef}
