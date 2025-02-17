@@ -92,16 +92,16 @@ function ERSimulation(props) {
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
-            if(!getConfigurationKey().IsExchangeRateEditableForSimulation){
+            if (!getConfigurationKey().IsExchangeRateEditableForSimulation) {
                 if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
                     item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
                     return null
                 }
-            }else{
+            } else {
                 item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
                 return null
             }
-})
+        })
     }, [list])
     useEffect(() => {
         if (handleEditMasterPage) {
@@ -215,6 +215,7 @@ function ERSimulation(props) {
         setShowOperationsList(false)
         setShowMachineRatesList(false)
         setShowRawMaterialsList(false)
+        setShowSurfaceTreatmentList(false)
     }
 
     const closeDrawer = (e = '') => {
@@ -370,11 +371,11 @@ function ERSimulation(props) {
             setIsWarningMessageShow(true)
             return false
         }
-          // Check if user has made any edits
-    if (!hasUserMadeEdits) {
-        Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
-        return false;
-    }
+        // Check if user has made any edits
+        if (!hasUserMadeEdits) {
+            Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
+            return false;
+        }
         let count = 0
         let listData = []
         let fromListData = ''
@@ -397,7 +398,7 @@ function ERSimulation(props) {
         //     Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`)
         //     return false
         // }
-        
+
         dispatch(setExchangeRateListBeforeDraft(listData))
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(listData, 'Currency') }))
         switch (simulationApplicability?.value) {
@@ -428,12 +429,17 @@ function ERSimulation(props) {
         return returnExcelColumn(EXCHANGE_IMPACT_DOWNLOAD_EXCEl, list)
     };
     const onCellValueChanged = (params) => {
-        
         if (params.column.colId === 'NewCurrencyExchangeRate') {
-            setHasUserMadeEdits(true);
+            // Only set hasUserMadeEdits to true if:
+            // 1. NewExchangeRateId is null/undefined
+            // 2. The new value is different from the original CurrencyExchangeRate
+            if (!params.data.NewExchangeRateId && 
+                Number(params.data.NewCurrencyExchangeRate) !== Number(params.data.CurrencyExchangeRate)) {
+                setHasUserMadeEdits(true);
+            }
         }
     };
-    
+
     const returnExcelColumn = (data = [], TempData) => {
 
         let temp = []
@@ -513,16 +519,20 @@ function ERSimulation(props) {
                                         >
                                             <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
                                             <AgGridColumn field="ToCurrency" headerName="To Currency" minWidth={135}></AgGridColumn>
-                                            {/* <AgGridColumn field="Currency" editable='false' headerName="Currency" width={columnWidths.Currency}></AgGridColumn> */}
-                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" width={columnWidths.CostingNumber}></AgGridColumn>}
-                                            {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" width={columnWidths.PartNumber}></AgGridColumn>}
-                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" width={columnWidths.BankRate}></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " width={columnWidths.BankCommissionPercentage}></AgGridColumn>
-                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" width={columnWidths.CustomRate}></AgGridColumn>
+                                            {/* <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={columnWidths.Currency}></AgGridColumn> */}
+                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
+                                            {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" minWidth={columnWidths.PartNumber}></AgGridColumn>}
+                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={columnWidths.BankRate}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={columnWidths.BankCommissionPercentage}></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={columnWidths.CustomRate}></AgGridColumn>
                                             {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate" marryChildren={true} >
-                                                <AgGridColumn width={columnWidths.CurrencyExchangeRate} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.NewCurrencyExchangeRate} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={(!isImpactedMaster && getConfigurationKey()?.IsExchangeRateEditableForSimulation)} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Exchange Rate" marryChildren={true} >
+                                                <AgGridColumn minWidth={columnWidths.CurrencyExchangeRate} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.NewCurrencyExchangeRate} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={(params) => {
+                                                    return !isImpactedMaster &&
+                                                        getConfigurationKey()?.IsExchangeRateEditableForSimulation &&
+                                                        !params?.data?.NewExchangeRateId;
+                                                }} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                             </AgGridColumn>}
 
                                             {isImpactedMaster && <>
