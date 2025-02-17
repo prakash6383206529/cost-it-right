@@ -1500,8 +1500,8 @@ let PercentageCalc = 0
                                                     <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewNetLandedCostLocalConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
-                                                {(!isImpactedMaster || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
-                                                {(!isImpactedMaster || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(Currency)`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>}
+                                                {(!isImpactedMaster||String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
+                                                {(!isImpactedMaster ||String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(Currency)`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>}
 
                                                 {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
 
