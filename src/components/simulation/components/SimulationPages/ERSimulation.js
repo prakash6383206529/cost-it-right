@@ -384,15 +384,14 @@ function ERSimulation(props) {
                 checkForNull(item?.NewCurrencyExchangeRate) === checkForNull(item?.CurrencyExchangeRate)) {
                 hasValidEdits = true;
                 count = count + 1;
-                listData.push(item);
-                fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
-                toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
-            }else{
-                listData.push(item);
-                listData.push(item);
-                fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
-                toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
+                // listData.push(item);
+                // fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
+                // toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
             }
+                listData.push(item);
+                fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
+                toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
+          
 
             return null;
         });
