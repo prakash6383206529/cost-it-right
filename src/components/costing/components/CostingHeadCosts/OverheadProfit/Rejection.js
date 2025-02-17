@@ -558,7 +558,7 @@ function Rejection(props) {
                             </span>
                         </Col>
                         <Col md="2">
-                            <span className="head-text">
+                            <span className="head-text word-nowrap">
                                 Rejection Recovery Cost
                             </span>
                         </Col>

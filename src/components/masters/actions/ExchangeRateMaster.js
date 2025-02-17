@@ -193,7 +193,7 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
 
             }
              // Add NewExchangeRateId only if getExchangeRateDataListForSimulation is false
-             if (!getConfigurationKey().IsExchangeRateEditableForSimulation) {
+             if (!getConfigurationKey().IsExchangeRateEditableForSimulation||item?.NewExchangeRateId!==null) {
                 data.NewExchangeRateId = item?.NewExchangeRateId;
             }
             const request = axios.post(API.createExchangeRate, data, config());

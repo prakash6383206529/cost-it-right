@@ -154,7 +154,7 @@ function AddConditionCosting(props) {
         // isFromImport ? type === 'Fixed' ? 'mb-3' : 'mt-4 pt-1' : type === 'Percentage' ? 'mb-3' : 'mt-4 pt-1'
         let cssClass = '';
         if (isFromImport) {
-            if (type?.label === "") {
+            if (!type) {
                 cssClass = 'mb-3';
             } else if (type?.label === "Fixed") {
                 cssClass = 'mb-3';
@@ -162,7 +162,7 @@ function AddConditionCosting(props) {
                 cssClass = 'mt-4 pt-1';
             }
         } else {
-            if (type?.label === "") {
+            if (!type) {
                 cssClass = 'mb-3';
             } else if (type?.label === "Fixed") {
                 cssClass = 'mb-3';

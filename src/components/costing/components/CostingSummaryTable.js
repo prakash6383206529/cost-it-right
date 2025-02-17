@@ -3220,7 +3220,7 @@ const CostingSummaryTable = (props) => {
                                        <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.value : ''}</span> */}
 
                                       <div className={`${highlighter("NetDiscountsCost")}`}>
-                                        <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.NetDiscountsCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.NetDiscountsCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''}</span>
+                                        <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetDiscountsCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetDiscountsCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''}</span>
                                       </div>
                                       {/* <span className="d-inline-block ">{"Applicability"}</span>
                                       <span className="d-inline-block ">{"Value"}</span>

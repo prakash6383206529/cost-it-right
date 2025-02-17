@@ -556,7 +556,7 @@ class AddFuel extends Component {
     const currentIsImport = this.state.isImport;
     this.setState({ ...this.initialState, costingTypeId: costingHeadFlag,
       isImport: currentIsImport // Preserve isImport value
-     }, () => {
+    }, () => {
       if (costingHeadFlag === CBCTypeId) {
         //this.props.getClientSelectList(() => { })
       }
@@ -678,14 +678,14 @@ class AddFuel extends Component {
         CostingHeadId: Number(costingTypeId),
       }
     })
-
+    
     if (isEditFlag) {
+      
 
-
-
+      
       let addRow = 0
       let count = 0
-      if (rateGrid.length > this.state.RateChange.FuelDetails.length) {
+      if (rateGrid.length >= this.state.RateChange.FuelDetails.length) {
         addRow = 1
       }
       if (addRow === 0) {
@@ -721,7 +721,7 @@ class AddFuel extends Component {
         LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
         FuelDetails: fuelDetailArray,
       }
-
+      
       this.props.updateFuelDetail(requestData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
@@ -896,7 +896,7 @@ class AddFuel extends Component {
     }
   };
   fuelRateTitle = () => {
-    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` :`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
       toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
@@ -915,7 +915,7 @@ class AddFuel extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency               
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
@@ -1208,8 +1208,8 @@ class AddFuel extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleFuel}
                                   valueDescription={this.state.fuel}
-                                  disabled={isEditFlag ? true : false}
-                                />
+                                  disabled={isEditFlag || this?.state?.rateGrid?.length > 0}
+                                  />
                               </div>
                               {!isEditFlag && (
                                 <div id="AddFuel_Toggle"
@@ -1354,7 +1354,7 @@ class AddFuel extends Component {
                             </div>
                           </Col>}
                           <Col md="3">
-                          {this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.fuelRateTitle()?.toolTipTextNetCostBaseCurrency : this.fuelRateTitle()?.tooltipTextPlantCurrency} />}
+                            {this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.fuelRateTitle()?.toolTipTextNetCostBaseCurrency : this.fuelRateTitle()?.tooltipTextPlantCurrency} />}
                             <div className='p-relative'>
                               <Field
                                 label={`Rate (${fieldsObj?.plantCurrency ?? 'Currency'})`}
@@ -1376,7 +1376,7 @@ class AddFuel extends Component {
                           {!this.state?.hidePlantCurrency &&
                             (
                               <Col md="3">
-                                 <TooltipCustom disabledIcon={true} id="fuel-rate" tooltipText={this.state.isImport ? this.fuelRateTitle()?.toolTipTextNetCostBaseCurrency : this.fuelRateTitle()?.tooltipTextPlantCurrency} />
+                                <TooltipCustom disabledIcon={true} id="fuel-rate" tooltipText={this.state.isImport ? this.fuelRateTitle()?.toolTipTextNetCostBaseCurrency : this.fuelRateTitle()?.tooltipTextPlantCurrency} />
                                 <div className='p-relative'>
                                   <Field
                                     label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}

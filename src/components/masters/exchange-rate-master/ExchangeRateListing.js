@@ -127,7 +127,7 @@ const ExchangeRateListing = (props) => {
     */
     const getTableListData = (currencyId = 0) => {
         let filterData = { currencyId: currencyId, costingHeadId: currencyId, vendorId: props.isSimulation ? filteredRMData?.VendorId ? filteredRMData?.VendorId : '' : '', customerId: props.isSimulation ? filteredRMData?.CustomerId ? filteredRMData?.CustomerId : '' : '', isBudgeting: currencyId, currency: '', isRequestForSimulation: props.isSimulation ? true : false, }
-        if (props.isSimulation) {
+        if (props.isSimulation/* &&(!getConfigurationKey()?.IsExchangeRateEditableForSimulation) */) {
             props?.changeTokenCheckBox(false)
             dispatch(getExchangeRateDataListForSimulation(true, filterData, res => {
                 if (res.status === 204 && res.data === '') {

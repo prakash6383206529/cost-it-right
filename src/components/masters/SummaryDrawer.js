@@ -29,7 +29,7 @@ import { ErrorMessage } from '../simulation/SimulationUtils';
 import ViewDrawer from '../costing/components/approval/ViewDrawer';
 
 function SummaryDrawer(props) {
-    
+
     const { approvalData } = props
     const dispatch = useDispatch()
     /**
@@ -94,7 +94,7 @@ function SummaryDrawer(props) {
             setQuotationId(QuotationId)
             setIsRfq(QuotationId !== null ? true : false)
             setApprovalLevelStep(Data?.MasterSteps)
-            
+
             setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId, DepartmentId: Data?.DepartmentId, DepartmentName: Data?.DepartmentName })
             setLoader(false)
             let masterPlantId = ''
@@ -246,7 +246,6 @@ function SummaryDrawer(props) {
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
     }
-
     return (
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
@@ -255,29 +254,23 @@ function SummaryDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    {/* <h3>{`Master Summary (Token No.${approvalDetails.Token}):`}</h3> */}
                                     <h3>{`${approvalDetails?.ApprovalTypeId === LPSAPPROVALTYPEID ? 'LPS' : (approvalDetails?.ApprovalTypeId === CLASSIFICATIONAPPROVALTYPEID ? 'Classification' : 'Master')} Summary (Token No.${approvalDetails?.Token ?? ''}):`}</h3>
-
-
                                 </div>
-                                    <button type={'button'} className="apply mr5" onClick={() => setViewButton(true)}>
-                                        View All
-                                    </button>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
                                     className={'close-button right'}>
                                 </div>
-                               
+
                             </Col>
-                                   
-                                  
+
+
                         </Row>
 
                         {loader ? <LoaderCustom /> :
                             <Row className="mx-0 mb-3">
                                 {getConfigurationKey()?.IsSAPConfigured && <ErrorMessage module={isRMApproval ? 'RM' : isBOPApproval ? 'BOP' : ''} id={approvalData?.id} />}
                                 <Col>
-                                    <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} approverData={dataForFetchingAllApprover} />
+                                    <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} approverData={dataForFetchingAllApprover} viewAll={() => setViewButton(true)} />
 
 
                                     {isRMApproval && <>
@@ -363,7 +356,7 @@ function SummaryDrawer(props) {
                 //approvalObj={approvalObj}
                 />
             }
-             {
+            {
                 viewButton && <ViewDrawer
                     approvalLevelStep={approvalLevelStep}
                     isOpen={viewButton}
