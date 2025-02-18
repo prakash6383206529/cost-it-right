@@ -565,7 +565,7 @@ class AddInterestRate extends Component {
         Data.PaymentTermPercent === values.PaymentTermPercent &&
         Data.RepaymentPeriod === values.RepaymentPeriod && DropdownNotChanged) {
 
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Interest Rate Details');
         return false;
       }
       this.setState({ setDisable: true })

@@ -694,7 +694,7 @@ class AddFreight extends Component {
         DeleteChanged
       ) {
 
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Freight Details');
         return false
       }
       this.setState({ setDisable: true })

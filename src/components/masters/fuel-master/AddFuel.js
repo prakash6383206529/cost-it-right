@@ -649,7 +649,7 @@ class AddFuel extends Component {
       }
       // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
       if (HandleChanged && addRow === 0 && count === rateGrid.length && DeleteChanged) {
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Fuel Details');
         return false
       }
 

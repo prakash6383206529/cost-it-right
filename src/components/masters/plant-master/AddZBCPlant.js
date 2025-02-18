@@ -261,7 +261,7 @@ class AddZBCPlant extends Component {
         DataToCheck?.Extension === values?.Extension && DataToCheck?.AddressLine1 === values?.AddressLine1 &&
         DataToCheck?.AddressLine2 === values?.AddressLine2 && DataToCheck?.ZipCode === values?.ZipCode) {
 
-        this.toggleDrawer('', 'cancel')
+          Toaster.warning('Please change data to save Plant Details');
         return false
       }
 

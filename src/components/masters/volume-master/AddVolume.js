@@ -672,8 +672,8 @@ class AddVolume extends Component {
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
 
-      if (this.state.DataToChange) {
-        this.cancel('cancel')
+      if (this.state?.DataToChange) {
+        Toaster.warning('Please change the data to save Volume Details');
         return false
       }
       this.setState({ setDisable: true })

@@ -211,7 +211,7 @@ class AddProcessDrawer extends Component {
     /** Update existing detail of supplier master **/
     if (isEditFlag) {
       if (DataToChange.ProcessName === values.ProcessName) {
-        this.toggleDrawer('', '', 'cancel')
+        Toaster.warning('Please change data to save Process Details');
         return false
       }
       let formData = {

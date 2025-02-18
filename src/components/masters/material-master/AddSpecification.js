@@ -382,9 +382,13 @@ class AddSpecification extends Component {
     const { ID, isEditFlag } = this.props;
 
     if (isEditFlag) {
-      if (DataToChange.Specification === values.Specification && DropdownChanged) {
-        this.cancel('cancel')
-        return false
+      const noChanges = DataToChange?.Specification === values?.Specification && 
+                       DataToChange?.RawMaterialId === RawMaterial?.value &&
+                       DataToChange?.GradeId === RMGrade?.value;
+                       
+      if (noChanges) {
+        Toaster.warning("Please change data to save specification Details");
+        return false;
       }
       this.setState({ setDisable: true })
       let formData = {

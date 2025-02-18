@@ -184,9 +184,18 @@ function ManageSOBDrawer(props) {
     * @description Used to Submit the form
     */
   const onSubmit = (values) => {
+    if (!effectiveDate) {
+      Toaster.warning('Please select Effective Date');
+      return;
+    }
 
     // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
+    const isDataUnchanged = JSON.stringify(GridData) === JSON.stringify(GridDataOldArray);
 
+    if (isDataUnchanged) {
+      Toaster.warning('Please change data to save SOB');
+      return;
+    }
 
     const sum = GridData.reduce((accummlator, el, currentIndex) => {
 

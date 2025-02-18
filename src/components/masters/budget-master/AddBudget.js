@@ -7,7 +7,7 @@ import { getCurrencySelectList, getPlantSelectListByType, getVendorNameByVendorS
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from '../../../helper/auth'
-import { BOUGHTOUTPARTSPACING, BUDGET_ID, CBCTypeId, EMPTY_GUID, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { BOUGHTOUTPARTSPACING, BUDGET_ID, CBCTypeId, EMPTY_GUID, PRODUCT_ID, searchCount, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -595,6 +595,33 @@ function AddBudget(props) {
      * @description Used to Submit the form
      */
     const onSubmit = debounce((values) => {
+        // Add check for data changes when updating
+        if (isEditFlag) {
+            const hasNoChanges = (
+                selectedPlants?.value === DataChanged?.PlantId && part?.value === DataChanged?.PartId && year?.label === DataChanged?.FinancialYear &&
+                costingTypeId === DataChanged?.CostingHeadId && partType?.label === DataChanged?.PartType && checkForDecimalAndNull(totalSum, initialConfiguration.NoOfDecimalForPrice) === 
+                    checkForDecimalAndNull(DataChanged.BudgetedPoPrice, initialConfiguration.NoOfDecimalForPrice) &&
+                checkForDecimalAndNull(currentPrice, initialConfiguration.NoOfDecimalForPrice) === 
+                    checkForDecimalAndNull(DataChanged.NetPoPrice, initialConfiguration.NoOfDecimalForPrice) &&
+                // Optional fields - need to handle null cases
+                ((!vendorName?.value && !DataChanged?.VendorId) || vendorName?.value === DataChanged?.VendorId) &&
+                ((!client?.value && !DataChanged?.CustomerId) || client?.value === DataChanged?.CustomerId) &&
+                ((!currency?.value && !DataChanged?.CurrencyId) || currency?.value === DataChanged?.CurrencyId) &&
+                // Condition data comparison - handle null case
+                (!DataChanged?.ConditionsData ? conditionTableData.length === 0 : 
+                    conditionTableData.length === DataChanged?.ConditionsData?.length &&
+                    conditionTableData.every((condition, index) => 
+                        checkForDecimalAndNull(condition.ConditionCost, initialConfiguration.NoOfDecimalForPrice) === 
+                        checkForDecimalAndNull(DataChanged?.ConditionsData[index]?.ConditionCost, initialConfiguration?.NoOfDecimalForPrice)
+                    )
+                )
+            );
+
+            if (hasNoChanges) {
+                Toaster.warning('Please change the data to save the Budget.');
+                return false;
+            }
+        }
 
         let startYear = year.label.slice(0, 4);
         let endYear = year.label.slice(-4);
