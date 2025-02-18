@@ -156,18 +156,37 @@ const BOPCompareTable = (props) => {
                 sectionTwo.push(formattedDataTwo);
             });
 
-            // Section Three Data
-            sectionThree = viewBOPDetails?.map(item => [
-                item?.bestCost ? '' : (
-                    <div
-                        onClick={() => handleOpenSpecificationDrawerSingle(item.BoughtOutPartId)}
-                        className={'link'}
-                    >
-                        View Specifications
-                    </div>
-                ),
-                item.Remark || ''
-            ]);
+            // Section Three Data with safety checks
+            sectionThree = viewBOPDetails.map(item => {
+                // Null check for item
+                if (!item) {
+                    return [null, ''];
+                }
+
+                // Safe check for bestCost property
+                const isBestCost = item.bestCost === true || item.bestCost === "";
+
+                // Safe check for BoughtOutPartId
+                const hasValidId = item?.BoughtOutPartId && 
+                                 typeof item.BoughtOutPartId !== 'undefined';
+
+                return [
+                    // Only show View Specifications if:
+                    // 1. Not a best cost row
+                    // 2. Has valid BoughtOutPartId
+                    // 3. Not undefined/null
+                    !isBestCost && hasValidId ? (
+                        <div
+                            onClick={() => handleOpenSpecificationDrawerSingle(item.BoughtOutPartId)}
+                            className={'link'}
+                        >
+                            View Specifications
+                        </div>
+                    ) : null,
+                    // Safe check for Remark
+                    typeof item.Remark === 'string' ? item.Remark : ''
+                ];
+            });
 
             // Main Header Data
             const mainHeader = viewBOPDetails?.map((item, index) => ({
@@ -190,37 +209,57 @@ const BOPCompareTable = (props) => {
 
             const sections = [
                 {
-                    header: sectionOneHeader,
-                    data: sectionOne,
-                    isHighlightedRow: true,
-                },
-                {
-                    header: ['Minimum Order Quantity', 'BOP Net Cost'],
-                    data: sectionTwo,
+                    header: sectionOneHeader || [],
+                    data: sectionOne || [],
                     isHighlightedRow: true,
                 },
                 {
                     header: [
-                        <span className="d-block small-grey-text p-relative">
-                            BOP Specification
-                            <button
-                                className="Balance mb-0 button-stick"
-                                type="button"
-                                onClick={handleOpenSpecificationDrawerMultiple}
-                            >
-                            </button>
-                        </span>,
-                        'Remark'
+                        "No. of Pieces",
+                        showConvertedCurrency ? 
+                            `Net Landed Cost (${getConfigurationKey()?.BaseCurrency || ''})` : 
+                            "Net Landed Cost"
                     ],
-                    data: sectionThree,
+                    data: sectionTwo || [],
+                    isHighlightedRow: true,
+                },
+                {
+                    header: ["Specifications", "Remarks"],
+                    data: sectionThree || [],
                     isHighlightedRow: false,
                 }
             ];
 
+            // Safely set state
             setSectionData(sections);
-            setMainHeadingData(mainHeader);
+            setMainHeadingData(mainHeader || []);
         }
     }, [viewBOPDetails, showConvertedCurrency]);
+
+    // Safe handler for specification drawer
+    const handleOpenSpecificationDrawerSingle = (id) => {
+        try {
+            if (!id) {
+                console.warn('Invalid BoughtOutPartId');
+                return;
+            }
+            setSelectedBopId([id]);
+            setOpenSpecification(true);
+        } catch (error) {
+            console.error('Error opening specification drawer:', error);
+        }
+    };
+
+    // Add cleanup on unmount
+    useEffect(() => {
+        return () => {
+            setOpenSpecification(false);
+            setSelectedBopId(null);
+            setSectionData([]);
+            setMainHeadingData([]);
+        };
+    }, []);
+
     const closeSpecificationDrawer = () => {
         setOpenSpecification(false);
     };
@@ -237,10 +276,6 @@ const BOPCompareTable = (props) => {
         }
     };
 
-    const handleOpenSpecificationDrawerSingle = (id) => {
-        setSelectedBopId([id]);
-        setOpenSpecification(true);
-    };
     const bestCostObjectFunction = (arrayList) => {
         if (!arrayList?.length) return [];
 
