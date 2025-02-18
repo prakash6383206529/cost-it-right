@@ -101,7 +101,6 @@ function RMIndexationSimulation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-
     const { technologyLabel, vendorLabel } = useLabels();
     const dispatch = useDispatch()
 
@@ -116,6 +115,7 @@ function RMIndexationSimulation(props) {
     const tableData = isApprovalSummary ? rmIndexedSimulationSummaryData : isCostingSimulation ? list : indexedRMForSimulation
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const RawMaterialsEffectiveDate = useSelector((state) => state.simulation.rawMaterialsEffectiveDate);
+    
 
 
     const columnWidths = {
@@ -1500,8 +1500,8 @@ let PercentageCalc = 0
                                                     <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewNetLandedCostLocalConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
-                                                {!isImpactedMaster && String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
-                                                {!isImpactedMaster && String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(Currency)`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>}
+                                                {(!isImpactedMaster||String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
+                                                {(!isImpactedMaster ||String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(Currency)`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>}
 
                                                 {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
 

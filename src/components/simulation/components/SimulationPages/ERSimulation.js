@@ -92,15 +92,12 @@ function ERSimulation(props) {
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
-            if (!getConfigurationKey().IsExchangeRateEditableForSimulation) {
-                if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
+            if (/* !getConfigurationKey().IsExchangeRateEditableForSimulation|| */item?.NewExchangeRateId===null) {
+                //if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
                     item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
                     return null
-                }
-            } else {
-                item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
-                return null
-            }
+                //}
+            } 
         })
     }, [list])
     useEffect(() => {
@@ -372,23 +369,37 @@ function ERSimulation(props) {
             return false
         }
         // Check if user has made any edits
-        if (!hasUserMadeEdits) {
-            Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
-            return false;
-        }
+        // if (!hasUserMadeEdits) {
+        //     Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
+        //     return false;
+        // }
         let count = 0
         let listData = []
         let fromListData = ''
         let toListData = ''
+        let hasValidEdits = false;
+
         list && list?.map((item) => {
-            if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
-                count = count + 1
-                listData.push(item)
-                fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency
-                toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency
+            if (item.NewExchangeRateId===null &&
+                checkForNull(item?.NewCurrencyExchangeRate) === checkForNull(item?.CurrencyExchangeRate)) {
+                hasValidEdits = true;
+                count = count + 1;
+                // listData.push(item);
+                // fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
+                // toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
             }
-            return null
-        })
+                listData.push(item);
+              fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
+                toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
+            
+
+            return null;
+        });
+        if (/* !hasUserMadeEdits ||  */hasValidEdits) {
+            
+            Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
+            return false;
+        }
         setFromListData(fromListData)
         setToListData(toListData)
 
@@ -430,11 +441,7 @@ function ERSimulation(props) {
     };
     const onCellValueChanged = (params) => {
         if (params.column.colId === 'NewCurrencyExchangeRate') {
-            // Only set hasUserMadeEdits to true if:
-            // 1. NewExchangeRateId is null/undefined
-            // 2. The new value is different from the original CurrencyExchangeRate
-            if (!params.data.NewExchangeRateId && 
-                Number(params.data.NewCurrencyExchangeRate) !== Number(params.data.CurrencyExchangeRate)) {
+            if (Number(params.data.NewCurrencyExchangeRate) !== Number(params.data.CurrencyExchangeRate)) {
                 setHasUserMadeEdits(true);
             }
         }
