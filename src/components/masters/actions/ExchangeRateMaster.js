@@ -192,8 +192,8 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
 
 
             }
-             // Add NewExchangeRateId only if getExchangeRateDataListForSimulation is false
-             if (!getConfigurationKey().IsExchangeRateEditableForSimulation||item?.NewExchangeRateId!==null) {
+            // Add NewExchangeRateId only if getExchangeRateDataListForSimulation is false
+            if (!getConfigurationKey().IsExchangeRateEditableForSimulation || item?.NewExchangeRateId !== null) {
                 data.NewExchangeRateId = item?.NewExchangeRateId;
             }
             const request = axios.post(API.createExchangeRate, data, config());
@@ -222,7 +222,7 @@ export function getExchangeRateDataListForSimulation(isAPICall, data, callback) 
     return (dispatch) => {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
-            axios.get(`${API.getExchangeRateDataListForSimulation}?currencyId=${data?.currencyId}&costingHeadId=${data?.costingHeadId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&isBudgeting=${data?.isBudgeting}&currency=${data?.currency}&isRequestForSimulation=${data?.isRequestForSimulation ? true : false}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}`, config())
+            axios.get(`${API.getExchangeRateDataListForSimulation}?currencyId=${data?.currencyId}&costingHeadId=${data?.costingHeadId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&isBudgeting=${data?.isBudgeting}&currency=${data?.currency}&isRequestForSimulation=${data?.isRequestForSimulation ? true : false}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}&exchangeRateSimulationTechnologyId=${data?.exchangeRateSimulationTechnologyId}&isAssociatedWithCosting=${data?.isAssociatedWithCosting ? data?.isAssociatedWithCosting : false}`, config())
                 .then((response) => {
                     if (response.data.Result === true || response.status === 204) {
                         dispatch({

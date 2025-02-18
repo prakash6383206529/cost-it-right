@@ -122,45 +122,45 @@ function RMDomesticListing(props) {
 
     };
 
-    const params = useMemo(() => {
-        let obj = { ...floatingFilterData }
+    // const params = useMemo(() => {
+    //     let obj = { ...floatingFilterData }
 
-        if (obj?.EffectiveDate) {
-            if (obj.EffectiveDate.dateTo) {
-                let temp = []
-                temp.push(DayTime(obj.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
-                temp.push(DayTime(obj.EffectiveDate.dateTo).format('DD/MM/YYYY'))
-                obj.dateArray = temp
-            }
-        }
+    //     if (obj?.EffectiveDate) {
+    //         if (obj.EffectiveDate.dateTo) {
+    //             let temp = []
+    //             temp.push(DayTime(obj.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+    //             temp.push(DayTime(obj.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+    //             obj.dateArray = temp
+    //         }
+    //     }
 
-        obj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : ''
-        obj.Currency = floatingFilterData?.Currency
-        obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
-        obj.OtherNetCost = floatingFilterData?.OtherNetCost
-        obj.StatusId = [props?.approvalStatus].join(",")
-        let data = {
-            StatusId: [props?.approvalStatus].join(","),
-            net_landed_min_range: value.min,
-            net_landed_max_range: value.max,
-            ListFor: ListFor,
-        }
+    //     obj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : ''
+    //     obj.Currency = floatingFilterData?.Currency
+    //     obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+    //     obj.OtherNetCost = floatingFilterData?.OtherNetCost
+    //     obj.StatusId = [props?.approvalStatus].join(",")
+    //     let data = {
+    //         StatusId: [props?.approvalStatus].join(","),
+    //         net_landed_min_range: value.min,
+    //         net_landed_max_range: value.max,
+    //         ListFor: ListFor,
+    //     }
 
-        return {
-            data: { technologyId: props?.technology ?? null },
-            skip: 0,
-            take: globalTakes,
-            isPagination: true,
-            obj: obj,
-            isImport: false,
-            dataObj: obj,
-            master: 'RawMaterial',
-            tabs: 'Domestic',
-            isMasterSummaryDrawer: props?.isMasterSummaryDrawer
-        }
-    }, []);
+    //     return {
+    //         data: { technologyId: props?.technology ?? null },
+    //         skip: 0,
+    //         take: globalTakes,
+    //         isPagination: true,
+    //         obj: obj,
+    //         isImport: false,
+    //         dataObj: obj,
+    //         master: 'RawMaterial',
+    //         tabs: 'Domestic',
+    //         isMasterSummaryDrawer: props?.isMasterSummaryDrawer
+    //     }
+    // }, []);
 
-    const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
+    // const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
 
     useEffect(() => {
         if (rmDataList?.length > 0) {
@@ -187,9 +187,12 @@ function RMDomesticListing(props) {
                 if (isSimulation) {
                     props?.changeTokenCheckBox(false)
                 }
+                getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
             }
             setvalue({ min: 0, max: 0 });
         }
+
+
     }, [])
 
 
@@ -212,6 +215,7 @@ function RMDomesticListing(props) {
     */
     const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
         const { isSimulation } = props
+        console.log("isSimulation", isSimulation)
 
         if (filterModel?.EffectiveDate && !isReset) {
 
@@ -226,7 +230,7 @@ function RMDomesticListing(props) {
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [props?.approvalStatus]
-        
+
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
             plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
@@ -245,7 +249,7 @@ function RMDomesticListing(props) {
         if (isPagination === true) {
             setloader(true)
         }
-        dataObj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : ''
+        dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
         dataObj.Currency = floatingFilterData?.Currency
         dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
@@ -541,7 +545,7 @@ function RMDomesticListing(props) {
                     title={"Cost Movement"}
                 />
 
-                {(!benchMark ) && (
+                {(!benchMark) && (
                     <>
                         {ViewRMAccessibility && <Button
                             id={`rmDomesticListing_view${props.rowIndex}`}

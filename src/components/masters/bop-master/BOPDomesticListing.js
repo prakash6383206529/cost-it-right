@@ -148,7 +148,7 @@ const BOPDomesticListing = (props) => {
     }
     let statusString = [props?.approvalStatus].join(",")
     const filterData = {
-      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props?.isSimulation && !props?.isBOPAssociated ? "" : props.ListFor, IsBOPAssociated: props?.isBOPAssociated,
+      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props?.isSimulation ? props?.ListFor : 'master', IsBOPAssociated: props?.isBOPAssociated,
       Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
       LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
       StatusId: statusString
@@ -167,7 +167,7 @@ const BOPDomesticListing = (props) => {
         if (props.isSimulation) {
           props?.changeTokenCheckBox(false)
         }
-        dataObj.EntryType = !props?.isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : null
+        dataObj.EntryType = Number(ENTRY_TYPE_DOMESTIC)
         dataObj.Currency = floatingFilterData?.Currency
         dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
