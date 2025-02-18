@@ -66,7 +66,7 @@ const {vendorLabel}= useLabels()
     const [openConditionCostDrawer, setOpenConditionCostDrawer] = useState(false)
     const [otherCostDetailForRow, setOtherCostDetailForRow] = useState([])
     const [conditionCostDetailForRow, setConditionCostDetailForRow] = useState([])
-      
+
     const [rowIndex, setRowIndex] = useState('')
     const [editIndex, setEditIndex] = useState('')
     const [isViewFlag, setIsViewFlag] = useState(false)
@@ -80,7 +80,7 @@ const {vendorLabel}= useLabels()
 
     const dispatch = useDispatch()
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
-const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const { selectedMasterForSimulation, selectedTechnologyForSimulation ,exchangeRateListBeforeDraft} = useSelector(state => state.simulation)
     const columnWidths = {
         BoughtOutPartNumber: showCompressedColumns ? 50 : 140,
@@ -112,7 +112,7 @@ const masterList = useSelector(state => state.simulation.masterSelectListSimulat
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
             setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
-        
+
         if (!isbulkUpload) {
             list && list?.map(item => {
                 item.NewBasicRate = item.BasicRate
@@ -140,15 +140,15 @@ const masterList = useSelector(state => state.simulation.masterSelectListSimulat
         }
     }, [list])
     useEffect(() => {
-        
+
         if (list && list?.[rowIndex]) {
-        
+
             let obj = list?.[rowIndex]
             obj.otherCostTableData = obj.NewBoughtOutPartOtherCostDetailsSchema
             obj.conditionTableData = obj.NewBoughtOutPartConditionsDetails
-            
+
             const updatedObjOtherCost = updateCostValue(false, obj, basicRate, true)
-            
+
             obj.NewBoughtOutPartOtherCostDetailsSchema = updatedObjOtherCost?.tableData
 
             obj.NewOtherNetCost = updatedObjOtherCost?.formValue?.value
@@ -192,91 +192,91 @@ const masterList = useSelector(state => state.simulation.masterSelectListSimulat
         }
         setShowTooltip(false)
     }, 500)
-const setValueFunction = (isExchangeRate, res) => {
-    const filteredMasterId = masterList?.find(item => item?.Text === "BOP Import")?.Value;
+    const setValueFunction = (isExchangeRate, res) => {
+        const filteredMasterId = masterList?.find(item => item?.Text === "BOP Import")?.Value;
 
-    if (!isEffectiveDateSelected) {
-        setIsWarningMessageShow(true)
-        return false
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
+
+        let obj = {
+            SimulationTechnologyId: isExchangeRate ? EXCHNAGERATE : selectedMasterForSimulation?.value,
+            SimulationTypeId: list[0].CostingTypeId,
+            LoggedInUserId: loggedInUserId(),
+            TechnologyId: selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null,
+            TechnologyName: selectedTechnologyForSimulation?.label ? selectedTechnologyForSimulation?.label : null,
+            EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+            SimulationHeadId: list[0].CostingTypeId,
+            IsSimulationWithOutCosting: true,
+            SimulationIds: tokenForMultiSimulation,
+            IsExchangeRateSimulation: false,
+            ExchangeRateSimulationTechnologyId: filteredMasterId
+
+        }
+
+        let tempArr = []
+        list && list.map(item => {
+            let tempObj = {
+                BoughtOutPartId: item.BoughtOutPartId,
+                OldBOPRate: item.BasicRate,
+                NewBOPRate: 0,
+                OldNetLandedCost: 0,
+                NewNetLandedCost: 0,
+                PercentageChange: 0,
+                NewOtherNetCost: item.NewOtherNetCost || 0,
+                NewNetConditionCost: item.NewNetConditionCost || 0,
+                NewNetCostWithoutConditionCost: item.NewNetCostWithoutConditionCost || 0,
+                BoughtOutPartConditionsDetails: item.NewBoughtOutPartConditionsDetails || [],
+                BoughtOutPartOtherCostDetailsSchema: item.NewBoughtOutPartOtherCostDetailsSchema || []
+            }
+
+            if ((item?.Percentage !== '') && (checkForNull(item?.Percentage) !== 0)) {
+                const val = item?.BasicRate + (item?.BasicRate * item?.Percentage / 100)
+                tempObj.NewBOPRate = val
+                tempObj.OldNetLandedCost = ((checkForNull(item.BasicRate) + checkForNull(item?.OtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item?.NetConditionCost)
+                tempObj.NewNetLandedCost = ((checkForNull(val) + checkForNull(item.NewOtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item.NewNetConditionCost)
+                tempObj.PercentageChange = checkForNull(item.Percentage)
+            } else {
+                tempObj.NewBOPRate = item.NewBasicRate
+                tempObj.OldNetLandedCost = ((checkForNull(item.BasicRate) + checkForNull(item?.OtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item?.NetConditionCost)
+                tempObj.NewNetLandedCost = ((Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.NewOtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item.NewNetConditionCost)
+            }
+            if (checkForNull(tempObj.OldNetLandedCost) !== checkForNull(tempObj.NewNetLandedCost)) {
+                tempArr.push(tempObj)
+            }
+            return null;
+        })
+
+
+        let check = 0
+        let percentageCheck = 0
+        tempArr && tempArr?.map(item => {
+            if (checkForNull(item?.OldNetLandedCost) !== checkForNull(item?.NewNetLandedCost)) {
+                check = check + 1
+            }
+            if (item?.PercentageChange > 100) {
+                percentageCheck = percentageCheck + 1
+            }
+        })
+        if (check === 0) {
+            Toaster.warning("There is no changes in net cost. Please change, then run simulation")
+            return false
+        } else if (percentageCheck !== 0) {
+            Toaster.warning("Percentage should be less than or equal to 100")
+            return false
+        }
+        setIsDisable(true)
+        obj.SimulationBoughtOutPart = tempArr
+
+        dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
+            setIsDisable(false)
+            if (res?.data?.Result) {
+                setToken(res.data.Identity)
+                setShowVerifyPage(true)
+            }
+        }))
     }
-
-    let obj = {
-        SimulationTechnologyId: isExchangeRate ? EXCHNAGERATE : selectedMasterForSimulation?.value,
-        SimulationTypeId: list[0].CostingTypeId,
-        LoggedInUserId: loggedInUserId(),
-        TechnologyId: selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null,
-        TechnologyName: selectedTechnologyForSimulation?.label ? selectedTechnologyForSimulation?.label : null,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        SimulationHeadId: list[0].CostingTypeId,
-        IsSimulationWithOutCosting: true,
-        SimulationIds: tokenForMultiSimulation,
-        IsExchangeRateSimulation: false ,
-       ExchangeRateSimulationTechnologyId:filteredMasterId
-
-    }
-
-    let tempArr = []
-    list && list.map(item => {
-        let tempObj = {
-            BoughtOutPartId: item.BoughtOutPartId,
-            OldBOPRate: item.BasicRate,
-            NewBOPRate: 0,
-            OldNetLandedCost: 0,
-            NewNetLandedCost: 0,
-            PercentageChange: 0,
-            NewOtherNetCost: item.NewOtherNetCost || 0,
-            NewNetConditionCost: item.NewNetConditionCost || 0,
-            NewNetCostWithoutConditionCost: item.NewNetCostWithoutConditionCost || 0,
-            BoughtOutPartConditionsDetails: item.NewBoughtOutPartConditionsDetails || [],
-            BoughtOutPartOtherCostDetailsSchema: item.NewBoughtOutPartOtherCostDetailsSchema || []
-        }
-
-        if ((item?.Percentage !== '') && (checkForNull(item?.Percentage) !== 0)) {
-            const val = item?.BasicRate + (item?.BasicRate * item?.Percentage / 100)
-            tempObj.NewBOPRate = val
-            tempObj.OldNetLandedCost = ((checkForNull(item.BasicRate)+checkForNull(item?.OtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1))+checkForNull(item?.NetConditionCost)
-            tempObj.NewNetLandedCost = ((checkForNull(val)+checkForNull(item.NewOtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item.NewNetConditionCost)
-            tempObj.PercentageChange = checkForNull(item.Percentage)
-        } else {
-            tempObj.NewBOPRate = item.NewBasicRate
-            tempObj.OldNetLandedCost = ((checkForNull(item.BasicRate)+checkForNull(item?.OtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1))+checkForNull(item?.NetConditionCost)
-            tempObj.NewNetLandedCost =( (Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate)  + checkForNull(item.NewOtherNetCost))/ (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item.NewNetConditionCost)
-        }
-        if (checkForNull(tempObj.OldNetLandedCost) !== checkForNull(tempObj.NewNetLandedCost)) {
-            tempArr.push(tempObj)
-        }
-        return null;
-    })
-
-
-    let check = 0
-    let percentageCheck = 0
-    tempArr && tempArr?.map(item => {
-        if (checkForNull(item?.OldNetLandedCost) !== checkForNull(item?.NewNetLandedCost)) {
-            check = check + 1
-        }
-        if (item?.PercentageChange > 100) {
-            percentageCheck = percentageCheck + 1
-        }
-    })
-    if (check === 0) {
-        Toaster.warning("There is no changes in net cost. Please change, then run simulation")
-        return false
-    } else if (percentageCheck !== 0) {
-        Toaster.warning("Percentage should be less than or equal to 100")
-        return false
-    }
-    setIsDisable(true)
-    obj.SimulationBoughtOutPart = tempArr
-    
-    dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
-        setIsDisable(false)
-        if (res?.data?.Result) {
-            setToken(res.data.Identity)
-            setShowVerifyPage(true)
-        }
-    }))
-}
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
     }
@@ -405,23 +405,23 @@ const setValueFunction = (isExchangeRate, res) => {
         return true
     }
 
-        const NewcostFormatter = (props) => {
+    const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const value = beforeSaveCell(cell, props.rowIndex, 'BasicRate', row.OldNetLandedCost)
         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         const NewNetLandedCost = ((checkForNull(row.NewBasicRate) + checkForNull(row?.NewOtherNetCost)) / NumberOfPieces) + checkForNull(row?.NewNetConditionCost)
-        
+
         let returnValue = ''
         if (!value) {
             returnValue = checkForDecimalAndNull(row.OldNetLandedCost)
 
         } else {
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
+            if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
             returnValue = checkForDecimalAndNull(((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100))+checkForNull(row?.OtherNetCost) / NumberOfPieces)+checkForNull(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice);
- } else {
-         // returnValue = checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)
-            returnValue = checkForDecimalAndNull(NewNetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
+            } else {
+                // returnValue = checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)
+                returnValue = checkForDecimalAndNull(NewNetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
             }
         }
 
@@ -433,7 +433,7 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     };
     const OldcostFormatter = (props) => {
         const row = props?.data;
-         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
          const NetLandedCost = (checkForNull(row.BasicRate)+checkForNull(row?.OtherNetCost) / NumberOfPieces)+checkForNull(row?.NetConditionCost)
         if (!row.BasicRate || row.BasicRate === '') return ''
         //return row.BasicRate != null ? <span title={checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}>{checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
@@ -447,7 +447,7 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
             </div>
         );
     };
-   
+
     const revisedScrapRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
@@ -522,16 +522,16 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
     const EditableCallbackForBasicRate = (props) => {
         const rowData = props?.data;
-       let value = false
+        let value = false
         if ((rowData?.Percentage !== '') && (checkForNull(rowData?.Percentage) !== 0)) {
             value = false
         } else {
             value = true
         }
-       setRowIndex(props?.node?.rowIndex)
+        setRowIndex(props?.node?.rowIndex)
         return value
     }
-   
+
     const EditableCallbackForPercentage = (props) => {
         const rowData = props?.data;
         let value = false
@@ -634,7 +634,7 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
             setEditIndex(index)
         } else {
 
-            setConditionCostDetailForRow( props?.isImpactedMaster ? row?.SimulationBoughtOutPartConditionsDetails || [] :row?.NewBoughtOutPartConditionsDetails || [])
+            setConditionCostDetailForRow(props?.isImpactedMaster ? row?.SimulationBoughtOutPartConditionsDetails || [] : row?.NewBoughtOutPartConditionsDetails || [])
             // setIsViewFlag((isRunSimulationClicked || isApprovalSummary) ? true : false)
             setIsViewFlag(false)
             setEditIndex(index)
@@ -680,8 +680,8 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (
             <>
                 {
-                   
-                        <span title={cell && value ? Number(cell) : Number(row?.OldNetConditionCost)}>{cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)} </span>
+
+                    <span title={cell && value ? Number(cell) : Number(row?.OldNetConditionCost)}>{cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)} </span>
 
                 }
                 {true && <button
@@ -703,7 +703,7 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (
             <>
                 {
-                 <span title={cell && value ? Number(cell) : Number(row?.OldNetConditionCost)}>{cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OldNetConditionCost), getConfigurationKey().NoOfDecimalForPrice)} </span>
+                    <span title={cell && value ? Number(cell) : Number(row?.OldNetConditionCost)}>{cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OldNetConditionCost), getConfigurationKey().NoOfDecimalForPrice)} </span>
 
                 }
                 {true && <button
@@ -727,7 +727,7 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
         const classGreen = (row?.NewOtherNetCost > row?.OtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OtherNetCost) ? 'green-value form-control' : 'form-class'
         setRowIndex(props?.node?.rowIndex)
-return (
+        return (
             <>
                 {
                     props?.isImpactedMaster ?
@@ -740,8 +740,8 @@ return (
                     type="button"
                     // className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
                     //onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
-                    className={`${props?.isImpactedMaster  ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}        
-                                onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
+                    className={`${props?.isImpactedMaster ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
+                    onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
                     title="Add"
                 >
                 </button>}
@@ -760,7 +760,7 @@ return (
         setRowIndex(props?.node?.rowIndex)
         return (
             <>
-                 {
+                {
                     props?.isImpactedMaster ?
                         row?.NewNetConditionCost :
                         <span title={showValue} className={`${classGreen} with-button`}>{showValue} </span>
@@ -780,36 +780,39 @@ return (
             </>
         )
     }
-   
 
-const basicPriceRevisedFormatter = (props) => {
-    const row = props?.data;
-    
-    let returnValue = '';
+    const localConversionFormatter = (props) => {
+        const cellValue = checkForNull(props?.value);
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
+    const basicPriceRevisedFormatter = (props) => {
+        const row = props?.data;
 
-    // Calculate the new basic price (basic rate + other costs)
+        let returnValue = '';
+
+        // Calculate the new basic price (basic rate + other costs)
     const newBasicRate = props?.isImpactedMaster?row.NewBOPRate:(row.NewBasicRate || row.BasicRate);
-    
-    const newOtherCost = props?.isImpactedMaster?row.NewOtherCost: row.NewOtherNetCost || row.OtherNetCost
-    const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
-    const newBasicPrice = props?.isImpactedMaster?row?.NewNetCostWithoutConditionCost:(checkForNull(newBasicRate)+checkForNull(newOtherCost)) / NumberOfPieces
-    
 
-    // if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-    //     // If percentage is applied
-    //     const basicRateWithPercentage = row.BasicRate + (row.BasicRate * row.Percentage / 100);
-    //     returnValue = checkForDecimalAndNull(basicRateWithPercentage + checkForNull(newOtherCost), getConfigurationKey().NoOfDecimalForPrice);
-    // } else {
+    const newOtherCost = props?.isImpactedMaster?row.NewOtherCost: row.NewOtherNetCost || row.OtherNetCost
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
+    const newBasicPrice = props?.isImpactedMaster?row?.NewNetCostWithoutConditionCost:(checkForNull(newBasicRate)+checkForNull(newOtherCost)) / NumberOfPieces
+
+
+        // if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
+        //     // If percentage is applied
+        //     const basicRateWithPercentage = row.BasicRate + (row.BasicRate * row.Percentage / 100);
+        //     returnValue = checkForDecimalAndNull(basicRateWithPercentage + checkForNull(newOtherCost), getConfigurationKey().NoOfDecimalForPrice);
+        // } else {
         // If direct basic rate is used
         returnValue = checkForDecimalAndNull(newBasicPrice, getConfigurationKey().NoOfDecimalForPrice);
-   // }
+        // }
 
-    return (
-        <div className='ag-header-cell-label'>
-            <span title={returnValue}>{returnValue}</span>
-        </div>
-    );
-};
+        return (
+            <div className='ag-header-cell-label'>
+                <span title={returnValue}>{returnValue}</span>
+            </div>
+        );
+    };
 
 
 
@@ -834,7 +837,8 @@ const basicPriceRevisedFormatter = (props) => {
         revisedOtherCostFormatter: revisedOtherCostFormatter,
         existingConditionCostFormatter: existingConditionCostFormatter,
         revisedConditionCostFormatter: revisedConditionCostFormatter,
-        basicPriceRevisedFormatter: basicPriceRevisedFormatter
+        basicPriceRevisedFormatter: basicPriceRevisedFormatter,
+        localConversionFormatter: localConversionFormatter
     };
 
     const basicRatetooltipToggle = () => {
@@ -868,10 +872,10 @@ const basicPriceRevisedFormatter = (props) => {
             <div className={`ag-grid-react`}>
                 {!showverifyPage &&
                     <Fragment>
-                        {showTooltip&&!props?.sImpactedMaster  && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
+                        {showTooltip && !props?.sImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
                         {/* {showTooltip && !props?.isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To edit revised scrap rate please double click on the field."}</Tooltip>} */}
 
-                       
+
                         <Row>
                             <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
@@ -941,7 +945,7 @@ const basicPriceRevisedFormatter = (props) => {
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         {list &&
-                                            (render || isLoader? <LoaderCustom customClass="loader-center" /> : (<AgGridReact
+                                            (render || isLoader ? <LoaderCustom customClass="loader-center" /> : (<AgGridReact
                                                 ref={gridRef}
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
@@ -965,7 +969,7 @@ const basicPriceRevisedFormatter = (props) => {
                                                 onCellValueChanged={onCellValueChanged}
                                             >
                                                 {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                                {<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                                                {<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()} Category`} minWidth={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
@@ -973,47 +977,47 @@ const basicPriceRevisedFormatter = (props) => {
                                                 {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={columnWidths.CustomerName} cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {<AgGridColumn field="Plants" tooltipField='Plants' editable='false' headerName="Plant (Code)" minWidth={columnWidths.Plants} cellRenderer='plantFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" tooltipField='NumberOfPieces' editable='false' headerName="Min Order Quantity" minWidth={columnWidths.NumberOfPieces} ></AgGridColumn>}
-                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                {<AgGridColumn field="Currency"width={120} tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
-                                                
-                                                <AgGridColumn field="LocalCurrency" width={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true} width={240}>
-                                                    <AgGridColumn width={140} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
-                                                    <AgGridColumn width={140} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                {<AgGridColumn field="Currency" minWidth={120} tooltipField='Currency' editable='false' headerName="Currency"></AgGridColumn>}
+
+                                                <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true} minWidth={240}>
+                                                    <AgGridColumn minWidth={140} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                    <AgGridColumn minWidth={140} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
-                                                {<AgGridColumn width={columnWidths.Percentage} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter'></AgGridColumn>}
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
-                                                   "Other Cost (Currency)"
+                                                {<AgGridColumn minWidth={columnWidths.Percentage} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter'></AgGridColumn>}
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={300} headerName={
+                                                    "Other Cost (Currency)"
                                                 } marryChildren={true} >
-                                                  <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field=" OtherNetCost" editable='false' headerName="Existing" /* colId={ "OtherNetCost"} */ ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field="NewOtherNetCost" headerName="Revised" colId='NewOtherNetCost'></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='existingOtherCostFormatter' field=" OtherNetCost" editable='false' headerName="Existing" /* colId={ "OtherNetCost"} */ ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field="NewOtherNetCost" headerName="Revised" colId='NewOtherNetCost'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
                                                     "Basic Price (Currency)"
                                                 }>
-                                                    <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field= 'NetCostWithoutConditionCost' editable='false' headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field="NewNetCostWithoutConditionCost" editable='false'  headerName="Revised"  cellRenderer='basicPriceRevisedFormatter' colId='NewNetCostWithoutConditionCost'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.NetCostWithoutConditionCost} field='NetCostWithoutConditionCost' editable='false' headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.NewNetCostWithoutConditionCost} field="NewNetCostWithoutConditionCost" editable='false' headerName="Revised" cellRenderer='basicPriceRevisedFormatter' colId='NewNetCostWithoutConditionCost'></AgGridColumn>
                                                 </AgGridColumn>}
 
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={300} headerName={
                                                     "Condition Cost (Currency)"
-                                                      
+
                                                 } marryChildren={true} >
-                                                  
-                                                    <AgGridColumn width={150} cellRenderer='existingConditionCostFormatter' field={"NetConditionCost"} editable='false' headerName="Existing" colId={"NetConditionCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={ "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>
+
+                                                    <AgGridColumn minWidth={150} cellRenderer='existingConditionCostFormatter' field={"NetConditionCost"} editable='false' headerName="Existing" colId={"NetConditionCost"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={"NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>
                                                 </AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true}>
-                                                    {/* <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
-                                                    <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true}>
+                                                    {/* <AgGridColumn minWidth={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
+                                                    <AgGridColumn minWidth={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {(String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)) &&<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                {(String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
                                                     "Net Cost (Plant Currency)"
 
                                                 }>
-                                                    <AgGridColumn width={columnWidths.NetLandedCost} field="OldNetLandedCostLocalConversion"  editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='OldNetLandedCostLocalConversion'></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCostLocalConversion" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCostLocalConversion'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.NetLandedCost} field="OldNetLandedCostLocalConversion" editable='false' headerName="Existing" colId='OldNetLandedCostLocalConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.NewNetLandedCost} field="NewNetLandedCostLocalConversion" editable='false' valueGetter={ageValueGetterLanded} headerName="Revised" colId='NewNetLandedCostLocalConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
 
@@ -1088,7 +1092,7 @@ const basicPriceRevisedFormatter = (props) => {
                         closeDrawer={closeOtherCostDrawer}
                         rawMaterial={true}
                         rmBasicRate={basicRate}
-                        ViewMode={ isViewFlag}
+                        ViewMode={isViewFlag}
                         rmTableData={otherCostDetailForRow}
                         RowData={rowData}
                         plantCurrency={rowData?.LocalCurrency}
@@ -1105,7 +1109,7 @@ const basicPriceRevisedFormatter = (props) => {
                         closeDrawer={closeConditionCostDrawer}
                         anchor={'right'}
                         basicRateBase={netCostWithoutConditionCost}
-                        ViewMode={ isViewFlag}
+                        ViewMode={isViewFlag}
                         isFromMaster={true}
                         // isFromImport={states.isImport}
                         // EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}

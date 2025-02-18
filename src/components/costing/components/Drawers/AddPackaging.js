@@ -64,6 +64,7 @@ function AddPackaging(props) {
   const [errorMessage, setErrorMessage] = useState('')
   const [removeApplicability, setRemoveApplicability] = useState([])
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
+  const [totalTabCost, setTotalTabCost] = useState(checkForNull(CostingDataList.NetTotalRMBOPCC) + checkForNull(CostingDataList.NetSurfaceTreatmentCost) + checkForNull(CostingDataList.NetOverheadAndProfitCost));
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -179,6 +180,7 @@ function AddPackaging(props) {
   const handleApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
+      setValue('PackagingCost', '')
       calculateApplicabilityCost(newValue.label, true)
     } else {
       setApplicability([])
@@ -217,8 +219,8 @@ function AddPackaging(props) {
 
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
     const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost)
-
-
+    
+    setTotalTabCost(totalTabCost)
     let totalPackagingCost = 0
     switch (Text) {
       case 'RM':
@@ -305,7 +307,7 @@ function AddPackaging(props) {
         }
         break;
       case 'Net Cost':
-
+        
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -343,7 +345,7 @@ function AddPackaging(props) {
       return false
     }
     const packagingCost = checkForNull(rate) * checkForNull(weight)
-
+    
     setValue('PackagingCost', packagingCost ? checkForDecimalAndNull(packagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
     setPackagingCost(packagingCost)
     errors.PackagingCost = {}
@@ -366,7 +368,7 @@ function AddPackaging(props) {
     props.closeDrawer('', {})
   }
   const packingCostHandler = (e) => {
-
+    
     let message = ''
     if (decimalNumberLimit6(e.target.value)) {
       message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
@@ -638,29 +640,36 @@ function AddPackaging(props) {
                     </Col>
                   }
 
-
-
-                  {costingData.TechnologyId !== LOGISTICS && <Col md="12">
-                    <TextFieldHookForm
-                      label="Packaging Cost"
-                      name={'PackagingCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={applicability?.label === 'Fixed' ? true : false}
-                      rules={{
-                        required: true,
-                        validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
-                      }}
-                      handleChange={packingCostHandler}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder mb-0'}
-                      errors={errors.PackagingCost}
-                      disabled={applicability?.label === 'Fixed' ? false : true}
-                    />
-                  </Col>
-                  }
+{costingData.TechnologyId !== LOGISTICS && <Col md="12">
+                    <div className="position-relative">
+                      {applicability?.label == 'Net Cost' && (
+                        <TooltipCustom
+                          id="Add_Packaging_Cost"
+                          width={"290px"}
+                          tooltipText={`Net Cost = ${checkForDecimalAndNull(totalTabCost, getConfigurationKey().NoOfDecimalForPrice)} (RM+CC+BOP + Surface Treatment + Overhead & Profit)`}
+                        />
+                      )}
+                      <TextFieldHookForm
+                        label="Packaging Cost"
+                        name={'PackagingCost'}
+                        id="Add_Packaging_Cost"
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={applicability?.label === 'Fixed' ? true : false}
+                        rules={{
+                          required: true,
+                          validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
+                        }}
+                        handleChange={packingCostHandler}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder mb-0'}
+                        errors={errors.PackagingCost}
+                        disabled={applicability?.label === 'Fixed' ? false : true}
+                        />
+                        </div>
+                      </Col>}
 
                   {initialConfiguration?.IsShowCRMHead && <Col md="12">
                     <SearchableSelectHookForm
