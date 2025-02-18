@@ -235,7 +235,7 @@ const BOPImportListing = (props) => {
       category_id: CategoryId,
       vendor_id: props?.isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : vendorId,
       plant_id: plantId,
-      ListFor: props?.isSimulation ? props?.ListFor : 'master',
+      ListFor: props?.isSimulation ? props?.ListFor : '',
       StatusId: statusString,
       IsBOPAssociated: !props?.isSimulation ? props?.isBOPAssociated : (isMasterAssociatedWithCosting ? true : false),
       Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
