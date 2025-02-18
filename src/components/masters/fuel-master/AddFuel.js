@@ -834,7 +834,7 @@ class AddFuel extends Component {
 
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ country: newValue, state: [], city: [] }, () => {
+      this.setState({ country: newValue, state: [], city: [], StateName: [] }, () => {
         this.getAllCityData()
       });
     } else {
