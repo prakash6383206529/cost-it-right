@@ -1900,14 +1900,16 @@ class AddBOPImport extends Component {
                                   onChange={this.handleChangeSapCode}
                                   className=" "
                                   customClassName=" withBorder w-100 mb-0"
-                                />
+                                >
+                                  {IsSAPCodeHandle && isEditFlag && (
+                                    <WarningMessage dClass={'d-flex justify-content-end'} message={`${MESSAGES.SAP_CODE_WARNING}`} />
+                                  )}
+                                </Field>
                                 {!IsSAPCodeUpdated && isEditFlag && (
                                   <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} disabled={isViewMode} />
                                 )}
                               </div>
-                              {IsSAPCodeHandle && isEditFlag && (
-                                <WarningMessage dClass={'d-flex justify-content-end'} message={`${MESSAGES.SAP_CODE_WARNING}`} />
-                              )}
+                              
                             </Col>}
                         </Row >
 
@@ -2008,8 +2010,9 @@ class AddBOPImport extends Component {
                               disabled={true}
                               className=" "
                               customClassName=" withBorder mb-1"
-                            />
+                            >
                             {this.state?.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
+                            </Field>
                           </Col>}
                           <Col md="3">
                             <Field

@@ -351,6 +351,7 @@ export function renderTextInputField(field) {
   const {
     input,
     meta: { touched, error, active, form },
+    children,
     ...others
   } = field;
   const inputbox = `${active ? "active" : ""}`;
@@ -389,6 +390,7 @@ export function renderTextInputField(field) {
           </div>
         )}
       </div>
+      {children}
       <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
@@ -578,6 +580,7 @@ export function renderText(field) {
     input,
 
     meta: { touched, error, form },
+    children,
     ...others
   } = field;
 
@@ -608,7 +611,11 @@ export function renderText(field) {
           autoComplete={'off'}
         />
       </div>
-      <div className="text-help mb-2">{touched ? error : ""}</div>
+      {children}
+      {/* <div className="text-help mb-2">{touched ? error : ""}</div> */}
+      {touched &&
+        <div className="text-help mb-2">{touched ? error : ""}</div>
+      }
     </div>
   );
 }
