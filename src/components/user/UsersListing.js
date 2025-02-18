@@ -68,7 +68,8 @@ const UsersListing = (props) => {
 		noData: false,
 		dataCount: 0,
 		render: false,
-		showExtraData: false
+		showExtraData: false,
+		globalTake: defaultPageSize
 	});
 	useEffect(() => {
 		getUsersListData(null, null);
@@ -331,6 +332,7 @@ const UsersListing = (props) => {
 
 	const onPageSizeChanged = (newPageSize) => {
 		state.gridApi.paginationSetPageSize(Number(newPageSize));
+		setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
 	};
 
 	const onFilterTextBoxChanged = (e) => {
@@ -338,7 +340,7 @@ const UsersListing = (props) => {
 
 	}
 	const resetState = () => {
-		setState((prevState) => ({ ...prevState, noData: false }));
+		setState((prevState) => ({ ...prevState, noData: false, isLoader: true, dataCount: 0, globalTake: defaultPageSize }));
 		state.gridApi.setQuickFilter(null)
 		state.gridApi.deselectAll();
 		gridOptions.columnApi.resetColumnState();
@@ -347,6 +349,7 @@ const UsersListing = (props) => {
 		if (searchRef.current) {
 			searchRef.current.value = '';
 		}
+		getUsersListData();
 	}
 	const renderRowData = () => {
 		if (props?.RFQUser) {
@@ -475,7 +478,7 @@ const UsersListing = (props) => {
 							<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 							<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 						</AgGridReact>
-						{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+						{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
 					</div>
 				</div>}
 
