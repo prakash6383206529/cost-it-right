@@ -271,7 +271,7 @@ function CommonApproval(props) {
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
         if (props?.OnboardingApprovalId === ONBOARDINGID) {
-            gridApi.sizeColumnsToFit();
+            // gridApi.sizeColumnsToFit();
         }
         for (var prop in floatingFilterData) {
 
@@ -720,7 +720,9 @@ function CommonApproval(props) {
             //params.api.sizeColumnsToFit();
 
         }
-        window.screen.width > 1920 && params.api.sizeColumnsToFit();
+        // window.screen.width > 1920
+        //  && 
+        // params.api.sizeColumnsToFit();
     };
 
     const onFilterTextBoxChanged = (e) => {
