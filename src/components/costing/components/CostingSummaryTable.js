@@ -1554,7 +1554,7 @@ const CostingSummaryTable = (props) => {
   };
   const onBtExport = () => {
     function checkAssembly(obj) {
-      if (obj.IsAssemblyCosting) {
+      if (obj.IsAssemblyCosting && !obj?.bestCost) {
 
         obj.rm = "Multiple RM"
         obj.gWeight = "Multiple RM"
@@ -1855,7 +1855,7 @@ const CostingSummaryTable = (props) => {
   const PDFPageStyle = "@page { size: A4 landscape; }";
 
   const tableDataClass = (data) => {
-    
+
     return props?.isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
   }
 
