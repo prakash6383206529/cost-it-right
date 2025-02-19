@@ -1554,7 +1554,7 @@ const CostingSummaryTable = (props) => {
   };
   const onBtExport = () => {
     function checkAssembly(obj) {
-      if (obj.IsAssemblyCosting) {
+      if (obj.IsAssemblyCosting && !obj?.bestCost) {
 
         obj.rm = "Multiple RM"
         obj.gWeight = "Multiple RM"
@@ -1855,7 +1855,7 @@ const CostingSummaryTable = (props) => {
   const PDFPageStyle = "@page { size: A4 landscape; }";
 
   const tableDataClass = (data) => {
-    
+
     return props?.isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
   }
 
@@ -2127,7 +2127,7 @@ const CostingSummaryTable = (props) => {
             {<Col md={simulationMode || props.isRfqCosting || isApproval || props?.costVariance ? "12" : "8"} className="text-right">
               <div className='d-flex justify-content-end mb-2'>
                 <div className='d-flex justify-content-end align-items-center'>
-                  {showConvertedCurrencyCheckbox && <span className="d-inline-block">
+                  {showConvertedCurrencyCheckbox && !props.isRfqCosting && <span className="d-inline-block">
                     <label
                       className={`custom-checkbox mb-0`}
                       onChange={checkboxHandler}
@@ -2242,7 +2242,7 @@ const CostingSummaryTable = (props) => {
                         {<th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} ></th>}
                         {viewCostingData && viewCostingData?.map((data, index) => {
                           return (<>
-                            <th style={{ width: cssObj.particularWidth + "%" }} key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId?.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? `Best Cost (${getConfigurationKey().BaseCurrency})` : ""}{data?.bestCost === true && <TooltipCustom id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Converted Currency'."} />}</th>
+                            <th style={{ width: cssObj.particularWidth + "%" }} key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId?.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? `Best Cost (${getConfigurationKey().BaseCurrency})` : ""}</th>
                           </>
                           )
                         })}
@@ -2308,7 +2308,23 @@ const CostingSummaryTable = (props) => {
                                     }
                                     {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
-                                        (data?.bestCost === true) ? "" :
+                                        (data?.bestCost === true) ? showConvertedCurrencyCheckbox && <><span className="d-inline-block">
+                                          <label
+                                            className={`custom-checkbox mb-0`}
+                                            onChange={checkboxHandler}
+                                          >
+                                            Show Converted Currency
+                                            <input
+                                              type="checkbox"
+                                              checked={showConvertedCurrency}
+                                            />
+                                            <span
+                                              className=" before-box"
+                                              onChange={checkboxHandler}
+                                              checked={showConvertedCurrency}
+                                            />
+                                          </label>
+                                        </span><TooltipCustom customClass="mt-n2 ml-n3 " id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Converted Currency'."} /></> :
                                           <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> ({heading(data).subHeading}) </span></span><span className='sub-heading'>{data.costingHeadCheck} {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></div></span>
                                     }
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}

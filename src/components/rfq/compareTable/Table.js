@@ -74,7 +74,7 @@ const Table = (props) => {
                 <tr>
                     <th></th>
                     {headerData.map((item, index) => {
-                        return (<th>{item.bestCost === "" ? 'BestCost' : item.shouldCost ? 'ShouldCost' : ''}</th>)
+                        return (<th>{item.bestCost === "" ? 'Best Cost (INR)' : item.shouldCost ? 'Should Cost' : ''}</th>)
                     })}
                 </tr>
                 <tr>
