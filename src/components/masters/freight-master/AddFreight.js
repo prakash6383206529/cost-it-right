@@ -54,7 +54,7 @@ const AddFreight = (props) => {
     getValues: getValuesTableForm,
     reset: resetTableForm,
     formState: { errors: errorsTableForm },
-    
+
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -130,7 +130,7 @@ const AddFreight = (props) => {
 
     if (!(props.data.isEditFlag || state.isViewMode)) {
       dispatch(getClientSelectList(() => { }));
-    }else{
+    } else {
       getDetails();
     }
 
@@ -158,17 +158,20 @@ const AddFreight = (props) => {
         VendorId: state?.vendorName?.value,
         CostingTypeId: state?.costingTypeId
       }
-      dispatch(getFreightData(data, (res) => { 
-        if(res?.status===200){
+      dispatch(getFreightData(data, (res) => {
+        if (res?.status === 200) {
           let data = res?.data?.Data;
-          setState(prev => ({ ...prev , dataToChange: data,
-            gridTable: data?.FullTruckLoadDetails,
+          setState(prev => ({
+            ...prev, dataToChange: data,
+            gridTable: data?.FullTruckLoadDetails ?? [],
             IsFreightAssociated: data?.IsFreightAssociated
           }));
-        }else{
-          setState(prev => ({ ...prev,
+        } else {
+          setState(prev => ({
+            ...prev,
             gridTable: [],
-            IsFreightAssociated: false }));
+            IsFreightAssociated: false
+          }));
         }
       }));
     } else {
@@ -271,10 +274,11 @@ const AddFreight = (props) => {
       }
       dispatch(getFreightData(obj, (res) => {
         if (res && res.data && res.data.Result) {
-          const Data = res.data.Data;
+          setState(prev => ({ ...prev, isLoader: false }));
+          const Data = res.data.Data[0];
           setState(prev => ({ ...prev, DataToChange: Data }));
           setValueMainForm('Plants', { label: Data.PlantName, value: Data.PlantId });
-          setValueMainForm('EffectiveDate', new Date(Data?.EffectiveDate));
+          setValueMainForm('EffectiveDate', DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '');
           setValueMainForm('vendorName', { label: Data.VendorName, value: Data.VendorId });
           setValueMainForm('ClientName', { label: Data.CustomerName, value: Data.CustomerId });
 
@@ -300,6 +304,7 @@ const AddFreight = (props) => {
             setState(prev => ({
               ...prev,
               isEditFlag: true,
+              isLoader: false,
               costingTypeId: Data.CostingTypeId,
               IsLoadingUnloadingApplicable: Data.IsLoadingUnloadingApplicable,
               TransportMode: modeObj && modeObj !== undefined
@@ -538,7 +543,7 @@ const AddFreight = (props) => {
     }
 
     // Check for duplicate entry
-    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria,Load, truckDimensions, gridTable);
+    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria, Load, truckDimensions, gridTable);
     if (isDuplicate) {
       Toaster.warning("This freight entry already exists.");
       return false;
@@ -559,7 +564,7 @@ const AddFreight = (props) => {
 
     setState(prev => ({
       ...prev,
-      gridTable: [...prev.gridTable, newGridItem],
+      gridTable: [...prev?.gridTable, newGridItem],
       AddUpdate: false
     }));
 
@@ -581,7 +586,7 @@ const AddFreight = (props) => {
     }
     // Filter out edited item to check duplicates
     const otherItems = gridTable.filter((_, i) => i !== gridEditIndex);
-    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria,Load, truckDimensions, otherItems);
+    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria, Load, truckDimensions, otherItems);
     if (isDuplicate) {
       Toaster.warning("This freight entry already exists.");
       return false;
@@ -604,7 +609,7 @@ const AddFreight = (props) => {
 
     setState(prev => ({
       ...prev,
-      gridTable: updatedGrid,
+      gridTable: updatedGrid ?? [],
       gridEditIndex: "",
       isEditIndex: false,
       AddUpdate: false
@@ -918,14 +923,14 @@ const AddFreight = (props) => {
   };
   const closeDimensionDrawer = (type, formData) => {
     if (type === 'Save') {
-      setState(prev => ({ ...prev, isEditDimension: true, truckDimensions: { label: `L(${formData?.Length}) B(${formData?.Breadth}) H(${formData?.Height})`, value: formData?.Id } ,hideEditDimension:false}));
+      setState(prev => ({ ...prev, isEditDimension: true, truckDimensions: { label: `L(${formData?.Length}) B(${formData?.Breadth}) H(${formData?.Height})`, value: formData?.Id }, hideEditDimension: false }));
       setValueTableForm("TruckDimensions", { label: `L(${formData?.Length}) B(${formData?.Breadth}) H(${formData?.Height})`, value: formData?.Id });
       dispatch(getTruckDimensionsSelectList(() => { }));
     }
     setState(prev => ({ ...prev, openDimensionDrawer: false }));
   };
   const onShowTruckDimensions = () => {
-    setState(prev => ({ ...prev, isShowTruckDimensions: !prev.isShowTruckDimensions}));
+    setState(prev => ({ ...prev, isShowTruckDimensions: !prev.isShowTruckDimensions }));
   };
 
   return (
@@ -1147,7 +1152,7 @@ const AddFreight = (props) => {
                                   defaultValue={state?.truckDimensions}
                                   disabled={isViewMode || state.disableAll}
                                   errors={errorsTableForm?.TruckDimensions}
-                                  title={state?.truckDimensions&&state?.truckDimensions?.label}
+                                  title={state?.truckDimensions && state?.truckDimensions?.label}
                                 />
                                 <div className='action-icon-container'>
                                   <div
@@ -1287,7 +1292,7 @@ const AddFreight = (props) => {
                                       return (
                                         <tr key={index}>
                                           <td>{item?.FreightLoadType ?? '-'}</td>
-                                          <td>{item?.IsShowDimesions===true?item?.DimensionsName : '-'}</td>
+                                          <td>{item?.IsShowDimesions === true ? item?.DimensionsName : '-'}</td>
                                           <td>{item?.Capacity ?? '-'}</td>
                                           <td>{item?.RateCriteria ?? '-'}</td>
                                           <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}</td>
