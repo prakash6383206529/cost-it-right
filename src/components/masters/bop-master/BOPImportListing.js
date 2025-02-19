@@ -7,7 +7,7 @@ import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
 import DayTime from "../../common/DayTimeWrapper";
 import BulkUpload from "../../massUpload/BulkUpload";
-import {  BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import LoaderCustom from "../../common/LoaderCustom";
 import { BopImport, BOP_MASTER_ID } from "../../../config/constants";
 import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
@@ -123,7 +123,7 @@ const BOPImportListing = (props) => {
   const { initialConfiguration } = useSelector((state) => state.auth);
   const tourStartData = useSelector(state => state.comman.tourStartData);
   const { technologyLabel, vendorLabel } = useLabels();
-  const { selectedRowForPagination, tokenForSimulation,isMasterAssociatedWithCosting } = useSelector(
+  const { selectedRowForPagination, tokenForSimulation, isMasterAssociatedWithCosting } = useSelector(
     (state) => state.simulation
   );
 
@@ -235,12 +235,12 @@ const BOPImportListing = (props) => {
       category_id: CategoryId,
       vendor_id: props?.isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : vendorId,
       plant_id: plantId,
-      ListFor: props?.isSimulation && !props?.isBOPAssociated ?"" : props.ListFor,
+      ListFor: props?.isSimulation ? props?.ListFor : '',
       StatusId: statusString,
-      IsBOPAssociated: !props?.isSimulation ? props?.isBOPAssociated : (isMasterAssociatedWithCosting? true : false),
+      IsBOPAssociated: !props?.isSimulation ? props?.isBOPAssociated : (isMasterAssociatedWithCosting ? true : false),
       Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
       LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
-      EffectiveDate: props?.isSimulation &&props?.minDate ? props?.minDate : '',
+      EffectiveDate: props?.isSimulation && props?.minDate ? props?.minDate : '',
     };
     if (isPagination === true) {
       setState((prevState) => ({ ...prevState, isLoader: true }));
@@ -1138,7 +1138,7 @@ const BOPImportListing = (props) => {
                       >
                         {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                         <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"}></AgGridColumn>
-                        {props?.isSimulation&&<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                        {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                         <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} No.`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Name`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>

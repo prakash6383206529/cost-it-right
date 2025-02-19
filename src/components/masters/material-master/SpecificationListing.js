@@ -63,15 +63,20 @@ const SpecificationListing = (props) => {
     isAssociate: false
   });
 
-  const params = useMemo(() => {
-    return {
-      data: { MaterialId: '', GradeId: '', },
-      master: 'RawMaterial',
-      tabs: 'Specification'
-    }
+  // const params = useMemo(() => {
+  //   return {
+  //     data: { MaterialId: '', GradeId: '', },
+  //     master: 'RawMaterial',
+  //     tabs: 'Specification'
+  //   }
+  // }, []);
+
+  // const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialSpecifications', params);
+  useEffect(() => {
+    getSpecificationListData("", "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialSpecifications', params);
 
   const getSpecificationListData = useCallback(
     (materialId = "", gradeId = "") => {

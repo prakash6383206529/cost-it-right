@@ -42,9 +42,11 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
+
     const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
 
     const { list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
+
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -92,12 +94,12 @@ function ERSimulation(props) {
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
-            if (/* !getConfigurationKey().IsExchangeRateEditableForSimulation|| */item?.NewExchangeRateId===null) {
+            if (/* !getConfigurationKey().IsExchangeRateEditableForSimulation|| */item?.NewExchangeRateId === null) {
                 //if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
-                    item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
-                    return null
+                item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
+                return null
                 //}
-            } 
+            }
         })
     }, [list])
     useEffect(() => {
@@ -380,7 +382,7 @@ function ERSimulation(props) {
         let hasValidEdits = false;
 
         list && list?.map((item) => {
-            if (item.NewExchangeRateId===null &&
+            if (item.NewExchangeRateId === null &&
                 checkForNull(item?.NewCurrencyExchangeRate) === checkForNull(item?.CurrencyExchangeRate)) {
                 hasValidEdits = true;
                 count = count + 1;
@@ -388,15 +390,15 @@ function ERSimulation(props) {
                 // fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
                 // toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
             }
-                listData.push(item);
-              fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
-                toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
-            
+            listData.push(item);
+            fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
+            toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
+
 
             return null;
         });
         if (/* !hasUserMadeEdits ||  */hasValidEdits) {
-            
+
             Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
             return false;
         }
@@ -667,7 +669,7 @@ function ERSimulation(props) {
                     // changeSetLoader={changeSetLoader}
                     // changeTokenCheckBox={changeTokenCheckBox}
                     // isReset={isReset}
-                    ListFor={'simulation'}
+                    ListFor={isMasterAssociatedWithCosting ? 'simulation' : 'master'}
                     isBOPAssociated={isMasterAssociatedWithCosting ? true : false}
                     approvalStatus={APPROVED_STATUS}
                     // callBackLoader={callBackLoader}  

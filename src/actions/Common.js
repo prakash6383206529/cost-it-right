@@ -1554,7 +1554,7 @@ export function getPartSelectList(partNumber, callback) {
 
 
 export function agGridStatus(data, id, arr = [], arrReports = []) {
-  
+
   return (dispatch) => {
     dispatch({
       type: STATUS_COLUMN_DATA,
@@ -1966,28 +1966,28 @@ const rmAPICalling = (params, dispatch) => {
 
 // ... existing code ...
 
-export const apiCallingFunction = (params, dispatch) => {
-  const { master, isMasterSummaryDrawer } = params;
-  if (isMasterSummaryDrawer) {
-    return;
-  }
+// export const apiCallingFunction = (params, dispatch) => {
+//   const { master, isMasterSummaryDrawer } = params;
+//   if (isMasterSummaryDrawer) {
+//     return;
+//   }
 
-  switch (master?.trim()) {
-    case "RawMaterial":
-      rmAPICalling(params, dispatch)
-      break;
-    default:
-      break;
-  }
-}
+//   switch (master?.trim()) {
+//     case "RawMaterial":
+//       rmAPICalling(params, dispatch)
+//       break;
+//     default:
+//       break;
+//   }
+// }
 
-// ... existing code ...
+// // ... existing code ...
 
-export function useFetchAPICall(keyName, params = {}) {
-  const dispatch = useDispatch();
-  return useQuery([[keyName], params], () => apiCallingFunction(params, dispatch), {
-    staleTime: Infinity,
-    onSuccess: (data) => {
-    }
-  });
-}
+// export function useFetchAPICall(keyName, params = {}) {
+//   const dispatch = useDispatch();
+//   return useQuery([[keyName], params], () => apiCallingFunction(params, dispatch), {
+//     staleTime: Infinity,
+//     onSuccess: (data) => {
+//     }
+//   });
+// }
