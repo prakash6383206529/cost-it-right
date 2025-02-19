@@ -739,29 +739,14 @@ function AddRfq(props) {
     }
 
     const deleteItemPartTable = (rowData, final) => {
-        // Check if this is the last item based on the current selected option
-        const isLastItem = (() => {
-            switch (selectedOption) {
-                case "componentAssembly":
-                    return partList.length === 1;
-                case "Raw Material":
-                    return rmDataList.length === 1;
-                case "Bought Out Part":
-                    return bopDataList.length === 1;
-                case "Tooling":
-                    return toolingList.length === 1;
-                default:
-                    return false;
-            }
-        })();
-
-        if (isLastItem) {
+        
+        
+        if(final.length === 1){
             setShowDeleteConfirmPopup(true);
-            setDeleteData({ rowData, final });
-            return;
-        }
-
-        // For non-last items, just delete the specific item
+                setDeleteData({ rowData, final, isLastItem: true });
+                return;
+        }   
+     
         handleDelete(rowData, final, false);
     };
     const handleDelete = (rowData, final, isLastItem = false) => {
@@ -2792,7 +2777,7 @@ function AddRfq(props) {
         }
     };
     const handleNfrChnage = (newValue) => {
-        console.log("newValue", newValue);
+        
         if (newValue && newValue !== '') {
             // setPartNoDisable(false)
             setPrNumber({ label: newValue.label, value: newValue.value })
@@ -3943,7 +3928,9 @@ function AddRfq(props) {
                                                         type="button"
                                                         value="CANCEL"
                                                         className="reset ml-2 mr5"
-                                                        disabled={isAddFlag ? (!updateButtonPartNoTable && prNumber.length !== 0) : (isViewFlag || !isEditAll) || disabledPartUid}
+                                                        disabled={isAddFlag
+                                                            ? ((!updateButtonPartNoTable && prNumber.length !== 0) || !getValues('UOM')?.value)
+                                                            : (isViewFlag || !isEditAll) || disabledPartUid}
                                                     >
                                                         <div className={''}></div>
                                                         RESET
