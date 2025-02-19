@@ -49,7 +49,7 @@ const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
 function AddRfq(props) {
-    
+
     const [selectedOption, setSelectedOption] = useState('componentAssembly');
     const permissions = useContext(ApplyPermission);
     const Vendor = permissions.permissionDataVendor
@@ -58,7 +58,7 @@ function AddRfq(props) {
     const dispatch = useDispatch()
     const { t } = useTranslation("Rfq")
     const { data: dataProps, isViewFlag, isAddFlag, isEditFlag } = props
-    
+
 
     const { technologyLabel, vendorLabel } = useLabels();
     const dropzone = useRef(null);
@@ -166,6 +166,8 @@ function AddRfq(props) {
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
     const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
+    console.log("initialConfiguration", initialConfiguration);
+
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
@@ -752,74 +754,74 @@ function AddRfq(props) {
                     return false;
             }
         })();
-    
+
         if (isLastItem) {
             setShowDeleteConfirmPopup(true);
             setDeleteData({ rowData, final });
             return;
         }
-    
+
         // For non-last items, just delete the specific item
         handleDelete(rowData, final, false);
     };
     const handleDelete = (rowData, final, isLastItem = false) => {
         dispatch(deleteQuotationPartDetail(rowData?.QuotationPartId, (res) => {
-            const type = selectedOption === 'Raw Material' ? 'Raw Material' : 
-                        selectedOption === "Bought Out Part" ? "Bought Out Part" : 'Part';
+            const type = selectedOption === 'Raw Material' ? 'Raw Material' :
+                selectedOption === "Bought Out Part" ? "Bought Out Part" : 'Part';
             Toaster.success(`${type} has been deleted successfully.`);
         }));
-       // For single item deletion, only remove that specific item
-    // For single item deletion, only remove that specific item
-    if (!isLastItem) {
-        switch (selectedOption) {
-            case "componentAssembly":
-                setPartList(prevList => 
-                    prevList.filter(item => item?.PartId !== rowData?.PartId)
-                );
-                break;
-            case "Raw Material":
-                setRmDataList(prevList => 
-                    prevList.filter(item => item?.RawMaterialChildId !== rowData?.RawMaterialChildId)
-                );
-                break;
-            case "Bought Out Part":
-                setBopDataList(prevList => 
-                    prevList.filter(item => item?.BoughtOutPartChildId !== rowData?.BoughtOutPartChildId)
-                );
-                break;
-            case "Tooling":
-                setToolingList(prevList => 
-                    prevList.filter(item => item?.PartId !== rowData?.PartId)
-                );
-                break;
-            default:
-                break;
+        // For single item deletion, only remove that specific item
+        // For single item deletion, only remove that specific item
+        if (!isLastItem) {
+            switch (selectedOption) {
+                case "componentAssembly":
+                    setPartList(prevList =>
+                        prevList.filter(item => item?.PartId !== rowData?.PartId)
+                    );
+                    break;
+                case "Raw Material":
+                    setRmDataList(prevList =>
+                        prevList.filter(item => item?.RawMaterialChildId !== rowData?.RawMaterialChildId)
+                    );
+                    break;
+                case "Bought Out Part":
+                    setBopDataList(prevList =>
+                        prevList.filter(item => item?.BoughtOutPartChildId !== rowData?.BoughtOutPartChildId)
+                    );
+                    break;
+                case "Tooling":
+                    setToolingList(prevList =>
+                        prevList.filter(item => item?.PartId !== rowData?.PartId)
+                    );
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            // For last item deletion, clear everything
+            switch (selectedOption) {
+                case "componentAssembly":
+                    setPartList([]);
+                    break;
+                case "Raw Material":
+                    setRmDataList([]);
+                    break;
+                case "Bought Out Part":
+                    setBopDataList([]);
+                    break;
+                case "Tooling":
+                    setToolingList([]);
+                    break;
+                default:
+                    break;
+            }
+            // Clear vendor list only when last item is deleted
+            setVendorList([]);
         }
-    } else {
-        // For last item deletion, clear everything
-        switch (selectedOption) {
-            case "componentAssembly":
-                setPartList([]);
-                break;
-            case "Raw Material":
-                setRmDataList([]);
-                break;
-            case "Bought Out Part":
-                setBopDataList([]);
-                break;
-            case "Tooling":
-                setToolingList([]);
-                break;
-            default:
-                break;
-        }
-        // Clear vendor list only when last item is deleted
-        setVendorList([]);
-    }
 
-    setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData });
-    onResetPartNoTable();
-};
+        setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData });
+        onResetPartNoTable();
+    };
     const editItemPartTable = (rowData, final, viewMode) => {
         setResetRmFields(false)
         setResetBopFields(false)
@@ -1328,7 +1330,7 @@ function AddRfq(props) {
         const row = props?.data;
         // const isSendButtonVisible = isViewFlag || (isAddFlag ? false : (isEditFlag && showOnlyFirstModule ? (showSendButton === PREDRAFT ? false : true) : (showSendButton === SENT ? true : false)))
         const disableButton = isAddFlag ? false : ((showSendButton === DRAFT || showSendButton === PREDRAFT) && isEditFlag) ? false : (isViewFlag || !isEditAll)
-        
+
 
         return (
             <>
@@ -2749,6 +2751,7 @@ function AddRfq(props) {
         if (newValue) {
             setPartNoDisable(false)
             setValue('partNumber', "")
+            setValue('Description', "")
             setTechnology(newValue)
             setHasTechnology(true)
         } else {
@@ -2780,7 +2783,16 @@ function AddRfq(props) {
         setVendor('')
         setValue("vendor", "")
     }
+    const handlePrChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setPartNoDisable(false);
+            setPrNumber({ label: newValue.label, value: newValue.value }); // Just set PR number
+            setValue('partNumber', "");
+            setPartName('');
+        }
+    };
     const handleNfrChnage = (newValue) => {
+        console.log("newValue", newValue);
         if (newValue && newValue !== '') {
             // setPartNoDisable(false)
             setPrNumber({ label: newValue.label, value: newValue.value })
@@ -3545,10 +3557,30 @@ function AddRfq(props) {
                                                 disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (isAddFlag ? false : (isViewFlag || !isEditAll || disabledPartUid)))}
                                             />
                                         </Col>
-                                        {/* {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
+                                        {initialConfiguration?.RFQManditField?.IsShowPRNumber && (quotationType === "Bought Out Part" || quotationType === 'Tooling') &&
+                                            <Col md="3" className={initialConfiguration?.RFQManditField?.IsShowPRNumber ? 'd-none' : ''}>
+                                                <SearchableSelectHookForm
+                                                    label={"PR No."}
+                                                    name={"prId"}
+                                                    isClearable={true}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    defaultValue={prNumber?.length !== 0 ? prNumber : ""}
+                                                    options={renderListing("prNo")}
+                                                    mandatory={true}
+                                                    handleChange={handlePrChange}
+                                                    errors={errors.prId}
+                                                    disabled={Object.keys(prNumber).length !== 0 || ((isViewFlag || showSendButton === DRAFT) ? true : false)
+                                                        || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
+                                                />
+                                            </Col>}
+                                        {initialConfiguration?.RFQManditField?.IsShowNFRNo && <Col md="3" className={initialConfiguration?.RFQManditField?.IsShowNFRNo ? 'd-none' : ''}>
                                             <SearchableSelectHookForm
-                                                label={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "PR No." : "NFR No."}
-                                                name={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "prId" : "nfrId"}
+                                                label={"NFR No."}
+                                                name={"nfrId"}
                                                 isClearable={true}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
@@ -3556,16 +3588,15 @@ function AddRfq(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={renderListing(quotationType === "Bought Out Part" || quotationType === 'Tooling' ? "prNo" : "nfrId")}
-                                                mandatory={quotationType === 'Tooling' ? true : false}
+                                                options={renderListing("nfrId")}
+                                                mandatory={true}
 
                                                 handleChange={handleNfrChnage}
                                                 errors={errors.nfrId}
-                                                disabled={Object.keys(prNumber).length !== 0 || ((isViewFlag  || showSendButton === DRAFT) ? true : false)
+                                                disabled={Object.keys(prNumber).length !== 0 || ((isViewFlag || showSendButton === DRAFT) ? true : false)
                                                     || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
                                             />
-                                        </Col>} */}
-
+                                        </Col>}
 
                                         {ShowQuoteSubmissionDate(quotationType) && <Col md="3">
                                             <div className="inputbox date-section">
@@ -4470,7 +4501,7 @@ function AddRfq(props) {
                                                         buttonName={"Send for Review"} />
                                                 </>
                                             )}
-                                            {}
+                                            { }
 
 
                                             {
@@ -4571,22 +4602,22 @@ function AddRfq(props) {
             }
             {/* New popup for delete confirmation */}
             {showDeleteConfirmPopup && (
-    <PopupMsgWrapper
-        isOpen={showDeleteConfirmPopup}
-        closePopUp={() => {
-            setShowDeleteConfirmPopup(false);
-            setDeleteData(null);
-        }}
-        confirmPopup={() => {
-            if (deleteData) {
-                handleDelete(deleteData.rowData, deleteData.final, true); // Pass true for last item deletion
-                setShowDeleteConfirmPopup(false);
-                setDeleteData(null);
-            }
-        }}
-        message="Deleting the last part will clear all vendor details. Do you want to continue?"
-    />
-)}
+                <PopupMsgWrapper
+                    isOpen={showDeleteConfirmPopup}
+                    closePopUp={() => {
+                        setShowDeleteConfirmPopup(false);
+                        setDeleteData(null);
+                    }}
+                    confirmPopup={() => {
+                        if (deleteData) {
+                            handleDelete(deleteData.rowData, deleteData.final, true); // Pass true for last item deletion
+                            setShowDeleteConfirmPopup(false);
+                            setDeleteData(null);
+                        }
+                    }}
+                    message="Deleting the last part will clear all vendor details. Do you want to continue?"
+                />
+            )}
             {isOpenVisualDrawer && (
                 <BOMViewer
                     isOpen={isOpenVisualDrawer}

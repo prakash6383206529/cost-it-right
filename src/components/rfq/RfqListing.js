@@ -224,10 +224,10 @@
          */
         const applyPermission = (topAndLeftMenuData) => {
             if (topAndLeftMenuData !== undefined) {
-                const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === RFQ);
-                const accessData = Data && Data.Pages.find(el => el.PageName === RFQ)
+                const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el?.ModuleName === RFQ);
+                const accessData = Data && Data.Pages.find(el => el?.PageName === RFQ)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-                const accessDataVendor = Data && Data.Pages.find(el => el.PageName === RFQVendor)
+                const accessDataVendor = Data && Data.Pages.find(el => el?.PageName === RFQVendor)
                 const permmisionDataVendor = accessDataVendor && accessDataVendor.Actions && checkPermission(accessDataVendor.Actions)
 
                 if (permmisionData !== undefined || permmisionDataVendor !== undefined) {
@@ -916,12 +916,12 @@
                                                         enableBrowserTooltips={true}
                                                     >
                                                         <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                                        {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
+                                                        {initialConfiguration?.RFQManditField?.IsShowNFRNo && <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn>}
                                                         <AgGridColumn field="PartType" headerName="Part Type" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                         <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRendererFramework={CustomCellRenderer} />
                                                         {RFQ_KEYS?.SHOW_RM && <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material Name-Grade-Specification" width={230} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
                                                         {RFQ_KEYS?.SHOW_BOP && <AgGridColumn field="BoughtOutPart" headerName="Bought Out Part Name" width={200} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
-                                                        {/* {(RFQ_KEYS?.SHOW_BOP||RFQ_KEYS?.SHOW_TOOLING) && <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>} */}
+                                                        {initialConfiguration?.RFQManditField?.IsShowPRNumber && (RFQ_KEYS?.SHOW_BOP||RFQ_KEYS?.SHOW_TOOLING) && <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
 
                                                         <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="VendorName" tooltipField="VendorName" headerName={vendorLabel + " (Code)"} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
