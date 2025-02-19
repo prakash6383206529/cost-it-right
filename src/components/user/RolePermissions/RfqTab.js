@@ -86,6 +86,9 @@ class RFQTab extends Component {
             return actionHeads && actionHeads.map((item, index) => {
                 if (item.Value === 0) return false;
                 if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
+                    if (item.Text === "Send For Review" && !this.state.initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ) {
+                        return null
+                    }
                     return (
                         <th className="crud-label" key={index}>
                             <div className={item.Text}></div>
