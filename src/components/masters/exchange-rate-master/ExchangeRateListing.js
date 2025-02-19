@@ -129,6 +129,8 @@ const ExchangeRateListing = (props) => {
         let filterData = { currencyId: currencyId, costingHeadId: currencyId, vendorId: props.isSimulation ? filteredRMData?.VendorId ? filteredRMData?.VendorId : '' : '', customerId: props.isSimulation ? filteredRMData?.CustomerId ? filteredRMData?.CustomerId : '' : '', isBudgeting: currencyId, currency: '', isRequestForSimulation: props.isSimulation ? true : false, }
         if (props.isSimulation/* &&(!getConfigurationKey()?.IsExchangeRateEditableForSimulation) */) {
             props?.changeTokenCheckBox(false)
+            filterData.isAssociatedWithCosting = props?.isBOPAssociated ? true : false // Except for BOP with associated costing it will go false in all cases
+            filterData.exchangeRateSimulationTechnologyId = props?.applicabilityMasterId
             dispatch(getExchangeRateDataListForSimulation(true, filterData, res => {
                 if (res.status === 204 && res.data === '') {
                     setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
