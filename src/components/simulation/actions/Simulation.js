@@ -1915,6 +1915,7 @@ export function draftSimulationForRMMaster(data, callback) {
     };
 }
 export function updateSimulationRawMaterial(data, callback) {
+    console.log(data, "data")
     return (dispatch) => {
         const request = axios.put(API.updateSimulationRawMaterial, data, config());
         request.then((response) => {
