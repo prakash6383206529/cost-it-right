@@ -11,7 +11,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { useLabels } from '../../../helper/core';
 import AddOtherCostDrawer from '../../masters/material-master/AddOtherCostDrawer';
 const RMCompareTable = (props) => {
-    const { RfqMasterApprovalDrawer = false } = props
+    const { RfqMasterApprovalDrawer = false, uniqueShouldCostingId = [], selectedRows = [] } = props;
     const dispatch = useDispatch()
     const { viewRmDetails } = useSelector(state => state.material)
     const [sectionData, setSectionData] = useState([])
@@ -33,19 +33,15 @@ const RMCompareTable = (props) => {
         setShowConvertedCurrency(value);
     }
     const tableDataClass = (data) => {
+                           // return props?.isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
+      } 
     
-        
-        
-        // return props?.isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
-      }
-    
-
     useEffect(() => {
         //if(!RfqMasterApprovalDrawer){
         setIsLoader(true)
         let temp = []
-        const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
-        const idArr = props?.selectedRows.map(item => item.RawMaterialId);
+        const uniqueShouldCostingIdArr = uniqueShouldCostingId || [];
+        const idArr = selectedRows?.map(item => item?.RawMaterialId);
         const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
         dispatch(getViewRawMaterialDetails(combinedArr, res => {
 
@@ -58,7 +54,7 @@ const RMCompareTable = (props) => {
                 let dat = [...temp]
 
                 let tempArrToSend = _.uniqBy(dat, 'RawMaterialId')
-                if (!props?.RfqMasterApprovalDrawer) {
+                if (!RfqMasterApprovalDrawer) {
                     let arr = bestCostObjectFunction(tempArrToSend)
                     dispatch(setRawMaterialCostingData([...arr]))
                 }
@@ -113,22 +109,22 @@ const RMCompareTable = (props) => {
 
             viewRmDetails.map((item, index) => {
                 //section one data start
-                const RMNameGrade = `${item?.RawMaterialName}-${item?.RawMaterialGradeName}`;
-                const effectiveDate = item?.EffectiveDate ? (item?.EffectiveDate !== "-" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
-                const plantCode = item?.Plant && item?.Plant[0] ? 
-                `${item.Plant[0].PlantName}` : '-';                const formattedDataOne = [
+                const RMNameGrade = item?.RawMaterialName && item?.RawMaterialGradeName ? `${item?.RawMaterialName}-${item?.RawMaterialGradeName}` : ' ';
+                const effectiveDate = item?.EffectiveDate ? (item?.EffectiveDate !== "" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : ' ') : ' ';
+                const plantCode = item?.Plant && item?.Plant[0] ?  `${item?.Plant[0]?.PlantName}` : ' ';              
+                  const formattedDataOne = [
                     tableDataClass(item),
-                    item?.TechnologyName,
+                    item?.TechnologyName || ' ',
                     plantCode, // Updated plant code here
-                    item?.RawMaterialCode,
+                    item?.RawMaterialCode || ' ',
                     RMNameGrade,
-                    item?.RawMaterialSpecificationName,
-                    item?.RawMaterialCategoryName,
-                    item?.Currency,
+                    item?.RawMaterialSpecificationName || ' ',
+                    item?.RawMaterialCategoryName || ' ',
+                    item?.Currency || ' ',
                     effectiveDate,
                     showConvertedCurrency ?
-                        item.bestCost === "" ? item.BasicRatePerUOMConversion : `${item.BasicRatePerUOM} (${item.BasicRatePerUOMConversion})` :
-                        item.BasicRatePerUOM
+                        item?.bestCost === "" ? item?.BasicRatePerUOMConversion : `${item?.BasicRatePerUOM} (${item?.BasicRatePerUOMConversion})` :
+                        item?.BasicRatePerUOM
 
                 ];
                 sectionOne.push(formattedDataOne);
@@ -165,13 +161,13 @@ const RMCompareTable = (props) => {
 
                 //mainheader data start
                 const mainHeaderObj = {
-                    vendorName: item.VendorName,
+                    vendorName: item?.VendorName,
                     onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: !props?.compare ? item.bestCost ? false : item.IsShowCheckBoxForApproval : false,
-                    bestCost: item.bestCost,
-                    shouldCost: props?.uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
-                    costingType: item.CostingType === "Zero Based" ? "ZBC" : item.costingType === "Vendor Based" ? "VBC" : "",
+                    isCheckBox: !props?.compare ? item?.bestCost ? false : item?.IsShowCheckBoxForApproval : false,
+                    bestCost: item?.bestCost,
+                    shouldCost: uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
+                    costingType: item?.CostingType === "Zero Based" ? "ZBC" : item?.costingType === "Vendor Based" ? "VBC" : "",
                     vendorCode: item.VendorCode,
                     showConvertedCurrencyCheckbox: item.bestCost === "" && showConvertedCurrencyCheckbox
                 }
@@ -310,7 +306,7 @@ const RMCompareTable = (props) => {
             {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
             <Table headerData={mainHeadingData}
              sectionData={sectionData}
-              uniqueShouldCostingId={props?.uniqueShouldCostingId}
+              uniqueShouldCostingId={uniqueShouldCostingId}
                 showConvertedCurrency={showConvertedCurrency}
                 onConvertedCurrencyChange={handleConvertedCurrencyChange}
                 showConvertedCurrencyCheckbox={showConvertedCurrencyCheckbox}

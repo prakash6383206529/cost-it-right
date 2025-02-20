@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Row, Col, Tooltip, FormGroup, Label, Input, Form } from 'reactstrap';
-import DatePicker from 'react-datepicker'
+import { Row, Col } from 'reactstrap';
 import { useForm, Controller } from "react-hook-form";
-import HeaderTitle from '../../common/HeaderTitle';
 import ProcessDrawer from '../ProcessDrawer';
-import { AsyncSearchableSelectHookForm, RadioHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../layout/HookFormInputs'
+import {  SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs'
 import Button from '../../layout/Button';
 import { getBopCategorySelectList, getBopNumberSelectList } from '../actions/rfq';
-import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
+import {  RECEIVED } from "../../../config/constants";
 import TooltipCustom from "../../common/Tooltip";
+import { canEnableFields } from "../../../helper";
 
 const RaiseRfqBopDetails = (props) => {
-    const { setViewQuotationPart, updateBopList, isEditFlag, isViewFlag, updateButtonPartNoTable, dataProps, resetBopFields, plant, prNumber, disabledPartUid, resetDrawer } = props
+    
+    const { setViewQuotationPart, updateBopList, updateButtonPartNoTable, dataProps, resetBopFields, plant, prNumber, disabledPartUid, resetDrawer } = props
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
@@ -23,28 +23,37 @@ const RaiseRfqBopDetails = (props) => {
         }
     });
     const dispatch = useDispatch()
-
+    const { isEditFlag, isViewFlag ,isAddFlag} = props?.dataProps
     const { SelectBopNumber, SelectBopCategory } = useSelector((state) => state.rfq)
     const [bopNumber, setBopNumber] = useState([])
     const [bopName, setBopName] = useState("")
-
-
     const [bopCategory, setBopCategory] = useState([])
     const [bopAttchment, setBopAttchment] = useState([])
     const [bopRemark, setBopRemark] = useState("");
     const [bopSpecificationList, setBopSpecificationList] = useState([])
-   const { bopSpecificRowData } = useSelector(state => state?.rfq);
-    const showStatus = dataProps?.rowData?.Status || ""
-    const showAddButton = !disabledPartUid || dataProps?.isAddFlag || (dataProps?.isEditFlag && showStatus === PREDRAFT) || (dataProps?.isViewFlag || dataProps?.isEditFlag ? false : true)
+    const { bopSpecificRowData } = useSelector(state => state?.rfq);
+
+
+    const areFieldsEnabled = canEnableFields({
+        plant,
+        type: 'BOP',
+        updateButtonPartNoTable,
+        isEditMode: isEditFlag,
+        isViewMode: isViewFlag,
+        isEditFlagReceived: isEditFlag && dataProps?.rowData?.Status === RECEIVED,
+        showSendButton: dataProps?.rowData?.Status,
+        isAddFlag: isAddFlag
+    });
 
 
     useEffect(() => {
         dispatch(getBopNumberSelectList(() => { }))
 
     }, [])
+  
     useEffect(() => {
         setBopData()
-    }, [bopNumber, bopName, bopCategory, bopAttchment, bopRemark,bopSpecificationList])
+    }, [bopNumber, bopName, bopCategory, bopAttchment, bopRemark, bopSpecificationList])
     useEffect(() => {
         setValue('BOPName', bopName)
     }, [bopName])
@@ -188,12 +197,8 @@ const RaiseRfqBopDetails = (props) => {
                         options={renderListing("bopNumber")}
                         mandatory={true}
                         handleChange={handleBopNo}
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) ||
-                            Object.keys(prNumber).length !== 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
-
-                        // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
+                        disabled={!areFieldsEnabled}
                         className="fullinput-icon"
-                        // disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                         errors={errors.BOPNo}
                         isClearable={true}
                     />
@@ -213,8 +218,7 @@ const RaiseRfqBopDetails = (props) => {
                         handleChange={(e) => { }}
                         defaultValue={""}
                         className=""
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) || Object.keys(prNumber).length !== 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
-
+                        disabled={!areFieldsEnabled}
                         customClassName={"withBorder"}
                         errors={errors.MBName}
                     />
@@ -232,18 +236,16 @@ const RaiseRfqBopDetails = (props) => {
                             options={bopNumber?.value ? renderListing("category") : []}
                             mandatory={true}
                             handleChange={handleBopCategory}
-                            // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                             className="fullinput-icon"
-                            disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) || Object.keys(prNumber).length !== 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
-
-                            // disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                            disabled={!areFieldsEnabled}
                             errors={errors.Category}
                             isClearable={true}
                         />
                         <TooltipCustom id="addBOPSpecification" disabledIcon={true} tooltipText="Click on the + button to start inputting Specification and mandatory attachments." />
                         <Button id="addBOPSpecification" className={"ml-2 mb-2 "}
                             variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
-                            title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={dataProps?.isAddFlag ? ((!updateButtonPartNoTable && prNumber.length !== 0) ? true : false) : (Object.keys(prNumber).length !== 0 ? !updateButtonPartNoTable : (disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT) || dataProps?.isViewFlag))}
+                            title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle}
+                            disabled={!areFieldsEnabled}
                         >
                         </Button>
 
