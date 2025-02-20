@@ -133,7 +133,9 @@ function AddRMFinancialDetails(props) {
     })
 
     useEffect(() => {
-        calculateNetCostDomestic();
+        if (!isViewFlag) {
+            calculateNetCostDomestic();
+        }
     }, [values])
     useEffect(() => {
         if (isEditFlag) {
@@ -170,7 +172,7 @@ function AddRMFinancialDetails(props) {
                 let toCurrency = !states.isImport ? reactLocalStorage.getObject("baseCurrency") : Data?.Currency
                 const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
                 const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
-                if (getValues('effectiveDate') && Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+                if (!isViewFlag && getValues('effectiveDate') && Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
                     if (IsFetchExchangeRateVendorWise() && (!rawMaterailDetails?.Vendor && !getValues('clientName'))) {
                         return false;
                     }
@@ -209,7 +211,9 @@ function AddRMFinancialDetails(props) {
     }, [rawMaterailDetails?.customer])
 
     useEffect(() => {
-        calculateNetCostDomestic()
+        if (!isViewFlag) {
+            calculateNetCostDomestic()
+        }
     }, [values, state.totalOtherCost, CurrencyExchangeRate])
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
@@ -225,6 +229,7 @@ function AddRMFinancialDetails(props) {
             setValue('NetCostWithoutConditionCost', states.isImport ? checkForDecimalAndNull(Data?.NetCostWithoutConditionCostConversion, getConfigurationKey()?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('NetLandedCost', checkForDecimalAndNull(Data?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', states.isImport ? checkForDecimalAndNull(Data?.NetLandedCostConversion, getConfigurationKey()?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('NetLandedCostLocalConversion', states.isImport ? checkForDecimalAndNull(Data?.NetLandedCostLocalConversion, getConfigurationKey()?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('FinalConditionCostBaseCurrency', states.isImport ? checkForDecimalAndNull(Data?.NetConditionCostConversion, getConfigurationKey()?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetConditionCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('ScrapRateUOM', { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId })
             setValue('CalculatedFactor', Data?.CalculatedFactor)

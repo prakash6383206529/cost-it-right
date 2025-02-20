@@ -273,7 +273,7 @@ function RMImportListing(props) {
       ListFor: ListFor,
       StatusId: statusString,
       Vendor: isSimulation && filteredRMData && filteredRMData?.Vendor ? filteredRMData?.Vendor : '',
-      Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+      Currency: isSimulation&&props?.FromExchangeRate ? (props?.fromListData ? props?.fromListData : '') :props?.isFromVerifyPage ? (filteredRMData?.Currency?filteredRMData?.Currency:"") : floatingFilterData?.Currency,
       LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
       EffectiveDate: isSimulation &&props?.minDate ? props?.minDate : '',
     }
@@ -286,7 +286,7 @@ function RMImportListing(props) {
         (filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : vendorId)
       ) : vendorId
       dataObj.CustomerId = filteredRMData && filteredRMData?.CustomerId ? filteredRMData?.CustomerId : ''
-      dataObj.Currency = filteredRMData?.Currency
+      //dataObj.Currency = filteredRMData?.Currency
       dataObj.ExchangeRateSourceName = filteredRMData?.ExchangeRateSourceName
       dataObj.OtherNetCost = filteredRMData?.OtherNetCost
       dataObj.StatusId = statusString

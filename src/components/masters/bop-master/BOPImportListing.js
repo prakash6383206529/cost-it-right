@@ -238,7 +238,7 @@ const BOPImportListing = (props) => {
       ListFor: props?.isSimulation && !props?.isBOPAssociated ?"" : props.ListFor,
       StatusId: statusString,
       IsBOPAssociated: !props?.isSimulation ? props?.isBOPAssociated : (isMasterAssociatedWithCosting? true : false),
-      Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+      Currency: props?.isSimulation&&props?.FromExchangeRate?( props?.fromListData && props?.fromListData ? props?.fromListData : '') :props?.isFromVerifyPage ? filteredRMData?.Currency : floatingFilterData?.Currency,
       LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
       EffectiveDate: props?.isSimulation &&props?.minDate ? props?.minDate : '',
     };
@@ -255,7 +255,7 @@ const BOPImportListing = (props) => {
         filteredRMData && filteredRMData?.CustomerId
           ? filteredRMData?.CustomerId
           : "";
-      dataObj.Currency = filteredRMData?.Currency;
+     // dataObj.Currency = filteredRMData?.Currency;
     }
     dataObj.EntryType = Number(ENTRY_TYPE_IMPORT)
     dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
