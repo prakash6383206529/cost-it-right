@@ -1738,7 +1738,7 @@ function RawMaterialCost(props) {
                       onChange={onPressApplyMasterBatch}
                     />
                   </label>
-                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n2 mt-3 " tooltipText="Can only be added with 1 RM" />
+                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n2 mt-1" tooltipText="Can only be added with 1 RM" />
                 </Col >
               }
 
