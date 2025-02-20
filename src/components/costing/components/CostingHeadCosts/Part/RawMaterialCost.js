@@ -1877,6 +1877,7 @@ function RawMaterialCost(props) {
             Ids={Ids}
             rmNameList={rmNameList}
             item={item}
+            selectedRM={getValues('MBId')}
           />
         )
       }
