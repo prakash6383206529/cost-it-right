@@ -2659,8 +2659,8 @@ class AddPower extends Component {
                                       colSpan={!this.state.hidePlantCurrency ? "2" : this.state.isImport ? "2" : "3"}
                                       >
                                         <div className='d-flex justify-content-around align-items-center'>
-                                          <strong>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
-                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                          <strong>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
+                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
                                         </div>
                                       </td>
                                       <td colSpan={this.state.isImport ? "0" : "2"}>
