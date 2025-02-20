@@ -78,9 +78,10 @@ import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
 import Toaster from '../components/common/Toaster';
 import { useDispatch } from 'react-redux';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { getAllRMDataList, getMaterialTypeDataListAPI, getRMSpecificationDataList } from '../components/masters/actions/Material';
 import { getBOPDataList } from '../components/masters/actions/BoughtOutParts';
+import { useMemo } from 'react';
 
 // const config() = config;
 
@@ -1946,6 +1947,7 @@ export function getTaxCodeSelectList(callback) {
 
 const rmAPICalling = (params, dispatch) => {
   const { tabs } = params;
+  console.log("tabs333", tabs?.trim())
   switch (tabs?.trim()) {
     case "Domestic":
     case "Import":

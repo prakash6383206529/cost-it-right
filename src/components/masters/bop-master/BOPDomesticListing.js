@@ -150,7 +150,7 @@ const BOPDomesticListing = (props) => {
     const filterData = {
       ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props?.isSimulation ? props?.ListFor : '', IsBOPAssociated: props?.isBOPAssociated,
       Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
-      LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+      // LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
       StatusId: statusString
     }
     const { isMasterSummaryDrawer } = props

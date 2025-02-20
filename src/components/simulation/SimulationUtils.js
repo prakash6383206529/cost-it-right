@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BOPImpactDownloadArray, ERImpactDownloadArray, MachineImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray, STOperationImpactDownloadArray, CPImpactDownloadArray } from "../../config/masterData";
+import { BOPImpactDownloadArray, ERImpactDownloadArray, MachineImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray, STOperationImpactDownloadArray, CPImpactDownloadArray, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_RAWMATERIAL_SIMULATION } from "../../config/masterData";
 import { Errorbox } from "../common/ErrorBox";
 import { getAmmendentStatus } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
@@ -454,3 +454,37 @@ export const ErrorMessage = (props) => {
     </>)
 }
 // **END** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE
+
+
+export const findApplicabilityMasterId = (masterList = [], value) => {
+
+    let applicabilityMasterId = "";
+    switch (value) {
+        case APPLICABILITY_RM_SIMULATION:
+            applicabilityMasterId = masterList?.find(item => item?.Text === "RM Import")?.Value;
+            break;
+        case APPLICABILITY_BOP_SIMULATION:
+            applicabilityMasterId = masterList?.find(item => item?.Text === "BOP Import")?.Value;
+            break;
+        case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
+            applicabilityMasterId = masterList?.find(item => item?.Text === "BOP Import")?.Value
+            break;
+        case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
+            applicabilityMasterId = masterList?.find(item => item?.Text === "Surface Treatment")?.Value;
+            break;
+        case APPLICABILITY_OPERATIONS_SIMULATION:
+            applicabilityMasterId = masterList?.find(item => item?.Text === "Operations")?.Value;
+            break;
+        case APPLICABILITY_MACHINE_RATES_SIMULATION:
+            applicabilityMasterId = masterList?.find(item => item?.Text === "Machine Rate")?.Value;
+            break;
+        case APPLICABILITY_RAWMATERIAL_SIMULATION:
+
+            applicabilityMasterId = masterList?.find(item => item?.Text === "Raw Materials")?.Value;
+            break;
+        default:
+            applicabilityMasterId = masterList?.find(item => item?.Text === "Exchange Rates")?.Value;
+            break;
+    }
+    return applicabilityMasterId;
+}

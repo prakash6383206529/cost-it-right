@@ -255,7 +255,7 @@ const BOPImportListing = (props) => {
         filteredRMData && filteredRMData?.CustomerId
           ? filteredRMData?.CustomerId
           : "";
-      dataObj.Currency = filteredRMData?.Currency;
+     // dataObj.Currency = filteredRMData?.Currency;
     }
     dataObj.EntryType = Number(ENTRY_TYPE_IMPORT)
     dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
