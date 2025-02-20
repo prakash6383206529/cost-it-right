@@ -7,11 +7,11 @@ import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
 import Button from '../../../layout/Button'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
-import { getCarrierTypeList, getFreightCalculation, getPackagingCalculation, getSimulationPackagingCalculation, getVolumePerDayForPackagingCalculator, saveFreightCalculation, savePackagingCalculation } from '../../actions/CostWorking'
+import { getCarrierTypeList, getFreightCalculation, getPackagingCalculation, getSimulationFreightCalculation, getSimulationPackagingCalculation, getVolumePerDayForPackagingCalculator, saveFreightCalculation, savePackagingCalculation } from '../../actions/CostWorking'
 import { Drawer } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
 import { ViewCostingContext } from '../CostingDetails'
-import { FullTruckLoad } from '../../../../config/constants'
+import { AWAITING_APPROVAL_ID, FullTruckLoad, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants'
 import FormFieldsRenderer from '../../../common/FormFieldsRenderer'
 import HeaderTitle from '../../../common/HeaderTitle'
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -138,7 +138,7 @@ function FreightCalculator(props) {
     useEffect(() => {
         dispatch(getCarrierTypeList(res => { }))
         setValue('TruckDimensions', truckDimensions?.label)
-        if(!costingViewMode){
+        if (!costingViewMode) {
             setValue('NoOfComponentsPerBinOrTrolley', noOfComponentsPerCrate)
             setValue('TripRate', rate)
         }
@@ -165,16 +165,17 @@ function FreightCalculator(props) {
                 hideUtilization: false
             }))
         }
-        const tempData = rowObjData?.SimulationTempData
-        const costingId = costingData?.CostingId ?? tempData.find(item => item?.CostingHeading === "Old Costing")?.costingId
+        const tempData = props.simulationMode ? rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.SimulationTempData && rowObjData?.SimulationTempData[props.mainIndex] : {} : {}
+        const costingId = props.simulationMode ? rowObjData?.CostingId : tempData?.costingId
         let calculatorId = FreightCalculationId
         let freightDetailId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.FreightDetailId : null
-        if(calculatorId!==null){
+
+        if (props.simulationMode && String(tempData?.CostingHeading) === String("New Costing") && (Number(tempData?.SimulationStatusId) === Number(REJECTEDID) || Number(tempData?.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData?.SimulationStatusId) === Number(AWAITING_APPROVAL_ID)) && FreightCalculationId === null) {
             setState(prevState => ({
                 ...prevState,
                 isLoader: true
             }))
-            dispatch(getFreightCalculation(costingId, freightDetailId, calculatorId, (res) => {
+            dispatch(getSimulationFreightCalculation(tempData?.SimulationId, costingId, calculatorId, (res) => {
                 let data = res?.data?.Data
                 setState(prevState => ({
                     ...prevState,
@@ -183,26 +184,42 @@ function FreightCalculator(props) {
                 setFormValues(data)
 
             }))
+        } else {
+            if (calculatorId !== null) {
+                setState(prevState => ({
+                    ...prevState,
+                    isLoader: true
+                }))
+                dispatch(getFreightCalculation(costingId, freightDetailId, calculatorId, (res) => {
+                    let data = res?.data?.Data
+                    setState(prevState => ({
+                        ...prevState,
+                        isLoader: false
+                    }))
+                    setFormValues(data)
+
+                }))
+            }
         }
     }, [])
     const calclulationFieldValues = useWatch({
-        control: control, 
+        control: control,
         name: ['Utilization'],
-        defaultValue: [] 
+        defaultValue: []
     })
     useEffect(() => {
         calculateTotalCost()
-    }, [state.noOfBins, state.totalNoOfBins, calclulationFieldValues,state.noOfTrolleys])
+    }, [state.noOfBins, state.totalNoOfBins, calclulationFieldValues, state.noOfTrolleys])
     const setFormValues = (data) => {
-        setValue('CarrierType', data?.CarrierType?{label: data?.CarrierType, value: data?.CarrierTypeId}:[])
+        setValue('CarrierType', data?.CarrierType ? { label: data?.CarrierType, value: data?.CarrierTypeId } : [])
         setValue('TrolleyLength', checkForDecimalAndNull(data?.TrolleyLength, NoOfDecimalForInputOutput))
         setValue('TrolleyBreadth', checkForDecimalAndNull(data?.TrolleyBreadth, NoOfDecimalForInputOutput))
         setValue('TrolleyHeight', checkForDecimalAndNull(data?.TrolleyHeight, NoOfDecimalForInputOutput))
         setValue('BinLength', checkForDecimalAndNull(data?.BinLength, NoOfDecimalForInputOutput))
         setValue('BinBreadth', checkForDecimalAndNull(data?.BinBreadth, NoOfDecimalForInputOutput))
         setValue('BinHeight', checkForDecimalAndNull(data?.BinHeight, NoOfDecimalForInputOutput))
-        setValue('BinAlignment', {label: data?.BinAlignment, value: data?.BinAlignment})
-        setValue('TrolleyAlignment', {label: data?.TrolleyAlignment, value: data?.TrolleyAlignment})
+        setValue('BinAlignment', { label: data?.BinAlignment, value: data?.BinAlignment })
+        setValue('TrolleyAlignment', { label: data?.TrolleyAlignment, value: data?.TrolleyAlignment })
         setValue('NoOfTrolleys', checkForDecimalAndNull(data?.NumberOfTrolleys, NoOfDecimalForInputOutput))
         setValue('NoOfBins', data?.NumberOfBins)
         setValue('NoOfBinsPerTrolley', checkForDecimalAndNull(data?.NoOfBinPerTrolley, NoOfDecimalForInputOutput))
@@ -211,7 +228,7 @@ function FreightCalculator(props) {
         setValue('Utilization', freightType === FullTruckLoad ? 100 : checkForDecimalAndNull(data?.Utilization, NoOfDecimalForInputOutput))
         setState(prevState => ({
             ...prevState,
-            carrierType: {label: data?.CarrierType, value: data?.CarrierTypeId},
+            carrierType: { label: data?.CarrierType, value: data?.CarrierTypeId },
             isShowAlignment: data?.IsAlignment,
             binAlignment: data?.BinAlignment,
             trolleyAlignment: data?.TrolleyAlignment,
@@ -233,7 +250,7 @@ function FreightCalculator(props) {
                 tripRate: data?.TripRate
             }))
         }
-        
+
     }
     /**
 * @method renderListing
@@ -303,7 +320,7 @@ function FreightCalculator(props) {
         }))
     }
     const cancelHandler = () => {
-            props.closeCalculator('',FreightCalculationId!==null?state?.totalCost : '')
+        props.closeCalculator('', FreightCalculationId !== null ? state?.totalCost : '')
     }
     const onShowAlignment = () => {
         setState(prevState => ({
@@ -393,7 +410,6 @@ function FreightCalculator(props) {
         const utilization = checkForNull(getValues('Utilization'))
         const noOfComponentsPerBinOrTrolley = checkForNull(noOfComponentsPerCrate)
         const totalNoOfBins = state?.carrierType?.label === 'Bin And Trolley' ? checkForNull(state.totalNoOfBins) : state?.carrierType?.label === 'Bin' ? checkForNull(state.noOfBins) : checkForNull(state.noOfTrolleys)
-        console.log(state.noOfTrolleys,'state.noOfTrolleys')
         const noOfbinOrTrolleypertruck = checkForNull(totalNoOfBins * utilization) / 100
         const totalCost = rate / (noOfComponentsPerBinOrTrolley * noOfbinOrTrolleypertruck)
         setValue('NoOfBinsRequiredPerVehicle', checkForDecimalAndNull(noOfbinOrTrolleypertruck, NoOfDecimalForInputOutput))
@@ -434,7 +450,7 @@ function FreightCalculator(props) {
             label: t('length', { defaultValue: 'Length (mm)' }),
             name: 'BinLength',
             mandatory: true,
-            disabled: CostingViewMode ? CostingViewMode : false ,
+            disabled: CostingViewMode ? CostingViewMode : false,
             handleChange: (e) => {
                 setValue('BinLength', e.target.value);
             },
@@ -444,7 +460,7 @@ function FreightCalculator(props) {
             label: t('breadth', { defaultValue: 'Breadth (mm)' }),
             name: 'BinBreadth',
             mandatory: true,
-            disabled: CostingViewMode ? CostingViewMode : false ,
+            disabled: CostingViewMode ? CostingViewMode : false,
             handleChange: (e) => {
                 setValue('BinBreadth', e.target.value);
             },
@@ -454,7 +470,7 @@ function FreightCalculator(props) {
             label: t('height', { defaultValue: 'Height (mm)' }),
             name: 'BinHeight',
             mandatory: true,
-            disabled: CostingViewMode ? CostingViewMode : false ,
+            disabled: CostingViewMode ? CostingViewMode : false,
             handleChange: (e) => {
                 setValue('BinHeight', e.target.value);
             },
@@ -466,7 +482,7 @@ function FreightCalculator(props) {
             label: t('length', { defaultValue: 'Length (mm)' }),
             name: 'TrolleyLength',
             mandatory: true,
-            disabled: CostingViewMode ? CostingViewMode : false ,
+            disabled: CostingViewMode ? CostingViewMode : false,
             handleChange: (e) => {
                 setValue('TrolleyLength', e.target.value);
             },
@@ -476,7 +492,7 @@ function FreightCalculator(props) {
             label: t('breadth', { defaultValue: 'Breadth (mm)' }),
             name: 'TrolleyBreadth',
             mandatory: true,
-            disabled: CostingViewMode ? CostingViewMode : false ,
+            disabled: CostingViewMode ? CostingViewMode : false,
             handleChange: (e) => {
                 setValue('TrolleyBreadth', e.target.value);
             },
@@ -486,7 +502,7 @@ function FreightCalculator(props) {
             label: t('height', { defaultValue: 'Height (mm)' }),
             name: 'TrolleyHeight',
             mandatory: true,
-            disabled: CostingViewMode ? CostingViewMode : false ,
+            disabled: CostingViewMode ? CostingViewMode : false,
             handleChange: (e) => {
                 setValue('TrolleyHeight', e.target.value);
             },
@@ -501,22 +517,22 @@ function FreightCalculator(props) {
             { label: t('binAlignment', { defaultValue: 'Bin Alignment' }), name: 'BinAlignment', options: renderListing('Alignment'), handleChange: handleBinAlignmentChange, mandatory: true, searchable: true, disabled: CostingViewMode ? CostingViewMode : false }
         ] : []),
         ...(state.carrierType?.label === 'Trolley' || state.carrierType?.label === "Bin And Trolley" ? [
-            { label: t('noOfTrolleys', { defaultValue: 'No. of trolleys' }), name: 'NoOfTrolleys', mandatory: true, searchable: false, disabled: true,tooltip: { text:`No. of trolleys = (Truck Length / Trolley ${state.trolleyAlignment === 'Horizontal' ? 'Breadth' : 'Length'}) * (Truck Breadth / Trolley ${state.trolleyAlignment === 'Horizontal' ? 'Length' : 'Breadth'}) * (Truck Height / Trolley Height)`, width: '250px',disabledIcon: true } }
+            { label: t('noOfTrolleys', { defaultValue: 'No. of trolleys' }), name: 'NoOfTrolleys', mandatory: true, searchable: false, disabled: true, tooltip: { text: `No. of trolleys = (Truck Length / Trolley ${state.trolleyAlignment === 'Horizontal' ? 'Breadth' : 'Length'}) * (Truck Breadth / Trolley ${state.trolleyAlignment === 'Horizontal' ? 'Length' : 'Breadth'}) * (Truck Height / Trolley Height)`, width: '250px', disabledIcon: true } }
         ] : []),
         ...(state.carrierType?.label === 'Bin' ? [
-            { label: t('noOfBins', { defaultValue: 'No. of bins' }), name: 'NoOfBins', mandatory: true, searchable: false, disabled: true,tooltip: { text:`No. of bins = (Truck Length / ${state.binAlignment === 'Horizontal' ? 'Bin Breadth' : 'Bin Length'}) * (Truck Breadth / ${state.binAlignment === 'Horizontal' ? 'Bin Length' : 'Bin Breadth'}) * (Truck Height / Bin Height)`, width: '250px',disabledIcon: true } }
+            { label: t('noOfBins', { defaultValue: 'No. of bins' }), name: 'NoOfBins', mandatory: true, searchable: false, disabled: true, tooltip: { text: `No. of bins = (Truck Length / ${state.binAlignment === 'Horizontal' ? 'Bin Breadth' : 'Bin Length'}) * (Truck Breadth / ${state.binAlignment === 'Horizontal' ? 'Bin Length' : 'Bin Breadth'}) * (Truck Height / Bin Height)`, width: '250px', disabledIcon: true } }
         ] : []),
         ...(state.carrierType?.label === "Bin And Trolley" ? [
-            { label: t('noOfBinsPerTrolley', { defaultValue: 'No. of bins per trolley' }), name: 'NoOfBinsPerTrolley', mandatory: true, searchable: false, disabled: true,tooltip: { text:`No. of bins per trolley = (Trolley Length / Bin ${state.binAlignment === 'Horizontal' ? 'Breadth' : 'Length'}) * (Trolley Breadth / Bin ${state.binAlignment === 'Horizontal' ? 'Length' : 'Breadth'}) * (Trolley Height / Bin Height)`, width: '250px',disabledIcon: true } }
+            { label: t('noOfBinsPerTrolley', { defaultValue: 'No. of bins per trolley' }), name: 'NoOfBinsPerTrolley', mandatory: true, searchable: false, disabled: true, tooltip: { text: `No. of bins per trolley = (Trolley Length / Bin ${state.binAlignment === 'Horizontal' ? 'Breadth' : 'Length'}) * (Trolley Breadth / Bin ${state.binAlignment === 'Horizontal' ? 'Length' : 'Breadth'}) * (Trolley Height / Bin Height)`, width: '250px', disabledIcon: true } }
         ] : []),
         ...(state.carrierType?.label === "Bin And Trolley" ? [
-            { label: t('totalNoOfBins', { defaultValue: 'Total no. of bins' }), name: 'TotalNoOfBins', mandatory: true, searchable: false, disabled: true,tooltip: { text:'Total no. of bins = No. of trolleys * No. of bins per trolley', width: '250px',disabledIcon: true } }
+            { label: t('totalNoOfBins', { defaultValue: 'Total no. of bins' }), name: 'TotalNoOfBins', mandatory: true, searchable: false, disabled: true, tooltip: { text: 'Total no. of bins = No. of trolleys * No. of bins per trolley', width: '250px', disabledIcon: true } }
         ] : []),
-        { label: t('noOfComponentsPerBinOrTrolley', { defaultValue: 'No. of components per bin/trolley' }), name: 'NoOfComponentsPerBinOrTrolley', mandatory: true, searchable: false, disabled: true,tooltip: { text:'Coming from packaging calculator(No. of components per crate/trolley)', width: '250px',disabledIcon: true } },
-        { label: t('utilization', { defaultValue: 'Utilization (%)' }), name: 'Utilization', percentageLimit: true, mandatory: true, searchable: false, disabled: (state.hideUtilization||CostingViewMode) },
-        { label: t('noOfBinsorTrolleysPerTruck', { defaultValue: 'No. of Bins/Trolleys per truck' }), name: 'NoOfBinsRequiredPerVehicle', mandatory: false, searchable: false, disabled: true,tooltip: { text:`No. of bins/trolleys per truck = (${state.carrierType?.label === "Bin And Trolley" ? 'Total no. of bins' : 'No. of bins'} * Utilization)/100`, width: '250px',disabledIcon: true } },
-        { label: t('tripRate', { defaultValue: 'Trip rate' }), name: 'TripRate', mandatory: false, searchable: false, disabled: true,tooltip: { text:'Coming from freight master', width: '250px',disabledIcon: true } },
-        { label: t('totalCost', { defaultValue: 'Total cost' }), name: 'TotalCost', mandatory: false, searchable: false, disabled: true,tooltip: { text:`Total cost = Trip rate / (No. of components per bin/trolley * No. of bins/trolleys per truck)`, width: '250px',disabledIcon: true } },
+        { label: t('noOfComponentsPerBinOrTrolley', { defaultValue: 'No. of components per bin/trolley' }), name: 'NoOfComponentsPerBinOrTrolley', mandatory: true, searchable: false, disabled: true, tooltip: { text: 'Coming from packaging calculator(No. of components per crate/trolley)', width: '250px', disabledIcon: true } },
+        { label: t('utilization', { defaultValue: 'Utilization (%)' }), name: 'Utilization', percentageLimit: true, mandatory: true, searchable: false, disabled: (state.hideUtilization || CostingViewMode) },
+        { label: t('noOfBinsorTrolleysPerTruck', { defaultValue: 'No. of Bins/Trolleys per truck' }), name: 'NoOfBinsRequiredPerVehicle', mandatory: false, searchable: false, disabled: true, tooltip: { text: `No. of bins/trolleys per truck = (${state.carrierType?.label === "Bin And Trolley" ? 'Total no. of bins' : 'No. of bins'} * Utilization)/100`, width: '250px', disabledIcon: true } },
+        { label: t('tripRate', { defaultValue: 'Trip rate' }), name: 'TripRate', mandatory: false, searchable: false, disabled: true, tooltip: { text: 'Coming from freight master', width: '250px', disabledIcon: true } },
+        { label: t('totalCost', { defaultValue: 'Total cost' }), name: 'TotalCost', mandatory: false, searchable: false, disabled: true, tooltip: { text: `Total cost = Trip rate / (No. of components per bin/trolley * No. of bins/trolleys per truck)`, width: '250px', disabledIcon: true } },
     ]
     return (
         <Drawer anchor={props.anchor} open={props.isOpen}

@@ -639,11 +639,11 @@ const CostingSummaryTable = (props) => {
   const viewPackagingAndFrieghtData = (index) => {
     let packagingData = viewCostingData[index]?.netPackagingCostView
     let freightData = viewCostingData[index]?.netFreightCostView
-
     setIsViewPackagingFreight(true)
     setViewPackagingFreight({
       packagingData: packagingData,
       freightData: freightData,
+      index: index
     })
   }
 
@@ -1179,7 +1179,7 @@ const CostingSummaryTable = (props) => {
             } else if (!allEqual(plantArray)) {
               Toaster.warning('Plant should be same for sending multiple costing for approval')
             } else {
-              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId??null, (res) => {
+              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId ?? null, (res) => {
                 if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
                   setShowApproval(false)
                   Toaster.warning('User is not in the approval flow')
@@ -1217,7 +1217,7 @@ const CostingSummaryTable = (props) => {
       } else if (!allEqual(plantArray)) {
         Toaster.warning('Plant should be same for sending multiple costing for approval')
       } else {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId,receiverId??null, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId ?? null, (res) => {
           if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')
@@ -1412,7 +1412,7 @@ const CostingSummaryTable = (props) => {
     if (data) {
       let temp = moduleHandler(data[0]?.costingId, 'down', data)
       if (!temp) {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId,receiverId??null, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId ?? null, (res) => {
           if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')

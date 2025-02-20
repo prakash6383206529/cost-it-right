@@ -141,43 +141,44 @@ const AddFreight = (props) => {
       reactLocalStorage?.setObject('vendorData', []);
     };
   }, []);
-  useEffect(() => {
-    const hasRequiredFields = (
-      (state.costingTypeId === ZBCTypeId) ||
-      (state.costingTypeId === CBCTypeId && state?.client) ||
-      (state.costingTypeId === VBCTypeId && state?.vendorName)
-    );
-    if (hasRequiredFields && state?.effectiveDate && state?.Plant) {
-      setState(prev => ({ ...prev, disableAll: false }));
-      let data = {
-        ...state,
-        freightId: null,
-        EffectiveDate: state?.effectiveDate,
-        PlantId: state?.Plant?.value,
-        CustomerId: state?.client?.value,
-        VendorId: state?.vendorName?.value,
-        CostingTypeId: state?.costingTypeId
-      }
-      dispatch(getFreightData(data, (res) => {
-        if (res?.status === 200) {
-          let data = res?.data?.Data;
-          setState(prev => ({
-            ...prev, dataToChange: data,
-            gridTable: data?.FullTruckLoadDetails ?? [],
-            IsFreightAssociated: data?.IsFreightAssociated
-          }));
-        } else {
-          setState(prev => ({
-            ...prev,
-            gridTable: [],
-            IsFreightAssociated: false
-          }));
-        }
-      }));
-    } else {
-      setState(prev => ({ ...prev, disableAll: true }));
-    }
-  }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate]);
+  // useEffect(() => {
+  //   const hasRequiredFields = (
+  //     (state.costingTypeId === ZBCTypeId) ||
+  //     (state.costingTypeId === CBCTypeId && state?.client) ||
+  //     (state.costingTypeId === VBCTypeId && state?.vendorName)
+  //   );
+  //   if (hasRequiredFields && state?.effectiveDate && state?.Plant) {
+  //     setState(prev => ({ ...prev, disableAll: false }));
+  //     let data = {
+  //       ...state,
+  //       freightId: null,
+  //       EffectiveDate: state?.effectiveDate,
+  //       PlantId: state?.Plant?.value,
+  //       CustomerId: state?.client?.value,
+  //       VendorId: state?.vendorName?.value,
+  //       CostingTypeId: state?.costingTypeId
+  //     }
+  //     // dispatch(getFreightData(data, (res) => {
+  //     //   if (res?.status === 200) {
+  //     //     let data = res?.data?.Data;
+  //     //     setState(prev => ({
+  //     //       ...prev, dataToChange: data,
+  //     //       gridTable: data?.FullTruckLoadDetails ?? [],
+  //     //       IsFreightAssociated: data?.IsFreightAssociated
+  //     //     }));
+  //     //   } else {
+  //     //     setState(prev => ({
+  //     //       ...prev,
+  //     //       gridTable: [],
+  //     //       IsFreightAssociated: false
+  //     //     }));
+  //     //   }
+  //     // }));
+  //   } else {
+  //     setState(prev => ({ ...prev, disableAll: true }));
+  //   }
+  // }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate]);
+
   /**
   * @method onPressVendor
   * @description Used for Vendor checked
@@ -276,7 +277,7 @@ const AddFreight = (props) => {
         if (res && res.data && res.data.Result) {
           setState(prev => ({ ...prev, isLoader: false }));
           const Data = res.data.Data[0];
-          setState(prev => ({ ...prev, DataToChange: Data }));
+          setState(prev => ({ ...prev, DataToChange: Data, gridTable: Data?.FullTruckLoadDetails }));
           setValueMainForm('Plants', { label: Data.PlantName, value: Data.PlantId });
           setValueMainForm('EffectiveDate', DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '');
           setValueMainForm('vendorName', { label: Data.VendorName, value: Data.VendorId });
@@ -314,7 +315,6 @@ const AddFreight = (props) => {
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               sourceLocation: Data.SourceCityName !== undefined ? { label: Data.SourceCityName, value: Data.SourceCityId } : [],
               destinationLocation: Data.DestinationCityName !== undefined ? { label: Data.DestinationCityName, value: Data.DestinationCityId } : [],
-              gridTable: GridArray,
               Plant: { label: Data.PlantName, value: Data.PlantId },
               effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : ''
             }));
@@ -327,7 +327,7 @@ const AddFreight = (props) => {
         ...prev,
         isLoader: false
       }));
-      dispatch(getFreightData("", (res) => { }));
+      // dispatch(getFreightData("", (res) => { }));
     }
   };
 

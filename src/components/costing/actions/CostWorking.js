@@ -1751,7 +1751,25 @@ export function getFreightCalculation(costingId, costingFreightDetailsId, costin
     });
   };
 }
-
+export function getSimulationFreightCalculation(simulationId, costingId, simulationCostingFreightCalculationDetailsId, callback) {
+  return (dispatch) => {
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId}&simulationCostingFreightCalculationDetailsId=${simulationCostingFreightCalculationDetailsId}`
+    const request = axios.get(`${API.getSimulationFreightCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else if (response.status === 204) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 /**
  * @method saveFreightCalculation  
  * @description save freight calculator data
@@ -1787,7 +1805,7 @@ export function getNoOfComponentsPerCrateFromPackaging(costingId, callback) {
       callback(error);
       apiErrors(error);
     });
-    };
+  };
 }
 /**
  * @method getCarrierTypeList

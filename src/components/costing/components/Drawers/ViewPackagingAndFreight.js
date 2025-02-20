@@ -15,25 +15,25 @@ function ViewPackagingAndFreight(props) {
   const [packagingCalculatorDrawer, setPackagingCalculatorDrawer] = useState(false)
   const [freightCalculatorDrawer, setFreightCalculatorDrawer] = useState(false)
   const [rowObjData, setRowObjData] = useState({
-    PackagingDetailId:null,
-    CostingPackagingCalculationDetailsId:null,
-    SimulationTempData:null,
-    truckDimensions:null
+    PackagingDetailId: null,
+    CostingPackagingCalculationDetailsId: null,
+    SimulationTempData: null,
+    truckDimensions: null
   })
   const [freightRowObjData, setFreightRowObjData] = useState({
-    FreightDetailId:null,
-    CostingFreightCalculationDetailsId:null,
-    SimulationTempData:null
+    FreightDetailId: null,
+    CostingFreightCalculationDetailsId: null,
+    SimulationTempData: null
   })
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { viewCostingDetailData} = useSelector((state) => state.costing)
+  const { viewCostingDetailData } = useSelector((state) => state.costing)
   // useEffect(() => {
   //   if (viewCostingDetailData && viewCostingDetailData?.length > 0) {
   //     setViewCostingData(viewCostingDetailData)
   //   } 
   // }, [viewCostingDetailData])
   useEffect(() => {
-    if(freightData && freightData?.length > 0){
+    if (freightData && freightData?.length > 0) {
       const truckDimension = freightData.find(row => row.DimensionId);
       setFreightRowObjData({
         truckDimensions: truckDimension ? {
@@ -60,17 +60,20 @@ function ViewPackagingAndFreight(props) {
 
   const getPackagingCalculator = (index) => {
     setRowObjData({
-      PackagingDetailId:packagingData[index]?.PackagingDetailId,
-      CostingPackagingCalculationDetailsId:packagingData[index]?.CostingPackagingCalculationDetailsId,
-      SimulationTempData:viewCostingDetailData
+      PackagingDetailId: packagingData[index]?.PackagingDetailId,
+      CostingPackagingCalculationDetailsId: packagingData[index]?.CostingPackagingCalculationDetailsId,
+      SimulationTempData: viewCostingDetailData
     })
     setPackagingCalculatorDrawer(true)
   }
   const getFreightCalculator = (index) => {
     setFreightRowObjData({
-      FreightDetailId:freightData[index]?.FreightDetailId,
-      CostingFreightCalculationDetailsId:freightData[index]?.CostingFreightCalculationDetailsId,
-      SimulationTempData:viewCostingDetailData,
+      FreightDetailId: freightData[index]?.FreightDetailId,
+      CostingFreightCalculationDetailsId: freightData[index]?.CostingFreightCalculationDetailsId,
+      SimulationTempData: viewCostingDetailData,
+      CostingHeading: freightData[index]?.CostingHeading,
+      SimulationStatusId: freightData[index]?.SimulationStatusId,
+      CostingId: freightData[index]?.CostingId,
       truckDimensions: freightData[index]?.DimensionId ? {
         label: freightData[index]?.DimensionName,
         value: freightData[index]?.DimensionId
@@ -123,11 +126,11 @@ function ViewPackagingAndFreight(props) {
                       <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                       <td><div className='d-flex align-items-center'>{item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
-                      {item?.CostingPackagingCalculationDetailsId !== 0 && item?.CostingPackagingCalculationDetailsId !== null && <button
-                        className="CalculatorIcon cr-cl-icon ml-1"
-                        type={"button"}
-                        onClick={() => { getPackagingCalculator(index) }}
-                      />}
+                        {item?.CostingPackagingCalculationDetailsId !== 0 && item?.CostingPackagingCalculationDetailsId !== null && <button
+                          className="CalculatorIcon cr-cl-icon ml-1"
+                          type={"button"}
+                          onClick={() => { getPackagingCalculator(index) }}
+                        />}
                       </div>
                       </td>
 
@@ -183,11 +186,11 @@ function ViewPackagingAndFreight(props) {
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
                       <td>
                         {item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
-                        {item?.CostingFreightCalculationDetailsId !== 0 && item?.CostingFreightCalculationDetailsId !== null && <button
-                        className="CalculatorIcon cr-cl-icon ml-1"
-                        type={"button"}
-                        onClick={() => { getFreightCalculator(index) }}
-                      />}
+                        {((item?.CostingFreightCalculationDetailsId !== 0 && item?.CostingFreightCalculationDetailsId !== null) || item?.IsFreightDetailedBreakup) && <button
+                          className="CalculatorIcon cr-cl-icon ml-1"
+                          type={"button"}
+                          onClick={() => { getFreightCalculator(index) }}
+                        />}
                       </td>
                       {initialConfiguration.IsShowCRMHead && <td>{item.FreightCRMHead ? item.FreightCRMHead : '-'}</td>}
                     </tr>
@@ -256,6 +259,7 @@ function ViewPackagingAndFreight(props) {
                 simulationMode={props?.simulationMode}
                 index={props?.index}
                 truckDimensions={freightRowObjData?.truckDimensions}
+                mainIndex={props.packagingAndFreightCost?.index}
               />
             )}
           </div>

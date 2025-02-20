@@ -649,6 +649,7 @@ export const API = {
   savePackagingCalculation: `${BASE_URL}/costing/save-costing-packaging-calculation-details`,
   getVolumePerDayForPackagingCalculator: `${BASE_URL}/costing/get-volume-per-day-for-packaging-calculator`,
   getSimulationPackagingCalculation: `${BASE_URL}/simulation/get-simulation-costing-packaging-calculation-details`,
+  getSimulationFreightCalculation: `${BASE_URL}/simulation/get-simulation-costing-freight-calculation-details`,
   getCarrierTypeList: `${BASE_URL}/costing/get-carrier-type`,
   getFreightCalculation: `${BASE_URL}/costing/get-costing-freight-calculation-details`,
   saveFreightCalculation: `${BASE_URL}/costing/save-costing-freight-calculation-details`,
@@ -3320,5 +3321,5 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.31.5";
+export const VERSION = "V3.1.31.6";
 
