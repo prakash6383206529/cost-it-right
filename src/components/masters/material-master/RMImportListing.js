@@ -275,8 +275,7 @@ function RMImportListing(props) {
       ListFor: ListFor,
       StatusId: statusString,
       Vendor: isSimulation && filteredRMData && filteredRMData?.Vendor ? filteredRMData?.Vendor : '',
-      Currency: isSimulation&&props?.FromExchangeRate ? (props?.fromListData ? props?.fromListData : '') :props?.isFromVerifyPage ? (filteredRMData?.Currency?filteredRMData?.Currency:"") : floatingFilterData?.Currency,
-      LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+
       EffectiveDate: isSimulation && props?.minDate ? props?.minDate : '',
     }
 
@@ -298,7 +297,8 @@ function RMImportListing(props) {
     dataObj.StatusId = statusString
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
-
+    dataObj.Currency = isSimulation && props?.FromExchangeRate ? (props?.fromListData ? props?.fromListData : '') : props?.isFromVerifyPage ? (filteredRMData?.Currency ? filteredRMData?.Currency : "") : floatingFilterData?.Currency;
+    dataObj.LocalCurrency = isSimulation && props?.toListData && props?.toListData ? props?.toListData : '';
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props?.isMasterSummaryDrawer) {
       dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
