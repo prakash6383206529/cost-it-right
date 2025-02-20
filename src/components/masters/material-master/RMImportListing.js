@@ -82,9 +82,11 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   // const [currentRowIndex, setCurrentRowIndex] = useState(0)
   // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: isSimulation &&props?.minDate ? props?.minDate : '', DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "", LocalCurrency: "" ,VendorId:isSimulation ? (props?.FromExchangeRate ? props?.vendorLabel?.value : 
-    (filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : '')
-  ) : ''})
+  const [floatingFilterData, setFloatingFilterData] = useState({
+    CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: isSimulation && props?.minDate ? props?.minDate : '', DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "", LocalCurrency: "", VendorId: isSimulation ? (props?.FromExchangeRate ? props?.vendorLabel?.value :
+      (filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : '')
+    ) : ''
+  })
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
@@ -153,40 +155,40 @@ function RMImportListing(props) {
 
   };
 
-  const params = useMemo(() => {
-    let obj = { ...floatingFilterData }
+  // const params = useMemo(() => {
+  //   let obj = { ...floatingFilterData }
 
-    if (obj?.EffectiveDate) {
-      if (obj.EffectiveDate.dateTo) {
-        let temp = []
-        temp.push(DayTime(obj.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
-        temp.push(DayTime(obj.EffectiveDate.dateTo).format('DD/MM/YYYY'))
-        obj.dateArray = temp
-      }
-    }
+  //   if (obj?.EffectiveDate) {
+  //     if (obj.EffectiveDate.dateTo) {
+  //       let temp = []
+  //       temp.push(DayTime(obj.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+  //       temp.push(DayTime(obj.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+  //       obj.dateArray = temp
+  //     }
+  //   }
 
-    obj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_IMPORT) : ''
-    obj.Currency = floatingFilterData?.Currency
-    obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
-    obj.OtherNetCost = floatingFilterData?.OtherNetCost
-    obj.Currency = isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : floatingFilterData?.Currency
-    obj.LocalCurrency = isSimulation && props?.toListData && props?.toListData ? props?.toListData : floatingFilterData?.LocalCurrency
-    obj.StatusId = [props?.approvalStatus].join(",")
-    return {
-      data: { technologyId: props?.technology ?? null },
-      skip: 0,
-      take: globalTakes,
-      isPagination: true,
-      obj: obj,
-      isImport: true,
-      dataObj: obj,
-      master: 'RawMaterial',
-      tabs: 'Import',
-      isMasterSummaryDrawer: props?.isMasterSummaryDrawer
-    }
-  }, []);
+  //   obj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_IMPORT) : ''
+  //   obj.Currency = floatingFilterData?.Currency
+  //   obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+  //   obj.OtherNetCost = floatingFilterData?.OtherNetCost
+  //   obj.Currency = isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : floatingFilterData?.Currency
+  //   obj.LocalCurrency = isSimulation && props?.toListData && props?.toListData ? props?.toListData : floatingFilterData?.LocalCurrency
+  //   obj.StatusId = [props?.approvalStatus].join(",")
+  //   return {
+  //     data: { technologyId: props?.technology ?? null },
+  //     skip: 0,
+  //     take: globalTakes,
+  //     isPagination: true,
+  //     obj: obj,
+  //     isImport: true,
+  //     dataObj: obj,
+  //     master: 'RawMaterial',
+  //     tabs: 'Import',
+  //     isMasterSummaryDrawer: props?.isMasterSummaryDrawer
+  //   }
+  // }, []);
 
-  const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList_Import', params);
+  // const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList_Import', params);
 
   useEffect(() => {
     if (rmImportDataList?.length > 0) {
@@ -230,8 +232,8 @@ function RMImportListing(props) {
           if (isSimulation && !isFromVerifyPage) {
             props?.changeTokenCheckBox(false)
           }
+          getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
         }
-
         setvalue({ min: 0, max: 0 });
       }
     }, 300);
@@ -258,7 +260,7 @@ function RMImportListing(props) {
 
     // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
     let statusString = [props?.approvalStatus].join(",")
-   
+
     const filterData = {
       costingHead: isSimulation && filteredRMData && filteredRMData?.costingHeadTemp ? filteredRMData?.costingHeadTemp.value : costingHead,
       plantId: isSimulation && filteredRMData && filteredRMData?.plantId ? filteredRMData?.plantId.value : plantId,
@@ -275,9 +277,9 @@ function RMImportListing(props) {
       Vendor: isSimulation && filteredRMData && filteredRMData?.Vendor ? filteredRMData?.Vendor : '',
       Currency: isSimulation&&props?.FromExchangeRate ? (props?.fromListData ? props?.fromListData : '') :props?.isFromVerifyPage ? (filteredRMData?.Currency?filteredRMData?.Currency:"") : floatingFilterData?.Currency,
       LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
-      EffectiveDate: isSimulation &&props?.minDate ? props?.minDate : '',
+      EffectiveDate: isSimulation && props?.minDate ? props?.minDate : '',
     }
-    
+
     if (isPagination === true) {
       setloader(true)
     }
@@ -296,7 +298,8 @@ function RMImportListing(props) {
     dataObj.StatusId = statusString
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
-   //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
+
+    //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props?.isMasterSummaryDrawer) {
       dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
 

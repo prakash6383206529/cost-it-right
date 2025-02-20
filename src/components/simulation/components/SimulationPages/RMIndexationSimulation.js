@@ -101,7 +101,6 @@ function RMIndexationSimulation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-
     const { technologyLabel, vendorLabel } = useLabels();
     const dispatch = useDispatch()
 
@@ -113,9 +112,11 @@ function RMIndexationSimulation(props) {
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { filteredRMData } = useSelector(state => state.material)
     const selectedEffectiveDate = useSelector((state) => state.simulation.selectedEffectiveDate);
+
     const tableData = isApprovalSummary ? rmIndexedSimulationSummaryData : isCostingSimulation ? list : indexedRMForSimulation
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const RawMaterialsEffectiveDate = useSelector((state) => state.simulation.rawMaterialsEffectiveDate);
+
 
 
     const columnWidths = {
@@ -154,7 +155,7 @@ function RMIndexationSimulation(props) {
 
         if (indexedRMForSimulation && indexedRMForSimulation?.[rowIndex] && !isImpactedMaster && (isOtherCostSaving || isConditionCostSaving)) {
             let obj = indexedRMForSimulation?.[rowIndex]
-obj.otherCostTableData = obj.NewRawMaterialOtherCostDetails || []
+            obj.otherCostTableData = obj.NewRawMaterialOtherCostDetails || []
             obj.conditionTableData = obj.NewRawMaterialConditionsDetails || []
 
             const updatedObjOtherCost = updateCostValue(false, obj, totalBasicRate, true, true)
@@ -511,7 +512,7 @@ obj.otherCostTableData = obj.NewRawMaterialOtherCostDetails || []
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell, props, "basicRate")
-let PercentageCalc = 0
+        let PercentageCalc = 0
         let classGreen = ''
         if (row.Percentage) {
             PercentageCalc = (row?.BasicRatePerUOM + (Number(row?.BasicRatePerUOM) * Number(row?.Percentage) / 100))
@@ -720,7 +721,7 @@ let PercentageCalc = 0
             ScrapRate: selectedRow?.NewScrapRate || selectedRow?.OldScrapRate,
             ScrapRateInINR: selectedRow?.ScrapRateInINR || '',
             CutOffPriceInINR: selectedRow?.CutOffPriceInINR || '',
-            EffectiveDate: selectedEffectiveDate || "",
+            EffectiveDate: DayTime(selectedEffectiveDate).format('YYYY-MM-DD HH:mm:ss') || "",
             LoggedInUserId: loggedInUserId(),
             FromDate: selectedRow?.NewFromDate,
             ToDate: selectedRow?.NewToDate,
@@ -994,6 +995,7 @@ let PercentageCalc = 0
     }
 
     const handleEffectiveDateChange = (date) => {
+
         setIsLoader(true)
         dispatch(setEffectiveDateRMNonIndexation(date));
 
@@ -1122,7 +1124,7 @@ let PercentageCalc = 0
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row.BasicRatePerUOM), getConfigurationKey().NoOfDecimalForPrice)
         const classGreen = (checkForDecimalAndNull(row?.NewOtherNetCost, getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.OldOtherNetCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewOtherNetCost, getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OldOtherNetCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
-        
+
 
         return (
             <>
@@ -1500,7 +1502,7 @@ let PercentageCalc = 0
                                                     <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewNetLandedCostLocalConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
-                                                {(!isImpactedMaster||String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
+                                                {(!isImpactedMaster || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
                                                 {(!isImpactedMaster || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(Currency)`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>}
 
                                                 {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}

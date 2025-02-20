@@ -4,6 +4,7 @@ import Button from '../../layout/Button';
 import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from './paginationAction';
 
 const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module }) => {
+    
     const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state.pagination);
     const dispatch = useDispatch();
     let pageSizeValue;
@@ -117,7 +118,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
             )}
             {pageSize?.pageSize100 && (
                 <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{pageNo}</span> of {totalRecordCount ? (Math.ceil(totalRecordCount / 60)) : 0}
+                    Page <span className="text-primary">{pageNo}</span> of {totalRecordCount ? (Math.ceil(totalRecordCount / 100)) : 0}
                 </p>
             )}
             <p>
