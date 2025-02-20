@@ -346,15 +346,20 @@ const CostingSummaryTable = (props) => {
     if (props?.isRfqCosting) {
       currency?.pop()
     }
-    if (props?.isRfqCosting && currency?.every(element => element === getConfigurationKey().BaseCurrency)) {
-      setShowConvertedCurrencyCheckbox(false)
-    } else {
-      setShowConvertedCurrencyCheckbox(true)
-      if (props.isRfqCosting) {
+    if (props?.isRfqCosting) {
+      // For RFQ Costing
+      if (currency?.every(element => element === getConfigurationKey().BaseCurrency)) {
+        setShowConvertedCurrencyCheckbox(false)
+      } else {
+        setShowConvertedCurrencyCheckbox(true)
         setShowConvertedCurrency(true)
       }
-      if (!props?.isRfqCosting && currency?.every(element => element === null || element === getConfigurationKey().BaseCurrency)) {
+    } else {
+      // For non-RFQ Costing
+      if (currency?.every(element => element === null || element === getConfigurationKey().BaseCurrency)) {
         setShowConvertedCurrencyCheckbox(false)
+      } else {
+        setShowConvertedCurrencyCheckbox(true)
       }
     }
 
@@ -3474,8 +3479,19 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
-                                {data?.bestCost !== true ? ((viewCostingData?.[0]?.CostingCurrency ? viewCostingData?.[0]?.CostingCurrency : initialConfiguration?.BaseCurrency) + ' : ') : ''}    {data?.bestCost === true ? (showConvertedCurrency ? displayValueWithSign(data, "nPOPrice") : initialConfiguration?.BaseCurrency) : displayValueWithSign(data, "nPOPrice")}
-                                {
+                                {data?.bestCost === true ?
+                                  // For best cost column
+                                  <>
+                                    {`${initialConfiguration?.BaseCurrency}: `}
+                                    {showConvertedCurrency ? displayValueWithSign(data, "nPOPrice") : ''}
+                                  </>
+                                  :
+                                  // For regular columns
+                                  <>
+                                    {`${viewCostingData?.[0]?.CostingCurrency || initialConfiguration?.BaseCurrency}: `}
+                                    {displayValueWithSign(data, "nPOPrice")}
+                                  </>
+                                }   {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     id="view_otherToolCost"
