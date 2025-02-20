@@ -499,7 +499,7 @@ function CopyCosting(props) {
                     selected={isInfoCategorySelected}
                     id={'category'}
                   >
-                    Category
+                    Sub Contracting
                     <input
                       type="checkbox"
                     />

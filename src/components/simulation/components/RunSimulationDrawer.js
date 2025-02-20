@@ -888,11 +888,11 @@ function RunSimulationDrawer(props) {
                                                                         onChange={() => handleAdditional('Packaging')}
                                                                     />
                                                                 </label>
-                                                                <TooltipCustom
+                                                                {/* <TooltipCustom
                                                                  id="packaging-calculation"
                                                                  tooltipText={"By applying additional packaging, the already added packaging will be removed"}
                                                                  customClass="mt-1"
-                                                                />  
+                                                                />   */}
                                                             </div>
                                                         )
                                                         }

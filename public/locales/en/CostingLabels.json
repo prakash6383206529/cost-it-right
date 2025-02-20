@@ -27,5 +27,6 @@
     "totalCostOfTrip": "Total cost of trip",
     "totalCost": "Total cost",
     "noOfBinsPerTrolley": "No. of bins per trolley",
-    "totalNoOfBins": "Total no of bins"
+    "totalNoOfBins": "Total no of bins",
+    "packagingCost": "Packaging Cost"
 }

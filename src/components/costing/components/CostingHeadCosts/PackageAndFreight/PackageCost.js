@@ -26,7 +26,6 @@ function PackageCost(props) {
     CostingPackagingCalculationDetailsId: null
   })
 
-
   const dispatch = useDispatch()
 
   const CostingViewMode = useContext(ViewCostingContext);
@@ -221,6 +220,7 @@ function PackageCost(props) {
         isOpen={packagingCalculatorDrawer}
         closeCalculator={closePackagingCalculatorDrawer}
         rowObjData={calculatorRowObjData}
+        costingPackagingCalculationDetailsId={calculatorRowObjData?.CostingPackagingCalculationDetailsId}
       />}
     </ >
   );
