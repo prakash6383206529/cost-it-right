@@ -158,13 +158,13 @@ function AssemblyPart(props) {
       obj.StaffCost = data.length > 0 ? data[0].staffCost : 0
       obj.StaffCostPercentage = data.length > 0 ? data[0].staffCostPercent : 0
       obj.IndirectLaborCostPercentage = data.length > 0 ? data[0].indirectLabourCostPercent : 0
-      obj.NetLabourCost = Math.round(sum * 10) / 10
+      obj.NetLabourCost = checkForDecimalAndNull(sum,initialConfiguration?.NoOfDecimalForPrice)
       obj.CostingLabourDetailList = data
       obj.NetLabourCRMHead = data.length > 0 ? data[0].NetLabourCRMHead : 0
       obj.IndirectLabourCRMHead = data.length > 0 ? data[0].IndirectLabourCRMHead : 0
       obj.StaffCRMHead = data.length > 0 ? data[0].StaffCRMHead : 0
       props.setAssemblyLabourCost(obj)
-      setTotalLabourCost(Number(obj.NetLabourCost) + Number(obj.IndirectLaborCost) + Number(obj.StaffCost))
+      setTotalLabourCost(checkForDecimalAndNull(obj?.NetLabourCost) + checkForDecimalAndNull(obj?.IndirectLaborCost) + checkForDecimalAndNull(obj?.StaffCost))
       let temp = []
       RMCCTabData && RMCCTabData.map((item, index) => {
         if (index === 0) {
@@ -225,6 +225,7 @@ function AssemblyPart(props) {
   useEffect(() => {
     let final = _.map(item && item?.CostingChildPartDetails, 'PartType')
     setIsBOPExists(final.includes('BOP'))
+    setTotalLabourCost(checkForDecimalAndNull(item?.CostingPartDetails?.NetLabourCost) + checkForDecimalAndNull(item?.CostingPartDetails?.IndirectLaborCost) + checkForDecimalAndNull(item?.CostingPartDetails?.StaffCost))
   }, [item])
 
   useEffect(() => {
@@ -310,6 +311,8 @@ function AssemblyPart(props) {
                 <div class="tooltip-n ml-2 assembly-tooltip"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
                     {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    <br></br>
+                    {`Assembly's Labour Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.NetLabourCost, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
                     {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
