@@ -27,6 +27,7 @@ const {rowObjData} = props
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
     const costingViewMode = useContext(ViewCostingContext);
     const CostingViewMode = costingViewMode??props?.CostingViewMode
+    const PackagingCalculationId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingPackagingCalculationDetailsId : props?.costingPackagingCalculationDetailsId ?? null
     const dispatch = useDispatch()
     const {
         register,
@@ -50,7 +51,7 @@ const {rowObjData} = props
         if (!CostingViewMode && calclulationFieldValues.some(value => value !== undefined)) {
             calculateAllValues();
         }
-    }, [calclulationFieldValues,state?.spacerPackingInsertRecoveryCostPerKg]);
+    }, [calclulationFieldValues,state?.spacerPackingInsertRecoveryCostPerKg,state?.volumePerDay,state?.volumePerAnnum]);
     useEffect(() => {
         if(!CostingViewMode){
         dispatch(getVolumePerDayForPackagingCalculator(costingData?.PartId, costingData?.PlantId, CostingEffectiveDate, costingData?.VendorId, (res) => {
@@ -60,18 +61,9 @@ const {rowObjData} = props
             setState((prevState) => ({ ...prevState, volumePerDay: data?.VolumePerDay, volumePerAnnum: data?.VolumePerAnnum }))
         }))
         }
-        const tempData = rowObjData?.SimulationTempData
-        // const index = props?.viewPackaingData?.findIndex(item => item.PackagingDetailId === rowObjData?.PackagingDetailId)
-        // if (props.simulationMode && tempData?.map(item => item?.CostingHeading)?.includes("New Costing") && tempData?.map(item => Number(item?.SimulationStatusId)).some(id => [REJECTEDID, PENDING_FOR_APPROVAL_ID, AWAITING_APPROVAL_ID, DRAFTID].includes(id)) && props?.viewPackaingData[index]?.Applicability === 'Crate/Trolley') {
-        //     const simulationId = tempData.find(item => item?.CostingHeading === "New Costing")?.SimulationId
-        //     dispatch(getSimulationPackagingCalculation(simulationId, costingId, (res) => {
-            //         let data = res?.data?.Data
-            //         setFormValues(data)
-            //      }))
-            // }
-            // else{
+            const tempData = rowObjData?.SimulationTempData
             const costingId = costingData?.CostingId??tempData.find(item => item?.CostingHeading === "Old Costing")?.costingId
-            let calculatorId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.CostingPackagingCalculationDetailsId:props?.costingPackagingCalculationDetailsId??null
+            let calculatorId = PackagingCalculationId
             let packagingDetailId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.PackagingDetailId:null
         dispatch(getPackagingCalculation(costingId, packagingDetailId, calculatorId, (res) => {
             let data = res?.data?.Data
@@ -221,7 +213,7 @@ const setFormValues=(data)=>{
         }))
     }
     const cancelHandler = () => {
-        props.closeCalculator('',state?.packingCost)
+        props.closeCalculator('',PackagingCalculationId!==null?state?.packingCost : '')
     }
 
     

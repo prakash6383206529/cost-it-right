@@ -17,9 +17,11 @@ export const config = () => {
   return { headers }
 }
 
-
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.1.102:3002/api/v1`;
+// const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+
+
+
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -452,8 +454,9 @@ export const API = {
   getFreightModeSelectList: `${BASE_URL}/configuration/select-list-get-freight-modes`,
   getFreigtFullTruckCapacitySelectList: `${BASE_URL}/configuration/select-list-get-full-truck-capacity`,
   getFreigtRateCriteriaSelectList: `${BASE_URL}/configuration/select-list-get-full-truck-ratecriteria`,
-  getTruckDimensionsSelectList: `${BASE_URL}/masters-freight/get-truck-dimensions-select-list`,
-  saveTruckDimensions: `${BASE_URL}/masters-freight/save-truck-dimensions`,
+  getTruckDimensionsSelectList: `${BASE_URL}/masters-freight/select-list-dimensions`,
+  saveTruckDimensions: `${BASE_URL}/masters-freight/create-dimensions`,
+  getTruckDimensionsById: `${BASE_URL}/masters-freight/get-dimensionsId`,
 
   //API's for Additional freight master
   createAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/create`,
@@ -584,7 +587,7 @@ export const API = {
 
   getRateCriteriaByCapacitySelectList: `${BASE_URL}/costing/get-rate-criteria-by-capacity-select-list`,
   getRateByCapacityCriteria: `${BASE_URL}/costing/get-rate-by-capacity-criteria`,
-
+  getNoOfComponentsPerCrateFromPackaging: `${BASE_URL}/costing/get-packaging-rate`,
   getCostingPartDetails: `${BASE_URL}/costing/get-costing-part-details`,
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
@@ -646,6 +649,10 @@ export const API = {
   savePackagingCalculation: `${BASE_URL}/costing/save-costing-packaging-calculation-details`,
   getVolumePerDayForPackagingCalculator: `${BASE_URL}/costing/get-volume-per-day-for-packaging-calculator`,
   getSimulationPackagingCalculation: `${BASE_URL}/simulation/get-simulation-costing-packaging-calculation-details`,
+  getSimulationFreightCalculation: `${BASE_URL}/simulation/get-simulation-costing-freight-calculation-details`,
+  getCarrierTypeList: `${BASE_URL}/costing/get-carrier-type`,
+  getFreightCalculation: `${BASE_URL}/costing/get-costing-freight-calculation-details`,
+  saveFreightCalculation: `${BASE_URL}/costing/save-costing-freight-calculation-details`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
@@ -1841,6 +1848,9 @@ export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
 export const SET_COSTING_VIEW_DATA_FOR_ASSEMBLY = 'SET_COSTING_VIEW_DATA_FOR_ASSEMBLY';
 export const GET_RM_DETAILS = 'GET_RM_DETAILS';
 export const GET_BOP_DETAILS = 'GET_BOP_DETAILS';
+export const GET_CARRIER_TYPE_LIST_SUCCESS = 'GET_CARRIER_TYPE_LIST_SUCCESS';
+export const SET_PACKAGING_CALCULATOR_AVAILABLE = 'SET_PACKAGING_CALCULATOR_AVAILABLE';
+export const SET_FREIGHT_CALCULATOR_AVAILABLE = 'SET_FREIGHT_CALCULATOR_AVAILABLE';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -3311,5 +3321,5 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.31.2";
+export const VERSION = "V3.1.31.6";
 

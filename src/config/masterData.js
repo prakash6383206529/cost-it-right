@@ -5752,10 +5752,11 @@ export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Customer (Code)", value: "CustomerName" },
     // { label: "Source City", value: "SourceCity" },
     // { label: "Destination City", value: "DestinationCity" },
-    { label: "Load", value: "FreightLoadType" },
-    { label: "Capacity", value: "Capacity" },
-    { label: "Criteria", value: "RateCriteria" },
-    { label: "Rate", value: "Rate" },
+    { label: "Load", value: "FreightLoadType" }, 
+    {label:'Truck Dimensions (mm)',value:'DimensionsName'}, 
+    { label: "Capacity", value: "Capacity" }, 
+    { label: "Criteria", value: "RateCriteria"}, 
+    { label: "Rate", value: "Rate" }, 
     { label: "Effective Date", value: "EffectiveDate" }
 ];
 

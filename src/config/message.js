@@ -303,7 +303,7 @@ export const MESSAGES = {
   DELETE_FREIGHT_SUCCESSFULLY: 'Freight deleted successfully',
   FREIGHT_DELETE_ALERT: 'Are you sure you want to delete this Freight?',
   TRUCK_DIMENSIONS_UPDATE_SUCCESS: 'Truck dimensions updated successfully',
-  TRUCK_DIMENSIONS_ADD_SUCCESS: 'Truck dimensions added successfully',
+  TRUCK_DIMENSIONS_ADD_SUCCESS: 'Truck dimensions saved successfully',
   
 
   //ADDITIONAL FREIGHT

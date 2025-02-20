@@ -30,6 +30,7 @@ import { Controller, useForm } from "react-hook-form";
 import Button from "../../layout/Button";
 import { DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm } from "../../layout/HookFormInputs";
 import DimensionsFieldsRenderer from "../../common/DimensionsFieldsRenderer";
+import { label } from "react-dom-factories";
 
 const AddFreight = (props) => {
   const {
@@ -53,6 +54,7 @@ const AddFreight = (props) => {
     getValues: getValuesTableForm,
     reset: resetTableForm,
     formState: { errors: errorsTableForm },
+
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -94,12 +96,15 @@ const AddFreight = (props) => {
     showErrorOnFocus: false,
     showPopup: false,
     vendorFilterList: [],
-    plant: [],
+    Plant: [],
     showEffectiveDateError: false,
     load: [],
     truckDimensions: [],
     openDimensionDrawer: false,
     isEditDimension: false,
+    isShowTruckDimensions: false,
+    hideEditDimension: true,
+    disableAll: true,
   });
   const dispatch = useDispatch();
   const cityList = useSelector(state => state.comman.cityList);
@@ -107,6 +112,7 @@ const AddFreight = (props) => {
   const freightModeSelectList = useSelector(state => state.freight.freightModeSelectList);
   const freightFullTruckCapacitySelectList = useSelector(state => state.freight.freightFullTruckCapacitySelectList);
   const freightRateCriteriaSelectList = useSelector(state => state.freight.freightRateCriteriaSelectList);
+  const truckDimensionsSelectList = useSelector(state => state.freight.truckDimensionsSelectList);
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
 
   /**
@@ -119,20 +125,60 @@ const AddFreight = (props) => {
     if (!state.isViewMode) {
       dispatch(getFreigtFullTruckCapacitySelectList((res) => { }));
       dispatch(getFreigtRateCriteriaSelectList((res) => { }));
+      dispatch(getTruckDimensionsSelectList((res) => { }));
     }
 
     if (!(props.data.isEditFlag || state.isViewMode)) {
       dispatch(getClientSelectList(() => { }));
+    } else {
+      getDetails();
     }
 
     dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }));
     dispatch(getFreightModeSelectList((res) => { }));
-    getDetails();
 
     return () => {
       reactLocalStorage?.setObject('vendorData', []);
     };
   }, []);
+  // useEffect(() => {
+  //   const hasRequiredFields = (
+  //     (state.costingTypeId === ZBCTypeId) ||
+  //     (state.costingTypeId === CBCTypeId && state?.client) ||
+  //     (state.costingTypeId === VBCTypeId && state?.vendorName)
+  //   );
+  //   if (hasRequiredFields && state?.effectiveDate && state?.Plant) {
+  //     setState(prev => ({ ...prev, disableAll: false }));
+  //     let data = {
+  //       ...state,
+  //       freightId: null,
+  //       EffectiveDate: state?.effectiveDate,
+  //       PlantId: state?.Plant?.value,
+  //       CustomerId: state?.client?.value,
+  //       VendorId: state?.vendorName?.value,
+  //       CostingTypeId: state?.costingTypeId
+  //     }
+  //     // dispatch(getFreightData(data, (res) => {
+  //     //   if (res?.status === 200) {
+  //     //     let data = res?.data?.Data;
+  //     //     setState(prev => ({
+  //     //       ...prev, dataToChange: data,
+  //     //       gridTable: data?.FullTruckLoadDetails ?? [],
+  //     //       IsFreightAssociated: data?.IsFreightAssociated
+  //     //     }));
+  //     //   } else {
+  //     //     setState(prev => ({
+  //     //       ...prev,
+  //     //       gridTable: [],
+  //     //       IsFreightAssociated: false
+  //     //     }));
+  //     //   }
+  //     // }));
+  //   } else {
+  //     setState(prev => ({ ...prev, disableAll: true }));
+  //   }
+  // }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate]);
+
   /**
   * @method onPressVendor
   * @description Used for Vendor checked
@@ -160,17 +206,6 @@ const AddFreight = (props) => {
       dispatch(getClientSelectList(() => { }));
     }
   }
-  /**
-   * @method handleTransportMoodChange
-   * @description  used to handle BOP Category Selection
-   */
-  const handleTransportMoodChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== "") {
-      setState(prev => ({ ...prev, TransportMode: newValue }));
-    } else {
-      setState(prev => ({ ...prev, TransportMode: [] }));
-    }
-  };
 
   /**
    * @method handleClient
@@ -230,11 +265,24 @@ const AddFreight = (props) => {
         isLoader: true,
         FreightID: data.Id,
       }));
-
-      dispatch(getFreightData(data.Id, (res) => {
+      let obj = {
+        freightId: data.Id,
+        EffectiveDate: null,
+        PlantId: null,
+        CustomerId: null,
+        VendorId: null,
+        CostingTypeId: null
+      }
+      dispatch(getFreightData(obj, (res) => {
         if (res && res.data && res.data.Result) {
-          const Data = res.data.Data;
-          setState(prev => ({ ...prev, DataToChange: Data }));
+          setState(prev => ({ ...prev, isLoader: false }));
+          const Data = res.data.Data[0];
+          setState(prev => ({ ...prev, DataToChange: Data, gridTable: Data?.FullTruckLoadDetails }));
+          setValueMainForm('Plants', { label: Data.PlantName, value: Data.PlantId });
+          setValueMainForm('EffectiveDate', DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '');
+          setValueMainForm('vendorName', { label: Data.VendorName, value: Data.VendorId });
+          setValueMainForm('ClientName', { label: Data.CustomerName, value: Data.CustomerId });
+
 
           setTimeout(() => {
             let modeObj = freightModeSelectList && freightModeSelectList.find((item) => item?.Value === Data.Mode);
@@ -246,14 +294,18 @@ const AddFreight = (props) => {
                 Capacity: item?.Capacity,
                 RateCriteria: item?.RateCriteria,
                 Rate: item?.Rate,
-                Load: { label: item?.FreightLoadType, value: item?.EFreightLoadType },
+                DimensionsName: item?.DimensionsName,
+                DimensionId: item?.DimensionId,
+                IsShowDimesions: item?.IsShowDimesions,
                 EFreightLoadType: item?.EFreightLoadType,
+                FreightLoadType: item?.FreightLoadType,
                 IsFreightAssociated: item?.IsFreightAssociated,
               };
             });
             setState(prev => ({
               ...prev,
               isEditFlag: true,
+              isLoader: false,
               costingTypeId: Data.CostingTypeId,
               IsLoadingUnloadingApplicable: Data.IsLoadingUnloadingApplicable,
               TransportMode: modeObj && modeObj !== undefined
@@ -263,7 +315,6 @@ const AddFreight = (props) => {
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               sourceLocation: Data.SourceCityName !== undefined ? { label: Data.SourceCityName, value: Data.SourceCityId } : [],
               destinationLocation: Data.DestinationCityName !== undefined ? { label: Data.DestinationCityName, value: Data.DestinationCityId } : [],
-              gridTable: GridArray,
               Plant: { label: Data.PlantName, value: Data.PlantId },
               effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : ''
             }));
@@ -276,7 +327,7 @@ const AddFreight = (props) => {
         ...prev,
         isLoader: false
       }));
-      dispatch(getFreightData("", (res) => { }));
+      // dispatch(getFreightData("", (res) => { }));
     }
   };
 
@@ -355,7 +406,12 @@ const AddFreight = (props) => {
       return temp
     }
     if (label === 'TruckDimensions') {
-      return [{ label: 'L(10), B(10), H(10)', value: 'L(10), B(10), H(10)' }, { label: 'L(10), B(10), H(10)', value: 'L(10), B(10), H(10)' }];
+      truckDimensionsSelectList && truckDimensionsSelectList.map((item) => {
+        if (item?.Value === '--0--') return false
+        temp.push({ label: item?.Text, value: item?.Value, isEditDimension: !item.IsAssociated });
+        return null;
+      });
+      return temp;
     }
   };
   /**
@@ -480,14 +536,14 @@ const AddFreight = (props) => {
 
 
   const gridHandler = () => {
-    const { FullTruckCapacity, RateCriteria, gridTable, Load } = state;
+    const { FullTruckCapacity, RateCriteria, gridTable, Load, truckDimensions, isShowTruckDimensions } = state;
     const Rate = getValuesTableForm("Rate");
     if (errorsTableForm && Object.keys(errorsTableForm)?.length > 0) {
       return false;
     }
 
     // Check for duplicate entry
-    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria, Load, gridTable);
+    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria, Load, truckDimensions, gridTable);
     if (isDuplicate) {
       Toaster.warning("This freight entry already exists.");
       return false;
@@ -498,26 +554,28 @@ const AddFreight = (props) => {
       Capacity: FullTruckCapacity?.label,
       RateCriteria: RateCriteria?.label,
       Rate: checkForNull(Rate) || 0,
-      Load: Load,
+      FreightLoadType: Load?.label,
       EFreightLoadType: Load?.value,
-      IsFreightAssociated: false
+      IsFreightAssociated: false,
+      DimensionsName: truckDimensions?.label,
+      DimensionId: truckDimensions?.value,
+      IsShowDimesions: isShowTruckDimensions
     };
 
     setState(prev => ({
       ...prev,
-      gridTable: [...prev.gridTable, newGridItem],
+      gridTable: [...prev?.gridTable, newGridItem],
       AddUpdate: false
     }));
 
     resetFormFields();
   };
-
   /**
    * @method updateGrid
    * @description Used to handle update grid
    */
   const updateGrid = () => {
-    const { FullTruckCapacity, RateCriteria, gridTable, gridEditIndex, Load } = state;
+    const { FullTruckCapacity, RateCriteria, gridTable, gridEditIndex, Load, truckDimensions, isShowTruckDimensions } = state;
     const Rate = getValuesTableForm("Rate");
 
     if (!Rate || Number(Rate) === 0) {
@@ -528,7 +586,7 @@ const AddFreight = (props) => {
     }
     // Filter out edited item to check duplicates
     const otherItems = gridTable.filter((_, i) => i !== gridEditIndex);
-    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria, Load, otherItems);
+    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria, Load, truckDimensions, otherItems);
     if (isDuplicate) {
       Toaster.warning("This freight entry already exists.");
       return false;
@@ -539,8 +597,11 @@ const AddFreight = (props) => {
       Capacity: FullTruckCapacity?.label,
       RateCriteria: RateCriteria?.label,
       Rate: checkForNull(Rate) || 0,
-      Load: Load,
+      FreightLoadType: Load?.label,
       EFreightLoadType: Load?.value,
+      DimensionsName: truckDimensions?.label,
+      DimensionId: truckDimensions?.value,
+      IsShowDimesions: isShowTruckDimensions
     };
 
     const updatedGrid = [...gridTable];
@@ -548,7 +609,7 @@ const AddFreight = (props) => {
 
     setState(prev => ({
       ...prev,
-      gridTable: updatedGrid,
+      gridTable: updatedGrid ?? [],
       gridEditIndex: "",
       isEditIndex: false,
       AddUpdate: false
@@ -574,22 +635,24 @@ const AddFreight = (props) => {
         rate: false,
         load: false
       },
+      truckDimensions: [],
       isEditIndex: false, // Reset edit mode
       gridEditIndex: "", // Clear edit index
-      AddUpdate: false // Reset update flag
+      AddUpdate: false, // Reset update flag
+      isShowTruckDimensions: false
     }));
 
     // Reset form values
     setValueTableForm("Rate", "");
 
     // Reset specific form fields and errors, preserving effective date
-    const currentValues = getValuesTableForm();
+    // const currentValues = getValuesTableForm();
     resetTableForm({
       Rate: "",
       FullTruckCapacity: "",
       RateCriteria: "",
       Load: "",
-      EffectiveDate: currentValues.EffectiveDate // Preserve effective date
+      // EffectiveDate: currentValues.EffectiveDate // Preserve effective date
     });
   };
 
@@ -597,11 +660,12 @@ const AddFreight = (props) => {
    * @method checkDuplicateEntry
    * @description Check for duplicate entries in grid
    */
-  const checkDuplicateEntry = (capacity, criteria, load, grid) => {
-    return grid.some(el =>
-      (el.Capacity ? el.Capacity : undefined) === (capacity?.value ? capacity?.value : undefined) &&
-      el.RateCriteria === criteria?.value &&
-      el.EFreightLoadType === load?.value
+  const checkDuplicateEntry = (capacity, criteria, load, truckDimensions, grid) => {
+    return grid?.some(el => el?.Capacity === capacity?.value &&
+      el?.RateCriteria === criteria?.value &&
+      el?.EFreightLoadType === load?.value &&
+      el?.DimensionsName === truckDimensions?.label &&
+      el?.DimensionId === truckDimensions?.value
     );
   };
   /**
@@ -623,9 +687,14 @@ const AddFreight = (props) => {
         value: item?.RateCriteria,
       },
       Load: {
-        label: item?.Load?.label,
-        value: item?.Load?.value
-      }
+        label: item?.FreightLoadType,
+        value: item?.EFreightLoadType
+      },
+      truckDimensions: {
+        label: item?.DimensionsName,
+        value: item?.DimensionId
+      },
+      isShowTruckDimensions: item?.IsShowDimesions
     }));
 
     // Reset form values first
@@ -648,8 +717,12 @@ const AddFreight = (props) => {
         value: item?.RateCriteria
       });
       setValueTableForm("Load", {
-        label: item?.Load?.label,
-        value: item?.Load?.value
+        label: item?.FreightLoadType,
+        value: item?.EFreightLoadType
+      });
+      setValueTableForm("TruckDimensions", {
+        label: item?.DimensionsName,
+        value: item?.DimensionId
       });
     }, 0);
   }, [state.gridTable, setState, resetTableForm, setValueTableForm]);
@@ -843,16 +916,21 @@ const AddFreight = (props) => {
     }
   };
   const handleTruckDimensions = (e) => {
-    setState(prev => ({ ...prev, truckDimensions: e }));
+    setState(prev => ({ ...prev, truckDimensions: e, hideEditDimension: !e.isEditDimension }));
   };
   const dimensionToggler = (isEditMode) => {
     setState(prev => ({ ...prev, openDimensionDrawer: true, isEditDimension: isEditMode }));
   };
-  const closeDimensionDrawer = (type) => {
+  const closeDimensionDrawer = (type, formData) => {
     if (type === 'Save') {
+      setState(prev => ({ ...prev, isEditDimension: true, truckDimensions: { label: `L(${formData?.Length}) B(${formData?.Breadth}) H(${formData?.Height})`, value: formData?.Id }, hideEditDimension: false }));
+      setValueTableForm("TruckDimensions", { label: `L(${formData?.Length}) B(${formData?.Breadth}) H(${formData?.Height})`, value: formData?.Id });
       dispatch(getTruckDimensionsSelectList(() => { }));
     }
     setState(prev => ({ ...prev, openDimensionDrawer: false }));
+  };
+  const onShowTruckDimensions = () => {
+    setState(prev => ({ ...prev, isShowTruckDimensions: !prev.isShowTruckDimensions }));
   };
 
   return (
@@ -876,7 +954,6 @@ const AddFreight = (props) => {
                   <form
                     noValidate
                     className="form"
-                    onSubmit={handleSubmitMainForm(onSubmit)}
                     onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}
                   >
                     <div className="add-min-height">
@@ -928,7 +1005,7 @@ const AddFreight = (props) => {
                                   name="vendorName"
                                   loadOptions={filterList}
                                   onChange={(e) => handleVendorName(e)}
-                                  value={state.vendor}
+                                  value={state.vendorName}
                                   noOptionsMessage={({ inputValue }) => inputValue?.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                   isDisabled={isEditFlag || isViewMode}
                                   onKeyDown={(onKeyDown) => {
@@ -979,7 +1056,7 @@ const AddFreight = (props) => {
                             rules={{ required: true }}
                             placeholder={'Select'}
                             options={renderListing("Plant")}
-                            defaultValue={state.plants}
+                            defaultValue={state.Plant}
                             handleChange={handlePlant}
                             disabled={isEditFlag || isViewMode}
                             errors={errorsMainForm?.Plants}
@@ -1006,7 +1083,7 @@ const AddFreight = (props) => {
                               disabledKeyboardNavigation
                               disabled={isViewMode || isEditMode}
                               mandatory={true}
-                              errors={errorsMainForm?.effectiveDate}
+                              errors={errorsMainForm?.EffectiveDate}
                               minDate={getEffectiveDateMinDate()}
                               maxDate={getEffectiveDateMaxDate()}
                               handleChange={handleEffectiveDateChange}
@@ -1035,11 +1112,65 @@ const AddFreight = (props) => {
                                 options={renderListing("Load")}
                                 handleChange={handleLoad}
                                 value={state?.Load}
-                                disabled={isViewMode}
+                                defaultValue={state.Load}
+                                disabled={isViewMode || state.disableAll}
                                 errors={errorsTableForm?.Load}
                               />
                             </Col>
-                            {state.Load?.value === FullTruckLoad && <Col md="2">
+
+                            <Col md='2' className='mt-2'>
+                              <label id="AddFreight_TruckDimensions"
+                                className={`custom-checkbox w-auto mb-0 mt-4 `}
+                                onChange={onShowTruckDimensions}
+                              >
+                                Enable Truck Dimensions
+                                <input
+                                  type="checkbox"
+                                  checked={state.isShowTruckDimensions}
+                                  disabled={isViewMode || state.disableAll}
+                                />
+                                <span
+                                  className=" before-box p-0"
+                                  checked={state.isShowTruckDimensions}
+                                  onChange={onShowTruckDimensions}
+                                />
+                              </label>
+                            </Col>
+                            {state.isShowTruckDimensions && <Col md="2">
+                              <div className="d-flex justify-space-between inputwith-icon form-group">
+                                <SearchableSelectHookForm
+                                  name="TruckDimensions"
+                                  label="Truck Dimensions (mm)"
+                                  Controller={Controller}
+                                  control={controlTableForm}
+                                  register={registerTableForm}
+                                  mandatory={true}
+                                  rules={{ required: true }}
+                                  placeholder={'Select'}
+                                  options={renderListing("TruckDimensions")}
+                                  handleChange={handleTruckDimensions}
+                                  defaultValue={state?.truckDimensions}
+                                  disabled={isViewMode || state.disableAll}
+                                  errors={errorsTableForm?.TruckDimensions}
+                                  title={state?.truckDimensions && state?.truckDimensions?.label}
+                                />
+                                <div className='action-icon-container'>
+                                  <div
+                                    onClick={() => dimensionToggler(false)}
+                                    className={"plus-icon-square mt-0 right"}
+                                  ></div>
+                                  <button
+                                    type="button"
+                                    onClick={() => dimensionToggler(true)}
+                                    className={'user-btn'}
+                                    disabled={state.hideEditDimension || isViewMode || state.disableAll}
+                                  >
+                                    <div className={"edit_pencil_icon right"}></div>
+                                  </button>
+                                </div>
+                              </div>
+                            </Col>}
+                            {(state.Load?.value === FullTruckLoad || state.isShowTruckDimensions) && <Col md="2">
                               <SearchableSelectHookForm
                                 name="Capacity"
                                 label="Capacity"
@@ -1054,43 +1185,10 @@ const AddFreight = (props) => {
                                 )}
                                 handleChange={handleCapacity}
                                 value={state.FullTruckCapacity}
-                                disabled={isViewMode}
-                                errors={errorsTableForm?.FullTruckCapacity}
+                                disabled={isViewMode || state.disableAll}
+                                errors={errorsTableForm?.Capacity}
                               />
                             </Col>}
-                            {/* <Col md="2">
-                            <div className="d-flex justify-space-between inputwith-icon form-group">
-                              <SearchableSelectHookForm
-                                name="TruckDimensions"
-                                label="Truck Dimensions"
-                                Controller={Controller}
-                                control={controlTableForm}
-                                register={registerTableForm}
-                                mandatory={true}
-                                rules={{ required: true }}
-                                placeholder={isViewMode ? '-' : 'Select'}
-                                options={renderListing("TruckDimensions")}
-                                handleChange={handleTruckDimensions}
-                                value={state?.truckDimensions}
-                                disabled={isViewMode}
-                                errors={errorsTableForm?.TruckDimensions}
-                              />
-                            <div className='action-icon-container'>
-                              <div
-                                onClick={dimensionToggler}
-                                className={"plus-icon-square mt-0 right"}
-                              ></div>
-                              <button 
-                                type="button" 
-                                onClick={() => dimensionToggler(true)} 
-                                className={'user-btn'} 
-                                disabled={state.truckDimensions?.label ? false : true}
-                              >
-                                <div className={"edit_pencil_icon right"}></div>
-                              </button>
-                            </div>
-                          </div>
-                          </Col> */}
                             <Col md="2">
                               <SearchableSelectHookForm
                                 name="RateCriteria"
@@ -1104,7 +1202,7 @@ const AddFreight = (props) => {
                                 options={renderListing(
                                   "FREIGHT_RATE_CRITERIA"
                                 )}
-                                disabled={isViewMode}
+                                disabled={isViewMode || state.disableAll}
                                 handleChange={criteriaHandler}
                                 value={state.RateCriteria}
                                 errors={errorsTableForm?.RateCriteria}
@@ -1124,7 +1222,7 @@ const AddFreight = (props) => {
                                 control={controlTableForm}
                                 register={registerTableForm}
                                 mandatory={true}
-                                disabled={isViewMode}
+                                disabled={isViewMode || state.disableAll}
                                 className=" "
                                 customClassName=" withBorder"
                                 handleChange={rateChange}
@@ -1133,21 +1231,19 @@ const AddFreight = (props) => {
                               {state.errorObj.rate && (!getValuesTableForm("Rate") || Number(getValuesTableForm("Rate")) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                             </Col>
                             <Col md="2">
-                              <div className="pt-2">
+                              <div className={`${state.isShowTruckDimensions ? "" : "pt-2"}`}>
                                 {state.isEditIndex ? (
                                   <>
                                     <button
                                       type="button"
-                                      className={
-                                        "btn btn-primary mt30 pull-left mr5 px-2 mb-2"
-                                      }
-                                      onClick={updateGrid}
+                                      className={`btn btn-primary ${state.isShowTruckDimensions ? "" : "mt30"} pull-left mr5 px-2 mb-2`}
+                                      onClick={handleSubmitTableForm(updateGrid)}
                                     >
                                       Update
                                     </button>
                                     <button
                                       type="button"
-                                      className={"reset-btn mt30 pull-left mb-2 w-auto px-1"}
+                                      className={`reset-btn ${state.isShowTruckDimensions ? "" : "mt30"} pull-left mb-2 w-auto px-1`}
                                       onClick={resetFormFields}
                                     >
                                       Cancel
@@ -1156,9 +1252,9 @@ const AddFreight = (props) => {
                                 ) : (
                                   <>
                                     <button
-                                      type="button"
-                                      disabled={isViewMode}
-                                      className={"user-btn mt30 pull-left"}
+                                      type="submit"
+                                      disabled={isViewMode || state.disableAll}
+                                      className={`user-btn ${state.isShowTruckDimensions ? "" : "mt30"} pull-left`}
                                       onClick={handleSubmitTableForm(gridHandler)}
                                     >
                                       <div className={"plus"}></div>
@@ -1166,9 +1262,9 @@ const AddFreight = (props) => {
                                     </button>
                                     <button
                                       type="button"
-                                      className={"reset-btn mt30 ml5 pull-left"}
+                                      className={`reset-btn ${state.isShowTruckDimensions ? "" : "mt30"} ml5 pull-left`}
                                       onClick={resetFormFields}
-                                      disabled={isViewMode}
+                                      disabled={isViewMode || state.disableAll}
                                     >
                                       Reset
                                     </button>
@@ -1178,11 +1274,12 @@ const AddFreight = (props) => {
                             </Col>
                           </Row>
                           <Row>
-                            <Col md="12">
+                            <Col md="12 mt-3">
                               <Table className="table border" size="sm">
                                 <thead>
                                   <tr>
                                     <th>{`Load`}</th>
+                                    <th>{`Truck Dimensions`}</th>
                                     <th>{`Capacity`}</th>
                                     <th>{`Criteria`}</th>
                                     <th>{`Rate`}</th>
@@ -1194,9 +1291,10 @@ const AddFreight = (props) => {
                                     state.gridTable?.map((item, index) => {
                                       return (
                                         <tr key={index}>
-                                          <td>{item?.Load?.label ? item?.Load?.label : '-'}</td>
-                                          <td>{item?.Capacity ? item?.Capacity : '-'}</td>
-                                          <td>{item?.RateCriteria ? item?.RateCriteria : '-'}</td>
+                                          <td>{item?.FreightLoadType ?? '-'}</td>
+                                          <td>{item?.IsShowDimesions === true ? item?.DimensionsName : '-'}</td>
+                                          <td>{item?.Capacity ?? '-'}</td>
+                                          <td>{item?.RateCriteria ?? '-'}</td>
                                           <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}</td>
                                           <td>
                                             <button className="Edit mr-2" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => editGridItemDetails(index)} />
@@ -1232,6 +1330,7 @@ const AddFreight = (props) => {
                           type="submit"
                           disabled={isViewMode || setDisable}
                           className="user-btn mr5 save-btn"
+                          onClick={handleSubmitMainForm(onSubmit)}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
@@ -1249,9 +1348,10 @@ const AddFreight = (props) => {
         }
         {
           state.openDimensionDrawer && <DimensionsFieldsRenderer
-            handleChange={handleTruckDimensions}
             cancelHandler={closeDimensionDrawer}
             isOpen={state.openDimensionDrawer}
+            truckDimensionId={state.truckDimensions?.value}
+            isEditDimension={state.isEditDimension}
           />
         }
         {isOpenVendor && (

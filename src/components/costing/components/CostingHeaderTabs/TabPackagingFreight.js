@@ -21,6 +21,7 @@ import { LOGISTICS } from '../../../../config/masterData';
 import { useHistory } from 'react-router';
 import { WACTypeId } from '../../../../config/constants';
 import { PreviousTabData } from '../CostingHeaderTabs';
+import { setFreightCalculatorAvailable, setPackagingCalculatorAvailable } from '../../actions/CostWorking';
 function TabPackagingFreight(props) {
 
   const { handleSubmit, } = useForm();
