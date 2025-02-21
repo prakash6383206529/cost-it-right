@@ -141,43 +141,43 @@ const AddFreight = (props) => {
       reactLocalStorage?.setObject('vendorData', []);
     };
   }, []);
-  // useEffect(() => {
-  //   const hasRequiredFields = (
-  //     (state.costingTypeId === ZBCTypeId) ||
-  //     (state.costingTypeId === CBCTypeId && state?.client) ||
-  //     (state.costingTypeId === VBCTypeId && state?.vendorName)
-  //   );
-  //   if (hasRequiredFields && state?.effectiveDate && state?.Plant) {
-  //     setState(prev => ({ ...prev, disableAll: false }));
-  //     let data = {
-  //       ...state,
-  //       freightId: null,
-  //       EffectiveDate: state?.effectiveDate,
-  //       PlantId: state?.Plant?.value,
-  //       CustomerId: state?.client?.value,
-  //       VendorId: state?.vendorName?.value,
-  //       CostingTypeId: state?.costingTypeId
-  //     }
-  //     // dispatch(getFreightData(data, (res) => {
-  //     //   if (res?.status === 200) {
-  //     //     let data = res?.data?.Data;
-  //     //     setState(prev => ({
-  //     //       ...prev, dataToChange: data,
-  //     //       gridTable: data?.FullTruckLoadDetails ?? [],
-  //     //       IsFreightAssociated: data?.IsFreightAssociated
-  //     //     }));
-  //     //   } else {
-  //     //     setState(prev => ({
-  //     //       ...prev,
-  //     //       gridTable: [],
-  //     //       IsFreightAssociated: false
-  //     //     }));
-  //     //   }
-  //     // }));
-  //   } else {
-  //     setState(prev => ({ ...prev, disableAll: true }));
-  //   }
-  // }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate]);
+  useEffect(() => {
+    const hasRequiredFields = (
+      (state.costingTypeId === ZBCTypeId) ||
+      (state.costingTypeId === CBCTypeId && state?.client) ||
+      (state.costingTypeId === VBCTypeId && state?.vendorName)
+    );
+    if (hasRequiredFields && state?.effectiveDate && state?.Plant) {
+      setState(prev => ({ ...prev, disableAll: false }));
+      // let data = {
+      //   ...state,
+      //   freightId: null,
+      //   EffectiveDate: state?.effectiveDate,
+      //   PlantId: state?.Plant?.value,
+      //   CustomerId: state?.client?.value,
+      //   VendorId: state?.vendorName?.value,
+      //   CostingTypeId: state?.costingTypeId
+      // }
+      // dispatch(getFreightData(data, (res) => {
+      //   if (res?.status === 200) {
+      //     let data = res?.data?.Data;
+      //     setState(prev => ({
+      //       ...prev, dataToChange: data,
+      //       gridTable: data?.FullTruckLoadDetails ?? [],
+      //       IsFreightAssociated: data?.IsFreightAssociated
+      //     }));
+      //   } else {
+      //     setState(prev => ({
+      //       ...prev,
+      //       gridTable: [],
+      //       IsFreightAssociated: false
+      //     }));
+      //   }
+      // }));
+    } else {
+      setState(prev => ({ ...prev, disableAll: true }));
+    }
+  }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate]);
 
   /**
   * @method onPressVendor
