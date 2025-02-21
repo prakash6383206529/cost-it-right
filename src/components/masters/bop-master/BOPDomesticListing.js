@@ -459,7 +459,9 @@ const BOPDomesticListing = (props) => {
 
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart !== null && rowData?.IsRFQBoughtOutPart !== undefined ? true : false
+    
+    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart === null || rowData?.IsRFQBoughtOutPart === undefined ? true : rowData?.IsRFQBoughtOutPart;
+
     let isEditbale = false
     let isDeleteButton = false
     if (permissions?.Edit) {

@@ -555,7 +555,7 @@ const BOPImportListing = (props) => {
       ? props.valueFormatted
       : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart !== null && rowData?.IsRFQBoughtOutPart !== undefined ? true : false
+    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart === null || rowData?.IsRFQBoughtOutPart === undefined ? true : rowData?.IsRFQBoughtOutPart;
     let isEditable = false;
     let isDeleteButton = false;
     if (isRfq && isMasterSummaryDrawer) {
