@@ -302,7 +302,7 @@ const VendorListing = (props) => {
   };
 
   const floatingFilterVendorType = {
-    maxValue: 6, suppressFilterButton: true, component: "vendorType", onFloatingFilterChanged: onFloatingFilterChanged
+    maxValue: 6, suppressFilterButton: true,component: "vendorType",column: { colId: "VendorType" }, onFloatingFilterChanged: onFloatingFilterChanged
   };
   /**
    * filter data
@@ -383,7 +383,7 @@ const VendorListing = (props) => {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
-        {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
+        {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
         )}
         {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
@@ -791,7 +791,7 @@ const VendorListing = (props) => {
               enablePivot={true}
               enableBrowserTooltips={true}
             >
-              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName={vendorLabel + " Type"} cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
+              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"380px"} headerName={vendorLabel + " Type"} cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
               <AgGridColumn field="VendorName" headerName={vendorLabel + " Name"}             ></AgGridColumn>
               <AgGridColumn field="VendorCode" headerName={vendorLabel + " Code"}              ></AgGridColumn>
               <AgGridColumn field="Country" headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
