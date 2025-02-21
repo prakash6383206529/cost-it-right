@@ -2122,10 +2122,11 @@ class AddBOPImport extends Component {
 
                             </>
                           }
-                          <Col md="3">
-                            <div className='d-flex align-items-center'>
-                              <div className="w-100">
-                                <Field
+                          {!isTechnologyVisible && (
+                            <Col md="3">
+                              <div className='d-flex align-items-center'>
+                                <div className="w-100">
+                                  <Field
                                   label={`Other Cost/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
                                   name={"OtherCost"}
                                   type="text"
@@ -2153,7 +2154,7 @@ class AddBOPImport extends Component {
                                 disabled={!this.props.fieldsObj?.BasicRate}
                               />
                             </div>
-                          </Col>
+                          </Col>)}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                               <Col md="3">
