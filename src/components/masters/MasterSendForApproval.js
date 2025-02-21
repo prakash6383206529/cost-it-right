@@ -12,7 +12,7 @@ import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
-import { BOPTYPE, BUDGETTYPE, BUDGET_ID, CBCTypeId, EMPTY_DATA, EMPTY_GUID, MACHINETYPE, OPERATIONTYPE, RMTYPE, VBCTypeId, ZBCTypeId } from '../../config/constants';
+import { BOPTYPE, BUDGETTYPE, BUDGET_ID, CBCTypeId, DRAFT, EMPTY_DATA, EMPTY_GUID, MACHINETYPE, OPERATIONTYPE, RMTYPE, VBCTypeId, ZBCTypeId } from '../../config/constants';
 import { getAllDivisionListAssociatedWithDepartment, getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { REMARKMAXLENGTH, SHEETMETAL } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
@@ -141,12 +141,12 @@ function MasterSendForApproval(props) {
                         return null
                     })
                 setDepartmentDropdown(department)
-                if (department?.length === 1 || !checkMultiDept) {
+                if ((department?.length === 1 || !checkMultiDept) && props?.approvalData[0]?.Status !== DRAFT) {
                     setValue('dept', { label: department[0]?.label, value: department[0]?.value })
 
                     setDisableDept(true)
                     setDepartment(department[0])
-                    if (props.approvalListing) {
+                    if (props?.approvalListing) {
                         fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                     } else if (type !== "Approve" && getConfigurationKey().IsDivisionAllowedForDepartment) {
                         fetchDivisionList(department[0].value, dispatch, (divisionArray, showDivision) => {
@@ -155,7 +155,7 @@ function MasterSendForApproval(props) {
                         });
                     }
                 }
-                if (!getConfigurationKey().IsDivisionAllowedForDepartment || (type === 'Approve' && !IsFinalLevelButtonShow && !props?.isRFQ)) {
+                if ((!getConfigurationKey().IsDivisionAllowedForDepartment && type !== 'Sender') || (type === 'Approve' && !IsFinalLevelButtonShow && !props?.isRFQ)) {
                     setTimeout(() => {
                         const matchingDepartment = department.find(dept => dept.value === approvalDetails?.DepartmentId);
                         let departmentId = matchingDepartment?.value ?? department[0]?.value
@@ -170,16 +170,8 @@ function MasterSendForApproval(props) {
                         fetchAndSetApprovalUsers(departmentId, reasonId, props?.divisionId);
                     }, 100);
                 }
-                if ((type === 'Sender' && props.approvalListing )) {
-                    const DepartmentId = approvalData && approvalData[0]?.ApprovalDepartmentId;
-                    // Ensure DepartmentId is an array
-                    const departmentIds = Array.isArray(DepartmentId) ? DepartmentId : [DepartmentId];
-                    
-                    const updateList = Data && Data.filter(item => departmentIds.includes(item.Value));
-                    setDepartmentDropdown(updateList)
-                    setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
 
-                    setDisableDept(true)
+                if ((type === 'Sender' && props?.approvalListing && props?.approvalData[0]?.Status === DRAFT)) {
                     fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                     setIsShowDivision(false)
                 }
@@ -913,7 +905,7 @@ function MasterSendForApproval(props) {
                                                 register={register}
                                                 defaultValue={""}
                                                 options={divisionList}
-                                                disabled={(Object.keys(getValues('dept')).length === 0) || (type === 'Approve' && !props?.isRFQ)? true : false }
+                                                disabled={(Object.keys(getValues('dept')).length === 0) || (type === 'Approve' && !props?.isRFQ) ? true : false}
                                                 handleChange={handleDivisionChange}
                                                 errors={errors.Division}
                                                 mandatory={true}

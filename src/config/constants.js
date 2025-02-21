@@ -3233,8 +3233,25 @@ export const OPERATIONTYPE = Number(reactLocalStorage.getObject('masterType')[OP
 export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGETING])
 
 //CONSTANTS FOR ONBOARDING
-export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
-export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+// export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
+// export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+export const ONBOARDINGNAME = (() => {
+  const storedName = reactLocalStorage.getObject('onboardingName')
+  return (storedName && 
+          storedName !== 'null' && 
+          storedName !== 'undefined' && 
+          storedName !== null && 
+          storedName !== undefined) ? storedName : ''
+})()
+// export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+export const ONBOARDINGID = (() => {
+  const storedId = reactLocalStorage.getObject('onboardingId')
+  return (storedId && 
+          storedId !== 'null' && 
+          storedId !== 'undefined' && 
+          storedId !== null && 
+          storedId !== undefined) ? storedId :''
+})()
 //CONSTANTS FOR MANAGE LEVELS RADIO BUTTON
 
 
