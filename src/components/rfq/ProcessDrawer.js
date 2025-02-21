@@ -15,7 +15,7 @@ import { AttachmentValidationInfo, MESSAGES } from '../../config/message'
 import classnames from 'classnames';
 import redcrossImg from '../../assests/images/red-cross.png'
 
-import { alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required, RFQ_KEYS, validateFileName } from '../../helper'
+import { acceptAllExceptSingleSpecialCharacter, alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required, RFQ_KEYS, validateFileName } from '../../helper'
 import Button from '../layout/Button'
 import HeaderTitle from '../common/HeaderTitle'
 import { HAVELLSREMARKMAXLENGTH, REMARKMAXLENGTH } from '../../config/masterData'
@@ -1300,7 +1300,7 @@ function ViewDrawer(props) {
                                                     mandatory={RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false}
                                                     rules={{
                                                         required: RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false,
-                                                        validate: { alphaNumeric, checkWhiteSpaces },
+                                                        validate: {checkWhiteSpaces,acceptAllExceptSingleSpecialCharacter },
                                                     }}
                                                     handleChange={(e) => handleSpecification(e.target.value)}
                                                     defaultValue={''}
@@ -1322,7 +1322,7 @@ function ViewDrawer(props) {
                                                     mandatory={RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false}
                                                     rules={{
                                                         required: RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false,
-                                                        validate: { alphaNumeric, checkWhiteSpaces },
+                                                        validate: { checkWhiteSpaces,acceptAllExceptSingleSpecialCharacter },
                                                     }}
                                                     handleChange={(e) => handleValue(e.target.value)}
                                                     defaultValue={''}

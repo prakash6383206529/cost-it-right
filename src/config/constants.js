@@ -2130,7 +2130,7 @@ export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
 export const RETURNED = 'Returned'
 export const NON_AWARDED = 'Non Awarded'
-export const Awarded = 'Awarded'
+export const AWARDED = 'Awarded'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
@@ -3233,8 +3233,25 @@ export const OPERATIONTYPE = Number(reactLocalStorage.getObject('masterType')[OP
 export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGETING])
 
 //CONSTANTS FOR ONBOARDING
-export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
-export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+// export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
+// export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+export const ONBOARDINGNAME = (() => {
+  const storedName = reactLocalStorage.getObject('onboardingName')
+  return (storedName && 
+          storedName !== 'null' && 
+          storedName !== 'undefined' && 
+          storedName !== null && 
+          storedName !== undefined) ? storedName : ''
+})()
+// export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+export const ONBOARDINGID = (() => {
+  const storedId = reactLocalStorage.getObject('onboardingId')
+  return (storedId && 
+          storedId !== 'null' && 
+          storedId !== 'undefined' && 
+          storedId !== null && 
+          storedId !== undefined) ? storedId :''
+})()
 //CONSTANTS FOR MANAGE LEVELS RADIO BUTTON
 
 
@@ -3299,7 +3316,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.78";
+export const VERSION = "V3.1.80";
 
 
 

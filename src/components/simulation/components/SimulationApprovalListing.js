@@ -32,7 +32,7 @@ import _ from 'lodash'
 import { useLabels } from '../../../helper/core'
 const gridOptions = {};
 function SimulationApprovalListing(props) {
-    const {vendorLabel} = useLabels()
+    const { vendorLabel } = useLabels()
     const { isDashboard } = props
     const [approvalData, setApprovalData] = useState('')
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -473,9 +473,9 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         dispatch(setIsMasterAssociatedWithCosting(!rowObj?.IsSimulationWithOutCosting))
-        setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
+        setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId, ExchangeRateSimulationTechnology: rowObj?.ExchangeRateSimulationTechnology, ExchangeRateSimulationTechnologyId: rowObj?.ExchangeRateSimulationTechnologyId })
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
-        dispatch(setSimulationApplicability({label:rowObj?.ExchangeRateSimulationTechnology,value:rowObj?.ExchangeRateSimulationTechnologyId}))
+        dispatch(setSimulationApplicability({ label: rowObj?.ExchangeRateSimulationTechnology, value: rowObj?.ExchangeRateSimulationTechnologyId }))
         // dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))                //RE
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
             setStatusForLinkedToken(rowObj?.Status === 'Linked')
@@ -598,7 +598,7 @@ function SimulationApprovalListing(props) {
         setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
 
         if (JSON.stringify(selectedRows) === JSON.stringify('')) return false
-        
+
         setSelectedRowData(selectedRows)
         // if (isSelected) {
         //     let tempArr = [...selectedRowData, row]
@@ -617,9 +617,9 @@ function SimulationApprovalListing(props) {
         }
         // return rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
     }
-const CheckFinalLevel = (value) => {
-    setShowFinalLevelButton(value)
-}
+    const CheckFinalLevel = (value) => {
+        setShowFinalLevelButton(value)
+    }
     const sendForApproval = () => {
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one approval to send for approval.')
@@ -648,14 +648,14 @@ const CheckFinalLevel = (value) => {
                     return false
                 } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
                     let technologyIdTemp = ""
-                    if(approvalData?.IsExchangeRateSimulation){
+                    if (approvalData?.IsExchangeRateSimulation) {
                         technologyIdTemp = EXCHNAGERATE
-                    }else if(selectedRowData[0]?.IsExchangeRateSimulation){
+                    } else if (selectedRowData[0]?.IsExchangeRateSimulation) {
                         technologyIdTemp = EXCHNAGERATE
-                    }else{
+                    } else {
                         technologyIdTemp = approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId
                     }
-                    
+
                     let obj = {
                         DepartmentId: res?.data?.Data?.DepartmentId ? res?.data?.Data?.DepartmentId : selectedRowData[0].DepartmentId ?? EMPTY_GUID,
                         UserId: loggedInUserId(),
@@ -690,7 +690,7 @@ const CheckFinalLevel = (value) => {
             let obj = {
                 DepartmentId: selectedRowData[0]?.Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: selectedRowData[0]?.IsExchangeRateSimulation                ? EXCHNAGERATE : selectedRowData[0]?.SimulationTechnologyId,
+                TechnologyId: selectedRowData[0]?.IsExchangeRateSimulation ? EXCHNAGERATE : selectedRowData[0]?.SimulationTechnologyId,
                 Mode: 'simulation',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
                 plantId: selectedRowData[0].PlantId,
@@ -698,7 +698,7 @@ const CheckFinalLevel = (value) => {
             }
             setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
             dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))
-            
+
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
                     if (selectedRowData[0]?.Status === DRAFT) {
@@ -722,7 +722,7 @@ const CheckFinalLevel = (value) => {
     }
 
     // const closeDrawer = (e = '', type) => {
-        
+
     //     gridApi.deselectAll()
     //     setApproveDrawer(false)
     //     if (type !== 'cancel') {
@@ -751,6 +751,8 @@ const CheckFinalLevel = (value) => {
                     statusForLinkedToken: statusForLinkedToken,
                     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalData?.SimulationHeadId),
                     DepartmentId: approvalData?.DepartmentId,
+                    ExchangeRateSimulationTechnology: approvalData?.ExchangeRateSimulationTechnology,
+                    ExchangeRateSimulationTechnologyId: approvalData?.ExchangeRateSimulationTechnologyId,
                     preserveData: true
                 }
 
@@ -766,7 +768,7 @@ const CheckFinalLevel = (value) => {
                     approvalNumber: approvalData?.approvalNumber,
                     approvalId: approvalData?.approvalProcessId,
                     SimulationTechnologyId: approvalData?.SimulationTechnologyId,
-                    SimulationHeadId:approvalData?.SimulationHeadId,
+                    SimulationHeadId: approvalData?.SimulationHeadId,
                     simulationId: approvalData?.simulationId
                 }
             }}

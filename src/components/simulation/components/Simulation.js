@@ -47,12 +47,14 @@ import RMIndexationSimulationListing from './SimulationPages/RMIndexationSimulat
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 import { setCommodityDetails } from '../../masters/actions/Indexation';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import { findApplicabilityMasterId } from '../SimulationUtils';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 export const ApplyPermission = React.createContext();
 function Simulation(props) {
+
     const { vendorLabel } = useLabels()
     const { handleEditMasterPage, showTour } = useContext(simulationContext) || {};
 
@@ -61,8 +63,22 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting, selectListCostingHead } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting, selectListCostingHead, } = useSelector(state => state.simulation)
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
+
+    const rmDomesticListing = useSelector(state => state.material.rmDataList)
+    const rmImportListing = useSelector(state => state.material.rmImportDataList)
+    const bopDomesticList = useSelector(state => state.material.bopDomesticList)
+    const bopImportList = useSelector(state => state.material.bopImportList)
+    const exchangeRateDataList = useSelector(state => state.material.exchangeRateDataList)
+    const operationList = useSelector(state => state.material.operationList)
+    const customerList = useSelector(state => state.client.clientSelectList)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    console.log(simulationApplicability, "simulationApplicability")
+
+
+    const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
     const [master, setMaster] = useState([])
 
     const [technology, setTechnology] = useState({})
@@ -106,7 +122,7 @@ function Simulation(props) {
     const [rawMaterialIds, setRawMaterialIds] = useState([])
     const { technologyLabel } = useLabels();
     const dispatch = useDispatch()
-    const [applicabilityMasterId, setApplicabilityMasterId] = useState('')
+    const [applicabilityMasterId, setApplicabilityMasterId] = useState(findApplicabilityMasterId(masterList, simulationApplicability?.value) ?? null)
     console.log(applicabilityMasterId, "applicabilityMasterId")
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     useEffect(() => {
@@ -156,19 +172,7 @@ function Simulation(props) {
         }
     }, [])
 
-    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
 
-    const rmDomesticListing = useSelector(state => state.material.rmDataList)
-    const rmImportListing = useSelector(state => state.material.rmImportDataList)
-    const bopDomesticList = useSelector(state => state.material.bopDomesticList)
-    const bopImportList = useSelector(state => state.material.bopImportList)
-    const exchangeRateDataList = useSelector(state => state.material.exchangeRateDataList)
-    const operationList = useSelector(state => state.material.operationList)
-    const customerList = useSelector(state => state.client.clientSelectList)
-    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-
-
-    const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
     useEffect(() => {
         // CHECK FOR ASSEMBLY TECHNOLOGY APPLIED BECAUSE WE DON'T WANT TO DO LINKED TOKEN API FOR IT
         if (technology && (technology?.value !== undefined && technology?.value !== '' && partType)) {
@@ -315,36 +319,12 @@ function Simulation(props) {
             dispatch(setIsMasterAssociatedWithCosting(true))
 
         }
-        let applicabilityMasterId = "";
-        switch (value?.label) {
-            case APPLICABILITY_RM_SIMULATION:
-                applicabilityMasterId = masterList?.find(item => item?.Text === "RM Import")?.Value;
-                break;
-            case APPLICABILITY_BOP_SIMULATION:
-                applicabilityMasterId = masterList?.find(item => item?.Text === "BOP Import")?.Value;
-                break;
-            case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
-                applicabilityMasterId = masterList?.find(item => item?.Text === "BOP Import")?.Value
-                break;
-            case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
-                applicabilityMasterId = masterList?.find(item => item?.Text === "Surface Treatment")?.Value;
-                break;
-            case APPLICABILITY_OPERATIONS_SIMULATION:
-                applicabilityMasterId = masterList?.find(item => item?.Text === "Operations")?.Value;
-                break;
-            case APPLICABILITY_MACHINE_RATES_SIMULATION:
-                applicabilityMasterId = masterList?.find(item => item?.Text === "Machine Rate")?.Value;
-                break;
-            case APPLICABILITY_RAWMATERIAL_SIMULATION:
-                applicabilityMasterId = masterList?.find(item => item?.Text === "Raw Materials")?.Value;
-                break;
-            default:
-                applicabilityMasterId = masterList?.find(item => item?.Text === "Exchange Rates")?.Value;
-                break;
-        }
+        let applicabilityMasterId = findApplicabilityMasterId(masterList, value?.value)
         // return applicabilityMasterId;
         setApplicabilityMasterId(applicabilityMasterId)
+
     }
+
 
 
 
@@ -1747,14 +1727,16 @@ function Simulation(props) {
     }
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
-    if (props?.isFromApprovalListing === true && String(props?.master) !== RAWMATERIALINDEX) {
+    if (props?.isFromApprovalListing === true && String(props?.master) !== RAWMATERIALINDEX && String(simulationApplicability?.value) !== String(RAWMATERIALINDEX)) {
+        console.log("COMING HERE")
         const simulationId = props?.approvalProcessId;
         const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
 
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} />
     }
-    if (props?.isFromApprovalListing === true && String(props?.master) === RAWMATERIALINDEX) {
+    if ((props?.isFromApprovalListing === true && String(props?.master) === RAWMATERIALINDEX) || (props?.isFromApprovalListing === true && String(simulationApplicability?.value) === String(RAWMATERIALINDEX))) {
+        console.log("COMING HERE 2")
         const simulationId = props?.approvalProcessId;
         const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)

@@ -150,7 +150,7 @@ const BOPDomesticListing = (props) => {
     const filterData = {
       ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props?.isSimulation ? props?.ListFor : '', IsBOPAssociated: props?.isBOPAssociated,
       Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
-      LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+      // LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
       StatusId: statusString
     }
     const { isMasterSummaryDrawer } = props
@@ -459,7 +459,9 @@ const BOPDomesticListing = (props) => {
 
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart !== null && rowData?.IsRFQBoughtOutPart !== undefined ? true : false
+    
+    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart === null || rowData?.IsRFQBoughtOutPart === undefined ? true : rowData?.IsRFQBoughtOutPart;
+
     let isEditbale = false
     let isDeleteButton = false
     if (permissions?.Edit) {

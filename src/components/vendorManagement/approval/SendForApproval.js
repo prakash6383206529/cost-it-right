@@ -11,7 +11,7 @@ import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetail
 import { sendForUnblocking } from '../Action';
 import { getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment } from '../../masters/actions/Material';
 import { transformApprovalItem } from '../../common/CommonFunctions';
-import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_GUID, LPSAPPROVALTYPEID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../config/constants';
+import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_GUID, LPSAPPROVALTYPEID, ONBOARDINGID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../config/constants';
 import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
@@ -215,11 +215,12 @@ const SendForApproval = (props) => {
   }, [isOpen]);
 
   useEffect(() => {
+       if(props?.OnboardingApprovalId === ONBOARDINGID){
     dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
 
       userTechnology(isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID, res.data.Data)
 
-    }))
+    }))}
   }, [isOpen])
   const userTechnology = (approvalTypeId, levelsList) => {
 

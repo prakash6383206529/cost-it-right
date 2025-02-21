@@ -115,7 +115,7 @@ const MachineMaster = () => {
                 <TabContent activeTab={state.activeTab}>
                   {Number(state.activeTab) === 1 && (<TabPane tabId="1"> <MachineRateListing displayForm={displayForm} getDetails={getDetails} isMasterSummaryDrawer={false} stopApiCallOnCancel={state.stopApiCallOnCancel} selectionForListingMasterAPI="Master" approvalStatus={APPROVAL_CYCLE_STATUS_MASTER} /> </TabPane>)}
                   {Number(state.activeTab) === 2 && (<TabPane tabId="2"> <ProcessListing stopApiCallOnCancel={state.stopApiCallOnCancel} /></TabPane>)}
-                  {Number(state.activeTab) === 3 && (<TabPane tabId="3">  <CommonApproval MasterId={MACHINE_MASTER_ID} /> </TabPane>)}
+                  {Number(state.activeTab) === 3 && (<TabPane tabId="3">  <CommonApproval MasterId={MACHINE_MASTER_ID} OnboardingApprovalId={'0'} /> </TabPane>)}
                 </TabContent>
               </ApplyPermission.Provider>
             </div>

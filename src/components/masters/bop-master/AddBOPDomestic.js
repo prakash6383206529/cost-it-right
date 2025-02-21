@@ -200,7 +200,7 @@ class AddBOPDomestic extends Component {
       if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
-      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
+      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, ZBCTypeId, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), null, null, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
         } else {

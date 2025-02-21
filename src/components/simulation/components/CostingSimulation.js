@@ -476,7 +476,7 @@ function CostingSimulation(props) {
             tempObj.BudgetedPriceImpactPerQuarter = simulationList[0]?.BudgetedPriceImpactPerQuarter
             tempObj.IsExchangeRateSimulation = Data?.IsExchangeRateSimulation
             setAmendmentDetails(tempObj)
-            dispatch(setSimulationApplicability({label:Data?.ExchangeRateSimulationTechnology,value:Data?.ExchangeRateSimulationTechnologyId}))
+            dispatch(setSimulationApplicability({ label: Data?.ExchangeRateSimulationTechnology, value: Data?.ExchangeRateSimulationTechnologyId }))
             //LISTING
             // SECOND PARAMETER TRUE | TO SAVE UNIQUE LIST OF NON REQUIRED COSTING(COMPONENT COSTING OF ASSEMBLY'S CHILD)  
             const list = getListMultipleAndAssembly(uniqeArray, true)
@@ -506,24 +506,24 @@ function CostingSimulation(props) {
             }))
         } else {
             let masterTemp = selectedMasterForSimulation?.value
-            if (Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_RM_SIMULATION)||Number(simulationApplicability?.value)===Number(RMIMPORT))) {
+            if (Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_RM_SIMULATION) || Number(simulationApplicability?.value) === Number(RMIMPORT))) {
                 masterTemp = Number(RMIMPORT)
-            } else if (Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_BOP_SIMULATION) || Number(simulationApplicability?.value) === Number(APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)||Number(simulationApplicability?.value)===Number(BOPIMPORT)    )) {
+            } else if (Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_BOP_SIMULATION) || Number(simulationApplicability?.value) === Number(APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION) || Number(simulationApplicability?.value) === Number(BOPIMPORT))) {
                 masterTemp = Number(BOPIMPORT)
-            } else if(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_OPERATIONS_SIMULATION) || Number(simulationApplicability?.value) === Number(OPERATIONS))) {
+            } else if (Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_OPERATIONS_SIMULATION) || Number(simulationApplicability?.value) === Number(OPERATIONS))) {
                 masterTemp = Number(OPERATIONS)
-            } else if(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_SURFACE_TREATMENT_SIMULATION) || Number(simulationApplicability?.value) === Number(SURFACETREATMENT))) {
+            } else if (Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_SURFACE_TREATMENT_SIMULATION) || Number(simulationApplicability?.value) === Number(SURFACETREATMENT))) {
                 masterTemp = Number(SURFACETREATMENT)
-            } else if(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_MACHINE_RATES_SIMULATION) || Number(simulationApplicability?.value) === Number(MACHINERATE))) {
+            } else if (Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) && (Number(simulationApplicability?.value) === Number(APPLICABILITY_MACHINE_RATES_SIMULATION) || Number(simulationApplicability?.value) === Number(MACHINERATE))) {
                 masterTemp = Number(MACHINERATE)
             }
             else {
                 masterTemp = Number(selectedMasterForSimulation?.value)
             }
-            
 
 
-            
+
+
             switch (Number(masterTemp)) {
                 //  ***** WHEN SAME BLOCK OF CODE IS FOR TWO DIFFERENT CASES | WE WRITE TWO CASES TOGETHER *****
                 case Number(RMDOMESTIC):
@@ -546,9 +546,10 @@ function CostingSimulation(props) {
                     break;
                 case Number(EXCHNAGERATE):
                     setMasterLoader(true)
+                    console.log(simulationApplicability, "simulationApplicability")
                     switch (simulationApplicability?.value) {
                         case APPLICABILITY_RM_SIMULATION:
-                            case Number(RMIMPORT):
+                        case Number(RMIMPORT):
 
                             handleRawMaterialCase(plantId, rawMatrialId);
                             break;
@@ -559,15 +560,15 @@ function CostingSimulation(props) {
                             handleBopCase();
                             break;
                         case APPLICABILITY_OPERATIONS_SIMULATION:
-                            case Number(OPERATIONS):
+                        case Number(OPERATIONS):
                             handleSurfaceTreatmentCase();
                             break;
                         case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
-                            case Number(SURFACETREATMENT):
+                        case Number(SURFACETREATMENT):
                             handleSurfaceTreatmentCase();
                             break;
                         case APPLICABILITY_MACHINE_RATES_SIMULATION:
-                            case Number(MACHINERATE):
+                        case Number(MACHINERATE):
                             handleMachineRateCase();
                             break;
                         default:

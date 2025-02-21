@@ -126,6 +126,7 @@ function BudgetMaster() {
                                             DeleteAccessibility={DeleteAccessibility}
                                             DownloadAccessibility={DownloadAccessibility}
                                             MasterId={BUDGET_ID}
+                                            OnboardingApprovalId={'0'}
                                         />
                                     </TabPane>}
                             </TabContent>
