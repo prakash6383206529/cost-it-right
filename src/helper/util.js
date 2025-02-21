@@ -8,9 +8,10 @@ import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
   RAWMATERIALINDEX,
-  
+  VBCTypeId,
+
 } from '../config/constants'
-import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
+import { IsFetchExchangeRateVendorWise, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
 import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID } from '../config/masterData';
@@ -1826,12 +1827,12 @@ export const calculateBestCost = (arrayList, showConvertedCurrency = false) => {
 };
 
 
-export const canEnableFields = ({ 
-  plant, 
-  technology, 
+export const canEnableFields = ({
+  plant,
+  technology,
   type,
-  updateButtonPartNoTable, 
-  isEditMode,             
+  updateButtonPartNoTable,
+  isEditMode,
   isViewMode,
   isEditFlagReceived ,     // Flag indicating if quotation is received
   showSendButton,  // Add this parameter
@@ -1840,38 +1841,66 @@ export const canEnableFields = ({
 
   // First check if quotation is received - disable all fields
   if (isEditFlagReceived) {
-      return false;
+    return false;
   }
 
   // Check for view mode - disable all fields
   if (isViewMode) {
-      return false;
+    return false;
   }
 
-    // For add mode or draft/predraft status
-    if (isAddFlag || showSendButton === 'Draft' || showSendButton === 'PreDraft') {
-      // For RM type, need both plant and technology
-      if (type === 'RM') {
-          return Object.keys(plant || {}).length > 0 && 
-                 Object.keys(technology || {}).length > 0;
-      }
-      // For other types, only need plant
-      return Object.keys(plant || {}).length > 0;
+  // For add mode or draft/predraft status
+  if (isAddFlag || showSendButton === 'Draft' || showSendButton === 'PreDraft') {
+    // For RM type, need both plant and technology
+    if (type === 'RM') {
+      return Object.keys(plant || {}).length > 0 &&
+        Object.keys(technology || {}).length > 0;
+    }
+    // For other types, only need plant
+    return Object.keys(plant || {}).length > 0;
   }
 
   // For grid edit operations
   if (updateButtonPartNoTable && isEditMode && !isViewMode) {
-      // Disable fields even in edit mode if quotation is received
-   
-      return true;
+    // Disable fields even in edit mode if quotation is received
+
+    return true;
   }
 
- 
-    // For grid edit operations
-    if (updateButtonPartNoTable && isEditMode && !isViewMode) {
-      return true;
+
+  // For grid edit operations
+  if (updateButtonPartNoTable && isEditMode && !isViewMode) {
+    return true;
   }
 
   // Default case - fields should be disabled
   return false;
+};
+export const getExchangeRateParams = ({ fromCurrency, toCurrency, defaultCostingTypeId, vendorId, clientValue }) => {
+  
+
+  const isConvertingToBase = toCurrency === reactLocalStorage.getObject("baseCurrency");
+  
+  
+  let costingType;
+  let vendorValue;
+  let clientId;
+
+  if (isConvertingToBase) {
+    costingType = ZBCTypeId;
+    vendorValue = null;
+    clientId = null;
+  } else {
+    costingType = IsFetchExchangeRateVendorWise() ? ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? VBCTypeId : defaultCostingTypeId) : ZBCTypeId;
+    vendorValue = IsFetchExchangeRateVendorWise() ? ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? vendorId : EMPTY_GUID) : EMPTY_GUID;
+    clientId = clientValue;
+  }
+  
+  
+  
+return {
+  costingHeadTypeId: costingType,   
+    vendorId: vendorValue,
+    clientId: clientId         
+  };
 };
