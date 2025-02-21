@@ -29,7 +29,7 @@ function AddFreight(props) {
     Criteria: rowObjData && rowObjData.Criteria !== undefined ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : '',
     Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
     Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForNull(rowObjData.Quantity) : '',
-    FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
+    FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? checkForDecimalAndNull(rowObjData.FreightCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     crmHeadFreight: rowObjData && rowObjData.FreightCRMHead !== undefined ? { label: rowObjData.FreightCRMHead, value: 1 } : '',
     IsFreightDetailedBreakup: rowObjData && rowObjData.IsFreightDetailedBreakup !== undefined ? rowObjData.IsFreightDetailedBreakup : false,
     TruckDimensions: rowObjData && rowObjData.DimensionName !== undefined ? { label: rowObjData.DimensionName, value: rowObjData.DimensionId } : [],
