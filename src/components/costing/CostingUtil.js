@@ -113,7 +113,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "EffectiveDate": DayTime(new Date(effectiveDate)),
       "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
       "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-      "TotalConversionCostWithQuantity": tabData && AddLabour ? (tabData.CostingPartDetails?.TotalConversionCostWithQuantity + checkForNull(tabData.CostingPartDetails.NetLabourCost) + checkForNull(tabData.CostingPartDetails.IndirectLaborCost) + checkForNull(tabData.CostingPartDetails.StaffCost)) : tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+      "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
       "TotalCalculatedRMBOPCCCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
