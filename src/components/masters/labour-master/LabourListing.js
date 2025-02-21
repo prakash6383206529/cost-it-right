@@ -63,7 +63,8 @@ function LabourListing(props) {
     effectiveDate: '',
     selectedVendor: [],
     selectedCustomer: [],
-    costingTypeId: ZBCTypeId
+    costingTypeId: ZBCTypeId,
+    globalTake: defaultPageSize
   });
   const dispatch = useDispatch();
   const { labourDataList, topAndLeftMenuData } = useSelector(state => ({ labourDataList: state.labour.labourDataList, topAndLeftMenuData: state.auth.topAndLeftMenuData, }));
@@ -269,6 +270,7 @@ function LabourListing(props) {
 
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = () => {
@@ -328,6 +330,8 @@ function LabourListing(props) {
     state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize }));
+    filterList()
   }
 
   const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, } = state
@@ -447,7 +451,7 @@ function LabourListing(props) {
               <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
               <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
             </AgGridReact>}
-            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
           </div>
         </div>
 
