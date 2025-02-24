@@ -384,7 +384,7 @@ const FreightListing = (props) => {
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={"customNoRowsOverlay"}
-                onFilterModified={() => { }}
+                onFilterModified={onFloatingFilterChanged}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
                   imagClass: "imagClass",
