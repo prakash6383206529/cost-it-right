@@ -29,7 +29,7 @@ function AddFreight(props) {
     Criteria: rowObjData && rowObjData.Criteria !== undefined ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : '',
     Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
     Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForNull(rowObjData.Quantity) : '',
-    FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
+    FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? checkForDecimalAndNull(rowObjData.FreightCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     crmHeadFreight: rowObjData && rowObjData.FreightCRMHead !== undefined ? { label: rowObjData.FreightCRMHead, value: 1 } : '',
     IsFreightDetailedBreakup: rowObjData && rowObjData.IsFreightDetailedBreakup !== undefined ? rowObjData.IsFreightDetailedBreakup : false,
     TruckDimensions: rowObjData && rowObjData.DimensionName !== undefined ? { label: rowObjData.DimensionName, value: rowObjData.DimensionId } : [],
@@ -495,7 +495,7 @@ function AddFreight(props) {
       isShowDetailedBreakup: false,
       truckDimensions: null
     }));
-    setValue('TruckDimensions', ''  )
+    setValue('TruckDimensions', '')
     errors.FreightCost = {}
     errors.Rate = {}
   }
@@ -519,7 +519,8 @@ function AddFreight(props) {
         // Check if any existing entry matches the applicability for 'Percentage'
         return array.some(item =>
           item.FreightType === 'Percentage' &&
-          item.Criteria === obj.Criteria
+          item.Criteria === obj.Criteria &&
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true)
         );
 
       case 'Full Truck Load':
@@ -527,14 +528,16 @@ function AddFreight(props) {
         return array.some(item =>
           item.FreightType === 'Full Truck Load' &&
           item.Capacity === obj.Capacity &&
-          item.Criteria === obj.Criteria
+          item.Criteria === obj.Criteria &&
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true)
         );
 
       case 'Part Truck Load':
         // Check if any existing entry matches Criteria for 'Part Truck Load'
         return array.some(item =>
           item.FreightType === 'Part Truck Load' &&
-          item.Criteria === obj.Criteria
+          item.Criteria === obj.Criteria &&
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true)
         );
 
       default:

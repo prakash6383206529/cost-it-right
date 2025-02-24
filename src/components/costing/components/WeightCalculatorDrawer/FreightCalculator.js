@@ -15,6 +15,7 @@ import { AWAITING_APPROVAL_ID, FullTruckLoad, PENDING_FOR_APPROVAL_ID, REJECTEDI
 import FormFieldsRenderer from '../../../common/FormFieldsRenderer'
 import HeaderTitle from '../../../common/HeaderTitle'
 import LoaderCustom from '../../../common/LoaderCustom'
+import { getTruckDimensionsById } from '../../../masters/actions/Freight'
 function FreightCalculator(props) {
     const { rowObjData, truckDimensions, freightType, noOfComponentsPerCrate, rate } = props
     const [state, setState] = useState({
@@ -142,16 +143,19 @@ function FreightCalculator(props) {
             setValue('NoOfComponentsPerBinOrTrolley', noOfComponentsPerCrate)
             setValue('TripRate', rate)
         }
-        if (truckDimensions?.label) {
-            const dimensions = truckDimensions?.label?.match(/L\((\d+)\),\s*B\((\d+)\),\s*H\((\d+)\)/);
-            if (dimensions) {
-                setState(prevState => ({
-                    ...prevState,
-                    truckLength: parseFloat(dimensions[1]),
-                    truckBreadth: parseFloat(dimensions[2]),
-                    truckHeight: parseFloat(dimensions[3])
-                }))
-            }
+        if (truckDimensions && truckDimensions?.value) {
+            dispatch(getTruckDimensionsById(truckDimensions?.value, (res) => {
+                if (res && res?.data?.DataList && res?.data?.DataList?.length > 0) {
+                    let tempData = res?.data?.DataList[0]
+                    setState(prevState => ({
+                        ...prevState,
+                        truckLength: tempData?.Length,
+                        truckBreadth: tempData?.Breadth,
+                        truckHeight: tempData?.Height
+                    }))
+                }
+            }))
+
         }
         if (freightType === FullTruckLoad) {
             setValue('Utilization', 100)
@@ -202,22 +206,29 @@ function FreightCalculator(props) {
             }
         }
     }, [])
+    const inputFields = ['BinLength', 'BinBreadth', 'BinHeight', 'TrolleyLength', 'TrolleyBreadth', 'TrolleyHeight']
     const calclulationFieldValues = useWatch({
         control: control,
-        name: ['Utilization'],
+        name: ['Utilization', 'BinAlignment', 'TrolleyAlignment', ...inputFields],
         defaultValue: []
     })
     useEffect(() => {
-        calculateTotalCost()
-    }, [state.noOfBins, state.totalNoOfBins, calclulationFieldValues, state.noOfTrolleys])
+        if (!CostingViewMode) {
+            calculateTotalCost()
+            if (state?.binAlignment) {
+                calculateBinsAndTrolleys('bin', state?.binAlignment)
+            }
+            if (state?.trolleyAlignment) {
+                calculateBinsAndTrolleys('trolley', state?.trolleyAlignment)
+            }
+        }
+    }, [state.noOfBins, state.totalNoOfBins, calclulationFieldValues, state.noOfTrolleys, state.binAlignment, state.trolleyAlignment])
+
     const setFormValues = (data) => {
         setValue('CarrierType', data?.CarrierType ? { label: data?.CarrierType, value: data?.CarrierTypeId } : [])
-        setValue('TrolleyLength', checkForDecimalAndNull(data?.TrolleyLength, NoOfDecimalForInputOutput))
-        setValue('TrolleyBreadth', checkForDecimalAndNull(data?.TrolleyBreadth, NoOfDecimalForInputOutput))
-        setValue('TrolleyHeight', checkForDecimalAndNull(data?.TrolleyHeight, NoOfDecimalForInputOutput))
-        setValue('BinLength', checkForDecimalAndNull(data?.BinLength, NoOfDecimalForInputOutput))
-        setValue('BinBreadth', checkForDecimalAndNull(data?.BinBreadth, NoOfDecimalForInputOutput))
-        setValue('BinHeight', checkForDecimalAndNull(data?.BinHeight, NoOfDecimalForInputOutput))
+        inputFields.forEach(field => {
+            setValue(field, checkForDecimalAndNull(data[field], NoOfDecimalForInputOutput))
+        })
         setValue('BinAlignment', { label: data?.BinAlignment, value: data?.BinAlignment })
         setValue('TrolleyAlignment', { label: data?.TrolleyAlignment, value: data?.TrolleyAlignment })
         setValue('NoOfTrolleys', checkForDecimalAndNull(data?.NumberOfTrolleys, NoOfDecimalForInputOutput))

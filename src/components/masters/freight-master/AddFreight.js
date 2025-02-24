@@ -599,8 +599,8 @@ const AddFreight = (props) => {
       Rate: checkForNull(Rate) || 0,
       FreightLoadType: Load?.label,
       EFreightLoadType: Load?.value,
-      DimensionsName: truckDimensions?.label,
-      DimensionId: truckDimensions?.value,
+      DimensionsName: isShowTruckDimensions ? truckDimensions?.label : null,
+      DimensionId: isShowTruckDimensions ? truckDimensions?.value : null,
       IsShowDimesions: isShowTruckDimensions
     };
 
