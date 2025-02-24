@@ -573,7 +573,10 @@ function AddFreight(props) {
       DimensionId: state?.truckDimensions?.value,
       IsFreightDetailedBreakup: state?.isShowDetailedBreakup
     }
-
+    if (checkForNull(formData?.FreightCost) === 0) {
+      Toaster.warning("Freight Cost cannot be zero.");
+      return false;
+    }
     if (doesObjectExist(gridData, formData)) {
       Toaster.warning("Data already exists in the grid.")
       return false;
@@ -586,7 +589,7 @@ function AddFreight(props) {
         ...prevState,
         isShowDetailedBreakup: false
       }));
-      Toaster.warning("Freight calculation requires 'No. of Parts per Crate' from Packaging Costing not found.");
+      Toaster.warning("Freight calculation requires 'No. of Parts per Crate'. Add the Packaging details to proceed with freight calculation.");
       return;
     }
 
