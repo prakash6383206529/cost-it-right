@@ -382,9 +382,13 @@ class AddSpecification extends Component {
     const { ID, isEditFlag } = this.props;
 
     if (isEditFlag) {
-      if (DataToChange.Specification === values.Specification && DropdownChanged) {
-        this.cancel('cancel')
-        return false
+      const noChanges = DataToChange?.Specification === values?.Specification && 
+                       DataToChange?.RawMaterialId === RawMaterial?.value &&
+                       DataToChange?.GradeId === RMGrade?.value;
+                       
+      if (noChanges) {
+        Toaster.warning("Please change data to save specification Details");
+        return false;
       }
       this.setState({ setDisable: true })
       let formData = {
@@ -689,7 +693,7 @@ class AddSpecification extends Component {
                       <div className="text-right ">
                         <Button
                           id="rm-specification-cancel"
-                          className="mr-2"
+                          className="mr15"
                           variant={"cancel-btn"}
                           disabled={setDisable}
                           onClick={this.cancelHandler}

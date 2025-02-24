@@ -446,7 +446,7 @@ const AddMaterialDetailDrawer = (props) => {
                                         <>
                                             <button
                                                 type="button"
-                                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : ''} pull-left`}
+                                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : ''} pull-left mr10`}
                                                 onClick={handleAddUpdateButtonClick}
                                             >
                                                 <div className={"plus"}></div>ADD

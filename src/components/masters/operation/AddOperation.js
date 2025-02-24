@@ -780,6 +780,29 @@ class AddOperation extends Component {
     const { initialConfiguration } = this.props;
     const userDetailsOperation = JSON.parse(localStorage.getItem('userDetail'))
     const userDetail = userDetails()
+    if (isEditFlag) {
+
+      const hasNoChanges = (
+        checkForDecimalAndNull(values?.Rate) === checkForDecimalAndNull(DataToChange?.Rate) &&
+        (values?.Remark || '') === (DataToChange?.Remark || '') &&
+        (UOM?.value || '') === (oldUOM?.value || '') &&
+        (values?.Description || '') === (DataToChange?.Description || '') &&
+        JSON.stringify(files) === JSON.stringify(DataToChange?.Attachements) &&
+        (values?.OperationName || '') === (DataToChange?.OperationName || '') &&
+        (values?.OperationCode || '') === (DataToChange?.OperationCode || '') &&
+        checkForDecimalAndNull(values?.LabourRatePerUOM) === checkForDecimalAndNull(DataToChange?.LabourRatePerUOM) &&
+        checkForDecimalAndNull(values?.WeldingRate) === checkForDecimalAndNull(DataToChange?.OperationBasicRate) &&
+        checkForDecimalAndNull(values?.Consumption) === checkForDecimalAndNull(DataToChange?.OperationConsumption) &&
+        !isDateChange
+      );
+
+      if (hasNoChanges) {
+        this.setState({ setDisable: false });
+        Toaster.warning('Please change the data to save Operation Details');
+        return false;
+      }
+    }
+
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED

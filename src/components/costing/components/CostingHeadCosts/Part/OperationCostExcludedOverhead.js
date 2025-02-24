@@ -551,7 +551,7 @@ function OperationCostExcludedOverhead(props) {
                   }
                   {gridData && gridData.length === 0 &&
                     <tr>
-                      <td colSpan={7}>
+                      <td colSpan={12}>
                         <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>

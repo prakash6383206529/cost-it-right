@@ -14,6 +14,7 @@ import { colorArray } from '../../../dashboard/ChartsDashboard';
 import { Costratiograph } from '../../../dashboard/CostRatioGraph';
 import { getCostRatioReport, getFormGridData } from '../../actions/ReportListing';
 import { useLabels } from '../../../../helper/core';
+import TooltipCustom from '../../../common/Tooltip';
 
 const CostRatioListing = (props) => {
     const [tableData, setTableData] = useState([])
@@ -261,7 +262,7 @@ const CostRatioListing = (props) => {
                                     <div className='column-data'>Process Cost (%)</div>
                                     <div className='column-data'>Operation Cost (%)</div>
                                     <div className='column-data'>Other Operation Cost (%)</div>
-                                    <div className='column-data'>Conversion Cost (%)</div>
+                                    <div className='column-data'>Conversion Cost (%)<div className='mb-3 ml-2'><TooltipCustom id="ConversionCost" tooltipText="Conversion Cost = (Process Cost + Operation Cost + Other Operation Cost)"/></div></div>
                                     <div className='column-data'>Surface Cost (%)</div>
                                     <div className='column-data'>Overhead Cost (%)</div>
                                     <div className='column-data'>Profit Cost (%)</div>

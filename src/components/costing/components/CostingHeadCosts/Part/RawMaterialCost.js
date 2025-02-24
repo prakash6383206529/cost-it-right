@@ -1707,8 +1707,9 @@ function RawMaterialCost(props) {
                     {
                       gridData && gridData.length === 0 &&
                       <tr>
-                        <td colSpan={11}>
+                        <td colSpan={12}>
                           <NoContentFound title={EMPTY_DATA} />
+
                         </td>
                       </tr>
                     }
@@ -1737,7 +1738,7 @@ function RawMaterialCost(props) {
                       onChange={onPressApplyMasterBatch}
                     />
                   </label>
-                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n2 mt-3 " tooltipText="Can only be added with 1 RM" />
+                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n2 mt-1" tooltipText="Can only be added with 1 RM" />
                 </Col >
               }
 
@@ -1876,6 +1877,7 @@ function RawMaterialCost(props) {
             Ids={Ids}
             rmNameList={rmNameList}
             item={item}
+            selectedRM={getValues('MBId')}
           />
         )
       }

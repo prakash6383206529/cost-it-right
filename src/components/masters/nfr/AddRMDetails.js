@@ -316,7 +316,7 @@ function AddRMDetails(props) {
                                                 <>
                                                     <button id="AddNFR_AddData"
                                                         type="button"
-                                                        className={"user-btn mt30 pull-left"}
+                                                        className={"user-btn mt30 pull-left mr10"}
                                                         onClick={addData}
                                                     >
                                                         <div className={"plus"}></div>ADD

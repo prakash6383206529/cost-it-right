@@ -3118,7 +3118,7 @@ function UserRegistration(props) {
                       />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         label="ZipCode"
                         name={"ZipCode"}
                         errors={errors.ZipCode}

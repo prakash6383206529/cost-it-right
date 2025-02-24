@@ -375,6 +375,27 @@ function AddMoreOperation(props) {
 
 
     const onSubmit = (values) => {
+        // Check for changes before proceeding
+        if (isEditFlag) {
+            // Compare all relevant fields with original data
+            const hasNoChanges = (
+                checkForDecimalAndNull(values?.netCost) === checkForDecimalAndNull(dataObj?.Rate) &&
+                (values?.remark || '') === (dataObj?.Remark || '') &&
+                (values?.description || '') === (dataObj?.Description || '') &&
+                JSON.stringify(files) === JSON.stringify(dataObj?.Attachements) &&
+                (values?.operationName || '') === (dataObj?.OperationName || '') &&
+                (values?.operationCode || '') === (dataObj?.OperationCode || '') &&
+                checkForDecimalAndNull(values?.LabourRatePerUOM) === checkForDecimalAndNull(dataObj?.LabourRatePerUOM) &&
+                checkForDecimalAndNull(values?.OperationBasicRate) === checkForDecimalAndNull(dataObj?.OperationBasicRate) &&
+                checkForDecimalAndNull(values?.OperationConsumption) === checkForDecimalAndNull(dataObj?.OperationConsumption) &&
+                DayTime(dataObj?.EffectiveDate).format('DD/MM/YYYY') === DayTime(values?.effectiveDate).format('DD/MM/YYYY')
+            );
+
+            if (hasNoChanges) {
+                Toaster.warning('Please change the data to save Operation Details');
+                return false;
+            }
+        }
 
         let technologyArray = []
         let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]

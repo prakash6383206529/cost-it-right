@@ -107,7 +107,7 @@ const AddReason = (props) => {
 
     if (isEditFlag) {
       if (dataToCheck.Reason === values?.Reason) {
-        toggleDrawer('', 'cancel');
+        Toaster.warning('Please change the data to save Reason Details')
         return false;
       }
       setSetDisable(true);

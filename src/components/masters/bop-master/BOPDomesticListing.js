@@ -138,6 +138,17 @@ const BOPDomesticListing = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    reactLocalStorage.setObject('selectedRow', {})
+    if (!props.stopApiCallOnCancel) {
+      return () => {
+        dispatch(setSelectedRowForPagination([]))
+        dispatch(resetStatePagination());
+        reactLocalStorage.setObject('selectedRow', {})
+      }
+    }
+  }, [])
+
   const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
     const { floatingFilterData } = state
     setSkipRecord(skip)
@@ -395,6 +406,7 @@ const BOPDomesticListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+    reactLocalStorage.setObject('selectedRow', {})
   };
 
   /**
@@ -817,6 +829,7 @@ const BOPDomesticListing = (props) => {
     setState((prevState) => ({ ...prevState, analyticsDrawer: false }))
   }
   const onRowSelect = (event) => {
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     var selectedRows = state.gridApi.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
@@ -833,6 +846,7 @@ const BOPDomesticListing = (props) => {
     }
     let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArray))
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) // Save to localStorage
     const newDataCount = uniqeArray.length;
     setState((prevState) => ({ ...prevState, dataCount: newDataCount }))
     let finalArr = selectedRows
@@ -847,6 +861,7 @@ const BOPDomesticListing = (props) => {
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]));
         state.gridApi.deselectAll();
+        reactLocalStorage.setObject('selectedRow', {}) // Clear localStorage
         Toaster.warning("Please select multiple bop's with same category");
       }
     }

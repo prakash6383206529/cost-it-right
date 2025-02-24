@@ -256,7 +256,7 @@ function Ferrous(props) {
         if (!CostingViewMode) {
             calculateTotalCastingCostInputWeight()
         }
-    }, [totalCastingCostInputWeightValues, totalCostCalculated, watchedValues])
+    }, [totalCastingCostInputWeightValues, totalCostCalculated, watchedValues, lostWeight])
 
     const calculateTotalCastingCostInputWeight = () => {
         const otherCostInputWeight = checkForNull(getValues('otherCostInputWeight'))

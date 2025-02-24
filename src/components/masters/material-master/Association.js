@@ -254,7 +254,7 @@ class Association extends Component {
 
                                                 <Button
                                                     id="rmAssociation_cancel"
-                                                    className="mr-2 mt-0"
+                                                    className="mr15 mt-0"
                                                     variant={"cancel-btn"}
                                                     onClick={this.cancel}
                                                     icon={"cancel-icon"}

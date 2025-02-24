@@ -718,7 +718,7 @@ function AddOtherCostDrawer(props) {
                                         <Col md="3" className={toggleCondition()}>
                                             <button
                                                 type="submit"
-                                                className={"user-btn  pull-left mt-1"}
+                                                className={"user-btn  pull-left mt-1 mr10"}
                                                 // onClick={addData}
                                                 disabled={props.ViewMode}
                                             >
@@ -806,7 +806,7 @@ function AddOtherCostDrawer(props) {
                                     <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                         <button
                                             type={'button'}
-                                            className="reset cancel-btn mr5"
+                                            className="reset cancel-btn mr15"
                                             onClick={cancel} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>

@@ -87,6 +87,8 @@
     "addMaterial": {
         "AddMaterialType_MaterialType": "Enter your material type.",
         "AddMaterialType_CalculatedDensityValue": "Enter your density.",
+        "AddMaterialType_CommodityStandardName": "Select your commodity standard name.",
+        "AddMaterialType_Percentage": "Enter your percentage.",
         "AddMaterialType_Cancel": "Click here to cancel."
     },
     "DynamicActionControl": {

@@ -719,7 +719,7 @@ class AddLabour extends Component {
     if (this.state.isEditFlag) {
 
       if (DropdownChanged) {
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Labour Details')
         return false
       }
 
@@ -1185,7 +1185,7 @@ class AddLabour extends Component {
                             <>
                               <button
                                 type="button"
-                                className={"user-btn  pull-left"}
+                                className={"user-btn  pull-left mr10"}
                                 onClick={this.gridHandler}
                                 disabled={isViewMode}
                               >

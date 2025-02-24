@@ -1116,6 +1116,7 @@ function TabDiscountOther(props) {
       if (!validateFileName(file.name)) {
         dropzone.current.files.pop()
         setDisableFalseFunction()
+        setAttachmentLoader(false)
         return false;
       }
       dispatch(fileUploadCosting(data, (res) => {
