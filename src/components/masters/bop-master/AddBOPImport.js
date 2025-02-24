@@ -183,7 +183,7 @@ class AddBOPImport extends Component {
       toolTipTextNetCost: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
         ? `Basic Price  + Condition Cost `
         : getConfigurationKey().IsMinimumOrderQuantityVisible
-          ? `Basic Rate  / Minimum Order Quantity`
+          ? `Basic Rate + Other Cost / Minimum Order Quantity`
           : `Basic Rate + Other Cost `
     };
     return obj
