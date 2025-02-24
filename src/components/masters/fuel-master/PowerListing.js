@@ -257,7 +257,7 @@ const PowerListing = (props) => {
     gridOptions.api.setFilterModel(null);
     state.gridApi.sizeColumnsToFit();
     setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize, }));
-    getDataList(null, null);
+    getDataList(state.isImport);
   };
 
   const ExcelFile = ReactExport.ExcelFile;

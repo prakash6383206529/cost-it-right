@@ -229,7 +229,7 @@ const FuelListing = (props) => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
     setState((prevState) => ({ ...prevState, isLoader: true, isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false, dataCount: 0, globalTake: defaultPageSize, }));
-    getDataList(null, null);
+    getDataList(null, null, state.isImport);
   };
 
   const commonCostFormatter = (props) => {

@@ -281,7 +281,7 @@ const MachineRateListing = (props) => {
     dispatch(updateCurrentRowIndex(10))
     setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, dataCount: 0, isFilterButtonClicked: false, floatingFilterData: state.floatingFilterData, warningMessage: false }));
     // getDataList("", 0, 0, "", '', 10, true, state.floatingFilterData);
-    getDataList();
+    getDataList("", 0, '', 0, "", "", 0, defaultPageSize, true, {}, state.isImport)
     dispatch(setSelectedRowForPagination([]));
     setSearchText(''); // Assuming this state is bound to the input value
   };
@@ -860,10 +860,10 @@ const MachineRateListing = (props) => {
                     {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                   </AgGridReact >}
                   <div className='button-wrapper'> {!state.isLoader &&
-                    <PaginationWrappers gridApi={state.gridApi} module="Machine" totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} />
+                    <PaginationWrappers gridApi={state.gridApi} module="Machine" totalRecordCount={state.totalRecordCount} getDataList={(...args) => getDataList(...args, state.isImport)} floatingFilterData={state.floatingFilterData} />
                   }
                     {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                      <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} module="Machine"
+                      <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={(...args) => getDataList(...args, state.isImport)} floatingFilterData={state.floatingFilterData} module="Machine"
                       />}
                   </div>
                 </div >
