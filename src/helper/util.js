@@ -13,7 +13,7 @@ import {
   BOP,
 
 } from '../config/constants'
-import { IsFetchExchangeRateVendorWise, IsFetchExchangeRateVendorWiseForBOP, IsFetchExchangeRateVendorWiseForRM, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
+import {  IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
 import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID } from '../config/masterData';
@@ -1836,7 +1836,7 @@ export const canEnableFields = ({
   updateButtonPartNoTable,
   isEditMode,
   isViewMode,
-  isEditFlagReceived ,     // Flag indicating if quotation is received
+  isEditFlagReceived,     // Flag indicating if quotation is received
   showSendButton,  // Add this parameter
   isAddFlag       // Add this parameter
 }) => {
@@ -1880,54 +1880,55 @@ export const canEnableFields = ({
 };
 // ... existing code ...
 
-export const getExchangeRateParams = ({ fromCurrency, toCurrency, defaultCostingTypeId, vendorId, clientValue, master="" }) => {
-  const isConvertingToBase = toCurrency === reactLocalStorage.getObject("baseCurrency");
+export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendorId, clientValue, master = "" }) => {
+  // Return early for base currency conversion
+  if (toCurrency === reactLocalStorage.getObject("baseCurrency")) {
+    return {
+      costingHeadTypeId: ZBCTypeId,
+      vendorId: null,
+      clientId: null
+    };
+  }
+
+  // Handle Raw Material case
+  if (master === RAW_MATERIAL && defaultCostingTypeId === ZBCTypeId) {
+    const useVendorWise = IsFetchExchangeRateVendorWiseForZBCRawMaterial();
+    return {
+      costingHeadTypeId: useVendorWise ? VBCTypeId : defaultCostingTypeId,
+      vendorId: useVendorWise ? vendorId : EMPTY_GUID,
+      clientId: clientValue
+    };
+  }
+
+  // Handle BOP case
+  if (master === BOP) {
+    const useVendorWise = IsFetchExchangeRateVendorWiseForParts();
+    return {
+      costingHeadTypeId: useVendorWise ? 
+        (defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId ? VBCTypeId : defaultCostingTypeId) 
+        : ZBCTypeId,
+      vendorId: useVendorWise ? vendorId : EMPTY_GUID,
+      clientId: clientValue
+    };
+  }
+
+  // Handle default case
+  const isZBC = defaultCostingTypeId === ZBCTypeId;
+  const useVendorWise = IsFetchExchangeRateVendorWiseForParts();
   
-  let costingType;
-  let vendorValue;
-  let clientId;
-
-  if (isConvertingToBase) {
-    costingType = ZBCTypeId;
-    vendorValue = null;
-    clientId = null;
-  } else {
-    switch(master) {
-      case RAW_MATERIAL:
-        costingType = IsFetchExchangeRateVendorWiseForRM() ? 
-          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? VBCTypeId : defaultCostingTypeId) 
-          : ZBCTypeId;
-        vendorValue = IsFetchExchangeRateVendorWiseForRM() ? 
-          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? vendorId : EMPTY_GUID) 
-          : EMPTY_GUID;
-        clientId = clientValue;
-        break;
-
-      case BOP:
-        costingType = IsFetchExchangeRateVendorWiseForBOP() ? 
-          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? VBCTypeId : defaultCostingTypeId) 
-          : ZBCTypeId;
-        vendorValue = IsFetchExchangeRateVendorWiseForBOP() ? 
-          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? vendorId : EMPTY_GUID) 
-          : EMPTY_GUID;
-        clientId = clientValue;
-        break;
-
-      default:
-        costingType = IsFetchExchangeRateVendorWise() ? 
-          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? VBCTypeId : defaultCostingTypeId) 
-          : ZBCTypeId;
-        vendorValue = IsFetchExchangeRateVendorWise() ? 
-          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? vendorId : EMPTY_GUID) 
-          : EMPTY_GUID;
-        clientId = clientValue;
-        break;
-    }
+  if (isZBC) {
+    return {
+      costingHeadTypeId: ZBCTypeId,
+      vendorId: EMPTY_GUID,
+      clientId: clientValue
+    };
   }
 
   return {
-    costingHeadTypeId: costingType,   
-    vendorId: vendorValue,
-    clientId: clientId         
+    costingHeadTypeId: useVendorWise ? 
+      (defaultCostingTypeId === VBCTypeId ? VBCTypeId : defaultCostingTypeId) 
+      : ZBCTypeId,
+    vendorId: useVendorWise ? vendorId : EMPTY_GUID,
+    clientId: clientValue
   };
 };

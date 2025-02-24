@@ -458,7 +458,7 @@ class AddBOPImport extends Component {
       const { costingTypeId, currency, effectiveDate, vendorName } = this.state;
       const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value:EMPTY_GUID, clientValue: newValue?.value,master: BOP});
       if (newValue && newValue?.length !== 0 && this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
-       this.props.getExchangeRateByCurrency(currency?.label, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+       this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true })
           } else {
@@ -821,7 +821,7 @@ class AddBOPImport extends Component {
             return false;
           }
           const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: this.state.currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: this.state.costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value,master: BOP });
-          this.props.getExchangeRateByCurrency(currency.label, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+          this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
             if (Object.keys(res.data.Data).length === 0) {
               this.setState({ showWarning: true })
             } else {
@@ -921,7 +921,7 @@ class AddBOPImport extends Component {
           return false;
         }
         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: newValue?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingType, vendorId: vendorValue, clientValue:client.value,master: BOP});
-        this.props.getExchangeRateByCurrency(newValue?.label, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+        this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
           } else {
@@ -1047,7 +1047,7 @@ class AddBOPImport extends Component {
         }
         
         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName.value, clientValue:client.value,master: BOP});
-        this.props.getExchangeRateByCurrency(currency.label, costingHeadTypeId, DayTime(date).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+        this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(date).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
           } else {

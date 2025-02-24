@@ -91,9 +91,13 @@ export function IsFetchExchangeRateVendorWiseForBOP() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey?.IsFetchExchangeRateVendorWiseForBOP
 }
-export function IsFetchExchangeRateVendorWiseForRM() {
+export function IsFetchExchangeRateVendorWiseForParts() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
-  return configurationKey?.IsFetchExchangeRateVendorWiseForRM
+  return configurationKey?.IsFetchExchangeRateVendorWiseForParts
+}
+export function IsFetchExchangeRateVendorWiseForZBCRawMaterial() {
+  const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
+  return configurationKey?.IsFetchExchangeRateVendorWiseForZBCRawMaterial
 }
 export function corrugatedBoxPermission() {
   const boxTypeStr = getConfigurationKey().PackagingCalculatorList

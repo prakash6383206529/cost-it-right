@@ -305,7 +305,7 @@ class AddMachineRate extends Component {
               const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value});
               
               
-              callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId)
+              callAPI(plantCurrency, toCurrency, costingHeadTypeId, vendorId, clientId)
                 .then(result2 => {
                   resolve({
                     plantCurrency: result1.rate,
