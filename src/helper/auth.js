@@ -87,6 +87,14 @@ export function IsFetchExchangeRateVendorWise() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey?.IsFetchExchangeRateVendorWise
 }
+export function IsFetchExchangeRateVendorWiseForBOP() {
+  const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
+  return configurationKey?.IsFetchExchangeRateVendorWiseForBOP
+}
+export function IsFetchExchangeRateVendorWiseForRM() {
+  const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
+  return configurationKey?.IsFetchExchangeRateVendorWiseForRM
+}
 export function corrugatedBoxPermission() {
   const boxTypeStr = getConfigurationKey().PackagingCalculatorList
   let boxTypeObject = {};

@@ -24,7 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AsyncSelect from 'react-select/async';
 import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { onFocus } from '../../../helper';
+import { getExchangeRateParams, onFocus } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
@@ -133,8 +133,7 @@ class AddFuel extends Component {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName?.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? (costingTypeId === VBCTypeId ? VBCTypeId : costingTypeId) : ZBCTypeId
+
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
@@ -144,14 +143,14 @@ class AddFuel extends Component {
         return;
       }
 
-      const callAPI = (from, to) => {
+      const callAPI = (from, to, costingType, vendorValue, clientValue) => {
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,
             costingType,
             DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
             vendorValue,
-            client.value,
+            clientValue,
             false,
             to,
             ExchangeSource?.label ?? null,
@@ -169,9 +168,11 @@ class AddFuel extends Component {
 
       if (isImport) {
         // First API call
-        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value });
+        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
           // Second API call
-          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value });
+          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
             this.setState({
               plantCurrency: rate1,
               settlementCurrency: rate2,
@@ -187,7 +188,8 @@ class AddFuel extends Component {
         });
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
-        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value });
+        callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
             this.handleCalculation(fieldsObj?.RateLocalConversion)
           });
@@ -554,7 +556,8 @@ class AddFuel extends Component {
     this.props.reset();
     // Store current isImport value
     const currentIsImport = this.state.isImport;
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag,
+    this.setState({
+      ...this.initialState, costingTypeId: costingHeadFlag,
       isImport: currentIsImport // Preserve isImport value
     }, () => {
       if (costingHeadFlag === CBCTypeId) {
@@ -678,11 +681,11 @@ class AddFuel extends Component {
         CostingHeadId: Number(costingTypeId),
       }
     })
-    
-    if (isEditFlag) {
-      
 
-      
+    if (isEditFlag) {
+
+
+
       let addRow = 0
       let count = 0
       if (rateGrid.length >= this.state.RateChange.FuelDetails.length) {
@@ -721,7 +724,7 @@ class AddFuel extends Component {
         LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
         FuelDetails: fuelDetailArray,
       }
-      
+
       this.props.updateFuelDetail(requestData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
@@ -1096,7 +1099,7 @@ class AddFuel extends Component {
                             </Col>
                           )}
                           <Col md="3">
-                          {!this.state.hidePlantCurrency &&this.props.fieldsObj?.plantCurrency&&!this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency } = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                            {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -1209,7 +1212,7 @@ class AddFuel extends Component {
                                   handleChangeDescription={this.handleFuel}
                                   valueDescription={this.state.fuel}
                                   disabled={isEditFlag || this?.state?.rateGrid?.length > 0}
-                                  />
+                                />
                               </div>
                               {!isEditFlag && (
                                 <div id="AddFuel_Toggle"

@@ -19,7 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { calculatePercentageValue, onFocus, showDataOnHover } from '../../../helper';
+import { calculatePercentageValue, getExchangeRateParams, onFocus, showDataOnHover } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
@@ -39,7 +39,6 @@ import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
 import WarningMessage from '../../common/WarningMessage';
-import { data1 } from '../../dashboard/ChartsDashboard';
 
 const selector = formValueSelector('AddPower');
 
@@ -176,8 +175,6 @@ class AddPower extends Component {
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
@@ -186,14 +183,15 @@ class AddPower extends Component {
         return;
       }
 
-      const callAPI = (from, to) => {
+      const callAPI = (from, to, costingType, vendorValue, clientValue) => {
+        
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,
             costingType,
             DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
             vendorValue,
-            client.value,
+            clientValue,
             false,
             to,
             ExchangeSource?.label ?? null,
@@ -211,9 +209,11 @@ class AddPower extends Component {
 
       if (isImport) {
         // First API call
-        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
-          // Second API call
-          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value});
+        
+        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value});
+          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
             this.setState({
               plantCurrency: rate1,
               settlementCurrency: rate2,
@@ -229,7 +229,8 @@ class AddPower extends Component {
         });
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
-        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value});
+        callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
             this.handleCalculation(fieldsObj?.NetPowerCostPerUnitLocalConversion)
           });
@@ -575,9 +576,10 @@ class AddPower extends Component {
     this.props.reset();
     // Store current isImport value
     const currentIsImport = this.state.isImport;
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag,
+    this.setState({
+      ...this.initialState, costingTypeId: costingHeadFlag,
       isImport: currentIsImport // Preserve isImport value
-     }, () => {
+    }, () => {
       if (costingHeadFlag === CBCTypeId) {
         //this.props.getClientSelectList(() => { })
       }
@@ -1683,13 +1685,13 @@ class AddPower extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency               
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
   };
   powerRateTitle = () => {
-    const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` :`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
       toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
@@ -1996,7 +1998,7 @@ class AddPower extends Component {
                           </Col>
                         )}
                         <Col md="3">
-                        {!this.state.hidePlantCurrency &&this.props.fieldsObj?.plantCurrency&&!this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency } = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             name="plantCurrency"
                             type="text"
@@ -2086,7 +2088,7 @@ class AddPower extends Component {
                               </div>
                             </Col>}
                             < Col md="3">
-                            {this.state.isImport && <TooltipCustom disabledIcon={true} id="cost-local" tooltipText={hidePlantCurrency ? this.powerRateTitle()?.toolTipTextNetCostBaseCurrency : this.powerRateTitle()?.tooltipTextPlantCurrency} />}
+                              {this.state.isImport && <TooltipCustom disabledIcon={true} id="cost-local" tooltipText={hidePlantCurrency ? this.powerRateTitle()?.toolTipTextNetCostBaseCurrency : this.powerRateTitle()?.tooltipTextPlantCurrency} />}
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
