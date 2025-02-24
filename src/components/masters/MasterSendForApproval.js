@@ -155,7 +155,8 @@ function MasterSendForApproval(props) {
                         });
                     }
                 }
-                if ((!getConfigurationKey().IsDivisionAllowedForDepartment && type !== 'Sender') || (type === 'Approve' && !IsFinalLevelButtonShow && !props?.isRFQ)) {
+                
+                if (((!getConfigurationKey().IsDivisionAllowedForDepartment ) || (type === 'Approve' && !IsFinalLevelButtonShow && !props?.isRFQ))&&!props?.approvalListing) {
                     setTimeout(() => {
                         const matchingDepartment = department.find(dept => dept.value === approvalDetails?.DepartmentId);
                         let departmentId = matchingDepartment?.value ?? department[0]?.value
