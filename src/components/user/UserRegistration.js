@@ -3118,7 +3118,7 @@ function UserRegistration(props) {
                       />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         label="ZipCode"
                         name={"ZipCode"}
                         errors={errors.ZipCode}
@@ -3132,11 +3132,6 @@ function UserRegistration(props) {
                           validate: { postiveNumber, number, maxLength6 }
                         }}
                         handleChange={() => { }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
-                            e.preventDefault();
-                          }
-                        }}
                         placeholder={'Enter'}
                         //validate={[postiveNumber, maxLength6]}
                         //component={renderText}
