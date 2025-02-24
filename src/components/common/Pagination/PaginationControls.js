@@ -108,7 +108,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
     return (
         <div className="d-flex pagination-button-container">
             <p>
-                <Button id="commonPagination_previous" variant="previous-btn" onClick={onBtPrevious} disabled={pageNo === 1} />
+                <Button id="commonPagination_previous" variant="previous-btn" onClick={onBtPrevious} disabled={Number(pageNo) === 1} />
             </p>
             {pageSize?.pageSize10 && (
                 <p className="next-page-pg custom-left-arrow">
