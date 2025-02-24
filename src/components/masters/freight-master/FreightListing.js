@@ -46,7 +46,7 @@ const FreightListing = (props) => {
   })
   const permissions = useContext(ApplyPermission);
   const { freightDetail } = useSelector((state) => state.freight);
-  const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   const { costingHeadFilter } = useSelector((state) => state?.comman);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const FreightListing = (props) => {
   }, [props.stopApiCallOnCancel])
   //for static dropdown
   useEffect(() => {
-   
+
     if (costingHeadFilter && costingHeadFilter?.data) {
       const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
       if (matchedOption) {
@@ -69,7 +69,7 @@ const FreightListing = (props) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ costingHeadFilter]);
+  }, [costingHeadFilter]);
   useEffect(() => {
     return () => {
       dispatch(setResetCostingHead(true, "costingHead"))
@@ -163,19 +163,19 @@ const FreightListing = (props) => {
     suppressFilterButton: true,
     component: CostingHeadDropdownFilter,
     onFilterChange: (originalValue, value) => {
-      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
       setState((prevState) => ({ ...prevState, disableFilter: false }));
     }
-};
-  
+  };
+
   const combinedCostingHeadRenderer = (props) => {
     // Call the existing checkBoxRenderer
     costingHeadFormatter(props);
-  
+
     // Get and localize the cell value
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-  
+
     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
     return localizedValue;
   };
@@ -213,28 +213,28 @@ const FreightListing = (props) => {
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
     // Map TempData to replace "NA" with "-"
-    let temp = [];  
+    let temp = [];
     temp = TempData && TempData.map((item) => {
-        const newItem = { ...item }; // Create a copy of the object to avoid mutating original data
-        for (let key in newItem) {
-         if (newItem[key] === 'NA'||newItem[key] === ' '||newItem[key] === null||newItem[key] === undefined) {
-                newItem[key] = '-';
-            }
-          }
-        return newItem;
+      const newItem = { ...item }; // Create a copy of the object to avoid mutating original data
+      for (let key in newItem) {
+        if (newItem[key] === 'NA' || newItem[key] === ' ' || newItem[key] === null || newItem[key] === undefined) {
+          newItem[key] = '-';
+        }
+      }
+      return newItem;
     });
-    
 
- return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
-       {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-     </ExcelSheet>);
+
+    return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+    </ExcelSheet>);
   }
 
 
-  
+
   const onGridReady = (params) => {
     state.gridApi = params.api;
-    state.gridApi.sizeColumnsToFit();
+    // state.gridApi.sizeColumnsToFit();
     setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
     params.api.paginationGoToPage(0);
   };
@@ -304,8 +304,8 @@ const FreightListing = (props) => {
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
-                             {/* Add button */}
-                             {permissions.Add && (
+                {/* Add button */}
+                {permissions.Add && (
                   <Button
                     id="freightListing_add"
                     className={"user-btn mr5"}
@@ -353,8 +353,8 @@ const FreightListing = (props) => {
         <Col>
           <div
             className={`ag-grid-wrapper height-width-wrapper ${(freightDetail && freightDetail.length <= 0) || noData
-                ? "overlay-contain"
-                : ""
+              ? "overlay-contain"
+              : ""
               }`}
           >
             <div className="ag-grid-header">
@@ -394,8 +394,8 @@ const FreightListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}   floatingFilterComponentParams={floatingFilterStatus} 
-                                            floatingFilterComponent="statusFilter"></AgGridColumn>
+                <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
+                  floatingFilterComponent="statusFilter"></AgGridColumn>
                 <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                 <AgGridColumn
                   field="VendorName"

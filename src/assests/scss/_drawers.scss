@@ -248,3 +248,19 @@
         margin-bottom: 0 !important;
     }
 }
+
+.freight-cost-calculator-warpper {
+
+    .form-group-searchable-select,
+    .form-group.inputbox {
+        min-height: auto !important;
+
+        label {
+            white-space: nowrap;
+        }
+    }
+
+    .right-seperate-border {
+        border-right: 1px solid $agGridBorder;
+    }
+}
