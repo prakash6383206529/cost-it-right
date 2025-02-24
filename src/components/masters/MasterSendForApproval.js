@@ -141,12 +141,12 @@ function MasterSendForApproval(props) {
                         return null
                     })
                 setDepartmentDropdown(department)
-                if ((department?.length === 1 || !checkMultiDept) && props?.approvalData[0]?.Status !== DRAFT) {
+                if ((department?.length === 1 || !checkMultiDept) ) {
                     setValue('dept', { label: department[0]?.label, value: department[0]?.value })
 
                     setDisableDept(true)
                     setDepartment(department[0])
-                    if (props?.approvalListing) {
+                    if (props?.approvalListing && props?.approvalData[0]?.Status !== DRAFT) {
                         fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                     } else if (type !== "Approve" && getConfigurationKey().IsDivisionAllowedForDepartment) {
                         fetchDivisionList(department[0].value, dispatch, (divisionArray, showDivision) => {
@@ -155,7 +155,8 @@ function MasterSendForApproval(props) {
                         });
                     }
                 }
-                if ((!getConfigurationKey().IsDivisionAllowedForDepartment && type !== 'Sender') || (type === 'Approve' && !IsFinalLevelButtonShow && !props?.isRFQ)) {
+                
+                if (((!getConfigurationKey().IsDivisionAllowedForDepartment ) || (type === 'Approve' && !IsFinalLevelButtonShow && !props?.isRFQ))&&!props?.approvalListing) {
                     setTimeout(() => {
                         const matchingDepartment = department.find(dept => dept.value === approvalDetails?.DepartmentId);
                         let departmentId = matchingDepartment?.value ?? department[0]?.value

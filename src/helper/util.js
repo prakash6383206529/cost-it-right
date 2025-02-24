@@ -9,9 +9,11 @@ import {
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
   RAWMATERIALINDEX,
   VBCTypeId,
+  RAW_MATERIAL,
+  BOP,
 
 } from '../config/constants'
-import { IsFetchExchangeRateVendorWise, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
+import { IsFetchExchangeRateVendorWise, IsFetchExchangeRateVendorWiseForBOP, IsFetchExchangeRateVendorWiseForRM, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
 import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID } from '../config/masterData';
@@ -1876,11 +1878,10 @@ export const canEnableFields = ({
   // Default case - fields should be disabled
   return false;
 };
-export const getExchangeRateParams = ({ fromCurrency, toCurrency, defaultCostingTypeId, vendorId, clientValue }) => {
-  
+// ... existing code ...
 
+export const getExchangeRateParams = ({ fromCurrency, toCurrency, defaultCostingTypeId, vendorId, clientValue, master="" }) => {
   const isConvertingToBase = toCurrency === reactLocalStorage.getObject("baseCurrency");
-  
   
   let costingType;
   let vendorValue;
@@ -1891,15 +1892,41 @@ export const getExchangeRateParams = ({ fromCurrency, toCurrency, defaultCosting
     vendorValue = null;
     clientId = null;
   } else {
-    costingType = IsFetchExchangeRateVendorWise() ? ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? VBCTypeId : defaultCostingTypeId) : ZBCTypeId;
-    vendorValue = IsFetchExchangeRateVendorWise() ? ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? vendorId : EMPTY_GUID) : EMPTY_GUID;
-    clientId = clientValue;
+    switch(master) {
+      case RAW_MATERIAL:
+        costingType = IsFetchExchangeRateVendorWiseForRM() ? 
+          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? VBCTypeId : defaultCostingTypeId) 
+          : ZBCTypeId;
+        vendorValue = IsFetchExchangeRateVendorWiseForRM() ? 
+          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? vendorId : EMPTY_GUID) 
+          : EMPTY_GUID;
+        clientId = clientValue;
+        break;
+
+      case BOP:
+        costingType = IsFetchExchangeRateVendorWiseForBOP() ? 
+          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? VBCTypeId : defaultCostingTypeId) 
+          : ZBCTypeId;
+        vendorValue = IsFetchExchangeRateVendorWiseForBOP() ? 
+          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? vendorId : EMPTY_GUID) 
+          : EMPTY_GUID;
+        clientId = clientValue;
+        break;
+
+      default:
+        costingType = IsFetchExchangeRateVendorWise() ? 
+          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? VBCTypeId : defaultCostingTypeId) 
+          : ZBCTypeId;
+        vendorValue = IsFetchExchangeRateVendorWise() ? 
+          ((defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId) ? vendorId : EMPTY_GUID) 
+          : EMPTY_GUID;
+        clientId = clientValue;
+        break;
+    }
   }
-  
-  
-  
-return {
-  costingHeadTypeId: costingType,   
+
+  return {
+    costingHeadTypeId: costingType,   
     vendorId: vendorValue,
     clientId: clientId         
   };

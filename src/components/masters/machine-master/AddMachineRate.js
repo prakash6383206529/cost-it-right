@@ -29,7 +29,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { debounce } from 'lodash';
-import { CheckApprovalApplicableMaster, displayUOM, userTechnologyDetailByMasterId } from '../../../helper'
+import { CheckApprovalApplicableMaster, displayUOM, getExchangeRateParams, userTechnologyDetailByMasterId } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
@@ -240,8 +240,7 @@ class AddMachineRate extends Component {
   callExchangeRateAPI = (costingTypeId, plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants) => {
     const { fieldsObj } = this.props;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
+
     const fromCurrency = isImport ? currency?.label : plantCurrency;
     const toCurrency = reactLocalStorage.getObject("baseCurrency");
     const hasCurrencyAndDate = Boolean(plantCurrency && effectiveDate);
@@ -255,14 +254,17 @@ class AddMachineRate extends Component {
       if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
-      const callAPI = (from, to) => {
+      const callAPI = (from, to, costingHeadTypeId, vendorId, clientId) => {
+       
+        
+       
         return new Promise((resolveAPI) => {
           this.props.getExchangeRateByCurrency(
             from,
-            costingType,
+            costingHeadTypeId,
             DayTime(effectiveDate).format('YYYY-MM-DD'),
-            vendorValue,
-            client.value,
+            vendorId,
+            clientId,
             false,
             to,
             ExchangeSource?.label ?? null,
@@ -281,7 +283,10 @@ class AddMachineRate extends Component {
       if (isImport && fromCurrency !== undefined) {
         if (plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
           // Make only one API call
-          callAPI(fromCurrency, plantCurrency)
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value});
+          
+          
+          callAPI(fromCurrency, plantCurrency, costingHeadTypeId, vendorId, clientId)
             .then(result => {
               resolve({
                 plantCurrency: result.rate,
@@ -293,10 +298,14 @@ class AddMachineRate extends Component {
               });
             });
         } else {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value});
           // Make two API calls as currencies are different
-          callAPI(fromCurrency, plantCurrency)
+          callAPI(fromCurrency, plantCurrency, costingHeadTypeId, vendorId, clientId)
             .then(result1 => {
-              callAPI(fromCurrency, toCurrency)
+              const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value});
+              
+              
+              callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId)
                 .then(result2 => {
                   resolve({
                     plantCurrency: result1.rate,
@@ -310,7 +319,10 @@ class AddMachineRate extends Component {
             });
         }
       } else if (!isImport && plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-        callAPI(fromCurrency, toCurrency)
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value});
+        
+        
+        callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId)
           .then(result => {
             resolve({
               plantCurrency: result.rate,
