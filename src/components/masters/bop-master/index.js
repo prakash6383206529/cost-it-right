@@ -320,6 +320,7 @@ const BOPMaster = () => {
                         DeleteAccessibility={state.DeleteAccessibility}
                         DownloadAccessibility={state.DownloadAccessibility}
                         MasterId={BOP_MASTER_ID}
+                        OnboardingApprovalId={'0'}
                       />
                     </TabPane>
                   )}
