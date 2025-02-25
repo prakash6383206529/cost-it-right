@@ -10,7 +10,7 @@ import {
 } from '../../actions/Costing';
 import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, getTaxCodeSelectList, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel, getConfigurationKey, IsFetchExchangeRateVendorWise } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel, getConfigurationKey, IsFetchExchangeRateVendorWiseForParts } from '../../../../helper';
 //MINDA
 // import {  removeBOPFromList} from '../../../../helper';
 import { debounce } from 'lodash';
@@ -998,10 +998,10 @@ function TabDiscountOther(props) {
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
-      const vendorValue = IsFetchExchangeRateVendorWise() ? costData?.VendorId : EMPTY_GUID
+      const vendorValue = IsFetchExchangeRateVendorWiseForParts() ? costData?.VendorId : EMPTY_GUID
 
       let costingTypeId = (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? VBCTypeId : costData.CostingTypeId
-      const costingType = IsFetchExchangeRateVendorWise() ? costingTypeId : ZBCTypeId
+      const costingType = IsFetchExchangeRateVendorWiseForParts() ? costingTypeId : ZBCTypeId
       dispatch(getExchangeRateByCurrency(currencySource?.label, costingType, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorValue, costData.CustomerId, false, newValue.label, initialConfiguration?.IsSourceExchangeRateNameVisible ? exchangeRateSource?.label : null, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
