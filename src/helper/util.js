@@ -1880,9 +1880,13 @@ export const canEnableFields = ({
 };
 // ... existing code ...
 
-export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendorId, clientValue, master = "" }) => {
-  // Return early for base currency conversion
-  if (toCurrency === reactLocalStorage.getObject("baseCurrency")) {
+export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendorId, clientValue, master = "", plantCurrency="" }) => {
+  const isPlantAndTargetBothBase = plantCurrency === reactLocalStorage.getObject("baseCurrency") && 
+                                  toCurrency === reactLocalStorage.getObject("baseCurrency");
+  
+  // Handle base currency conversion only for settlement currency, not when both are INR
+  if (toCurrency === reactLocalStorage.getObject("baseCurrency") && 
+      !isPlantAndTargetBothBase) {
     return {
       costingHeadTypeId: ZBCTypeId,
       vendorId: null,
