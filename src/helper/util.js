@@ -11,6 +11,7 @@ import {
   VBCTypeId,
   RAW_MATERIAL,
   BOP,
+  RAWMATERIAL,
 
 } from '../config/constants'
 import {  IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
@@ -1895,7 +1896,8 @@ export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendor
   }
 
   // Handle Raw Material case
-  if (master === RAW_MATERIAL && defaultCostingTypeId === ZBCTypeId) {
+  if (master === RAWMATERIAL && defaultCostingTypeId === ZBCTypeId) {
+    
     const useVendorWise = IsFetchExchangeRateVendorWiseForZBCRawMaterial();
     return {
       costingHeadTypeId: useVendorWise ? VBCTypeId : defaultCostingTypeId,

@@ -236,7 +236,7 @@ class AddMoreDetails extends Component {
         stateId: this.state.stateId || null,
         cityId: this.state.cityId || null
       }
-       this.props.getFuelByPlant(obj, () => { })
+      this.props.getFuelByPlant(obj, () => { })
       //this.props.getFuelList(obj, () => { })
     }
     if (!this.props?.editDetails?.isEditFlag) {
@@ -517,8 +517,8 @@ class AddMoreDetails extends Component {
               stateId: this.state.stateId || null,
               cityId: this.state.cityId || null
             }
-             this.props.getFuelByPlant(obj, () => { })
-           // this.props.getFuelList(obj, () => { })
+            this.props.getFuelByPlant(obj, () => { })
+            // this.props.getFuelList(obj, () => { })
 
           }
           setTimeout(() => {
@@ -779,7 +779,7 @@ class AddMoreDetails extends Component {
           })
           const { selectedPlants } = this.state
           this.callLabourTypeApi()
-         let obj = {
+          let obj = {
             plantId: newValue?.value,
             vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
             customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
@@ -2449,7 +2449,7 @@ class AddMoreDetails extends Component {
     if (isEditFlag && (this.state.isFinalApprovar || CheckApprovalApplicableMaster(MACHINE_MASTER_ID) !== true)) {               //editDetails.isIncompleteMachine &&
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-
+      
       if (IsFinancialDataChanged && isEditFlag) {
 
         if (this.state.isDateChange) {
@@ -2876,7 +2876,7 @@ class AddMoreDetails extends Component {
     } else {
       currencyLabel = 'Currency';
     }
-
+    
     return <>Machine Rate/{(UOM && UOM.length !== 0) ? displayUOM(UOM?.label) : "UOM"} ({currencyLabel})</>
   }
   DisplayMachineRatePlantCurrencyLabel = () => {
@@ -5010,8 +5010,8 @@ class AddMoreDetails extends Component {
                                     <th>{`UOM`}</th>
                                     {/* <th>{`Output/Hr`}</th>     COMMENTED FOR NOW MAY BE USED LATER
                                     <th>{`Output/Annum`}</th> */}
-                                    <th>{`Machine Rate (${this.state.entryType && this.state?.currency?.label !== undefined ? this.state?.currency.label : this.state?.isImport ? "Currency" : this.state?.plantCurrency ? this.state?.plantCurrency : "Currency"})`}</th>
-                                    {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <th>{`Machine Rate (${this.state?.plantCurrency ? this.state?.plantCurrency : "Currency"})`}</th>}
+                                    <th>{`Machine Rate (${this.state.entryType && this.state?.currency?.label !== undefined ? this.state?.currency.label : this.state?.isImport ? "Currency" : this.props.fieldsObj?.plantCurrency ? this.props.fieldsObj?.plantCurrency : "Currency"})`}</th>
+                                    {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <th>{`Machine Rate (${this.props.fieldsObj?.plantCurrency ? this.props.fieldsObj?.plantCurrency : "Currency"})`}</th>}
                                     {(!(!this?.state?.entryType && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                     <th>{`Action`}</th>
                                   </tr>

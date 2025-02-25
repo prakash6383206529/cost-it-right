@@ -10,7 +10,7 @@ import {
 } from "../../../helper/validation";
 
 import { MESSAGES } from "../../../config/message";
-import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, userDetails } from "../../../helper/auth";
 import { Row, Col, Label } from 'reactstrap';
 import { CBCTypeId, CRMHeads, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FILE_URL, OPERATIONS_ID, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
 import HeaderTitle from "../../common/HeaderTitle";
@@ -28,7 +28,7 @@ import imgRedcross from '../../../assests/images/red-cross.png';
 import TooltipCustom from "../../common/Tooltip";
 import { useLabels } from "../../../helper/core";
 import { getUsersMasterLevelAPI } from "../../../actions/auth/AuthActions";
-import { CheckApprovalApplicableMaster, userTechnologyDetailByMasterId } from "../../../helper";
+import { CheckApprovalApplicableMaster, getExchangeRateParams, userTechnologyDetailByMasterId } from "../../../helper";
 import { checkFinalUser, getExchangeRateByCurrency } from "../../costing/actions/Costing";
 import MasterSendForApproval from "../MasterSendForApproval";
 import Button from "../../layout/Button";
@@ -160,29 +160,23 @@ function AddMoreOperation(props) {
     }, [localCurrencyLabel]);
 
     const callExchangeRateAPI = (obj) => {
-        const vendorValue = IsFetchExchangeRateVendorWise() ?
-            ((addMoreDetailObj.costingTypeId === VBCTypeId) ? vendor.value : EMPTY_GUID) :
-            EMPTY_GUID;
-        const costingType = IsFetchExchangeRateVendorWise() ?
-            ((addMoreDetailObj.costingTypeId === VBCTypeId) ? VBCTypeId : addMoreDetailObj.costingTypeId) :
-            ZBCTypeId;
-        const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
+       const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
         const toCurrency = reactLocalStorage.getObject("baseCurrency");
         const hasCurrencyAndDate = Boolean(localCurrencyLabel?.current && getValues('effectiveDate'));
 
         if (hasCurrencyAndDate) {
-            if (IsFetchExchangeRateVendorWise() && (vendor?.length === 0 && client?.length === 0)) {
+            if (IsFetchExchangeRateVendorWiseForParts() && (vendor?.length === 0 && client?.length === 0)) {
                 return;
             }
 
-            const callAPI = (from, to) => {
+            const callAPI = (from, to,costingType,vendorValue,clientValue) => {
                 return new Promise((resolve) => {
                     dispatch(getExchangeRateByCurrency(
                         from,
                         costingType,
                         DayTime(getValues('effectiveDate')).format('YYYY-MM-DD'),
                         vendorValue,
-                        client.value,
+                        clientValue,
                         false,
                         to,
                         state.ExchangeSource?.label ?? null,
@@ -203,8 +197,12 @@ function AddMoreOperation(props) {
 
             if (state.isImport) {
                 // First API call
-                callAPI(fromCurrency, localCurrencyLabel?.current).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-                    callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: localCurrencyLabel?.current, defaultCostingTypeId:  addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+
+                callAPI(fromCurrency, localCurrencyLabel?.current,costingHeadTypeId,vendorId,clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId:  addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+
+                    callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"),costingHeadTypeId,vendorId,clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
                         setState(prevState => ({
                             ...prevState,
                             plantCurrency: rate1,
@@ -230,7 +228,8 @@ function AddMoreOperation(props) {
                 });
             } else if (localCurrencyLabel.current !== reactLocalStorage?.getObject("baseCurrency")) {
                 // Original single API call for non-import case
-                callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId:  addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+                callAPI(fromCurrency, toCurrency,costingHeadTypeId,vendorId,clientId).then(({ rate, exchangeRateId }) => {
                     setState(prevState => ({
                         ...prevState,
                         plantCurrency: rate,
@@ -1080,7 +1079,7 @@ function AddMoreOperation(props) {
 
         // Generate tooltip text based on the condition
         return <>
-            {!this.state?.hidePlantCurrency
+            {!state?.hidePlantCurrency
                 ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
                 : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
         </>;

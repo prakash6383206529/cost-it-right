@@ -330,6 +330,8 @@ const FuelListing = (props) => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
+                <AgGridColumn field="CostingHead"minWidth={170} headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+
                 <AgGridColumn field="FuelName" headerName="Fuel" width={250} cellRenderer={"costingHeadFormatter"}></AgGridColumn>
                 <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
