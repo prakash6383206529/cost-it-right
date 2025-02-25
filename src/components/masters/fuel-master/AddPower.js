@@ -2647,32 +2647,25 @@ class AddPower extends Component {
 
                                 <tfoot>
                                   <tr className="bluefooter-butn">
-                                      <td
-                                      colSpan={this.state.isImport ? "2" : "0"}
-                                      >
+                                    <td></td>
+                                    <td colSpan="2" className='text-end'>
                                         {this.state.isImport &&
-                                        <div className='d-flex justify-content-around align-items-center'>
-                                          <strong>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
-                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
-                                        </div>
+                                          <strong className='d-block mb-1'>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
                                         }
-                                      </td>
-                                      <td
-                                      colSpan={!this.state.hidePlantCurrency ? "2" : this.state.isImport ? "2" : "3"}
-                                      >
-                                        <div className='d-flex justify-content-around align-items-center'>
-                                          <strong>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
-                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
-                                        </div>
-                                      </td>
-                                      <td colSpan={this.state.isImport ? "0" : "2"}>
+                                        <strong className='d-block mb-1'>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
                                         {!this.state.hidePlantCurrency &&
-                                        <div className='d-flex justify-content-around align-items-center'>
-                                          <strong>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</strong>
-                                          <label className='w-auto mb-0'>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
-                                        </div>
+                                          <strong className='d-block mb-1'>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</strong>
                                         }
-                                      </td>
+                                    </td>
+                                    <td colSpan="2">
+                                        {this.state.isImport &&
+                                          <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        }
+                                        <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        {!this.state.hidePlantCurrency &&
+                                          <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        }
+                                    </td>
                                   </tr>
                                 </tfoot>
 
