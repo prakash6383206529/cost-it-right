@@ -431,7 +431,7 @@ class AddExchangeRate extends Component {
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+        res = await getVendorNameByVendorSelectList(null, resultInput)
 
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
