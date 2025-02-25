@@ -271,3 +271,13 @@ div[class$="MenuList"] {
   }
 
 }
+
+.truck-dimensions {
+  @media (max-width: $max1367) {
+    margin-right: -37px;
+  }
+
+  label {
+    white-space: nowrap;
+  }
+}

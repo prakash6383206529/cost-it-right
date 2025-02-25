@@ -1137,7 +1137,7 @@ const AddFreight = (props) => {
                               </label>
                             </Col>
                             {state.isShowTruckDimensions && <Col md="2">
-                              <div className="d-flex justify-space-between inputwith-icon form-group">
+                              <div className="d-flex justify-space-between truck-dimensions inputwith-icon form-group">
                                 <SearchableSelectHookForm
                                   name="TruckDimensions"
                                   label="Truck Dimensions (mm)"
