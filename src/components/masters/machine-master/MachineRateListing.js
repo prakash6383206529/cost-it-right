@@ -281,7 +281,7 @@ const MachineRateListing = (props) => {
     dispatch(updateCurrentRowIndex(10))
     setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, dataCount: 0, isFilterButtonClicked: false, floatingFilterData: state.floatingFilterData, warningMessage: false }));
     // getDataList("", 0, 0, "", '', 10, true, state.floatingFilterData);
-    getDataList("", 0, '', 0, "", "", 0, defaultPageSize, true, {}, state.isImport)
+    getDataList("", 0, '', 0, "", "", 0, defaultPageSize, true, state.floatingFilterData, state.isImport)
     dispatch(setSelectedRowForPagination([]));
     setSearchText(''); // Assuming this state is bound to the input value
   };
