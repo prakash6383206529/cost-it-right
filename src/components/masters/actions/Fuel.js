@@ -241,7 +241,7 @@ export function deleteFuelTypeAPI(index, Id, callback) {
 export function getFuelByPlant(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelByPlant}?plantId=${obj.plantId ? obj.plantId : EMPTY_GUID}&vendorId=${obj.vendorId ? obj.vendorId : EMPTY_GUID}&customerId=${obj.customerId ? obj.customerId : EMPTY_GUID}&cityId=${obj.cityId ? obj.cityId : EMPTY_GUID}`, config());
+        const request = axios.get(`${API.getFuelByPlant}?plantId=${obj.plantId ? obj.plantId : EMPTY_GUID}&vendorId=${obj.vendorId ? obj.vendorId : EMPTY_GUID}&customerId=${obj.customerId ? obj.customerId : EMPTY_GUID}&cityId=${obj.cityId ? obj.cityId : EMPTY_GUID}&stateId=${obj.stateId ? obj.stateId : null}&costingTypeId=${obj.costingTypeId ? obj.costingTypeId : null}&entryType=${obj.entryType ? obj.entryType : 0}&countryId=${obj.countryId ? obj.countryId : null}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

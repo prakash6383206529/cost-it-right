@@ -83,17 +83,13 @@ export function IsSendMailToPrimaryContact() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey?.IsSendMailToPrimaryContact
 }
-export function IsFetchExchangeRateVendorWise() {
+export function IsFetchExchangeRateVendorWiseForParts() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
-  return configurationKey?.IsFetchExchangeRateVendorWise
+  return configurationKey?.IsFetchExchangeRateVendorWiseForParts
 }
-export function IsFetchExchangeRateVendorWiseForBOP() {
+export function IsFetchExchangeRateVendorWiseForZBCRawMaterial() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
-  return configurationKey?.IsFetchExchangeRateVendorWiseForBOP
-}
-export function IsFetchExchangeRateVendorWiseForRM() {
-  const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
-  return configurationKey?.IsFetchExchangeRateVendorWiseForRM
+  return configurationKey?.IsFetchExchangeRateVendorWiseForZBCRawMaterial
 }
 export function corrugatedBoxPermission() {
   const boxTypeStr = getConfigurationKey().PackagingCalculatorList

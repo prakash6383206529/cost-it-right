@@ -298,7 +298,7 @@ function Simulation(props) {
         setValue('token', '')
         setToken('')
         setTimeout(() => {
-            if (!getConfigurationKey()?.IsFetchExchangeRateVendorWise) {
+            if (!getConfigurationKey()?.IsFetchExchangeRateVendorWiseForParts) {
                 setShowMasterList(true)
             } else {
 

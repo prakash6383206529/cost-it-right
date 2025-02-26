@@ -15,7 +15,7 @@ import {
 } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, getConfigurationKey, userDetails, IsFetchExchangeRateVendorWise } from "../../../helper/auth";
+import { loggedInUserId, getConfigurationKey, userDetails, IsFetchExchangeRateVendorWiseForParts } from "../../../helper/auth";
 import AddSpecification from './AddSpecification';
 import AddGrade from './AddGrade';
 import AddCategory from './AddCategory';
@@ -526,15 +526,14 @@ class AddRMImport extends Component {
         this.setState({ VendorCode: result })
         this.props.getPlantBySupplier(vendorName.value, () => { })
         const { costingTypeId, currency, effectiveDate, client } = this.state;
-        const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? newValue.value : EMPTY_GUID) : EMPTY_GUID;
-        const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+       
 
         if (this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
-          if (IsFetchExchangeRateVendorWise() && (!newValue || newValue?.length === 0)) {
+          if (IsFetchExchangeRateVendorWiseForParts() && (!newValue || newValue?.length === 0)) {
             this.setState({ showWarning: true });
             return;
           }
-          this.props.getExchangeRateByCurrency(currency.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, res => {
+          this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), newValue.value, client.value, false, res => {
             if (Object.keys(res.data.Data).length === 0) {
               this.setState({ showWarning: true })
             } else {
@@ -629,15 +628,14 @@ class AddRMImport extends Component {
         this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
         const { costingTypeId, vendorName, client } = this.state;
-        const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? newValue?.value : EMPTY_GUID) : EMPTY_GUID;
-        const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+       
 
         if (effectiveDate && (vendorName?.length !== 0 || client?.length !== 0)) {
-          if (IsFetchExchangeRateVendorWise() && (!newValue || newValue?.length === 0)) {
+          if (IsFetchExchangeRateVendorWiseForParts() && (!newValue || newValue?.length === 0)) {
             this.setState({ showWarning: true });
             return;
           }
-          this.props.getExchangeRateByCurrency(newValue.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, res => {
+          this.props.getExchangeRateByCurrency(newValue.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorName?.value, client.value, false, res => {
             if (Object.keys(res.data.Data).length === 0) {
               this.setState({ showWarning: true });
             } else {
@@ -672,11 +670,11 @@ class AddRMImport extends Component {
         this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
         const { costingTypeId, vendorName, client } = this.state;
-        const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-        const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+        const vendorValue = IsFetchExchangeRateVendorWiseForParts() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+        const costingType = IsFetchExchangeRateVendorWiseForParts() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
 
         if (currency && currency.length !== 0 && date) {
-          if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
+          if (IsFetchExchangeRateVendorWiseForParts() && (vendorName?.length === 0 || client?.length === 0)) {
             this.setState({ showWarning: true });
             return;
           }

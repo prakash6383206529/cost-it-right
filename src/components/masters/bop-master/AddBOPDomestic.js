@@ -11,7 +11,7 @@ import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelect
 import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -192,12 +192,9 @@ class AddBOPDomestic extends Component {
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource } = this.state;
-
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
-    const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
+const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWiseForParts() && (vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
       this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, ZBCTypeId, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), null, null, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
