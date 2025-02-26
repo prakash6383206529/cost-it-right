@@ -71,9 +71,7 @@
         const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
         const { globalTakes } = useSelector((state) => state.pagination);
         const [warningMessage, setWarningMessage] = useState(false)
-        const [disableDownload, setDisableDownload] = useState(false)
-
-        const [disableFilter, setDisableFilter] = useState(false)
+        const [disableFilter, setDisableFilter] = useState(true)
         const [remarkHistoryDrawer, setRemarkHistoryDrawer] = useState(false)
         const [remarkRowData, setRemarkRowData] = useState([])
         const [floatingFilterData, setFloatingFilterData] = useState({
@@ -125,7 +123,7 @@
         useEffect(() => {
             dispatch(agGridStatus("", ""))
             // setloader(true)
-            getDataList()
+            getDataList(0, globalTakes, true)
             applyPermission(topAndLeftMenuData)
         }, [topAndLeftMenuData])
         useEffect(() => {
@@ -264,7 +262,7 @@
             }));
         };
 
-        const getDataList = useCallback((skip = 0, take = 10, isPagination = true) => {
+        const getDataList = useCallback((skip = 0, take = 10, isPagination = true,isReset = false) => {
             if (isPagination) {
                 setloader(true)
             }
@@ -492,6 +490,7 @@
             }
             setAddRfqData(data)
             setShowAddFrom(true)
+            resetState()
         }
 
         const cancelItem = (id) => {
@@ -634,7 +633,7 @@
             setAddRfqData({})
             setShowAddFrom(false)
             // setAddRfq(false)
-            getDataList()
+            resetState()
 
         }
 
@@ -647,7 +646,7 @@
             }));
             setViewRfq(false);
             setCloseViewRfq(true);
-            getDataList();
+            resetState()
         };
 
 
@@ -775,15 +774,10 @@
 
 
         const viewDetails = (rowData) => {
-
             setViewRfqData(rowData)
-
             setViewRfq(true)
-            // this.setState({
-            //     UserId: UserId,
-            //     isOpen: true,
-            // })
-
+            resetState()
+           
         }
 
 
@@ -848,7 +842,7 @@
                                                     <>
                                                         {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                                             <div className="warning-message d-flex align-items-center">
-                                                                {warningMessage && !disableDownload && (<><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>)}
+                                                                {warningMessage && (<><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>)}
                                                             </div>
                                                         }
                                                         {
@@ -965,7 +959,6 @@
                             <ViewRfq
                                 data={viewRfqData}
                                 isOpen={viewRfq}
-                                getDataList={getDataList}
                                 closeDrawer={closeDrawerViewRfq}
                             />
 
