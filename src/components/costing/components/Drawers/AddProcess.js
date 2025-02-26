@@ -202,6 +202,10 @@ function AddProcess(props) {
   }
 
   const isFirstColumn = (params) => {
+    const allProcessSelected = processDrawerList?.every(process => props?.Ids?.includes(process.ProcessId));
+    if (allProcessSelected) {
+      return false;
+    }
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 

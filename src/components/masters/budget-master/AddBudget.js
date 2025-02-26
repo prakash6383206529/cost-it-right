@@ -7,7 +7,7 @@ import { getCurrencySelectList, getPlantSelectListByType, getVendorNameByVendorS
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from '../../../helper/auth'
-import { BOUGHTOUTPARTSPACING, BUDGET_ID, CBCTypeId, EMPTY_GUID, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { BOUGHTOUTPARTSPACING, BUDGET_ID, CBCTypeId, EMPTY_GUID, PRODUCT_ID, searchCount, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -20,7 +20,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown, autoCompleteDropdownPart, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions'
 import { useEffect } from 'react'
 import { useState } from 'react'
-import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
+import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCostingHead, updateBudget } from '../actions/Budget'
 import { checkFinalUser, getExchangeRateByCurrency } from '../../costing/actions/Costing'
@@ -61,8 +61,6 @@ function AddBudget(props) {
     const [showErrorOnFocus, setShowErrorOnFocus] = useState(false);
     const [costingTypeId, setCostingTypeId] = useState(ZBCTypeId);
     const [client, setClient] = useState([]);
-    const [isPartNumberNotSelected, setIsPartNumberNotSelected] = useState(false);
-    const [showErrorOnFocusPart, setShowErrorOnFocusPart] = useState(false);
     const [conditionAcc, setConditionAcc] = useState(false);
     const [partName, setPartName] = useState('');
     const [IsVendor, setIsVendor] = useState(false);
@@ -70,7 +68,6 @@ function AddBudget(props) {
     const [currentPrice, setCurrentPrice] = useState(0);
     const [totalSum, setTotalSum] = useState(0);
     const [count, setCount] = useState(0);
-    const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
     const [vendorFilter, setVendorFilter] = useState([]);
     const [currency, setCurrency] = useState(0);
     const [showPopup, setShowPopup] = useState(false);
@@ -98,6 +95,7 @@ function AddBudget(props) {
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const isViewMode = props.data.isViewMode
     const { vendorLabel } = useLabels()
+    const [budgetingId, setBudgetingId] = useState(0)
     useEffect(() => {
         setCostingTypeId(getCostingTypeIdByCostingPermission())
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
@@ -502,6 +500,7 @@ function AddBudget(props) {
                     setValue('FinancialYear', { label: Data.FinancialYear, value: 0 })
                     setValue('currency', { label: Data.Currency, value: Data.CurrencyId })
                     setPartType({ label: Data.PartType, value: Data?.PartTypeId })
+                    setBudgetingId(Data?.BudgetingId)
 
                     setTimeout(() => {
                         setTableData(temp)
@@ -596,6 +595,33 @@ function AddBudget(props) {
      * @description Used to Submit the form
      */
     const onSubmit = debounce((values) => {
+        // Add check for data changes when updating
+        if (isEditFlag) {
+            const hasNoChanges = (
+                selectedPlants?.value === DataChanged?.PlantId && part?.value === DataChanged?.PartId && year?.label === DataChanged?.FinancialYear &&
+                costingTypeId === DataChanged?.CostingHeadId && partType?.label === DataChanged?.PartType && checkForDecimalAndNull(totalSum, initialConfiguration.NoOfDecimalForPrice) === 
+                    checkForDecimalAndNull(DataChanged.BudgetedPoPrice, initialConfiguration.NoOfDecimalForPrice) &&
+                checkForDecimalAndNull(currentPrice, initialConfiguration.NoOfDecimalForPrice) === 
+                    checkForDecimalAndNull(DataChanged.NetPoPrice, initialConfiguration.NoOfDecimalForPrice) &&
+                // Optional fields - need to handle null cases
+                ((!vendorName?.value && !DataChanged?.VendorId) || vendorName?.value === DataChanged?.VendorId) &&
+                ((!client?.value && !DataChanged?.CustomerId) || client?.value === DataChanged?.CustomerId) &&
+                ((!currency?.value && !DataChanged?.CurrencyId) || currency?.value === DataChanged?.CurrencyId) &&
+                // Condition data comparison - handle null case
+                (!DataChanged?.ConditionsData ? conditionTableData.length === 0 : 
+                    conditionTableData.length === DataChanged?.ConditionsData?.length &&
+                    conditionTableData.every((condition, index) => 
+                        checkForDecimalAndNull(condition.ConditionCost, initialConfiguration.NoOfDecimalForPrice) === 
+                        checkForDecimalAndNull(DataChanged?.ConditionsData[index]?.ConditionCost, initialConfiguration?.NoOfDecimalForPrice)
+                    )
+                )
+            );
+
+            if (hasNoChanges) {
+                Toaster.warning('Please change the data to save the Budget.');
+                return false;
+            }
+        }
 
         let startYear = year.label.slice(0, 4);
         let endYear = year.label.slice(-4);
@@ -625,22 +651,49 @@ function AddBudget(props) {
             temp.push(obj)
         })
 
+        if (totalSum <= 0) {
+            Toaster.warning('Please add the budgeting details to save the data.')
+            return false;
+        }
 
+        let formData = {
+            LoggedInUserId: loggedInUserId(),
+            FinancialYear: values?.FinancialYear?.label,
+            NetPoPrice: values?.currentPrice,
+            BudgetedPoPrice: totalSum,
+            BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate,
+            CostingHeadId: costingTypeId,
+            PartId: part?.value,
+            PartName: part?.label,
+            RevisionNumber: part?.RevisionNumber,
+            PlantId: selectedPlants?.value,
+            PlantName: selectedPlants?.label,
+            VendorId: vendorName?.value,
+            VendorName: vendorName?.label,
+            CustomerId: client?.value,
+            BudgetingPartCostingDetails: temp,
+            CurrencyId: currency?.value,
+            Currency: currency?.label,
+            ConditionsData: conditionTableData,
+            BudgetingId: budgetingId
+        }
         if (isEditFlag) {
-
-            let formData = { BudgetingId: BudgetId, LoggedInUserId: loggedInUserId(), FinancialYear: DataChanged.FinancialYear, NetPoPrice: values.currentPrice, BudgetedPoPrice: totalSum, BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate, CostingHeadId: costingTypeId, PartId: DataChanged.PartId, RevisionNumber: DataChanged.RevisionNumber, PlantId: DataChanged.PlantId, VendorId: DataChanged.VendorId, CustomerId: DataChanged.CustomerId, BudgetingPartCostingDetails: temp }
-
-            dispatch(updateBudget(formData, (res) => {
-                setSetDisable(false)
-                if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.BUDGET_UPDATE_SUCCESS)
-                    cancel('submit')
-                }
-            }))
+            if (isFinalApprover) {
+                dispatch(updateBudget(formData, (res) => {
+                    setSetDisable(false)
+                    if (res?.data?.Result) {
+                        Toaster.success(MESSAGES.BUDGET_UPDATE_SUCCESS)
+                        cancel('submit')
+                    }
+                }))
+            } else {
+                setApprovalObj(formData)
+                setTimeout(() => {
+                    setApproveDrawer(true)
+                }, 300);
+            }
 
         } else {
-
-            let formData = { LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label, NetPoPrice: values.currentPrice, BudgetedPoPrice: totalSum, BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate, CostingHeadId: costingTypeId, PartId: part.value, PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value, PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp, CurrencyId: currency.value, Currency: currency.label, ConditionsData: conditionTableData }
             if (isFinalApprover) {
                 dispatch(createBudget(formData, (res) => {
                     setSetDisable(false)
@@ -650,16 +703,12 @@ function AddBudget(props) {
                     }
                 }))
             } else {
-
                 setApprovalObj(formData)
-
                 setTimeout(() => {
                     setApproveDrawer(true)
                 }, 300);
-
             }
         }
-
     }, 500)
 
     const handleKeyDown = function (e) {
@@ -897,31 +946,31 @@ function AddBudget(props) {
                                                             )}
                                                             {costingTypeId === VBCTypeId && (<>
                                                                 <Col md="3">
-                                                                    <label>{vendorLabel} (Code)<span className="asterisk-required">*</span></label>
-                                                                    <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                                                                        <div className="fullinput-icon p-relative">
-                                                                            {inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                                                            <AsyncSelect
-                                                                                id="AddBudget_vendorName"
-                                                                                name="vendorName"
-                                                                                //ref={this.myRef}
-                                                                                //key={this.state.updateAsyncDropdown}
-                                                                                loadOptions={vendorFilterList}
-                                                                                onChange={(e) => handleVendorName(e)}
-                                                                                value={vendorName}
-                                                                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                                                                isDisabled={(isViewMode) ? true : false}
-                                                                                onKeyDown={(onKeyDown) => {
-                                                                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                                                                }}
-                                                                                onBlur={() => setShowErrorOnFocus(true)}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                    {((showErrorOnFocus && vendorName.length === 0) || isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                                                                    <AsyncSearchableSelectHookForm
+                                                                        label={`${vendorLabel} (Code)`}
+                                                                        id='AddBudget_vendorName'
+                                                                        name={"vendorName"}
+                                                                        placeholder={"Select"}
+                                                                        Controller={Controller}
+                                                                        value={vendorName}
+                                                                        control={control}
+                                                                        rules={{ required: true }}
+                                                                        register={register}
+                                                                        defaultValue={vendorName?.length !== 0 ? vendorName : ""}
+                                                                        asyncOptions={vendorFilterList}
+                                                                        mandatory={true}
+                                                                        loadOptions={vendorFilterList}
+                                                                        handleChange={(e) => handleVendorName(e)}
+                                                                        errors={errors.vendorName}
+                                                                        disabled={isViewMode}
+                                                                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                                        isLoading={{
+                                                                            isLoader: inputLoader,
+                                                                            loaderClass: ''
+                                                                        }}
+                                                                    />
                                                                 </Col>
-                                                            </>
-                                                            )}
+                                                            </>)}
 
 
                                                             {((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
@@ -979,7 +1028,7 @@ function AddBudget(props) {
                                                                     </div>
                                                                 </>
                                                             )}
-                                                            <Col className="col-md-15">
+                                                            <Col className="col-md-3 p-relative">
                                                                 <SearchableSelectHookForm
                                                                     label={"Part Type"}
                                                                     name={"PartType"}
@@ -996,28 +1045,27 @@ function AddBudget(props) {
                                                                     disabled={isViewMode ? true : false}
                                                                 />
                                                             </Col>
-                                                            <Col md="3">
-                                                                <label>{"Part No. (Revision No.)"}<span className="asterisk-required">*</span></label>
-                                                                <div className="d-flex justify-space-between align-items-center async-select">
-                                                                    <div className="fullinput-icon p-relative">
-                                                                        <AsyncSelect
-                                                                            id='AddBudget_PartNumber'
-                                                                            name="PartNumber"
-                                                                            //ref={this.myRef}
-                                                                            //key={updateAsyncDropdown}
-                                                                            loadOptions={partFilterList}
-                                                                            onChange={(e) => handlePartName(e)}
-                                                                            value={part}
-                                                                            noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                                                            onKeyDown={(onKeyDown) => {
-                                                                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                                                            }}
-                                                                            isDisabled={(isViewMode || partType.length === 0) ? true : false}
-                                                                            onBlur={() => setShowErrorOnFocusPart(true)}
-                                                                        />
-                                                                        {((showErrorOnFocusPart && part.length === 0) || isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                                                                    </div>
-                                                                </div>
+                                                            <Col className="col-md-3 p-relative">
+                                                                <AsyncSearchableSelectHookForm
+                                                                    label={"Part No. (Revision No.)"}
+                                                                    id='AddBudget_PartNumber'
+                                                                    name={"PartNumber"}
+                                                                    placeholder={"Select"}
+                                                                    Controller={Controller}
+                                                                    value={part}
+                                                                    control={control}
+                                                                    rules={{ required: true }}
+                                                                    register={register}
+                                                                    defaultValue={part?.length !== 0 ? part : ""}
+                                                                    asyncOptions={partFilterList}
+                                                                    mandatory={true}
+                                                                    loadOptions={partFilterList}
+                                                                    handleChange={(e) => handlePartName(e)}
+                                                                    errors={errors.PartNumber}
+                                                                    disabled={(isViewMode || partType?.length === 0) ? true : false}
+                                                                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                                />
+
                                                             </Col>
 
                                                             <div className="col-md-3 p-relative">

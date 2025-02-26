@@ -364,9 +364,11 @@ class AddVolume extends Component {
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowIndex = props?.rowIndex
+    const rowData = props?.data;
+    const isDisabled = Number(rowData?.BudgetedQuantity) === 0 && Number(rowData?.ApprovedQuantity) === 0;
     return (
       <>
-        <button id='AddVolume_Delete' title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowIndex)} />
+        <button id='AddVolume_Delete' title='Delete' disabled={isDisabled} className="Delete" type={'button'} onClick={() => !isDisabled && this.deleteItem(cellValue, rowIndex)} />
       </>
     )
   }
@@ -429,8 +431,15 @@ class AddVolume extends Component {
     this.setState({ DataToChange: false })
   }
 
-  onCellValueChanged = () => {
+  onCellValueChanged = (params) => {
     this.setState({ DataToChange: false })
+    if (params.column.colId === 'BudgetedQuantity' || params.column.colId === 'ApprovedQuantity') {
+      const actionColumn = this.state.gridApi.getColumnDef('VolumeApprovedDetailId');
+      this.state.gridApi.refreshCells({
+        force: true,
+        columns: [actionColumn],
+      });
+    }
   }
 
   deleteItem = (ID) => {
@@ -663,8 +672,8 @@ class AddVolume extends Component {
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
 
-      if (this.state.DataToChange) {
-        this.cancel('cancel')
+      if (this.state?.DataToChange) {
+        Toaster.warning('Please change the data to save Volume Details');
         return false
       }
       this.setState({ setDisable: true })
@@ -975,7 +984,7 @@ class AddVolume extends Component {
                                   {!isEditFlag && (
                                     <div
                                       onClick={this.vendorToggler}
-                                      className={"plus-icon-square  right"}
+                                      className={"plus-icon-square  right mb-2"}
                                     ></div>
                                   )}
                                 </div>

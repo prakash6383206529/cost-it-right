@@ -809,8 +809,9 @@ const AddFreight = (props) => {
         (AddUpdate && HandleChanged) &&
         DeleteChanged
       ) {
-        cancel('cancel');
-        return false;
+
+        Toaster.warning('Please change the data to save Freight Details');
+        return false
       }
 
       const requestData = {
@@ -1162,7 +1163,7 @@ const AddFreight = (props) => {
                                   <button
                                     type="button"
                                     onClick={() => dimensionToggler(true)}
-                                    className={'user-btn'}
+                                    className={"user-btn mt30 pull-left mr10"}
                                     disabled={state.hideEditDimension || isViewMode || state.disableAll}
                                   >
                                     <div className={"edit_pencil_icon right"}></div>

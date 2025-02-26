@@ -47,6 +47,7 @@ const IndivisualProductListing = (props) => {
   const [deletedId, setDeletedId] = useState("");
   const [isLoader, setIsLoader] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [totalRecordCount, setTotalRecordCount] = useState(0)
   const [dataCount, setDataCount] = useState(0);
   const [searchText, setSearchText] = useState("")
   const dispatch = useDispatch();
@@ -76,6 +77,7 @@ const IndivisualProductListing = (props) => {
         } else if (res && res.data && res.data.DataList) {
           let Data = res.data.DataList;
           setTableData(Data);
+          setTotalRecordCount(Data?.length)
         } else {
         }
       })
@@ -113,6 +115,7 @@ const IndivisualProductListing = (props) => {
     setTimeout(() => {
       productDataList?.length !== 0 &&
         setNoData(searchNocontentFilter(value, noData));
+        setTotalRecordCount(gridApi?.getDisplayedRowCount())
     }, 500);
   };
 
@@ -150,7 +153,7 @@ const IndivisualProductListing = (props) => {
         {permissions.View && (
           <button
             title="View"
-            className="View Tour_List_View"
+            className="View Tour_List_View mr-2"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
@@ -357,6 +360,7 @@ const IndivisualProductListing = (props) => {
                         title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"
                           }`}
                         type="button"
+                        disabled={totalRecordCount === 0}
                         className={"user-btn mr5 Tour_List_Download"}
                       >
                         <div className="download mr-1"></div>
@@ -364,7 +368,7 @@ const IndivisualProductListing = (props) => {
                       </button>
                     }
                   >
-                    {onBtExport()}
+                    {totalRecordCount !== 0 ? onBtExport() : null}
                   </ExcelFile>
                 </>
               )}

@@ -419,8 +419,7 @@ class AddVendorDrawer extends Component {
                 DataToCheck.Extension === values.Extension && DataToCheck.MobileNumber === values.MobileNumber &&
                 DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
                 DataToCheck.AddressLine2 === values.AddressLine2 && DataToCheck.IsCriticalVendor === isCriticalVendor && JSON.stringify(DataToCheck.VendorPlants) === JSON.stringify(technologyPlantGrid)) {
-
-                this.toggleDrawer('', '', 'cancel')
+                Toaster.warning('Please change data to save Vendor Details');
                 return false
             }
             this.setState({ setDisable: true })

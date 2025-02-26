@@ -117,7 +117,7 @@ export function getVolumeDataList(skip, take, isPagination, obj, callback) {
       IsCustomerDataShow: obj?.IsCustomerDataShow,
       IsVendorDataShow: obj?.IsVendorDataShow,
       IsZeroDataShow: obj?.IsZeroDataShow,
-      PartType: obj?.PartType
+      partType: obj?.PartType
     });
     axios.get(`${API.getVolumeDataList}?${queryParams}`, config())
       .then((response) => {
@@ -168,10 +168,10 @@ export function deleteVolume(ID, callback) {
  * @method getFinancialYearSelectList
  * @description GET FINANCIAL YEAR LIST
  */
-export function getFinancialYearSelectList(callback) {
+export function getFinancialYearSelectList(callback, onlyShowCurrentAndFutureYears = true) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getFinancialYearSelectList}`, config())
+    const request = axios.get(`${API.getFinancialYearSelectList}?onlyShowCurrentAndFutureYears=${onlyShowCurrentAndFutureYears}`, config())
     request
       .then((response) => {
         if (response.data.Result) {

@@ -59,6 +59,7 @@ const BOPDomesticListing = (props) => {
 
   const { t } = useTranslation("common")
   const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const [skipRecord, setSkipRecord] = useState(0)
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -141,8 +142,20 @@ const BOPDomesticListing = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    reactLocalStorage.setObject('selectedRow', {})
+    if (!props.stopApiCallOnCancel) {
+      return () => {
+        dispatch(setSelectedRowForPagination([]))
+        dispatch(resetStatePagination());
+        reactLocalStorage.setObject('selectedRow', {})
+      }
+    }
+  }, [])
+
   const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
     const { floatingFilterData } = state
+    setSkipRecord(skip)
     if (state.filterModel?.EffectiveDate && !isReset) {
       if (state.filterModel.EffectiveDate.dateTo) {
         let temp = []
@@ -247,7 +260,7 @@ const BOPDomesticListing = (props) => {
     let originalValue;
     setTimeout(() => {
       if (bopDomesticList?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -404,6 +417,7 @@ const BOPDomesticListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+    reactLocalStorage.setObject('selectedRow', {})
   };
 
   /**
@@ -426,16 +440,24 @@ const BOPDomesticListing = (props) => {
   * @method confirmDelete
   * @description confirm delete Raw Material details
   */
+
   const confirmDelete = (ID) => {
     const loggedInUser = loggedInUserId()
     dispatch(deleteBOP(ID, loggedInUser, (res) => {
-      if (res.data.Result === true) {
+      if (res && res?.data && res?.data?.Result === true) {
+        dispatch(setSelectedRowForPagination([]));
+        if (state?.gridApi) {
+          state?.gridApi?.deselectAll();
+        }
         Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
-        resetState()
+        getDataList("", 0, "", "", skipRecord, globalTakes, true, state?.floatingFilterData);
       }
+      reactLocalStorage.remove('selectedRow');
+      setState((prevState) => ({ ...prevState, dataCount: 0 }))
     }));
     setState((prevState) => ({ ...prevState, showPopup: false }))
   }
+
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
   }
@@ -840,6 +862,7 @@ const BOPDomesticListing = (props) => {
     setState((prevState) => ({ ...prevState, analyticsDrawer: false }))
   }
   const onRowSelect = (event) => {
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     var selectedRows = state.gridApi.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
@@ -856,6 +879,7 @@ const BOPDomesticListing = (props) => {
     }
     let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArray))
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) // Save to localStorage
     const newDataCount = uniqeArray.length;
     setState((prevState) => ({ ...prevState, dataCount: newDataCount }))
     let finalArr = selectedRows
@@ -870,6 +894,7 @@ const BOPDomesticListing = (props) => {
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]));
         state.gridApi.deselectAll();
+        reactLocalStorage.setObject('selectedRow', {}) // Clear localStorage
         Toaster.warning("Please select multiple bop's with same category");
       }
     }
@@ -910,7 +935,7 @@ const BOPDomesticListing = (props) => {
                   )}
                   {permissions?.Download && (
                     <>
-                      <Button className="mr5 Tour_List_Download" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button className="mr5 Tour_List_Download" id={"bopDomesticListing_excel_download"} disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                       <ExcelFile filename={`${showBopLabel()} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
                         {onBtExport()}
                       </ExcelFile>

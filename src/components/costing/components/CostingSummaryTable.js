@@ -1914,7 +1914,7 @@ const CostingSummaryTable = (props) => {
       finalKey = data?.currency?.currencyTitle === "-" ? "nPOPrice" : "nPOPriceWithCurrency"
       value = data[finalKey]
     }
-
+    const formattedValue = checkForDecimalAndNull(Math.abs(value), initialConfiguration.NoOfDecimalForPrice)
     let varianceValues = ''
 
     switch (key) {
@@ -1936,7 +1936,7 @@ const CostingSummaryTable = (props) => {
 
     let valueWithSign = (
       <>
-        {data?.CostingHeading === VARIANCE && isApproval && Number(value) !== 0 ? (
+        {data?.CostingHeading === VARIANCE && isApproval && Number(formattedValue) !== 0 ? (
           // Conditionally display the sign based on specific conditions
           viewCostingData?.length > 0 && viewCostingData[firstIndex]?.[finalKey] > viewCostingData[secondIndex]?.[finalKey] ? (
             <span className='positive-sign'>+</span>
@@ -1965,7 +1965,7 @@ const CostingSummaryTable = (props) => {
     switch (columnName) {
       case 'main-row':
         // Highlight class for main row, conditionally set to green or red based on values
-        highlighClass = `${mainRow} ${activeClass ? viewCostingData?.length > 0 && viewCostingData[firstInd]?.[key] > viewCostingData[secondInd]?.[key] ? 'green-row' : viewCostingData[firstInd]?.[key] < viewCostingData[secondInd]?.[key] ? 'red-row' : '' : '-'}`
+        highlighClass = `${mainRow} ${activeClass ? viewCostingData?.length > 0 && checkForDecimalAndNull((viewCostingData[firstInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) > checkForDecimalAndNull((viewCostingData[secondInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) ? 'green-row' : checkForDecimalAndNull((viewCostingData[firstInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) < checkForDecimalAndNull((viewCostingData[secondInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) ? 'red-row' : '' : '-'}`
         break;
       case 'multiple-key':
         // Highlight class case, if hierarchical key comes from function,  here is getting value like viewCostingData[firstInd]?.[key[0]]?.[key[1]] as viewCostingData[firstInd]?.childObject.childValue
@@ -2206,7 +2206,7 @@ const CostingSummaryTable = (props) => {
                         {'Send For Approval'}
                       </button>
                     )}
-                    {!simulationDrawer && <button
+                    {props?.showAddToComparison && <button
                       type="button"
                       id="costingSummary_addtocomparison"
 
@@ -2678,11 +2678,11 @@ const CostingSummaryTable = (props) => {
                                             {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                           </span>
                                           {data?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>
-                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.ForgingScrapWeight && data?.ForgingScrapWeight)}>{(data?.ForgingScrapWeight ? data?.ForgingScrapWeight : "-")}</span> : '-')}
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.ForgingScrapWeight && data?.ForgingScrapWeight)}>{(data?.ForgingScrapWeight ? checkForDecimalAndNull(data?.ForgingScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : "-")}</span> : '-')}
                                             {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                           </span>}
                                           {data?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>
-                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.MachiningScrapWeight && data?.MachiningScrapWeight)}>{(data?.MachiningScrapWeight ? data?.MachiningScrapWeight : '-')}</span> : '-')}
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.MachiningScrapWeight && data?.MachiningScrapWeight)}>{(data?.MachiningScrapWeight ? checkForDecimalAndNull(data?.MachiningScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-')}</span> : '-')}
                                             {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                           </span>}
                                           {data?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>
@@ -2719,7 +2719,7 @@ const CostingSummaryTable = (props) => {
                                 </th></tr>}
 
                               <tr className={highlighter("netRM", "main-row")}>
-                                <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
+                                <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT))}</th>
                                 {viewCostingData &&
                                   viewCostingData?.map((data, index) => {
                                     return (

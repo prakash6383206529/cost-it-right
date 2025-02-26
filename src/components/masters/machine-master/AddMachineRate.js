@@ -694,7 +694,7 @@ class AddMachineRate extends Component {
   * @description called
   */
   moreDetailsToggler = (Id, editFlag) => {
-    const { selectedTechnology, vendorName, costingTypeId, client } = this.state;
+    const { selectedTechnology, vendorName, costingTypeId, client, machineType } = this.state;
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
       Toaster.warning(`${this.props.t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
@@ -713,8 +713,9 @@ class AddMachineRate extends Component {
       vendorName: vendorName ?? [],
       selectedPlants: this.state.selectedPlants,
       selectedEffectiveDate: this.props.fieldsObj.EffectiveDate,
-      selectedCustomer: client ?? []
-
+      selectedCustomer: client ?? [],
+      fieldsObj: this.props.fieldsObj,
+      machineType: machineType
     }
     this.props.displayMoreDetailsForm(data)
   }
@@ -1160,7 +1161,6 @@ class AddMachineRate extends Component {
       // if (DropdownChange) {
 
       // }
-      this.setState({ setDisable: true })
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
@@ -1229,7 +1229,7 @@ class AddMachineRate extends Component {
             (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '') === (machineType?.value ? String(machineType?.value) : '') &&
             (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '') &&
             DataToChange?.Remark === values?.Remark) {
-            this.cancel('submit')
+              Toaster.warning('Please change data to save Machine Details');
             return false
           }
 
@@ -1519,7 +1519,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(ZBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode) ? true : false}
                             />{" "}
                             <span>Zero Based</span>
                           </Label>}
@@ -1533,7 +1533,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(VBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode) ? true : false}
                             />{" "}
                             <span>{VendorLabel} Based</span>
                           </Label>}
@@ -1547,7 +1547,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(CBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode) ? true : false}
                             />{" "}
                             <span>Customer Based</span>
                           </Label>}
@@ -1871,7 +1871,7 @@ class AddMachineRate extends Component {
                               <>
                                 <button id="AddMachineRate_addmore"
                                   type="button"
-                                  className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                  className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr15`}
                                   disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated) || isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                                   onClick={this.processTableHandler}>
                                   <div className={'plus'}></div>ADD</button>

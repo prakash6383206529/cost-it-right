@@ -489,7 +489,7 @@ class BulkUpload extends Component {
                         case String(LABOURBULKUPLOAD):
                             const localizedLabour = this.localizeHeaders(Labour);
                             masterDataArray = localizedLabour
-                            checkForFileHead = checkForSameFileUpload(localizedLabour, fileHeads)
+                            checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(localizedLabour), fileHeads)
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
@@ -745,24 +745,24 @@ class BulkUpload extends Component {
                                 } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
-                                if (fileHeads[i] === 'InsertPartNumber' || fileHeads[i] === 'BOPNumber' || fileHeads[i] === 'InsertNumber') {
+                                if (fileHeads[i] === `${showBopLabel()}PartNumber` || fileHeads[i] === 'BOPNumber' || fileHeads[i] === `${showBopLabel()}Number`) {
                                     fileHeads[i] = 'BoughtOutPartNumber'
                                 }
-                                if (fileHeads[i] === 'InsertPartName' || fileHeads[i] === 'BOPName' || fileHeads[i] === 'InsertName') {
+                                if (fileHeads[i] === `${showBopLabel()}PartName` || fileHeads[i] === 'BOPName' || fileHeads[i] === `${showBopLabel()}Name`) {
 
                                     fileHeads[i] = 'BoughtOutPartName'
 
                                 }
-                                if (fileHeads[i] === `Insert${VendorLabel}`) {
+                                if (fileHeads[i] === `${showBopLabel()}${VendorLabel}`) {
                                     fileHeads[i] = `BOP${VendorLabel}`
                                 }
-                                if (fileHeads[i] === 'InsertCategory') {
+                                if (fileHeads[i] === `${showBopLabel()}Category`) {
                                     fileHeads[i] = 'CategoryName'
                                 }
                                 if (fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
-                                if (fileHeads[i] === `Insert${VendorLabel}`) {
+                                if (fileHeads[i] === `${showBopLabel()}${VendorLabel}`) {
                                     fileHeads[i] = `BOP${VendorLabel}`
                                 }
                                 if (fileName === 'Product Component' && fileHeads[i] === 'PreferredForImpactCalculation') {
@@ -829,6 +829,15 @@ class BulkUpload extends Component {
                                 }
                                 if (fileHeads[i] === 'To Currency') {
                                     fileHeads[i] = 'ToCurrency'
+                                }
+                                if (fileHeads[i] === `IsBreakup${showBopLabel()}`) {
+                                    fileHeads[i] = `IsBreakupBoughtOutPart`
+                                }
+                                if (fileHeads[i] === 'OverheadRMCost/PartCost') {
+                                    fileHeads[i] = 'OverheadRMPercentage'
+                                }
+                                if (fileHeads[i] === 'ProfitRMCost/PartCost') {
+                                    fileHeads[i] = 'ProfitRMPercentage'
                                 }
                                 const key = this.getValueFromMasterData(fileHeads[i], masterDataArray)
 

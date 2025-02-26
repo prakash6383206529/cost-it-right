@@ -64,7 +64,7 @@ const VendorListing = (props) => {
     pageNo: 1,
     pageNoNew: 1,
     floatingFilterData: {
-      vendorType: "",
+      VendorType: "",
       vendorName: "",
       VendorCode: "",
       Country: "",
@@ -102,6 +102,7 @@ const VendorListing = (props) => {
     showExtraData: false,
   });
 
+  const [pageRecord, setPageRecord] = useState(0)
   useEffect(() => {
     if (!topAndLeftMenuData) {
       setState(prevState => ({ ...prevState, isLoader: true }));
@@ -167,10 +168,10 @@ const VendorListing = (props) => {
    * @description Get Table data
    */
   const getTableListData = (
-    skip, obj, take, isPagination
+    skip = 0, obj, take = 10, isPagination = true
   ) => {
     setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false, }));
-
+    setPageRecord(skip)
     let constantFilterData = state.filterModel;
     let object = { ...state.floatingFilterData };
     dispatch(
@@ -247,14 +248,10 @@ const VendorListing = (props) => {
     );
   };
 
-  const floatingFilterVendorType = {
-    maxValue: 6, suppressFilterButton: true, component: "vendorType",
-  };
-
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       if (supplierDataList?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -304,6 +301,9 @@ const VendorListing = (props) => {
     }
   };
 
+  const floatingFilterVendorType = {
+    maxValue: 6, suppressFilterButton: true, component: "vendorType", column: { colId: "VendorType" }, onFloatingFilterChanged: onFloatingFilterChanged
+  };
   /**
    * filter data
    */
@@ -383,7 +383,7 @@ const VendorListing = (props) => {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
-        {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
+        {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
         )}
         {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
@@ -503,27 +503,23 @@ const VendorListing = (props) => {
    * @description close bulk upload drawer
    */
   const closeBulkUploadDrawer = (event, type) => {
+
     setState(
       (prevState) => ({ ...prevState, isBulkUpload: false, }))
 
     if (type !== "cancel") {
       setTimeout(() => {
-        getTableListData(
-          currentRowIndex,
-          state.floatingFilterData,
-          100,
-          true
-        );
+        getTableListData(pageRecord, state.floatingFilterData, globalTakes, true);
       }, 200);
     }
   }
 
   /**
    * @method filterList
-   * @description Filter user listing on the basis of role and department
+   * @description Filter user listing on the basis of role and departments
    */
   const filterList = () => {
-    getTableListData(currentRowIndex, state.floatingFilterData, 100, true);
+    getTableListData(pageRecord, state.floatingFilterData, globalTakes, true);
   };
 
   const formToggle = () => {
@@ -744,7 +740,7 @@ const VendorListing = (props) => {
               {BulkUploadAccessibility && (<Button id="vendorListing_bulkUpload" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
               )}
               {DownloadAccessibility && (<>
-                <Button className="mr5 Tour_List_Download" id={"vendorListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                <Button className="mr5 Tour_List_Download" id={"vendorListing_excel_download"} disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                 />
 
                 <ExcelFile filename={"Vendor"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-vendor"} className="p-absolute" />}>
@@ -795,7 +791,7 @@ const VendorListing = (props) => {
               enablePivot={true}
               enableBrowserTooltips={true}
             >
-              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"280px"} headerName={vendorLabel + " Type"} cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
+              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"380px"} headerName={vendorLabel + " Type"} cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
               <AgGridColumn field="VendorName" headerName={vendorLabel + " Name"}             ></AgGridColumn>
               <AgGridColumn field="VendorCode" headerName={vendorLabel + " Code"}              ></AgGridColumn>
               <AgGridColumn field="Country" headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>

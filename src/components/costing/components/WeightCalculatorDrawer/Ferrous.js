@@ -14,6 +14,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { MESSAGES } from '../../../../config/message'
+import { calculateTotalPercentage } from '../../CostingUtil'
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props?.rmRowData?.WeightCalculatorRequest
@@ -80,7 +81,14 @@ function Ferrous(props) {
             calculateScrapCost();
         }
     }, [watchedValues, finishWeight, tableVal]);
-
+    useEffect(() => {
+        if (tableRawMaterials.length > 0) {
+            calculateNetRmRate();
+            calculateNetScrapRate();
+            calculateRemainingCalculation();
+            calculatetotalCostInputWeight();
+        }
+    }, [tableRawMaterials]);
 
     useEffect(() => {
         if (tableVal && tableVal?.length > 0) {
@@ -184,6 +192,10 @@ function Ferrous(props) {
             }));
 
         setTableRawMaterials(rawMaterials);
+        const result = calculateTotalPercentage(0, 0, rawMaterials, getValues,true);
+        setPercentage(result?.total);
+        setFieldsEnabled(result?.total !== 0)
+
         rawMaterials.forEach((item, index) => {
             setValue(`rmGridFields.${index}.Percentage`, checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForInputOutput));
         });
@@ -244,7 +256,7 @@ function Ferrous(props) {
         if (!CostingViewMode) {
             calculateTotalCastingCostInputWeight()
         }
-    }, [totalCastingCostInputWeightValues, totalCostCalculated, watchedValues])
+    }, [totalCastingCostInputWeightValues, totalCostCalculated, watchedValues, lostWeight])
 
     const calculateTotalCastingCostInputWeight = () => {
         const otherCostInputWeight = checkForNull(getValues('otherCostInputWeight'))
@@ -261,26 +273,20 @@ function Ferrous(props) {
         setValue('NetRMCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForPrice));
         return netRMCost;
     }
-    const totalPercentageValue = () => {
-        let sum = 0;
-        tableRawMaterials.forEach((item, index) => {
-            sum += parseFloat(getValues(`rmGridFields.${index}.Percentage`) || 0);
-        });
-        setPercentage(sum);
-        setFieldsEnabled(sum === 100 && tableRawMaterials.length > 0);
-        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
-    };
+
     const percentageChange = (percentage, index) => {
 
         setValue(`rmGridFields.${index}.Percentage`, percentage);
-
+        
         setTimeout(() => {
-            const totalPercentage = totalPercentageValue();
-            if (totalPercentage > 100) {
-                Toaster.warning(`Total percentage is ${totalPercentage}%, must be 100% to save the values`);
+            const result = calculateTotalPercentage(percentage, index, tableRawMaterials, getValues,false);
+            setPercentage(result?.total);
+            setFieldsEnabled(result?.total === 100);
+            if (!result?.isValid) {
+                Toaster.warning(result?.message);
+                setFieldsEnabled(false);
                 return false;
             }
-
             const updatedItems = tableRawMaterials.map((item, idx) => {
                 const currentPercentage = idx === index ? parseFloat(percentage) || 0 : parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
                 return {
@@ -297,7 +303,7 @@ function Ferrous(props) {
                 calculateNetRmRate();
                 calculateNetScrapRate();
             }
-
+            calculatetotalCostInputWeight();
             calculateRemainingCalculation();
         }, 300);
     };
@@ -335,7 +341,7 @@ function Ferrous(props) {
     };
     const calculateFinishWeight = () => {
         const castingWeight = Number(getValues('castingWeight'));
-        const totalLossWeight = Number(findLostWeight(tableVal));
+        const totalLossWeight = Number(findLostWeight(tableVal, false));
         const finishedWeight = checkForNull(castingWeight - totalLossWeight);
         setFinishWeight(finishedWeight);
         setValue('finishedWeight', checkForDecimalAndNull(finishedWeight, getConfigurationKey().NoOfDecimalForInputOutput));
@@ -586,22 +592,12 @@ function Ferrous(props) {
             }
         }));
     };
-    const [isSaveEnabled, setIsSaveEnabled] = useState(false);
 
-    useEffect(() => {
-        const totalPercentage = totalPercentageValue();
-        setIsSaveEnabled(totalPercentage === 100 && tableRawMaterials.length > 0);
-    }, [tableRawMaterials, getValues]);
     const onSubmit = debounce(handleSubmit((values) => {
         // if (!fieldsEnabled) {
         //     Toaster.warning('Please add raw materials and ensure their percentages sum up to 100% before saving.');
         //     return false;
         // }
-        if (totalPercentageValue() !== 100) {
-            Toaster.warning(`Total percentage is ${totalPercentageValue()}%, must be 100% to save the values`)
-            return false;
-        }
-
         saveCalculation();
     }), 500);
     const onCancel = () => {
@@ -784,7 +780,6 @@ function Ferrous(props) {
             calculateNetRmRate();
             calculateNetScrapRate();
             calculateRemainingCalculation();
-            totalPercentageValue();
         }, 300);
     };
 
@@ -844,7 +839,7 @@ function Ferrous(props) {
         setValue('finishedWeight', '');
         setValue('scrapWeight', '');
         setValue('recovery', '');
-        // setValue('scrapCost', '');
+        setValue('inputWeight', 0);
         setValue('NetRMCost', '');
 
         // Reset rmGridFields
@@ -899,10 +894,9 @@ function Ferrous(props) {
 
     const deleteMainRawMaterial = (index) => {
         const updatedMaterials = tableRawMaterials.filter((_, idx) => idx !== index);
-        setTableRawMaterials(updatedMaterials);
-
         // Recalculate percentages and update form values
         let totalPercentage = 0;
+        const inputWeight = getValues('inputWeight')
         updatedMaterials.forEach((item, idx) => {
             const currentPercentage = parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
             totalPercentage += currentPercentage;
@@ -927,10 +921,7 @@ function Ferrous(props) {
         // Enable/disable fields based on total percentage
         setFieldsEnabled(totalPercentage === 100 && updatedMaterials.length > 0);
 
-        // Recalculate other values
-        calculateNetRmRate();
-        calculateNetScrapRate();
-        calculateRemainingCalculation();
+        setValue("inputWeight", updatedMaterials.length === 0 ? 0 : inputWeight)
 
         // Update unselected raw materials
         const deletedItem = tableRawMaterials[index];
@@ -949,6 +940,8 @@ function Ferrous(props) {
             setValue(`rmGridFields.${i}.Percentage`, getValues(`rmGridFields.${i + 1}.Percentage`));
         }
         setValue(`rmGridFields.${updatedMaterials.length}.Percentage`, '');
+        setTableRawMaterials(updatedMaterials);
+
     };
 
     const resetBinderMaterials = () => {
@@ -1278,7 +1271,7 @@ function Ferrous(props) {
                                     mandatory={true}
                                     isMulti={true}
                                     errors={errorsTableForm.RawMaterialBinders}
-                                    disabled={!fieldsEnabled}
+                                    disabled={!fieldsEnabled || props.CostingViewMode}
                                     // disabled={!fieldsEnabled || props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
                                     handleChange={(selected, action) => rawMaterialBinderHandler(selected, 'binders')}
                                     value={getValuesTableForm('RawMaterialBinders')} // Add this line

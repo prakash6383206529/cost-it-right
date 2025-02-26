@@ -190,7 +190,7 @@ export function deleteBOP(bopId, loggedInUserId, callback) {
         callback(response);
       })
       .catch((error) => {
-        apiErrors(error);
+        apiErrors(error)
         dispatch({ type: API_FAILURE });
       });
   };

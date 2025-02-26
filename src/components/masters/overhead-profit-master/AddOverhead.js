@@ -100,7 +100,7 @@ class AddOverhead extends Component {
       this.props.getRawMaterialNameChild(() => { })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.fetchCostingHeadsAPI('master', false, res => { });
+    this.props.fetchCostingHeadsAPI('Overhead and Profits', false, res => { });
     this.getDetails();
   }
   componentWillUnmount() {
@@ -192,7 +192,9 @@ class AddOverhead extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          Data.OverheadCCPercentage = Data?.OverheadMachiningCCPercentage;
           this.setState({ DataToChange: Data })
+          Data?.OverheadApplicabilityType?.includes("Part Cost") ? this.setState({ showPartCost: true }) : this.setState({ showPartCost: false })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
@@ -816,8 +818,8 @@ class AddOverhead extends Component {
         (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
         && Number(DataToChange.OverheadCCPercentage) === Number(values.OverheadCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
-        this.cancel('cancel')
-        return false
+          Toaster.warning('Please change the data to save Overhead Details')
+          return false
       }
       this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {

@@ -64,7 +64,7 @@ const OperationListing = (props) => {
         selectedRowDataAnalytics: [],
         inRangeDate: [],
         //states for pagination purpose
-        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '', ForType: '' },
+        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UOM: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '', ForType: '' },
         warningMessage: false,
         filterModel: {},
         totalRecordCount: 0,
@@ -85,6 +85,7 @@ const OperationListing = (props) => {
         permissionData: {},
 
     })
+    const [pageRecord, setPageRecord] = useState(0)
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const { t } = useTranslation("common")
     const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
@@ -166,6 +167,7 @@ const OperationListing = (props) => {
     }
 
     const getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 10, isPagination = true, dataObj) => {
+        setPageRecord(skip)
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
 
         if (state.filterModel?.EffectiveDate) {
@@ -269,7 +271,7 @@ const OperationListing = (props) => {
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (operationList?.length !== 0) {
-                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
             }
         }, 500);
         setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -320,13 +322,13 @@ const OperationListing = (props) => {
 
     const onSearch = () => {
         dispatch(updatePageNumber(1));
-        dispatch(updateCurrentRowIndex(0));
+        dispatch(updateCurrentRowIndex(10));
         setState((prevState) => ({
             ...prevState, warningMessage: false,
             //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0, 
             noData: false,
         }));
-        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     };
 
     const resetState = () => {
@@ -396,16 +398,22 @@ const OperationListing = (props) => {
     * @description confirm delete item
     */
     const confirmDeleteItem = (ID) => {
-        const loggedInUser = loggedInUserId()
+        const loggedInUser = loggedInUserId();
         dispatch(deleteOperationAPI(ID, loggedInUser, (res) => {
-            if (res.data.Result === true) {
+            if (res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
-                resetState()
-                setState(prevState => ({ ...prevState, dataCount: 0 }))
+                dispatch(setSelectedRowForPagination([]));
+                if (state?.gridApi) {
+                    state?.gridApi?.deselectAll();
+                }
+                getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData);
+                setState((prevState) => ({ ...prevState, dataCount: 0 }));
             }
         }));
-        setState(prevState => ({ ...prevState, showPopup: false }))
-    }
+        setState((prevState) => ({ ...prevState, showPopup: false }));
+    };
+
+
     const onPopupConfirm = () => {
         confirmDeleteItem(state.deletedId);
     }
@@ -866,7 +874,7 @@ const OperationListing = (props) => {
                                         permissionData?.Download && !props?.isMasterSummaryDrawer &&
                                         <>
 
-                                            <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                            <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                                 icon={"download mr-1"}
                                                 buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                             />

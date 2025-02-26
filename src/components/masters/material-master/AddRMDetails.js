@@ -109,6 +109,11 @@ function AddRMDetails(props) {
         if (states.costingTypeId === CBCTypeId) {
             dispatch(getClientSelectList(() => { }))
         }
+        setState(prevState => ({
+            ...prevState,
+            vendor: [],
+            sourceVendor: [],
+        }))
     }, [states.costingTypeId])
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
@@ -703,12 +708,14 @@ function AddRMDetails(props) {
                                     />
                                 </div>
                                 {!(isEditFlag || isViewFlag) && (
+                                    // <div className="mt-3">
                                     <Button
                                         id="addRMDomestic_RMToggle"
                                         onClick={openRMdrawer}
-                                        className={`right`}
+                                        className={`right mt-2`}
                                         variant="plus-icon-square"
                                     />
+                                    // </div>
                                 )}
                             </div>
                         </Col>
@@ -804,7 +811,7 @@ function AddRMDetails(props) {
                                         <input
                                             type="checkbox"
                                             checked={state.isShowIndexCheckBox}
-                                            disabled={isViewFlag}
+                                            disabled={isViewFlag || isEditFlag}
                                         />
                                         <span
                                             className=" before-box p-0"

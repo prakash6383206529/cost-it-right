@@ -284,7 +284,7 @@ class AddIndivisualProduct extends Component {
 
         if (isEditFlag) {
             if (DropdownChanged && ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && DataToCheck.ProductHierarchyValueDetailsIdRef === ProductHierarachyValueId) {
-                this.cancel('cancel')
+                Toaster.warning('Please change data to save the Product');
                 return false;
             }
             this.setState({ setDisable: true })
@@ -374,7 +374,7 @@ class AddIndivisualProduct extends Component {
     */
     render() {
         const { handleSubmit, initialConfiguration, t, productHierarchyData } = this.props;
-        const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Name'
+        const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Product'
         const { isEditFlag, isViewMode, setDisable } = this.state;
         return (
             <>

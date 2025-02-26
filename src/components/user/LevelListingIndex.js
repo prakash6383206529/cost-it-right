@@ -80,6 +80,7 @@ function ManageLevelTabs(props) {
                     </Col> */}
                     <Col md="6 d-flex">
                         <h2 className="manage-level-heading d-flex">{`Highest Level of Approvals`}
+                            <div className="mt-0 ml-3">
                             <TourWrapper
                                 buttonSpecificProp={{
                                     id: "HightestLevel_Approval_ListingTour"
@@ -87,6 +88,7 @@ function ManageLevelTabs(props) {
                                 stepsSpecificProp={{
                                     steps: Steps(t).HIGHTEST_LEVEL_APPROVAL
                                 }} />
+                                </div>
                         </h2>
                         {permissionData.Add && <Button id="levelTechnologyListing_add" className={"user-btn mr5 text-right search-user-block mb-5 HighestApproval_Add "} onClick={mappingToggler} title={"Add"} icon={"plus mr-0"} />}
                     </Col>

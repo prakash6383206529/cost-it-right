@@ -60,7 +60,8 @@ const SpecificationListing = (props) => {
     noData: false,
     dataCount: 0,
     render: false,
-    isAssociate: false
+    isAssociate: false,
+    totalRecordCount: 0
   });
 
   useEffect(() => {
@@ -87,6 +88,7 @@ const SpecificationListing = (props) => {
               ...prev,
               specificationData: Data,
               isLoader: false,
+              totalRecordCount: Data?.length
             }));
           }
         })
@@ -175,8 +177,9 @@ const SpecificationListing = (props) => {
               id={`rmSpecification_edit${props.rowIndex}`}
               className={"mr-1 Tour_List_Edit"}
               variant="Edit"
-              onClick={() => editItemDetails(cellValue, rowData, false)}
+              onClick={() => editItemDetails(cellValue, rowData)}
               title={"Edit"}
+              disabled={rowData?.IsAssociated}
             />
           )}
           {isDeleteButton && (
@@ -194,12 +197,14 @@ const SpecificationListing = (props) => {
   }, [permissions.Edit, permissions.Delete, tourStartData?.showExtraData]);
 
 
+
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       rmSpecificationList.length !== 0 &&
         setState((prevState) => ({
           ...prevState,
           noData: searchNocontentFilter(value, state.noData),
+          totalRecordCount: state?.gridApi?.getDisplayedRowCount()
         }));
     }, 500);
   };
@@ -379,17 +384,15 @@ const SpecificationListing = (props) => {
             {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
             {permissions.Download && (
               <>
-                <>
-                  <ExcelFile
-                    filename={"RM Specification"}
-                    fileExtension={".xls"}
-                    element={
-                      <Button className="mr5 Tour_List_Download" id={"rmSpecification_excel_download"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                    }
-                  >
-                    {onBtExport()}
-                  </ExcelFile>
-                </>
+                <ExcelFile
+                  filename={"RM Specification"}
+                  fileExtension={".xls"}
+                  element={
+                    <Button className="mr5 Tour_List_Download" id={"rmSpecification_excel_download"} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                  }
+                >
+                  {state?.totalRecordCount !== 0 ? onBtExport() : null}
+                </ExcelFile>
               </>
             )}
             <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} className={" Tour_List_Reset"} icon={"refresh"} />

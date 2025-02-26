@@ -271,7 +271,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             Plant: obj.Plants !== undefined ? obj.Plants : "",
             OperationName: obj.OperationName !== undefined ? obj.OperationName : "",
             OperationCode: obj.OperationCode !== undefined ? obj.OperationCode : "",
-            UOM: obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : "",
+            UOM: obj?.UOM !== undefined ? obj?.UOM : "",
             Rate: obj.Rate !== undefined ? obj.Rate : "",
             EffectiveDate: obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate,
             applyPagination: isPagination,
@@ -399,7 +399,7 @@ export function deleteOperationAPI(OperationId, loggedInUserId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                apiErrors(error)
                 dispatch({ type: API_FAILURE });
             });
     };

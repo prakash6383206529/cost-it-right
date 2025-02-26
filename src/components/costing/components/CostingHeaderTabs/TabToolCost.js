@@ -223,7 +223,7 @@ function TabToolCost(props) {
         setTimeout(() => {
           setLoader(false)
         }, 200);
-        if (res?.data && res?.data?.DataList[0]?.ProcessOrOperation) {
+        if (res?.data && res?.data?.DataList) {
           setGridData(res.data.DataList)
 
         }

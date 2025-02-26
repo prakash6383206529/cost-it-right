@@ -33,7 +33,7 @@ import { fetchDivisionId } from '../../CostingUtil'
 export const QuotationIdFromSummary = React.createContext();
 
 function ApprovalSummary(props) {
-  const { approvalNumber, approvalProcessId,receiverId ,fromDashboard} = props.location.state
+  const { approvalNumber, approvalProcessId, receiverId, fromDashboard } = props.location.state
   const loggedInUser = loggedInUserId()
 
   const dispatch = useDispatch()
@@ -136,7 +136,7 @@ function ApprovalSummary(props) {
 
   const approvalSummaryHandler = () => {
     setIsLoader(true)
-    dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser,receiverId, (res) => {
+    dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, receiverId, (res) => {
 
       if (res?.data?.Data?.Costings?.length > 0) {
         const { IsRFQCostingApproval, PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
@@ -850,7 +850,7 @@ function ApprovalSummary(props) {
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
 
-                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} selectedTechnology={partDetail.Technology} receiverId={receiverId} />}
+                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} selectedTechnology={partDetail?.Technology} showAddToComparison={true} receiverId={receiverId} />}
 
               </Col>
             </Row>

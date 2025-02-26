@@ -28,7 +28,7 @@ function AddFreight(props) {
     Capacity: rowObjData && rowObjData.Capacity !== undefined ? { label: rowObjData.Capacity, value: rowObjData.Capacity } : [],
     Criteria: rowObjData && rowObjData.Criteria !== undefined ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : '',
     Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
-    Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForNull(rowObjData.Quantity) : '',
+    Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForDecimalAndNull(rowObjData?.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? checkForDecimalAndNull(rowObjData.FreightCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     crmHeadFreight: rowObjData && rowObjData.FreightCRMHead !== undefined ? { label: rowObjData.FreightCRMHead, value: 1 } : '',
     IsFreightDetailedBreakup: rowObjData && rowObjData.IsFreightDetailedBreakup !== undefined ? rowObjData.IsFreightDetailedBreakup : false,
@@ -104,7 +104,7 @@ function AddFreight(props) {
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
-      setValue("Quantity", totalFinishWeight)
+      setValue("Quantity", checkForDecimalAndNull(totalFinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
       setTotalRMGrossWeight(totalGrossWeight)
 
     }
@@ -846,11 +846,11 @@ function AddFreight(props) {
                       mandatory={freightType !== Fixed ? true : false}
                       rules={{
                         required: freightType !== Fixed ? true : false,
-                        validate: {},
+                        validate: freightType === Percentage ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces },
                         max: freightType === Percentage ? {
                           value: 100,
                           message: 'Percentage should be less than 100'
-                        } : undefined,
+                        } : {},
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

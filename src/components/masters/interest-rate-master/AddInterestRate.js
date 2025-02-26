@@ -87,7 +87,7 @@ class AddInterestRate extends Component {
   /**
    * @method componentDidMount
    * @description called after render the component
-   */
+  */
   componentDidMount() {
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
@@ -109,8 +109,8 @@ class AddInterestRate extends Component {
     reactLocalStorage?.setObject('vendorData', [])
   }
   /**
-  * @method renderListing
-  * @description Used show listing of unit of measurement
+   * @method renderListing
+   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
     const { plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList, clientSelectList, rawMaterialNameSelectList, gradeSelectList } = this.props;
@@ -565,7 +565,7 @@ class AddInterestRate extends Component {
         Data.PaymentTermPercent === values.PaymentTermPercent &&
         Data.RepaymentPeriod === values.RepaymentPeriod && DropdownNotChanged) {
 
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Interest Rate Details');
         return false;
       }
       this.setState({ setDisable: true })
@@ -1057,7 +1057,12 @@ class AddInterestRate extends Component {
 
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn">
-                      {isWarningVisible && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message="Either ICC or Payment Term should be filled!" />}
+                      {(!isViewMode && !isEditFlag && isWarningVisible) && (
+                        <WarningMessage
+                          dClass="col-md-12 pr-0 justify-content-end"
+                          message="Either ICC or Payment Term should be filled!"
+                        />
+                      )}
                       <button
                         id='AddInterestRate_Cancel'
                         type={"button"}
@@ -1071,7 +1076,7 @@ class AddInterestRate extends Component {
                       {!isViewMode && <button
                         type="submit"
                         id='AddInterestRate_Save'
-                        disabled={isWarningVisible || isViewMode || setDisable}
+                        disabled={isViewMode || setDisable || (isWarningVisible && !isEditFlag)}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>

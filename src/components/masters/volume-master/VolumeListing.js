@@ -164,6 +164,7 @@ function VolumeListing(props) {
   });
   const [disableDownload, setDisableDownload] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [pageRecord, setPageRecord] = useState(0);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { volumeDataList, volumeDataListForDownload } = useSelector((state) => state.volume);
   const { globalTakes } = useSelector((state) => state.pagination);
@@ -223,6 +224,7 @@ function VolumeListing(props) {
    * @description Get user list data
    */
   const getTableListData = (skip = 0, take = 10, isPagination = true) => {
+    setPageRecord(skip)
     if (isPagination === true || isPagination === null) setIsLoader(true);
     let dataObj = { ...floatingFilterData };
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
@@ -298,17 +300,19 @@ function VolumeListing(props) {
    */
   const confirmDeleteItem = (ID) => {
     dispatch(deleteVolume(ID, (res) => {
-      if (res.data.Result === true) {
-        Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
-        getTableListData(0, globalTakes, true);
-        gridApi.deselectAll();
+      if (res?.data?.Result === true) {
         dispatch(setSelectedRowForPagination([]));
+        if (gridApi) {
+          gridApi?.deselectAll();
+        }
+        Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
+        getTableListData(pageRecord, globalTakes, true);
         setDataCount(0);
       }
-    })
-    );
+    }));
     setShowPopup(false);
   };
+
 
   const onPopupConfirm = () => {
     confirmDeleteItem(deletedId);
@@ -477,6 +481,7 @@ function VolumeListing(props) {
     setTimeout(() => {
       if (volumeDataList?.length !== 0) {
         setNoData(searchNocontentFilter(value, noData));
+        setTotalRecordCount(gridApi?.getDisplayedRowCount())
       }
     }, 500);
     setDisableFilter(false);
@@ -687,7 +692,7 @@ function VolumeListing(props) {
                     {addAccessibility && (<Button id="volumeListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
                     {bulkUploadAccessibility && (<Button id="volumeListing_bulkUpload" className={"user-btn mr5  Tour_List_BulkUpload"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
 
-                    {downloadAccessibility && (<>                        <Button className="user-btn mr5 Tour_List_Download" id={"volumeListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                    {downloadAccessibility && (<><Button className="user-btn mr5 Tour_List_Download" id={"volumeListing_excel_download"} onClick={onExcelDownload} disabled={totalRecordCount === 0} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                       icon={"download mr-1"}
                       buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                     />

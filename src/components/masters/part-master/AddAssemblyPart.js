@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString, minLength3, hashValidation, validateFileName } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString, minLength3, hashValidation, validateFileName, checkForNull } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect, validateForm } from "../../layout/FormInputs";
 import {
@@ -720,10 +720,17 @@ class AddAssemblyPart extends Component {
 
     if (isEditFlag || convertPartToAssembly) {
       let isGroupCodeChange = this.checkGroupCodeChange(values)
-      if (!DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && !isGroupCodeChange && String(DataToCheck.Description) === String(values.Description) &&
-        String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
-        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.Remark) === String(values.Remark) && String(DataToCheck.SAPCode) === String(values.SAPCode) && BOMChanged === false && uploadAttachements) {
-        this.cancel('cancel')
+
+      const noChanges = 
+        String(DataToCheck?.AssemblyPartName) === String(values?.AssemblyPartName) && 
+        String(DataToCheck?.Description) === String(values?.Description) &&
+        String(DataToCheck?.ECNNumber) === String(values?.ECNNumber) && 
+        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
+        String(DataToCheck?.DrawingNumber) === String(values?.DrawingNumber) && 
+        String(DataToCheck?.Remark) === String(values?.Remark) && 
+        String(DataToCheck?.SAPCode) === String(values?.SAPCode) 
+      if (noChanges) {
+        Toaster.warning('Please change data to save Assembly Part Details');
         return false;
       }
 
@@ -1256,7 +1263,7 @@ class AddAssemblyPart extends Component {
                             type="button"
                             disabled={false}
                             onClick={this.toggleBOMViewer}
-                            className={"user-btn pull-left mt30"}>
+                            className={"user-btn pull-left mt30 mb-4 "}>
                             <div className={`${!isViewMode && BOMViewerData?.length <= 0 ? 'plus' : 'fa fa-eye pr-1'}`}></div> BOM
                           </button>
                         </Col>

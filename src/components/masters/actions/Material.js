@@ -139,7 +139,7 @@ export function deleteRawMaterialAPI(rawMaterialId, loggedInUserId, callback) {
                 callback(response);
             }).catch((error) => {
                 callback(error.response);
-                //apiErrors(error);
+                apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
     };
@@ -621,7 +621,7 @@ export function deleteMaterialTypeAPI(MaterialTypeId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                callback(error.response);
+                // callback(error.response);
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });

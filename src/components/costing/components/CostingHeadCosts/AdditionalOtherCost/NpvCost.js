@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useContext } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
@@ -6,6 +6,8 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../help
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useEffect } from 'react'
+import { ViewCostingContext } from '../../CostingDetails'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function NpvCost(props) {
     const [totalCost, setTotalCost] = useState(0)
@@ -14,6 +16,7 @@ function NpvCost(props) {
         props.editData(indexValue, operation)
     }
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const CostingViewMode = useContext(ViewCostingContext);
 
     useEffect(() => {
         const sum = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
@@ -43,8 +46,8 @@ function NpvCost(props) {
                                                 {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.NpvQuantity)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
-                                                    <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} />
+                                                {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} disabled={CostingViewMode} />
+                                                    <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} disabled={CostingViewMode} />
                                                 </div>
                                                 </td>}
                                             </tr>
@@ -59,7 +62,7 @@ function NpvCost(props) {
                                 </tr>
                             )}
                             <tr className='table-footer'>
-                                <td colSpan={"3"} className="text-right">{'Total Cost:'}</td>
+                                <td colSpan={"3"} className="text-right">{`Total NPV Cost (${reactLocalStorage.getObject("baseCurrency")}) :`}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
                         </tbody>

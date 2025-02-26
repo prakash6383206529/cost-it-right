@@ -116,7 +116,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "EffectiveDate": DayTime(new Date(effectiveDate)),
       "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
       "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-      "TotalConversionCostWithQuantity": tabData && AddLabour ? (tabData.CostingPartDetails?.TotalConversionCostWithQuantity + checkForNull(tabData.CostingPartDetails.NetLabourCost) + checkForNull(tabData.CostingPartDetails.IndirectLaborCost) + checkForNull(tabData.CostingPartDetails.StaffCost)) : tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+      "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
       "TotalCalculatedRMBOPCCCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
@@ -468,3 +468,24 @@ export const fetchDivisionId = (requestObject, dispatch) => {
     }
   })
 }
+export const calculateTotalPercentage = (currentValue, index, rawMaterials, getValues, rmExist) => {
+  let totalPercentage = 0
+  if (rmExist) {
+    totalPercentage = rawMaterials?.reduce((total, item) => {
+      return total + (checkForNull(item.Percentage) || 0);
+    }, 0);
+  }
+  else {
+    totalPercentage = rawMaterials?.reduce((total, _, idx) => {
+      return checkForNull(total) + (idx === index ?
+        checkForNull(currentValue) || 0 :
+        checkForNull(getValues(`rmGridFields.${idx}.Percentage`)) || 0);
+    }, 0);
+  }
+  return {
+    total: checkForNull(totalPercentage),
+    message: totalPercentage > 100 ?
+      `Total percentage is ${totalPercentage}%, must be 100% to save the values` : '',
+    isValid: totalPercentage <= 100
+  };
+};

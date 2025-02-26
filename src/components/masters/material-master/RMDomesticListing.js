@@ -89,8 +89,8 @@ function RMDomesticListing(props) {
 
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
-    const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined ? true : false
-
+    const [pageRecord, setPageRecord] = useState(0);
+    const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -182,7 +182,7 @@ function RMDomesticListing(props) {
     */
     const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
         const { isSimulation } = props
-
+        setPageRecord(skip)
         if (filterModel?.EffectiveDate && !isReset) {
 
             if (filterModel.EffectiveDate.dateTo) {
@@ -300,6 +300,7 @@ function RMDomesticListing(props) {
         setTimeout(() => {
             if (rmDataList.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
         setDisableFilter(false)
@@ -451,12 +452,15 @@ function RMDomesticListing(props) {
     const confirmDelete = (ID) => {
         const loggedInUser = loggedInUserId()
         dispatch(deleteRawMaterialAPI(ID, loggedInUser, (res) => {
-            if (res !== undefined && res.status === 417 && res.data.Result === false) {
-                Toaster.error(res.data.Message)
-            } else if (res && res.data && res.data.Result === true) {
+            if (res && res?.data && res?.data?.Result === true) {
+                dispatch(setSelectedRowForPagination([]));
+                if (gridApi) {
+                    gridApi.deselectAll();
+                }
+                reactLocalStorage.remove('selectedRow');
                 Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-                setDataCount(0)
-                resetState()
+                getDataList(null, null, null, null, null, 0, pageRecord, globalTakes, true, floatingFilterData, false);
+                setDataCount(0);
             }
         }));
         setShowPopup(false)
@@ -928,7 +932,7 @@ function RMDomesticListing(props) {
                 <>
                     {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                     <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-2'}`}>
-                        <Col md="3" lg="3" className='mb-2'>
+                        <Col md="6" lg="6" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                                 buttonSpecificProp={{
@@ -938,7 +942,7 @@ function RMDomesticListing(props) {
                                     steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
                                 }} />)}
                         </Col>
-                        <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
+                        <Col md="6" lg="6" className="mb-3 d-flex justify-content-end">
                             {
                                 // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                 (!props.isMasterSummaryDrawer) &&
@@ -1008,6 +1012,7 @@ function RMDomesticListing(props) {
                                                             title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                             icon={"download mr-1"}
                                                             buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                            disabled={totalRecordCount === 0}
                                                         />
                                                         <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                                                             <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />

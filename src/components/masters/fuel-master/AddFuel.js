@@ -229,10 +229,31 @@ class AddFuel extends Component {
     let count = 0;
     setTimeout(() => {
 
-      if (country.length === 0 || city.length === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, state: true } })
-        count++
+      if (!country || Object.keys(country).length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, country: true } })
+        count++;
       }
+
+      if (!city || Object.keys(city).length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, city: true } })
+        count++;
+      }
+
+      if (country?.label) {
+        const isIndia = country.label === 'India';
+        const hasStateName = StateName && Object.keys(StateName).length > 0;
+
+        this.setState({
+          errorObj: { ...this.state.errorObj, state: isIndia && !hasStateName },
+        });
+
+        if (isIndia && !hasStateName) count++;
+      } else {
+        this.setState({ errorObj: { ...this.state.errorObj, state: true } });
+        count++;
+      }
+
+
       if (fieldsObj === undefined || Number(fieldsObj) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
         count++
@@ -266,19 +287,18 @@ class AddFuel extends Component {
 
       this.setState({
         rateGrid: tempArray,
-        // StateName: [],
+        StateName: [],
         effectiveDate: '',
         country: {},
         city: {},
       }, () => {
         this.props.change('Rate', '')
-        this.props.change('CountryId', {})
-        this.props.change('StateId', {})
-        this.props.change('CityId', {})
-
+        this.props.change('CountryId', "")
+        this.props.change('StateId', "")
+        this.props.change('CityId', "")
       }
       );
-      this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
+      this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false, country: false, city: false } })
     }, 200);
   }
 
@@ -290,7 +310,8 @@ class AddFuel extends Component {
       country: [],
       city: [],
       effectiveDate: "",
-    }, () => this.props.change('Rate', 0));
+      errorObj: { city: false, state: false, rate: false, country: false, effectiveDate: false }
+    }, () => this.props.change('Rate', ""));
     this.setState({ AddUpdate: false, isEditIndex: false })
 
   }
@@ -628,7 +649,7 @@ class AddFuel extends Component {
       }
       // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
       if (HandleChanged && addRow === 0 && count === rateGrid.length && DeleteChanged) {
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Fuel Details');
         return false
       }
 
@@ -715,7 +736,13 @@ class AddFuel extends Component {
 
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ country: newValue, state: [], city: [] }, () => {
+      this.setState({
+        country: newValue, state: [], city: [],
+        errorObj: {
+          ...this.state.errorObj,
+          country: false
+        }
+      }, () => {
         this.getAllCityData()
       });
     } else {
@@ -730,7 +757,12 @@ class AddFuel extends Component {
   */
   stateHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ StateName: newValue, city: [] }, () => {
+      this.setState({
+        StateName: newValue, city: [], errorObj: {
+          ...this.state.errorObj,
+          state: false
+        }
+      }, () => {
         const { StateName } = this.state;
         this.props.fetchCityDataAPI(StateName.value, () => { })
       });
@@ -752,7 +784,12 @@ class AddFuel extends Component {
 
   cityHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ city: newValue });
+      this.setState({
+        city: newValue, errorObj: {
+          ...this.state.errorObj,
+          city: false
+        }
+      });
     } else {
       this.setState({ city: [] });
     }
@@ -1026,12 +1063,12 @@ class AddFuel extends Component {
                                 component={searchableSelect}
                                 placeholder={'Select'}
                                 options={this.renderListing('country')}
-                                validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
                                 required={true}
                                 handleChangeDescription={this.countryHandler}
                                 valueDescription={this.state.country}
                                 disabled={isViewMode}
                               />
+                              {this.state.errorObj?.country && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
 
@@ -1045,12 +1082,12 @@ class AddFuel extends Component {
                                   component={searchableSelect}
                                   placeholder={'Select'}
                                   options={this.renderListing('state')}
-                                  validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.stateHandler}
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj?.state && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
                             </Col>}
 
@@ -1063,12 +1100,12 @@ class AddFuel extends Component {
                                 component={searchableSelect}
                                 placeholder={'Select'}
                                 options={this.renderListing('city')}
-                                validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
                                 required={true}
                                 handleChangeDescription={this.cityHandler}
                                 valueDescription={this.state.city}
                                 disabled={isViewMode}
                               />
+                              {this.state.errorObj?.city && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
 
@@ -1137,7 +1174,7 @@ class AddFuel extends Component {
                                 <>
                                   <button id="AddFuel_AddData"
                                     type="button"
-                                    className={"user-btn pull-left"}
+                                    className={"user-btn pull-left mr10"}
                                     disabled={isViewMode}
                                     onClick={this.rateTableHandler}
                                   >

@@ -1006,10 +1006,10 @@ export function isRMDivisorApplicable(technology) {
 
 
 
-export function findLostWeight(tableVal) {
+export function findLostWeight(tableVal, isPlastic = false) {
   let sum = 0
   tableVal && tableVal.map(item => {
-    if (Number(item.LossOfType) === 2) {
+    if (Number(item.LossOfType) === 2 && isPlastic) {
       return false
     } else {
       sum = sum + item.LossWeight
@@ -1379,7 +1379,7 @@ export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalF
     return conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
   } else if (id.includes("Combined")) {
     text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>{showBopLabel()} cost is not included for {showBopLabel()} part type</p>}</>;
-    return (arr[0]?.IsRMCutOffApplicable === true) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
+    return (arr[0]?.IsRMCutOffApplicable === true && id.includes("RM")) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
   }
 }
 
@@ -1416,20 +1416,18 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
   const updatedLabels = bopLabels.map(label => ({
     ...label,
     [labelName]: label[labelName]?.replace(bopRegex, bopReplacement),
-    // value: label.value?.replace(bopRegex, bopReplacement),
 
+    // const updatedTempData = bopData.map(dataItem => {
+    //   const newDataItem = {};
+    //   for (let key in dataItem) {
+    //     if (dataItem.hasOwnProperty(key)) {
+    //       const newKey = key?.replace(bopRegex, bopReplacement);
+    //       newDataItem[newKey] = dataItem[key];
+    //     }
+    //   }
+    //   return newDataItem;
+    // });
   }));
-
-  // const updatedTempData = bopData.map(dataItem => {
-  //   const newDataItem = {};
-  //   for (let key in dataItem) {
-  //     if (dataItem.hasOwnProperty(key)) {
-  //       const newKey = key?.replace(bopRegex, bopReplacement);
-  //       newDataItem[newKey] = dataItem[key];
-  //     }
-  //   }
-  //   return newDataItem;
-  // });
   return { updatedLabels };
 }
 /**

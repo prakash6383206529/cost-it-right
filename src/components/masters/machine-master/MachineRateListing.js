@@ -83,6 +83,7 @@ const MachineRateListing = (props) => {
     render: false,
   });
   const [searchText, setSearchText] = useState('');
+  const [pageRecord, setPageRecord] = useState(0)
   const { machineDatalist, allMachineDataList } = useSelector(state => state.machine)
   const { selectedRowForPagination, simulationCostingStatus } = useSelector(state => state.simulation);
   const { globalTakes } = useSelector(state => state.pagination);
@@ -114,8 +115,7 @@ const MachineRateListing = (props) => {
     return () => {
       dispatch(setSelectedRowForPagination([]));
       dispatch(resetStatePagination());
-      dispatch(setResetCostingHead(true, "costingHead"));
-
+      reactLocalStorage.setObject('selectedRow', {});
     };
     // eslint-disable-next-line
   }, []);
@@ -130,6 +130,7 @@ const MachineRateListing = (props) => {
   };
 
   const getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 10, isPagination = true, dataObj = {}) => {
+    setPageRecord(skip)
     if (state.filterModel?.EffectiveDateNew) {
       if (state.filterModel.EffectiveDateNew.dateTo) {
         let temp = []
@@ -220,7 +221,7 @@ const MachineRateListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       if (machineDatalist?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -292,6 +293,7 @@ const MachineRateListing = (props) => {
       //  globalTake: 10, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
     }));
     setSearchText(''); // Assuming this state is bound to the input value
+    reactLocalStorage.setObject('selectedRow', {});
   };
 
   const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
@@ -348,9 +350,13 @@ const MachineRateListing = (props) => {
   const confirmDelete = (ID) => {
     const loggedInUser = loggedInUserId()
     dispatch(deleteMachine(ID, loggedInUser, (res) => {
-      if (res.data.Result === true) {
+      if (res?.data?.Result === true) {
         Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
-        resetState()
+        dispatch(setSelectedRowForPagination([]));
+        if (state?.gridApi) {
+          state?.gridApi?.deselectAll();
+        }
+        getDataList("", 0, "", 0, "", "", pageRecord, globalTakes, true, state.floatingFilterData);
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
       }
     }));
@@ -678,6 +684,8 @@ const MachineRateListing = (props) => {
   };
 
   const onRowSelect = (event) => {
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+
     var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {
       selectedRows = selectedRowForPagination;
@@ -699,9 +707,10 @@ const MachineRateListing = (props) => {
       selectedRows = [...selectedRows, ...finalData];
     }
 
-    let uniqeArray = _.uniqBy(selectedRows, "MachineProcessRateId"); //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    dispatch(setSelectedRowForPagination(uniqeArray));
-    setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length })); //SETTING CHECKBOX STATE DATA IN REDUCER
+    let uniqeArray = _.uniqBy(selectedRows, "MachineProcessRateId")
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray })
+    setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length }))
+    dispatch(setSelectedRowForPagination(uniqeArray))
     let finalArr = selectedRows;
     let length = finalArr?.length;
     let uniqueArray = _.uniqBy(finalArr, "MachineProcessRateId");
@@ -715,10 +724,29 @@ const MachineRateListing = (props) => {
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]));
         state.gridApi.deselectAll();
-        Toaster.warning("Please select multiple machinr rate's with same category");
+        Toaster.warning("Please select multiple machine rate's with same category")
       }
     }
   };
+
+  const checkBoxRenderer = (props) => {
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
+        if (item?.MachineProcessRateId === props?.node?.data?.MachineProcessRateId) {
+          props?.node?.setSelected(true)
+        }
+        return null
+      })
+
+      return cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC' ? 'Vendor Based' : 'Zero Based';
+    } else {
+      return cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC' ? 'Vendor Based' : 'Zero Based';
+    }
+  }
+
 
   return (
     <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
@@ -750,7 +778,7 @@ const MachineRateListing = (props) => {
                   <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                   {permissions?.Add && (<button type="button" className={"user-btn mr5 Tour_List_Add"} onClick={displayForm} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>)}
                   {permissions?.BulkUpload && (<button type="button" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title="Bulk Upload"><div className={"upload mr-0"}></div>{/* Bulk Upload */} </button>)}
-                  {permissions?.Download && <>  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>
+                  {permissions?.Download && <>  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>
 
                     <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
                       <button id={'Excel-Downloads-machine'} className="p-absolute " type="button" >

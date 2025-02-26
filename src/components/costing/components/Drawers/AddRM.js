@@ -23,7 +23,7 @@ const gridOptions = {};
 
 function AddRM(props) {
   const { vendorLabel } = useLabels()
-  const { IsApplyMasterBatch, Ids, rmNameList, item } = props;
+  const { IsApplyMasterBatch, Ids, rmNameList, item, selectedRM } = props;
 
   const { handleSubmit } = useForm({
     mode: 'onChange',
@@ -174,6 +174,11 @@ function AddRM(props) {
   const onSubmit = data => { }
 
   const isFirstColumn = (params) => {
+    const allRMsSelected = rmDrawerList?.every(rm => Ids.includes(rm.RawMaterialId));
+    const isSelectedMasterBatch = params.data && selectedRM === params.data.RawMaterialId;
+    if (allRMsSelected || isSelectedMasterBatch) {
+      return false;
+    }
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 

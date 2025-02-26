@@ -780,6 +780,29 @@ class AddOperation extends Component {
     const { initialConfiguration } = this.props;
     const userDetailsOperation = JSON.parse(localStorage.getItem('userDetail'))
     const userDetail = userDetails()
+    if (isEditFlag) {
+
+      const hasNoChanges = (
+        checkForDecimalAndNull(values?.Rate) === checkForDecimalAndNull(DataToChange?.Rate) &&
+        (values?.Remark || '') === (DataToChange?.Remark || '') &&
+        (UOM?.value || '') === (oldUOM?.value || '') &&
+        (values?.Description || '') === (DataToChange?.Description || '') &&
+        JSON.stringify(files) === JSON.stringify(DataToChange?.Attachements) &&
+        (values?.OperationName || '') === (DataToChange?.OperationName || '') &&
+        (values?.OperationCode || '') === (DataToChange?.OperationCode || '') &&
+        checkForDecimalAndNull(values?.LabourRatePerUOM) === checkForDecimalAndNull(DataToChange?.LabourRatePerUOM) &&
+        checkForDecimalAndNull(values?.WeldingRate) === checkForDecimalAndNull(DataToChange?.OperationBasicRate) &&
+        checkForDecimalAndNull(values?.Consumption) === checkForDecimalAndNull(DataToChange?.OperationConsumption) &&
+        !isDateChange
+      );
+
+      if (hasNoChanges) {
+        this.setState({ setDisable: false });
+        Toaster.warning('Please change the data to save Operation Details');
+        return false;
+      }
+    }
+
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -984,6 +1007,10 @@ class AddOperation extends Component {
       obj.customer = this.state.client
       obj.isSurfaceTreatment = isSurfaceTreatment
       obj.OperationId = OperationId
+      obj.labourRatePerUOM = fieldsObj?.LabourRatePerUOM || ''
+      obj.rate = fieldsObj?.Rate || ''
+      obj.consumption = fieldsObj?.Consumption || ''
+      obj.weldingRate = fieldsObj?.WeldingRate || ''
 
       if (String(this.state.operationType.label) === "Ni Cr Plating") {
 
@@ -1164,7 +1191,7 @@ class AddOperation extends Component {
                           label={`Operation Name`}
                           name={"OperationName"}
                           type="text"
-                          placeholder={isEditFlag ? '-' : "Select"}
+                          placeholder={isEditFlag ? '-' : "Enter"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
                           onChange={this.checkUniqCodeByName}
                           component={renderText}
@@ -1194,7 +1221,7 @@ class AddOperation extends Component {
                           label={`Description`}
                           name={"Description"}
                           type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           disabled={isViewMode ? true : false}
@@ -1371,7 +1398,7 @@ class AddOperation extends Component {
                           label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}
                           type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, number]}
                           component={renderTextInputField}
                           disabled={isEditFlag ? true : false}
@@ -1533,7 +1560,7 @@ class AddOperation extends Component {
                         {"Cancel"}
                       </button>
                       {!isViewMode && <>
-                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state?.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || ((initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) && !CostingTypePermission) ?
                           <button id="AddOperation_SendForApproval" type="submit"
                             class="user-btn approval-btn save-btn mr5"
                             disabled={isViewMode || setDisable || disableSendForApproval}
@@ -1630,7 +1657,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption');
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', 'Rate', 'LabourRatePerUOM');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;

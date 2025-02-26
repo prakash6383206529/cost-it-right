@@ -35,7 +35,7 @@ function MasterSendForApproval(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-    const receiverId = selectedRows&&selectedRows[0]?.ReceiverId?selectedRows[0]?.ReceiverId:props?.receiverId??null
+    const receiverId = selectedRows && selectedRows[0]?.ReceiverId ? selectedRows[0]?.ReceiverId : props?.receiverId ?? null
     const { vendorLabel } = useLabels();
     const gridOptions = {};
     const [approvalDropDown, setApprovalDropDown] = useState([])
@@ -76,7 +76,7 @@ function MasterSendForApproval(props) {
     useEffect(() => {
         dispatch(getReasonSelectList((res) => { }))
         setValue('ScrapRateUOM', { label: approvalObj?.ScrapUnitOfMeasurement, value: approvalObj?.ScrapUnitOfMeasurementId })
-        dispatch(getAllMasterApprovalDepartment(receiverId,(res) => {
+        dispatch(getAllMasterApprovalDepartment(receiverId, (res) => {
             const Data = res?.data?.SelectList
             const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
             const updateList = Data && Data.filter(item => Departments.includes(item.Text))
@@ -120,7 +120,7 @@ function MasterSendForApproval(props) {
                 const departmentIds = Array.isArray(DepartmentId) ? DepartmentId : [DepartmentId];
                 const updateList = Data && Data.filter(item => departmentIds.includes(item.Value));
                 setDepartmentDropdown(updateList)
-                setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
+                setValue('dept', { label: updateList?.[0]?.Text, value: updateList?.[0]?.Value })
                 setDisableDept(true)
                 fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                 setIsShowDivision(false)
@@ -140,7 +140,7 @@ function MasterSendForApproval(props) {
             ReasonId: reasonId,
             PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID),
             DivisionId: divisionId ?? null,
-            ReceiverId:receiverId??null
+            ReceiverId: receiverId ?? null
         };
 
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
@@ -275,7 +275,7 @@ function MasterSendForApproval(props) {
                 ReasonId: '',
                 ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
                 PlantId: props?.isRFQ ? RFQPlantId : (approvalObj?.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID),
-                ReceiverId:receiverId??null
+                ReceiverId: receiverId ?? null
             }
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -315,7 +315,7 @@ function MasterSendForApproval(props) {
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
             plantId: (approvalObj?.Plant && approvalObj.Plant[0]?.PlantId) || (approvalData && approvalData[0]?.DestinationPlantId) || null,
             divisionId: (divisionId || divisionId !== '') ? divisionId : null,
-            receiverId:receiverId??null
+            receiverId: receiverId ?? null
         }
 
         dispatch(checkFinalUser(obj, (res) => {
@@ -356,8 +356,8 @@ function MasterSendForApproval(props) {
             props.handleOperation(approvalObj, props.isEdit)
         } else {
             setIsDisable(true)
-            
-            if (initialConfiguration?.IsMultipleUserAllowForApproval && (initialConfiguration?.IsDivisionAllowedForDepartment ? false: !getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
+
+            if (initialConfiguration?.IsMultipleUserAllowForApproval && (initialConfiguration?.IsDivisionAllowedForDepartment ? false : !getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
                 Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
                 setIsDisable(false)
                 return false
@@ -401,7 +401,7 @@ function MasterSendForApproval(props) {
                 senderObj.ApprovalTypeId = masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId
                 senderObj.IsFinalApprover = isFinalApprover
                 senderObj.DivisionId = division?.value ?? props?.divisionId ?? null
-                senderObj.ReceiverId = receiverId??null
+                senderObj.ReceiverId = receiverId ?? null
                 senderObj.MasterIdList = [
 
                 ]
@@ -556,7 +556,7 @@ function MasterSendForApproval(props) {
                         let obj = {
 
                             LoggedInUserId: loggedInUserId(),
-                            BudgetingId: 0,
+                            BudgetingId: approvalObj?.BudgetingId,
                             FinancialYear: approvalObj?.FinancialYear,
                             NetPoPrice: approvalObj?.NetPoPrice,
                             BudgetedPoPrice: approvalObj?.BudgetedPoPrice,
@@ -670,7 +670,7 @@ function MasterSendForApproval(props) {
                 // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
                 const processedApprovalObjects = approvalObjects.map(item => ({
-                    ApprovalProcessSummaryId: item?.ApprovalProcessSummaryId !== null ? item?.ApprovalProcessSummaryId : 0,
+                    ApprovalProcessSummaryId: item?.MasterApprovalProcessSummaryId !== null ? item?.MasterApprovalProcessSummaryId : 0,
                     ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
                     ApprovalToken: item?.Token !== null ? item?.Token : 0,
                     LoggedInUserId: loggedInUserId(),
@@ -691,7 +691,7 @@ function MasterSendForApproval(props) {
                     IsFinalApprovalProcess: false,
                     IsRFQCostingSendForApproval: props.isRFQ ? true : false,
                     DivisionId: props?.divisionId ?? null,
-                    ReceiverId:receiverId??null
+                    ReceiverId: receiverId ?? null
 
                     // Add any other necessary fields from the item
                 }));
@@ -1330,7 +1330,7 @@ function MasterSendForApproval(props) {
                                         disabled={isDisable}
                                     >
                                         <div className={'save-icon'}></div>
-                                        {isFinalApprover || type === 'Approve' || type === 'Reject'||type === 'Return' ? 'Submit' : 'Send For Approval'}
+                                        {isFinalApprover || type === 'Approve' || type === 'Reject' || type === 'Return' ? 'Submit' : 'Send For Approval'}
                                     </button>
                                 </div>
                             </Row>

@@ -154,8 +154,10 @@ class AddBOPForm extends Component {
       selectedPartType: this.props.selectedPartType,
       PartId: BOPPart ? BOPPart.value : '',
       PartType: this.props.selectedPartType.Text,
+      Technology: this.props?.TechnologySelected,
       PartTypeId: this.props.selectedPartType.Value,
       Input: Math.floor(100000 + Math.random() * 900000),
+      IsBreakupBoughtOutPart: DrawerPartData?.IsBreakupBoughtOutPart
     }
 
     this.props.getDrawerBOPData('', () => { })

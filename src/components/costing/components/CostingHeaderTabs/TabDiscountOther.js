@@ -311,7 +311,7 @@ function TabDiscountOther(props) {
       <Button
         id="tabDiscount_otherCost"
         onClick={() => handleOtherCostdrawer()}
-        className={"right mt15"}
+        className={"right mt-2"}
         variant={viewAddButtonIcon(otherCostData.gridData, "className")}
         title={viewAddButtonIcon(otherCostData.gridData, "title")}
       />
@@ -377,7 +377,7 @@ function TabDiscountOther(props) {
       <Button
         id="tabDiscount_otherCost"
         onClick={handleOtherDiscountDrawer}
-        className={"right mt15"}
+        className={"right mt-2"}
         variant={viewAddButtonIcon(otherDiscountData.gridData, "className")}
         title={viewAddButtonIcon(otherDiscountData.gridData, "title")}
       />
@@ -417,7 +417,7 @@ function TabDiscountOther(props) {
         <Button
           id="tabDiscount_condition"
           onClick={() => openAndCloseAddConditionCosting('Open')}
-          className={"right mt15"}
+          className={"right mt-2"}
           variant={viewAddButtonIcon(conditionTableData, "className")}
           title={viewAddButtonIcon(conditionTableData, "title")}
         />
@@ -810,13 +810,33 @@ function TabDiscountOther(props) {
   }, [costData, headerCosts, DiscountAndOtherCostTabData])
 
   //MANIPULATE TOP HEADER COSTS
+
+  const calculateBasicRate = () => {
+    let basicrate = checkForNull(totalCost) + checkForNull(otherCostData.otherCostTotal)
+    let netCost = checkForNull(totalCost) + checkForNull(otherCostData.otherCostTotal)
+    if (initialConfiguration?.IsAddNPVInNetCost) {
+      basicrate = checkForNull(basicrate) + checkForNull(totalNpvCost)
+      netCost = checkForNull(netCost) + checkForNull(totalNpvCost)
+    }
+    if (initialConfiguration?.IsAddPaymentTermInNetCost) {
+      basicrate = checkForNull(basicrate) + checkForNull(DiscountCostData?.paymentTermCost)
+      netCost = checkForNull(netCost) + checkForNull(DiscountCostData?.paymentTermCost)
+    }
+    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
+      netCost = checkForNull(netCost) + checkForNull(DiscountCostData?.totalConditionCost)
+    }
+    basicrate = checkForNull(basicrate) - checkForNull(otherDiscountData.totalCost)
+    netCost = checkForNull(netCost) - checkForNull(otherDiscountData.totalCost)
+    return { basicrate: basicrate, netCost: netCost }
+  }
+
   useEffect(() => {
     if (!CostingViewMode) {
 
 
-      setValue('BasicRateINR', DiscountCostData && checkForDecimalAndNull(checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)), initialConfiguration?.NoOfDecimalForPrice))
+      setValue('BasicRateINR', checkForDecimalAndNull(calculateBasicRate()?.basicrate, initialConfiguration?.NoOfDecimalForPrice))
 
-      setValue('NetPOPriceINR', DiscountCostData && checkForDecimalAndNull(netPOPrice, initialConfiguration?.NoOfDecimalForPrice))
+      setValue('NetPOPriceINR', checkForDecimalAndNull(calculateBasicRate()?.netCost, initialConfiguration?.NoOfDecimalForPrice))
       // if (otherCostType.value === 'Percentage') {
       //   setValue('AnyOtherCost', DiscountCostData !== undefined ? checkForDecimalAndNull(DiscountCostData.AnyOtherCost, initialConfiguration?.NoOfDecimalForPrice) : 0)
       // }
@@ -1096,6 +1116,7 @@ function TabDiscountOther(props) {
       if (!validateFileName(file.name)) {
         dropzone.current.files.pop()
         setDisableFalseFunction()
+        setAttachmentLoader(false)
         return false;
       }
       dispatch(fileUploadCosting(data, (res) => {
@@ -1901,6 +1922,22 @@ function TabDiscountOther(props) {
     dispatch(setSAPData({ ...SAPData, evaluationType: value?.label ?? '', isValuationValid: evaluationType.length > 0 ? true : false }))
   }
 
+  const showBasicRateTooltip = () => {
+    let basicrate = `Basic Price = Total Cost + Other Cost`
+    let netCost = `Net Cost = Basic Price`
+    if (initialConfiguration?.IsAddNPVInNetCost) {
+      basicrate = basicrate + ' + NPV Cost'
+    }
+    if (initialConfiguration?.IsAddPaymentTermInNetCost) {
+      basicrate = basicrate + ' + Payment Terms Cost'
+    }
+    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
+      netCost = netCost + ' + Condition Cost'
+    }
+    basicrate = basicrate + ' - Hundi/Discount Value'
+    return { basicrate: basicrate, netCost: netCost }
+  }
+
   return (
     <>
       {!nfrListing && <div className="login-container signup-form">
@@ -1915,7 +1952,7 @@ function TabDiscountOther(props) {
                       <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={`Total Cost = Net RM ${showBopLabel()} CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost`} />
                       <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p>
                       <button type="button" id="total_refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
-                      <TooltipCustom disabledIcon={true} id="total_refresh" tooltipText="Refresh to update Discount, Other cost and Cost" />
+                      <TooltipCustom disabledIcon={true} id="total_refresh" tooltipText="Refresh to update Discount cost & Other cost" />
                     </div >
                   </Col >
                 </Row >
@@ -2107,7 +2144,7 @@ function TabDiscountOther(props) {
                     </Row>
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                       <Col md="3">
-                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost + Total Other Cost - ${discountLabel} Value)  ${initialConfiguration?.IsAddPaymentTermInNetCost ? "+ Payment Terms Cost" : ""}`} />
+                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={showBasicRateTooltip()?.basicrate} />
                         <TextFieldHookForm
                           label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={'BasicRateINR'}
@@ -2174,7 +2211,7 @@ function TabDiscountOther(props) {
                       CostingViewMode={CostingViewMode}
                     />
                     }
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={showBasicRateTooltip()?.netCost} />
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}

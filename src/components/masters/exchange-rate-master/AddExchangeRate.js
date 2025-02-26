@@ -113,7 +113,16 @@ class AddExchangeRate extends Component {
     const temp = [];
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || item.Value === this.state?.toCurrency?.value) return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
+    if (label === 'toCurrency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0' || item.Value === this.state?.currency?.value) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -304,7 +313,7 @@ class AddExchangeRate extends Component {
         (DataToChange.BankRate === values.BankRate || values.BankRate === undefined || values.BankRate === '') && (DataToChange.CustomRate === values.CustomRate || values.CustomRate === undefined || values.CustomRate === '') &&
         DropdownChanged && (DataToChange.BankCommissionPercentage === values.BankCommissionPercentage || values.BankCommissionPercentage === undefined || values.BankCommissionPercentage === '')
       ) {
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Exchange Rate Details');
         return false;
       }
 
@@ -603,7 +612,7 @@ class AddExchangeRate extends Component {
                           component={searchableSelect}
                           placeholder={isEditFlag ? '-' : "Select"}
                           onChange={this.onFinancialDataChange}
-                          options={this.renderListing("currency")}
+                          options={this.renderListing("toCurrency")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
                             this.state.toCurrency == null ||

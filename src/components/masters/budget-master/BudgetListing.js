@@ -74,6 +74,7 @@ function BudgetListing(props) {
     const [noData, setNoData] = useState(false)
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
+    const [pageRecord, setPageRecord] = useState(0);
     const [showPopup, setShowPopup] = useState(false);
     const [deletedId, setDeletedId] = useState('');
     const { topAndLeftMenuData } = useSelector(state => state.auth);
@@ -141,6 +142,7 @@ function BudgetListing(props) {
      * @description Get user list data
      */
     const getTableListData = (skip = 0, take = 10, isPagination = true) => {
+        setPageRecord(skip);
         if (isPagination === true || isPagination === null) setIsLoader(true)
         let dataObj = { ...floatingFilterData }
         const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
@@ -222,12 +224,14 @@ function BudgetListing(props) {
     */
     const confirmDelete = (ID) => {
         dispatch(deleteBudget(ID, (res) => {
-            if (res !== undefined && res.status === 417 && res.data.Result === false) {
-                Toaster.error(res.data.Message)
-            } else if (res && res.data && res.data.Result === true) {
+            if (res && res?.data && res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_BUDGET_SUCCESS);
-                setDataCount(0)
-                resetState()
+                dispatch(setSelectedRowForPagination([]));
+                if (gridApi) {
+                    gridApi.deselectAll();
+                }
+                getTableListData(pageRecord, globalTakes, true);
+                setDataCount(0);
             }
         }));
         setShowPopup(false)
@@ -372,6 +376,7 @@ function BudgetListing(props) {
         setTimeout(() => {
             if (volumeDataList?.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
         setDisableFilter(false)
@@ -575,12 +580,13 @@ function BudgetListing(props) {
                                             <>
                                                 <Button className="user-btn mr5 Tour_List_Download" id={"budgetListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                     icon={"download mr-1"}
+                                                    disabled={totalRecordCount === 0}
                                                     buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 />
                                                 <ExcelFile filename={'Budget'} fileExtension={'.xls'} element={
                                                     <Button id={"Excel-Downloads-volume"} className="p-absolute" />
                                                 }>
-                                                    {onBtExport()}
+                                                    {totalRecordCount !== 0 ? onBtExport() : null}
                                                 </ExcelFile>
                                             </>
                                         }

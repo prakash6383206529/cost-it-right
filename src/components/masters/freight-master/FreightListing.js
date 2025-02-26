@@ -42,7 +42,8 @@ const FreightListing = (props) => {
     deletedId: '',
     selectedRowData: false,
     noData: false,
-    dataCount: 0
+    dataCount: 0,
+    totalRecordCount: 0
   })
   const permissions = useContext(ApplyPermission);
   const { freightDetail } = useSelector((state) => state.freight);
@@ -86,7 +87,7 @@ const FreightListing = (props) => {
       setState((prevState) => ({ ...prevState, isLoader: false }))
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
+        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, totalRecordCount: Data?.length }))
       } else if (res && res.response && res.response.status === 412) {
         setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
       } else {
@@ -139,7 +140,7 @@ const FreightListing = (props) => {
      */
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      freightDetail.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
+      freightDetail.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }))
     }, 500);
   }
   /**
@@ -283,7 +284,8 @@ const FreightListing = (props) => {
     filter: true,
     sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: isFirstColumn
+    checkboxSelection: isFirstColumn,
+    onFilterChanged: onFloatingFilterChanged
   };
 
   const frameworkComponents = {
@@ -326,13 +328,14 @@ const FreightListing = (props) => {
                           id={"Excel-Downloads-freightListing"}
                           title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                           type="button"
+                          disabled={state?.totalRecordCount === 0}
                           className={'user-btn mr5'}
                           icon={"download mr-1"}
                           buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                         />
                       }
                     >
-                      {onBtExport()}
+                      {state?.totalRecordCount !== 0 ? onBtExport() : null}
                     </ExcelFile>
                   </>
                 )}

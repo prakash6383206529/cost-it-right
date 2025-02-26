@@ -101,7 +101,7 @@ class AddProfit extends Component {
       this.props.getRawMaterialNameChild(() => { })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.fetchCostingHeadsAPI('master', false, res => { });
+    this.props.fetchCostingHeadsAPI('Overhead and Profits', false, res => { });
     this.getDetails();
   }
 
@@ -181,7 +181,9 @@ class AddProfit extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          Data.ProfitCCPercentage = Data?.ProfitMachiningCCPercentage;
           this.setState({ DataToChange: Data })
+          Data?.ProfitApplicabilityType?.includes("Part Cost") ? this.setState({ showPartCost: true }) : this.setState({ showPartCost: false })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
@@ -826,8 +828,8 @@ class AddProfit extends Component {
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
-        this.cancel('cancel')
-        return false
+          Toaster.warning('Please change the data to save Profit Details')
+          return false
       }
       this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
