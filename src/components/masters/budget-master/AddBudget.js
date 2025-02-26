@@ -261,7 +261,7 @@ function AddBudget(props) {
         setCostingTypeId(costingHeadFlag)
         setShowPlantWarning(false)
         setShowWarning(false)
-        let arr = ['PartType', 'plantCurrency', 'ExchangeSource', 'totalSumCurrency', 'totalSumPlantCurrency', 'totalSum', 'currentPrice', 'currency', 'FinancialYear','PartNumber','clientName','DestinationPlant','vendorName','Plant','']
+        let arr = ['PartType', 'plantCurrency', 'ExchangeSource', 'totalSumCurrency', 'totalSumPlantCurrency', 'totalSum', 'currentPrice', 'currency', 'FinancialYear', 'PartNumber', 'clientName', 'DestinationPlant', 'vendorName', 'Plant', '']
         arr.map(label => setValue(label, null || ''))
         setPart([])
         if (costingHeadFlag === VBCTypeId) {
@@ -692,7 +692,7 @@ function AddBudget(props) {
         const finalYear = year?.label && year?.label?.slice(0, 4);
         let date = (`${finalYear}-04-01`);
         const plantCurrency = getValues('plantCurrency')
-        
+
         const hasCurrencyAndDate = plantCurrency && date;
         const fromCurrency = getValues("plantCurrency")
         if (hasCurrencyAndDate && finalYear) {
@@ -729,10 +729,10 @@ function AddBudget(props) {
 
 
             if (costConverSionInLocalCurrency && Object.keys(currency).length !== 0) {
-                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:plantCurrency});
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
                 callAPI(currency?.label, plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
-                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:plantCurrency});
-                    callAPI(currency?.label, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
+                    callAPI(plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
                         setPlantCurrency(rate1);
                         setSettlementCurrency(rate2);
                         setPlantExchangeRateId(exchangeRateId1);
@@ -743,7 +743,7 @@ function AddBudget(props) {
                     });
                 });
             } else if (!costConverSionInLocalCurrency && fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
-                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:plantCurrency});
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
                 callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning, showWarning }) => {
                     setPlantCurrency(rate1);
                     setPlantExchangeRateId(exchangeRateId1);

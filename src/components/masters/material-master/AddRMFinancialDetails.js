@@ -171,7 +171,7 @@ function AddRMFinancialDetails(props) {
                 let fromCurrency = states.isImport ? state.currency?.label : Data?.Currency
                 let toCurrency = !states.isImport ? reactLocalStorage.getObject("baseCurrency") : Data?.Currency
 
-                if (!isViewFlag && getValues('effectiveDate') &&fromCurrency&& Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+                if (!isViewFlag && getValues('effectiveDate') &&fromCurrency!==undefined&& Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
                     if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && (!rawMaterailDetails?.Vendor && !getValues('clientName'))) {
                         return false;
                     }
