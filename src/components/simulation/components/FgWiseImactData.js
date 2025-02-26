@@ -1,7 +1,7 @@
 import { Row, Col } from 'reactstrap'
 import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { checkForDecimalAndNull, checkForNull } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
@@ -24,6 +24,7 @@ export function Fgwiseimactdata(props) {
             fgWiseAccDisable(true);
 
             let obj = {
+                "LoggedInUserId": loggedInUserId(),
                 "SimulationId": SimulationId ? SimulationId : EMPTY_GUID,
                 ...costingIdArray
             };

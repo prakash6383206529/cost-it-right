@@ -10,7 +10,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getComparisionSimulationData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
-import { checkForDecimalAndNull, formViewData } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, loggedInUserId } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AssemblyWiseImpactt } from '../../../config/constants'
@@ -48,7 +48,8 @@ function AssemblyWiseImpact(props) {
                     CostingId: dataForAssemblyImpact?.CostingId,
                     delta: isImpactDrawer ? dataForAssemblyImpact?.Variance : dataForAssemblyImpact.POVariance,
                     IsSinglePartImpact: true,
-                    SimulationId: simulationId
+                    SimulationId: simulationId,
+                    LoggedInUserId: loggedInUserId()
                 }
                 requestData = [obj]
 

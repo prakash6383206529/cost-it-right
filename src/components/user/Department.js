@@ -210,6 +210,7 @@ class Department extends Component {
 				}
 			} else {
 				formReq = {
+					LoggedInUserId: loggedInUserId(),
 					DepartmentId: DepartmentId,
 					IsActive: true,
 					CreatedDate: DayTime(new Date()).format('YYYY/MM/dd HH:mm:ss'),

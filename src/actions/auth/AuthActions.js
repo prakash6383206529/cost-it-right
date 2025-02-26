@@ -2012,8 +2012,9 @@ export function addOnboardingLevel(requestData, callback) {
  * @description UPDATE ONBOARDING LEVEL
  */
 export function updateOnboardingLevel(requestData, callback) {
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
-        axiosInstance.put(API.updateOnboardingLevel, requestData, config())
+        axiosInstance.put(API.updateOnboardingLevel, requestedData, config())
             .then((response) => {
                 callback(response);
             })

@@ -148,9 +148,10 @@ export function updatePlantAPI(plantId, request, callback) {
  * @description active Inactive Status
  */
 export function activeInactiveStatus(requestData, callback) {
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axiosInstance.put(`${API.activeInactiveStatus}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveStatus}`, requestedData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);

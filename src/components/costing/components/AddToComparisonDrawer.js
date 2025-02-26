@@ -99,7 +99,7 @@ function AddToComparisonDrawer(props) {
       // setIsZbcSelected(false)
       setisCbcSelected(false)
       setisNccSelected(false)
-      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
+      dispatch(getPartCostingPlantSelectList(partNo?.value !== undefined ? partNo?.value : partNo?.partId, (res) => {
         // dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
         dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
         dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', '', () => { }))
@@ -114,7 +114,7 @@ function AddToComparisonDrawer(props) {
         setIsVbcSelected(false)
         setisCbcSelected(false)
         setisNccSelected(false)
-        dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
+        dispatch(getPartCostingPlantSelectList(partNo?.value !== undefined ? partNo?.value : partNo?.partId, (res) => { }))
         commonApiCall(ZBCTypeId)
       } else if (costingTypeId === VBCTypeId) {//VBC COSTING CONDITION
         setIsZbcSelected(false)
@@ -200,7 +200,7 @@ function AddToComparisonDrawer(props) {
       setIsVbcSelected(false)
       setisCbcSelected(false)
       setisNccSelected(false)
-      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
+      dispatch(getPartCostingPlantSelectList(partNo?.value !== undefined ? partNo?.value : partNo?.partId, (res) => {
         commonApiCall(ZBCTypeId)
         setValue('costings', '')
         setValue('plant', '')

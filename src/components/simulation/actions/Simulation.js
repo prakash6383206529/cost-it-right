@@ -1055,7 +1055,7 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
 
 export function getCostingBoughtOutPartSimulationList(token, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingBoughtOutPartSimulationList}?simulationId=${token}`, config());
+        const request = axios.get(`${API.getCostingBoughtOutPartSimulationList}?simulationId=${token}?loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {
@@ -1086,14 +1086,12 @@ export function getCostingBoughtOutPartSimulationList(token, callback) {
 }
 
 export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, callback) {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const requestedData = { LoggedInUserId: loggedInUser?.loggedInUserId, ...requestData }
     return (dispatch) => {
         dispatch({
             type: GET_ASSEMBLY_SIMULATION_LIST,
             payload: [],
         })
-        const request = axiosInstance.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestedData, config());
+        const request = axiosInstance.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, config());
         request.then((response) => {
             // THIS BLOCK WORKS WHEN THERE IS DATA IN API
             if (response.data.Result) {

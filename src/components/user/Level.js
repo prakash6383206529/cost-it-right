@@ -400,6 +400,7 @@ const Level = (props) => {
         if (Number(state?.levelType) === COSTING_LEVEL) {
           // UPDATE COSTING LEVEL
           let formReq = {
+            LoggedInUserId: loggedInUserId(),
             TechnologyId: technology.value,
             LevelId: level.value,
             Technology: technology.label,
@@ -437,6 +438,7 @@ const Level = (props) => {
         if (Number(state?.levelType) === SIMULATION_LEVEL) {
           // UPDATE SIMULATION LEVEL
           let formReq = {
+            LoggedInUserId: loggedInUserId(),
             TechnologyId: technology.value,
             LevelId: level.value,
             Technology: technology.label,
@@ -525,6 +527,7 @@ const Level = (props) => {
       else {
         let formData = {
           LevelId: level.value,
+          UserId: loggedInUserId(),
           TechnologyId: technology.value,
           ApprovalTypeId: approvalTypeObject?.value
         }
