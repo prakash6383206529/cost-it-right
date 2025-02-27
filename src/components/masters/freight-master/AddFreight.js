@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Row, Col, Table, Label } from "reactstrap";
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
-import { required, checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
+import { required, checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces, positiveAndDecimalNumber } from "../../../helper/validation";
 import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType, getCityByCountryAction, getExchangeRateSource, getCurrencySelectList } from "../../../actions/Common";
 import {
@@ -556,8 +556,8 @@ class AddFreight extends Component {
     this.handleCalculation(newValue?.target?.value)
     const { errorObj } = this.state
     let obj = { ...errorObj }
-    if (decimalNumberLimit6(newValue?.target?.value) !== undefined || checkWhiteSpaces(newValue?.target?.value) !== undefined || number(newValue?.target?.value) !== undefined) {
-      obj.rate = true;
+    const value = newValue?.target?.value?.trim();
+    if (value && (decimalNumberLimit6(value) !== undefined || checkWhiteSpaces(value) !== undefined)) {      obj.rate = true;
     } else {
       obj.rate = false;
     }
@@ -617,7 +617,13 @@ class AddFreight extends Component {
       Load
     } = this.state;
     const { fieldsObj } = this.props;
-
+    if (fieldsObj) {
+      const value = String(fieldsObj).trimStart();
+      if (decimalNumberLimit6(value) !== undefined || checkWhiteSpaces(value) !== undefined || positiveAndDecimalNumber(value) !== undefined) {
+        this.setState({ errorObj: { ...this.state.errorObj, rate: true } });
+        return false;
+      }
+    }
     if (this.checkValidation()) {
       return false
     }
@@ -683,7 +689,8 @@ class AddFreight extends Component {
       if (i === gridEditIndex) return false;
       return true;
     });
-    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+    const value = String(fieldsObj).trimStart();
+    if (fieldsObj === undefined || Number(fieldsObj) === 0 || positiveAndDecimalNumber(value) !== undefined) {
       this.setState({ errorObj: { rate: true } })
       return false
     }
