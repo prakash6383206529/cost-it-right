@@ -29,7 +29,8 @@ function TabSTAssemblyTechnology(props) {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
         AssemCostingId: costData.CostingId,
-        SubAsmCostingId: costData.CostingId
+        SubAsmCostingId: costData.CostingId,
+        isComponentCosting: costData?.PartType === "Component" ? true : false
       }
       dispatch(getSurfaceTreatmentTabData(data, true, () => { }))
     }

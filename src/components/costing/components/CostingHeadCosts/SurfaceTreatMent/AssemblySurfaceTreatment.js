@@ -38,6 +38,7 @@ function AssemblySurfaceTreatment(props) {
         PartId: item.PartId,
         AssemCostingId: item.AssemblyCostingId,
         SubAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
+        isComponentCosting: costData?.PartType === "Component" ? true : false
       }
       dispatch(getSurfaceTreatmentTabData(data, true, (res) => {
         if (res && res.data && res.data.Result) {
