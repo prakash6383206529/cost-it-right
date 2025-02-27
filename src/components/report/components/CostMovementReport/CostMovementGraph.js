@@ -285,14 +285,14 @@ function CostMovementGraph(props) {
     }
 
     const POPriceFormatter = (props) => {
-        const cellValue = props?.value;
+        const cellValue = checkForDecimalAndNull(props?.value, initialConfiguration.NoOfDecimalForPrice);
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
     }
 
     const POPriceCurrencyFormatter = (props) => {
-        const cellValue = props?.value;
+        const cellValue = checkForDecimalAndNull(props?.value, initialConfiguration.NoOfDecimalForPrice);
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
@@ -301,6 +301,18 @@ function CostMovementGraph(props) {
     // const rowSpan = (params) => { //DONT DELETE (WILL BE USED FOR ROW MERGING LATER)
     //     return 5
     // }
+    const getYAxisMaxWithPadding = (datasets) => {
+        // Find the maximum value across all datasets
+        const maxValue = Math.max(...datasets.flatMap(dataset => 
+            dataset.data.filter(value => value !== null && value !== undefined)
+        ));
+        
+        // Add 20% padding above the maximum value
+        const padding = maxValue * 0.1;
+        // Round up to the next nice number
+        return Math.ceil((maxValue + padding) / 5) * 5;
+    };
+
     const lineChartOptions = {
         plugins: {
             legend: {
@@ -328,8 +340,8 @@ function CostMovementGraph(props) {
                             label += ': ';
                         }
                         if (context.parsed.y !== null) {
-                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
-                        }
+                            label += new Intl.NumberFormat('en-US', {style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR', minimumFractionDigits: initialConfiguration?.NoOfDecimalForPrice,maximumFractionDigits: initialConfiguration?.NoOfDecimalForPrice
+                            }).format(context.parsed.y);                      }
                         return label;
                     }
                 }
@@ -391,7 +403,11 @@ function CostMovementGraph(props) {
                 minRatation: 180,
             },
             y: {
-                min: 0
+                min: 0,
+                max: getYAxisMaxWithPadding(lineDataSets),
+                ticks: {
+                    stepSize: 5
+                }
             },
 
         },
@@ -422,8 +438,10 @@ function CostMovementGraph(props) {
                             label += ': ';
                         }
                         if (context.parsed.y !== null) {
-                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
-                        }
+                            label += new Intl.NumberFormat('en-US', {
+                                style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR', minimumFractionDigits: initialConfiguration?.NoOfDecimalForPrice,
+                                maximumFractionDigits: initialConfiguration?.NoOfDecimalForPrice
+                            }).format(context.parsed.y);                       }
                         return label;
                     }
                 }
@@ -461,6 +479,13 @@ function CostMovementGraph(props) {
                 }
             },
 
+            y: {
+                min: 0,
+                max: getYAxisMaxWithPadding(barDataSets),
+                ticks: {
+                    stepSize: 5
+                }
+            }
         },
     }
 
