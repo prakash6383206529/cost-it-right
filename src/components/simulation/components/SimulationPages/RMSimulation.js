@@ -1021,7 +1021,7 @@ function RMSimulation(props) {
     }
 
     const zeroFormatter = (props) => {
-        const cellValue = props?.value;
+        const cellValue = checkForDecimalAndNull(props?.value, getConfigurationKey().NoOfDecimalForPrice);
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '0';
     }
 

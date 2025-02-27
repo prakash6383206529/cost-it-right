@@ -478,7 +478,7 @@ function VerifySimulation(props) {
      * @method hyphenFormatter
      */
     const hyphenFormatter = (props) => {
-        const cellValue = props?.value;
+        const cellValue = checkForDecimalAndNull(props?.value, getConfigurationKey().NoOfDecimalForPrice);
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
