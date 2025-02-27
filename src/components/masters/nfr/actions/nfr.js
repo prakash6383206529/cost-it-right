@@ -32,9 +32,10 @@ export function getAllNfrList(callback) {
 }
 
 export function getNfrPartDetails(nfrId, callback) {
+        
     return (dispatch) => {
 
-        const request = axios.get(`${API.getNfrPartDetails}/${nfrId}`, config());
+        const request = axios.get(`${API.getNfrPartDetails}/${nfrId}/${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);

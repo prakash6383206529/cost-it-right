@@ -473,7 +473,7 @@ const Level = (props) => {
           // manageLevelTabApi(true)
           // UPDATE SIMULATION LEVEL
           let formReq = {
-
+            LoggedInUserId: loggedInUserId(),
             MasterId: technology.value,
             LevelId: level.value,
             Master: technology.label,

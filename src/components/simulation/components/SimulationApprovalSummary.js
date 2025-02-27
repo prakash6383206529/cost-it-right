@@ -255,7 +255,7 @@ function SimulationApprovalSummary(props) {
 
                     // CREATE OBJECT FOR ASSEMBLY WISE IMPACT API
                     uniqueArr && uniqueArr.map(item => {
-                        requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false, SimulationId: SimulationId, LoggedInUserId: loggedInUserId() })
+                        requestData.push({ CostingId: item?.CostingId, delta: item?.POVariance, IsSinglePartImpact: false, SimulationId: SimulationId, LoggedInUserId: loggedInUserId() })
                         return null
                     })
 
