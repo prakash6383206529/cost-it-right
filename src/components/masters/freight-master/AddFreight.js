@@ -546,6 +546,9 @@ class AddFreight extends Component {
   criteriaHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
       this.setState({ RateCriteria: newValue });
+      let errorObj = { ...this.state.errorObj };
+      errorObj.criteria = false;
+      this.setState({ errorObj });
     } else {
       this.setState({ RateCriteria: [] });
     }
@@ -593,6 +596,16 @@ class AddFreight extends Component {
     }
 
     if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      errorObj.rate = true;
+      count++;
+    }
+
+    if(this.state.isImport && !fieldsObj.hasOwnProperty("Rate")){
+      errorObj.rate = true;
+      count++;
+    }
+  
+    if(!this.state.isImport && !fieldsObj.hasOwnProperty("RateLocalConversion")){
       errorObj.rate = true;
       count++;
     }
@@ -1496,8 +1509,10 @@ class AddFreight extends Component {
                               disabled={isViewMode}
                               className=" "
                               customClassName="withBorder"
-                            />
-                            {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                            >
+                              {this.state.errorObj.rate && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                            </Field>
+                            {/* {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>} */}
                           </Col>}
                           <Col md="3">
                             {this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.freightRateTitle()?.toolTipTextNetCostBaseCurrency : this.freightRateTitle()?.tooltipTextPlantCurrency} />}
@@ -1514,8 +1529,10 @@ class AddFreight extends Component {
                               disabled={isViewMode || this.state.isImport}
                               className=" "
                               customClassName="withBorder"
-                            />
-                            {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                            >
+                              {this.state.errorObj.rate && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                            </Field>
+                            {/* {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>} */}
                           </Col>
                           {!hidePlantCurrency && <Col md="3">
                             <TooltipCustom disabledIcon={true} id="freight-rate" tooltipText={this.state.isImport ? this.freightRateTitle()?.toolTipTextNetCostBaseCurrency : this.freightRateTitle()?.tooltipTextPlantCurrency} />
