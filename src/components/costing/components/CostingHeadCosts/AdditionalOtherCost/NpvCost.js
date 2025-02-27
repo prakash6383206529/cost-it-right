@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import { ViewCostingContext } from '../../CostingDetails'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function NpvCost(props) {
     const [totalCost, setTotalCost] = useState(0)
@@ -61,7 +62,7 @@ function NpvCost(props) {
                                 </tr>
                             )}
                             <tr className='table-footer'>
-                                <td colSpan={"3"} className="text-right">{'Total Cost:'}</td>
+                                <td colSpan={"3"} className="text-right">{`Total NPV Cost (${reactLocalStorage.getObject("baseCurrency")}) :`}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
                         </tbody>

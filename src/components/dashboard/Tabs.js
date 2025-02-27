@@ -50,26 +50,26 @@ const Tabs = (props) => {
             <TabContent activeTab={activeTab}>
                 {activeTab === '1' &&
                     <TabPane tabId="1">
-                        {props.costing ? <ApprovalListing isApproval={true} closeDashboard={props.closeDashboard} isDashboard={true} isPageNoChange={props.isPageNoChange} status={PENDING} hidesendBtn={false} />
-                            : <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={props.isPageNoChange} status={PENDING} hidesendBtn={false} />
+                        {props.costing ? <ApprovalListing isApproval={true} closeDashboard={props.closeDashboard} isDashboard={true} isPageNoChange={props.isPageNoChange} status={PENDING} hidesendBtn={false} delegation={props.delegation} />
+                            : <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={props.isPageNoChange} status={PENDING} hidesendBtn={false} delegation={props.delegation} />
                         }
                     </TabPane>}
                 {activeTab === '2' &&
                     <TabPane tabId="2">
-                        {props.costing ? <ApprovalListing isApproval={true} closeDashboard={props.closeDashboard} isDashboard={true} isPageNoChange={props.isPageNoChange} status={WAITING_FOR_APPROVAL} hidesendBtn={true} />
-                            : <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={props.isPageNoChange} status={WAITING_FOR_APPROVAL} hidesendBtn={true} />
+                        {props.costing ? <ApprovalListing isApproval={true} closeDashboard={props.closeDashboard} isDashboard={true} isPageNoChange={props.isPageNoChange} status={WAITING_FOR_APPROVAL} hidesendBtn={true} delegation={props.delegation} />
+                            : <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={props.isPageNoChange} status={WAITING_FOR_APPROVAL} hidesendBtn={true} delegation={props.delegation} />
                         }
                     </TabPane>}
                 {activeTab === '3' &&
                     <TabPane tabId="3">
-                        {props.costing ? <ApprovalListing isApproval={true} closeDashboard={props.closeDashboard} isDashboard={true} isPageNoChange={props.isPageNoChange} status={REJECTED} hidesendBtn={true} />
-                            : <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={props.isPageNoChange} status={REJECTED} hidesendBtn={true} />
+                        {props.costing ? <ApprovalListing isApproval={true} closeDashboard={props.closeDashboard} isDashboard={true} isPageNoChange={props.isPageNoChange} status={REJECTED} hidesendBtn={true} delegation={props.delegation} />
+                            : <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={props.isPageNoChange} status={REJECTED} hidesendBtn={true} delegation={props.delegation} />
                         }
                     </TabPane>}
                 {activeTab === '4' &&
                     <TabPane tabId="4">
-                        {props.costing ? <ApprovalListing isApproval={true} closeDashboard={props.closeDashboard} isDashboard={true} isPageNoChange={props.isPageNoChange} status={APPROVED} hidesendBtn={true} />
-                            : <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={props.isPageNoChange} status={APPROVED} hidesendBtn={true} />
+                        {props.costing ? <ApprovalListing isApproval={true} closeDashboard={props.closeDashboard} isDashboard={true} isPageNoChange={props.isPageNoChange} status={APPROVED} hidesendBtn={true} delegation={props.delegation} />
+                            : <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} isPageNoChange={props.isPageNoChange} status={APPROVED} hidesendBtn={true} delegation={props.delegation} />
                         }
                     </TabPane>}
             </TabContent>

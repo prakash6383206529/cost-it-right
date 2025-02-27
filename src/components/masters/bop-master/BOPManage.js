@@ -59,6 +59,7 @@ const BOPManage = (props) => {
         dataCount: 0,
         showExtraData: false,
         render: false,
+        totalRecordCount: 0
     });
 
     useEffect(() => {
@@ -83,7 +84,7 @@ const BOPManage = (props) => {
             setState((prevState) => ({ ...prevState, isLoader: false }));
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                setState((prevState) => ({ ...prevState, tableData: Data }));
+                setState((prevState) => ({ ...prevState, tableData: Data, totalRecordCount: Data?.length }));
             } else if (res && res.response && res.response.status === 412) {
                 setState((prevState) => ({ ...prevState, tableData: [] }));
             } else {
@@ -110,7 +111,7 @@ const BOPManage = (props) => {
        */
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
-            getViewBoughtOutParts.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }));
+            getViewBoughtOutParts.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
         }, 500);
     };
 
@@ -320,9 +321,9 @@ const BOPManage = (props) => {
                                 <>
                                     <ExcelFile filename={Sob} fileExtension={'.xls'}
                                         element={
-                                            <Button id={"Excel-Downloads-bopManage"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                            <Button id={"Excel-Downloads-bopManage"}  disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                                         }>
-                                        {onBtExport()}
+                                         {state?.totalRecordCount !== 0 ? onBtExport() : null}
                                     </ExcelFile>
                                 </>
                             }

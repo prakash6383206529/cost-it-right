@@ -104,7 +104,7 @@ export const MESSAGES = {
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
 
   //FERROUSCALCULATOR 
-  FERROUSCALCULATOR_RESET_RM: 'Are you sure you want to delete this raw material? Deleting it will also remove all associated calculations.',
+  FERROUSCALCULATOR_RESET_RM: 'Calculated value will get reset. Do you want to continue ?',
   FERROUSCALCULATOR_UNUSED_RM: 'Rm which are not used will be get deleted from the grid',
   //INDEXATION
   INDEX_ADD_SUCCESS: 'Record added successfully',
@@ -303,7 +303,7 @@ export const MESSAGES = {
   DELETE_FREIGHT_SUCCESSFULLY: 'Freight deleted successfully',
   FREIGHT_DELETE_ALERT: 'Are you sure you want to delete this Freight?',
   TRUCK_DIMENSIONS_UPDATE_SUCCESS: 'Truck dimensions updated successfully',
-  TRUCK_DIMENSIONS_ADD_SUCCESS: 'Truck dimensions added successfully',
+  TRUCK_DIMENSIONS_ADD_SUCCESS: 'Truck dimensions saved successfully',
   
 
   //ADDITIONAL FREIGHT

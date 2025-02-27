@@ -481,6 +481,7 @@ function VolumeListing(props) {
     setTimeout(() => {
       if (volumeDataList?.length !== 0) {
         setNoData(searchNocontentFilter(value, noData));
+        setTotalRecordCount(gridApi?.getDisplayedRowCount())
       }
     }, 500);
     setDisableFilter(false);
@@ -691,7 +692,7 @@ function VolumeListing(props) {
                     {addAccessibility && (<Button id="volumeListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
                     {bulkUploadAccessibility && (<Button id="volumeListing_bulkUpload" className={"user-btn mr5  Tour_List_BulkUpload"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
 
-                    {downloadAccessibility && (<>                        <Button className="user-btn mr5 Tour_List_Download" id={"volumeListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                    {downloadAccessibility && (<><Button className="user-btn mr5 Tour_List_Download" id={"volumeListing_excel_download"} onClick={onExcelDownload} disabled={totalRecordCount === 0} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                       icon={"download mr-1"}
                       buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                     />

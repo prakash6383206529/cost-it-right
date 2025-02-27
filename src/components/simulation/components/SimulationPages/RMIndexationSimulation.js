@@ -28,7 +28,7 @@ import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRat
 import LoaderCustom from '../../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '..';
-import { setCommodityDetails } from '../../../masters/actions/Indexation';
+import { calculateAndSaveRMIndexationSimulation, setCommodityDetails } from '../../../masters/actions/Indexation';
 import CommoditySimulationDrawer from './CommoditySimulationDrawer';
 import AddOtherCostDrawer from '../../../masters/material-master/AddOtherCostDrawer';
 import SimulationApproveReject from '../../../costing/components/approval/SimulationApproveReject';
@@ -40,6 +40,7 @@ import { isResetClick } from '../../../../actions/Common';
 import AddConditionCosting from '../../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { updateCostValue } from '../../../common/CommonFunctions';
 import { setResetCostingHead } from '../../../../actions/Common';
+import { AgGridCustomDatePicker } from '../../../masters/masterUtil';
 
 const gridOptions = {
 
@@ -98,6 +99,7 @@ function RMIndexationSimulation(props) {
     const [conditionCostDetailForRow, setConditionCostDetailForRow] = useState([])
     const [rowIndex, setRowIndex] = useState('')
     const [isSaving, setIsSaving] = useState(false);
+    const [dateState, setDateState] = useState({})
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -490,11 +492,9 @@ function RMIndexationSimulation(props) {
     const combinedCostingHeadRenderer = (props) => {
         // Call the existing checkBoxRenderer
         costingHeadFormatter(props);
-
         // Get and localize the cell value
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-
         // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
         return localizedValue;
     };
@@ -940,7 +940,10 @@ function RMIndexationSimulation(props) {
     const onCellValueChanged = (props) => {
         const rowData = props?.data
         if (rowData) {
-            setIsSaving(true)
+            if (props?.column?.colId === 'NewToDate' || props?.column?.colId === 'NewFromDate' || props?.column?.colId === 'NewEffectiveDate') {
+            } else {
+                setIsSaving(true)
+            }
             setTotalBasicRate(rowData?.NewBasicRatePerUOM)
             setNetCostWithoutConditionCost(rowData?.NewNetCostWithoutConditionCost)
         }
@@ -1203,6 +1206,61 @@ function RMIndexationSimulation(props) {
         }, 1000);
     }
 
+
+    const selectedDateRenderer = (props) => {
+        const rowData = props?.data
+        let tempDate = {
+            "NewEffectiveDate": rowData?.NewEffectiveDate,
+            "NewFromDate": rowData?.NewFromDate,
+            "NewToDate": rowData?.NewToDate
+        }
+        tempDate = {
+            ...tempDate, // spread existing tempDate if needed
+            [props?.column?.colId]: rowData[props?.column?.colId]
+        }
+        // tempDate[props?.column?.colId] = rowData[props?.column?.colId]
+        setDateState(prev => ({ ...prev, ...tempDate }))
+
+
+        const isEditable = (isImpactedMaster || isRunSimulationClicked || isApprovalSummary) ? false : (isCostingSimulation ? rowData?.NewRawMaterialIndexationDetails?.FrequencyOfSettlement : rowData?.FrequencyOfSettlement) === 'As and When'
+        return isEditable ? <><AgGridCustomDatePicker dateState={tempDate} props={props} colId={props?.column?.colId} />  </> : effectiveDateFormatter(props)
+    }
+    const fetchData = (props) => {
+        const rowData = props?.data
+        const rowIndex = props?.rowIndex
+        let obj = {
+            "SimulationId": simulationId,
+            "LoggedInUserId": loggedInUserId(),
+            "RawMaterialDetails": [
+                {
+                    "RawMaterialId": rowData?.OldRawMaterialId,
+                    "EffectiveDate": DayTime(rowData?.NewEffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+                    "FromDate": DayTime(rowData?.NewFromDate).format('YYYY-MM-DD HH:mm:ss'),
+                    "ToDate": DayTime(rowData?.NewToDate).format('YYYY-MM-DD HH:mm:ss')
+                }
+            ]
+
+        }
+        dispatch(calculateAndSaveRMIndexationSimulation(obj, (response) => {
+            if (response) {
+                dispatch(editRMIndexedSimulationData({ SimulationId: simulationId }, (res) => {
+                    setIsLoader(!res?.data?.Result);
+                    setIsSaving(true);
+                    if (indexedRMForSimulation && indexedRMForSimulation.length > 0) {
+                        if (indexedRMForSimulation[rowIndex]?.Message) {
+                            Toaster.warning(indexedRMForSimulation[rowIndex]?.Message)
+                        } else {
+                            Toaster.success("Data saved successfully")
+                        }
+                    }
+                }));
+            }
+        }))
+    }
+    const saveButtonRenderer = (props) => {
+        return <button title='Save' className="SaveIcon" type={'button'} onClick={() => fetchData(props)} disabled={false} />
+    }
+
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         combinedCostingHeadRenderer: combinedCostingHeadRenderer,
@@ -1235,7 +1293,9 @@ function RMIndexationSimulation(props) {
         newBasicRateFormatterForNonIndexedRM: newBasicRateFormatterForNonIndexedRM,
         actionCellRenderer: actionCellRenderer,
         existingConditionCostFormatter: existingConditionCostFormatter,
-        revisedConditionCostFormatter: revisedConditionCostFormatter
+        revisedConditionCostFormatter: revisedConditionCostFormatter,
+        selectedDateRenderer: selectedDateRenderer,
+        saveButtonRenderer: saveButtonRenderer
     };
 
 
@@ -1308,7 +1368,10 @@ function RMIndexationSimulation(props) {
 
 
 
-
+    const showForAsAndWhen = (props) => {
+        const isEditable = (isImpactedMaster || isRunSimulationClicked || isApprovalSummary) ? false : (isCostingSimulation ? rowData?.NewRawMaterialIndexationDetails?.FrequencyOfSettlement : rowData?.FrequencyOfSettlement) === 'As and When'
+        return !isEditable
+    }
 
     return (
 
@@ -1404,16 +1467,20 @@ function RMIndexationSimulation(props) {
 
                                                 {String(props?.masterId) === String(RMIMPORT) && !isIndexedRM && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
                                                 {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
-                                                {isIndexedRM && <>
-                                                    <AgGridColumn field='IndexExchangeName' tooltipField='IndexExchangeName' editable='false' headerName="Index" minWidth={140} ></AgGridColumn>
-                                                    <AgGridColumn field='ExchangeRateSourceName' tooltipField='ExchangeRateSourceName' editable='false' headerName="Exchange Rate Source" minWidth={140} ></AgGridColumn>
-                                                    <AgGridColumn field='MaterialType' tooltipField='MaterialType' editable='false' headerName="Material" minWidth={140} ></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.FrequencyOfSettlement} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FrequencyOfSettlement' : "FrequencyOfSettlement"} editable='false' headerName={"Frequency Of Settlement"} ></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.OldFromDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.FromDate' : "OldFromDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old From Date"} ></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewFromDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FromDate' : "NewFromDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New From Date"} ></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.OldToDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.ToDate' : "OldToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old To Date"} ></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewToDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ToDate' : "NewToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New To Date"} ></AgGridColumn></>}
-                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+
+                                                {isIndexedRM && <AgGridColumn field='IndexExchangeName' tooltipField='IndexExchangeName' editable='false' headerName="Index" minWidth={140} ></AgGridColumn>}
+                                                {isIndexedRM && <AgGridColumn field='ExchangeRateSourceName' tooltipField='ExchangeRateSourceName' editable='false' headerName="Exchange Rate Source" minWidth={140} ></AgGridColumn>}
+                                                {isIndexedRM && <AgGridColumn field='MaterialType' tooltipField='MaterialType' editable='false' headerName="Material" minWidth={140} ></AgGridColumn>}
+                                                {isIndexedRM && <AgGridColumn width={columnWidths.FrequencyOfSettlement} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FrequencyOfSettlement' : "FrequencyOfSettlement"} editable='false' headerName={"Frequency Of Settlement"} ></AgGridColumn>}
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={"Date"} marryChildren={true} >
+                                                    {isIndexedRM && <AgGridColumn width={columnWidths.OldFromDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.FromDate' : "OldFromDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old From Date"} ></AgGridColumn>}
+                                                    {isIndexedRM && <AgGridColumn width={columnWidths.NewFromDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FromDate' : "NewFromDate"} editable='false' cellRenderer={'selectedDateRenderer'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New From Date"} ></AgGridColumn>}
+                                                    {isIndexedRM && <AgGridColumn width={columnWidths.OldToDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.ToDate' : "OldToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old To Date"} ></AgGridColumn>}
+                                                    {isIndexedRM && <AgGridColumn width={columnWidths.NewToDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ToDate' : "NewToDate"} editable='false' cellRenderer={'selectedDateRenderer'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New To Date"} ></AgGridColumn>}
+                                                    <AgGridColumn width={columnWidths.OldEffectiveDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.EffectiveDate' : "OldEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={isIndexedRM ? props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old Effective Date" : "Effective Date"} ></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NewEffectiveDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.EffectiveDate' : "NewEffectiveDate"} editable='false' cellRenderer={'selectedDateRenderer'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New Effective Date"} ></AgGridColumn>
+                                                </AgGridColumn>
+                                                {/* {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>} */}
                                                 <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={"Basic Rate (Currency)"} marryChildren={true} >
                                                     {!isIndexedRM && <AgGridColumn width={120} field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>}
@@ -1461,8 +1528,9 @@ function RMIndexationSimulation(props) {
                                                 }
                                                 {props.children}
                                                 <AgGridColumn width={columnWidths.OldEffectiveDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.EffectiveDate' : "OldEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={isIndexedRM ? props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old Effective Date" : "Effective Date"} ></AgGridColumn>
-                                                {isIndexedRM && <AgGridColumn width={columnWidths.NewEffectiveDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.EffectiveDate' : "NewEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New Effective Date"} ></AgGridColumn>}
+                                                <AgGridColumn width={columnWidths.NewEffectiveDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.EffectiveDate' : "NewEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New Effective Date"} ></AgGridColumn>
                                                 {(!isIndexedRM && !isImpactedMaster && !isApprovalSummary && !isRunSimulationClicked) && <AgGridColumn headerName='Action' pinned='right' cellRenderer='actionCellRenderer'></AgGridColumn>}
+                                                <AgGridColumn hide={showForAsAndWhen} width={120} pinned='right' field="NewRMNetLandedCostConversion" editable='false' headerName="Action" cellRenderer={'saveButtonRenderer'}></AgGridColumn>
                                                 <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
                                             </AgGridReact>))}

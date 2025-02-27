@@ -65,7 +65,7 @@ const CostingSummaryTable = (props) => {
   });
 
 
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, compareButtonPressed, showEditSOBButton, partTypeValue, technology } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, compareButtonPressed, showEditSOBButton, partTypeValue, technology, receiverId } = props
   const { t } = useTranslation("Costing")
   const [totalCost, setTotalCost] = useState(0)
   let history = useHistory();
@@ -654,11 +654,11 @@ const CostingSummaryTable = (props) => {
   const viewPackagingAndFrieghtData = (index) => {
     let packagingData = viewCostingData[index]?.netPackagingCostView
     let freightData = viewCostingData[index]?.netFreightCostView
-
     setIsViewPackagingFreight(true)
     setViewPackagingFreight({
       packagingData: packagingData,
       freightData: freightData,
+      index: index
     })
   }
 
@@ -1138,8 +1138,6 @@ const CostingSummaryTable = (props) => {
     let plantArray = []
 
     list && list?.map((item) => {
-
-
       vendorArray?.push(item?.vendorId)
       effectiveDateArray?.push(item?.effectiveDate)
       plantArray?.push(item?.plantCode)
@@ -1196,7 +1194,7 @@ const CostingSummaryTable = (props) => {
             } else if (!allEqual(plantArray)) {
               Toaster.warning('Plant should be same for sending multiple costing for approval')
             } else {
-              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId ?? null, (res) => {
                 if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
                   setShowApproval(false)
                   Toaster.warning('User is not in the approval flow')
@@ -1234,7 +1232,7 @@ const CostingSummaryTable = (props) => {
       } else if (!allEqual(plantArray)) {
         Toaster.warning('Plant should be same for sending multiple costing for approval')
       } else {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId ?? null, (res) => {
           if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')
@@ -1248,37 +1246,34 @@ const CostingSummaryTable = (props) => {
                 "PlantId": viewCostingData[0]?.destinationPlantId,
                 "PartId": viewCostingData[0]?.partId
               }
-              const { Department } = userDetails()
-              if (Department.length === 1 || getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-                fetchDivisionId(requestObject, dispatch).then((divisionId) => {
-                  dataSelected[0].DivisionId = divisionId
-                  let obj = {}
-                  obj.DepartmentId = userDetails().DepartmentId
-                  obj.UserId = loggedInUserId()
-                  obj.TechnologyId = partInfo.TechnologyId
-                  obj.Mode = 'costing'
-                  obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
-                  obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
-                  obj.divisionId = divisionId
 
-                  dispatch(checkFinalUser(obj, res => {
-                    if (res?.data?.Result) {
-                      setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                      if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
-                        sendForApprovalData(multipleCostings)
-                        setShowApproval(true)
-                      } else if (res?.data?.Data?.IsFinalApprover === true) {
-                        Toaster.warning("Final level user cannot send costing for approval.")
-                      } else {
-                        Toaster.warning("User does not have permission to send costing for approval.")
-                      }
+
+              fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+                dataSelected[0].DivisionId = divisionId
+                let obj = {}
+                obj.DepartmentId = userDetails().DepartmentId
+                obj.UserId = loggedInUserId()
+                obj.TechnologyId = partInfo.TechnologyId
+                obj.Mode = 'costing'
+                obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+                obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
+                obj.divisionId = divisionId
+
+                dispatch(checkFinalUser(obj, res => {
+                  if (res?.data?.Result) {
+                    setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                      sendForApprovalData(multipleCostings)
+                      setShowApproval(true)
+                    } else if (res?.data?.Data?.IsFinalApprover === true) {
+                      Toaster.warning("Final level user cannot send costing for approval.")
+                    } else {
+                      Toaster.warning("User does not have permission to send costing for approval.")
                     }
-                  }))
-                })
-              } else {
-                sendForApprovalData(multipleCostings)
-                setShowApproval(true)
-              }
+                  }
+                }))
+              })
+
 
             }
           }
@@ -1432,7 +1427,7 @@ const CostingSummaryTable = (props) => {
     if (data) {
       let temp = moduleHandler(data[0]?.costingId, 'down', data)
       if (!temp) {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId ?? null, (res) => {
           if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')
@@ -1937,7 +1932,7 @@ const CostingSummaryTable = (props) => {
       finalKey = data?.currency?.currencyTitle === "-" ? "nPOPrice" : "nPOPriceWithCurrency"
       value = data[finalKey]
     }
-
+    const formattedValue = checkForDecimalAndNull(Math.abs(value), initialConfiguration.NoOfDecimalForPrice)
     let varianceValues = ''
 
     switch (key) {
@@ -1966,7 +1961,7 @@ const CostingSummaryTable = (props) => {
 
     let valueWithSign = (
       <>
-        {data?.CostingHeading === VARIANCE && isApproval && Number(value) !== 0 ? (
+        {data?.CostingHeading === VARIANCE && isApproval && Number(formattedValue) !== 0 ? (
           // Conditionally display the sign based on specific conditions
           viewCostingData?.length > 0 && viewCostingData[firstIndex]?.[finalKey] > viewCostingData[secondIndex]?.[finalKey] ? (
             <span className='positive-sign'>+</span>
@@ -1995,7 +1990,7 @@ const CostingSummaryTable = (props) => {
     switch (columnName) {
       case 'main-row':
         // Highlight class for main row, conditionally set to green or red based on values
-        highlighClass = `${mainRow} ${activeClass ? viewCostingData?.length > 0 && viewCostingData[firstInd]?.[key] > viewCostingData[secondInd]?.[key] ? 'green-row' : viewCostingData[firstInd]?.[key] < viewCostingData[secondInd]?.[key] ? 'red-row' : '' : '-'}`
+        highlighClass = `${mainRow} ${activeClass ? viewCostingData?.length > 0 && checkForDecimalAndNull((viewCostingData[firstInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) > checkForDecimalAndNull((viewCostingData[secondInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) ? 'green-row' : checkForDecimalAndNull((viewCostingData[firstInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) < checkForDecimalAndNull((viewCostingData[secondInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) ? 'red-row' : '' : '-'}`
         break;
       case 'multiple-key':
         // Highlight class case, if hierarchical key comes from function,  here is getting value like viewCostingData[firstInd]?.[key[0]]?.[key[1]] as viewCostingData[firstInd]?.childObject.childValue
@@ -2446,7 +2441,6 @@ const CostingSummaryTable = (props) => {
                             </td >
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
-
                                 const isPieChartVisible = viewPieChart[index];
                                 const dateVersionAndStatus = (data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.isRfqCosting ? (notSelectedCostingId?.includes(data?.costingId) ? "-Not Selected" : `-${data?.status}`) : props.costingSummaryMainPage ? `-${data?.status}` : ''}`
                                 return (

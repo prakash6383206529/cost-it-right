@@ -727,7 +727,7 @@ function AddConditionCosting(props) {
                                     <Col md="3" className={toggleCondition()}>
                                         <button
                                             type="button"
-                                            className={"user-btn  pull-left mt-1"}
+                                            className={"user-btn pull-left mt-1 mr10"}
                                             onClick={addData}
                                             disabled={props.ViewMode || props?.disabled}
                                         >
@@ -750,16 +750,17 @@ function AddConditionCosting(props) {
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                     <button
                                         type={'button'}
-                                        className="reset cancel-btn mr5"
+                                        className="reset cancel-btn mr15"
                                         onClick={cancel || props?.disabled} >
                                         <div className={'cancel-icon'}></div> {'Cancel'}
                                     </button>
                                     <button
                                         type={'button'}
-                                        className="submit-button save-btn"
+                                        className="submit-button save-btn mr15"
                                         onClick={() => { props.closeDrawer('save', tableData, costingConditionEntryType, conditionCost) }}
                                         disabled={props.ViewMode || props?.disabled}
                                     >
+
                                         <div className={"save-icon"}></div>
                                         {'Save'}
                                     </button>

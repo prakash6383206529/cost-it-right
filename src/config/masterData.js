@@ -274,7 +274,7 @@ export const RMDomesticVBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI,*
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
@@ -475,7 +475,7 @@ export const RMImportZBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "DestinationPlantCode" }, //*
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
     { label: "VendorCode", value: "VendorCode" }, //NOUI
@@ -680,7 +680,7 @@ export const RMDomesticCBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
@@ -866,7 +866,7 @@ export const RMImportVBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
@@ -1068,7 +1068,7 @@ export const RMImportCBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
@@ -1394,7 +1394,7 @@ export const Overhead = [
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
     { label: 'OverheadCCPercentage', value: 'OverheadCCPercentage', },
     { label: 'OverheadBOPPercentage', value: 'OverheadBOPPercentage', },
-    { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
+    { label: 'OverheadRMCost/PartCost', value: 'OverheadRMCost/PartCost', },
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
@@ -1408,7 +1408,7 @@ export const OverheadTempData = [
         'OverheadPercentage': '',
         'OverheadCCPercentage': '',
         'OverheadBOPPercentage': '',
-        'OverheadRMPercentage': '10',
+        'OverheadRMCost/PartCost': '10',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
@@ -1419,7 +1419,19 @@ export const OverheadTempData = [
         'OverheadPercentage': '',
         'OverheadCCPercentage': '',
         'OverheadBOPPercentage': '10',
-        'OverheadRMPercentage': '',
+        'OverheadRMCost/PartCost': '',
+        "PlantCode": '0503',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    },
+    {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'Part Cost',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '',
+        'OverheadRMCost/PartCost': '12',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
@@ -1434,7 +1446,7 @@ export const OverheadVBC = [
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
     { label: 'OverheadCCPercentage', value: 'OverheadCCPercentage', },
     { label: 'OverheadBOPPercentage', value: 'OverheadBOPPercentage', },
-    { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
+    { label: 'OverheadRMCost/PartCost', value: 'OverheadRMCost/PartCost', },
     { label: 'VendorCode', value: 'VendorCode', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1449,7 +1461,7 @@ export const OverheadVBC_TempData = [
         'OverheadPercentage': '',
         'OverheadCCPercentage': '',
         'OverheadBOPPercentage': '',
-        'OverheadRMPercentage': '10',
+        'OverheadRMCost/PartCost': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1461,11 +1473,24 @@ export const OverheadVBC_TempData = [
         'OverheadPercentage': '',
         'OverheadCCPercentage': '',
         'OverheadBOPPercentage': '10',
-        'OverheadRMPercentage': '',
+        'OverheadRMCost/PartCost': '',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
+    },
+    {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'Part Cost',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '',
+        'OverheadRMCost/PartCost': '12',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
     }
 ]
 export const OverheadCBC = [
@@ -1475,7 +1500,7 @@ export const OverheadCBC = [
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
     { label: 'OverheadCCPercentage', value: 'OverheadCCPercentage', },
     { label: 'OverheadBOPPercentage', value: 'OverheadBOPPercentage', },
-    { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
+    { label: 'OverheadRMCost/PartCost', value: 'OverheadRMCost/PartCost', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: "CustomerCode", value: "CustomerCode" },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1490,7 +1515,7 @@ export const OverheadCBC_TempData = [
         'OverheadPercentage': '',
         'OverheadCCPercentage': '',
         'OverheadBOPPercentage': '',
-        'OverheadRMPercentage': '10',
+        'OverheadRMCost/PartCost': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1502,7 +1527,20 @@ export const OverheadCBC_TempData = [
         'OverheadPercentage': '',
         'OverheadCCPercentage': '',
         'OverheadBOPPercentage': '10',
-        'OverheadRMPercentage': '',
+        'OverheadRMCost/PartCost': '',
+        "PlantCode": '3456',
+        "CustomerCode": 'C-10006',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    },
+    {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'Part Cost',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '',
+        'OverheadRMCost/PartCost': '15',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2351,7 +2389,7 @@ export const Profit = [
     { label: 'ProfitCCPercentage', value: 'ProfitCCPercentage', },
     { label: 'ProfitBOPPercentage', value: 'ProfitBOPPercentage', },
     { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
-    { label: 'ProfitPartCostPercentage', value: 'ProfitPartCostPercentage', },
+    { label: 'ProfitRMCost/PartCost', value: 'ProfitRMCost/PartCost', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
@@ -2366,7 +2404,7 @@ export const ProfitTempData = [
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '',
         'ProfitRMPercentage': '10',
-        'ProfitPartCostPercentage': '',
+        'ProfitRMCost/PartCost': '12',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
@@ -2378,7 +2416,7 @@ export const ProfitTempData = [
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '10',
         'ProfitRMPercentage': '10',
-        'ProfitPartCostPercentage': '',
+        'ProfitRMCost/PartCost': '15',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
@@ -2391,7 +2429,7 @@ export const ProfitTempData = [
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '',
         'ProfitRMPercentage': '',
-        'ProfitPartCostPercentage': '10',
+        'ProfitRMCost/PartCost': '20',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
@@ -2406,7 +2444,7 @@ export const ProfitVBC = [
     { label: 'ProfitCCPercentage', value: 'ProfitCCPercentage', },
     { label: 'ProfitBOPPercentage', value: 'ProfitBOPPercentage', },
     { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
-    { label: 'ProfitPartCostPercentage', value: 'ProfitPartCostPercentage', },
+    { label: 'ProfitRMCost/PartCost', value: 'ProfitRMCost/PartCost', },
     { label: 'VendorCode', value: 'VendorCode', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2422,7 +2460,7 @@ export const ProfitTempDataVBC = [
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '',
         'ProfitRMPercentage': '10',
-        'ProfitPartCostPercentage': '',
+        'ProfitRMCost/PartCost': '15',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2435,7 +2473,7 @@ export const ProfitTempDataVBC = [
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '10',
         'ProfitRMPercentage': '10',
-        'ProfitPartCostPercentage': '',
+        'ProfitRMCost/PartCost': '20',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2449,7 +2487,7 @@ export const ProfitTempDataVBC = [
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '10',
         'ProfitRMPercentage': '',
-        'ProfitPartCostPercentage': '24',
+        'ProfitRMCost/PartCost': '24',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2464,7 +2502,7 @@ export const ProfitCBC = [
     { label: 'ProfitCCPercentage', value: 'ProfitCCPercentage', },
     { label: 'ProfitBOPPercentage', value: 'ProfitBOPPercentage', },
     { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
-    { label: 'ProfitPartCostPercentage', value: 'ProfitPartCostPercentage', },
+    { label: 'ProfitRMCost/PartCost', value: 'ProfitRMCost/PartCost', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'CustomerCode', value: 'CustomerCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2480,7 +2518,7 @@ export const ProfitTempDataCBC = [
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '',
         'ProfitRMPercentage': '10',
-        'ProfitPartCostPercentage': '',
+        'ProfitRMCost/PartCost': '12',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2493,7 +2531,7 @@ export const ProfitTempDataCBC = [
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '10',
         'ProfitRMPercentage': '10',
-        'ProfitPartCostPercentage': '',
+        'ProfitRMCost/PartCost': '15',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2507,7 +2545,7 @@ export const ProfitTempDataCBC = [
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '10',
         'ProfitRMPercentage': '',
-        'ProfitPartCostPercentage': '14',
+        'ProfitRMCost/PartCost': '14',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2529,6 +2567,9 @@ export const Labour = [
     { label: 'RatePerPersonPerAnnum', value: 'RatePerPersonPerAnnum', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'ProductNumber', value: 'ProductNumber', },
+    { label: 'Efficiency', value: 'Efficiency', },
+    { label: 'WorkingTime', value: 'WorkingTime', },
+
 ]
 export const LabourTempData = [
     {
@@ -2541,7 +2582,9 @@ export const LabourTempData = [
         'LabourType': 'Skilled',
         'RatePerPersonPerAnnum': 2000000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ProductNumber": 'Silencer'
+        "ProductNumber": 'Silencer',
+        "Efficiency": '89',
+        "WorkingTime": '250'
     },
     {
         "CustomerCode": 'C-10008',
@@ -2553,7 +2596,9 @@ export const LabourTempData = [
         'LabourType': 'Semi-Skilled',
         'RatePerPersonPerAnnum': 300000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ProductNumber": 'Silencer'
+        "ProductNumber": 'Silencer',
+        "Efficiency": '90',
+        "WorkingTime": '240'
     }
 ]
 export const Volume = [
@@ -2884,7 +2929,7 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
+    { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -3192,7 +3237,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
+    { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
@@ -3798,7 +3843,7 @@ export const Bought_Out_Parts = [
     { label: 'Quantity', value: 'Quantity', },
     { label: 'NetLandedCost', value: 'NetLandedCost', },
     { label: 'PartNumber', value: 'PartNumber', },
-    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" },
+    { label: 'TechnologyName', value: 'TechnologyName' },
     { label: 'CategoryName', value: 'CategoryName', },
     { label: 'CategoryTypeName', value: 'CategoryTypeName', },
     { label: 'Specification', value: 'Specification', },
@@ -3838,7 +3883,7 @@ export const OtherOperation = [
     { label: 'OtherOperationName', value: 'OtherOperationName', },
     { label: 'OperationProcessCode', value: 'OperationProcessCode', },
     { label: 'Description', value: 'Description', },
-    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "TechnologyName", value: 'TechnologyName' },
     { label: 'SupplierName', value: 'SupplierName', },
     { label: 'OperationName', value: 'OperationName', },
     { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
@@ -6207,6 +6252,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Revised RM Cost", value: "NewRMPrice" },
     { label: "Variance (RM Cost)", value: "RMVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADER = [
@@ -6230,6 +6276,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADER = [
     { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
@@ -6254,6 +6301,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Revised Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
     { label: "Variance (ST Cost)", value: "NetSurfaceTreatmentCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [         // KEEP COMMENTED ON RE						//RE
 
@@ -6273,6 +6321,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [         // KEEP COMMENTED O
     { label: "Revised CC", value: "NewNetCC" },
     { label: "CC Variance", value: "Variance" },
     { label: `Impact for Quarter (${reactLocalStorage.getObject("baseCurrency")})`, value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 
 ]
 
@@ -6346,6 +6395,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
     { label: "BOP Part Category", value: "BoughtOutPartCategory", },
+    { label: "Division", value: "Division", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
     { label: "SAP Code", value: "SAPPartNumber", },
@@ -6375,6 +6425,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
     { label: "BOP Part Name", value: "BoughtOutPartName" },
     { label: "BOP Category", value: "BoughtOutPartCategory" },
+    { label: "Division", value: "Division", },
     { label: "UOM", value: "UOM" },
     { label: "Specification", value: "Specification" },
     { label: "SAP Code", value: "SAPPartNumber", },
@@ -6446,8 +6497,9 @@ export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Customer (Code)", value: "CustomerName" },
     // { label: "Source City", value: "SourceCity" },
     // { label: "Destination City", value: "DestinationCity" },
-    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
     { label: "Load", value: "FreightLoadType" },
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: 'Truck Dimensions (mm)', value: 'DimensionsName' },
     { label: "Capacity", value: "Capacity" },
     { label: "Criteria", value: "RateCriteria" },
     { label: "Rate", value: "Rate" },
@@ -6725,6 +6777,7 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
+    { label: "Division", value: "Division", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: "Status", value: "IsActive", },
@@ -6852,6 +6905,7 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
+    { label: "Division Applicable", value: "IsDivisionApplied", },
     { label: "ZipCode", value: "ZipCode", },
     { label: "Status", value: "status", },
 ]
@@ -7280,6 +7334,7 @@ export const InitialGridForTokenSummary = [
 
 export const LastGridForTokenSummary = [
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Existing Net Cost", value: "OldPOPrice" },
     { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
@@ -7576,8 +7631,10 @@ export const TechnologyDropdownBulkUploadV4 = [
     { label: 'Die Casting', value: '7' },
     { label: 'Electrical Stamping', value: '12' },
     { label: 'Insulation', value: '11' },
-    { label: 'Monocarton', value: '13' }
+    { label: 'Monocarton', value: '13' },
+    { label: 'Plastic,Rubber (With Extrusion Process)', value: '14' }
 ]
+
 
 
 export const constRMCCTabData = [{

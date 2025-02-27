@@ -15,7 +15,7 @@ import {
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_COSTING, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, OPERATIONS_ID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_COSTING, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -163,6 +163,7 @@ class AddMachineRate extends Component {
         rowData: data?.rowData,
         hidePlantCurrency: data?.hidePlant
       })
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
       setTimeout(() => {
         this.props.change('plantCurrency', data?.MachineEntryType === ENTRY_TYPE_IMPORT ? data?.LocalCurrency : data?.Currency)
         if (data?.MachineProcessRates) {
@@ -540,6 +541,7 @@ class AddMachineRate extends Component {
           this.props.change('Specification', Data.Specification)
           this.props.change('plantCurrency', Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency ?? Data?.LocalCurrency)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
+          this.finalUserCheckAndMasterLevelCheckFunction(Data.Plant[0].PlantId)
           setTimeout(() => {
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
@@ -1469,7 +1471,6 @@ class AddMachineRate extends Component {
       // if (DropdownChange) {
 
       // }
-      this.setState({ setDisable: true })
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
@@ -1535,7 +1536,7 @@ class AddMachineRate extends Component {
             (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '') === (machineType?.value ? String(machineType?.value) : '') &&
             (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '') &&
             DataToChange?.Remark === values?.Remark) {
-            this.cancel('submit')
+            Toaster.warning('Please change data to save Machine Details');
             return false
           }
 
@@ -2400,7 +2401,7 @@ class AddMachineRate extends Component {
                               <>
                                 <button id="AddMachineRate_addmore"
                                   type="button"
-                                  className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                  className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr15`}
                                   disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated) || isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                                   onClick={this.processTableHandler}>
                                   <div className={'plus'}></div>ADD</button>

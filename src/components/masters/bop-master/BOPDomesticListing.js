@@ -19,8 +19,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
-import { hyphenFormatter } from '../masterUtil';
-import { TourStartAction, disabledClass, isResetClick, setResetCostingHead, useFetchAPICall } from '../../../actions/Common';
+import { divisionApplicableFilter, hyphenFormatter } from '../masterUtil';
+import { TourStartAction, disabledClass, isResetClick, setResetCostingHead } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -136,6 +136,17 @@ const BOPDomesticListing = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bopDomesticList]);
 
+  useEffect(() => {
+    reactLocalStorage.setObject('selectedRow', {})
+    if (!props.stopApiCallOnCancel) {
+      return () => {
+        dispatch(setSelectedRowForPagination([]))
+        dispatch(resetStatePagination());
+        reactLocalStorage.setObject('selectedRow', {})
+      }
+    }
+  }, [])
+
   const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
     const { floatingFilterData } = state
     setSkipRecord(skip)
@@ -248,7 +259,7 @@ const BOPDomesticListing = (props) => {
     let originalValue;
     setTimeout(() => {
       if (bopDomesticList?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -405,6 +416,7 @@ const BOPDomesticListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+    reactLocalStorage.setObject('selectedRow', {})
   };
 
   /**
@@ -686,7 +698,7 @@ const BOPDomesticListing = (props) => {
       getDataList("", 0, "", "", 0, defaultPageSize, false, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   }
-  const BOP_DOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_DOMESTIC_DOWNLOAD_EXCEl, "MasterLabels")
+  const BOP_DOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(divisionApplicableFilter(BOP_DOMESTIC_DOWNLOAD_EXCEl, "Division"), "MasterLabels")
 
   const onBtExport = () => {
     const bopMasterName = showBopLabel();
@@ -858,6 +870,7 @@ const BOPDomesticListing = (props) => {
     setState((prevState) => ({ ...prevState, analyticsDrawer: false }))
   }
   const onRowSelect = (event) => {
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     var selectedRows = state.gridApi.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
@@ -874,6 +887,7 @@ const BOPDomesticListing = (props) => {
     }
     let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArray))
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) // Save to localStorage
     const newDataCount = uniqeArray.length;
     setState((prevState) => ({ ...prevState, dataCount: newDataCount }))
     let finalArr = selectedRows
@@ -888,6 +902,7 @@ const BOPDomesticListing = (props) => {
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]));
         state.gridApi.deselectAll();
+        reactLocalStorage.setObject('selectedRow', {}) // Clear localStorage
         Toaster.warning("Please select multiple bop's with same category");
       }
     }
@@ -928,7 +943,7 @@ const BOPDomesticListing = (props) => {
                   )}
                   {permissions?.Download && (
                     <>
-                      <Button className="mr5 Tour_List_Download" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button className="mr5 Tour_List_Download" id={"bopDomesticListing_excel_download"} disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                       <ExcelFile filename={`${showBopLabel()} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
                         {onBtExport()}
                       </ExcelFile>
@@ -982,6 +997,7 @@ const BOPDomesticListing = (props) => {
                 <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                 {props?.isMasterSummaryDrawer && <AgGridColumn field="IncoSummary" headerName="Inco Terms"></AgGridColumn>}
                 {props?.isMasterSummaryDrawer && getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>}
                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}

@@ -176,6 +176,7 @@ const IndexDataListing = (props) => {
         setTimeout(() => {
             if (rmIndexDataList.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
         setDisableFilter(false)
@@ -584,6 +585,7 @@ const IndexDataListing = (props) => {
                                         className="mr5 Tour_List_Download"
                                         id={"indexDataListing_excel_download"}
                                         onClick={onExcelDownload}
+                                        disabled={totalRecordCount === 0}
                                         title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                         icon={"download mr-1"}
                                         buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}

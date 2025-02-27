@@ -44,7 +44,8 @@ const FreightListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    isImport: false
+    isImport: false,
+    totalRecordCount: 0
   })
   const permissions = useContext(ApplyPermission);
   const { freightDetail } = useSelector((state) => state.freight);
@@ -88,7 +89,7 @@ const FreightListing = (props) => {
       setState((prevState) => ({ ...prevState, isLoader: false }))
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
+        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, totalRecordCount: Data?.length }))
       } else if (res && res.response && res.response.status === 412) {
         setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
       } else {
@@ -141,7 +142,7 @@ const FreightListing = (props) => {
      */
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      freightDetail.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
+      freightDetail.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }))
     }, 500);
   }
   /**
@@ -222,7 +223,7 @@ const FreightListing = (props) => {
         newItem.VendorName = ' '
       }
       for (let key in newItem) {
-        if (newItem[key] === 'NA') {
+        if (newItem[key] === 'NA' || newItem[key] === ' ' || newItem[key] === null || newItem[key] === undefined) {
           newItem[key] = '-';
         }
       }
@@ -236,9 +237,10 @@ const FreightListing = (props) => {
   }
 
 
+
   const onGridReady = (params) => {
     state.gridApi = params.api;
-    state.gridApi.sizeColumnsToFit();
+    // state.gridApi.sizeColumnsToFit();
     setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
     params.api.paginationGoToPage(0);
   };
@@ -293,7 +295,8 @@ const FreightListing = (props) => {
     filter: true,
     sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: isFirstColumn
+    checkboxSelection: isFirstColumn,
+    onFilterChanged: onFloatingFilterChanged
   };
 
   const frameworkComponents = {
@@ -361,13 +364,14 @@ const FreightListing = (props) => {
                           id={"Excel-Downloads-freightListing"}
                           title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                           type="button"
+                          disabled={state?.totalRecordCount === 0}
                           className={'user-btn mr5'}
                           icon={"download mr-1"}
                           buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                         />
                       }
                     >
-                      {onBtExport()}
+                      {state?.totalRecordCount !== 0 ? onBtExport() : null}
                     </ExcelFile>
                   </>
                 )}
@@ -420,7 +424,7 @@ const FreightListing = (props) => {
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={"customNoRowsOverlay"}
-                onFilterModified={() => { }}
+                onFilterModified={onFloatingFilterChanged}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
                   imagClass: "imagClass",
@@ -438,9 +442,26 @@ const FreightListing = (props) => {
                 {reactLocalStorage.getObject("CostingTypePermission").cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 {/* New Columns */}
-                <AgGridColumn field="Load" headerName="Load" valueGetter={(params) => params.data?.FreightLoadType || "N/A"}></AgGridColumn>
-                <AgGridColumn field="Capacity" headerName="Capacity" valueGetter={(params) => params.data?.Capacity || "N/A"}></AgGridColumn>
-                <AgGridColumn field="Criteria" headerName="Criteria" valueGetter={(params) => params.data?.RateCriteria || "N/A"}></AgGridColumn>
+                <AgGridColumn
+                  field="Load"
+                  headerName="Load"
+                  valueGetter={(params) => params.data?.FreightLoadType || "-"}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="DimensionsName"
+                  headerName="Truck Dimensions (mm)"
+                  valueGetter={(params) => params.data?.DimensionsName || "-"}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="Capacity"
+                  headerName="Capacity"
+                  valueGetter={(params) => params.data?.Capacity || "-"}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="Criteria"
+                  headerName="Criteria"
+                  valueGetter={(params) => params.data?.RateCriteria || "-"}
+                ></AgGridColumn>
                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"}></AgGridColumn>
                 <AgGridColumn width="220px" field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>

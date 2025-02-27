@@ -679,11 +679,11 @@ function AddRMFinancialDetails(props) {
                 validToDate = addYears(date, 1);
                 break;
             case 'As and When':
-                validToDate = null; // Allow user to select any date
+                validToDate = getValues('toDate');; // Allow user to select any date
                 break;
             default:
                 validToDate = date;
-                break;
+                break
         }
 
         setState(prevState => ({

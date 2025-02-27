@@ -89,8 +89,8 @@ function RMDomesticListing(props) {
 
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
-    const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined ? true : false
     const [pageRecord, setPageRecord] = useState(0);
+    const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -344,6 +344,7 @@ function RMDomesticListing(props) {
         setTimeout(() => {
             if (rmDataList.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
         setDisableFilter(false)
@@ -1068,6 +1069,7 @@ function RMDomesticListing(props) {
                                                             title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                             icon={"download mr-1"}
                                                             buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                            disabled={totalRecordCount === 0}
                                                         />
                                                         <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                                                             <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />

@@ -50,7 +50,7 @@ const initialState = {
     indexedRMForSimulation: [],
     selectedEffectiveDate: null,
 
-    simulationCostingStatus: false
+    simulationCostingStatus: []
 };
 
 export default function SimulationReducer(state = initialState, action) {

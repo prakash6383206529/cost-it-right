@@ -180,6 +180,7 @@ function CostingHeaderTabs(props) {
         "Version": ComponentItemData.Version,
         "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
         "NetRMCost": CostingDataList[0].NetRMCost,
+        "CalculatorType": ComponentItemData?.CostingPartDetails?.CalculatorType,
         // "NetBOPCost": CostingDataList[0].NetBOPCost,
         // "NetConversionCost": CostingDataList[0].NetConversionCost,
         "NetTotalRMBOPCC": CostingDataList[0].NetTotalRMBOPCC,

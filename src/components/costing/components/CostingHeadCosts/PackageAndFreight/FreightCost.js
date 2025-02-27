@@ -10,6 +10,8 @@ import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/C
 import { checkForDecimalAndNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { LOGISTICS, PACK_AND_FREIGHT_PER_KG } from '../../../../../config/masterData';
 import Button from '../../../../layout/Button';
+import { setFreightCalculatorAvailable } from '../../../actions/CostWorking';
+import FreightCalculator from '../../WeightCalculatorDrawer/FreightCalculator';
 
 function FreightCost(props) {
 
@@ -19,6 +21,12 @@ function FreightCost(props) {
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [isAddFlag, setIsAddFlag] = useState(false)
+  const [freightCalculatorDrawer, setFreightCalculatorDrawer] = useState(false)
+  const [calculatorRowObjData, setCalculatorRowObjData] = useState({
+    truckDimensions: null,
+    FreightDetailId: null,
+    CostingFreightCalculationDetailsId: null
+  })
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const dispatch = useDispatch()
@@ -29,6 +37,11 @@ function FreightCost(props) {
     props.setFreightCost(gridData, JSON.stringify(gridData) !== JSON.stringify((props?.data && props?.data?.length > 0 ? props?.data : [])) ? true : false)
     if (JSON.stringify(gridData) !== JSON.stringify((props?.data && props?.data?.length > 0 ? props?.data : []))) {
       dispatch(isPackageAndFreightDataChange(true))
+    }
+    if (gridData?.length > 0 && gridData?.some(rowData => rowData?.CostingFreightCalculationDetailsId && rowData?.IsFreightDetailedBreakup)) {
+      dispatch(setFreightCalculatorAvailable(true));
+    } else {
+      dispatch(setFreightCalculatorAvailable(false));
     }
   }, [gridData]);
 
@@ -49,6 +62,10 @@ function FreightCost(props) {
    * @description HIDE FREIGHT DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
+    if (rowData?.IsFreightDetailedBreakup === true && rowData?.CostingFreightCalculationDetailsId) {
+      dispatch(setFreightCalculatorAvailable(true));
+    }
+
     if (Object.keys(rowData).length > 0) {
       if (editIndex !== '' && isEditFlag) {
         let tempArr = Object.assign([...gridData], { [editIndex]: rowData })
@@ -71,12 +88,17 @@ function FreightCost(props) {
   }
 
   const deleteItem = (index) => {
+    if (gridData[index]?.IsFreightDetailedBreakup === true && gridData[index]?.CostingFreightCalculationDetailsId) {
+      dispatch(setFreightCalculatorAvailable(false));
+    }
+ 
     let tempArr = gridData && gridData.filter((el, i) => {
       if (i === index) return false;
       return true;
     })
     setGridData(tempArr)
   }
+
 
   const editItem = (index) => {
     let tempArr = gridData && gridData.find((el, i) => i === index)
@@ -86,6 +108,21 @@ function FreightCost(props) {
     setRowObjData(tempArr)
     setDrawerOpen(true)
   }
+  const getFreightCalculator = (index) => {
+    setFreightCalculatorDrawer(true)
+    setCalculatorRowObjData({
+      truckDimensions: gridData[index]?.DimensionName ? {
+        label: gridData[index]?.DimensionName,
+        value: gridData[index]?.DimensionId
+      } : null,
+      FreightDetailId: gridData[index]?.FreightDetailId,
+      CostingFreightCalculationDetailsId: gridData[index]?.CostingFreightCalculationDetailsId
+    })
+  }
+  const closeFreightCalculatorDrawer = () => {
+    setFreightCalculatorDrawer(false)
+  }
+
 
   /**
   * @method render
@@ -121,6 +158,7 @@ function FreightCost(props) {
                   <thead>
                     <tr>
                       <th>{`Freight Type`}</th>
+                      <th>{`Truck Dimensions`}</th>
                       <th>{`Capacity`}</th>
                       <th>{`Criteria/Applicability`}</th>
                       <th>{`Rate/Percentage`}</th>
@@ -143,11 +181,18 @@ function FreightCost(props) {
                         return (
                           <tr key={index}>
                             <td>{EFreightLoadTypeText}</td>
+                            <td>{item?.DimensionName ? item?.DimensionName : '-'}</td>
                             <td>{item.Capacity ? item.Capacity : '-'}</td>
                             <td>{item.Criteria ? item.Criteria : '-'}</td>
                             <td>{item.Rate ? item.Rate : '-'}</td>
                             <td>{item.Quantity ? item.Quantity : '-'}</td>
-                            <td>{checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            <td><div className='d-flex align-items-center'>{checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice)}
+                              {CostingViewMode && (item?.CostingFreightCalculationDetailsId !== 0 && item?.CostingFreightCalculationDetailsId !== null) && <button title='Calculator'
+                                className="CalculatorIcon cr-cl-icon ml-1"
+                                type={'button'}
+                                onClick={() => { getFreightCalculator(index) }} />}
+                            </div>
+                            </td>
                             {initialConfiguration.IsShowCRMHead && <td>{item?.FreightCRMHead}</td>}
                             <td style={{ textAlign: "right" }}>
                               {!CostingViewMode && <button title='Edit' className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
@@ -182,6 +227,13 @@ function FreightCost(props) {
         anchor={'right'}
         isAddFlag={isAddFlag}
         gridData={gridData}
+      />}
+      {freightCalculatorDrawer && <FreightCalculator
+        isOpen={freightCalculatorDrawer}
+        closeCalculator={closeFreightCalculatorDrawer}
+        rowObjData={calculatorRowObjData}
+        anchor={'right'}
+        truckDimensions={calculatorRowObjData?.truckDimensions}
       />}
     </ >
   );

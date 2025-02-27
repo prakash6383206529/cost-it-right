@@ -70,7 +70,7 @@ import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper';
+import { loggedInUserId, userDetails } from '../../../helper';
 import _ from 'lodash';
 
 // const config() = config
@@ -209,7 +209,7 @@ export function runSimulationOnSelectedCosting(data, callback) {
     };
 }
 
-export function getSimulationApprovalList(filterData, skip, take, isPagination, obj, callback) {
+export function getSimulationApprovalList(filterData, skip, take, isPagination, obj, delegation, callback) {
     return (dispatch) => {
         dispatch({
             type: GET_SIMULATION_APPROVAL_LIST,
@@ -219,10 +219,10 @@ export function getSimulationApprovalList(filterData, skip, take, isPagination, 
             type: GET_SIMULATION_APPROVAL_LIST_DRAFT,
             payload: [],
         })
-        const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission')
+        const { cbc, zbc, vbc } = !delegation ? reactLocalStorage.getObject('CostingTypePermission') : { cbc: true, zbc: true, vbc: true }
         const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
 
-        const queryParamsSecond = `ApprovalNumber=${obj?.ApprovalNumber !== undefined ? obj?.ApprovalNumber : ""}&CostingHead=${obj?.CostingHead !== undefined ? obj?.CostingHead : ""}&SimulationType=${obj?.SimulationType !== undefined ? obj?.SimulationType : ""}&AmedmentStatus=${obj?.ProvisionalStatus !== undefined ? obj?.ProvisionalStatus : ""}&LinkingTokenNo=${obj?.LinkingTokenNo !== undefined ? obj?.LinkingTokenNo : ""}&SimulationHead=${obj?.SimulationTechnologyHead !== undefined ? obj?.SimulationTechnologyHead : ""}&Technology=${obj?.TechnologyName !== undefined ? obj?.TechnologyName : ""}&Vendor=${obj?.VendorName !== undefined ? obj?.VendorName : ""}&ImpactedCosting=${obj?.ImpactCosting !== undefined ? obj?.ImpactCosting : ""}&ImpactedParts=${obj?.ImpactParts !== undefined ? obj?.ImpactParts : ""}&Reason=${obj?.Reason !== undefined ? obj?.Reason : ""}&InitiatedBy=${obj?.SimulatedByName !== undefined ? obj?.SimulatedByName : ""}&SimulatedOn=${obj?.SimulatedOn !== undefined ? obj?.SimulatedOn : ""}&LastApproval=${obj?.LastApprovedBy !== undefined ? obj?.LastApprovedBy : ""}&RequestedOn=${obj?.RequestedOn !== undefined ? obj?.RequestedOn : ""}&SimulationStatus=${obj?.DisplayStatus !== undefined ? obj?.DisplayStatus : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`
+        const queryParamsSecond = `ApprovalNumber=${obj?.ApprovalNumber !== undefined ? obj?.ApprovalNumber : ""}&CostingHead=${obj?.CostingHead !== undefined ? obj?.CostingHead : ""}&SimulationType=${obj?.SimulationType !== undefined ? obj?.SimulationType : ""}&AmedmentStatus=${obj?.ProvisionalStatus !== undefined ? obj?.ProvisionalStatus : ""}&LinkingTokenNo=${obj?.LinkingTokenNo !== undefined ? obj?.LinkingTokenNo : ""}&SimulationHead=${obj?.SimulationTechnologyHead !== undefined ? obj?.SimulationTechnologyHead : ""}&Technology=${obj?.TechnologyName !== undefined ? obj?.TechnologyName : ""}&Vendor=${obj?.VendorName !== undefined ? obj?.VendorName : ""}&ImpactedCosting=${obj?.ImpactCosting !== undefined ? obj?.ImpactCosting : ""}&ImpactedParts=${obj?.ImpactParts !== undefined ? obj?.ImpactParts : ""}&Reason=${obj?.Reason !== undefined ? obj?.Reason : ""}&InitiatedBy=${obj?.SimulatedByName !== undefined ? obj?.SimulatedByName : ""}&SimulatedOn=${obj?.SimulatedOn !== undefined ? obj?.SimulatedOn : ""}&LastApproval=${obj?.LastApprovedBy !== undefined ? obj?.LastApprovedBy : ""}&RequestedOn=${obj?.RequestedOn !== undefined ? obj?.RequestedOn : ""}&SimulationStatus=${obj?.DisplayStatus !== undefined ? obj?.DisplayStatus : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&IsShowDelegationData=${userDetails()?.IsUserDelegatee}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
 
         request.then((response) => {
@@ -337,7 +337,7 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
             type: GET_KEYS_FOR_DOWNLOAD_SUMMARY,
             payload: [],
         })
-        const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
+        const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}/${params.receiverId}`;
         const request = axios.get(`${API.getApprovalSimulatedCostingSummary}/${queryParameter}`, config())
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -383,10 +383,10 @@ export function getAllSimulationApprovalList(data, callback) {
     }
 }
 
-export function getSimulationApprovalByDepartment(callback) {
+export function getSimulationApprovalByDepartment(receiverId,callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllSimulationApprovalDepartment}`, config());
+        const request = axios.get(`${API.getAllSimulationApprovalDepartment}?receiverId=${receiverId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

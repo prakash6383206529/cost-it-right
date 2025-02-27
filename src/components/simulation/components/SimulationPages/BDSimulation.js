@@ -959,8 +959,8 @@ function BDSimulation(props) {
                                                 onCellValueChanged={onCellValueChanged}
                                             >
                                                 {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" width={190}></AgGridColumn> */}
-                                                <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName="BOP Part No" width={columnWidths.BoughtOutPartNumber}></AgGridColumn>
-                                                <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName="BOP Part Name" width={columnWidths.BoughtOutPartName}></AgGridColumn>
+                                                <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName="BOP Part No" minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
+                                                <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName="BOP Part Name" minWidth={columnWidths.BoughtOutPartName}></AgGridColumn>
                                                 {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName="BOP Category" width={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
                                                 {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName={vendorLabel + " (Code)"} width={columnWidths.VendorCode} cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" width={columnWidths.CustomerName} cellRenderer='customerFormatter'></AgGridColumn>}

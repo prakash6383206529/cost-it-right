@@ -46,7 +46,7 @@ function ViewOverheadProfit(props) {
   }
 
   const overheadAndProfitTooltipText = <>
-    {isRmCutOffApplicable && <p>RM Cut Off Price {rawMaterialCostWithCutOff} is Applied</p>}
+    {isRmCutOffApplicable && <p>RM Cut Off Price {checkForDecimalAndNull(rawMaterialCostWithCutOff,initialConfiguration?.NoOfDecimalForPrice)} is Applied</p>}
     {isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
     {isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
 
@@ -92,7 +92,7 @@ function ViewOverheadProfit(props) {
               <tr>
                 <th>{`Overhead On`}</th>
                 <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && viewOverheadData.OverheadApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
                 <th>{`Overhead`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
@@ -214,7 +214,7 @@ function ViewOverheadProfit(props) {
               <tr>
                 <th>{`Profit On`}</th>
                 <th>{viewProfitData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && viewProfitData.ProfitApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
                 <th>{`Profit`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
@@ -341,7 +341,7 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Rejection ${rejectData?.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th><div className='w-fit'>Cost (Applicability){isIncludeSurfaceTreatmentWithRejection && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="rejection-table" tooltipText={'Surface Treatment Cost Included'} />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){isIncludeSurfaceTreatmentWithRejection && rejectData.RejectionApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="rejection-table" tooltipText={'Surface Treatment Cost Included'} />}</div></th>
                 <th>{`Rejection`}</th>
                 <th>{`Net Rejection`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
@@ -423,8 +423,8 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Interest Rate ${iccPaymentData.ICCApplicabilityDetail.ICCApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th><div className='w-fit'>Cost (Applicability){showToolTipForICC.includes(true) && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={iccToolTipText} />}</div></th>
-                <th>{`Net ICC`}</th>
+                <th><div className='w-fit'>Cost (Applicability){showToolTipForICC.includes(true) && iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={iccToolTipText} />}</div></th>
+                <th><div className='w-fit'>Net ICC  {!isPDFShow && getConfigurationKey().IsShowRmcAndNetWeightToggleForIcc && (iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight || iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('RM')) && <TooltipCustom customClass="mt-1 ml-1" id="icc-rm-applicable" tooltipText={iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight ? "ICC Calculation on Net Weight" : "ICC Calculation on RMC"} />}</div></th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
               </tr>
@@ -441,7 +441,7 @@ function ViewOverheadProfit(props) {
                     <td>{iccPaymentData.ICCApplicabilityDetail ? iccPaymentData.ICCApplicabilityDetail.ICCApplicability : '-'}</td>
                     <td>{iccPaymentData.ICCApplicabilityDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{iccPaymentData.ICCApplicabilityDetail.CostApplicability ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td><div className='w-fit'>{iccPaymentData.NetICC ? checkForDecimalAndNull(iccPaymentData.NetICC, initialConfiguration.NoOfDecimalForPrice) : '-'}{!isPDFShow && getConfigurationKey().IsShowRmcAndNetWeightToggleForIcc && (iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight || iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('RM')) && <TooltipCustom customClass="mt-1 ml-1" id="icc-rm-applicable" tooltipText={iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight ? "ICC Calculation on Net Weight" : "ICC Calculation on RMC"} />}</div></td>
+                    <td><div className='w-fit'>{iccPaymentData?.NetICC ? checkForDecimalAndNull(iccPaymentData?.NetICC, initialConfiguration?.NoOfDecimalForPrice) : '-'}</div></td>
                     {initialConfiguration.IsShowCRMHead && <td>{iccPaymentData.ICCApplicabilityDetail.ICCCRMHead}</td>}
                     <td>{iccPaymentData.ICCApplicabilityDetail.Remark ? iccPaymentData.ICCApplicabilityDetail.Remark : '-'}</td>
                   </tr>

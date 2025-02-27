@@ -17,11 +17,10 @@ export const config = () => {
   return { headers }
 }
 
-
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//const BASE_URL = `http://10.10.1.100:4001/api/v1/`;
-//const BASE_URL = `http://172.16.0.63:8081/api/v1`;
-//const BASE_URL = `http://172.16.0.18:81/api/v1`;
+// const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+
+
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -121,6 +120,7 @@ export const API = {
   runSimulationOnRawMaterial: `${BASE_URL}/simulation/run-simulation-on-raw-material-master`,
   getApprovalSimulatedRawMaterialSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-raw-material-summary`,
   getRMIndexationCostingSimulationListing: `${BASE_URL}/simulation/get-impacted-raw-material-details`,
+  calculateAndSaveRMIndexationSimulation: `${BASE_URL}/simulation/calculate-and-update-simulation-raw-material-master`,
 
 
   //MATERIAL TYPE
@@ -457,8 +457,9 @@ export const API = {
   getFreightModeSelectList: `${BASE_URL}/configuration/select-list-get-freight-modes`,
   getFreigtFullTruckCapacitySelectList: `${BASE_URL}/configuration/select-list-get-full-truck-capacity`,
   getFreigtRateCriteriaSelectList: `${BASE_URL}/configuration/select-list-get-full-truck-ratecriteria`,
-  getTruckDimensionsSelectList: `${BASE_URL}/masters-freight/get-truck-dimensions-select-list`,
-  saveTruckDimensions: `${BASE_URL}/masters-freight/save-truck-dimensions`,
+  getTruckDimensionsSelectList: `${BASE_URL}/masters-freight/select-list-dimensions`,
+  saveTruckDimensions: `${BASE_URL}/masters-freight/create-dimensions`,
+  getTruckDimensionsById: `${BASE_URL}/masters-freight/get-dimensionsId`,
 
   //API's for Additional freight master
   createAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/create`,
@@ -589,7 +590,7 @@ export const API = {
 
   getRateCriteriaByCapacitySelectList: `${BASE_URL}/costing/get-rate-criteria-by-capacity-select-list`,
   getRateByCapacityCriteria: `${BASE_URL}/costing/get-rate-by-capacity-criteria`,
-
+  getNoOfComponentsPerCrateFromPackaging: `${BASE_URL}/costing/get-packaging-rate`,
   getCostingPartDetails: `${BASE_URL}/costing/get-costing-part-details`,
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
@@ -634,6 +635,8 @@ export const API = {
   saveRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-box-calculation-details`,
   saveRawMaterialCalculationForMonoCartonCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-and-mono-carton-box-calculation-details`,
   getRawMaterialCalculationForMonoCartonCorrugatedBox: `${BASE_URL}/costing/get-raw-material-corrugated-and-mono-carton-box-calculation-details`,
+  saveRawMaterialCalculationForLamination: `${BASE_URL}/costing/save-raw-material-corrugated-laminate-calculation-details`,
+  getRawMaterialCalculationForLamination: `${BASE_URL}/costing/get-raw-material-corrugated-laminate-calculation-details`,
   getRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/get-raw-material-die-casting-calculation-details`,
   saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
@@ -645,10 +648,15 @@ export const API = {
   getRawMaterialCalculationForMachining: `${BASE_URL}/costing/get-raw-material-machining-calculation-details`,
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
   getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
+  getSimulationLaminationCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-laminate-calculation-details`,
   getPackagingCalculation: `${BASE_URL}/costing/get-costing-packaging-calculation-details`,
   savePackagingCalculation: `${BASE_URL}/costing/save-costing-packaging-calculation-details`,
   getVolumePerDayForPackagingCalculator: `${BASE_URL}/costing/get-volume-per-day-for-packaging-calculator`,
   getSimulationPackagingCalculation: `${BASE_URL}/simulation/get-simulation-costing-packaging-calculation-details`,
+  getSimulationFreightCalculation: `${BASE_URL}/simulation/get-simulation-costing-freight-calculation-details`,
+  getCarrierTypeList: `${BASE_URL}/costing/get-carrier-type`,
+  getFreightCalculation: `${BASE_URL}/costing/get-costing-freight-calculation-details`,
+  saveFreightCalculation: `${BASE_URL}/costing/save-costing-freight-calculation-details`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
@@ -755,6 +763,12 @@ export const API = {
   checkHighestApprovalLevelForHeadsAndApprovalType: `${BASE_URL}/user-level/check-valid-approval-levels`,
   getOnboardingLevelById: `${BASE_URL}/configuration/select-list-get-level-by-onboarding`,
   getUserOnboardingLevel: `${BASE_URL}/user-level/get-user-onboarding-levels`,
+  getDelegateeUserListAPI: `${BASE_URL}/user-delegation/get-delegatee-users`,
+  createDelegation: `${BASE_URL}/user-delegation/create-user-delegations`,
+  getUserDelegationDetails: `${BASE_URL}/user-delegation/get-user-delegations`,
+  revokeDelegation: `${BASE_URL}/user-delegation/revoke-user-delegations`,
+  getDelegationHistory: `${BASE_URL}/user-delegation/get-user-delegations-history`,
+  getAllUserDelegationApi: `${BASE_URL}/user/get-all-users-delegation`,
 
   //AUDIT API
 
@@ -1842,6 +1856,9 @@ export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
 export const SET_COSTING_VIEW_DATA_FOR_ASSEMBLY = 'SET_COSTING_VIEW_DATA_FOR_ASSEMBLY';
 export const GET_RM_DETAILS = 'GET_RM_DETAILS';
 export const GET_BOP_DETAILS = 'GET_BOP_DETAILS';
+export const GET_CARRIER_TYPE_LIST_SUCCESS = 'GET_CARRIER_TYPE_LIST_SUCCESS';
+export const SET_PACKAGING_CALCULATOR_AVAILABLE = 'SET_PACKAGING_CALCULATOR_AVAILABLE';
+export const SET_FREIGHT_CALCULATOR_AVAILABLE = 'SET_FREIGHT_CALCULATOR_AVAILABLE';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -1883,6 +1900,8 @@ export const COSTINGS_APPROVAL_DASHBOARD = 'COSTINGS_APPROVAL_DASHBOARD'
 export const AMENDMENTS_APPROVAL_DASHBOARD = 'AMENDMENTS_APPROVAL_DASHBOARD'
 export const GRANT_USER_WISE_DATA = 'GRANT_USER_WISE_DATA'
 export const GET_ONBOARDING_LEVEL_BY_ID = 'GET_ONBOARDING_LEVEL_BY_ID'
+export const GET_DELEGATEE_USER_LIST_SUCCESS = 'GET_DELEGATEE_USER_LIST_SUCCESS'
+
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
 export const GET_UNIT_ROLE_DATA_SUCCESS = 'GET_UNIT_ROLE_DATA_SUCCESS'
@@ -2327,6 +2346,8 @@ export const COMPANY = 'Company'//MINDA
 export const RFQUSER = 'RFQUser'
 export const DELEGATION = 'Delegation'
 export const DIVISION = 'Division'
+export const SELF_DELEGATION = 'Self Delegation'
+export const ON_BEHALF_DELEGATION = 'On Behalf Delegation'
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM'
@@ -2905,7 +2926,7 @@ export const DIE_CASTING = 7
 //changed the sheet metal to 8 bcz the version 3 code is not working or deployed
 export const SHEETMETAL = 8
 export const MONOCARTON = 13
-
+export const PLASTIC_RUBBER_WITH_EXTRUSION = 14
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
@@ -3314,7 +3335,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.66.2";
+export const VERSION = "V3.1.42";
 
 
 

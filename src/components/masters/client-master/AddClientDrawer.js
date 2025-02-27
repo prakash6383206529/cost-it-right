@@ -280,7 +280,7 @@ class AddClientDrawer extends Component {
                 DataToCheck.PhoneNumber === values.PhoneNumber && DataToCheck.Extension === values.Extension &&
                 DataToCheck.MobileNumber === values.MobileNumber && DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
                 DataToCheck.AddressLine2 === values.AddressLine2) {
-                this.toggleDrawer('')
+                Toaster.warning('Please change data to save Client Details');
                 return false
             }
 
@@ -1023,6 +1023,8 @@ function mapStateToProps(state) {
             ZipCode: clientData.ZipCode,
             PhoneNumber: clientData.PhoneNumber,
             Extension: clientData.Extension,
+            AddressLine1: clientData.AddressLine1 || '',
+            AddressLine2: clientData.AddressLine2 || '',
         }
     }
 

@@ -148,7 +148,7 @@ function AddLabourCost(props) {
         let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
         let absentism = Number(checkForNull(getValues('absentism'))) / 100
         let labourRate = Number(getValues('labourRate'))
-        let workingHours = Number(getValues('workingHours'))
+        let workingHours = Number(getValues('workingHours'))*3600;
         let efficiency = Number(getValues('efficiency'))
         efficiency = efficiency / 100
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
@@ -164,7 +164,7 @@ function AddLabourCost(props) {
             let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
             let absentism = Number(checkForNull(getValues('absentism'))) / 100
             let labourRate = Number(getValues('labourRate'))
-            let workingHours = Number(getValues('workingHours'))
+            let workingHours = Number(getValues('workingHours'))*3600;
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(e?.target?.value)
@@ -180,7 +180,7 @@ function AddLabourCost(props) {
         let noOfLabour = Number(checkForNull(e?.target?.value))
         let absentism = Number(checkForNull(getValues('absentism'))) / 100
         let labourRate = Number(getValues('labourRate'))
-        let workingHours = Number(getValues('workingHours'))
+        let workingHours = Number(getValues('workingHours'))*3600;
         let efficiency = Number(getValues('efficiency'))
         efficiency = efficiency / 100
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
@@ -195,7 +195,7 @@ function AddLabourCost(props) {
             let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
             let absentism = Number(checkForNull(e?.target?.value)) / 100
             let labourRate = Number(getValues('labourRate'))
-            let workingHours = Number(getValues('workingHours'))
+            let workingHours = Number(getValues('workingHours'))*3600;
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(checkForNull(getValues('cycleTime')))

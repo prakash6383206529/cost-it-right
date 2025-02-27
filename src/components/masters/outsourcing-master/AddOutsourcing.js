@@ -84,7 +84,7 @@ const AddOutsourcing = (props) => {
         const { isEditMode } = props;
         if (isEditMode) {
             if (dataToCheck.OutSourcingName === values?.OutsourcingName && dataToCheck.OutSourcingShortName === values?.OutsourcingShortName) {
-                toggleDrawer('', 'cancel');
+                Toaster.warning('Please change the data to save Out Sourcing Details');
                 return false;
             }
             setSetDisable(true);

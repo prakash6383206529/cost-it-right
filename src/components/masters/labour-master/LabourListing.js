@@ -63,7 +63,8 @@ function LabourListing(props) {
     effectiveDate: '',
     selectedVendor: [],
     selectedCustomer: [],
-    costingTypeId: ZBCTypeId
+    costingTypeId: ZBCTypeId,
+    totalRecordCount: 0
   });
   const dispatch = useDispatch();
   const { labourDataList, topAndLeftMenuData } = useSelector(state => ({ labourDataList: state.labour.labourDataList, topAndLeftMenuData: state.auth.topAndLeftMenuData, }));
@@ -127,7 +128,7 @@ function LabourListing(props) {
         setState((prevState) => ({ ...prevState, tableData: [] }))
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        setState((prevState) => ({ ...prevState, tableData: Data, }))
+        setState((prevState) => ({ ...prevState, tableData: Data, totalRecordCount: Data?.length }))
       } else {
       }
     }))
@@ -231,7 +232,7 @@ function LabourListing(props) {
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      labourDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
+      labourDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }))
     }, 500);
   }
 
@@ -392,9 +393,9 @@ function LabourListing(props) {
                     <>
 
                       <ExcelFile filename={'Labour'} fileExtension={'.xls'} element={
-                        <Button id={"Excel-Downloads-labourListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                        <Button id={"Excel-Downloads-labourListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                       }>
-                        {onBtExport()}
+                        {state?.totalRecordCount !== 0 ? onBtExport() : null}
                       </ExcelFile>
                     </>
                   }

@@ -1110,7 +1110,7 @@ export function getRateCriteriaByCapacitySelectList(Capacity) {
  */
 export function getRateByCapacityCriteria(data, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}`, config(),)
+    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}&dimensionId=${data?.DimensionId}`, config(),)
     request.then((response) => {
       if (response?.data?.Result) {
         callback(response)
@@ -2443,7 +2443,7 @@ export function saveBOMLevel(data) {
  */
 export function checkFinalUser(data, callback) {
   return (dispatch) => {
-    const queryParams = `DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}&plantId=${data?.plantId}&divisionId=${data?.divisionId ?? null}`
+    const queryParams = `DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}&plantId=${data?.plantId}&divisionId=${data?.divisionId ?? null}&receiverId=${data?.ReceiverId ?? null}`
 
     const request = axios.get(`${API.checkFinalUser}?${queryParams}`, config())
     request.then((response) => {

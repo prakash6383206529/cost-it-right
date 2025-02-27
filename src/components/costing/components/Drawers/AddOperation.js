@@ -25,6 +25,7 @@ function AddOperation(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [render, setRender] = useState(false);
   const [noData, setNoData] = useState(false);
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext)
@@ -67,6 +68,7 @@ function AddOperation(props) {
       } else {
         setTableDataList([])
       }
+      setRender(true);
     }))
   }, []);
 
@@ -105,6 +107,11 @@ function AddOperation(props) {
 
   const isFirstColumn = (params) => {
     const rowData = params?.valueFormatted ? params.valueFormatted : params?.data;
+    const allSelectedOperation = tableData?.every(operation => selectedIds?.includes(operation.OperationId));
+    if (allSelectedOperation) {
+      return false;
+    }
+
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 
@@ -116,8 +123,8 @@ function AddOperation(props) {
     filter: true,
     sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
-    headerCheckboxSelection: isFirstColumn,
-    checkboxSelection: isFirstColumn
+    headerCheckboxSelection: render ? isFirstColumn : false,
+    checkboxSelection: render ? isFirstColumn : false
   };
 
 
@@ -211,7 +218,7 @@ function AddOperation(props) {
                     </div>
                     <div className="ag-theme-material p-relative">
                       {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
-                      <AgGridReact
+                      {render && <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
                         floatingFilter={true}
@@ -244,7 +251,7 @@ function AddOperation(props) {
                         {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <AgGridColumn field="LabourRate" headerName='Labour Rate' ></AgGridColumn>}
 
 
-                      </AgGridReact>
+                      </AgGridReact>}
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
                   </div>

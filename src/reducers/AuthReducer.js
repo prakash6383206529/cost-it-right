@@ -47,7 +47,8 @@ import {
     MANAGE_LEVEL_TAB_API,
     GET_DIVISION_SUCCESS,
     GET_DIVISION_LIST_SUCCESS,
-    GET_DIVISION_LIST_FOR_DEPARTMENT
+    GET_DIVISION_LIST_FOR_DEPARTMENT,
+    GET_DELEGATEE_USER_LIST_SUCCESS
 } from '../../src/config/constants'
 import DayTime from '../components/common/DayTimeWrapper'
 import { showBopLabel, updateBOPValues } from '../helper'
@@ -442,6 +443,13 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 divisionListForDepartment: action.payload
+            }
+        case GET_DELEGATEE_USER_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                delegateeUserList: action.payload
             }
         default:
             return state;

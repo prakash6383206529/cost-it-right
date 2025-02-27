@@ -469,12 +469,12 @@ function TabRMCC(props) {
       newItem.CostingPartDetails.TotalOperationCostSubAssembly = obj?.CostingPartDetails?.TotalOperationCostSubAssembly
       newItem.CostingPartDetails.TotalOperationCostComponent = obj?.CostingPartDetails?.TotalOperationCostComponent
       newItem.CostingPartDetails.TotalConversionCost = checkForNull(obj?.CostingPartDetails?.TotalConversionCost)
-      newItem.CostingPartDetails.TotalConversionCostWithQuantity = obj?.CostingPartDetails?.TotalConversionCostWithQuantity + checkForNull(obj?.CostingPartDetails?.IndirectLaborCost) + checkForNull(obj?.CostingPartDetails?.StaffCost) + checkForNull(obj?.CostingPartDetails?.NetLabourCost)
+      newItem.CostingPartDetails.TotalConversionCostWithQuantity = obj?.CostingPartDetails?.TotalConversionCostWithQuantity
       newItem.CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)
       newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity
       newItem.CostingPartDetails.IsRMCutOffApplicable = obj?.CostingPartDetails?.IsRMCutOffApplicable
       newItem.CostingPartDetails.TotalOtherOperationCostPerAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly
-
+      newItem.CalculatorType = ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType
       newItem.CostingPartDetails.BOPHandlingChargeType = obj?.CostingPartDetails?.BOPHandlingChargeType;
       newItem.CostingPartDetails.CostingRawMaterialsCost = obj?.CostingPartDetails?.CostingRawMaterialsCost;
       newItem.CostingPartDetails.CostingBoughtOutPartCost = obj?.CostingPartDetails?.CostingBoughtOutPartCost;
@@ -1168,7 +1168,7 @@ function TabRMCC(props) {
         newItem.CostingPartDetails.NetLabourCRMHead = obj?.CostingPartDetails?.NetLabourCRMHead
         newItem.CostingPartDetails.IndirectLabourCRMHead = obj?.CostingPartDetails?.IndirectLabourCRMHead
         newItem.CostingPartDetails.StaffCRMHead = obj?.CostingPartDetails?.StaffCRMHead
-
+        newItem.CalculatorType = ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType
       }
       if (item.CostingChildPartDetails.length > 0) {
         mapArray(newItem.CostingChildPartDetails)
@@ -1335,6 +1335,7 @@ function TabRMCC(props) {
           newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
           newItem.CostingPartDetails.IsRMCutOffApplicable = obj?.CostingPartDetails?.IsRMCutOffApplicable
           newItem.CostingPartDetails.TotalOtherOperationCostPerAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly
+          newItem.CalculatorType = ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType
         }
         if (item.CostingChildPartDetails.length > 0) {
           mapArray(newItem.CostingChildPartDetails)
@@ -1627,6 +1628,8 @@ function TabRMCC(props) {
 
   }
 
+  const isAccordionOpen = ComponentItemData && Object.keys(ComponentItemData)?.length > 0 && ComponentItemData?.IsOpen;
+
   return (
     <>
       <div className="login-container signup-form" id="rm-cc-costing-header">
@@ -1723,6 +1726,7 @@ function TabRMCC(props) {
                   </div>
                 }
               </form >
+              {!isAccordionOpen && costData?.IsAssemblyPart!=="Assembly" && !CostingViewMode && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Please open the accordion to enter costing data.'} />}
             </div >
           </Col >
         </Row >

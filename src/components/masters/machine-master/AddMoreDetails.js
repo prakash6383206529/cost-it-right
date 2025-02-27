@@ -4738,7 +4738,7 @@ class AddMoreDetails extends Component {
                                   <button
                                     type="button"
                                     disabled={disableAllForm}
-                                    className={'btn btn-primary mt30 pull-left mr5'}
+                                    className={'btn btn-primary mt30 pull-left mr10'}
                                     onClick={this.updateLabourGrid}
                                   >Update</button>
 
@@ -4754,7 +4754,7 @@ class AddMoreDetails extends Component {
                                   <button id="AddMoreDetails_Labour_Add"
                                     type="button"
                                     disabled={disableAllForm}
-                                    className={'user-btn mt30 pull-left mr5'}
+                                    className={'user-btn mt30 pull-left mr15'}
                                     onClick={this.labourTableHandler}>
                                     <div className={'plus'}></div>ADD</button>
                                   <button
@@ -5008,7 +5008,7 @@ class AddMoreDetails extends Component {
                                       <>
                                         <button id="AddMoreDetails_Process_Add"
                                           type="button"
-                                          className={'user-btn pull-left'}
+                                          className={'user-btn pull-left mr10'}
                                           disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
                                           onClick={this.processTableHandler}>
                                           <div className={'plus'}></div>ADD</button>
@@ -5017,9 +5017,10 @@ class AddMoreDetails extends Component {
                                           disabled={this.state.isViewMode}
                                           className={'reset-btn pull-left ml5'}
                                           onClick={this.resetProcessGridData}
-                                        >Reset</button> </>}
-                                  </div></Col>
-                              </Row>
+                                        >Reset</button> </>
+                                    }
+                                  </div></Col >
+                              </Row >
                             </Col >
 
                             <Col md="12">
@@ -5107,7 +5108,7 @@ class AddMoreDetails extends Component {
                           }
                         </Row >
                       }
-                      <Row>
+                      < Row >
                         <Col md="12" className="filter-block">
                           <div className="mb-2">
                             <h5>{'Remarks & Attachments:'}</h5>

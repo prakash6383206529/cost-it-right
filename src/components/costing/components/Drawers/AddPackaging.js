@@ -59,7 +59,7 @@ function AddPackaging(props) {
   const [freightTypeState, setFreightTypeState] = useState(isEditFlag ? { label: rowObjData.PackagingDescription, value: rowObjData.PackagingDescription } : []);
   // const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
   const [PackageType, setPackageType] = useState(true);
-  const [packagingCost, setPackagingCost] = useState(0)
+  const [packagingCost, setPackagingCost] = useState(rowObjData?.PackagingCost ?? 0)
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
@@ -68,7 +68,7 @@ function AddPackaging(props) {
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
   const [showCalculator, setShowCalculator] = useState(false)
   const [openCalculator, setOpenCalculator] = useState(false)
-  const [costingPackagingCalculationDetailsId, setCostingPackagingCalculationDetailsId] = useState('')
+  const [costingPackagingCalculationDetailsId, setCostingPackagingCalculationDetailsId] = useState(rowObjData?.CostingPackagingCalculationDetailsId ?? null)
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -97,12 +97,14 @@ function AddPackaging(props) {
       })
       // setTotalFinishWeight(totalFinishWeight)
 
-      if(applicability?.label === 'Crate/Trolley'){
+      if (applicability?.label === 'Crate/Trolley') {
         setShowCalculator(true)
       }
+      setValue("Quantity", totalFinishWeight)
       setTotalRMGrossWeight(totalGrossWeight)
     }
   }, [RMCCTabData, applicability])
+
 
   useEffect(() => {
     if (applicability && applicability?.value !== undefined) {
@@ -116,7 +118,7 @@ function AddPackaging(props) {
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
     const removeApplicabilityList = _.map(gridData, 'Applicability')
     setRemoveApplicability(removeApplicabilityList)
-    if(applicability?.label === 'Crate/Trolley'){
+    if (applicability?.label === 'Crate/Trolley') {
       setShowCalculator(true)
     }
   }, [])
@@ -191,9 +193,9 @@ function AddPackaging(props) {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
       calculateApplicabilityCost(newValue.label, true)
-      if(newValue.label === 'Crate/Trolley'){
+      if (newValue.label === 'Crate/Trolley') {
         setShowCalculator(true)
-      }else{
+      } else {
         setShowCalculator(false)
       }
     } else {
@@ -421,21 +423,23 @@ function AddPackaging(props) {
         PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : '',
         Rate: getValues('Rate'),
         Quantity: getValues('Quantity'),
-        CostingPackagingCalculationDetailsId: costingPackagingCalculationDetailsId??null
+        CostingPackagingCalculationDetailsId: costingPackagingCalculationDetailsId ?? null
       }
     }
-
     toggleDrawer('', formData)
   }
-const toggleWeightCalculator = (packingCost) => {
-  setOpenCalculator(true)
-}
-const closeCalculator = (formData,packingCost) => {
-  setCostingPackagingCalculationDetailsId(formData?.CalculationId)
-  setValue('PackagingCost', checkForDecimalAndNull(packingCost, getConfigurationKey().NoOfDecimalForPrice))
-  setPackagingCost(packingCost)
-  setOpenCalculator(false)
-}
+  const toggleWeightCalculator = (packingCost) => {
+    setOpenCalculator(true)
+  }
+  const closeCalculator = (calculatorId, packingCost, type) => {
+
+    setCostingPackagingCalculationDetailsId(calculatorId)
+    if (type === 'Save') {
+      setValue('PackagingCost', checkForDecimalAndNull(packingCost, getConfigurationKey().NoOfDecimalForPrice))
+      setPackagingCost(packingCost)
+    }
+    setOpenCalculator(false)
+  }
   /**
   * @method render
   * @description Renders the component
@@ -524,7 +528,7 @@ const closeCalculator = (formData,packingCost) => {
                       disabled={!PackageType ? true : false}
                     />
                   </Col>}
-                 
+
                   {/* {
                     applicability.label === 'Fixed'?
                     <Col md="12">
@@ -669,33 +673,33 @@ const closeCalculator = (formData,packingCost) => {
                   {costingData.TechnologyId !== LOGISTICS && <Col md="12">
                     <div className="packaging-cost-warpper">
                       <TextFieldHookForm
-                      label="Packaging Cost"
-                      name={'PackagingCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={applicability?.label === 'Fixed' ? true : false}
-                      rules={{
-                        required: applicability?.label === 'Fixed' ? true : false,
-                        validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
-                      }}
-                      handleChange={packingCostHandler}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder w-100 mb-0'}
-                      errors={errors.PackagingCost}
-                      disabled={applicability?.label === 'Fixed' ? false : true}
-                    />
+                        label="Packaging Cost"
+                        name={'PackagingCost'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={applicability?.label === 'Fixed' ? true : false}
+                        rules={{
+                          required: applicability?.label === 'Fixed' ? true : false,
+                          validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
+                        }}
+                        handleChange={packingCostHandler}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder w-100 mb-0'}
+                        errors={errors.PackagingCost}
+                        disabled={applicability?.label === 'Fixed' ? false : true}
+                      />
                       {showCalculator && <button
-                    id={`RM_calculator`}
-                    className={`CalculatorIcon mb-0 mt-1 ml-2 cr-cl-icon RM_calculator`}
-                    type={'button'}
-                    onClick={() => toggleWeightCalculator()}
-                    disabled={false}
-                    />}
+                        id={`RM_calculator`}
+                        className={`CalculatorIcon mb-0 mt-1 ml-2 cr-cl-icon RM_calculator`}
+                        type={'button'}
+                        onClick={() => toggleWeightCalculator()}
+                        disabled={false}
+                      />}
                     </div>
                   </Col>
-                 
+
                   }
 
                   {initialConfiguration.IsShowCRMHead && <Col md="12">
@@ -742,16 +746,16 @@ const closeCalculator = (formData,packingCost) => {
                   </div>
                 </Row>
               </>
-            
+
             </form>
             {openCalculator && <PackagingCalculator
-                isOpen={openCalculator}
-                anchor={'right'}
-                closeCalculator={closeCalculator}
-                rowObjData={rowObjData}
-                CostingViewMode={isEditFlag ? true : false}
-                costingPackagingCalculationDetailsId={costingPackagingCalculationDetailsId}
-               />}
+              isOpen={openCalculator}
+              anchor={'right'}
+              closeCalculator={closeCalculator}
+              rowObjData={rowObjData}
+              CostingViewMode={isEditFlag ? true : false}
+              costingPackagingCalculationDetailsId={costingPackagingCalculationDetailsId}
+            />}
           </div>
         </Container>
       </Drawer>

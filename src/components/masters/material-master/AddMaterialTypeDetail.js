@@ -202,7 +202,7 @@ const AddMaterialTypeDetail = (props) => {
                         <>
                             <button
                                 type="button"
-                                className={"btn btn-primary mt30 pull-left mr5"}
+                                className={"btn btn-primary mt30 pull-left mr10"}
                                 onClick={handleAddUpdateButtonClick}
                                 disabled={isViewFlag}
                             >
@@ -221,10 +221,11 @@ const AddMaterialTypeDetail = (props) => {
                         <>
                             <button
                                 type="button"
-                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} pull-left`}
+                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} pull-left mr10`}
                                 onClick={handleAddUpdateButtonClick}
                                 disabled={isViewFlag}
                             >
+
                                 <div className={"plus"}></div>ADD
                             </button>
                             <button

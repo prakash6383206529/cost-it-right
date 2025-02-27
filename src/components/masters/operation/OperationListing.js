@@ -66,7 +66,7 @@ const OperationListing = (props) => {
         selectedRowDataAnalytics: [],
         inRangeDate: [],
         //states for pagination purpose
-        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '', ForType: '' },
+        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UOM: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '', ForType: '' },
         warningMessage: false,
         filterModel: {},
         totalRecordCount: 0,
@@ -276,7 +276,7 @@ const OperationListing = (props) => {
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (operationList?.length !== 0) {
-                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
             }
         }, 500);
         setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -327,13 +327,13 @@ const OperationListing = (props) => {
 
     const onSearch = () => {
         dispatch(updatePageNumber(1));
-        dispatch(updateCurrentRowIndex(0));
+        dispatch(updateCurrentRowIndex(10));
         setState((prevState) => ({
             ...prevState, warningMessage: false,
             //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0, 
             noData: false,
         }));
-        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     };
 
     const resetState = () => {
@@ -915,7 +915,7 @@ const OperationListing = (props) => {
                                         permissionData?.Download && !props?.isMasterSummaryDrawer &&
                                         <>
 
-                                            <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                            <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                                 icon={"download mr-1"}
                                                 buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                             />
@@ -940,15 +940,12 @@ const OperationListing = (props) => {
                 <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
                     <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                        {(!state.render && !state.isLoader) && Object.keys(permissionData).length > 0 && <AgGridReact
+                        {(!state.render && !state.isLoader) && (props.isMasterSummaryDrawer || Object.keys(permissionData).length > 0) && <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
                             rowData={state.showExtraData ? [...setLoremIpsum(state.tableData[0]), ...state.tableData] : state.tableData}
-
-
                             pagination={true}
-
                             paginationPageSize={globalTakes}
                             onGridReady={onGridReady}
                             gridOptions={gridOptions}

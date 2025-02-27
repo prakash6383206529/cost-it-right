@@ -37,6 +37,7 @@ import { useTranslation } from "react-i18next";
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import RfqMasterApprovalDrawer from "../material-master/RfqMasterApprovalDrawer";
 import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
+import { divisionApplicableFilter } from "../masterUtil";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -371,6 +372,7 @@ const BOPImportListing = (props) => {
         setState((prevState) => ({
           ...prevState,
           noData: searchNocontentFilter(value, state.noData),
+          totalRecordCount: state?.gridApi?.getDisplayedRowCount()
         }));
       }
     }, 500);
@@ -783,7 +785,7 @@ const BOPImportListing = (props) => {
     }
   };
 
-  const BOP_IMPORT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_IMPORT_DOWNLOAD_EXCEl, "MasterLabels")
+  const BOP_IMPORT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(divisionApplicableFilter(BOP_IMPORT_DOWNLOAD_EXCEl, "Division"), "MasterLabels")
   const onBtExport = () => {
     let tempArr = [];
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
@@ -1098,7 +1100,7 @@ const BOPImportListing = (props) => {
                           )}
                           {permissions?.Download && (
                             <>
-                              <Button className={"user-btn mr5 Tour_List_Download"} id={"bopImportingListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                              <Button className={"user-btn mr5 Tour_List_Download"} id={"bopImportingListing_excel_download"}  disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
 
                               <ExcelFile filename={`${showBopLabel()} Import`} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
                                 {onBtExport()}
@@ -1173,6 +1175,7 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="Plants" cellRenderer={"hyphenFormatter"} headerName="Plant (Code)"></AgGridColumn>
                         <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                         {reactLocalStorage.getObject('CostingTypePermission').cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
+                        {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                         <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms"></AgGridColumn>
                         {getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn>}
                         {getConfigurationKey().IsMinimumOrderQuantityVisible && (<AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>)}

@@ -165,7 +165,7 @@ function CommonApproval(props) {
 
         setLoader(true)
         props?.isDashboard && dispatch(dashboardTabLock(true))
-        dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, props?.OnboardingApprovalId, (res) => {
+        dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, props?.OnboardingApprovalId, props?.delegation, (res) => {
             setLoader(false)
             dispatch(dashboardTabLock(false))
             let obj = { ...floatingFilterData }
@@ -459,8 +459,8 @@ function CommonApproval(props) {
         }
     }
 
-    const viewDetails = (approvalNumber = '', approvalProcessId = '', costingTypeId = '', id = '') => {
-        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber, costingTypeId: costingTypeId, id: id })
+    const viewDetails = (approvalNumber = '', approvalProcessId = '', costingTypeId = '', id = '', receiverId = null) => {
+        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber, costingTypeId: costingTypeId, id: id, receiverId: receiverId })
         setShowApprovalSummary(true)
 
     }
@@ -526,12 +526,11 @@ function CommonApproval(props) {
                 return null
             })
         }
-
         return (
             <Fragment>
                 {
                     row.Status !== DRAFT ?
-                        <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId, row.CostingTypeId, id)} className={row.Status !== DRAFT ? 'link' : ''}>
+                        <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId, row.CostingTypeId, id, row?.ReceiverId)} className={row.Status !== DRAFT ? 'link' : ''}>
                             {row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber}
                         </div> :
                         row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber
@@ -653,7 +652,7 @@ function CommonApproval(props) {
     const sendForApproval = () => {
         if (selectedRowData?.length > 0) {
             let levelDetailsTemp = []
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, (res) => {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, selectedRowData[0]?.ReceiverId, (res) => {
                 levelDetailsTemp = userTechnologyDetailByMasterId(selectedRowData[0]?.CostingTypeId, props?.MasterId, res?.data?.Data?.MasterLevels)
                 setLevelDetails(levelDetailsTemp)
             }))
@@ -676,7 +675,7 @@ function CommonApproval(props) {
             let checkApprovalTypeOfSupplier = true
             if (props?.OnboardingApprovalId !== ONBOARDINGID) {
 
-                dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, (res) => {
+                dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, selectedRowData[0]?.ReceiverId, (res) => {
                     levelDetailsTemp = userTechnologyDetailByMasterId(selectedRowData[0]?.CostingTypeId, props?.MasterId, res?.data?.Data?.MasterLevels)
                     setLevelDetails(levelDetailsTemp)
                 }))
@@ -696,7 +695,7 @@ function CommonApproval(props) {
                     return null
                 })
             } else {
-                dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
+                dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), selectedRowData[0]?.ReceiverId, (res) => {
 
                     levelDetailsTemp = userTechnologyLevelDetailsWithoutCostingToApproval(selectedRowData[0]?.ApprovalTypeId, res?.data?.Data?.OnboardingApprovalLevels)
 

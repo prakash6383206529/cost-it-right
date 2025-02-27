@@ -58,7 +58,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function SimulationApprovalSummary(props) {
     const { vendorLabel } = useLabels()
     const { isbulkUpload } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId } = props?.location?.state
+    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId, receiverId, fromDashboard } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -159,6 +159,7 @@ function SimulationApprovalSummary(props) {
             approvalTokenNumber: approvalNumber,
             approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
+            receiverId: receiverId
         }
         const params = {
             simulationId: simulationId,
@@ -330,7 +331,8 @@ function SimulationApprovalSummary(props) {
 
                 // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(simulationData.SimulationHeadId),
                 plantId: simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : null,
-                divisionId: simulationData?.DivisionId ?? null
+                divisionId: simulationData?.DivisionId ?? null,
+                ReceiverId: receiverId
             }
             if (initialConfiguration?.IsMultipleUserAllowForApproval ? simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : true : true) {
                 dispatch(checkFinalUser(obj, res => {
@@ -1041,7 +1043,13 @@ function SimulationApprovalSummary(props) {
     }
 
     if (showListing === true) {
-        return <Redirect to="/simulation-history" />
+        return <Redirect to={{
+            pathname: fromDashboard ? "/" : "/simulation-history",
+            state: fromDashboard ? {
+                activeTab: '1',  // Or whichever tab the user came from
+                module: 'simulation'
+            } : undefined
+        }} />
     }
 
     const defaultColDef = {
@@ -1295,8 +1303,7 @@ function SimulationApprovalSummary(props) {
                             </Col >
                         </Row >
                         {/* } */}
-
-                        {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && < Row className='reset-btn-container' >
+                        {(Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && !isMultiTechnology) && < Row className='reset-btn-container' >
                             <Col md="6"><div className="left-border ">{'Impacted Master Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
@@ -1529,8 +1536,8 @@ function SimulationApprovalSummary(props) {
                                                                     &&
                                                                     < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft Net Cost" ></AgGridColumn>
                                                                 }
-                                                                {isMasterAssociatedWithCosting && < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
-                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && < AgGridColumn width={160} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={180} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned"></AgGridColumn>}
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
@@ -1606,8 +1613,9 @@ function SimulationApprovalSummary(props) {
                                             isApproval={true}
                                             costingIdExist={true}
                                             selectedTechnology={technologyName}
-                                            simulationId={simulationDetail?.SimulationId}
                                             showAddToComparison={true}
+                                            simulationId={simulationDetail?.SimulationId}
+                                            receiverId={simulationDetail?.ReceiverId}
                                         />}
                                     </Col>
                                 </Row>
@@ -1868,11 +1876,11 @@ function SimulationApprovalSummary(props) {
                     approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
                     IsExchangeRateSimulation={keysForDownloadSummary?.IsExchangeRateSimulation}
                     CheckFinalLevel={CheckFinalLevel}
+                    receiverId={receiverId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
             }
-
             {
                 rejectDrawer && <SimulationApproveReject
                     // rejectDrawer && <ApproveRejectDrawer               //RE
@@ -1893,6 +1901,7 @@ function SimulationApprovalSummary(props) {
                     costingTypeId={simulationDetail?.SimulationHeadId}
                     technologyId={SimulationTechnologyId}
                     CheckFinalLevel={CheckFinalLevel}
+                    receiverId={receiverId}
                 />
             }
 

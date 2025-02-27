@@ -395,11 +395,12 @@ export function getApprovalSummary(
   approvalNumber,
   approvalProcessId,
   loggedInUserId,
+  receiverId,
   callback,
 ) {
   return (dispatch) => {
     const request = axios.get(
-      `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}`, config())
+      `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}/${receiverId}`, config())
     request
       .then((response) => {
         if (response?.data?.Result) {

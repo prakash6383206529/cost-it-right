@@ -114,6 +114,11 @@ function AddRMDetails(props) {
         if (states.costingTypeId === CBCTypeId) {
             dispatch(getClientSelectList(() => { }))
         }
+        setState(prevState => ({
+            ...prevState,
+            vendor: [],
+            sourceVendor: [],
+        }))
     }, [states.costingTypeId])
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
@@ -288,12 +293,10 @@ function AddRMDetails(props) {
         }
         dispatch(setRawMaterialDetails({ Plants: newValue }, () => { }))
         handleCommonFunction(IsMultipleUserAllowForApproval ? newValue?.value : EMPTY_GUID, state?.rmSpec?.value)
-        console.log(newValue, 'newValue', IsMultipleUserAllowForApproval)
     }
     const handleCommonFunction = (plantId, partId) => {
-        console.log(plantId, partId, 'plantId, partId')
         if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && plantId && partId) {
-            props?.commonFunction({ PlantId: plantId, PartId: partId }, props?.masterLevels)
+            props?.commonFunction(plantId,false, props?.masterLevels)
         }
     }
     /**
@@ -693,12 +696,14 @@ function AddRMDetails(props) {
                                     />
                                 </div>
                                 {!(isEditFlag || isViewFlag) && (
+                                    // <div className="mt-3">
                                     <Button
                                         id="addRMDomestic_RMToggle"
                                         onClick={openRMdrawer}
-                                        className={`right`}
+                                        className={`right mt-2`}
                                         variant="plus-icon-square"
                                     />
+                                    // </div>
                                 )}
                             </div>
                         </Col>

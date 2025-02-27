@@ -224,7 +224,7 @@ class AddOperation extends Component {
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
         }, 100);
@@ -245,7 +245,7 @@ class AddOperation extends Component {
       UserId: loggedInUserId(),
       Mode: 'master',
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
-      plantId: plantId
+      plantId: plantId,
     }
     if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
@@ -989,6 +989,29 @@ class AddOperation extends Component {
     const { initialConfiguration } = this.props;
     const userDetailsOperation = JSON.parse(localStorage.getItem('userDetail'))
     const userDetail = userDetails()
+    if (isEditFlag) {
+
+      const hasNoChanges = (
+        checkForDecimalAndNull(values?.Rate) === checkForDecimalAndNull(DataToChange?.Rate) &&
+        (values?.Remark || '') === (DataToChange?.Remark || '') &&
+        (UOM?.value || '') === (oldUOM?.value || '') &&
+        (values?.Description || '') === (DataToChange?.Description || '') &&
+        JSON.stringify(files) === JSON.stringify(DataToChange?.Attachements) &&
+        (values?.OperationName || '') === (DataToChange?.OperationName || '') &&
+        (values?.OperationCode || '') === (DataToChange?.OperationCode || '') &&
+        checkForDecimalAndNull(values?.LabourRatePerUOM) === checkForDecimalAndNull(DataToChange?.LabourRatePerUOM) &&
+        checkForDecimalAndNull(values?.WeldingRate) === checkForDecimalAndNull(DataToChange?.OperationBasicRate) &&
+        checkForDecimalAndNull(values?.Consumption) === checkForDecimalAndNull(DataToChange?.OperationConsumption) &&
+        !isDateChange
+      );
+
+      if (hasNoChanges) {
+        this.setState({ setDisable: false });
+        Toaster.warning('Please change the data to save Operation Details');
+        return false;
+      }
+    }
+
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1756,7 +1779,7 @@ class AddOperation extends Component {
                           label={`Labour Rate/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}
                           type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, number]}
                           component={renderTextInputField}
                           disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
@@ -1894,7 +1917,7 @@ class AddOperation extends Component {
                         {"Cancel"}
                       </button>
                       {!isViewMode && <>
-                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || ((initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) && !CostingTypePermission) ?
+                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state?.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || ((initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) && !CostingTypePermission) ?
                           <button id="AddOperation_SendForApproval" type="submit"
                             class="user-btn approval-btn save-btn mr5"
                             disabled={isViewMode || setDisable || disableSendForApproval}
@@ -1915,11 +1938,11 @@ class AddOperation extends Component {
                         }
                       </>}
                     </div>
-                  </Row>}
-                </form>
-              </div>
-            </div>
-          </div>
+                  </Row >}
+                </form >
+              </div >
+            </div >
+          </div >
         </div >}
 
         {
@@ -1992,7 +2015,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion", 'Rate', 'RateLocalConversion');
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion", 'Rate', 'RateLocalConversion', 'LabourRatePerUOM');
   const { plantSelectList, filterPlantList, UOMSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;

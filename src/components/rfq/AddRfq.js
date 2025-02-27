@@ -805,10 +805,15 @@ function AddRfq(props) {
 
                 setPartType({ label: rowData?.PartType, value: rowData?.PartTypeId })
                 setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
-                setRequirementDate(rowData?.TimeLine || '')
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
-                //setPartNumberWithName({ label: rowData?.PartNumberWithName, value: rowData?.PartId })
-                setPartTypeforRM(rowData?.PartTypeId)
+                // Handle dates
+                const timelineDate = rowData?.TimeLine ? new Date(rowData.TimeLine) : null;
+                const sopDateTime = rowData?.SOPDate ? new Date(rowData.SOPDate) : null;
+
+                setRequirementDate(rowData?.TimeLine || '');
+                setN100Date(timelineDate);
+                setSOPDate(rowData?.SOPDate || '');
+                setSopDate(sopDateTime); setPartTypeforRM(rowData?.PartTypeId)
 
             }, 200);
         } else if (selectedOption === "Raw Material") {
@@ -3152,13 +3157,11 @@ function AddRfq(props) {
                         PartSpecification: item?.PartSpecification || []
                     };
 
-                    const { PartSpecification, ...rest } = item; // Destructure to omit PartSpecification
-
                     return {
-                        ...rest,
+                        ...item,
                         UnitOfMeasurementId: getValues('UOM')?.value || null,
                         HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
-                        TimeLine: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || null,
+                        TimeLine: formattedDate,
                         PartSpecificationList,
                         QuotationPartId
                     };
@@ -3169,7 +3172,7 @@ function AddRfq(props) {
                 return updatedDetail;
             });
         }
-    }
+    };
 
     const renderListingRM = (label) => {
 

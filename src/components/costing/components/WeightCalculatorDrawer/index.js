@@ -18,13 +18,12 @@ import Pipe from './sheetMetal/Pipe'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Stamping from './Stamping'
 import { showPaperCorrugatedBox } from '../../../../config/constants'
-import PaperCorrugatedBox from './corrugatedBox/PaperCorrugatedBox'
 import { useSelector } from 'react-redux'
 import { sourceCurrencyFormatter } from '../Drawers/processCalculatorDrawer/CommonFormula'
+import MonoCartoon from './corrugatedBox/monoCartoon'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox, calculatorType } = props
-
   let appyMasterBatch;
   let totalRM;
   const { currencySource } = useSelector((state) => state?.costing);
@@ -167,10 +166,11 @@ function OpenWeightCalculator(props) {
         )
 
       case CORRUGATEDBOX:
-        if (calculatorType === 'CorrugatedAndMonoCartonBox') {
+        if (calculatorType === 'CorrugatedAndMonoCartonBox' || calculatorType === 'Laminate') {
           return (
-            <PaperCorrugatedBox
+            <MonoCartoon
               rmRowData={props.rmRowData}
+              calculatorType={calculatorType}
               isEditFlag={props.isEditFlag}
               toggleDrawer={toggleDrawer}
               item={item}
@@ -240,7 +240,7 @@ function OpenWeightCalculator(props) {
       case INSULATION:
         return 'insulation'
       case CORRUGATEDBOX:
-        if (calculatorType === 'CorrugatedAndMonoCartonBox') {
+        if (calculatorType === 'CorrugatedAndMonoCartonBox' || calculatorType === 'Laminate') {
           return 'paper_corrugated_box'
         } else {
           return ''

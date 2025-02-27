@@ -844,7 +844,7 @@ class AddLabour extends Component {
   onSubmit = debounce((values) => {
     const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged, product, costingTypeId, client, country, city } = this.state
 
-    if (vendorName.length <= 0 && costingTypeId === VBCTypeId) {
+    if (vendorName.length <= 0 && costingTypeId === VBCTypeId && this.state.IsEmployeContractual) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
@@ -859,7 +859,7 @@ class AddLabour extends Component {
     if (this.state.isEditFlag) {
 
       if (DropdownChanged) {
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Labour Details')
         return false
       }
 
@@ -1486,7 +1486,7 @@ class AddLabour extends Component {
                               <>
                                 <button
                                   type="button"
-                                  className={"user-btn  pull-left"}
+                                  className={"user-btn  pull-left mr10"}
                                   onClick={this.gridHandler}
                                   disabled={isViewMode}
                                 >

@@ -313,7 +313,7 @@ function CopyCosting(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={copyCostingData.Customer}
+                    defaultValue={copyCostingData.Customer ? copyCostingData.Customer : "no other customer"}
                     className=""
                     customClassName={"withBorder mb-0"}
                     errors={errors.customer}
@@ -578,6 +578,7 @@ function CopyCosting(props) {
 
         </Container >
       </Drawer >
+
       {
         showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} disablePopup={disablePopup} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected ${vendorLabel}. Do you still wish to continue ?` : ` is not available for the selected ${vendorLabel}. Do you still wish to continue ?`}`} />
       }

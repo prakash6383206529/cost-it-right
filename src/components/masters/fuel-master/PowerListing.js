@@ -49,6 +49,7 @@ const PowerListing = (props) => {
     noData: false,
     dataCount: 0,
     isImport: false,
+    totalRecordCount: 0
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -70,7 +71,7 @@ const PowerListing = (props) => {
           setState((prevState) => ({ ...prevState, isLoader: false }));
           if (res && res.status === 200) {
             let Data = res.data.DataList;
-            setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, }));
+            setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, totalRecordCount: Data?.length }));
           } else if (res && res.response && res.response.status === 412) {
             setState((prevState) => ({ ...prevState, tableData: [], isLoader: false, }));
           }
@@ -182,7 +183,7 @@ const PowerListing = (props) => {
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      powerDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+      powerDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
     }, 500);
   };
 
@@ -321,8 +322,8 @@ const PowerListing = (props) => {
                   )}
                   {permissions.Download && (
                     <>
-                      <ExcelFile filename={"Power"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-powerListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}                      >
-                        {onBtExport()}
+                      <ExcelFile filename={"Power"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-powerListing"} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
+                        {state?.totalRecordCount !== 0 ? onBtExport() : null}
                       </ExcelFile>
                     </>
                   )}

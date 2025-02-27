@@ -5,7 +5,9 @@ import {
   UPDATE_COSTING_RM_SUCCESS, GET_BOP_LIST_SUCCESS, ADD_BOP_COSTING_SUCCESS, GET_OTHER_OPERATION_LIST_SUCCESS, ADD_OTHER_OPERATION_COSTING_SUCCESS, ADD_UNIT_OTHER_OPERATION_COSTING_DATA,
   GET_MHR_LIST_SUCCESS, ADD_MHR_FOR_PROCESS_GRID_DATA, GET_PROCESSES_LIST_SUCCESS, SAVE_PROCESS_COSTING_SUCCESS, GET_OTHER_OPERATION_SELECT_LIST_SUCCESS, SAVE_OTHER_OPERATION_COSTING_SUCCESS,
   ADD_PROCESS_COSTING_SUCCESS, SET_COSTING_DETAIL_ROW_DATA, UPDATE_COSTING_OTHER_OPERATION_SUCCESS, SAVE_COSTING_AS_DRAFT_SUCCESS, ADD_BOP_GRID_COSTING_SUCCESS,
-  SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET,
+  SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET, GET_CARRIER_TYPE_LIST_SUCCESS,
+  SET_PACKAGING_CALCULATOR_AVAILABLE,
+  SET_FREIGHT_CALCULATOR_AVAILABLE
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -269,6 +271,25 @@ export function getRawMaterialCalculationForMonoCartonCorrugatedBox(costingId, r
     });
   };
 }
+
+export function getRawMaterialCalculationForLamination(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForLamination}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  }
+}
+
 /**
  * @method saveRawMaterialCalculationForCorrugatedBox
  * @description save raw materical calculator data for Corrugated Box
@@ -1101,7 +1122,7 @@ export function bulkUploadCosting(data, costingVersion, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1254,7 +1275,7 @@ export function plasticBulkUploadCosting(data, costingVersion, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1278,7 +1299,7 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1297,7 +1318,7 @@ export function corrugatedBoxBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1315,7 +1336,7 @@ export function assemblyBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1399,7 +1420,7 @@ export function wiringHarnessBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1416,7 +1437,7 @@ export function diecastingBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1500,6 +1521,23 @@ export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, co
   };
 }
 
+export function getSimulationLaminationCalculation(simulationId, costingId, rawMaterialId, callback) {
+  return (dispatch) => {
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}`
+    const request = axios.get(`${API.getSimulationLaminationCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  }
+}
 
 /**
  * @method saveRawMaterialCalculationForInsulation
@@ -1558,7 +1596,7 @@ export function InsulationBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1579,7 +1617,7 @@ export function ElectricalStampingCostingBulkImport(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1599,7 +1637,7 @@ export function MonocartonBulkUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       // if (error?.response?.status === 400) {
-        callback(error.response)
+      callback(error.response)
       // }
       apiErrors(error);
     });
@@ -1690,5 +1728,129 @@ export function getSimulationPackagingCalculation(simulationId, costingId, callb
       callback(error);
       apiErrors(error);
     });
+  };
+}
+/**
+ * @method getFreightCalculation
+ * @description Get freight calculator data
+*/
+export function getFreightCalculation(costingId, costingFreightDetailsId, costingFreightCalculatorDetailsId, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}&costingFreightDetailsId=${costingFreightDetailsId}&costingFreightCalculatorDetailsId=${costingFreightCalculatorDetailsId}`
+    const request = axios.get(`${API.getFreightCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+export function getSimulationFreightCalculation(simulationId, costingId, simulationCostingFreightCalculationDetailsId, callback) {
+  return (dispatch) => {
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId}&simulationCostingFreightCalculationDetailsId=${simulationCostingFreightCalculationDetailsId}`
+    const request = axios.get(`${API.getSimulationFreightCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else if (response.status === 204) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method saveFreightCalculation  
+ * @description save freight calculator data
+*/
+export function saveFreightCalculation(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveFreightCalculation, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
+/**
+ * @method getNoOfComponentsPerCrateFromPackaging
+ * @description Get No of components per crate from packaging
+*/
+export function getNoOfComponentsPerCrateFromPackaging(costingId, callback) {
+  return (dispatch) => {
+    const queryParams = `CostingId=${costingId}`
+    const request = axios.get(`${API.getNoOfComponentsPerCrateFromPackaging}?${queryParams}`, config());
+    request.then((response) => {
+      if (response) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method getCarrierTypeList
+ * @description Get carrier type dropdown list
+*/
+export function getCarrierTypeList(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(API.getCarrierTypeList, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_CARRIER_TYPE_LIST_SUCCESS,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+    });
+  };
+}
+/**
+ * @method setPackagingCalculatorAvailable
+ * @description Set packaging calculator availability flag
+ */
+
+export function setPackagingCalculatorAvailable(isAvailable) {
+  return {
+    type: SET_PACKAGING_CALCULATOR_AVAILABLE,
+    payload: isAvailable
+  };
+}
+
+/**
+ * @method setFreightCalculatorAvailable
+ * @description Set freight calculator availability flag
+ */
+
+export function setFreightCalculatorAvailable(data) {
+  return {
+    type: SET_FREIGHT_CALCULATOR_AVAILABLE,
+    payload: data
   };
 }

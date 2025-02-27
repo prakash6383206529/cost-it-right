@@ -34,8 +34,8 @@ import { useQueryClient } from "react-query";
 import { fetchDivisionId } from "../../costing/CostingUtil";
 
 function AddRMMaster(props) {
-    const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
-    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated, clearErrors } = useForm({
+    const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE, isRMAssociated } = props
+    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, clearErrors } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -82,7 +82,7 @@ function AddRMMaster(props) {
 
     const avgValues = useWatch({
         control,
-        name: ['Index', 'ExchangeSource', 'fromDate']
+        name: ['Index', 'ExchangeSource', 'fromDate', 'toDate']
     })
     const sourceVendorValues = useWatch({
         control,
@@ -134,7 +134,7 @@ function AddRMMaster(props) {
     }, [sourceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId])
 
     useEffect(() => {
-        if (!isViewFlag && state.callAvgApi === true && getValues('Index')?.value !== null && getValues('fromDate') && !state?.isSourceVendorApiCalled) {
+        if (!isViewFlag && state.callAvgApi === true && getValues('Index')?.value !== null && getValues('fromDate') && !state?.isSourceVendorApiCalled && getValues('toDate')) {
             dispatch(getCommodityIndexRateAverage(
                 getValues('Material')?.value,
                 getValues('Index').value,
@@ -210,7 +210,7 @@ function AddRMMaster(props) {
 
     const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
         if (!isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, null, (res) => {
                 setState(prevState => ({ ...prevState, masterLevels: res?.data?.Data?.MasterLevels }))
                 setTimeout(() => {
                     commonFunction(plantId, isDivision, res?.data?.Data?.MasterLevels)
@@ -223,12 +223,15 @@ function AddRMMaster(props) {
      * @method onPressVendor
      * @description Used for Vendor checked
      */
-    const onPressVendor = (costingHeadFlag, setStateData) => {
-        reset()
-        setState((prevState) => ({
-            ...initialState, // Reset all states to the initial state
-            isImport: prevState.isImport, // Preserve the current value of isImport
-            costingTypeId: costingHeadFlag, // Update costingTypeId as needed
+    const onPressVendor = (costingHeadFlag) => {
+        reset({
+            Technology: '', RawMaterialCode: '', RawMaterialName: '', RawMaterialGrade: '', RawMaterialSpecification: '', RawMaterialCategory: '', Plants: '', UnitOfMeasurement: '', cutOffPriceBaseCurrency: '', sourceVendorName: '',
+            BasicRateSelectedCurrency: '', ScrapRateBaseCurrency: '', OtherCostBaseCurrency: '', BasicRateBaseCurrency: '', EffectiveDate: '',
+        });
+        setState(prevState => ({
+            ...prevState,
+            isImport: prevState.isImport,
+            costingTypeId: costingHeadFlag,
         }));
         dispatch(setRawMaterialDetails({}, () => { }))
         dispatch(setExchangeRateDetails({}, () => { }))
@@ -244,37 +247,37 @@ function AddRMMaster(props) {
         dispatch(fetchSpecificationDataAPI(0, () => { }))
         props?.hideForm(type)
     }
-    const commonFunction = (requestObject, masterLevels = []) => {
+    const commonFunction = (plantId, isDivision = false, masterLevels = []) => {
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(state.costingTypeId, RM_MASTER_ID, masterLevels)
         setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
-        fetchDivisionId(requestObject, dispatch).then((divisionId) => {
-            let obj = {
-                DepartmentId: userDetails().DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: RM_MASTER_ID,
-                Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
-                plantId: (getConfigurationKey().IsMultipleUserAllowForApproval && requestObject?.PlantId) ? requestObject?.PlantId : EMPTY_GUID,
-                divisionId: divisionId
-            }
-            if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
-                dispatch(checkFinalUser(obj, (res) => {
-                    if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+        // fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+        let obj = {
+            DepartmentId: userDetails().DepartmentId,
+            UserId: loggedInUserId(),
+            TechnologyId: RM_MASTER_ID,
+            Mode: 'master',
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
+            plantId: (getConfigurationKey().IsMultipleUserAllowForApproval && plantId) ? plantId : EMPTY_GUID,
+            divisionId: null
+        }
+        if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+            dispatch(checkFinalUser(obj, (res) => {
+                if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
 
-                        setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
-                    }
-                    else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-                        setState(prevState => ({ ...prevState, disableSendForApproval: true }))
-                    } else {
-                        setState(prevState => ({ ...prevState, disableSendForApproval: false }))
-                    }
-                }))
-            }
-            setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
-        }).catch((error) => {
-            setState(prevState => ({ ...prevState, disableSendForApproval: true }))
-        })
+                    setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
+                }
+                else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+                } else {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: false }))
+                }
+            }))
+        }
+        setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
+        // }).catch((error) => {
+        //     setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+        // })
     }
     /**
     * @method getDetails
@@ -498,7 +501,10 @@ function AddRMMaster(props) {
         if (state.isEditFlag) {
             if (!isRMAssociated) {
                 if (financialDataNotChanged && nonFinancialDataNotChanged) {
-                    if (!state.isFinalApprovar && getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+                    if (state?.isFinalApprovar && getConfigurationKey()?.IsMasterApprovalAppliedConfigure) {
+                        Toaster.warning('Please change data to save RM')
+                        return false
+                    } else {
                         Toaster.warning('Please change data to send RM for approval')
                         return false
                     }
@@ -507,8 +513,17 @@ function AddRMMaster(props) {
                     setState(prevState => ({ ...prevState, isDateChanged: true }))
                     return false
                 }
-                formData.IsFinancialDataChanged = false
+                formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
             } else {
+                if (financialDataNotChanged && nonFinancialDataNotChanged) {
+                    if (state?.isFinalApprovar && getConfigurationKey()?.IsMasterApprovalAppliedConfigure) {
+                        Toaster.warning('Please change data to save RM')
+                        return false
+                    } else {
+                        Toaster.warning('Please change data to send RM for approval')
+                        return false
+                    }
+                }
                 formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
             }
 

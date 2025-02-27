@@ -517,8 +517,8 @@ function ViewConversionCost(props) {
                 <th>{`UOM`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
-                {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
-                {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
+                {initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure && othercostingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
+                {initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure && othercostingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th className="costing-border-right">{`Remark`}</th>

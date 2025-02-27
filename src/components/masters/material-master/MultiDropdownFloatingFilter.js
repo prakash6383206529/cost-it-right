@@ -107,8 +107,16 @@ function MultiDropdownFloatingFilter(props) {
         let gridTempArr = Object.assign([...arr], { [props?.maxValue]: event })
         dispatch(agGridStatus(plants, props?.maxValue, event, gridTempArr))
         setCurrentValue(event?.target?.value)
-        props.onFloatingFilterChanged({ model: buildModel() });
-
+        props.onFloatingFilterChanged({
+            column: {
+                colId: props.column.colId
+            },
+            filterInstance: {
+                appliedModel: {
+                    filter: plants || ""
+                }
+            }
+        });
     }
 
     const onFocus = () => {

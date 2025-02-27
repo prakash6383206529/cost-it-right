@@ -565,7 +565,7 @@ class AddInterestRate extends Component {
         Data.PaymentTermPercent === values.PaymentTermPercent &&
         Data.RepaymentPeriod === values.RepaymentPeriod && DropdownNotChanged) {
 
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Interest Rate Details');
         return false;
       }
       this.setState({ setDisable: true })
@@ -1076,7 +1076,7 @@ class AddInterestRate extends Component {
                       {!isViewMode && <button
                         type="submit"
                         id='AddInterestRate_Save'
-                        disabled={isWarningVisible || isViewMode || setDisable}
+                        disabled={isViewMode || setDisable || (isWarningVisible && !isEditFlag)}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>

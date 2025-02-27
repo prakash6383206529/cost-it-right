@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { getReasonSelectList, setSAPData } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, AllApprovalField } from '../../../layout/HookFormInputs'
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails } from '../../../../helper'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails, validateFileName } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { FILE_URL, RAWMATERIALINDEX, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
 import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -246,6 +246,7 @@ function ApproveRejectUI(props) {
 
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
+    const fileName = file.name;
     setIsDisable(true)
     setAttachmentLoader(true)
     if (status === 'removed') {
@@ -260,21 +261,32 @@ function ApproveRejectUI(props) {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
-      setIsDisable(true)
+      if (!validateFileName(fileName)) {
+        dropzone.current.files.pop()
+        setDisableFalseFunction()
+        return false;
+      }
       dispatch(uploadSimulationAttachment(data, (res) => {
-        if (res?.includes("Error")) {
+        if (res && res?.status !== 200) {
+          setDisableFalseFunction()
           dropzone.current.files.pop()
           setAttachmentLoader(false)
-          setDisableFalseFunction()
           return false
         }
         setDisableFalseFunction()
-        let Data = res?.data[0]
-        files.push(Data)
-        setFiles(files)
-        setTimeout(() => {
-          setIsOpen(!IsOpen)
-        }, 500);
+        if ('response' in res) {
+          status = res && res?.response?.status
+          dropzone.current.files.pop()
+        }
+        else {
+          let Data = res.data[0]
+          files.push(Data)
+          setAttachmentLoader(false)
+          setFiles(files)
+          setTimeout(() => {
+            setIsOpen(!IsOpen)
+          }, 500);
+        }
       }))
     }
 
@@ -414,7 +426,7 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false) || type === 'Approve'}
+                        disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID) && !showApprovalDropdown()) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false) || type === 'Approve'}
                       />
                     </div>}
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -462,7 +474,7 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? true : !(userData.Department.length > 1 && reasonId !== REASON_ID)) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false) || type === 'Approve'}
+                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? true : (!(userData.Department.length > 1 && reasonId !== REASON_ID) && !showApprovalDropdown()) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false) || type === 'Approve')}
 
                       />
                     </div>}

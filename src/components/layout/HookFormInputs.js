@@ -18,9 +18,7 @@ export const TextFieldHooks = (input) => {
     ...rules,
     validate: {
       ...rules?.validate,
-      ...(isDisabled ? {} : { // Only apply specialCharCheck if not disabled
-        specialCharCheck: (value) => validateSpecialChars(value),
-      }),
+      specialCharCheck: (value) => isDisabled ? () => { } : validateSpecialChars(value),
     },
   };
   return (
@@ -75,9 +73,7 @@ export const TextFieldHookForm = (field) => {
     ...rules,
     validate: {
       ...rules?.validate,
-      ...(isDisabled ? {} : { // Only apply specialCharCheck if not disabled
-        specialCharCheck: (value) => validateSpecialChars(value),
-      }),
+      specialCharCheck: (value) => isDisabled ? () => { } : validateSpecialChars(value),
     },
   };
   return (
@@ -104,7 +100,7 @@ export const TextFieldHookForm = (field) => {
                 <div className={`${isLoader ? "p-relative" : ''} input-container`}>
                   <input
                     {...field}
-                    id={name}
+                    id={`${name}_input`}
                     {...register}
                     title={isDisabled ? value : ''}
                     name={name}
@@ -457,9 +453,7 @@ export const TextAreaHookForm = (field) => {
     ...rules,
     validate: {
       ...rules?.validate,
-      ...(isDisabled ? {} : { // Only apply specialCharCheck if not disabled
-        specialCharCheck: (value) => validateSpecialChars(value),
-      }),
+      specialCharCheck: (value) => isDisabled ? () => { } : validateSpecialChars(value),
     },
   };
   return (

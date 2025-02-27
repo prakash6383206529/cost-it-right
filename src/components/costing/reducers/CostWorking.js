@@ -27,14 +27,18 @@ import {
     SAVE_COSTING_AS_DRAFT_SUCCESS,
     ADD_BOP_GRID_COSTING_SUCCESS,
     GET_RAW_MATERIAL_CALCI_INFO,
-    FERROUS_CALCULATOR_RESET
+    FERROUS_CALCULATOR_RESET,
+    GET_CARRIER_TYPE_LIST_SUCCESS,
+    SET_PACKAGING_CALCULATOR_AVAILABLE,
+    SET_FREIGHT_CALCULATOR_AVAILABLE
 } from '../../../config/constants';
 
 const initialState = {
     costingGridOtherOperationData: [],
     addMHRForProcessGrid: [],
+    packagingCalculatorAvailable: {},
+    freightCalculatorAvailable: {},
 };
-
 
 export default function CostWorkingReducer(state = initialState, action) {
     switch (action.type) {
@@ -235,6 +239,27 @@ export default function CostWorkingReducer(state = initialState, action) {
             return {
                 ...state,
                 ferrousCalculatorReset: action.payload
+            }
+        case GET_CARRIER_TYPE_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                carrierTypeList: action.payload
+            }
+        case SET_PACKAGING_CALCULATOR_AVAILABLE:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                packagingCalculatorAvailable: {...state.packagingCalculatorAvailable, ...action.payload}
+            }
+        case SET_FREIGHT_CALCULATOR_AVAILABLE:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                freightCalculatorAvailable: action.payload
             }
         default:
             return state;

@@ -121,7 +121,7 @@ class BulkUpload extends Component {
     componentDidMount() {
 
         this.setState({ costingTypeId: this.props?.fileName === "Interest Rate" ? VBCTypeId : getCostingTypeIdByCostingPermission() })
-        this.props.getAllMasterApprovalDepartment((res) => {
+        this.props.getAllMasterApprovalDepartment('', (res) => {
             const Data = res?.data?.SelectList
             const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
             const updateList = Data && Data.filter(item => Departments.includes(item.Text))
@@ -140,7 +140,7 @@ class BulkUpload extends Component {
             }
         })
         if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -151,7 +151,7 @@ class BulkUpload extends Component {
             this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -162,7 +162,7 @@ class BulkUpload extends Component {
             this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -489,7 +489,7 @@ class BulkUpload extends Component {
                         case String(LABOURBULKUPLOAD):
                             const localizedLabour = this.localizeHeaders(Labour);
                             masterDataArray = localizedLabour
-                            checkForFileHead = checkForSameFileUpload(localizedLabour, fileHeads)
+                            checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(localizedLabour), fileHeads)
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
@@ -833,6 +833,12 @@ class BulkUpload extends Component {
                                 }
                                 if (fileHeads[i] === `IsBreakup${showBopLabel()}`) {
                                     fileHeads[i] = `IsBreakupBoughtOutPart`
+                                }
+                                if (fileHeads[i] === 'OverheadRMCost/PartCost') {
+                                    fileHeads[i] = 'OverheadRMPercentage'
+                                }
+                                if (fileHeads[i] === 'ProfitRMCost/PartCost') {
+                                    fileHeads[i] = 'ProfitRMPercentage'
                                 }
                                 const key = this.getValueFromMasterData(fileHeads[i], masterDataArray)
 

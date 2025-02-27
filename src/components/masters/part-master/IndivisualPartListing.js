@@ -33,6 +33,7 @@ import { useTranslation } from "react-i18next";
 import { showTitleForActiveToggle } from '../../../../src/helper/util';
 import Switch from "react-switch";
 import { useLabels, useWithLocalization } from "../../../helper/core";
+import { divisionApplicableFilter } from "../masterUtil";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -47,7 +48,7 @@ const IndivisualPartListing = (props) => {
     showPopup: false,
     gridColumnApi: null,
     dataCount: 0,
-    totalRecordCount: 1,
+    totalRecordCount: 0,
     // currentRowIndex: 0,
     // pageNoNew: 1,
     // globalTake: defaultPageSize,
@@ -180,7 +181,7 @@ const IndivisualPartListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {  // <-- this may introduce asynchronous behavior
       if (newPartsListing?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), disableFilter: false }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), disableFilter: false,totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -555,7 +556,7 @@ const IndivisualPartListing = (props) => {
     }
   };
 
-  const INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(INDIVIDUALPART_DOWNLOAD_EXCEl, "MasterLabels")
+  const INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(divisionApplicableFilter(INDIVIDUALPART_DOWNLOAD_EXCEl, "Division"), "MasterLabels")
   const onBtExport = () => {
 
     let tempArr = [];
@@ -775,7 +776,7 @@ const IndivisualPartListing = (props) => {
                 )}
                 {permissions.Download && (
                   <>
-                    <Button className="mr5 Tour_List_Download" id={"individualPartListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                    <Button className="mr5 Tour_List_Download" id={"individualPartListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                     />
                     <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-component-part"} className="p-absolute" />}>
                       {onBtExport()}

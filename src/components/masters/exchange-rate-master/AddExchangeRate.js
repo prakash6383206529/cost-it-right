@@ -316,7 +316,7 @@ class AddExchangeRate extends Component {
         (DataToChange.BankRate === values.BankRate || values.BankRate === undefined || values.BankRate === '') && (DataToChange.CustomRate === values.CustomRate || values.CustomRate === undefined || values.CustomRate === '') &&
         DropdownChanged && (DataToChange.BankCommissionPercentage === values.BankCommissionPercentage || values.BankCommissionPercentage === undefined || values.BankCommissionPercentage === '')
       ) {
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Exchange Rate Details');
         return false;
       }
 
