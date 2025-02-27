@@ -45,7 +45,8 @@ function TabRMCC(props) {
         PartId: costData.PartId,
         AssemCostingId: selectedCostingDetail.AssemblyCostingId ? selectedCostingDetail.AssemblyCostingId : costData.CostingId,
         subAsmCostingId: selectedCostingDetail.SubAssemblyCostingId ? selectedCostingDetail.SubAssemblyCostingId : costData.CostingId,
-        EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null
+        EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null,
+        isComponentCosting: costData?.PartType === "Component" ? true : false
       }
       dispatch(getRMCCTabData(data, true, (res) => {
         dispatch(setIsBreakupBoughtOutPartCostingFromAPI(res?.data?.DataList[0]?.IsBreakupBoughtOutPart))
