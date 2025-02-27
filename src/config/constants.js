@@ -3237,20 +3237,20 @@ export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGE
 // export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
 export const ONBOARDINGNAME = (() => {
   const storedName = reactLocalStorage.getObject('onboardingName')
-  return (storedName && 
-          storedName !== 'null' && 
-          storedName !== 'undefined' && 
-          storedName !== null && 
-          storedName !== undefined) ? storedName : ''
+  return (storedName &&
+    storedName !== 'null' &&
+    storedName !== 'undefined' &&
+    storedName !== null &&
+    storedName !== undefined) ? storedName : ''
 })()
 // export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
 export const ONBOARDINGID = (() => {
   const storedId = reactLocalStorage.getObject('onboardingId')
-  return (storedId && 
-          storedId !== 'null' && 
-          storedId !== 'undefined' && 
-          storedId !== null && 
-          storedId !== undefined) ? storedId :''
+  return (storedId &&
+    storedId !== 'null' &&
+    storedId !== 'undefined' &&
+    storedId !== null &&
+    storedId !== undefined) ? storedId : ''
 })()
 //CONSTANTS FOR MANAGE LEVELS RADIO BUTTON
 
@@ -3316,7 +3316,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.81";
+export const VERSION = "V3.1.82";
 
 
 
