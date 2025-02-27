@@ -171,7 +171,7 @@ function AddRMFinancialDetails(props) {
                 let fromCurrency = states.isImport ? state.currency?.label : Data?.Currency
                 let toCurrency = !states.isImport ? reactLocalStorage.getObject("baseCurrency") : Data?.Currency
 
-                if (!isViewFlag && getValues('effectiveDate') &&fromCurrency&& Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+                if (!isViewFlag && getValues('effectiveDate') &&fromCurrency!==undefined&& Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
                     if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && (!rawMaterailDetails?.Vendor && !getValues('clientName'))) {
                         return false;
                     }
@@ -492,8 +492,8 @@ function AddRMFinancialDetails(props) {
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
-        let NetLandedCostLocalConversion = NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
-        let NetLandedCostConversion = NetLandedCost * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
+        let NetLandedCostLocalConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
+        let NetLandedCostConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
         if (states.isImport) {
             setValue('NetLandedCost', checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))

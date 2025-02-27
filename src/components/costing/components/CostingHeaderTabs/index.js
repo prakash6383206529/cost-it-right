@@ -20,7 +20,7 @@ import {
   setExchangeRateSourceValue,
   exchangeRateReducer,
 } from '../../actions/Costing';
-import { checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForNull, CheckIsCostingDateSelected, getConfigurationKey, getExchangeRateParams, loggedInUserId } from '../../../../helper';
 import { customHavellsChanges, LEVEL1, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsPartType, IsNFR } from '../CostingDetails';
 import DatePicker from "react-datepicker";
@@ -79,7 +79,7 @@ function CostingHeaderTabs(props) {
   const isNFR = useContext(IsNFR);
 
   const costingApprovalStatus = useContext(CostingStatusContext);
-  const { nfrDetailsForDiscount,exchangeRateData } = useSelector(state => state.costing)
+  const { nfrDetailsForDiscount, exchangeRateData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
@@ -97,12 +97,12 @@ function CostingHeaderTabs(props) {
     dispatch(setExchangeRateSourceValue({ label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName }))
     setCurrency({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
     dispatch(setCurrencySource({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId }))
-    dispatch(exchangeRateReducer({  
+    dispatch(exchangeRateReducer({
       plantExchangeRate: costData?.LocalCurrencyExchangeRate,
-       baseExchangeRate: costData?.BaseCurrencyExchangeRate,
-       plantFromCurrency: costData?.CostingCurrency,
-       plantToCurrency: costData?.LocalCurrency,
-     baseFromCurrency: costData?.CostingCurrency,
+      baseExchangeRate: costData?.BaseCurrencyExchangeRate,
+      plantFromCurrency: costData?.CostingCurrency,
+      plantToCurrency: costData?.LocalCurrency,
+      baseFromCurrency: costData?.CostingCurrency,
        baseToCurrency: initialConfiguration?.BaseCurrency,}))
     setValue('Currency', { label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
     setValue('ExchangeSource', { label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
@@ -113,9 +113,10 @@ function CostingHeaderTabs(props) {
     dispatch(getExchangeRateSource((res) => { }))
   }, [])
 
-  const callExchangeRateAPI = (fromCurrency) => {
+  const callExchangeRateAPI = (fromCurrency, toCurrency) => {
     return new Promise((resolve) => {
-      dispatch(getExchangeRateByCurrency(currency?.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData?.VendorId, costData?.CustomerId, false, fromCurrency, exchangeRateSource?.value, (res) => {
+      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costData?.CostingTypeId, vendorId: costData?.VendorId, clientValue: costData?.CustomerId, plantCurrency: costData?.LocalCurrency });
+     dispatch(getExchangeRateByCurrency(fromCurrency, costingHeadTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, toCurrency, exchangeRateSource?.value, (res) => {
         resolve(res);
       }))
     });
@@ -124,7 +125,7 @@ function CostingHeaderTabs(props) {
   useEffect(() => {
     if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && (costData?.TechnologyId === ASSEMBLY ? true : !costData?.CostingCurrencyId)) {
       let arr = []
-      callExchangeRateAPI(costData?.LocalCurrency).then(res => { //plant
+      callExchangeRateAPI(currency?.label, costData?.LocalCurrency).then(res => { //plant
         const exchangeData = {
           plantExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? Boolean(res?.data?.Data) : false,
           baseExchangeRate: null,
@@ -134,7 +135,7 @@ function CostingHeaderTabs(props) {
           baseFromCurrency: currency?.label
         };
         arr.push(res?.data?.Data)
-        callExchangeRateAPI(initialConfiguration?.BaseCurrency).then(resp => {
+        callExchangeRateAPI(costData?.LocalCurrency, initialConfiguration?.BaseCurrency).then(resp => {
           exchangeData.baseExchangeRate = resp?.data?.Data && Object.keys(resp?.data?.Data).length > 0 ? Boolean(resp?.data?.Data) : false;
           dispatch(exchangeRateReducer(exchangeData));
 
@@ -427,10 +428,10 @@ function CostingHeaderTabs(props) {
       return false
     }
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currency,exchangeRateData)) return false;
-   
+
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
-    
-    
+
+
     delete tempErrorObjRMCC?.bopGridFields
     // tourStartRef()
     if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;

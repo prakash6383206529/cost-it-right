@@ -146,7 +146,7 @@ class AddLabour extends Component {
       if (IsFetchExchangeRateVendorWiseForParts() && ((IsEmployeContractual && costingTypeId === ZBCTypeId) && vendorName?.length === 0 && client?.length === 0)) {
         return;
       }
-      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fieldsObj?.plantCurrency, toCurrency: reactLocalStorage?.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fieldsObj?.plantCurrency, toCurrency: reactLocalStorage?.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
 
       if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
@@ -564,7 +564,7 @@ class AddLabour extends Component {
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId, efficiency, workingHours, city, country } = this.state
     const { fieldsObj } = this.props
-    if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || country.length === 0 || city.length === 0) {
+   if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || country.length === 0 || city.length === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
@@ -578,7 +578,7 @@ class AddLabour extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, labourType: true } })
         count++;
       }
-      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      if (fieldsObj?.LabourRateConversion === 0 || fieldsObj?.LabourRate === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, labourRate: true } })
         count++;
       }
@@ -1378,14 +1378,15 @@ class AddLabour extends Component {
                               type="text"
                               placeholder={isViewMode ? "-" : "Enter"}
                               disabled={isViewMode}
-                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={true}
                               className=" "
                               customClassName="withBorder"
                             />
-                            {this.state.errorObj.labourRate&& this.state.labourRate.length === 0 && <div className='text-help'>This field is required.</div>}
-                          </div>
+                           {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRate &&
+                              <div className='text-help'>This field is required.</div>
+                            }                          </div>
                         </Col>
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
                           {<TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
@@ -1403,7 +1404,6 @@ class AddLabour extends Component {
                             className=" "
                             customClassName=" withBorder"
                           />
-                          {this.state?.errorObj?.LabourRateConversion && (this.props?.fieldsObj?.LabourRateConversion === undefined || Number(this.props?.fieldsObj?.LabourRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
                         <Col md="3">
                           <div className="form-group">
@@ -1630,7 +1630,7 @@ class AddLabour extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const fieldsObj = selector(state, 'LabourRate', "plantCurrency", "LabourRateConversion", 'city', 'state', 'country')
+  const fieldsObj = selector(state, 'LabourRate', 'plantCurrency', 'LabourRateConversion', 'workingHours', 'Efficiency', 'city', 'state', 'country')
   const { supplier, machine, fuel, labour, auth, comman, part, client } = state
   const {
     VendorLabourTypeSelectList,
