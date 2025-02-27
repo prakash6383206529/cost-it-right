@@ -162,22 +162,26 @@ export function createMachine(data, callback) {
  * @description Copy Machine
  */
 export function copyMachine(MachineId, callback) {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const queryParams = `machineId=${MachineId}&loggedInUserId=${loggedInUser?.loggedInUserId}`
-        const request = axiosInstance.post(`${API.copyMachine}?${queryParams}`, '', config());
+        
+        // This will go through axiosInstance's encryption interceptor
+        const request = axiosInstance.post(
+            `${API.copyMachine}?machineId=${MachineId}&loggedInUserId=${loggedInUserId()}`,
+            config()
+        );       
+        
         request.then((response) => {
             if (response.data.Result === true) {
-                dispatch({ type: CREATE_SUCCESS, });
+                dispatch({ type: CREATE_SUCCESS });
                 callback(response);
             }
         }).catch((error) => {
             dispatch({ type: CREATE_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
-
 /**
  * @method getMachineDataList
  * @description GET DATALIST
