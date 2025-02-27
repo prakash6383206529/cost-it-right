@@ -98,7 +98,7 @@ function ApprovalWorkFlow(props) {
                     </div>
                     <div className="right">
                       <span className="">{item?.Title}</span>
-                      <p className="">{(item?.ApprovedBy && item?.ApprovedBy !== '-') ? item?.ApprovedBy : initialConfiguration?.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
+                      <p className="" title={(item?.ApprovedBy && item?.ApprovedBy !== '-') ? item?.ApprovedBy : '-'}>{(item?.ApprovedBy && item?.ApprovedBy !== '-') ? item?.ApprovedBy : initialConfiguration?.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
                     </div>
                   </div>
                   {/* top */}

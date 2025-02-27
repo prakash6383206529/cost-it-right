@@ -104,7 +104,7 @@ export const TextFieldHookForm = (field) => {
                 <div className={`${isLoader ? "p-relative" : ''} input-container`}>
                   <input
                     {...field}
-                    id={name}
+                    id={`${name}_input`}
                     {...register}
                     title={isDisabled ? value : ''}
                     name={name}

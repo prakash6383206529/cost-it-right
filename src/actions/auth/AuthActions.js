@@ -326,6 +326,29 @@ export function getAllUserDataAPI(data, callback) {
             });
     };
 }
+/**
+ * @method getAllUserDelegationApi
+ * @description get all user's data list
+ */
+export function getAllUserDelegationApi(data, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.get(`${API.getAllUserDelegationApi}?department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}&IsShowDelegation=${data?.isShowDelegation}&IsSelfDelegatedOnly=${data?.isSelfDelegatedOnly}`, config())
+            .then((response) => {
+                dispatch({
+                    type: GET_USER_DATA_SUCCESS,
+                    payload: response.status === 200 ? response?.data?.DataList : [],
+                });
+                callback(response);
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+    };
+}
+
+
 
 /**
 * @method getUserDataAPI
@@ -2383,6 +2406,25 @@ export function createDelegation(data, callback) {
             apiErrors(error);
         });
     };
+}
+
+/**
+ * @method getUserDelegationDetails
+ * @description get user delegation details
+ */
+export function getUserDelegationDetails(delegatorUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserDelegationDetails}?delegatorUserId=${delegatorUserId??null}`, config());
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    }
 }
 
 /**

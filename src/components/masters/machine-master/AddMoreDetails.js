@@ -202,7 +202,7 @@ class AddMoreDetails extends Component {
       })
     }
     if (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID,null, (res) => {
         setTimeout(() => {
           this.commonFunction()
         }, 100);

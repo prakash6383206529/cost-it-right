@@ -65,7 +65,7 @@ const CostingSummaryTable = (props) => {
   });
 
 
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, compareButtonPressed, showEditSOBButton, partTypeValue, technology } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, compareButtonPressed, showEditSOBButton, partTypeValue, technology, receiverId } = props
   const { t } = useTranslation("Costing")
   const [totalCost, setTotalCost] = useState(0)
   let history = useHistory();
@@ -214,7 +214,7 @@ const CostingSummaryTable = (props) => {
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
   const { discountLabel, toolMaintenanceCostLabel } = useLabels();
-const {isNetPoPrice , setIsNetPoPrice} = useState(false)
+  const { isNetPoPrice, setIsNetPoPrice } = useState(false)
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -345,8 +345,8 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
       setCssObj(prevState => ({ ...prevState, particularWidth: 50 / viewCostingData.length, tableWidth: "auto" }))
     }
   }, [viewCostingData])
-  
-  
+
+
   useEffect(() => {
     viewCostingData && viewCostingData.map((item) => {
       if (item.costingHeadCheck === NCC) {
@@ -639,11 +639,11 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
   const viewPackagingAndFrieghtData = (index) => {
     let packagingData = viewCostingData[index]?.netPackagingCostView
     let freightData = viewCostingData[index]?.netFreightCostView
-
     setIsViewPackagingFreight(true)
     setViewPackagingFreight({
       packagingData: packagingData,
       freightData: freightData,
+      index: index
     })
   }
 
@@ -1123,21 +1123,19 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
     let plantArray = []
 
     list && list?.map((item) => {
-      
-      
       vendorArray?.push(item?.vendorId)
       effectiveDateArray?.push(item?.effectiveDate)
       plantArray?.push(item?.plantCode)
       return null
     })
-    const hasZeroPrice = viewCostingData?.some(data => 
+    const hasZeroPrice = viewCostingData?.some(data =>
       Number(data?.poPrice) === Number(0))
-      
-      if(hasZeroPrice){
-        Toaster.warning('Net price is 0, cannot proceed with approval.')
-        return false
-      }
-    if (effectiveDateArray?.includes('') ) {
+
+    if (hasZeroPrice) {
+      Toaster.warning('Net price is 0, cannot proceed with approval.')
+      return false
+    }
+    if (effectiveDateArray?.includes('')) {
       Toaster.warning('Please select the effective date.')
       return false
     }
@@ -1181,7 +1179,7 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
             } else if (!allEqual(plantArray)) {
               Toaster.warning('Plant should be same for sending multiple costing for approval')
             } else {
-              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId ?? null, (res) => {
                 if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
                   setShowApproval(false)
                   Toaster.warning('User is not in the approval flow')
@@ -1219,7 +1217,7 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
       } else if (!allEqual(plantArray)) {
         Toaster.warning('Plant should be same for sending multiple costing for approval')
       } else {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId ?? null, (res) => {
           if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')
@@ -1233,37 +1231,34 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
                 "PlantId": viewCostingData[0]?.destinationPlantId,
                 "PartId": viewCostingData[0]?.partId
               }
-              const { Department } = userDetails()
-              if (Department.length === 1 || getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-                fetchDivisionId(requestObject, dispatch).then((divisionId) => {
-                  dataSelected[0].DivisionId = divisionId
-                  let obj = {}
-                  obj.DepartmentId = userDetails().DepartmentId
-                  obj.UserId = loggedInUserId()
-                  obj.TechnologyId = partInfo.TechnologyId
-                  obj.Mode = 'costing'
-                  obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
-                  obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
-                  obj.divisionId = divisionId
 
-                  dispatch(checkFinalUser(obj, res => {
-                    if (res?.data?.Result) {
-                      setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                      if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
-                        sendForApprovalData(multipleCostings)
-                        setShowApproval(true)
-                      } else if (res?.data?.Data?.IsFinalApprover === true) {
-                        Toaster.warning("Final level user cannot send costing for approval.")
-                      } else {
-                        Toaster.warning("User does not have permission to send costing for approval.")
-                      }
+
+              fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+                dataSelected[0].DivisionId = divisionId
+                let obj = {}
+                obj.DepartmentId = userDetails().DepartmentId
+                obj.UserId = loggedInUserId()
+                obj.TechnologyId = partInfo.TechnologyId
+                obj.Mode = 'costing'
+                obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+                obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
+                obj.divisionId = divisionId
+
+                dispatch(checkFinalUser(obj, res => {
+                  if (res?.data?.Result) {
+                    setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                      sendForApprovalData(multipleCostings)
+                      setShowApproval(true)
+                    } else if (res?.data?.Data?.IsFinalApprover === true) {
+                      Toaster.warning("Final level user cannot send costing for approval.")
+                    } else {
+                      Toaster.warning("User does not have permission to send costing for approval.")
                     }
-                  }))
-                })
-              } else {
-                sendForApprovalData(multipleCostings)
-                setShowApproval(true)
-              }
+                  }
+                }))
+              })
+
 
             }
           }
@@ -1417,7 +1412,7 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
     if (data) {
       let temp = moduleHandler(data[0]?.costingId, 'down', data)
       if (!temp) {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId ?? null, (res) => {
           if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')
@@ -2399,7 +2394,6 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
                             </td >
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
-                                
                                 const isPieChartVisible = viewPieChart[index];
                                 const dateVersionAndStatus = (data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.isRfqCosting ? (notSelectedCostingId?.includes(data?.costingId) ? "-Not Selected" : `-${data?.status}`) : props.costingSummaryMainPage ? `-${data?.status}` : ''}`
                                 return (

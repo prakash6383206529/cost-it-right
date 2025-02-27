@@ -56,19 +56,19 @@ const MasterApprovalTabs = (props) => {
         <TabContent activeTab={activeTab}>
             {activeTab === '1' &&
                 <TabPane tabId="1">
-                    <CommonApproval isApproval={true} MasterId={props.MasterId} isPageNoChange={props.isPageNoChange} status={PENDING} hidesendBtn={false} isDashboard={true} />
+                    <CommonApproval isApproval={true} MasterId={props.MasterId} isPageNoChange={props.isPageNoChange} status={PENDING} hidesendBtn={false} isDashboard={true} delegation={props.delegation}/>
                 </TabPane>}
             {activeTab === '2' &&
                 <TabPane tabId="2">
-                    <CommonApproval isApproval={true} MasterId={props.MasterId} isPageNoChange={props.isPageNoChange} status={WAITING_FOR_APPROVAL} hidesendBtn={true} isDashboard={true} />
+                    <CommonApproval isApproval={true} MasterId={props.MasterId} isPageNoChange={props.isPageNoChange} status={WAITING_FOR_APPROVAL} hidesendBtn={true} isDashboard={true} delegation={props.delegation}/>
                 </TabPane>}
             {activeTab === '3' &&
                 <TabPane tabId="3">
-                    <CommonApproval isApproval={true} MasterId={props.MasterId} isPageNoChange={props.isPageNoChange} status={REJECTED} hidesendBtn={true} isDashboard={true} />
+                    <CommonApproval isApproval={true} MasterId={props.MasterId} isPageNoChange={props.isPageNoChange} status={REJECTED} hidesendBtn={true} isDashboard={true} delegation={props.delegation}/>
                 </TabPane>}
             {activeTab === '4' &&
                 <TabPane tabId="4">
-                    <CommonApproval isApproval={true} MasterId={props.MasterId} isPageNoChange={props.isPageNoChange} status={APPROVED} hidesendBtn={true} isDashboard={true} />
+                    <CommonApproval isApproval={true} MasterId={props.MasterId} isPageNoChange={props.isPageNoChange} status={APPROVED} hidesendBtn={true} isDashboard={true} delegation={props.delegation}/>
                 </TabPane>}
         </TabContent>
     </> : <> </>

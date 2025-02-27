@@ -36,7 +36,7 @@ const gridOptions = {};
 function SimulationApprovalListing(props) {
 
     const {vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels()
-    const { isDashboard } = props
+    const { isDashboard,delegation } = props
     const [approvalData, setApprovalData] = useState('')
     const [selectedCostingHead, setSelectedCostingHead] = useState(null);
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -214,7 +214,7 @@ function SimulationApprovalListing(props) {
         setIsLoader(true)
         isDashboard && dispatch(dashboardTabLock(true))
         let obj = { ...dataObj }
-        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, delegation, (res) => {
             dispatch(dashboardTabLock(false))
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)
@@ -435,6 +435,9 @@ function SimulationApprovalListing(props) {
     const linkableFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        if (rowData?.ReceiverId) {
+            reactLocalStorage.setObject('receiverId', rowData.ReceiverId);
+          }
         return (
             <Fragment>
                 <div
@@ -500,7 +503,7 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         dispatch(setIsMasterAssociatedWithCosting(!rowObj?.IsSimulationWithOutCosting))
-        setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
+        setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId ,receiverId:rowObj?.ReceiverId})
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
         // dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))                //RE
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
@@ -589,6 +592,7 @@ function SimulationApprovalListing(props) {
         setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
 
         if (JSON.stringify(selectedRows) === JSON.stringify('')) return false
+        
         setSelectedRowData(selectedRows)
         // if (isSelected) {
         //     let tempArr = [...selectedRowData, row]
@@ -607,7 +611,9 @@ function SimulationApprovalListing(props) {
         }
         // return rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
     }
-
+const CheckFinalLevel = (value) => {
+    setShowFinalLevelButton(value)
+}
     const sendForApproval = () => {
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one approval to send for approval.')
@@ -620,7 +626,7 @@ function SimulationApprovalListing(props) {
         let requestObject = {
             LoggedInUserId: loggedInUserId(),
             Mode: 'Simulation',
-            ApprovalTokens: selectedDataObj.TokenNo
+            ApprovalTokens: selectedDataObj.TokenNo,
         }
         dispatch(checkFinalLevelApproverForApproval(requestObject, res => {
             let Data = res?.data?.Data
@@ -696,7 +702,8 @@ function SimulationApprovalListing(props) {
                                 Mode: 'simulation',
                                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId ? res?.data?.Data?.ApprovalTypeId : selectedRowData[0].ApprovalTypeId),
                                 plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
-                                divisionId: selectedRowData[0].DivisionId ?? EMPTY_GUID
+                                divisionId: selectedRowData[0].DivisionId ?? EMPTY_GUID,
+                                ReceiverId: selectedRowData[0]?.ReceiverId
                             }
                             dispatch(checkFinalUser(obj, res => {
                                 if (res && res.data && res.data.Result) {
@@ -727,7 +734,8 @@ function SimulationApprovalListing(props) {
                         Mode: 'simulation',
                         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
                         plantId: selectedRowData[0].PlantId,
-                        divisionId: selectedRowData[0].DivisionId ?? null
+                        divisionId: selectedRowData[0].DivisionId ?? null,
+                        ReceiverId: selectedRowData[0]?.ReceiverId
                     }
                     setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
                     dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))
@@ -758,13 +766,22 @@ function SimulationApprovalListing(props) {
 
     }
 
+    // const closeDrawer = (e = '', type) => {
+        
+    //     gridApi.deselectAll()
+    //     setApproveDrawer(false)
+    //     if (type !== 'cancel') {
+    //         getTableData(0, 10, true, floatingFilterData)
+    //     }
+    //     //setSelectedRowData([])
+    // }
     const closeDrawer = (e = '', type) => {
-        gridApi.deselectAll()
-        setApproveDrawer(false)
+        // Only deselect rows if not canceling
         if (type !== 'cancel') {
+            gridApi.deselectAll()
             getTableData(0, 10, true, floatingFilterData)
         }
-        setSelectedRowData([])
+        setApproveDrawer(false)
     }
 
     if (redirectCostingSimulation === true) {
@@ -794,7 +811,9 @@ function SimulationApprovalListing(props) {
                     approvalNumber: approvalData.approvalNumber,
                     approvalId: approvalData.approvalProcessId,
                     SimulationTechnologyId: approvalData.SimulationTechnologyId,
-                    simulationId: approvalData.simulationId
+                    simulationId: approvalData.simulationId,
+                    receiverId:approvalData.receiverId,
+                    fromDashboard:isDashboard
                 }
             }}
         />
@@ -1031,6 +1050,7 @@ function SimulationApprovalListing(props) {
                                             releaseStrategyDetails={releaseStrategyDetails}
                                             technologyId={selectedRowData ? selectedRowData[0]?.SimulationTechnologyId : approvalData?.SimulationTechnologyId}
                                             IsExchangeRateSimulation={selectedRowData[0]?.IsExchangeRateSimulation}
+                                            CheckFinalLevel={CheckFinalLevel}
                                         />
                                     }
                                 </div >

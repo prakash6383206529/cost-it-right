@@ -45,7 +45,7 @@ const gridOptions = {};
 
 function ProfitListing(props) {
 
-    const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props
     const [showExtraData, setShowExtraData] = useState(false)
     const { t } = useTranslation("common")
@@ -409,7 +409,7 @@ function ProfitListing(props) {
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {EditAccessibility && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {(DeleteAccessibility && !rowData?.IsProfitAssociated) && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -550,14 +550,14 @@ function ProfitListing(props) {
     const combinedCostingHeadRenderer = (props) => {
         // Call the existing checkBoxRenderer
         checkBoxRenderer(props);
-      
+
         // Get and localize the cell value
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-      
+
         // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
         return localizedValue;
-      };
+    };
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
@@ -776,8 +776,8 @@ function ProfitListing(props) {
                                         //onFilterModified={(e) => { setNoData(searchNocontentFilter(e)) }}
                                         >
                                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer}
-                                               floatingFilterComponentParams={floatingFilterStatus} 
-                                               floatingFilterComponent="statusFilter"></AgGridColumn>
+                                                floatingFilterComponentParams={floatingFilterStatus}
+                                                floatingFilterComponent="statusFilter"></AgGridColumn>
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}

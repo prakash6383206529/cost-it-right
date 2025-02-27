@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setGroupProcessList, setProcessList } from './actions/MachineMaster';
 import NoContentFound from '../common/NoContentFound';
 import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, EXTERNAL_REJECT, RECEIVED, SENT, UNDER_REVISION, EMPTY_GUID } from '../../config/constants';
-import { encodeQueryParamsAndLog, hashValidation } from '../../helper';
+import { encodeQueryParamsAndLog, getConfigurationKey, hashValidation } from '../../helper';
 export const ProcessGroup = (props) => {
     const { isEditFlag, isViewFlag } = props
 
@@ -429,7 +429,6 @@ export const StatusTooltip = (APIData) => {
     })
     return temp;
 }
-
 export const AgGridCustomDatePicker = ({ props, dateState, colId }) => {
     const formattedDate = props && props?.value ? props?.value?.split('T')[0] : ''; // Extract the date part
 
@@ -474,3 +473,9 @@ export const AgGridCustomDatePicker = ({ props, dateState, colId }) => {
         }}
     />
 }
+
+export const divisionApplicableFilter = (columnsArray, valueToExclude) => {
+    return getConfigurationKey().IsDivisionAllowedForDepartment
+        ? columnsArray
+        : columnsArray.filter(col => col.value !== valueToExclude);
+};

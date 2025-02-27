@@ -412,7 +412,7 @@ class Department extends Component {
 													<label
 														className={`custom-checkbox mb-0`}
 														onChange={this.checkboxHandler}>
-														IsApplyDivision
+														Apply Division
 														<input
 															type="checkbox"
 															checked={isApplyDivision}

@@ -58,7 +58,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function SimulationApprovalSummary(props) {
     const { vendorLabel } = useLabels()
     const { isbulkUpload } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId } = props?.location?.state
+    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId,receiverId,fromDashboard } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -159,6 +159,7 @@ function SimulationApprovalSummary(props) {
             approvalTokenNumber: approvalNumber,
             approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
+            receiverId:receiverId
         }
         const params = {
             simulationId: simulationId,
@@ -169,7 +170,7 @@ function SimulationApprovalSummary(props) {
             dispatch(getApprovalSimulatedRawMaterialSummary(params, res => {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
+                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId,DepartmentName } = res.data.Data
                 setSimulationData(res?.data?.Data)
                 setApprovalTypeId(ApprovalTypeId)
                 setDataForFetchingAllApprover({
@@ -185,7 +186,7 @@ function SimulationApprovalSummary(props) {
                     ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
                     PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
                     , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId,DepartmentName: DepartmentName
                 })
                 setIsApprovalDone(IsSent)
                 setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -195,7 +196,7 @@ function SimulationApprovalSummary(props) {
             dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId, DivisionId } = res.data.Data
+                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId, DivisionId, DepartmentName } = res.data.Data
                 setApprovalTypeId(ApprovalTypeId)
                 let uniqueArr
                 setSimulationData(res?.data?.Data)
@@ -228,7 +229,7 @@ function SimulationApprovalSummary(props) {
                     ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
                     PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
                     , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DivisionId: DivisionId
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DivisionId: DivisionId,DepartmentName: DepartmentName
                 })
                 let requestObject = {}
 
@@ -330,7 +331,8 @@ function SimulationApprovalSummary(props) {
 
                 // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(simulationData.SimulationHeadId),
                 plantId: simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : null,
-                divisionId: simulationData?.DivisionId ?? null
+                divisionId: simulationData?.DivisionId ?? null,
+                ReceiverId: receiverId
             }
             if (initialConfiguration?.IsMultipleUserAllowForApproval ? simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : true : true) {
                 dispatch(checkFinalUser(obj, res => {
@@ -1041,7 +1043,13 @@ function SimulationApprovalSummary(props) {
     }
 
     if (showListing === true) {
-        return <Redirect to="/simulation-history" />
+        return <Redirect to={{  
+            pathname: fromDashboard ? "/" : "/simulation-history",
+            state: fromDashboard ? {
+                activeTab: '1',  // Or whichever tab the user came from
+                module: 'simulation'
+            } : undefined
+        }} />
     }
 
     const defaultColDef = {
@@ -1193,6 +1201,9 @@ function SimulationApprovalSummary(props) {
                     </div>
                 </>
         }
+    }       
+    const CheckFinalLevel = (value) => {
+        setFinalLevelUser(value)
     }
     return (
         <>
@@ -1600,7 +1611,9 @@ function SimulationApprovalSummary(props) {
                                             isApproval={true}
                                             costingIdExist={true}
                                             selectedTechnology={technologyName}
-                                            simulationId={simulationDetail?.SimulationId} />}
+                                            simulationId={simulationDetail?.SimulationId} 
+                                            receiverId={simulationDetail?.ReceiverId}
+                                            />}
                                     </Col>
                                 </Row>
                             </>
@@ -1859,11 +1872,12 @@ function SimulationApprovalSummary(props) {
                     technologyId={SimulationTechnologyId}
                     approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
                     IsExchangeRateSimulation={keysForDownloadSummary?.IsExchangeRateSimulation}
+                    CheckFinalLevel={CheckFinalLevel}
+                    receiverId={receiverId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
             }
-
             {
                 rejectDrawer && <SimulationApproveReject
                     // rejectDrawer && <ApproveRejectDrawer               //RE
@@ -1883,6 +1897,8 @@ function SimulationApprovalSummary(props) {
                     SimulationHeadId={simulationDetail?.SimulationHeadId}
                     costingTypeId={simulationDetail?.SimulationHeadId}
                     technologyId={SimulationTechnologyId}
+                    CheckFinalLevel={CheckFinalLevel}
+                    receiverId={receiverId}
                 />
             }
 

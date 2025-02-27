@@ -213,17 +213,14 @@ const FreightListing = (props) => {
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
     // Map TempData to replace "NA" with "-"
-    let temp = [];
+    let temp = [];  
     temp = TempData && TempData.map((item) => {
         const newItem = { ...item }; // Create a copy of the object to avoid mutating original data
-        if (newItem.VendorName === '-') {
-          newItem.VendorName = ' '
-         }
         for (let key in newItem) {
-         if (newItem[key] === 'NA') {
+         if (newItem[key] === 'NA'||newItem[key] === ' '||newItem[key] === null||newItem[key] === undefined) {
                 newItem[key] = '-';
             }
-        }
+          }
         return newItem;
     });
     
@@ -234,6 +231,7 @@ const FreightListing = (props) => {
   }
 
 
+  
   const onGridReady = (params) => {
     state.gridApi = params.api;
     state.gridApi.sizeColumnsToFit();
@@ -421,17 +419,22 @@ const FreightListing = (props) => {
                 <AgGridColumn
                   field="Load"
                   headerName="Load"
-                  valueGetter={(params) => params.data?.FreightLoadType || "N/A"}
+                  valueGetter={(params) => params.data?.FreightLoadType || "-"}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="DimensionsName"
+                  headerName="Truck Dimensions (mm)"
+                  valueGetter={(params) => params.data?.DimensionsName || "-"}
                 ></AgGridColumn>
                 <AgGridColumn
                   field="Capacity"
                   headerName="Capacity"
-                  valueGetter={(params) => params.data?.Capacity || "N/A"}
+                  valueGetter={(params) => params.data?.Capacity || "-"}
                 ></AgGridColumn>
                 <AgGridColumn
                   field="Criteria"
                   headerName="Criteria"
-                  valueGetter={(params) => params.data?.RateCriteria || "N/A"}
+                  valueGetter={(params) => params.data?.RateCriteria || "-"}
                 ></AgGridColumn>
                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
                 <AgGridColumn

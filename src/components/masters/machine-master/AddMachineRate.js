@@ -15,7 +15,7 @@ import {
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_COSTING, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, OPERATIONS_ID, SPACEBAR, VBCTypeId, VBC_COSTING, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -141,7 +141,7 @@ class AddMachineRate extends Component {
         isViewFlag: true,
         rowData: data?.rowData
       })
-
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
       setTimeout(() => {
         if (data?.MachineProcessRates) {
           this.setState({
@@ -168,7 +168,7 @@ class AddMachineRate extends Component {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
       if (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
-        this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
+        this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID,null, (res) => {
           setTimeout(() => {
             this.commonFunction(this.state.selectedPlants.value)
           }, 100);
@@ -220,6 +220,18 @@ class AddMachineRate extends Component {
 
     //GET MACHINE VALUES IN EDIT MODE
     this.getDetails()
+  }
+  finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
+    const { initialConfiguration } = this.props
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, null, (res) => {
+        setTimeout(() => {
+          this.commonFunction(plantId, isDivision)
+        }, 100);
+      })
+    } else {
+      this.setState({ finalApprovalLoader: false })
+    }
   }
 
   commonFunction(plantId = EMPTY_GUID) {
@@ -407,6 +419,7 @@ class AddMachineRate extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('Specification', Data.Specification)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
+          this.finalUserCheckAndMasterLevelCheckFunction(Data.Plant[0].PlantId)
           setTimeout(() => {
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
@@ -2109,6 +2122,7 @@ class AddMachineRate extends Component {
               IsImportEntry={false}
               costingTypeId={this.state.costingTypeId}
               levelDetails={this.state.levelDetails}
+              commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
             />
           )
         }

@@ -284,7 +284,7 @@ function AddRMDetails(props) {
     }
     const handleCommonFunction = (plantId, partId) => {
         if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && plantId && partId) {
-            props?.commonFunction({ PlantId: plantId, PartId: partId }, props?.masterLevels)
+            props?.commonFunction(plantId,false, props?.masterLevels)
         }
     }
     /**

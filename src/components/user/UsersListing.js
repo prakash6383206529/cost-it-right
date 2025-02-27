@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
-import { getAllUserDataAPI, getAllRoleAPI, activeInactiveUser, revokeDelegation } from '../../actions/auth/AuthActions';
+import { getAllUserDataAPI, getAllRoleAPI, activeInactiveUser, revokeDelegation, getAllUserDelegationApi } from '../../actions/auth/AuthActions';
 import $ from 'jquery';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { DELEGATION, EMPTY_DATA, RFQUSER } from '../../config/constants';
+import { DELEGATION, EMPTY_DATA, ON_BEHALF_DELEGATION, RFQUSER, SELF_DELEGATION } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -64,6 +64,7 @@ const UsersListing = (props) => {
 		EditAccessibility: false,
 		DeleteAccessibility: false,
 		ActivateAccessibility: false,
+		ViewAccessibility: false,
 		gridApi: null,
 		gridColumnApi: null,
 		rowData: null,
@@ -79,7 +80,8 @@ const UsersListing = (props) => {
 		showExtraData: false,
 		selectedRow: [],
 		openHistory: false,
-		showRevokePopup:false,
+		showRevokePopup: false,
+		isSelfDelegatedOnly: false,
 
 	});
 	const [skip, setSkip] = useState(0);  // Starting record
@@ -95,23 +97,34 @@ const UsersListing = (props) => {
 	const [disableDownload, setDisableDownload] = useState(false)
 	const { isSimulation } = props;
 	useEffect(() => {
-		getDataList(null, null, skip, take, floatingFilterData, true);
+		if (!props?.isDelegation) {
+			getDataList(null, null, skip, take, floatingFilterData, true);
+		}
 		if (props?.tabId === '1' || props?.tabId === '6' || props?.tabId === '7') {
 			const moduleName = 'Users';
-			const pageType = props?.tabId === '1' ? USER : props?.tabId === '7' ? DELEGATION : RFQUSER;
+			const pageType = props.tabId === '1' ? USER : props.tabId === '7' ? ON_BEHALF_DELEGATION || SELF_DELEGATION : RFQUSER;
 
 			if (topAndLeftMenuData) {
-				const userMenu = topAndLeftMenuData?.find(el => el?.ModuleName === moduleName);
-				const userPermissions = userMenu && userMenu?.Pages?.find(el => el?.PageName === pageType);
-				const permissionData = userPermissions && userPermissions?.Actions && checkPermission(userPermissions?.Actions);
+				const userMenu = topAndLeftMenuData.find(el => el.ModuleName === moduleName);
 
-				if (permissionData) {
-					setState(prevState => ({
-						...prevState,
-						AddAccessibility: permissionData?.Add || false,
-						EditAccessibility: permissionData?.Edit || false,
-						DeleteAccessibility: permissionData?.Delete || false,
-						ActivateAccessibility: permissionData?.Activate || false,
+				if (props.tabId === '7') {
+					const pages = userMenu?.Pages || [];
+					const hasSelfDelegation = pages.some(p => p.PageName === SELF_DELEGATION);
+					const hasOnBehalfDelegation = pages.some(p => p.PageName === ON_BEHALF_DELEGATION);
+					let isSelfDelegatedOnly = hasSelfDelegation && !hasOnBehalfDelegation
+					setState((prevState) => ({ ...prevState, isSelfDelegatedOnly: isSelfDelegatedOnly }));
+					getDataList(null, null, skip, take, floatingFilterData, true, isSelfDelegatedOnly);
+				}
+				const permissions = userMenu?.Pages?.find(el => el.PageName === pageType)?.Actions;
+				if (permissions) {
+					const access = checkPermission(permissions);
+					setState(prev => ({
+						...prev,
+						ViewAccessibility: access?.View || false,
+						AddAccessibility: access?.Add || false,
+						EditAccessibility: access?.Edit || false,
+						DeleteAccessibility: access?.Delete || false,
+						ActivateAccessibility: access?.Activate || false
 					}));
 				}
 			}
@@ -128,9 +141,12 @@ const UsersListing = (props) => {
 				setState((prevState) => ({ ...prevState, roleType: obj, }))
 			}
 		}))
-
 	}, []);
-
+	useEffect(() => {
+		if (props?.callDelegationApi === true) {
+			getDataList(null, null, skip, take, floatingFilterData, true, state?.isSelfDelegatedOnly);
+		}
+	}, [props?.callDelegationApi])
 	useEffect(() => {
 		reactLocalStorage.setObject('selectedRow', {})
 		if (!props.stopApiCallOnCancel) {
@@ -220,7 +236,7 @@ const UsersListing = (props) => {
 		* @description Get user list data
 		*/
 
-	const getDataList = (departmentId, roleId, skip, take, dataObj, isPagination) => {
+	const getDataList = (departmentId, roleId, skip, take, dataObj, isPagination, isSelfDelegatedOnly = state?.isSelfDelegatedOnly) => {
 		let data = {
 			logged_in_user: loggedInUserId(),
 			DepartmentId: departmentId ?? null,
@@ -240,11 +256,13 @@ const UsersListing = (props) => {
 			role: dataObj?.RoleName ?? null,
 			modifiedBy: dataObj?.ModifiedBy ?? null,
 			isPagination: isPagination ?? true,
-			isShowDelegation: props?.isDelegation ?? false
+			isShowDelegation: props?.isDelegation ?? false,
+			isSelfDelegatedOnly: isSelfDelegatedOnly
 		};
 		setState((prevState) => ({ ...prevState, isLoader: true }));
 
-		dispatch(getAllUserDataAPI(data, (res) => {
+		dispatch(props?.isDelegation ? getAllUserDelegationApi(data, callback) : getAllUserDataAPI(data, callback));
+		function callback(res) {
 			setState((prevState) => ({ ...prevState, isLoader: false }));
 
 			let isReset = true;
@@ -294,7 +312,7 @@ const UsersListing = (props) => {
 					}, 500);
 				}
 			}
-		}));
+		}
 	};
 
 
@@ -307,7 +325,7 @@ const UsersListing = (props) => {
 		dispatch(updatePageNumber(1))
 		dispatch(updateCurrentRowIndex(10))
 		gridOptions?.columnApi?.resetColumnState();
-		getDataList(null, null, skip, globalTakes, floatingFilterData, true);
+		getDataList(null, null, skip, globalTakes, floatingFilterData, true, state?.isSelfDelegatedOnly);
 	}
 
 
@@ -469,25 +487,27 @@ const UsersListing = (props) => {
 		let data = { isEditFlag: true, UserId: Id, passwordFlag: passwordFlag, RFQUser: props?.RFQUser }
 		closeUserDetails()
 		props.getUserDetail(data)
+
 	}
 	/**
 	* @method editDelegationItemDetails
 	* @description confirm edit item
 	*/
-	const editDelegationItemDetails = (Id, rowData, isShowHistory = false,isView = false) => {
-		let data = { isEditFlag: true, UserId: Id, RFQUser: props?.RFQUser, rowData: rowData, isShowHistory: isShowHistory,isView:isView }
+	const editDelegationItemDetails = (Id, rowData, isShowHistory = false, isView = false, isEdit = false) => {
+		let data = { isEditFlag: true, UserId: Id, RFQUser: props?.RFQUser, rowData: rowData, isShowHistory: isShowHistory, isView: isView, isEdit: isEdit }
 		closeUserDetails()
 		props.getDelegationDetail(data)
 	}
-const onRevokePopupConfirm=()=>{
-	let data = { DelegatorUserId: state?.row, LoggedInUserId: loggedInUserId()}
-	dispatch(revokeDelegation(data,(res)=>{
-		closeRevokePopup()
-	}))
-}
-const closeRevokePopup = () => {
-	setState((prevState) => ({ ...prevState, showRevokePopup: false }))
-}
+	const onRevokePopupConfirm = () => {
+		let data = { DelegatorUserId: state?.row, LoggedInUserId: loggedInUserId() }
+		dispatch(revokeDelegation(data, (res) => {
+			closeRevokePopup()
+			getDataList(null, null, skip, globalTakes, floatingFilterData, true, state?.isSelfDelegatedOnly);
+		}))
+	}
+	const closeRevokePopup = () => {
+		setState((prevState) => ({ ...prevState, showRevokePopup: false }))
+	}
 
 	const onPopupConfirm = () => {
 		let data = { Id: state?.row?.UserId, ModifiedBy: loggedInUserId(), IsActive: !state?.cell, }
@@ -532,7 +552,7 @@ const closeRevokePopup = () => {
 		setState(prevState => ({ ...prevState, openHistory: false }))
 	}
 	const deleteItem = (UserId) => {
-			setState(prevState => ({ ...prevState, showRevokePopup: true,row:UserId }))
+		setState(prevState => ({ ...prevState, showRevokePopup: true, row: UserId }))
 	}
 
 	/**
@@ -540,20 +560,20 @@ const closeRevokePopup = () => {
 		* @description Renders buttons
 		*/
 	const actionButtonFormatter = (props) => {
-		const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
+		const isEdit = rowData?.IsDelegated === true ? true : false
 		return (
 			<div className="">
-				{true && <Button id={`userListing_add${props?.rowIndex}`} className={"Add Tour_List_Edit"} variant="Add" onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false,false)} title={"Add"} />}
-				{true && <Button id={`userListing_view${props?.rowIndex}`} className={"View Tour_List_Edit"} variant="View" onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false,true)} title={"View"} />}
-				{true && <button title='Remark History' id='ViewRfq_remarkHistory' className="btn-history-remark mr-1" type={'button'} onClick={() => { editDelegationItemDetails(rowData?.UserId, rowData, true,false) }}><div className='history-remark'></div></button>}
-				{true && <Button
-                            id={`userListing_delete${props.rowIndex}`}
-                            className={"mr-1 Tour_List_Delete"}
-                            variant="Delete"
-                            onClick={() => deleteItem(rowData?.UserId)}
-                            title={"Delete"}
-                        />}
+				{AddAccessibility && <Button id={`userListing_add${props?.rowIndex}`} className={"Add Tour_List_Edit ml-1"} variant={isEdit ? "Edit" : "Add"} onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false, false, isEdit)} title={isEdit ? "Edit" : "Add"} />}
+				{isEdit && ViewAccessibility && <Button id={`userListing_view${props?.rowIndex}`} className={"View Tour_List_Edit ml-1"} variant="View" onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false, true, isEdit)} title={"View"} />}
+				{<button title='Remark History' id='ViewRfq_remarkHistory' className="btn-history-remark ml-1" type={'button'} onClick={() => { editDelegationItemDetails(rowData?.UserId, rowData, true, false, isEdit) }}><div className='history-remark'></div></button>}
+				{isEdit && DeleteAccessibility && <Button
+					id={`userListing_delete${props.rowIndex}`}
+					className={"ml-1 Tour_List_Delete"}
+					variant="Delete"
+					onClick={() => deleteItem(rowData?.UserId)}
+					title={"Revoke"}
+				/>}
 			</div>
 		)
 	}
@@ -645,7 +665,7 @@ const closeRevokePopup = () => {
 		setWarningMessage(false);
 		dispatch(updatePageNumber(1))
 		setDisableFilter(true);
-		getDataList(null, null, 0, 10, floatingFilterData, true);
+		getDataList(null, null, 0, 10, floatingFilterData, true, state?.isSelfDelegatedOnly);
 		dispatch(updateCurrentRowIndex(10))
 		dispatch(setSelectedRowForPagination([]))
 		dispatch(updateGlobalTake(10))
@@ -691,7 +711,7 @@ const closeRevokePopup = () => {
 		window.screen.width >= 1920 && params.api.sizeColumnsToFit()
 	};
 
-	const { EditAccessibility, AddAccessibility, noData } = state;
+	const { EditAccessibility, AddAccessibility, noData, ViewAccessibility, DeleteAccessibility } = state;
 	const isFirstColumn = (params) => {
 		var displayedColumns = params?.columnApi.getAllDisplayedColumns();
 		var thisIsFirstColumn = displayedColumns[0] === params?.column;
@@ -753,7 +773,7 @@ const closeRevokePopup = () => {
 									>
 										{onBtExport()}
 									</ExcelFile>
-									<Button id="userListing_add" className={"mr5 Tour_List_Add "} onClick={formToggle} title={"Add"} icon={"plus"} />
+									{!props?.isDelegation && <Button id="userListing_add" className={"mr5 Tour_List_Add "} onClick={formToggle} title={"Add"} icon={"plus"} />}
 								</div>
 
 								<Button id={"userListing_refresh"} className="user-btn Tour_List_Reset" onClick={resetState} title={"Reset Grid"} icon={"refresh"} />
@@ -817,10 +837,10 @@ const closeRevokePopup = () => {
 								<>
 									<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 									<AgGridColumn field="DelegateeUsers" headerName="Delegated To (Substitute User)"></AgGridColumn>
-									<AgGridColumn field="StartDate" headerName="Start Date"></AgGridColumn>
-									<AgGridColumn field="EndDate" headerName="End Date"></AgGridColumn>
-									<AgGridColumn pinned="right" field="DelegationStatus" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-									<AgGridColumn field="DelegationStatus" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'actionButtonFormatter'}></AgGridColumn>
+									<AgGridColumn field="DelegationStartDate" headerName="Start Date"></AgGridColumn>
+									<AgGridColumn field="DelegationEndDate" headerName="End Date"></AgGridColumn>
+									<AgGridColumn field="DelegationStatus" width={160} headerName="Status" floatingFilter={false}></AgGridColumn>
+									<AgGridColumn field="DelegationStatus" width={160} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'actionButtonFormatter'}></AgGridColumn>
 								</>
 							}
 							{/* {getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" filter={true} cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}

@@ -901,3 +901,11 @@
     place-content: end;
   }
 }
+
+.table-with-input-data.Laminate {
+  tbody {
+    .inputbox {
+      min-height: auto !important;
+    }
+  }
+}

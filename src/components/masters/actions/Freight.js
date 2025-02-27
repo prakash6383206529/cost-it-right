@@ -22,6 +22,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import axiosInstance from '../../../utils/axiosInstance';
 import { loggedInUserId } from '../../../helper';
+import DayTime from '../../common/DayTimeWrapper';
 
 // const config() = config;
 
@@ -77,11 +78,10 @@ export function getFreightDataList(filterData, callback) {
 export function getFreightData(freightId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        if (freightId !== '') {
             dispatch({ type: API_REQUEST });
             axios.get(`${API.getFreightData}/${freightId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
-                    if (response.data.Result) {
+                    if (response) {
                         dispatch({
                             type: GET_FREIGHT_DATA_SUCCESS,
                             payload: response.data.Data,
@@ -92,7 +92,7 @@ export function getFreightData(freightId, callback) {
                     dispatch({ type: API_FAILURE });
                     apiErrors(error);
                 });
-        } else {
+    
             dispatch({
                 type: GET_FREIGHT_DATA_SUCCESS,
                 payload: {},
@@ -100,7 +100,7 @@ export function getFreightData(freightId, callback) {
             callback();
         }
     };
-}
+
 
 /**
  * @method deleteFright
@@ -340,7 +340,7 @@ export function getTruckDimensionsSelectList(callback) {
         request.then((response) => {
             dispatch({
                 type: GET_TRUCK_DIMENSIONS_SELECTLIST,
-                payload: response.data.SelectList,
+                payload: response.data.DataList,
             });
             callback(response);
         }).catch((error) => {
@@ -352,30 +352,39 @@ export function getTruckDimensionsSelectList(callback) {
 }
 
 /**
- * @method handleTruckDimensions 
+ * @method saveAndUpdateTruckDimensions 
  * @description SAVE OR UPDATE TRUCK DIMENSIONS
  */
-export function handleTruckDimensions(requestData, isUpdate = false, callback) {
+export function saveAndUpdateTruckDimensions(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const method = isUpdate ? 'put' : 'post';
-        const url = isUpdate ? API.updateTruckDimensions : API.saveTruckDimensions;
-        
-        axiosInstance[method](url, requestData, config())
+axiosInstance.post(API.saveTruckDimensions, requestData, config())
             .then((response) => {
-                if (response.data.Result) {
+                if (response) {
                     callback(response);
-                } else {
-                    dispatch({ type: API_FAILURE });
-                    if (response.data.Message) {
-                        Toaster.warning(response.data.Message);
-                    }
                 }
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
                 callback(error);
             });
+    };
+}
+/**
+ * @method getTruckDimensionsById
+ * @description GET TRUCK DIMENSIONS BY ID
+ */
+export function getTruckDimensionsById(dimensionsId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getTruckDimensionsById}?dimensionsId=${dimensionsId}`, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
     };
 }
 

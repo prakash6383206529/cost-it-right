@@ -8,7 +8,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID, TOOLING } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, getTechnology, ELECTRICAL_STAMPING, INSULATION } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
-import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationCorrugatedAndMonoCartonCalculation, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, getRawMaterialCalculationForInsulation } from '../../actions/CostWorking'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationCorrugatedAndMonoCartonCalculation, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, getRawMaterialCalculationForInsulation, getRawMaterialCalculationForLamination, getSimulationLaminationCalculation } from '../../actions/CostWorking'
 import { Row, Col, Table } from 'reactstrap'
 import TooltipCustom from '../../../common/Tooltip';
 import _ from 'lodash';
@@ -24,8 +24,7 @@ function ViewRM(props) {
 
 
   const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
-
-  const disabledForMonoCartonCorrugated = (viewCostingData[props.index]?.technologyId === CORRUGATEDBOX && viewCostingData[props.index]?.CalculatorType === 'CorrugatedAndMonoCartonBox')
+  const disabledForMonoCartonCorrugated = (viewCostingData[props.index]?.technologyId === CORRUGATEDBOX && (viewCostingData[props.index]?.CalculatorType === 'CorrugatedAndMonoCartonBox' || viewCostingData[props.index]?.CalculatorType === 'Laminate'))
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewCostingDetailData)
@@ -100,15 +99,26 @@ function ViewRM(props) {
           }))
           break;
         case CORRUGATEDBOX:
-          if (viewCostingData[props.index]?.CalculatorType === 'CorrugatedAndMonoCartonBox') {
-            dispatch(getSimulationCorrugatedAndMonoCartonCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, res => {
+          if (viewCostingData[props.index]?.CalculatorType === 'CorrugatedAndMonoCartonBox' || viewCostingData[props.index]?.CalculatorType === 'Laminate') {
+            if (viewCostingData[props.index]?.CalculatorType === 'Laminate') {
+              dispatch(getSimulationLaminationCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, res => {
 
-              if (Number(res.status) === Number(204)) {
-                Toaster.warning('Data is not available for calculator')
-              } else {
-                setCalculatorData(res, index)
-              }
-            }))
+                if (Number(res.status) === Number(204)) {
+                  Toaster.warning('Data is not available for calculator')
+                } else {
+                  setCalculatorData(res, index)
+                }
+              }))
+            } else {
+              dispatch(getSimulationCorrugatedAndMonoCartonCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, res => {
+
+                if (Number(res.status) === Number(204)) {
+                  Toaster.warning('Data is not available for calculator')
+                } else {
+                  setCalculatorData(res, index)
+                }
+              }))
+            }
           } else {
             if (tempData?.netRMCostView[index]?.LayoutType === 'Plastic') {
               dispatch(getRawMaterialCalculationForPlastic(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
@@ -168,6 +178,11 @@ function ViewRM(props) {
         case CORRUGATEDBOX:
           if (viewCostingData[props.index]?.CalculatorType === 'CorrugatedAndMonoCartonBox') {
             dispatch(getRawMaterialCalculationForMonoCartonCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+              setCalculatorData(res, index)
+            }))
+          }
+          else if (viewCostingData[props.index]?.CalculatorType === 'Laminate') {
+            dispatch(getRawMaterialCalculationForLamination(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
               setCalculatorData(res, index)
             }))
           } else {

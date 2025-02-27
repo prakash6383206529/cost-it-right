@@ -4,6 +4,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { Redirect } from 'react-router-dom';
 import { checkPageAuthorization } from './actions/auth/AuthActions'
 import { loggedInUserId } from './helper';
+import { APPROVAL_APP, Simulation_Page } from './config/constants';
 
 export default function AuthMiddleware(ComposedComponent, PAGENAME) {
     class AuthMiddleware extends Component {
@@ -25,9 +26,10 @@ export default function AuthMiddleware(ComposedComponent, PAGENAME) {
 
             // CONDITION TO CHECK REQUEST (PAGE OR URL) IS ACCESSIBLE OR NOT
             if (this.props.authenticated === true) {
-                let reqData = {
-                    PageName: PAGENAME,
-                    LoggedInUserId: loggedInUserId()
+                    let reqData = {
+                        PageName: PAGENAME,
+                        LoggedInUserId: loggedInUserId(),
+                        ReceiverId: (PAGENAME===Simulation_Page||PAGENAME===APPROVAL_APP)?reactLocalStorage.getObject('receiverId'):null
                 }
                 this.props.checkPageAuthorization(reqData, res => {
                     if (res && res.status === 401 && res.statusText === 'Unauthorized') {

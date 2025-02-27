@@ -48,7 +48,7 @@ const initialState = {
     costingSimulationList: [],
     keysForDownloadSummary: {},
     indexedRMForSimulation: [],
-    simulationCostingStatus: false
+    simulationCostingStatus: []
 };
 
 export default function SimulationReducer(state = initialState, action) {
