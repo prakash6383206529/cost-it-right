@@ -578,6 +578,14 @@ class AddFreight extends Component {
     });
   };
 
+  checkRateValidation = (val) => {
+    if (decimalNumberLimit6(val) !== undefined || checkWhiteSpaces(val) !== undefined || number(val) !== undefined) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   checkValidation = () => {
     const { FullTruckCapacity, RateCriteria, Load } = this.state;
     const { fieldsObj } = this.props;
@@ -600,14 +608,19 @@ class AddFreight extends Component {
       count++;
     }
 
-    if(this.state.isImport && !fieldsObj.hasOwnProperty("Rate")){
+    const rateKey = this.state.isImport ? "Rate" : "RateLocalConversion";
+    const rateValue = fieldsObj[rateKey];
+    if (!rateValue || !fieldsObj.hasOwnProperty(rateKey)) {
       errorObj.rate = true;
       count++;
-    }
-  
-    if(!this.state.isImport && !fieldsObj.hasOwnProperty("RateLocalConversion")){
-      errorObj.rate = true;
-      count++;
+    } else {
+      const errorVal = this.checkRateValidation(Number(rateValue));
+      if (errorVal) {
+        errorObj.rate = errorVal;
+        count++;
+      }else{
+        errorObj.rate = false
+      }
     }
 
     if (Load.length === 0) {
@@ -1510,7 +1523,7 @@ class AddFreight extends Component {
                               className=" "
                               customClassName="withBorder"
                             >
-                              {this.state.errorObj.rate && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                              {this.state.errorObj.rate && (!this.props.fieldsObj.Rate) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                             </Field>
                             {/* {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>} */}
                           </Col>}
@@ -1530,7 +1543,7 @@ class AddFreight extends Component {
                               className=" "
                               customClassName="withBorder"
                             >
-                              {this.state.errorObj.rate && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                              {this.state.errorObj.rate && (!this.props.fieldsObj.RateLocalConversion) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                             </Field>
                             {/* {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>} */}
                           </Col>
