@@ -18,15 +18,16 @@ import {
   getExchangeRateByCurrency,
   setCurrencySource,
   setExchangeRateSourceValue,
+  exchangeRateReducer,
 } from '../../actions/Costing';
-import { checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForNull, CheckIsCostingDateSelected, getConfigurationKey, getExchangeRateParams, loggedInUserId } from '../../../../helper';
 import { customHavellsChanges, LEVEL1, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsPartType, IsNFR } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
 import TabAssemblyTechnology from './TabAssemblyTechnology';
-import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
+import { checkNegativeValue, createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
 import { ASSEMBLY, IdForMultiTechnology, TOOLING_ID } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
@@ -79,7 +80,7 @@ function CostingHeaderTabs(props) {
   const isNFR = useContext(IsNFR);
 
   const costingApprovalStatus = useContext(CostingStatusContext);
-  const { nfrDetailsForDiscount } = useSelector(state => state.costing)
+  const { nfrDetailsForDiscount, exchangeRateData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
@@ -97,6 +98,13 @@ function CostingHeaderTabs(props) {
     dispatch(setExchangeRateSourceValue({ label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName }))
     setCurrency({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
     dispatch(setCurrencySource({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId }))
+    dispatch(exchangeRateReducer({
+      plantExchangeRate: costData?.LocalCurrencyExchangeRate,
+      baseExchangeRate: costData?.BaseCurrencyExchangeRate,
+      plantFromCurrency: costData?.CostingCurrency,
+      plantToCurrency: costData?.LocalCurrency,
+      baseFromCurrency: costData?.CostingCurrency,
+       baseToCurrency: initialConfiguration?.BaseCurrency,}))
     setValue('Currency', { label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
     setValue('ExchangeSource', { label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
   }, [costingData, costData])
@@ -106,9 +114,10 @@ function CostingHeaderTabs(props) {
     dispatch(getExchangeRateSource((res) => { }))
   }, [])
 
-  const callExchangeRateAPI = (fromCurrency) => {
+  const callExchangeRateAPI = (fromCurrency, toCurrency) => {
     return new Promise((resolve) => {
-      dispatch(getExchangeRateByCurrency(currency?.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData?.VendorId, costData?.CustomerId, false, fromCurrency, exchangeRateSource?.value, (res) => {
+      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costData?.CostingTypeId, vendorId: costData?.VendorId, clientValue: costData?.CustomerId, plantCurrency: costData?.LocalCurrency });
+     dispatch(getExchangeRateByCurrency(fromCurrency, costingHeadTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, toCurrency, exchangeRateSource?.value, (res) => {
         resolve(res);
       }))
     });
@@ -117,9 +126,21 @@ function CostingHeaderTabs(props) {
   useEffect(() => {
     if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && (costData?.TechnologyId === ASSEMBLY ? true : !costData?.CostingCurrencyId)) {
       let arr = []
-      callExchangeRateAPI(costData?.LocalCurrency).then(res => { //plant
+      callExchangeRateAPI(currency?.label, costData?.LocalCurrency).then(res => { //plant
+        const exchangeData = {
+          plantExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? Boolean(res?.data?.Data) : false,
+          baseExchangeRate: null,
+          plantToCurrency: costData?.LocalCurrency,
+          plantFromCurrency: currency?.label,
+          baseToCurrency: initialConfiguration?.BaseCurrency,
+          baseFromCurrency: currency?.label
+        };
         arr.push(res?.data?.Data)
-        callExchangeRateAPI(initialConfiguration?.BaseCurrency).then(resp => {
+        callExchangeRateAPI(costData?.LocalCurrency, initialConfiguration?.BaseCurrency).then(resp => {
+          exchangeData.baseExchangeRate = resp?.data?.Data && Object.keys(resp?.data?.Data).length > 0 ? Boolean(resp?.data?.Data) : false;
+          dispatch(exchangeRateReducer(exchangeData));
+
+
           arr.push(resp?.data?.Data)
 
           let obj = {
@@ -192,6 +213,10 @@ function CostingHeaderTabs(props) {
         // "NetOverheadAndProfitCost": CostingDataList[0].NetOverheadAndProfitCost,
         // "NetPackagingAndFreight": CostingDataList[0].NetPackagingAndFreight,
         CostingPartDetails: ComponentItemData?.CostingPartDetails,
+      }
+      const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
+      if (hasNegativeValue) {
+        return false;
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         callAssemblyAPi(1)
@@ -396,12 +421,19 @@ function CostingHeaderTabs(props) {
   * @description toggling the tabs
   */
   const toggle = (tab) => {
+    const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
+    if (hasNegativeValue) {
+      return false;
+    }
     if (isNFR && !CostingViewMode && (CostingDataList[0].NetRMCost === 0 || CostingDataList[0].NetRMCost === null || CostingDataList[0].NetRMCost === undefined) && (tab === '2' || tab === '3' || tab === '4' || tab === '5' || tab === '6')) {
       Toaster.warning("Please add RM detail before adding the data in this tab.")
       return false
     }
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currency)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currency,exchangeRateData)) return false;
+
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
+
+
     delete tempErrorObjRMCC?.bopGridFields
     // tourStartRef()
     if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;

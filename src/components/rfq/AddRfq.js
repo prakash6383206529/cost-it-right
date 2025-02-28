@@ -7,14 +7,14 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, RFQ_KEYS, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull, validateFileName } from '../.././helper/validation'
-import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENTASSEMBLY, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RAW_MATERIAL, RFQ, RFQVendor, TOOLING, TOOLINGPART, ToolingId, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENTASSEMBLY, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RAW_MATERIAL, RFQ, RFQVendor, SENT, TOOLING, TOOLINGPART, ToolingId, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
-import { MESSAGES } from '../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../config/message';
 import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts, getRfqToolingDetails, setToolingSpecificRowData, sendQuotationForReview, getQuotationDetailsList, checkRmExistInRfq, checkBopExistInRfq } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -39,7 +39,6 @@ import { getSelectListPartType } from '../masters/actions/Part';
 import ProcessDrawer from './ProcessDrawer';
 import Button from '../layout/Button';
 import { ApplyPermission } from './RfqListing';
-import AddRm from './RM/AddRfqRmDetails';
 import AddRfqRmDetails from './RM/AddRfqRmDetails';
 import RaiseRfqBopDetails from './BOP/RaiseRfqBopDetails';
 import TooltipCustom from '../common/Tooltip';
@@ -51,16 +50,15 @@ const gridOptionsVendor = {}
 
 function AddRfq(props) {
 
-    const [isRmSelected, setIsRmSelected] = useState(false); // State to track if "RM" is selected
     const [selectedOption, setSelectedOption] = useState('componentAssembly');
-
     const permissions = useContext(ApplyPermission);
     const Vendor = permissions.permissionDataVendor
     const Part = permissions.permissionDataPart
 
     const dispatch = useDispatch()
     const { t } = useTranslation("Rfq")
-    const { data: dataProps } = props
+    const { data: dataProps, isViewFlag, isAddFlag, isEditFlag } = props
+
 
     const { technologyLabel, vendorLabel } = useLabels();
     const dropzone = useRef(null);
@@ -80,15 +78,15 @@ function AddRfq(props) {
     const [vendor, setVendor] = useState([]);
     const [isEditAll, setIsEditAll] = useState(false);
     const [isEditSubmissionDate, setIsEditSubmissionDate] = useState(false);
-    const [isViewFlag, setIsViewFlag] = useState(false);
     const [selectedVendors, setSelectedVendors] = useState([]);
     const [inputLoader, setInputLoader] = useState(false)
     const [VendorInputLoader, setVendorInputLoader] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [partList, setPartList] = useState([])
-
-
+    const [showDeleteConfirmPopup, setShowDeleteConfirmPopup] = useState(false);
+    const [deleteData, setDeleteData] = useState(null);
+    // const []
 
     const [vendorList, setVendorList] = useState([])
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
@@ -106,7 +104,7 @@ function AddRfq(props) {
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState('')
     const [technology, setTechnology] = useState({})
-
+    const [hasTechnology, setHasTechnology] = useState(false)
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
@@ -128,6 +126,7 @@ function AddRfq(props) {
     const [rmspecification, setRMSpecification] = useState([])
     const [deleteToggle, setDeleteToggle] = useState(false)
     const [plant, setPlant] = useState({})
+    const [hasPlant, setHasPlant] = useState(false)
     const [isNFRFlow, setIsNFRFlow] = useState(false)
     const [rmAPIList, setRMAPIList] = useState([])
     const [rmNameSelected, setRmNameSelected] = useState(false)
@@ -166,12 +165,14 @@ function AddRfq(props) {
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
-    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
+    console.log("initialConfiguration", initialConfiguration);
+
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
     const showSendButton = dataProps?.rowData?.Status || ''
-    const isDropdownDisabled = (initialConfiguration.IsCriticalVendorConfigured && isViewFlag) || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === 'PreDraft' || showSendButton === ''));
+    const isDropdownDisabled = (initialConfiguration?.IsCriticalVendorConfigured && isViewFlag) || (!isAddFlag && !(showSendButton === 'Draft' || showSendButton === 'PreDraft' || showSendButton === ''));
 
 
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
@@ -219,11 +220,11 @@ function AddRfq(props) {
     // Add these state variables at the top with other states
     const [n100Date, setN100Date] = useState(null);
     const [sopDate, setSopDate] = useState(null);
-    const showOnlyFirstModule = initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
+    const isManageSeparatePermissions = initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
     const isQuotationReceived = () => dataProps?.rowData?.Status === 'Received' || dataProps?.rowData?.Status === 'Sent'
-    const disableUOMFiled = (Object.keys(prNumber).length !== 0 || dataProps?.isViewFlag || isQuotationReceived() || disabledPartUid)
-    const showTcoFields = initialConfiguration.IsShowTCO
+    const disableUOMFiled = (Object.keys(prNumber).length !== 0 || isViewFlag || isQuotationReceived() || disabledPartUid)
+    const showTcoFields = initialConfiguration?.IsShowTCO
 
 
 
@@ -236,15 +237,19 @@ function AddRfq(props) {
         setValue('prId', '');
         setPrNumber([])
 
-        // if (type !== selectedOption) {
-        //     setTableData([]);
-        //     setSpecificationList([]);
-        //     setSopQuantityList([]);
-        //     setChildPartFiles([]);
-        //     setRemark('');
-        // }
         onResetPartNoTable(true)
     };
+    // Add this helper function to check if any parts exist
+    const hasAnyParts = () => {
+        return (
+            partList?.length > 0 ||
+            rmDataList?.length > 0 ||
+            bopDataList?.length > 0 ||
+            toolingList?.length > 0
+        );
+    };
+    const isVendorSectionDisabled = !hasAnyParts()
+        ;
 
     useEffect(() => {
         if (selectedOption === "Bought Out Part" || selectedOption === "Tooling") {
@@ -290,7 +295,7 @@ function AddRfq(props) {
     const isPartEffectiveDateValid = partEffectiveDate && new Date(partEffectiveDate).getTime() > new Date().getTime();
     const effectiveMinDate = isPartEffectiveDateValid ? new Date(partEffectiveDate) : new Date();
     useEffect(() => {
-        if (dataProps?.isAddFlag) {
+        if (isAddFlag) {
             dispatch(setQuotationIdForRfq(""))
             dispatch(setTargetPriceDetail({}))
             setTimeout(() => {
@@ -307,13 +312,13 @@ function AddRfq(props) {
 
 
     useEffect(() => {
-        if (showOnlyFirstModule) {
+        if (isManageSeparatePermissions) {
             if (showSendButton === DRAFT) {
                 setDisabledVendoUId((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
                 setShowVendorSection((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
                 setReviewButtonPermission(Vendor && (Vendor?.SendForReview) ? true : false)
 
-            } else if (dataProps?.isAddFlag || showSendButton === PREDRAFT) {
+            } else if (isAddFlag || showSendButton === PREDRAFT) {
 
                 setDisabledPartUId((Part && (Part?.Add || Part?.Edit)) ? false : true)
             } else {
@@ -362,7 +367,7 @@ function AddRfq(props) {
             dispatch(getPurchaseRequisitionSelectList((/* filterObj */) => { }))
         }
         dispatch(getRawMaterialNameChild(() => { }))
-        if (initialConfiguration.IsNFRConfigured) {
+        if (initialConfiguration?.IsNFRConfigured) {
             dispatch(getNfrSelectList(() => { }))
         }
         let tempArr = [];
@@ -378,19 +383,7 @@ function AddRfq(props) {
             dispatch(setRFQBulkUpload([]))
         }
     }, []);
-    // useEffect(() => {
-    //     if ((prNumber.length !== 0)) {
 
-    //         //dispatch(getRfqToolingDetails(prNumber.value, () => { }))
-    //     }
-    // }, [prNumber])
-
-    // useEffect(() => {
-    //     const filteredArray = selectedparts.filter((obj) => {
-    //         return obj.value !== deleteToggle?.rowData?.PartId;
-    //     });
-    //     setSelectedParts(filteredArray)
-    // }, [deleteToggle])
     useEffect(() => {
         if (selectedOption === 'Tooling') {
             setPartNoDisable(false)
@@ -433,21 +426,7 @@ function AddRfq(props) {
                 })
 
                 listFinal = [...listWithSOPData]
-                // item?.RMDetailsResponses && item?.RMDetailsResponses?.map((itemRM, indexRM) => {
-                //     let objFinal = listWithSOPData[indexRM] ?? {}
-                //     objFinal.RMName = itemRM?.RawMaterialName
-                //     objFinal.RawMaterialChildId = itemRM?.RawMaterialChildId
-                //     objFinal.RMGrade = itemRM?.RawMaterialGrade
-                //     objFinal.RawMaterialGradeId = itemRM?.RawMaterialGradeId
-                //     objFinal.RMSpecification = itemRM?.RawMaterialSpecification
-                //     objFinal.RawMaterialSpecificationId = itemRM?.RawMaterialSpecificationId
-                //     objFinal.IsRMAdded = itemRM?.RawMaterialSpecificationId
-                //     if (indexRM > listWithSOPData?.length - 1) {
-                //         listWithSOPData.push(objFinal)
-                //     } else {
-                //         Object.assign([...listWithSOPData], { indexRM: objFinal })
-                //     }
-                // })
+
                 let obj = {
                     partName: { label: item?.PartNumber, value: item?.PartId, RevisionNumber: item?.RevisionNumber },
                     RmList: listFinal,
@@ -559,7 +538,7 @@ function AddRfq(props) {
         var newDate = addDays(new Date(), 7);
         setSubmissionDate(newDate)
 
-        if (dataProps?.isEditFlag || dataProps?.isViewFlag) {
+        if (isEditFlag || isViewFlag) {
             setLoader(true)
             getQuotationDataById(dataProps?.Id)
         }
@@ -569,7 +548,7 @@ function AddRfq(props) {
 
 
 
-        //const quotationId = (dataProps?.isEditFlag || dataProps?.isViewFlag) ? dataProps?.Id : getBopPrQuotationIdentity
+        //const quotationId = (isEditFlag || isViewFlag) ? dataProps?.Id : getBopPrQuotationIdentity
 
 
         setLoader(true)
@@ -579,12 +558,12 @@ function AddRfq(props) {
             setPartNoDisable(false)
 
             if (res?.data?.Data) {
+
                 setLoader(false)
 
                 let data = res?.data?.Data
                 setIsEditAll(data?.IsSent ? false : true)
                 setIsEditSubmissionDate(data?.IsLastSubmissionEditable ? true : false)
-                setIsViewFlag(dataProps?.isViewFlag)
                 setValue("technology", {
                     label: data.TechnologyName, value: data.TechnologyId
                 })
@@ -637,7 +616,7 @@ function AddRfq(props) {
     }
 
     const deleteFile = (FileId, OriginalFileName) => {
-        if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
+        if (isAddFlag ? false : isViewFlag || !isEditAll) {
             return false
         }
         if (FileId != null) {
@@ -760,35 +739,75 @@ function AddRfq(props) {
     }
 
     const deleteItemPartTable = (rowData, final) => {
+
+
+        if (final.length === 1) {
+            setShowDeleteConfirmPopup(true);
+            setDeleteData({ rowData, final, isLastItem: true });
+            return;
+        }
+
+        handleDelete(rowData, final, false);
+    };
+    const handleDelete = (rowData, final, isLastItem = false) => {
         dispatch(deleteQuotationPartDetail(rowData?.QuotationPartId, (res) => {
-            const type = selectedOption === 'Raw Material' ? 'Raw Material' : selectedOption === "Bought Out Part" ? "Bought Out Part" : 'Part';
+            const type = selectedOption === 'Raw Material' ? 'Raw Material' :
+                selectedOption === "Bought Out Part" ? "Bought Out Part" : 'Part';
             Toaster.success(`${type} has been deleted successfully.`);
-
-        }))
-        if (selectedOption === "componentAssembly") {
-            let arr = final && final.filter(item => item?.PartId !== rowData?.PartId)
-            setPartList(arr)
-        } else if (selectedOption === "Raw Material") {
-            let arr = final && final.filter(item => item?.RawMaterialChildId !== rowData?.RawMaterialChildId)
-            setRmDataList(arr)
-        } else if (selectedOption === "Bought Out Part") {
-            let arr = final && final.filter(item => item?.BoughtOutPartChildId !== rowData?.BoughtOutPartChildId)
-            setBopDataList(arr)
+        }));
+        // For single item deletion, only remove that specific item
+        // For single item deletion, only remove that specific item
+        if (!isLastItem) {
+            switch (selectedOption) {
+                case "componentAssembly":
+                    setPartList(prevList =>
+                        prevList.filter(item => item?.PartId !== rowData?.PartId)
+                    );
+                    break;
+                case "Raw Material":
+                    setRmDataList(prevList =>
+                        prevList.filter(item => item?.RawMaterialChildId !== rowData?.RawMaterialChildId)
+                    );
+                    break;
+                case "Bought Out Part":
+                    setBopDataList(prevList =>
+                        prevList.filter(item => item?.BoughtOutPartChildId !== rowData?.BoughtOutPartChildId)
+                    );
+                    break;
+                case "Tooling":
+                    setToolingList(prevList =>
+                        prevList.filter(item => item?.PartId !== rowData?.PartId)
+                    );
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            // For last item deletion, clear everything
+            switch (selectedOption) {
+                case "componentAssembly":
+                    setPartList([]);
+                    break;
+                case "Raw Material":
+                    setRmDataList([]);
+                    break;
+                case "Bought Out Part":
+                    setBopDataList([]);
+                    break;
+                case "Tooling":
+                    setToolingList([]);
+                    break;
+                default:
+                    break;
+            }
+            // Clear vendor list only when last item is deleted
+            setVendorList([]);
         }
-        else {
-            let arr = final && final.filter(item => item?.PartId !== rowData?.PartId)
-            setToolingList(arr)
-        }
 
-
-        setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
-
-
-        onResetPartNoTable()
-    }
+        setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData });
+        onResetPartNoTable();
+    };
     const editItemPartTable = (rowData, final, viewMode) => {
-
-
         setResetRmFields(false)
         setResetBopFields(false)
         setUpdateButtonPartNoTable(true)
@@ -917,6 +936,7 @@ function AddRfq(props) {
 
     const editItemVendorTable = (gridData, props) => {
 
+
         setSelectedVendorTable(props?.node.data)
 
         setUpdateButtonVendorTable(true)
@@ -1044,10 +1064,8 @@ function AddRfq(props) {
         }
     }
 
-    const handleSubmitClick = (data, e, isPartDetailSent) => {
-
-        //handleSubmit(() => onSubmit(data, e, isSent))()
-        onSubmit(data, e, isPartDetailSent)
+    const handleSubmitClick = (e, isPartDetailSent) => {
+        onSubmit(e, isPartDetailSent)
     };
 
     const onRadioSubmit = (data) => {
@@ -1076,7 +1094,7 @@ function AddRfq(props) {
                 title = 'BOP'
                 break
             case RAW_MATERIAL:
-                warningMessgae = 'Select a RM, then add attachment doucments'
+                warningMessgae = 'Select a RM, then add attachment documents'
                 title = 'RM'
                 break
             case COMPONENTASSEMBLY:
@@ -1092,8 +1110,7 @@ function AddRfq(props) {
         }
         return <HeaderTitle customClass="d-flex" title={title}><WarningMessage dClass={"mt-1 ml-3"} message={warningMessgae} /></HeaderTitle>
     }
-    const onSubmit = (data, e, isPartDetailsSent) => {
-
+    const onSubmit = (e, isPartDetailsSent) => {
         switch (selectedOption) {
             case BOUGHTOUTPARTSPACING:
                 if (bopDataList?.length === 0) {
@@ -1219,6 +1236,10 @@ function AddRfq(props) {
 
             isSent = (showSendButton === PREDRAFT || showSendButton === '') ? false : ((hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent)
         }
+        if (isSent && vendorList?.length === 0) {
+            Toaster.warning("Please add at least one vendor before sending RFQ.");
+            return false;
+        }
         // const IsPartDetailsSent = isShowRfqPartDetail ? ((isPartDetailSent && partList && partList.length > 0) ? true : (partList && partList.length > 0 && vendorList && vendorList.length > 0) ? true : false) : false
         // const isSent = isShowRfqPartDetail ? ((partList && vendorList && partList.length > 0 && vendorList.length > 0) ? IsPartDetailsSent : false) : false
 
@@ -1227,42 +1248,7 @@ function AddRfq(props) {
 
 
 
-
         const obj = createQuotationObject(isSent, IsPartDetailsSent);
-
-        // let obj = {}
-        // obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
-        // obj.QuotationNumber = apiData.QuotationNumber ? apiData.QuotationNumber : ""
-        // obj.Remark = getValues('remark')
-        // obj.TechnologyId = getValues('technology').value
-        // obj.PlantId = getValues('plant')?.value
-        // obj.LoggedInUserId = loggedInUserId()
-        // obj.StatusId = ''
-        // obj.IsSent = isSent
-        // obj.IsConditionallyVisible = isConditionalVisible
-        // obj.VisibilityMode = visibilityMode?.label
-        // obj.VisibilityDate = dateAndTime
-        // obj.VisibilityDuration = getValues('Time')
-        // obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
-        // obj.VendorList = vendorList
-        // obj.Timezone = getTimeZone()
-        // //obj.QuotaionPartIds = quotationPartIds
-        // obj.Attachments = files
-        // obj.IsSent = isSent
-        // obj.NfrId = nfrId?.value
-        // if (dataProps?.isEditFlag) {
-        //     dispatch(updateRfqQuotation(obj, (res) => {
-
-        //         if (res?.data?.Result) {
-        //             setQuotationIdentity(res?.data?.Identity)
-        //             if (isSent) {
-        //                 Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
-        //             } else {
-        //                 Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
-        //             }
-        //             cancel()
-        //         }
-        //     }))
 
         dispatch(createRfqQuotation(obj, (res) => {
 
@@ -1332,26 +1318,29 @@ function AddRfq(props) {
 
 
         const row = props?.data;
+        // const isSendButtonVisible = isViewFlag || (isAddFlag ? false : (isEditFlag && showOnlyFirstModule ? (showSendButton === PREDRAFT ? false : true) : (showSendButton === SENT ? true : false)))
+        const disableButton = isAddFlag ? false : ((showSendButton === DRAFT || showSendButton === PREDRAFT) && isEditFlag) ? false : (isViewFlag || !isEditAll)
 
-        const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showSendButton === PREDRAFT ? false : true))
+
         return (
             <>
                 {show && selectedOption === TOOLINGPART && (<button title="button" className="hirarchy-btn Tour_List_View_BOM" type="button" onClick={() => visualAdDetails(cellValue)} />)}
-                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => editItemPartTable(rowData, props, true)} />}
+                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={disableButton} type={'button'} onClick={() => editItemPartTable(rowData, props, true)} />}
                 {show && < button title='View' className="View mr-2 align-middle" disabled={false} type={'button'} onClick={() => ViewItemPartTable(rowData, props, false)} />}
 
-                {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
-                {show && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
+                {/*  {<button title='Delete' className="Delete align-middle" disabled={isAddFlag ? false : (isViewFlag || !isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
+                {show && <button title='Delete' className="Delete align-middle" disabled={disableButton} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
 
             </>
         )
     };
 
     const buttonFormatterVendorTable = (props) => {
+        const disableButton = isAddFlag ? false : ((showSendButton === DRAFT || showSendButton === PREDRAFT) && isEditFlag) ? false : (isViewFlag || !isEditAll)
         return (
             <>
-                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={(dataProps?.isAddFlag || showSendButton === DRAFT) ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={(dataProps?.isAddFlag || showSendButton === DRAFT) ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={disableButton} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={disableButton} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -1820,13 +1809,13 @@ function AddRfq(props) {
                     //     }
                     //     if (nfrId && nfrId.value !== null) {
                     //         if (index === 0) {
-                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //             newObjTemp.YearName = Data.FirstYear
                     //         } else if (index === 1) {
-                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //             newObjTemp.YearName = Data.SecondYear
                     //         } else if (index === 2) {
-                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //             newObjTemp.YearName = Data.ThirdYear
                     //         } else if (index === 3) {
                     //             newObjTemp.Quantity = 0;
@@ -2062,13 +2051,13 @@ function AddRfq(props) {
 
                 //     if (nfrId) {
                 //         if (index === 0) {
-                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                 //             newObjTemp.YearName = Data.FirstYear
                 //         } else if (index === 1) {
-                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                 //             newObjTemp.YearName = Data.SecondYear
                 //         } else if (index === 2) {
-                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                 //             newObjTemp.YearName = Data.ThirdYear
                 //         } else if (index === 3) {
                 //             newObjTemp.Quantity = 0;
@@ -2752,9 +2741,12 @@ function AddRfq(props) {
         if (newValue) {
             setPartNoDisable(false)
             setValue('partNumber', "")
+            setValue('Description', "")
             setTechnology(newValue)
+            setHasTechnology(true)
         } else {
             setPartNoDisable(true)
+            setHasTechnology(false)
         }
         setVendor('')
         setValue("vendor", "")
@@ -2773,13 +2765,24 @@ function AddRfq(props) {
     const handlePlant = (newValue) => {
         if (newValue && newValue !== '') {
             setPlant(newValue)
+            setHasPlant(true)
         } else {
             setPlant('')
+            setHasPlant(false)
         }
         setVendor('')
         setValue("vendor", "")
     }
+    const handlePrChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setPartNoDisable(false);
+            setPrNumber({ label: newValue.label, value: newValue.value }); // Just set PR number
+            setValue('partNumber', "");
+            setPartName('');
+        }
+    };
     const handleNfrChnage = (newValue) => {
+
         if (newValue && newValue !== '') {
             // setPartNoDisable(false)
             setPrNumber({ label: newValue.label, value: newValue.value })
@@ -3028,9 +3031,9 @@ function AddRfq(props) {
         setPartList(final)
         let isEnable
         if (getValues('nfrId')) {
-            isEnable = dataProps?.isAddFlag && props?.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props?.data.isEdit ? true : false
+            isEnable = isAddFlag && props?.data.isEdit ? true : isViewFlag ? false : isEditAll && props?.data.isEdit ? true : false
         } else {
-            isEnable = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
+            isEnable = isAddFlag ? true : isViewFlag ? false : isEditAll ? true : false
         }
         return (
             <>
@@ -3307,9 +3310,9 @@ function AddRfq(props) {
     const EditableCallback = (props) => {
         let value
         if (getValues('nfrId')) {
-            value = dataProps?.isAddFlag && props?.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props?.data.isEdit ? true : false
+            value = isAddFlag && props?.data.isEdit ? true : isViewFlag ? false : isEditAll && props?.data.isEdit ? true : false
         } else {
-            value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
+            value = isAddFlag ? true : isViewFlag ? false : isEditAll ? true : false
         }
 
         return value
@@ -3423,7 +3426,7 @@ function AddRfq(props) {
                         <div className="shadow-lgg login-formg">
                             <div className="row">
                                 <div className="col-md-6">
-                                    <h3>{isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} {showOnlyFirstModule && (showSendButton === PREDRAFT || showSendButton === "") ? "RFI" : "RFQ"}
+                                    <h3>{isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} {isManageSeparatePermissions && (showSendButton === PREDRAFT || showSendButton === "") ? "RFI" : "RFQ"}
 
                                         {!isViewFlag && <TourWrapper
                                             buttonSpecificProp={{ id: "Add_Rfq_Form" }}
@@ -3517,7 +3520,7 @@ function AddRfq(props) {
                                                     mandatory={true}
                                                     handleChange={handleTechnologyChange}
                                                     errors={errors.technology}
-                                                    disabled={selectedOption === 'Tooling' || ((dataProps?.isViewFlag) ? true : false)
+                                                    disabled={selectedOption === 'Tooling' || ((isViewFlag) ? true : false)
                                                         || (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
                                                 />
                                             </Col>)}
@@ -3535,17 +3538,37 @@ function AddRfq(props) {
                                                 mandatory={true}
                                                 handleChange={handlePlant}
                                                 errors={errors.plant}
-                                                // disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
+                                                // disabled={((isViewFlag || isEditAll) ? true : false)
                                                 //     || (partList?.length !== 0 || vendorList?.length !== 0)}
-                                                //     selectedOption === 'Tooling' || ((dataProps?.isViewFlag ) ? true : false)
+                                                //     selectedOption === 'Tooling' || ((isViewFlag ) ? true : false)
                                                 // || (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)
-                                                disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
+                                                disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (isAddFlag ? false : (isViewFlag || !isEditAll || disabledPartUid)))}
                                             />
                                         </Col>
-                                        {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
+                                        {initialConfiguration?.RFQManditField?.IsShowPRNumber && (quotationType === "Bought Out Part" || quotationType === 'Tooling') &&
+                                            <Col md="3" className={initialConfiguration?.RFQManditField?.IsShowPRNumber ? 'd-none' : ''}>
+                                                <SearchableSelectHookForm
+                                                    label={"PR No."}
+                                                    name={"prId"}
+                                                    isClearable={true}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    defaultValue={prNumber?.length !== 0 ? prNumber : ""}
+                                                    options={renderListing("prNo")}
+                                                    mandatory={true}
+                                                    handleChange={handlePrChange}
+                                                    errors={errors.prId}
+                                                    disabled={Object.keys(prNumber).length !== 0 || ((isViewFlag || showSendButton === DRAFT) ? true : false)
+                                                        || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
+                                                />
+                                            </Col>}
+                                        {initialConfiguration?.RFQManditField?.IsShowNFRNo && <Col md="3" className={initialConfiguration?.RFQManditField?.IsShowNFRNo ? 'd-none' : ''}>
                                             <SearchableSelectHookForm
-                                                label={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "PR No." : "NFR No."}
-                                                name={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "prId" : "nfrId"}
+                                                label={"NFR No."}
+                                                name={"nfrId"}
                                                 isClearable={true}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
@@ -3553,17 +3576,15 @@ function AddRfq(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={renderListing(quotationType === "Bought Out Part" || quotationType === 'Tooling' ? "prNo" : "nfrId")}
-                                                mandatory={quotationType === 'Tooling' ? true : false}
+                                                options={renderListing("nfrId")}
+                                                mandatory={true}
 
                                                 handleChange={handleNfrChnage}
                                                 errors={errors.nfrId}
-                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag /* || dataProps?.isEditFlag */ || showSendButton === DRAFT) ? true : false)
+                                                disabled={Object.keys(prNumber).length !== 0 || ((isViewFlag || showSendButton === DRAFT) ? true : false)
                                                     || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
-                                            // isLoading={VendorLoaderObj}
                                             />
                                         </Col>}
-
 
                                         {ShowQuoteSubmissionDate(quotationType) && <Col md="3">
                                             <div className="inputbox date-section">
@@ -3589,7 +3610,7 @@ function AddRfq(props) {
                                                             errors={errors.SubmissionDate}
                                                             disabledKeyboardNavigation
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={dataProps?.isEditFlag ? !isEditSubmissionDate : dataProps?.isViewFlag ? true : false || disabledPartUid}
+                                                            disabled={isEditFlag ? !isEditSubmissionDate : isViewFlag ? true : false || disabledPartUid}
                                                         />
                                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                                     </div>
@@ -3603,7 +3624,7 @@ function AddRfq(props) {
                                         onClick={bulkToggle}
                                         title={"Bulk Upload"}
                                         icon={"upload"}
-                                        disabled={dataProps?.isViewFlag} />}
+                                        disabled={isViewFlag} />}
                                     {(selectedOption === 'componentAssembly' || selectedOption === 'Tooling') && <>
                                         {heading()}
 
@@ -3622,7 +3643,7 @@ function AddRfq(props) {
                                                     mandatory={true}
                                                     handleChange={handlePartTypeChange}
                                                     errors={errors.Part}
-                                                    disabled={Object.keys(prNumber).length !== 0 || isQuotationReceived() || (dataProps?.isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
+                                                    disabled={Object.keys(prNumber).length !== 0 || isQuotationReceived() || (isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                                 />
                                             </Col>}
 
@@ -3640,7 +3661,7 @@ function AddRfq(props) {
                                                     mandatory={true}
                                                     handleChange={(newValue) => handlePartNoChange(newValue)}
                                                     errors={errors.partNumber}
-                                                    disabled={Object.keys(prNumber).length !== 0 || disabledPartUid || (dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || updateButtonPartNoTable || partType.length === 0}
+                                                    disabled={Object.keys(prNumber).length !== 0 || disabledPartUid || (isAddFlag ? partNoDisable : (isViewFlag || !isEditAll)) || updateButtonPartNoTable || partType.length === 0}
                                                     isLoading={plantLoaderObj}
                                                     asyncOptions={(inputValue) => partFilterList(inputValue, partTypeforRM)}
                                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
@@ -3695,16 +3716,47 @@ function AddRfq(props) {
                                                     handleChange={(value) => handleHavellsDesignPart(value)}
                                                     //handleChange={handlePartTypeChange}
                                                     errors={errors.Part}
-                                                    disabled={(dataProps?.isViewFlag) ? true : false || updateButtonPartNoTable || disabledPartUid}
+                                                    disabled={(isViewFlag) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                                 />
                                             </Col>}
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
-                                    {quotationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} selectedOption={selectedOption} />}
+                                    {quotationType === 'Raw Material' && <AddRfqRmDetails
+                                        updateRawMaterialList={updateRawMaterialList}
+                                        resetRmFields={resetRmFields}
+                                        rmSpecificRowData={rmSpecificRowData}
+                                        updateButtonPartNoTable={updateButtonPartNoTable}
+                                        dataProps={dataProps}
+                                        // New props for handling edit/view states
+                                        isEditFlag={(isAddFlag || isEditFlag) && editQuotationPart}
+                                        isViewFlag={viewQuotationPart}
+                                        disabledPartUid={disabledPartUid}
+                                        isManageSeparatePermissions={initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ}
+                                        showSendButton={showSendButton} // Pass the status
+                                        plant={plant}
+                                        technology={technology}
+                                        setDisabled={setDisabled}
+                                        isDisabled={isDisabled}
+                                        heading={heading}
+                                    />}
                                     <Row>
 
-                                        {quotationType === "Bought Out Part" && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} selectedOption={selectedOption} />}
+                                        {quotationType === "Bought Out Part" && <RaiseRfqBopDetails
+                                            updateBopList={updateBopList}
+                                            resetBopFields={resetBopFields}
+                                            plant={plant}
+                                            prNumber={prNumber}
+                                            disabledPartUid={disabledPartUid}
+                                            heading={heading}
+                                            // New props for handling edit/view states
+                                            isEditFlag={(isAddFlag || isEditFlag) && editQuotationPart}
+                                            isViewFlag={viewQuotationPart}
+                                            isManageSeparatePermissions={initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ}
+                                            showSendButton={showSendButton}
+                                            updateButtonPartNoTable={updateButtonPartNoTable}
+                                            dataProps={dataProps}
+                                        />}
 
                                         {/* {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
@@ -3724,7 +3776,7 @@ function AddRfq(props) {
                                                             options={renderListingRM('rmname')}
                                                             mandatory={false}
                                                             handleChange={(newValue) => handleRMName(newValue)}
-                                                            disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                                            disabled={(isAddFlag ? partNoDisable : (isViewFlag || !isEditAll)) || isNFRFlow}
                                                         // errors={`${indexInside} CostingVersion`}
                                                         />
                                                     </Col>
@@ -3743,7 +3795,7 @@ function AddRfq(props) {
                                                             options={renderListingRM('rmgrade')}
                                                             mandatory={rmNameSelected}
                                                             handleChange={(newValue) => handleRMGrade(newValue)}
-                                                            disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                                            disabled={(isAddFlag ? partNoDisable : (isViewFlag || !isEditAll)) || isNFRFlow}
                                                         // errors={`${indexInside} CostingVersion`}
                                                         />
                                                     </Col>
@@ -3762,7 +3814,7 @@ function AddRfq(props) {
                                                             options={renderListingRM('rmspecification')}
                                                             mandatory={rmNameSelected}
                                                             handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                            disabled={(dataProps?.isAddFlag ? partNoDisable || isNFRFlow : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                                            disabled={(isAddFlag ? partNoDisable || isNFRFlow : (isViewFlag || !isEditAll)) || isNFRFlow}
                                                         // errors={`${indexInside} CostingVersion`}
                                                         />
                                                     </Col>
@@ -3791,7 +3843,7 @@ function AddRfq(props) {
                                                             handleChange={(newValue) => handleChangeUOM(newValue)}
                                                             errors={errors?.UOM}
                                                             disabled={disableUOMFiled}
-                                                        //Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid
+                                                        //Object.keys(prNumber).length !== 0 || (isViewFlag) ? true : false || disabledPartUid
                                                         />
                                                     </Col>
                                                 }
@@ -3866,8 +3918,11 @@ function AddRfq(props) {
                                                         type="button"
                                                         className={'user-btn pull-left'}
                                                         onClick={() => addRowPartNoTable()}
-                                                        disabled={dataProps?.isAddFlag ? ((!updateButtonPartNoTable && prNumber.length !== 0) ? true : false) : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
-                                                    >
+                                                        disabled={
+                                                            isAddFlag
+                                                                ? ((!updateButtonPartNoTable && prNumber.length !== 0) || !getValues('UOM')?.value)
+                                                                : (isViewFlag || !isEditAll) || disabledPartUid
+                                                        }                                                    >
                                                         <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                                                     </button>
                                                     <button
@@ -3876,7 +3931,9 @@ function AddRfq(props) {
                                                         type="button"
                                                         value="CANCEL"
                                                         className="reset ml-2 mr5"
-                                                        disabled={dataProps?.isAddFlag ? (!updateButtonPartNoTable && prNumber.length !== 0) : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
+                                                        disabled={isAddFlag
+                                                            ? ((!updateButtonPartNoTable && prNumber.length !== 0) || !getValues('UOM')?.value)
+                                                            : (isViewFlag || !isEditAll) || disabledPartUid}
                                                     >
                                                         <div className={''}></div>
                                                         RESET
@@ -3913,7 +3970,7 @@ function AddRfq(props) {
                                                     validate: { postiveNumber, maxLength10, nonZero }
                                                 }}
                                                 handleChange={() => { }}
-                                                disabled={dataProps?.isViewFlag}
+                                                disabled={isViewFlag}
                                                 placeholder={'Enter'}
                                                 customClassName={'withBorder'}
                                             />
@@ -4027,7 +4084,7 @@ function AddRfq(props) {
                                                     errors={errors.vendor}
                                                     isLoading={VendorLoaderObj}
                                                     asyncOptions={vendorFilterList}
-                                                    disabled={(dataProps?.isViewFlag) ? true : false || isDropdownDisabled || disabledVendoUi}
+                                                    disabled={(isViewFlag) ? true : false || isDropdownDisabled || disabledVendoUi || isVendorSectionDisabled}
                                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                 />
                                             </Col>
@@ -4047,7 +4104,7 @@ function AddRfq(props) {
                                                         // handleChange={handleDestinationPlantChange}
                                                         handleChange={() => { }}
                                                         errors={errors.contactPerson}
-                                                        disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                        disabled={isVendorSectionDisabled || disabledVendoUi || isDropdownDisabled}
                                                         isLoading={plantLoaderObj}
                                                     />
                                                 </Col>
@@ -4111,7 +4168,7 @@ function AddRfq(props) {
                                                             className=""
                                                             customClassName={'withBorder'}
                                                             errors={errors.LDClause}
-                                                            disabled={(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
+                                                            disabled={isVendorSectionDisabled || (isViewFlag) ? true : false || disabledVendoUi}
 
                                                         />
                                                     </Col>
@@ -4124,7 +4181,7 @@ function AddRfq(props) {
                                                     type="button"
                                                     className={'user-btn pull-left'}
                                                     onClick={() => addRowVendorTable()}
-                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                    disabled={isVendorSectionDisabled || disabledVendoUi ? true : isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 >
                                                     <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
                                                 </button>
@@ -4135,7 +4192,7 @@ function AddRfq(props) {
                                                     type="button"
                                                     value="CANCEL"
                                                     className="reset ml-2"
-                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                    disabled={isVendorSectionDisabled || disabledVendoUi ? true : isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 >
                                                     <div className={''}></div>
                                                     RESET
@@ -4200,7 +4257,7 @@ function AddRfq(props) {
                                                             value={"All"}
                                                             checked={isConditionalVisible}
 
-                                                            disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                            disabled={isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                         />
 
                                                         <span className=" before-box"
@@ -4227,7 +4284,7 @@ function AddRfq(props) {
                                                         handleChange={handleVisibilityMode}
                                                         errors={errors.VisibilityMode}
                                                         isLoading={VendorLoaderObj}
-                                                        disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                        disabled={isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                     />
                                                 </Col>
 
@@ -4258,7 +4315,7 @@ function AddRfq(props) {
                                                                     errors={errors.startPlanDate}
                                                                     disabledKeyboardNavigation
                                                                     onChangeRaw={(e) => e.preventDefault()}
-                                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                                    disabled={isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                                 />
                                                             </div>
                                                         </div>
@@ -4300,7 +4357,7 @@ function AddRfq(props) {
                                                                     className=""
                                                                     customClassName={'withBorder mn-height-auto hide-label mb-0'}
                                                                     errors={errors.Time}
-                                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                                    disabled={isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                                 />
                                                             </div>
                                                         </div>
@@ -4332,15 +4389,15 @@ function AddRfq(props) {
                                                     customClassName={"withBorder"}
                                                     handleChange={() => { }}
                                                     errors={errors.remark}
-                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                    disabled={isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                     rowHeight={6}
                                                 // isLoading={plantLoaderObj}
                                                 />
                                             </Col>
                                             <Col md="4" className="height152-label">
-                                                <TooltipCustom id="uploadFile" tooltipText="Upload upto 4 file, size of each file upto 20MB" />
+                                                {/* <TooltipCustom id="uploadFile" tooltipText="Upload upto 4 file, size of each file upto 20MB" /> */}
 
-                                                <label>Upload Attachment (upload up to 4 files){/* <span className="asterisk-required"></span> */}</label>
+                                                <label>Upload Attachment (upload up to 4 files){/* <span className="asterisk-required"></span> */}  <AttachmentValidationInfo /> </label>
                                                 <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                                     Maximum file upload limit has been reached.
                                                 </div>
@@ -4378,7 +4435,7 @@ function AddRfq(props) {
                                                                 extra.reject ? { color: "red" } : {},
                                                         }}
                                                         classNames="draper-drop"
-                                                        disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                        disabled={isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                     />
                                                 </div>
                                             </Col>
@@ -4422,11 +4479,11 @@ function AddRfq(props) {
                                                 <div className={"cancel-icon"}></div>
                                                 {"Cancel"}
                                             </button>
-                                            {reviewButtonPermission && showOnlyFirstModule && (
+                                            {reviewButtonPermission && isManageSeparatePermissions && (
                                                 <>
                                                     <Button
                                                         id="Return_RFQ_for_Review"
-                                                        disabled={isViewFlag}
+                                                        disabled={isVendorSectionDisabled || isViewFlag}
                                                         className="save-btn mr-2"
                                                         variant={"submit-button"}
                                                         onClick={(data, e) => handleReviewButtonClick(data, e, false)}
@@ -4434,13 +4491,15 @@ function AddRfq(props) {
                                                         buttonName={"Send for Review"} />
                                                 </>
                                             )}
+                                            { }
+
 
                                             {
                                                 <button type="button" className="submit-button save-btn mr-2" value="save"
                                                     // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
                                                     id="addRFQ_save"
-                                                    onClick={(data, e) => handleSubmitClick(data, e, false)}
-                                                    disabled={isViewFlag || showSendButton === PREDRAFT && disabledPartUid}>
+                                                    onClick={(e) => handleSubmitClick(e, false)}
+                                                    disabled={(isVendorSectionDisabled || showSendButton === PREDRAFT) && (disabledPartUid || isViewFlag)}>
                                                     <div className={"save-icon"}></div>
                                                     {"Save"}
                                                 </button>
@@ -4448,8 +4507,9 @@ function AddRfq(props) {
 
                                             {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
-                                                onClick={(data, e) => handleSubmitClick(data, e, true)}
-                                                disabled={isViewFlag || (showSendButton === PREDRAFT && disabledPartUid)}>
+                                                onClick={(e) => handleSubmitClick(e, true)}
+
+                                                disabled={vendorList?.length === 0 || isVendorSectionDisabled || isViewFlag || (showSendButton === PREDRAFT && disabledPartUid)}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
                                             </button>}
@@ -4515,6 +4575,7 @@ function AddRfq(props) {
                                             setSopDate={setSopDate}
                                             setN100Date={setN100Date}
                                             setRequirementDate={setRequirementDate}
+                                            partTypeInPartList={partType?.label}
                                         />
                                     )
                                 }
@@ -4529,6 +4590,24 @@ function AddRfq(props) {
                 showPopup && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
                     plantId={plantId} redirectPath={blocked ? "/initiate-unblocking" : ""} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
+            {/* New popup for delete confirmation */}
+            {showDeleteConfirmPopup && (
+                <PopupMsgWrapper
+                    isOpen={showDeleteConfirmPopup}
+                    closePopUp={() => {
+                        setShowDeleteConfirmPopup(false);
+                        setDeleteData(null);
+                    }}
+                    confirmPopup={() => {
+                        if (deleteData) {
+                            handleDelete(deleteData.rowData, deleteData.final, true); // Pass true for last item deletion
+                            setShowDeleteConfirmPopup(false);
+                            setDeleteData(null);
+                        }
+                    }}
+                    message="Deleting the last part will clear all vendor details. Do you want to continue?"
+                />
+            )}
             {isOpenVisualDrawer && (
                 <BOMViewer
                     isOpen={isOpenVisualDrawer}

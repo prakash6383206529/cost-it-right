@@ -11,7 +11,7 @@ import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetail
 import { sendForUnblocking } from '../Action';
 import { getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment } from '../../masters/actions/Material';
 import { transformApprovalItem } from '../../common/CommonFunctions';
-import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_GUID, LPSAPPROVALTYPEID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../config/constants';
+import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_GUID, LPSAPPROVALTYPEID, ONBOARDINGID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../config/constants';
 import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
@@ -24,7 +24,7 @@ import { useLabels } from '../../../helper/core';
 
 const SendForApproval = (props) => {
   const [isLoader, setIsLoader] = useState(false)
-  const {vendorLabel} = useLabels()
+  const { vendorLabel } = useLabels()
   const dispatch = useDispatch()
   const { register, control, setValue, handleSubmit, reset, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -80,7 +80,7 @@ const SendForApproval = (props) => {
 
   useEffect(() => {
     setIsLoader(true)
-    dispatch(getAllMasterApprovalDepartment(deviationData?.ReceiverId,(res) => {
+    dispatch(getAllMasterApprovalDepartment(deviationData?.ReceiverId, (res) => {
 
       setIsLoader(false)
       const Data = res?.data?.SelectList;
@@ -138,7 +138,7 @@ const SendForApproval = (props) => {
             ReasonId: 0,
             PlantId: deviationData?.PlantId ?? EMPTY_GUID,
             OnboardingMasterId: 1,
-            ReceiverId:deviationData?.ReceiverId??null
+            ReceiverId: deviationData?.ReceiverId ?? null
           };
 
           const handleApiResponse = (res, deptKey, approverKey) => {
@@ -216,11 +216,13 @@ const SendForApproval = (props) => {
   }, [isOpen]);
 
   useEffect(() => {
-    dispatch(getUsersOnboardingLevelAPI(loggedInUserId(),deviationData?.ReceiverId, (res) => {
+    if (props?.OnboardingApprovalId === ONBOARDINGID) {
+      dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), deviationData?.ReceiverId, (res) => {
 
-      userTechnology(isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID, res.data.Data)
+        userTechnology(isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID, res.data.Data)
 
-    }))
+      }))
+    }
   }, [isOpen])
   const userTechnology = (approvalTypeId, levelsList) => {
 
@@ -245,7 +247,7 @@ const SendForApproval = (props) => {
 
       }
       else {
-        if (initialConfiguration.IsMultipleUserAllowForApproval && !dept?.label) {
+        if (initialConfiguration?.IsMultipleUserAllowForApproval && !dept?.label) {
           Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.');
           return false;
         }
@@ -259,7 +261,7 @@ const SendForApproval = (props) => {
           // ApproverDepartmentId: dept?.value || '',
           ApproverLevel: approver?.levelName || '',
           // ApproverDepartmentName: dept?.label || '',
-          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval
             ? approverIdList
             : [approver?.value || ''],
           SenderLevelId: levelDetails?.LevelId,
@@ -281,7 +283,7 @@ const SendForApproval = (props) => {
           ReasonId: getValues('reason')?.value || '',
           Reason: getValues('reason')?.label || '',
           ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID,
-          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval
             ? classificationApproverIdList
             : [approver?.value || ''],
           ApproverDepartmentName: getValues('dept')?.label ?? '',
@@ -321,7 +323,7 @@ const SendForApproval = (props) => {
           ApproverDepartmentId: getValues('dept1')?.value ?? '',
           SenderRemark: getValues('remarks1'),
           ApprovalTypeId: LPSAPPROVALTYPEID,
-          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval
             ? lpsApproverIdList
             : [approver?.value || ''],
           FinalApprover: isFinalApproverLps,
@@ -521,7 +523,7 @@ const SendForApproval = (props) => {
       OnboardingMasterId: 1,
       ApprovalTypeId: approvalId,
       DivisionId: divisionId ?? null,
-      ReceiverId:deviationData?.ReceiverId??null
+      ReceiverId: deviationData?.ReceiverId ?? null
     }
 
     let obj = {
@@ -532,7 +534,7 @@ const SendForApproval = (props) => {
       approvalTypeId: approvalId,
       plantId: deviationData.PlantId ?? EMPTY_GUID,
       divisionId: divisionId ?? null,
-      ReceiverId:deviationData?.ReceiverId??null
+      ReceiverId: deviationData?.ReceiverId ?? null
     }
 
     dispatch(checkFinalUser(obj, (res) => {
@@ -740,7 +742,7 @@ const SendForApproval = (props) => {
                         options={departmentDropdown}
                         disabled={disableRS || (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
 
-                        // disabled={(disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))) && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
+                        // disabled={(disableRS || (!(userData.Department.length > 1) || (initialConfiguration?.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))) && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
                         mandatory={true}
                         handleChange={(e) => handleDepartmentChange(e, CLASSIFICATIONAPPROVALTYPEID)}
                         errors={errors.dept}
@@ -887,7 +889,7 @@ const SendForApproval = (props) => {
                         defaultValue={""}
                         options={departmentDropdown}
                         disabled={disableRS || (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
-                        // disabled={(disableRS || (!(userData?.department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured ))) || !getConfigurationKey().IsDivisionAllowedForDepartment}
+                        // disabled={(disableRS || (!(userData?.department.length > 1) || (initialConfiguration?.IsReleaseStrategyConfigured ))) || !getConfigurationKey().IsDivisionAllowedForDepartment}
                         mandatory={true}
                         handleChange={(e) => handleDepartmentChange(e, LPSAPPROVALTYPEID)}
                         errors={errors.dept1}
@@ -913,7 +915,7 @@ const SendForApproval = (props) => {
                       />
                     </Col>}
                   {!isFinalApproverLps && (<Col md="6">
-                    {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                    {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                       <AllApprovalField
                         label="Approver"
                         approverList={lpsApprovalDropDown}

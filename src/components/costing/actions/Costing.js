@@ -74,6 +74,7 @@ import {
   GET_SAP_EVALUATIONTYPE,
   SET_EXCHANGE_RATE_SOURCE,
   SET_CURRENCY_SOURCE,
+  SET_EXCHANGE_RATE_DATA,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -435,7 +436,7 @@ export function getVBCDetailByVendorId(data, callback) {
 export function getRMCCTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
     let queryParams = data.EffectiveDate ? data.EffectiveDate : null
-    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}/${data.subAsmCostingId}/${queryParams}`, config());
+    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}/${data.subAsmCostingId}/${queryParams}/${data?.isComponentCosting ? data?.isComponentCosting : false}`, config());
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
         let TabData = response.data.DataList;
@@ -744,7 +745,7 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
  */
 export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.SubAsmCostingId}/${data.AssemCostingId}`, config());
+    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.SubAsmCostingId}/${data.AssemCostingId}/${data?.isComponentCosting ? data?.isComponentCosting : false}`, config());
     request.then((response) => {
       if (response.data.Result) {
         if (IsUseReducer && response.data.Result) {
@@ -3123,6 +3124,14 @@ export function setCurrencySource(value) {
   return (dispatch) => {
     dispatch({
       type: SET_CURRENCY_SOURCE,
+      payload: value
+    });
+  }
+}
+export function exchangeRateReducer(value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_EXCHANGE_RATE_DATA,
       payload: value
     });
   }

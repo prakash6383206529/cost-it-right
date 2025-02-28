@@ -18,8 +18,8 @@ export const RMSection = (props) => {
     const defaultValues = {
         no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? WeightCalculatorRequest.NoOfPly : '',
         gsm: WeightCalculatorRequest && WeightCalculatorRequest.GSM !== null ? WeightCalculatorRequest.GSM : '',
-        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        bursting_strength: WeightCalculatorRequest && WeightCalculatorRequest.BurstingStrength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+        bursting_strength: WeightCalculatorRequest && WeightCalculatorRequest.BurstingStrength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration?.NoOfDecimalForInputOutput) : '',
     }
     const {
         setValue, getValues } = useForm({
@@ -33,10 +33,10 @@ export const RMSection = (props) => {
     })
     useEffect(() => {
         if (props.CostingViewMode && WeightCalculatorRequest) {
-            props.setValue('no_of_ply', checkForDecimalAndNull(WeightCalculatorRequest.NoOfPly, initialConfiguration.NoOfDecimalForInputOutput))
-            props.setValue('gsm', checkForDecimalAndNull(WeightCalculatorRequest.GSM, initialConfiguration.NoOfDecimalForInputOutput))
-            props.setValue('bursting_factor', checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput))
-            props.setValue('bursting_strength', checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration.NoOfDecimalForInputOutput))
+            props.setValue('no_of_ply', checkForDecimalAndNull(WeightCalculatorRequest.NoOfPly, initialConfiguration?.NoOfDecimalForInputOutput))
+            props.setValue('gsm', checkForDecimalAndNull(WeightCalculatorRequest.GSM, initialConfiguration?.NoOfDecimalForInputOutput))
+            props.setValue('bursting_factor', checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration?.NoOfDecimalForInputOutput))
+            props.setValue('bursting_strength', checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration?.NoOfDecimalForInputOutput))
         }
     }, [])
     useEffect(() => {
@@ -50,7 +50,7 @@ export const RMSection = (props) => {
         }
         const getWeightSheet = (data.burstingFactor * data.gsm * data.noOfPly) / 1000;
         dispatch(corrugatedData({ ...corrugatedDataObj, RMData: data, burstingStrengthWithDecimal: getWeightSheet, }))
-        setValue('bursting_strength', checkForDecimalAndNull(getWeightSheet, initialConfiguration.NoOfDecimalForInputOutput))
+        setValue('bursting_strength', checkForDecimalAndNull(getWeightSheet, initialConfiguration?.NoOfDecimalForInputOutput))
 
     }
     return (
@@ -159,8 +159,8 @@ export const BoxDetails = (props) => {
         width_box: WeightCalculatorRequest && WeightCalculatorRequest.WidthBox !== null ? WeightCalculatorRequest.WidthBox : '',
         height_box: WeightCalculatorRequest && WeightCalculatorRequest.HeightBox !== null ? WeightCalculatorRequest.HeightBox : '',
         stiching_length: WeightCalculatorRequest && WeightCalculatorRequest.StitchingLengthInchPerJoint !== null ? WeightCalculatorRequest.StitchingLengthInchPerJoint : '',
-        // width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
-        // width_sheet_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
+        // width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration?.NoOfDecimalForInputOutput) : '', //
+        // width_sheet_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration?.NoOfDecimalForInputOutput) : '', //
         // cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
         // width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
     }
@@ -182,10 +182,10 @@ export const BoxDetails = (props) => {
 
     useEffect(() => {
         if (props.CostingViewMode && WeightCalculatorRequest) {
-            props.setValue('length_box', checkForDecimalAndNull(WeightCalculatorRequest.LengthBox, initialConfiguration.NoOfDecimalForInputOutput))
-            props.setValue('width_box', checkForDecimalAndNull(WeightCalculatorRequest.WidthBox, initialConfiguration.NoOfDecimalForInputOutput))
-            props.setValue('height_box', checkForDecimalAndNull(WeightCalculatorRequest.HeightBox, initialConfiguration.NoOfDecimalForInputOutput))
-            props.setValue('stiching_length', checkForDecimalAndNull(WeightCalculatorRequest.StitchingLengthInchPerJoint, initialConfiguration.NoOfDecimalForInputOutput))
+            props.setValue('length_box', checkForDecimalAndNull(WeightCalculatorRequest.LengthBox, initialConfiguration?.NoOfDecimalForInputOutput))
+            props.setValue('width_box', checkForDecimalAndNull(WeightCalculatorRequest.WidthBox, initialConfiguration?.NoOfDecimalForInputOutput))
+            props.setValue('height_box', checkForDecimalAndNull(WeightCalculatorRequest.HeightBox, initialConfiguration?.NoOfDecimalForInputOutput))
+            props.setValue('stiching_length', checkForDecimalAndNull(WeightCalculatorRequest.StitchingLengthInchPerJoint, initialConfiguration?.NoOfDecimalForInputOutput))
         }
     }, [])
     const setWidthSheet_LengthSheet = () => {
@@ -334,12 +334,12 @@ export const ProcessAndRejection = (props) => {
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: {
-                paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '',
+                paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration?.NoOfDecimalForInputOutput) : '',
             }
         })
     useEffect(() => {
         if (!CostingViewMode) {
-            setValue('paper_process', checkForDecimalAndNull(data.paperWithDecimal, initialConfiguration.NoOfDecimalForInputOutput))
+            setValue('paper_process', checkForDecimalAndNull(data.paperWithDecimal, initialConfiguration?.NoOfDecimalForInputOutput))
         }
     }, [data])
     return <>

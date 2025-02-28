@@ -72,7 +72,6 @@ function RMDomesticListing(props) {
     // const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
     // const [pageNo, setPageNo] = useState(1)
-    const [pageNoNew, setPageNoNew] = useState(1)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [noData, setNoData] = useState(false)
@@ -128,44 +127,45 @@ function RMDomesticListing(props) {
 
     };
 
-    const params = useMemo(() => {
-        let obj = { ...floatingFilterData }
+    // const params = useMemo(() => {
+    //     let obj = { ...floatingFilterData }
 
-        if (obj?.EffectiveDate) {
-            if (obj.EffectiveDate.dateTo) {
-                let temp = []
-                temp.push(DayTime(obj.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
-                temp.push(DayTime(obj.EffectiveDate.dateTo).format('DD/MM/YYYY'))
-                obj.dateArray = temp
-            }
-        }
+    //     if (obj?.EffectiveDate) {
+    //         if (obj.EffectiveDate.dateTo) {
+    //             let temp = []
+    //             temp.push(DayTime(obj.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+    //             temp.push(DayTime(obj.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+    //             obj.dateArray = temp
+    //         }
+    //     }
 
-        obj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
-        obj.Currency = floatingFilterData?.Currency
-        obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
-        obj.OtherNetCost = floatingFilterData?.OtherNetCost
-        let data = {
-            StatusId: [props?.approvalStatus].join(","),
-            net_landed_min_range: value.min,
-            net_landed_max_range: value.max,
-            ListFor: ListFor,
-        }
+    //     obj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : ''
+    //     obj.Currency = floatingFilterData?.Currency
+    //     obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+    //     obj.OtherNetCost = floatingFilterData?.OtherNetCost
+    //     obj.StatusId = [props?.approvalStatus].join(",")
+    //     let data = {
+    //         StatusId: [props?.approvalStatus].join(","),
+    //         net_landed_min_range: value.min,
+    //         net_landed_max_range: value.max,
+    //         ListFor: ListFor,
+    //     }
 
-        return {
-            data: { technologyId: props?.technology ?? null },
-            skip: 0,
-            take: globalTakes,
-            isPagination: true,
-            obj: obj,
-            isImport: false,
-            dataObj: obj,
-            master: 'RawMaterial',
-            tabs: 'Domestic',
-            isMasterSummaryDrawer: props?.isMasterSummaryDrawer
-        }
-    }, []);
+    //     return {
+    //         data: { technologyId: props?.technology ?? null },
+    //         skip: 0,
+    //         take: globalTakes,
+    //         isPagination: true,
+    //         obj: obj,
+    //         isImport: false,
+    //         dataObj: obj,
+    //         master: 'RawMaterial',
+    //         tabs: 'Domestic',
+    //         isMasterSummaryDrawer: props?.isMasterSummaryDrawer
+    //     }
+    // }, []);
 
-    const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
+    // const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
 
     useEffect(() => {
         if (rmDataList?.length > 0) {
@@ -193,6 +193,7 @@ function RMDomesticListing(props) {
                 if (isSimulation) {
                     props?.changeTokenCheckBox(false)
                 }
+                getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
             }
             setvalue({ min: 0, max: 0 });
         }
@@ -234,7 +235,8 @@ function RMDomesticListing(props) {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [props?.approvalStatus].join(",")
+        let statusString = [props?.approvalStatus]
+
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
             plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
@@ -257,7 +259,7 @@ function RMDomesticListing(props) {
         dataObj.Currency = floatingFilterData?.Currency
         dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
-
+        dataObj.StatusId = statusString
         if (isSimulation && getConfigurationKey().IsDivisionAllowedForDepartment) {
             dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
         }
@@ -419,9 +421,7 @@ function RMDomesticListing(props) {
 
         // setPageNo(1)
         dispatch(updatePageNumber(1))
-        setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
-        // setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
         getDataList(null, null, null, null, null, 0, 0, globalTakes, true, floatingFilterData)
     }
@@ -451,7 +451,6 @@ function RMDomesticListing(props) {
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(updatePageNumber(1))
-        setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
         getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
         dispatch(setSelectedRowForPagination([]))
@@ -536,13 +535,13 @@ function RMDomesticListing(props) {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
         let isDeleteButton = false
-
+        const IsRFQRawMaterial = Boolean(rowData?.IsRFQRawMaterial);
         if (EditAccessibility) {
             isEditbale = true
         } else {
             isEditbale = false
         }
-        if (isRfq && isMasterSummaryDrawer) {
+        if (isRfq && isMasterSummaryDrawer && !IsRFQRawMaterial) {
             return (
                 <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
@@ -577,14 +576,14 @@ function RMDomesticListing(props) {
                             onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
                             title={"View"}
                         />}
-                        {isEditbale && <Button
+                        {isEditbale && !IsRFQRawMaterial && <Button
                             id={`rmDomesticListing_edit${props.rowIndex}`}
                             className={"mr-1 Tour_List_Edit"}
                             variant="Edit"
                             onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
                             title={"Edit"}
                         />}
-                        {isDeleteButton && <Button
+                        {isDeleteButton && !IsRFQRawMaterial && <Button
                             id={`rmDomesticListing_delete${props.rowIndex}`}
                             className={"mr-1 Tour_List_Delete"}
                             variant="Delete"

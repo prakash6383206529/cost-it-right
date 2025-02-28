@@ -134,7 +134,7 @@ function ApproveRejectDrawer(props) {
 
           setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
-          if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
+          if (initialConfiguration?.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
             setDisableSR(true)
             approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId)
           } else {
@@ -157,7 +157,7 @@ function ApproveRejectDrawer(props) {
                 if (levelDetailsTemp?.length !== 0) {
                   getApproversList(departObj[0].Value, departObj[0].Text, levelDetailsTemp)
                 }
-                if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
+                if (initialConfiguration?.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
                   setDisableSR(true)
                   approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId)
                 } else {
@@ -592,7 +592,7 @@ function ApproveRejectDrawer(props) {
             SenderLevel: levelDetails.Level,
             SenderId: userLoggedIn,
             // ApproverId: approver && approver.value ? approver.value : '',
-            ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+            ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
             ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
             ApproverLevel: approver && approver.levelName ? approver.levelName : '',
             Remark: remark,
@@ -614,7 +614,7 @@ function ApproveRejectDrawer(props) {
           SenderLevel: levelDetails.Level,
           SenderId: userLoggedIn,
           // ApproverId: approver && approver.value ? approver.value : '',
-          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
           ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
           ApproverLevel: approver && approver.levelName ? approver.levelName : '',
           Remark: remark,
@@ -646,7 +646,7 @@ function ApproveRejectDrawer(props) {
         senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
         senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
         // senderObj.ApproverId = approver && approver.value ? approver.value : ''
-        senderObj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+        senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
         senderObj.SenderLevelId = levelDetails?.LevelId
         senderObj.SenderLevel = levelDetails?.Level
         senderObj.SenderId = userLoggedIn
@@ -1052,7 +1052,7 @@ function ApproveRejectDrawer(props) {
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                      {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField
                           label="Approver"
                           approverList={approvalDropDown}
@@ -1104,7 +1104,7 @@ function ApproveRejectDrawer(props) {
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                      {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField
                           label="Approver"
                           approverList={approvalDropDown}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext, useCallback } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, RAWMATERIALAPPROVALTYPEID, RAWMATERIALINDEX, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, RAWMATERIALAPPROVALTYPEID, RAWMATERIALINDEX, ZBCTypeId, GET_INDEXED_RM_FOR_SIMULATION } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, userDetails } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -22,7 +22,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl, RM_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
+import { APPLICABILITY_RAWMATERIAL_SIMULATION, APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl, RM_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -100,6 +100,8 @@ function RMIndexationSimulation(props) {
     const [rowIndex, setRowIndex] = useState('')
     const [isSaving, setIsSaving] = useState(false);
     const [dateState, setDateState] = useState({})
+    const [isOtherCostSaving, setIsOtherCostSaving] = useState(true)
+    const [isConditionCostSaving, setIsConditionCostSaving] = useState(true)
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -111,13 +113,16 @@ function RMIndexationSimulation(props) {
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft, indexedRMForSimulation } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    const rmIndexedSimulationSummaryData = useSelector(state => state.simulation.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
+    const rmIndexedSimulationSummaryData = useSelector(state => state?.simulation?.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
 
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { filteredRMData } = useSelector(state => state.material)
     const selectedEffectiveDate = useSelector((state) => state.simulation.selectedEffectiveDate);
     const costingHeadFilter = useSelector(state => state?.common?.costingHeadFilter)
     const tableData = isApprovalSummary ? rmIndexedSimulationSummaryData : isCostingSimulation ? list : indexedRMForSimulation
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
+    const RawMaterialsEffectiveDate = useSelector((state) => state.simulation.rawMaterialsEffectiveDate);
+
 
     useEffect(() => {
 
@@ -160,9 +165,10 @@ function RMIndexationSimulation(props) {
     }, [isApprovalSummary])
 
     useEffect(() => {
-        if (!isSaving) return; // Only run if saving
 
-        if (indexedRMForSimulation && indexedRMForSimulation?.[rowIndex] && !isImpactedMaster) {
+        if (!isSaving) return;
+
+        if (indexedRMForSimulation && indexedRMForSimulation?.[rowIndex] && !isImpactedMaster && (isOtherCostSaving || isConditionCostSaving)) {
             let obj = indexedRMForSimulation?.[rowIndex]
             obj.otherCostTableData = obj.NewRawMaterialOtherCostDetails || []
             obj.conditionTableData = obj.NewRawMaterialConditionsDetails || []
@@ -201,8 +207,21 @@ function RMIndexationSimulation(props) {
                 setIsSaving(false) // Reset saving state
             }, 200);
         }
-    }, [totalBasicRate, openOtherCostDrawer, openConditionCostDrawer, otherCostDetailForRow, indexedRMForSimulation, isSaving]);
+    }, [totalBasicRate, isOtherCostSaving, isConditionCostSaving, otherCostDetailForRow, indexedRMForSimulation, /* isSaving */]);
     useEffect(() => {
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, props?.effectiveDate, res => {
+                if (!res?.status && !res?.error) {
+                    setValueFunction(true, res);
+                }
+            }))
+        } else {
+            setValueFunction(false, []);
+        }
+    }, [])
+    const setValueFunction = (check, res) => {
+
+        const filteredMasterId = masterList?.find(item => item?.Text === "Raw Materials")?.Value;
         if ((!props?.isFromApprovalListing && !isApprovalSummary && !isCostingSimulation)) {
             setIsLoader(true)
             let rawMaterialIds = isCostingSimulation ? props?.list && props?.list?.length > 0 && props?.list.map(item => item.NewRawMaterialIndexationDetails.RawMaterialId) : props?.list && props?.list?.length > 0 && props?.list.map(item => item.RawMaterialId)
@@ -210,12 +229,18 @@ function RMIndexationSimulation(props) {
 
                 "RawMaterialIds": rawMaterialIds,
                 "TechnologyId": null,
-                "SimulationTechnologyId": selectedMasterForSimulation?.value,
-                "EffectiveDate": null,
+                "SimulationTechnologyId": check ? EXCHNAGERATE : selectedMasterForSimulation?.value,
+                "EffectiveDate": props?.effectiveDate ? DayTime(props?.effectiveDate).format('YYYY-MM-DD HH:mm:ss') : null,
                 "LoggedInUserId": loggedInUserId(),
                 "SimulationHeadId": RAWMATERIALAPPROVALTYPEID,
-                "IsSimulationWithOutCosting": true
-
+                "IsSimulationWithOutCosting": true,
+                "IsExchangeRateSimulation": check,
+                "SimulationExchangeRates": [],
+                "ExchangeRateSimulationTechnologyId": filteredMasterId
+            }
+            if (check) {
+                obj.SimulationExchangeRates = res
+                obj.IsExchangeRateSimulation = true
             }
             dispatch(draftSimulationForRMMaster(obj, (res) => {
 
@@ -241,11 +266,7 @@ function RMIndexationSimulation(props) {
 
             }))
         }
-        return () => {
-            dispatch(isResetClick(true, "costingHead"))
-        }
-    }, [])
-
+    }
     useEffect(() => {
 
         if (props?.isFromApprovalListing && !isApprovalSummary && !isCostingSimulation) {
@@ -333,7 +354,8 @@ function RMIndexationSimulation(props) {
             let obj = {
                 LoggedInUserId: loggedInUserId(),
                 SimulationId: simulationId,
-                IsProvisional: false
+                IsProvisional: false,
+                EffectiveDate: DayTime(selectedEffectiveDate).format('YYYY-MM-DD HH:mm:ss')
             }
             dispatch(runSimulationOnRawMaterial(obj, (res) => {
                 if (res?.data?.Result) {
@@ -616,6 +638,7 @@ function RMIndexationSimulation(props) {
             setOtherCostDetailForRow(row?.OldRawMaterialOtherCostDetails)
             setIsViewFlag(true)
             setEditIndex(index)
+            setRowIndex(index)
         } else {
             const basicRate = checkForNull(row?.NewBasicRatePerUOM)
             setCommodityDetailsData(row?.NewMaterialCommodityIndexRateDetails)
@@ -625,6 +648,7 @@ function RMIndexationSimulation(props) {
             setOtherCostDetailForRow(row?.NewRawMaterialOtherCostDetails)
             setIsViewFlag((isRunSimulationClicked || isApprovalSummary) ? true : false)
             setEditIndex(index)
+            setRowIndex(index)
         }
         setOpenOtherCostDrawer(true)
 
@@ -643,6 +667,7 @@ function RMIndexationSimulation(props) {
             setIsViewFlag(true)
 
             setEditIndex(index)
+            setRowIndex(index)
         } else {
 
             const basicRate = checkForNull(row?.NewBasicRatePerUOM)
@@ -657,13 +682,45 @@ function RMIndexationSimulation(props) {
             setIsViewFlag((isRunSimulationClicked || isApprovalSummary) ? true : false)
 
             setEditIndex(index)
+            setRowIndex(index)
         }
         setOpenConditionCostDrawer(true)
 
     }
+    const calculateOtherCostAndSave = (tableData, total, totalCostBase) => {
+        setIsLoader(true)
+        indexedRMForSimulation[editIndex].NewOtherNetCost = total
+        indexedRMForSimulation[editIndex].NewOtherNetCostConversion = totalCostBase
+        indexedRMForSimulation[editIndex].NewOtherNetCostLocalConversion = totalCostBase
+        indexedRMForSimulation[editIndex].NewRawMaterialOtherCostDetails = tableData
+        list[editIndex].NewNetCostWithoutConditionCost = Number(indexedRMForSimulation[editIndex].NewBasicRate) + checkForNull(total); // Update this line
+        setNetCostWithoutConditionCost(Number(indexedRMForSimulation[editIndex].NewBasicRate) + checkForNull(total)); // Update the state
+
+        setIsSaving(true);
+        setTimeout(() => {
+            setIsLoader(false)
+        }, 200);
+    }
+    const calculateAndSaveCondition = (tableData, totalCostBase) => {
+
+        setIsLoader(true)
+        indexedRMForSimulation[editIndex].NewNetConditionCost = totalCostBase
+        indexedRMForSimulation[editIndex].NewConditionNetCostConversion = totalCostBase
+        indexedRMForSimulation[editIndex].NewConditionNetCostLocalConversion = totalCostBase
+        indexedRMForSimulation[editIndex].NewRawMaterialConditionsDetails = tableData
+        setIsSaving(true);
+
+        setTimeout(() => {
+            setIsLoader(false)
+        }, 100);
+    }
     const closeOtherCostDrawer = (type, data, total, totalBase) => {
         if (type === 'Save') {
-            calculateAndSave(totalBasicRate, data, totalBase, 'Other Cost', editIndex)
+            setIsOtherCostSaving(true)
+            //setIsSaving(true);
+            calculateOtherCostAndSave(data, total, totalBase)
+        } else {
+            setIsOtherCostSaving(false)
         }
         setOpenOtherCostDrawer(false)
         setIsViewFlag(false)
@@ -671,10 +728,11 @@ function RMIndexationSimulation(props) {
     }
     const closeConditionCostDrawer = (type, data, total, totalBase) => {
         if (type === 'Save' || type === 'save') {
-            setIsSaving(true); // Set saving state before calculations
-            const newConditionCost = data.reduce((acc, item) =>
-                checkForNull(acc) + checkForNull(item?.ConditionCostPerQuantity || 0), 0);
-            calculateAndSave(totalBasicRate, data, newConditionCost, 'Condition Cost', editIndex)
+            setIsConditionCostSaving(true)
+            const newConditionCost = data.reduce((acc, item) => checkForNull(acc) + checkForNull(item?.ConditionCostPerQuantity || 0), 0);
+            calculateAndSaveCondition(data, newConditionCost)
+        } else {
+            setIsConditionCostSaving(false)
         }
         setOpenConditionCostDrawer(false)
         setIsViewFlag(false)
@@ -694,7 +752,7 @@ function RMIndexationSimulation(props) {
             ScrapRate: selectedRow?.NewScrapRate || selectedRow?.OldScrapRate,
             ScrapRateInINR: selectedRow?.ScrapRateInINR || '',
             CutOffPriceInINR: selectedRow?.CutOffPriceInINR || '',
-            EffectiveDate: selectedEffectiveDate || "",
+            EffectiveDate: DayTime(selectedEffectiveDate).format('YYYY-MM-DD HH:mm:ss') || "",
             LoggedInUserId: loggedInUserId(),
             FromDate: selectedRow?.NewFromDate,
             ToDate: selectedRow?.NewToDate,
@@ -732,6 +790,25 @@ function RMIndexationSimulation(props) {
         dispatch(updateSimulationRawMaterial(obj, (response) => {
             if (response?.data?.Result) {
                 dispatch(editRMIndexedSimulationData({ SimulationId: simulationId }, (res) => {
+                    if (res?.data?.Result) {
+                        const updatedData = res?.data?.Data?.SimulationRawMaterialDetailsResponse.map((newRow, index) => {
+                            if (index !== currentIndex && indexedRMForSimulation[index]) {
+                                return {
+                                    ...newRow,
+                                    NewBasicRatePerUOM: indexedRMForSimulation[index].NewBasicRatePerUOM,
+                                    NewScrapRate: indexedRMForSimulation[index].NewScrapRate,
+                                    NewScrapRatePerScrapUOM: indexedRMForSimulation[index].NewScrapRatePerScrapUOM,
+                                    NewOtherNetCost: indexedRMForSimulation[index].NewOtherNetCost,
+                                    NewNetConditionCost: indexedRMForSimulation[index].NewNetConditionCost,
+                                    NewNetCostWithoutConditionCost: indexedRMForSimulation[index].NewNetCostWithoutConditionCost,
+                                    NewNetLandedCost: indexedRMForSimulation[index].NewNetLandedCost,
+                                };
+                            } return newRow;
+                        });
+
+                        dispatch({ type: GET_INDEXED_RM_FOR_SIMULATION, payload: updatedData });
+
+                    }
                     setIsLoader(!res?.data?.Result);
                     setIsSaving(true);
                 }));
@@ -882,14 +959,14 @@ function RMIndexationSimulation(props) {
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text '><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text '><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && !isIndexedRM && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
             </div>
         );
     };
     const revisedScrapRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"scrapRate-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text'><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && !isIndexedRM && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"scrapRate-tooltip"}></i>} </span>
             </div>
         );
     };
@@ -946,10 +1023,13 @@ function RMIndexationSimulation(props) {
             }
             setTotalBasicRate(rowData?.NewBasicRatePerUOM)
             setNetCostWithoutConditionCost(rowData?.NewNetCostWithoutConditionCost)
+            setIsOtherCostSaving(true)
+            setIsConditionCostSaving(true)
         }
     }
 
     const handleEffectiveDateChange = (date) => {
+
         setIsLoader(true)
         dispatch(setEffectiveDateRMNonIndexation(date));
 
@@ -1078,7 +1158,7 @@ function RMIndexationSimulation(props) {
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row.BasicRatePerUOM), getConfigurationKey().NoOfDecimalForPrice)
         const classGreen = (checkForDecimalAndNull(row?.NewOtherNetCost, getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.OldOtherNetCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewOtherNetCost, getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OldOtherNetCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
-        setRowIndex(props?.node?.rowIndex)
+
 
         return (
             <>
@@ -1131,7 +1211,6 @@ function RMIndexationSimulation(props) {
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
         const classGreen = (checkForDecimalAndNull(row?.NewNetConditionCost, getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.OldNetConditionCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewNetConditionCost, getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OldNetConditionCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
-        setRowIndex(props?.node?.rowIndex)
 
         return (
             <>
@@ -1179,20 +1258,24 @@ function RMIndexationSimulation(props) {
             {/* <button title='Discard' className="CancelIcon" type={'button'} onClick={() => discardBasicRate(props)} /> */}
         </div>
     }
-
+    const localConversionFormatter = (props) => {
+        const cellValue = checkForNull(props?.value);
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
     const saveBasicRate = (props) => {
 
 
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const currentIndex = props.rowIndex; // Store index in local variable
         setIsLoader(true);
-        if (/* props?.isRMNonIndexSimulation && */ selectedEffectiveDate === null || selectedEffectiveDate === undefined) {
+        if (!isIndexedRM && (selectedEffectiveDate === null || selectedEffectiveDate === undefined)) {
             Toaster.warning("Please select effective date")
             setIsLoader(false);
             return false
         }
         setEditIndex(currentIndex)
 
+        setRowIndex(currentIndex)
         setRowData(row)
 
         setTotalBasicRate(checkForNull(row?.NewBasicRatePerUOM))
@@ -1295,9 +1378,9 @@ function RMIndexationSimulation(props) {
         existingConditionCostFormatter: existingConditionCostFormatter,
         revisedConditionCostFormatter: revisedConditionCostFormatter,
         selectedDateRenderer: selectedDateRenderer,
-        saveButtonRenderer: saveButtonRenderer
+        saveButtonRenderer: saveButtonRenderer,
+        localConversionFormatter: localConversionFormatter
     };
-
 
     const ageValueGetterScrapRate = (params) => {
         let row = params.data
@@ -1380,10 +1463,10 @@ function RMIndexationSimulation(props) {
                 {!showverifyPage &&
                     // {(!showverifyPage && !showMainSimulation) &&                    //RE
                     <Fragment>
-                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
-                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To edit revised scrap rate please double click on the field."}</Tooltip>}
+                        {showTooltip && !isImpactedMaster && !isIndexedRM && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
+                        {showTooltip && !isImpactedMaster && !isIndexedRM && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To edit revised scrap rate please double click on the field."}</Tooltip>}
                         <Row>
-                            <Col className={`${props.isApprovalSummary ? "" : "add-min-height sm-edit-page"}  mb-3 `}>
+                            <Col className={`${props?.isApprovalSummary ? "" : "add-min-height sm-edit-page"}  mb-3 `}>
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header d-flex justify-content-between">
                                         <div className='d-flex align-items-center'>
@@ -1449,98 +1532,102 @@ function RMIndexationSimulation(props) {
                                                         floatingFilterComponentParams={floatingFilterStatus}
                                                         floatingFilterComponent="statusFilter"></AgGridColumn>
                                                 }
-                                                <AgGridColumn width={columnWidths.RawMaterialName} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.RawMaterialGradeName} field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.RawMaterialSpecificationName} field={props.isCostingSimulation ? 'RawMaterialSpecs' : "RawMaterialSpecificationName"} tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.RawMaterialCode} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" width={250} headerName={`Raw Material Code (Source ${vendorLabel} Code)`} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
-                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn width={columnWidths.SourceVendorName} field="SourceVendorName" tooltipField='SourceVendorName' editable='false' headerName={`Source ${vendorLabel} (Code)`} cellRenderer='hyphenFormatter'></AgGridColumn>}
-                                                {!isImpactedMaster && <AgGridColumn width={columnWidths.RawMaterialCategoryName} field={props.isCostingSimulation ? 'Category' : "RawMaterialCategoryName"} tooltipField='RawMaterialCategoryName' editable='false' headerName="Category"></AgGridColumn>}
-                                                {!isImpactedMaster && <AgGridColumn width={columnWidths.TechnologyName} field={props.isCostingSimulation ? 'Technology' : "TechnologyName"} tooltipField='TechnologyName' editable='false' headerName={technologyLabel} ></AgGridColumn>}
-                                                {!isImpactedMaster && list && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={columnWidths.VendorCod} field={props.isCostingSimulation ? 'VendorCode' : "Vendor (Code)"} tooltipField='Vendor (Code)' editable='false' headerName={vendorLabel + " (Code)"} cellRenderer='vendorFormatter'></AgGridColumn>}
-                                                {!isImpactedMaster && list && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={columnWidths.CustomerName} field={props.isCostingSimulation ? 'CustomerCode' : "CustomerName"} tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
-                                                {!isImpactedMaster && <AgGridColumn width={columnWidths.PlantCode} field={props.isCostingSimulation ? 'PlantCode' : "Plant (Code)"} editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
-                                                <AgGridColumn width={columnWidths.UnitOfMeasurementName} field={props.isCostingSimulation ? 'UOM' : "UnitOfMeasurementName"} tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>
-                                                {isScrapUOMApplyTemp && <AgGridColumn width={150} field="ScrapUnitOfMeasurement" tooltipField='ScrapUnitOfMeasurement' editable='false' headerName="Scrap UOM" cellRenderer='hyphenFormatter'></AgGridColumn>}
-                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" width={columnWidths.CostingNumber}></AgGridColumn>}
-                                                {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" width={columnWidths.PartNumber}></AgGridColumn>}
+                                                {<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                                                <AgGridColumn minWidth={columnWidths.RawMaterialName} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.RawMaterialGradeName} field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.RawMaterialSpecificationName} field={props.isCostingSimulation ? 'RawMaterialSpecs' : "RawMaterialSpecificationName"} tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.RawMaterialCode} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" minWidth={250} headerName={`Raw Material Code (Source ${vendorLabel} Code)`} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn minWidth={columnWidths.SourceVendorName} field="SourceVendorName" tooltipField='SourceVendorName' editable='false' headerName={`Source ${vendorLabel} (Code)`} cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn minWidth={columnWidths.RawMaterialCategoryName} field={props.isCostingSimulation ? 'Category' : "RawMaterialCategoryName"} tooltipField='RawMaterialCategoryName' editable='false' headerName="Category"></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn minWidth={columnWidths.TechnologyName} field={props.isCostingSimulation ? 'Technology' : "TechnologyName"} tooltipField='TechnologyName' editable='false' headerName={technologyLabel} ></AgGridColumn>}
+                                                {!isImpactedMaster && list && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn minWidth={columnWidths.VendorCod} field={props.isCostingSimulation ? 'VendorCode' : "Vendor (Code)"} tooltipField='Vendor (Code)' editable='false' headerName={vendorLabel + " (Code)"} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn minWidth={columnWidths.CustomerName} field={props.isCostingSimulation ? 'CustomerCode' : "CustomerName"} tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn minWidth={columnWidths.PlantCode} field={props.isCostingSimulation ? 'PlantCode' : "Plant (Code)"} editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
+                                                <AgGridColumn minWidth={columnWidths.UnitOfMeasurementName} field={props.isCostingSimulation ? 'UOM' : "UnitOfMeasurementName"} tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>
+                                                {isScrapUOMApplyTemp && <AgGridColumn minWidth={150} field="ScrapUnitOfMeasurement" tooltipField='ScrapUnitOfMeasurement' editable='false' headerName="Scrap UOM" cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" minWidth={columnWidths.PartNumber}></AgGridColumn>}
 
                                                 {String(props?.masterId) === String(RMIMPORT) && !isIndexedRM && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
                                                 {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
+                                                {isIndexedRM && <>
+                                                    <AgGridColumn field='IndexExchangeName' tooltipField='IndexExchangeName' editable='false' headerName="Index" minWidth={140} ></AgGridColumn>
+                                                    <AgGridColumn field='ExchangeRateSourceName' tooltipField='ExchangeRateSourceName' editable='false' headerName="Exchange Rate Source" minWidth={140} ></AgGridColumn>
+                                                    <AgGridColumn field='MaterialType' tooltipField='MaterialType' editable='false' headerName="Material" minWidth={140} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.FrequencyOfSettlement} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FrequencyOfSettlement' : "FrequencyOfSettlement"} editable='false' headerName={"Frequency Of Settlement"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.OldFromDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.FromDate' : "OldFromDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old From Date"} ></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NewFromDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FromDate' : "NewFromDate"} editable='false' cellRenderer={'selectedDateRenderer'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New From Date"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.OldToDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.ToDate' : "OldToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old To Date"} ></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NewToDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ToDate' : "NewToDate"} editable='false' cellRenderer={'selectedDateRenderer'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New To Date"} ></AgGridColumn></>}
+                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                <AgGridColumn field="Currency" minWidth={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                {(String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>}
 
-                                                {isIndexedRM && <AgGridColumn field='IndexExchangeName' tooltipField='IndexExchangeName' editable='false' headerName="Index" minWidth={140} ></AgGridColumn>}
-                                                {isIndexedRM && <AgGridColumn field='ExchangeRateSourceName' tooltipField='ExchangeRateSourceName' editable='false' headerName="Exchange Rate Source" minWidth={140} ></AgGridColumn>}
-                                                {isIndexedRM && <AgGridColumn field='MaterialType' tooltipField='MaterialType' editable='false' headerName="Material" minWidth={140} ></AgGridColumn>}
-                                                {isIndexedRM && <AgGridColumn width={columnWidths.FrequencyOfSettlement} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FrequencyOfSettlement' : "FrequencyOfSettlement"} editable='false' headerName={"Frequency Of Settlement"} ></AgGridColumn>}
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={"Date"} marryChildren={true} >
-                                                    {isIndexedRM && <AgGridColumn width={columnWidths.OldFromDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.FromDate' : "OldFromDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old From Date"} ></AgGridColumn>}
-                                                    {isIndexedRM && <AgGridColumn width={columnWidths.NewFromDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FromDate' : "NewFromDate"} editable='false' cellRenderer={'selectedDateRenderer'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New From Date"} ></AgGridColumn>}
-                                                    {isIndexedRM && <AgGridColumn width={columnWidths.OldToDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.ToDate' : "OldToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old To Date"} ></AgGridColumn>}
-                                                    {isIndexedRM && <AgGridColumn width={columnWidths.NewToDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ToDate' : "NewToDate"} editable='false' cellRenderer={'selectedDateRenderer'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New To Date"} ></AgGridColumn>}
-                                                    <AgGridColumn width={columnWidths.OldEffectiveDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.EffectiveDate' : "OldEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={isIndexedRM ? props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old Effective Date" : "Effective Date"} ></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewEffectiveDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.EffectiveDate' : "NewEffectiveDate"} editable='false' cellRenderer={'selectedDateRenderer'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New Effective Date"} ></AgGridColumn>
-                                                </AgGridColumn>
-                                                {/* {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>} */}
-                                                <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={"Basic Rate (Currency)"} marryChildren={true} >
-                                                    {!isIndexedRM && <AgGridColumn width={120} field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>}
-                                                    {isIndexedRM && <AgGridColumn width={150} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>}
-                                                    {!isIndexedRM && <AgGridColumn width={120} cellRenderer='newBasicRateFormatterForNonIndexedRM' editable={(isImpactedMaster || isRunSimulationClicked || isApprovalSummary) ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.BasicRate' : "NewBasicRatePerUOM"} headerName="Revised" colId='NewBasicRatePerUOM' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>}
-                                                    {isIndexedRM && <AgGridColumn width={150} cellRenderer='newBasicRateFormatter' editable='false' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.BasicRate' : "NewBasicRatePerUOM"} headerName="Revised" colId='NewBasicRatePerUOM' ></AgGridColumn>}
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={300} headerName={"Basic Rate (Currency)"} marryChildren={true} >
+                                                    {!isIndexedRM && <AgGridColumn minWidth={120} field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>}
+                                                    {isIndexedRM && <AgGridColumn minWidth={150} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>}
+                                                    {!isIndexedRM && <AgGridColumn minWidth={120} cellRenderer='newBasicRateFormatterForNonIndexedRM' editable={(isImpactedMaster || isRunSimulationClicked || isApprovalSummary) ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.BasicRate' : "NewBasicRatePerUOM"} headerName="Revised" colId='NewBasicRatePerUOM' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>}
+                                                    {isIndexedRM && <AgGridColumn minWidth={150} cellRenderer='newBasicRateFormatter' editable='false' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.BasicRate' : "NewBasicRatePerUOM"} headerName="Revised" colId='NewBasicRatePerUOM' ></AgGridColumn>}
                                                 </AgGridColumn>
 
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} marryChildren={true} headerName={"Scrap Rate (Currency)"
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={300} marryChildren={true} headerName={"Scrap Rate (Currency)"
                                                 }>
 
-                                                    {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.ScrapRatePerScrapUOM} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatterPerScrapUOM' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>}
-                                                    {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.NewScrapRatePerScrapUOM} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} editable={(isRunSimulationClicked || isApprovalSummary) ? false : EditableCallbackForNewScrapRate}></AgGridColumn>}
-                                                    <AgGridColumn width={150} field={isImpactedMaster ? "OldScrapRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.ScrapRate' : "OldScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "OldScrapRate"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer={'newScrapRateFormatter'} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ScrapRate' : "NewScrapRate"} headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={scrapEditableCallback} ></AgGridColumn>
+                                                    {isScrapUOMApplyTemp && <AgGridColumn minWidth={columnWidths.ScrapRatePerScrapUOM} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatterPerScrapUOM' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>}
+                                                    {isScrapUOMApplyTemp && <AgGridColumn minWidth={columnWidths.NewScrapRatePerScrapUOM} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} editable={(isRunSimulationClicked || isApprovalSummary) ? false : EditableCallbackForNewScrapRate}></AgGridColumn>}
+                                                    <AgGridColumn minWidth={150} field={isImpactedMaster ? "OldScrapRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.ScrapRate' : "OldScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "OldScrapRate"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer={'newScrapRateFormatter'} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ScrapRate' : "NewScrapRate"} headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={scrapEditableCallback} ></AgGridColumn>
                                                 </AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={300} headerName={
                                                     "Other Cost (Currency)"
                                                 } marryChildren={true} >
-                                                    <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OldOtherNetCost" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OldOtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldOtherNetCost" : "OldOtherNetCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost'></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OldOtherNetCost" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OldOtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldOtherNetCost" : "OldOtherNetCost"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"Basic Price (Currency)"}>
-                                                    <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'OldNetCostWithoutConditionCost'} editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} editable='false' cellRenderer={'costFormatter'} headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={"Basic Price (Currency)"}>
+                                                    <AgGridColumn minWidth={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'OldNetCostWithoutConditionCost'} editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} editable='false' cellRenderer={'costFormatter'} headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>
                                                 </AgGridColumn>}
 
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={"Condition Cost (Currency)"} marryChildren={true} >
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={300} headerName={"Condition Cost (Currency)"} marryChildren={true} >
 
-                                                    <AgGridColumn width={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "OldNetConditionCost" : "OldNetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewNetConditionCost" : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "OldNetConditionCost" : "OldNetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewNetConditionCost" : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>
                                                 </AgGridColumn>}
-                                                {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
                                                     "Net Cost (Currency)"
                                                 }>
-                                                    <AgGridColumn width={columnWidths.OldNetLandedCost} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.NetLandedCost' : "OldNetLandedCost"} tooltipField='OldNetLandedCost' editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='OldNetLandedCost'></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewNetLandedCost} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.NetLandedCost' : "NewNetLandedCost"} editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.OldNetLandedCost} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.NetLandedCost' : "OldNetLandedCost"} tooltipField='OldNetLandedCost' editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='OldNetLandedCost'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.NewNetLandedCost} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.NetLandedCost' : "NewNetLandedCost"} editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
+                                                {((isRunSimulationClicked && (String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE))) || isApprovalSummary || props?.isFromApprovalListing) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Cost (Plant Currency)`}>
+                                                    <AgGridColumn minWidth={120} field="OldNetLandedCostLocalConversion" editable='false' headerName="Existing" colId='OldNetLandedCostLocalConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewNetLandedCostLocalConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                </AgGridColumn>
+                                                }
+                                                {(!isImpactedMaster && String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate (Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
+                                                {(!isImpactedMaster && String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate (Currency)`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>}
+
                                                 {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
-                                                {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}>
-                                                    <AgGridColumn width={120} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
-                                                </AgGridColumn>
-                                                }
+
                                                 {props.children}
-                                                <AgGridColumn width={columnWidths.OldEffectiveDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.EffectiveDate' : "OldEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={isIndexedRM ? props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old Effective Date" : "Effective Date"} ></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.NewEffectiveDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.EffectiveDate' : "NewEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New Effective Date"} ></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.OldEffectiveDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.EffectiveDate' : "OldEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={isIndexedRM ? props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old Effective Date" : "Effective Date"} ></AgGridColumn>
+                                                {isIndexedRM && <AgGridColumn minWidth={columnWidths.NewEffectiveDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.EffectiveDate' : "NewEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New Effective Date"} ></AgGridColumn>}
                                                 {(!isIndexedRM && !isImpactedMaster && !isApprovalSummary && !isRunSimulationClicked) && <AgGridColumn headerName='Action' pinned='right' cellRenderer='actionCellRenderer'></AgGridColumn>}
                                                 <AgGridColumn hide={showForAsAndWhen} width={120} pinned='right' field="NewRMNetLandedCostConversion" editable='false' headerName="Action" cellRenderer={'saveButtonRenderer'}></AgGridColumn>
                                                 <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
-                                            </AgGridReact>))}
+                                            </AgGridReact >))
+                                        }
 
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                    </div>
-                                </div>
+                                    </div >
+                                </div >
 
-                            </Col>
-                        </Row>
+                            </Col >
+                        </Row >
 
                         {
                             !isImpactedMaster && !isApprovalSummary &&
@@ -1606,7 +1693,7 @@ function RMIndexationSimulation(props) {
                                 </div>
                             </Row>
                         }
-                    </Fragment>
+                    </Fragment >
 
                 }
                 {
@@ -1646,7 +1733,8 @@ function RMIndexationSimulation(props) {
 
                     />
                 }
-                {isApprovalDrawer &&
+                {
+                    isApprovalDrawer &&
                     <SimulationApproveReject
                         isOpen={isApprovalDrawer}
                         vendorId={''}
@@ -1655,7 +1743,7 @@ function RMIndexationSimulation(props) {
                         anchor={'right'}
                         approvalData={[]}
                         type={'Sender'}
-                        simulationDetail={{ TokenNo: tokenNumber, Status: '', SimulationId: simulationId, SimulationAppliedOn: simulationTechnologyId, EffectiveDate: '', IsExchangeRateSimulation: false }}
+                        simulationDetail={{ TokenNo: tokenNumber, Status: '', SimulationId: simulationId, SimulationAppliedOn: simulationTechnologyId, EffectiveDate: !isIndexedRM ? effectiveDate : '', IsExchangeRateSimulation: false }}
                         selectedRowData={indexedRMForSimulation}
                         costingArr={indexedRMForSimulation}
                         master={selectedMasterForSimulation?.value ? selectedMasterForSimulation?.value : master}
@@ -1667,7 +1755,7 @@ function RMIndexationSimulation(props) {
                         technologyId={simulationTechnologyId}
                         showApprovalTypeDropdown={true}
                         approvalTypeIdValue={simulationHeadId}//CONFIRM FROM ANIKET
-                        IsExchangeRateSimulation={false}
+                        IsExchangeRateSimulation={selectedMasterForSimulation?.value === EXCHNAGERATE ? true : false}
                         isRMIndexationSimulation={true}
                     // isSaveDone={isSaveDone}
                     />
@@ -1691,8 +1779,8 @@ function RMIndexationSimulation(props) {
                         disabled={isImpactedMaster || isRunSimulationClicked || isApprovalSummary}
                     />
                 }
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 

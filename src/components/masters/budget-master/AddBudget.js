@@ -6,7 +6,7 @@ import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../acti
 import { getCurrencySelectList, getExchangeRateSource, getPlantSelectListByType, getVendorNameByVendorSelectList, plantSelectList } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
-import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from '../../../helper/auth'
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, userDetails } from '../../../helper/auth'
 import { BOUGHTOUTPARTSPACING, BUDGET_ID, CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -27,8 +27,7 @@ import { checkFinalUser, getExchangeRateByCurrency } from '../../costing/actions
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting'
 import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
 import MasterSendForApproval from '../MasterSendForApproval'
-import { CheckApprovalApplicableMaster, userTechnologyDetailByMasterId } from '../../../helper'
-import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
+import { CheckApprovalApplicableMaster, getExchangeRateParams, userTechnologyDetailByMasterId } from '../../../helper'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import WarningMessage from '../../common/WarningMessage'
 import { getSelectListPartType } from '../actions/Part'
@@ -41,6 +40,7 @@ import { getPlantUnitAPI } from '../actions/Plant'
 import DayTime from '../../common/DayTimeWrapper'
 import ReactSwitch from 'react-switch'
 import { useRef } from "react";
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
 
 const gridOptions = {};
 function AddBudget(props) {
@@ -155,7 +155,7 @@ function AddBudget(props) {
             approvalTypeId: costingTypeId,
             plantId: plantId,
         }
-        if (initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             dispatch(checkFinalUser(obj, res => {
                 if (res.data?.Result) {
                     setIsFinalApprover(res.data?.Data?.IsFinalApprover)
@@ -692,22 +692,21 @@ function AddBudget(props) {
         const finalYear = year?.label && year?.label?.slice(0, 4);
         let date = (`${finalYear}-04-01`);
         const plantCurrency = getValues('plantCurrency')
-        const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
-        const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
+
         const hasCurrencyAndDate = plantCurrency && date;
         const fromCurrency = getValues("plantCurrency")
         if (hasCurrencyAndDate && finalYear) {
-            if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
+            if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
                 return;
             }
-            const callAPI = (from, to) => {
+            const callAPI = (from, to, costingType, vendorValue, clientValue) => {
                 return new Promise((resolve) => {
                     dispatch(getExchangeRateByCurrency(
                         from,
                         costingType,
                         date,
                         vendorValue,
-                        client.value,
+                        clientValue,
                         true,
                         to,
                         getValues("ExchangeSource")?.label ?? "",
@@ -730,8 +729,10 @@ function AddBudget(props) {
 
 
             if (costConverSionInLocalCurrency && Object.keys(currency).length !== 0) {
-                callAPI(currency?.label, plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
-                    callAPI(currency?.label, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
+                callAPI(currency?.label, plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
+                    callAPI(plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
                         setPlantCurrency(rate1);
                         setSettlementCurrency(rate2);
                         setPlantExchangeRateId(exchangeRateId1);
@@ -742,7 +743,8 @@ function AddBudget(props) {
                     });
                 });
             } else if (!costConverSionInLocalCurrency && fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
-                callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning, showWarning }) => {
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
+                callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning, showWarning }) => {
                     setPlantCurrency(rate1);
                     setPlantExchangeRateId(exchangeRateId1);
                     setShowPlantWarning(showPlantWarning)
@@ -868,7 +870,34 @@ function AddBudget(props) {
             }
 
         } else {
-            if (isFinalApprover) {
+
+            let formData = {
+                LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label,
+                NetPoPrice: values?.currentPrice,
+                //  BudgetedPoPrice: totalSum,
+                BudgetedPoPrice: totalSum,
+                BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+                BudgetedPoPriceInCurrency: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+                CostingHeadId: costingTypeId,
+                PartId: part.value,
+                PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
+                PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp,
+                ConditionsData: conditionTableData,
+                ExchangeRateSourceName: ExchangeSource?.label,
+                CurrencyId: costConverSionInLocalCurrency ? currency?.value : null,
+                Currency: costConverSionInLocalCurrency ? currency?.label : getValues("plantCurrency"),
+                LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
+                LocalCurrency: costConverSionInLocalCurrency ? getValues("plantCurrency") : null,
+                LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
+                ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
+                ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
+                NetPoPriceConversion: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
+                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
+
+            }
+
+            if (isFinalApprover || (userDetails().Role === 'SuperAdmin') || (!initialConfiguration?.IsMasterApprovalAppliedConfigure)) {
                 dispatch(createBudget(formData, (res) => {
                     setSetDisable(false)
                     if (res?.data?.Result) {
@@ -1629,7 +1658,7 @@ function AddBudget(props) {
                                                         <div className={"cancel-icon"}></div>{" "}
                                                         {"Cancel"}
                                                     </button>
-                                                    {!userDetails().Role === 'SuperAdmin' && !isFinalApprover && initialConfiguration.IsMasterApprovalAppliedConfigure ?
+                                                    {!userDetails().Role === 'SuperAdmin' && !isFinalApprover && initialConfiguration?.IsMasterApprovalAppliedConfigure ?
                                                         <button type="submit"
                                                             id='AddBudget_SendForApproval'
                                                             className="user-btn approval-btn save-btn mr5"

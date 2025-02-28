@@ -15,7 +15,7 @@ import { AttachmentValidationInfo, MESSAGES } from '../../config/message'
 import classnames from 'classnames';
 import redcrossImg from '../../assests/images/red-cross.png'
 
-import { alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required, RFQ_KEYS } from '../../helper'
+import { acceptAllExceptSingleSpecialCharacter, alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required, RFQ_KEYS, validateFileName } from '../../helper'
 import Button from '../layout/Button'
 import HeaderTitle from '../common/HeaderTitle'
 import { HAVELLSREMARKMAXLENGTH, REMARKMAXLENGTH } from '../../config/masterData'
@@ -43,7 +43,7 @@ function ViewDrawer(props) {
         { sop: 'SOP5' },
     ]
 
-    const { isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, n100Date, sopDate, setSopDate, setN100Date, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer } = props
+    const { isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, n100Date, sopDate, setSopDate, setN100Date, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer, partTypeInPartList } = props
     const type = String(props?.type)
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -213,13 +213,13 @@ function ViewDrawer(props) {
                     // }
                     // if (nfrId && nfrId.value !== null) {
                     //     if (index === 0) {
-                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //         newObjTemp.YearName = Data.FirstYear
                     //     } else if (index === 1) {
-                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //         newObjTemp.YearName = Data.SecondYear
                     //     } else if (index === 2) {
-                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
                     //         newObjTemp.YearName = Data.ThirdYear
                     //     } else if (index === 3) {
                     //         newObjTemp.Quantity = 0;
@@ -492,6 +492,20 @@ function ViewDrawer(props) {
         setValue('Specification', '')
         setValue('Value', '')
         setValue("rmcode", "")
+        if (partTypeInPartList === "Assembly") {
+            if (renderListingRM('childPartName')?.length === 0) {
+                setDisabled(true)
+            } else {
+                setDisabled(false)
+            }
+        } else if (partTypeInPartList === "Component") {
+            if (tableData.length > 0) {
+                setDisabled(true)
+            } else {
+                setDisabled(false)
+            }
+        }
+        setDisabled(false)
         // if (!isViewFlag && !isEditFlag) {
 
         //     setValue('remark', '')
@@ -834,12 +848,16 @@ function ViewDrawer(props) {
         }
 
         if (status === 'done') {
-            let data = new FormData();
-            data.append('file', file);
+            let data = new FormData()
+            data.append('file', file)
+            if (!validateFileName(file.name)) {
+                dropzone.current.files.pop()
+                //setDisableFalseFunction()
+                return false;
+            }
             setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
             setAttachmentLoader(true);
-            setIsDisable(true);
-
+            setIsDisable(true)
             dispatch(fileUploadQuotation(data, (res) => {
 
                 if ('response' in res) {
@@ -1174,8 +1192,10 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmname')}
                                                         mandatory={RFQ_KEYS?.RM_MANDATORY ? true : false}
                                                         handleChange={(newValue) => handleRMName(newValue)}
-                                                        disabled={disabled || isViewFlag || (type === Component && tableData.length > 0 && !isEdit && props?.dataProp?.isAddFlag)}
+                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : tableData.length > 0))}
+
                                                     //disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                    // disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0 && !isEdit) || (renderListingRM('childPartName')?.length !== 0 && isEdit) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
 
                                                     />
                                                 </Col>
@@ -1194,7 +1214,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmgrade')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
-                                                        disabled={disabled || isViewFlag || (partType === 'Component' && tableData.length > 0 && !isEdit)}
+                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : tableData.length > 0))}
                                                     />
                                                 </Col>
 
@@ -1212,7 +1232,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmspecification')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                        disabled={disabled || isViewFlag || (partType === 'Component' && tableData.length > 0 && !isEdit)}
+                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : tableData.length > 0))}
                                                     />
                                                 </Col>
 
@@ -1230,7 +1250,7 @@ function ViewDrawer(props) {
                                                         handleChange={handleCode}
                                                         isClearable={true}
                                                         errors={errors.Code}
-                                                        disabled={disabled || isViewFlag || (partType === 'Component' && tableData.length > 0 && !isEdit)}
+                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : tableData.length > 0))}
                                                     />
                                                 </Col>
                                             </Row>
@@ -1278,7 +1298,7 @@ function ViewDrawer(props) {
                                                     mandatory={RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false}
                                                     rules={{
                                                         required: RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false,
-                                                        validate: { alphaNumeric, checkWhiteSpaces },
+                                                        validate: { checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter },
                                                     }}
                                                     handleChange={(e) => handleSpecification(e.target.value)}
                                                     defaultValue={''}
@@ -1300,7 +1320,7 @@ function ViewDrawer(props) {
                                                     mandatory={RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false}
                                                     rules={{
                                                         required: RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false,
-                                                        validate: { alphaNumeric, checkWhiteSpaces },
+                                                        validate: { checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter },
                                                     }}
                                                     handleChange={(e) => handleValue(e.target.value)}
                                                     defaultValue={''}
@@ -1353,7 +1373,7 @@ function ViewDrawer(props) {
                                     </Col>
                                 </Row>
                                 <Col md="6" className="height152-label">
-                                    <label>Upload Attachment (upload up to 4 files, size of each file upto 20MB)<span className="asterisk-required">{RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY ? "*" : ""}</span> </label>
+                                    <label>Upload Attachment (upload up to 4 files, size of each file upto 20MB)<span className="asterisk-required">{RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY ? "*" : ""}</span><AttachmentValidationInfo />  </label>
                                     <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit has been reached.
                                     </div>

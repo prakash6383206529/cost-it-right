@@ -1,26 +1,23 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-
-import { Row, Col, Tooltip, FormGroup, Label, Input, Form } from 'reactstrap';
-import { DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { Row, Col, } from 'reactstrap';
+import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { useForm, Controller } from "react-hook-form";
-import HeaderTitle from '../../common/HeaderTitle';
-import DatePicker from 'react-datepicker';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import ProcessDrawer from '../ProcessDrawer';
 import Button from '../../layout/Button';
 import { fetchSpecificationDataAPI } from '../../../actions/Common';
 import { getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild } from '../../masters/actions/Material';
 import Toaster from "../../common/Toaster";
-import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
 import TooltipCustom from "../../common/Tooltip";
+import { canEnableFields } from "../../../helper";
+import { RECEIVED } from "../../../config/constants";
 
 
 
 const AddRfqRmDetails = (props) => {
-    const { updateRawMaterialList, resetRmFields, updateButtonPartNoTable, rmSpecificRowData, dataProps, isEditFlag, isViewFlag, setViewQuotationPart, disabledPartUid, technology, setDisabled, isDisabled, resetDrawer } = props
-
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({ mode: 'onChange', reValidateMode: 'onChange', defaultValues: { radioOption: false, } });
+    
+    const { updateRawMaterialList, resetRmFields, updateButtonPartNoTable, rmSpecificRowData, dataProps, setViewQuotationPart, disabledPartUid, technology, plant, setDisabled, isDisabled, resetDrawer } = props
+    const { register, Submit, setValue, getValues, formState: { errors }, control } = useForm({ mode: 'onChange', reValidateMode: 'onChange', defaultValues: { radioOption: false, } });
     const [rmName, setRmName] = useState([]);
     const [rmGrade, setRmGrade] = useState([]);
     const [rmSpec, setRmSpec] = useState([]);
@@ -29,31 +26,48 @@ const AddRfqRmDetails = (props) => {
     const [rmAttchment, setRmAttchment] = useState([])
     const dispatch = useDispatch()
     const [rmRemark, setRmRemark] = useState("");
-    const showStatus = dataProps?.rowData?.Status || ""
+    // const showStatus = dataProps?.rowData?.Status || ""
+    const rawMaterialNameSelectList = useSelector((state) => state?.material?.rawMaterialNameSelectList)
+    const gradeSelectList = useSelector((state) => state?.material?.gradeSelectList)
+    const rmSpecificationSelectList = useSelector((state) => state?.comman?.rmSpecification)
+    const rmSpecificationList = useSelector((state) => state?.material?.rmSpecificationList)
+    const { isViewFlag, isEditFlag ,rowData, isAddFlag } = props?.dataProps
 
-    // const [viewQuotationPart, setViewQuotationPart] = useState(false)
-    const rawMaterialNameSelectList = useSelector((state) => state.material.rawMaterialNameSelectList)
-    const gradeSelectList = useSelector((state) => state.material.gradeSelectList)
-    const rmSpecificationSelectList = useSelector((state) => state.comman.rmSpecification)
-    const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
-
-    const showAddButton = !disabledPartUid || dataProps?.isAddFlag || (dataProps?.isEditFlag && showStatus === PREDRAFT) || (dataProps?.isViewFlag || dataProps?.isEditFlag ? false : true)
-
-
-
+   
+// In AddRfqRmDetails.jsx
+const areFieldsEnabled = canEnableFields({
+    plant,
+    technology,
+    type: 'RM',
+    updateButtonPartNoTable,
+    isEditMode: isEditFlag,
+    isViewMode: isViewFlag,
+    isEditFlagReceived: isEditFlag && rowData?.Status === RECEIVED,
+    showSendButton: rowData?.Status,
+    isAddFlag: isAddFlag
+});
+    
+    // For RM
+    useEffect(() => {
+        if (!areFieldsEnabled) {
+            onResetRmFields();
+        }
+    }, [Object.keys(plant || {}).length, Object.keys(technology || {}).length]);
     useEffect(() => {
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
     }, [])
     useEffect(() => {
         setRmData()
-   }, [rmName, rmGrade, rmSpec, rmCode, rmAttchment, rmRemark,rmSpecificRowData])
+    }, [rmName, rmGrade, rmSpec, rmCode, rmAttchment, rmRemark, rmSpecificRowData])
 
     useEffect(() => {
         if (resetRmFields) {
             onResetRmFields();
         }
     }, [resetRmFields]);
+
+
 
     useEffect(() => {
         if (updateButtonPartNoTable) {
@@ -83,11 +97,11 @@ const AddRfqRmDetails = (props) => {
         }
     }, [updateButtonPartNoTable, rmSpecificRowData,])
     const setRmData = () => {
-        if (rmName.length !== 0 && rmGrade.length !== 0 && rmSpec.length !== 0) {
+        if (rmName?.length !== 0 && rmGrade?.length !== 0 && rmSpec?.length !== 0) {
             let obj = {
-                RawMaterialChildId: rmName.value,
-                RawMaterialGradeId: rmGrade.value,
-                RawMaterialSpecificationId: rmSpec.value,
+                RawMaterialChildId: rmName?.value,
+                RawMaterialGradeId: rmGrade?.value,
+                RawMaterialSpecificationId: rmSpec?.value,
                 RawMaterialSpecification: rmSpec?.label,
                 RawMaterialGrade: rmGrade?.label,
                 RawMaterialName: rmName?.label,
@@ -254,11 +268,24 @@ const AddRfqRmDetails = (props) => {
                 setValue('Specifications', { label: Data.Specification, value: Data.SpecificationId })
             }))
         } else {
+            // Clear all related fields
+            setRmCode([])  // Clear rmCode state
+            setValue('Code', '')  // Clear form value
             setValue('RmName', '')
             setValue('Grade', '')
             setValue('Specifications', '')
             setDisabled(false)
 
+            // Clear other states
+            setRmName([])
+            setRmGrade([])
+            setRmSpec([])
+
+
+            // Clear any existing errors
+            if (errors.RawMaterialCode) {
+                delete errors.RawMaterialCode
+            }
         }
     }
 
@@ -280,9 +307,12 @@ const AddRfqRmDetails = (props) => {
                         options={renderListing("material")}
                         mandatory={true}
                         handleChange={handleRM}
+                        // disabled={isButtonDisabled}
+                        disabled={!areFieldsEnabled}
+
                         // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                         className="fullinput-icon"
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT) || isDisabled}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        // disabled={isViewFlag || isEditFlag || isViewFlag || Object.keys(technology).length === 0 || (isEditFlag && showStatus !== PREDRAFT) || isDisabled}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                         errors={errors.RmName}
                         isClearable={true}
                     />
@@ -299,8 +329,7 @@ const AddRfqRmDetails = (props) => {
                         required={true}
                         mandatory={true}
                         handleChange={handleGrade}
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT) || isDisabled}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
-                        // disabled={isEditFlag || isViewFlag || state.isDisabled}
+                        disabled={!areFieldsEnabled}
                         errors={errors.Grade}
                     />
                 </Col>
@@ -315,9 +344,7 @@ const AddRfqRmDetails = (props) => {
                         options={renderListing("specification")}
                         mandatory={true}
                         handleChange={handleSpecification}
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT) || isDisabled}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
-                        // defaultValue={state.rmSpec.length !== 0 ? state.rmSpec : ""}
-                        // disabled={isEditFlag || isViewFlag || state.isDisabled}
+                        disabled={!areFieldsEnabled}
                         errors={errors.Specifications}
                     />
                 </Col>
@@ -332,28 +359,40 @@ const AddRfqRmDetails = (props) => {
                         register={register}
                         rules={{ required: true }}
                         mandatory={true}
-                        // defaultValue={state.rmCode.length !== 0 ? state.rmCode : ""}
                         handleChange={handleCode}
                         isClearable={true}
-                        disabled={updateButtonPartNoTable || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}
+                        disabled={!areFieldsEnabled}
                         errors={errors.Code}
                     />
-                    {/* <Button id="addRMSpecificatione" className={"ml-2 mb-2 "}
 
-
-                        // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}     
-
-                        variant={'plus-icon-square'}
-                        title={'Add'} onClick={DrawerToggle} >
-                    </Button> */}
                     <TooltipCustom id="addRMSpecification" disabledIcon={true} tooltipText="Click on the + button to start inputting remark and mandatory attachments." />
 
-                    <Button id="addRMSpecification" className={"ml-2 mb-2"}
-                        // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
-                        variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
-
-                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}></Button>
-
+                    {updateButtonPartNoTable ? (
+                        <Button
+                            id="addRMSpecification"
+                            className={"ml-2 mb-2"}
+                            variant={'Edit'}
+                            title={'Edit'}
+                            onClick={DrawerToggle}
+                            disabled={false}  // Always enabled in edit mode
+                        />
+                    ) : (
+                        <Button
+                            id="addRMSpecification"
+                            className={"ml-2 mb-2"}
+                            variant={'plus-icon-square'}
+                            title={'Add'}
+                            onClick={DrawerToggle}
+                            disabled={!(
+                                Object.keys(technology).length > 0 &&
+                                Object.keys(plant).length > 0 &&
+                                rmName?.value &&
+                                rmGrade?.value &&
+                                rmSpec?.value &&
+                                rmCode?.value
+                            )}  // Enable only when all fields are filled
+                        />
+                    )}
                 </Col>
             </Row>
 

@@ -1028,6 +1028,7 @@ export const API = {
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
   getExchangeRateDataList: `${BASE_URL}/masters-exchange-rate/get-all-exchange-rate`,
+  getExchangeRateDataListForSimulation: `${BASE_URL}/masters-exchange-rate/get-old-and-new-all-exchange-rate`,
   getExchangeRateData: `${BASE_URL}/masters-exchange-rate/get-exchange-rate-by-id`,
   deleteExchangeRate: `${BASE_URL}/masters-exchange-rate/delete-exchange-rate`,
   updateExchangeRate: `${BASE_URL}/masters-exchange-rate/update-exchange-rate`,
@@ -1770,6 +1771,7 @@ export const GET_TCO_DATA = 'GET_TCO_DATA'
 export const SET_RFQ_COSTING_TYPE = 'SET_RFQ_COSTING_TYPE'
 export const SET_EXCHANGE_RATE_SOURCE = 'SET_EXCHANGE_RATE_SOURCE'
 export const SET_CURRENCY_SOURCE = 'SET_CURRENCY_SOURCE'
+export const SET_EXCHANGE_RATE_DATA = 'SET_EXCHANGE_RATE_DATA'
 
 //WEIGHT CALCULATION COSTING
 
@@ -2074,6 +2076,8 @@ export const SET_EFFECTIVE_DATE = 'SET_EFFECTIVE_DATE';
 export const GET_SIMULATION_COSTING_STATUS = 'GET_SIMULATION_COSTING_STATUS'
 export const SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV = 'SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV'
 export const GET_IMPACTED_DATA_LIST = 'GET_IMPACTED_DATA_LIST'
+export const SET_RAW_MATERIALS_EFFECTIVE_DATE = 'SET_RAW_MATERIALS_EFFECTIVE_DATE';
+
 
 // ASSEMBLY TECHNOLOGY
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
@@ -2159,6 +2163,8 @@ export const WAITING_FOR_APPROVAL = 'AwaitingApproval'
 export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
 export const RETURNED = 'Returned'
+export const NON_AWARDED = 'Non Awarded'
+export const AWARDED = 'Awarded'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
@@ -3136,6 +3142,7 @@ export const statusOptionsSimulation = _.sortBy([
   { label: "Approved", value: "3" },
 ], ({ label }) => label.toLowerCase());
 
+export const ApprovedCostingStatus = ['8', '3', '9', '5', '16']
 
 export const statusOptions = _.sortBy([
   { label: "Approved By Assembly", value: "8" },
@@ -3267,8 +3274,25 @@ export const OPERATIONTYPE = Number(reactLocalStorage.getObject('masterType')[OP
 export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGETING])
 
 //CONSTANTS FOR ONBOARDING
-export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
-export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+// export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
+// export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+export const ONBOARDINGNAME = (() => {
+  const storedName = reactLocalStorage.getObject('onboardingName')
+  return (storedName &&
+    storedName !== 'null' &&
+    storedName !== 'undefined' &&
+    storedName !== null &&
+    storedName !== undefined) ? storedName : ''
+})()
+// export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+export const ONBOARDINGID = (() => {
+  const storedId = reactLocalStorage.getObject('onboardingId')
+  return (storedId &&
+    storedId !== 'null' &&
+    storedId !== 'undefined' &&
+    storedId !== null &&
+    storedId !== undefined) ? storedId : ''
+})()
 //CONSTANTS FOR MANAGE LEVELS RADIO BUTTON
 
 
@@ -3321,7 +3345,7 @@ export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = false
-export const customHavellsChanges = true
+export const customHavellsChanges = false
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = true
@@ -3335,7 +3359,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.42";
+export const VERSION = "V3.1.82";
 
 
 

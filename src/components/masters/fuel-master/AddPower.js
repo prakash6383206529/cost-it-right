@@ -14,12 +14,12 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
-import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { calculatePercentageValue, onFocus, showDataOnHover } from '../../../helper';
+import { calculatePercentageValue, getExchangeRateParams, onFocus, showDataOnHover } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
@@ -39,7 +39,6 @@ import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
 import WarningMessage from '../../common/WarningMessage';
-import { data1 } from '../../dashboard/ChartsDashboard';
 
 const selector = formValueSelector('AddPower');
 
@@ -176,24 +175,23 @@ class AddPower extends Component {
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return;
       }
 
-      const callAPI = (from, to) => {
+      const callAPI = (from, to, costingType, vendorValue, clientValue) => {
+        
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,
             costingType,
             DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
             vendorValue,
-            client.value,
+            clientValue,
             false,
             to,
             ExchangeSource?.label ?? null,
@@ -211,9 +209,11 @@ class AddPower extends Component {
 
       if (isImport) {
         // First API call
-        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
-          // Second API call
-          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+        
+        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+          callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
             this.setState({
               plantCurrency: rate1,
               settlementCurrency: rate2,
@@ -229,7 +229,8 @@ class AddPower extends Component {
         });
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
-        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+        callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
             this.handleCalculation(fieldsObj?.NetPowerCostPerUnitLocalConversion)
           });
@@ -279,7 +280,7 @@ class AddPower extends Component {
         ...power, minMonthlyCharge: power.minMonthlyCharge
       }
     })
-    this.props.change('MinMonthlyCharge', minMonthlyCharge === 0 ? '' : checkForDecimalAndNull(minMonthlyCharge, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('MinMonthlyCharge', minMonthlyCharge === 0 ? '' : checkForDecimalAndNull(minMonthlyCharge, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -304,7 +305,7 @@ class AddPower extends Component {
       this.setState({
         power: { ...power, AvgUnitConsumptionPerMonth: power.AvgUnitConsumptionPerMonth }
       })
-      this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration.NoOfDecimalForInputOutput))
+      this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration?.NoOfDecimalForInputOutput))
     }
 
     //Formula for SEB COST PER UNIT calculation
@@ -316,7 +317,7 @@ class AddPower extends Component {
         this.setState({
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
-        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
       } else {
         const SEBCostPerUnit = checkForNull(((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth);
 
@@ -325,7 +326,7 @@ class AddPower extends Component {
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
         this.setState({ costPerUnitTooltipText: 'Cost per Unit = (Min Monthly Charge + (Avg. Unit Consumption per Month - Min Demand kW per Month) * Max Demand Charges per kW) / Avg. Unit Consumption per Month' })
-        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
       }
 
     }
@@ -339,7 +340,7 @@ class AddPower extends Component {
     this.setState({
       power: { ...power, TotalUnitCharges: power.TotalUnitCharges }
     })
-    this.props.change('TotalUnitCharges', checkForDecimalAndNull(TotalUnitCharges, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('TotalUnitCharges', checkForDecimalAndNull(TotalUnitCharges, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -362,7 +363,7 @@ class AddPower extends Component {
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
       })
-      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
     } else {
       const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
       const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
@@ -374,7 +375,7 @@ class AddPower extends Component {
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
       })
-      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
     }
 
   }
@@ -1684,7 +1685,7 @@ class AddPower extends Component {
     return <>
       {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
   };
   powerRateTitle = () => {
@@ -2629,10 +2630,10 @@ class AddPower extends Component {
                                       return (
                                         <tr key={index}>
                                           <td>{item.SourcePowerType}</td>
-                                          <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                          <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
                                           <td>{item.PowerContributionPercentage}</td>
                                           {/* Ask which value to use for trim */}
-                                          <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForPrice)}</td>
+                                          <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration?.NoOfDecimalForPrice)}</td>
                                           <td>
                                             <button title='Edit' className="Edit mr-2" type={'button'} disabled={isViewMode} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
                                             <button title='Delete' className="Delete" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
@@ -2653,19 +2654,19 @@ class AddPower extends Component {
                                       <>
                                         <th>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
                                         <td>
-                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
+                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
                                         </td>
                                       </>
                                     )}
                                     <th>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
                                     <td>
-                                      <label>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label>
+                                      <label>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
                                     </td>
                                     {!this.state.hidePlantCurrency && (
                                       <>
                                         <th>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</th>
                                         <td>
-                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration.NoOfDecimalForPrice)}</label>
+                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
                                         </td>
                                       </>
                                     )}

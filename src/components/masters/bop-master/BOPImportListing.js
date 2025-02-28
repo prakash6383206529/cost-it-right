@@ -125,7 +125,7 @@ const BOPImportListing = (props) => {
   const { initialConfiguration } = useSelector((state) => state.auth);
   const tourStartData = useSelector(state => state.comman.tourStartData);
   const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
-  const { selectedRowForPagination, tokenForSimulation } = useSelector(
+  const { selectedRowForPagination, tokenForSimulation, isMasterAssociatedWithCosting } = useSelector(
     (state) => state.simulation
   );
 
@@ -239,11 +239,14 @@ const BOPImportListing = (props) => {
       ...floatingFilterData,
       bop_for: bopFor,
       category_id: CategoryId,
-      vendor_id: vendorId,
+      vendor_id: props?.isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : vendorId,
       plant_id: plantId,
-      ListFor: props.ListFor,
+      ListFor: props?.isSimulation ? props?.ListFor : '',
       StatusId: statusString,
-      IsBOPAssociated: props?.isBOPAssociated,
+      IsBOPAssociated: !props?.isSimulation ? props?.isBOPAssociated : (isMasterAssociatedWithCosting ? true : false),
+      Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+      LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+      EffectiveDate: props?.isSimulation && props?.minDate ? props?.minDate : '',
     };
     if (isPagination === true) {
       setState((prevState) => ({ ...prevState, isLoader: true }));
@@ -258,9 +261,9 @@ const BOPImportListing = (props) => {
         filteredRMData && filteredRMData?.CustomerId
           ? filteredRMData?.CustomerId
           : "";
-      dataObj.Currency = filteredRMData?.Currency;
+      // dataObj.Currency = filteredRMData?.Currency;
     }
-    dataObj.EntryType = Number(ENTRY_TYPE_IMPORT);
+    dataObj.EntryType = Number(ENTRY_TYPE_IMPORT)
     dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
     dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
     if (!props?.isMasterSummaryDrawer) {
@@ -563,6 +566,7 @@ const BOPImportListing = (props) => {
       ? props.valueFormatted
       : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart === null || rowData?.IsRFQBoughtOutPart === undefined ? true : rowData?.IsRFQBoughtOutPart;
     let isEditable = false;
     let isDeleteButton = false;
     if (isRfq && isMasterSummaryDrawer) {
@@ -582,7 +586,7 @@ const BOPImportListing = (props) => {
         isDeleteButton = true
       }
     }
-    if (isRfq && isMasterSummaryDrawer) {
+    if (isRfq && isMasterSummaryDrawer && !IsRFQBoughtOutPart) {
       return (
         <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
@@ -604,13 +608,13 @@ const BOPImportListing = (props) => {
                 title="View" className="View Tour_List_View" variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
 
             )}
-            {isEditable && (
+            {isEditable && !IsRFQBoughtOutPart && (
 
 
               <Button id={`bopImportingListing_Edit${props.rowIndex}`} title={"Edit"} className={"Edit Tour_List_Edit"} variant={"Edit"} type={"button"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
               />
             )}
-            {isDeleteButton && (
+            {isDeleteButton && !IsRFQBoughtOutPart && (
 
               <Button
                 id={`bopImportingListing_Delete${props.rowIndex}`}
@@ -1072,7 +1076,7 @@ const BOPImportListing = (props) => {
                         steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
                       }} />)}
                   </Col>
-                  <Col md="9" lg="9" className=" mb-3">
+                  <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
                     <div className="d-flex justify-content-end bd-highlight w100">
 
                       {!props.isMasterSummaryDrawer && (
@@ -1100,7 +1104,7 @@ const BOPImportListing = (props) => {
                           )}
                           {permissions?.Download && (
                             <>
-                              <Button className={"user-btn mr5 Tour_List_Download"} id={"bopImportingListing_excel_download"}  disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                              <Button className={"user-btn mr5 Tour_List_Download"} id={"bopImportingListing_excel_download"} disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
 
                               <ExcelFile filename={`${showBopLabel()} Import`} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
                                 {onBtExport()}
@@ -1166,6 +1170,7 @@ const BOPImportListing = (props) => {
                         {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                         <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"} floatingFilterComponentParams={floatingFilterStatus}
                           floatingFilterComponent="statusFilter"></AgGridColumn>
+                        {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                         <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} No.`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Name`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
@@ -1211,7 +1216,7 @@ const BOPImportListing = (props) => {
                   {state.showPopup && (
                     <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                   )}
-                  {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && !props.isMasterSummaryDrawer && (<WarningMessage dClass={"w-100 justify-content-end"} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />)}
+                  {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration?.IsMasterApprovalAppliedConfigure && !props.isMasterSummaryDrawer && (<WarningMessage dClass={"w-100 justify-content-end"} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />)}
                 </Col>
               </Row>
               {props.isSimulation && props.isFromVerifyPage && (

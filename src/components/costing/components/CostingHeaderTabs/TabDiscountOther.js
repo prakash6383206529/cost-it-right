@@ -10,7 +10,7 @@ import {
 } from '../../actions/Costing';
 import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, getTaxCodeSelectList, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel, getConfigurationKey, IsFetchExchangeRateVendorWise } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel, getConfigurationKey, IsFetchExchangeRateVendorWiseForParts } from '../../../../helper';
 //MINDA
 // import {  removeBOPFromList} from '../../../../helper';
 import { debounce } from 'lodash';
@@ -42,6 +42,7 @@ import PaymentTerms from '../CostingHeadCosts/OverheadProfit/PaymentTerms';
 import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 import { setSAPData } from '../../actions/Approval';
 import { useLabels } from '../../../../helper/core';
+import YOYCost from '../CostingHeadCosts/AdditionalOtherCost/YOYCost';
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -170,7 +171,7 @@ function TabDiscountOther(props) {
         setValue('NetPOPriceINR', discountObj !== undefined && checkForDecimalAndNull((checkForNull(netPOPrice) - checkForNull(netPOPrice) * calculatePercentage(discountObj?.HundiOrDiscountPercentage)), initialConfiguration?.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', discountObj !== undefined && discountObj?.HundiOrDiscountPercentage !== null ? discountObj?.HundiOrDiscountPercentage : '')
         // setValue('HundiOrDiscountValue', discountObj !== undefined && discountObj?.DiscountCostType === 'Percentage' ? discountObj !== undefined && (netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)) : otherDiscountData.otherCostTotal)
-        setValue('AnyOtherCost', discountObj !== undefined && checkForDecimalAndNull(discountObj?.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('AnyOtherCost', discountObj !== undefined && checkForDecimalAndNull(discountObj?.AnyOtherCost, initialConfiguration?.NoOfDecimalForPrice))
         let topHeaderData = {
           DiscountsAndOtherCost: checkForNull(otherDiscountData.totalCost),
           HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
@@ -292,7 +293,7 @@ function TabDiscountOther(props) {
   }
   const otherCostUI = useMemo(() => {
     let otherCost = otherCostData.otherCostTotal
-    setValue('OtherCost', checkForDecimalAndNull(otherCost, initialConfiguration.NoOfDecimalForPrice))
+    setValue('OtherCost', checkForDecimalAndNull(otherCost, initialConfiguration?.NoOfDecimalForPrice))
     return <div className='d-flex align-items-center'>
       <TextFieldHookForm
         label="Other Cost"
@@ -352,7 +353,7 @@ function TabDiscountOther(props) {
 
   const otherDiscountUI = useMemo(() => {
     let totalDiscount = otherDiscountData.totalCost
-    setValue('HundiOrDiscountValue', checkForDecimalAndNull(totalDiscount, initialConfiguration.NoOfDecimalForPrice))
+    setValue('HundiOrDiscountValue', checkForDecimalAndNull(totalDiscount, initialConfiguration?.NoOfDecimalForPrice))
     return <div className='d-flex align-items-center'>
       <TooltipCustom disabledIcon={true} width="280px" id="totalDiscountCost" tooltipText={"Discount Cost = Sum of Discount cost added in Discount cost drawer"} />
       <TextFieldHookForm
@@ -394,7 +395,7 @@ function TabDiscountOther(props) {
   const costingConditionUI = useMemo(() => {
     const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
 
-    setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+    setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
 
     return <Col md="3">
       <div className='d-flex align-items-center'>
@@ -866,7 +867,7 @@ function TabDiscountOther(props) {
       if (!isNaN(event.target.value)) {
 
         // let topHeaderData = {
-        //   DiscountsAndOtherCost: checkForDecimalAndNull(getValues('HundiOrDiscountValue'), initialConfiguration.NoOfDecimalForPrice),
+        //   DiscountsAndOtherCost: checkForDecimalAndNull(getValues('HundiOrDiscountValue'), initialConfiguration?.NoOfDecimalForPrice),
         //   HundiOrDiscountPercentage: checkForNull(event.target.value),
         //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
         //   DiscountCostType: hundiscountType.value
@@ -1017,10 +1018,10 @@ function TabDiscountOther(props) {
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
-      const vendorValue = IsFetchExchangeRateVendorWise() ? costData?.VendorId : EMPTY_GUID
+      const vendorValue = IsFetchExchangeRateVendorWiseForParts() ? costData?.VendorId : EMPTY_GUID
 
       let costingTypeId = (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? VBCTypeId : costData.CostingTypeId
-      const costingType = IsFetchExchangeRateVendorWise() ? costingTypeId : ZBCTypeId
+      const costingType = IsFetchExchangeRateVendorWiseForParts() ? costingTypeId : ZBCTypeId
       dispatch(getExchangeRateByCurrency(currencySource?.label, costingType, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorValue, costData.CustomerId, false, newValue.label, initialConfiguration?.IsSourceExchangeRateNameVisible ? exchangeRateSource?.label : null, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
@@ -1628,7 +1629,7 @@ function TabDiscountOther(props) {
         ...discountObj,
         AnyOtherCost: otherCost
       })
-      setValue('AnyOtherCost', checkForDecimalAndNull(otherCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue('AnyOtherCost', checkForDecimalAndNull(otherCost, initialConfiguration?.NoOfDecimalForPrice))
       dispatch(isDiscountDataChange(true))
       setOtherCostArray(otherCostArr)
       setOpenCloseOtherCost(false)
@@ -1646,7 +1647,7 @@ function TabDiscountOther(props) {
         ...discountObj,
         HundiOrDiscountValue: discountTotal
       })
-      setValue('HundiOrDiscountValue', checkForDecimalAndNull(discountTotal, initialConfiguration.NoOfDecimalForPrice))
+      setValue('HundiOrDiscountValue', checkForDecimalAndNull(discountTotal, initialConfiguration?.NoOfDecimalForPrice))
       dispatch(isDiscountDataChange(true))
       setOpenCloseOtherDiscount(false)
       setDiscountCostArray(discountTableData)
@@ -1955,7 +1956,7 @@ function TabDiscountOther(props) {
                     <div className='tab-disount-total-cost mt-4'>
                       <span >Total Cost:</span>
                       <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={`Total Cost = Net RM ${showBopLabel()} CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost`} />
-                      <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p>
+                      <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</p>
                       <button type="button" id="total_refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
                       <TooltipCustom disabledIcon={true} id="total_refresh" tooltipText="Refresh to update Discount cost & Other cost" />
                     </div >
@@ -1967,7 +1968,7 @@ function TabDiscountOther(props) {
                 >
                   <Row>
                     {/* {
-                      initialConfiguration.IsShowCRMHead && <Col md="3">
+                      initialConfiguration?.IsShowCRMHead && <Col md="3">
                         <SearchableSelectHookForm
                           name={`crmHeadDiscount`}
                           type="text"
@@ -2220,6 +2221,23 @@ function TabDiscountOther(props) {
                       CostingViewMode={CostingViewMode}
                     />
                     }
+                    {costData?.IsRfqCosting && <Col md="12" className='yoy-cost mb-4'>
+                      <YOYCost
+                        outside={true}
+                        NetPOPrice={netPOPrice}
+                        setValue={setValue}
+                        getValues={getValues}
+                        control={control}
+                        register={register}
+                        errors={errors}
+                        activeTab={props.activeTab}
+                        patId={costData?.PartId}
+                        vendorId={costData?.VendorId}
+                        viewMode={CostingViewMode}
+                        quotationId={costData?.QuotationId}
+                        isRfqCosting={costData?.IsRfqCosting}
+                      />
+                    </Col>}
                     <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency}) = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
                     <Col md="3">
                       <TextFieldHookForm

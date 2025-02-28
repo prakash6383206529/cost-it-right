@@ -55,7 +55,7 @@ class AddZBCPlant extends Component {
       this.props.fetchCountryDataAPI(() => { })
       this.props.getCurrencySelectList(true, () => { })
     }
-    if (this.props.initialConfiguration.IsCompanyConfigureOnPlant) {
+    if (this.props.initialConfiguration?.IsCompanyConfigureOnPlant) {
       this.props.getComapanySelectList(() => { })
     }
     this.getDetails()
@@ -435,7 +435,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={isEditFlag ? '-' : "Enter"}
-                      validate={this.props.initialConfiguration.IsPlantCodeInteger ? [required, hashValidation, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4] : [required, hashValidation, acceptAllExceptSingleSpecialCharacter, alphaneumericSpecialAccept, maxLength25, checkWhiteSpaces, checkSpacesInString]}
+                      validate={this.props.initialConfiguration?.IsPlantCodeInteger ? [required, hashValidation, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4] : [required, hashValidation, acceptAllExceptSingleSpecialCharacter, alphaneumericSpecialAccept, maxLength25, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
                       className=""
@@ -467,7 +467,7 @@ class AddZBCPlant extends Component {
 
                 <Row className="pl-3">
                   {
-                    this.props.initialConfiguration.IsCompanyConfigureOnPlant &&
+                    this.props.initialConfiguration?.IsCompanyConfigureOnPlant &&
                     <Col md="6">
                       <Field
                         name="CompanyName"
@@ -666,7 +666,7 @@ class AddZBCPlant extends Component {
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }
-        {this.state.showPopupOnCompanyChange && this.props.initialConfiguration.IsCompanyConfigureOnPlant && <PopupMsgWrapper isOpen={this.state.showPopupOnCompanyChange} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmCompanyChange}
+        {this.state.showPopupOnCompanyChange && this.props.initialConfiguration?.IsCompanyConfigureOnPlant && <PopupMsgWrapper isOpen={this.state.showPopupOnCompanyChange} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmCompanyChange}
           message={
             <>
               The plant's company has been changed, data for this plant will be visible under the new company. <br />

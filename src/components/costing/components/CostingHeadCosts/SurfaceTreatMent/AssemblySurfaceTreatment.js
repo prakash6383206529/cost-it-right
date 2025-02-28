@@ -38,6 +38,7 @@ function AssemblySurfaceTreatment(props) {
         PartId: item.PartId,
         AssemCostingId: item.AssemblyCostingId,
         SubAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
+        isComponentCosting: costData?.PartType === "Component" ? true : false
       }
       dispatch(getSurfaceTreatmentTabData(data, true, (res) => {
         if (res && res.data && res.data.Result) {
@@ -132,37 +133,37 @@ function AssemblySurfaceTreatment(props) {
           </td>
           <td>{item && item.BOMLevel}</td>
           <td>{item && item.PartType}</td>
-          <td>{item?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}
+          <td>{item?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}
             {
               item?.CostingPartDetails && (item?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity !== null && item?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity !== 0) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon st-tooltip"></i>
                   <span class="tooltiptext text-right">
-                    {`Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {`Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly, initialConfiguration?.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {`Sub Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {`Sub Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly, initialConfiguration?.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {`Child Parts Surface Treatment Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalSurfaceTreatmentCostComponent, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {`Child Parts Surface Treatment Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalSurfaceTreatmentCostComponent, initialConfiguration?.NoOfDecimalForPrice)}`}
                   </span>
                 </div> : ''
             }
           </td>
-          <td>{item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}
+          <td>{item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}
             {
               item?.CostingPartDetails && (item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== null && item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== 0) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext max225">
-                    {`Assembly's Extra Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {`Assembly's Extra Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostPerAssembly, initialConfiguration?.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {`Sub Assembly's Extra Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostPerSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {`Sub Assembly's Extra Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostPerSubAssembly, initialConfiguration?.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {`Child Parts Extra Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostComponent, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {`Child Parts Extra Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostComponent, initialConfiguration?.NoOfDecimalForPrice)}`}
                   </span>
                 </div> : ''
             }
           </td>
           <td>{checkForNull(item?.Quantity)}</td>
           <td>
-            {item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys, initialConfiguration.NoOfDecimalForPrice) : 0}
+            {item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys, initialConfiguration?.NoOfDecimalForPrice) : 0}
           </td>
         </div>
         <td>

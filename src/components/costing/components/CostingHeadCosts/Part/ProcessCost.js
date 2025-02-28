@@ -61,7 +61,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource,exchangeRateData } = useSelector(state => state.costing)
   const { rmFinishWeight, rmGrossWeight } = props
   const [openMachineForm, setOpenMachineForm] = useState(false)
 
@@ -317,7 +317,7 @@ function ProcessCost(props) {
 
 
       setValue(`${SingleProcessGridField}.${calciIndex}${parentCalciIndex}${tempData.ProcessName}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : checkForDecimalAndNull(weightData.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
-      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
       //MAIN PROCESS ROW WITH GROUP
       let ProcessCostTotal = 0
       ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
@@ -339,7 +339,7 @@ function ProcessCost(props) {
       let processTemparr = Object.assign([...gridData], { [parentCalciIndex]: processTempData })
 
       setValue(`${ProcessGridFields}.${parentCalciIndex}.Quantity`, checkForDecimalAndNull(totalQuantity, getConfigurationKey().NoOfDecimalForInputOutput))
-      setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice))
 
       let apiArr = []
       processTemparr && processTemparr.map((item) => {
@@ -474,7 +474,7 @@ function ProcessCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
@@ -507,7 +507,7 @@ function ProcessCost(props) {
 
     const setDataInGridAndApi = (tempArr) => {
       tempArr && tempArr.map((el, index) => {
-        setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         return null
       })
@@ -737,7 +737,7 @@ function ProcessCost(props) {
       setTabData(tempArr2)
       setValue(`${ProcessGridFields}.${index}.remarkPopUp`, '')
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
-        setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${ProcessGridFields}.${i}.remarkPopUp`, el.Remark)
         return null
@@ -784,8 +784,8 @@ function ProcessCost(props) {
 
     let ProductionPerHourTotal = findProductionPerHour(QuantityTotal)
 
-    setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
-    setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(QuantityTotal, initialConfiguration.NoOfDecimalForPrice))
+    setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice))
+    setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(QuantityTotal, initialConfiguration?.NoOfDecimalForPrice))
 
     setValue(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`, '')
     setValue(`${SingleProcessGridField}.${index}.remarkPopUp`, '')
@@ -814,7 +814,7 @@ function ProcessCost(props) {
     setTabData(tempArr3)
 
     tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
-      setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
       setValue(`${SingleProcessGridField}.${i}${parentIndex}${el.ProcessName}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`, el.Remark)
       setValue(`${SingleProcessGridField}.${index}.remarkPopUp`, el.Remark)
@@ -879,7 +879,7 @@ function ProcessCost(props) {
       }
       setGridData(gridTempArr)
       dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
-      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration?.NoOfDecimalForPrice))
     }
     //  else {
 
@@ -991,7 +991,7 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
-      setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice))
       setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(quantityTotal, getConfigurationKey().NoOfDecimalForInputOutput))
 
       tempArr = {
@@ -1362,7 +1362,7 @@ function ProcessCost(props) {
         // Update field values
         finalTemp && finalTemp.map((el, index) => {
           setTimeout(() => {
-            setValue(`${SingleProcessGridField}.${index}.${groupIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue(`${SingleProcessGridField}.${index}.${groupIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue(`${SingleProcessGridField}.${index}${groupIndex}${el.ProcessName}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
             setValue(`${SingleProcessGridField}.${index}${groupIndex}.remarkPopUp`, (el.Remark))
           }, 200);
@@ -1379,7 +1379,7 @@ function ProcessCost(props) {
 
         finalTemp && finalTemp.map((el, index) => {
           // Update field values
-          setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+          setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
           setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
           setValue(`${ProcessGridFields}.${index}.remarkPopUp`, (el.Remark))
           setValue(`crmHeadProcess${index}`, { label: el.ProcessCRMHead, value: 1 })
@@ -1410,11 +1410,11 @@ function ProcessCost(props) {
         <div className={isAssemblyTechnology ? '' : 'cr-process-costwrap'}>
           <Row className="cr-innertool-cost">
 
-            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
             {!isAssemblyTechnology && <>
-              <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-              <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Other Operation Cost: ${tabData && tabData.OtherOperationCostTotal !== null ? checkForDecimalAndNull(tabData.OtherOperationCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-              <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+              <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
+              <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Other Operation Cost: ${tabData && tabData.OtherOperationCostTotal !== null ? checkForDecimalAndNull(tabData.OtherOperationCostTotal, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
+              <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
             </>}
           </Row>
 
@@ -1454,7 +1454,7 @@ function ProcessCost(props) {
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
                     <th style={{ width: "180px" }}><span>Quantity <TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`quantity-info`} tooltipText={tooltipText} /></span></th>
                     <th style={{ width: "110px" }} >{`Net Cost`}</th>
-                    {initialConfiguration.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
+                    {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
                     <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -1551,7 +1551,7 @@ function ProcessCost(props) {
                               }
                             </td>
                             {
-                              initialConfiguration.IsShowCRMHead && <td>
+                              initialConfiguration?.IsShowCRMHead && <td>
                                 <SearchableSelectHookForm
                                   name={`crmHeadProcess${index}`}
                                   type="text"

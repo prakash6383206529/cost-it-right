@@ -45,6 +45,7 @@ import { ASSEMBLY } from '../../config/masterData';
 import { customHavellsChanges } from '../.././config/constants';
 import { useLabels } from '../../helper/core';
 import { fetchDivisionId } from '../costing/CostingUtil';
+import { getAllMasterApprovalDepartment } from '../masters/actions/Material';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -63,7 +64,6 @@ function RfqListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
-
 
     const [noData, setNoData] = useState(false)
     const [sendForApproval, setSendForApproval] = useState(false)
@@ -128,8 +128,13 @@ function RfqListing(props) {
     const history = useHistory();
     const location = useLocation();
     useEffect(() => {
-        getDataList()
-    }, [])
+        getDataList();
+        // Clear status filter on mount
+        gridApi?.setQuickFilter("");
+        dispatch(agGridStatus("", ""));
+    }, []);
+
+
     useEffect(() => {
         if (compareButtonPressed && (partType === 'Raw Material' || partType === 'Bought Out Part')) {
             const masterId = partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
@@ -190,7 +195,7 @@ function RfqListing(props) {
                 case 'Tooling':
                     filteredArr = _.map(viewCostingData, 'costingId');
                     filteredArr.forEach(item => {
-                        selectedRows.filter(el => {
+                        selectedRows?.filter(el => {
                             if (el.CostingId === item) {
                                 arr.push(el);
                             }
@@ -255,6 +260,7 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
+
         setloader(true)
         dispatch(getQuotationDetailsList(data?.QuotationId, (res) => {
             if (res === 204) {
@@ -348,6 +354,9 @@ function RfqListing(props) {
                 } else {
                     setNoData(false)
                 }
+                // if (!agGridRef.current.isDestroyed) {
+                //     dispatch(agGridStatus("", ""));
+                // }
             }, 100);
 
             const gridApi = agGridRef.current.api;
@@ -400,54 +409,60 @@ function RfqListing(props) {
     }
 
     const commonFunction = (type, plantId = EMPTY_GUID) => {
+        const { costingTypeId } = state;
 
-        const finalUserApi = (mode, divisionId, technologyId) => {
-            let obj = {
-                DepartmentId: userDetails().DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: technologyId,
-                Mode: mode,
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
-                plantId: rowData[0]?.PlantId,
-                DivisionId: divisionId
-            };
-            dispatch(checkFinalUser(obj, (res) => {
-                if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
-                    setState(prevState => ({
-                        ...prevState,
-                        isFinalApprovar: res?.data?.Data?.IsFinalApprover,
-                        CostingTypePermission: true,
-                        finalApprovalLoader: false
-                    }));
-                }
-                if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-                    setState(prevState => ({ ...prevState, disableSendForApproval: true }));
-                } else {
-                    setState(prevState => ({ ...prevState, disableSendForApproval: false }));
-                }
-            }));
-        }
-        let fetchDivisionRequestObj = {
-            "PlantId": rowData[0]?.PlantId,
-            "PartId": rowData[0]?.PartId
-        }
-        const { costingTypeId } = state
         if (type === 'Raw Material' || type === 'Bought Out Part') {
-            const getMasterType = type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID
-            let levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, getMasterType, userMasterLevelAPI);
-            setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }));
+            const masterId = type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
 
-            if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
-                if (getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-                    fetchDivisionId(fetchDivisionRequestObj, dispatch).then((divisionId) => {
-                        selectedRows[0].DivisionId = divisionId
-                        finalUserApi('master', divisionId, getMasterType)
-                    })
-                } else {
-                    finalUserApi('master', null, getMasterType)
-                }
+            // Add check for userMasterLevelAPI
+            if (!userMasterLevelAPI) {
+                return;
             }
-            setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }));
+
+            const levelDetailsTemp = userTechnologyDetailByMasterId(
+                costingTypeId,
+                masterId,
+                userMasterLevelAPI
+            );
+
+            if (!levelDetailsTemp) {
+                return;
+            }
+
+            setState(prevState => ({
+                ...prevState,
+                levelDetails: levelDetailsTemp
+            }));
+
+            // const obj = {
+            //     DepartmentId: userDetails().DepartmentId,
+            //     UserId: loggedInUserId(),
+            //     TechnologyId: masterId,
+            //     Mode: 'master',
+            //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
+            //     plantId: plantId
+            // };
+
+            // if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+            //     dispatch(checkFinalUser(obj, (res) => {
+            //         console.log(res);
+
+            //         if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+            //             setState(prevState => ({
+            //                 ...prevState,
+            //                 isFinalApprovar: res?.data?.Data?.IsFinalApprover,
+            //                 CostingTypePermission: true,
+            //                 finalApprovalLoader: false
+            //             }));
+            //         }
+            //         if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+            //             setState(prevState => ({ ...prevState, disableSendForApproval: true }));
+            //         } else {
+            //             setState(prevState => ({ ...prevState, disableSendForApproval: false }));
+            //         }
+            //     }));
+            // }
+            // setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }));
         }
         else {
             const arrayOfObjects = [...viewCostingData]
@@ -498,17 +513,10 @@ function RfqListing(props) {
             // setAddRfq(true)
             dispatch(storePartNumber(rowData))
 
-            if (getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-                fetchDivisionId(fetchDivisionRequestObj, dispatch).then((divisionId) => {
-                    selectedRows[0].DivisionId = divisionId
-                    finalUserApi('costing', divisionId, rowData[0]?.TechnologyId)
-                    sendForApprovalData(arr)
-                    setSendForApproval(true)
-                })
-            } else {
-                sendForApprovalData(arr)
-                setSendForApproval(true)
-            }
+
+            sendForApprovalData(arr)
+            setSendForApproval(true)
+
 
         }
     }
@@ -541,7 +549,7 @@ function RfqListing(props) {
                 return false
             }
 
-            if (initialConfiguration.IsReleaseStrategyConfigured) {
+            if (initialConfiguration?.IsReleaseStrategyConfigured) {
                 let dataList = costingIdObj(selectedCostingList)
                 let requestObject = {
                     "RequestFor": "COSTING",
@@ -656,6 +664,7 @@ function RfqListing(props) {
     }
 
     const cancel = () => {
+        dispatch(agGridStatus("", ""))
         props.closeDrawer()
     }
 
@@ -1185,6 +1194,7 @@ function RfqListing(props) {
 
     const addComparisonDrawerToggle = () => {
         let arr = []
+        setMatchedStatus([])
 
         selectedRows && selectedRows?.map(item => {
             if (item?.CostingId) {
@@ -1203,6 +1213,7 @@ function RfqListing(props) {
 
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = selectedRows?.length > 0 ? [...selectedRows[0]?.ShouldCostings, ...selectedRows] : selectedRows
+
         setSelectedCostingList([])
         const partTypes = partType?.split(',');
         partTypes?.forEach(type => {
@@ -1285,102 +1296,36 @@ function RfqListing(props) {
         // })
 
     }
-    // Helper function to get unique should cost IDs
-    const getUniqueShouldCostIds = (items) => {
-        let uniqueShouldCostId = [];
 
-        items.forEach(item => {
-            const partTypes = item?.PartType?.split(',');
 
-            partTypes?.forEach(type => {
-                let unique;
-                switch (type.trim()) {
-                    case 'Raw Material':
-                        unique = _.uniq(_.map(item?.ShouldRawMaterial, 'RawMaterialId'));
-                        break;
-                    case 'Component':
-                    case 'Assembly':
-                        unique = _.uniq(_.map(item?.ShouldCostings, 'CostingId'));
-                        break;
-                    case 'Bought Out Part':
-                        unique = _.uniq(_.map(item?.ShouldBoughtOutPart, 'BoughtOutPartId'));
-                        break;
-                    case 'Tooling':
-                        unique = _.uniq(_.map(item?.ShouldCostings, 'CostingId'));
-                        break;
-                    default:
-                        unique = [];
-                }
-                uniqueShouldCostId.push(...unique);
-            });
-        });
-
-        return uniqueShouldCostId;
-    };
     const onRowSelect = (event) => {
-        if (event.node.isSelected()) {
-            const selectedRowIndex = event.node.rowIndex;
-            setSelectedRowIndex(selectedRowIndex)
-        } else {
-            setaddComparisonToggle(false)
-            setSelectedRowIndex('')
-            gridApi?.deselectAll()
+
+        if (!event.node.isSelected()) {
+            setaddComparisonToggle(false);
+            setSelectedRowIndex('');
+            gridApi?.deselectAll();
+            return;
         }
+        setSelectedRowIndex(event.node.rowIndex);
 
-        const selectedRows = gridApi?.getSelectedRows()
-        let partNumber = []
-        let data
+        const selectedRow = event.node.data;
 
-        if (selectedRows?.length > 0) {
-            const partTypes = selectedRows[0]?.PartType.split(',');
-            partTypes?.forEach(type => {
-                switch (type.trim()) {
-                    case 'Raw Material':
-                        selectedRows?.map(item => partNumber?.push(item?.RawMaterial))
-                        data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))
-                        // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
-                        break;
-                    case 'Bought Out Part':
-                        selectedRows?.map(item => partNumber.push(item?.BoughtOutPart))
-                        data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+        if (!selectedRow) return;
+        const matchingRows = getMatchingRows(selectedRow);
 
-                        break;
-                    case 'Component':
-                    case 'Assembly':
-                        selectedRows?.map(item => partNumber?.push(item?.PartNo))
-                        data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-                        break;
-                    case 'Tooling':
-                        selectedRows?.map(item => partNumber?.push(item?.PartNo))
-                        data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))
-                        break;
-                    default:
-                        break;
-                }
-            });
+        const visibleRows = matchingRows.filter(row =>
+            row?.IsVisibiltyConditionMet && row.IsShowNetPoPrice
+        );
 
-            let newArray = []
-            data?.map((item) => {
-                newArray = [...newArray, ...item]
-                return null
-            })
+        const hasVisibleRow = visibleRows.length > 0;
 
-            // Update uniqueShouldCostingId based on selected rows
-            const uniqueSelectedCosts = getUniqueShouldCostIds(newArray);
-            setUniqueShouldCostingId(uniqueSelectedCosts);
+        setisVisibiltyConditionMet(hasVisibleRow);
+        const uniqueRows = getUniqueRows(visibleRows);
 
-            if (selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
-                setisVisibiltyConditionMet(true)
-            } else {
-                setisVisibiltyConditionMet(false)
-            }
-
-            setSelectedRows(newArray)
-            setAddComparisonButton(false)
-            setTechnologyId(selectedRows[0]?.TechnologyId)
-        } else {
-            setAddComparisonButton(true)
-            setUniqueShouldCostingId([]) // Clear should cost IDs when no rows selected
+        setSelectedRows(visibleRows);
+        setAddComparisonButton(uniqueRows.length === 0);
+        if (uniqueRows.length > 0) {
+            setTechnologyId(uniqueRows[0]?.TechnologyId);
         }
     };
     // const onRowSelect = (event) => {
@@ -1407,6 +1352,7 @@ function RfqListing(props) {
     //     }
     // };
     const getIdentifier = (type) => {
+
         switch (type.trim()) {
             case 'Raw Material': return 'RawMaterial';
             case 'Bought Out Part': return 'BoughtOutPart';
@@ -1434,9 +1380,13 @@ function RfqListing(props) {
 
     // Helper function to get unique rows
     const getUniqueRows = (rows) => {
+
         return _.uniqBy(rows, row => {
             const type = row.PartType.split(',')[0].trim();
+
             const identifier = getIdentifier(type);
+
+
             return row[identifier];
         });
     };
@@ -1678,9 +1628,9 @@ function RfqListing(props) {
 
                                             <AgGridColumn cellClass={cellClass} field="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             <AgGridColumn field="PartTypes" cellClass={cellClass} headerName={`${partType === 'Tooling' ? 'Tool' : 'Part'} Type`} width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
-                                            {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
+                                            {initialConfiguration?.RFQManditField?.IsShowNFRNo && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
                                             {partType !== 'Bought Out Part' && <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>}
-                                            {partType === 'Bought Out Part' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
+                                            {initialConfiguration?.RFQManditField?.IsShowPRNumber && partType === 'Bought Out Part' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
 
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName={vendorLabel + " (Code)"}></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -1862,7 +1812,7 @@ function RfqListing(props) {
             {shouldShowButtons() && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
-                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (<button
+                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && localStorage.getItem('showInitiateAuctionButton') === true && (<button
                         type="button"
                         className="submit-button save-btn mr-2"
                         id="addRFQ_save"

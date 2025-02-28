@@ -11,7 +11,7 @@ import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByTy
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
-import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId } from "../../../helper/auth";
 import Toaster from '../../common/Toaster';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -25,7 +25,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AsyncSelect from 'react-select/async';
 import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { onFocus } from '../../../helper';
+import { getExchangeRateParams, onFocus } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
@@ -134,25 +134,24 @@ class AddFuel extends Component {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName?.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? (costingTypeId === VBCTypeId ? VBCTypeId : costingTypeId) : ZBCTypeId
+
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
 
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return;
       }
 
-      const callAPI = (from, to) => {
+      const callAPI = (from, to, costingType, vendorValue, clientValue) => {
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,
             costingType,
             DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
             vendorValue,
-            client.value,
+            clientValue,
             false,
             to,
             ExchangeSource?.label ?? null,
@@ -170,9 +169,11 @@ class AddFuel extends Component {
 
       if (isImport) {
         // First API call
-        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency });
+        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
           // Second API call
-          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency });
+          callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
             this.setState({
               plantCurrency: rate1,
               settlementCurrency: rate2,
@@ -188,7 +189,8 @@ class AddFuel extends Component {
         });
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
-        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency });
+        callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
             this.handleCalculation(fieldsObj?.RateLocalConversion)
           });
@@ -710,7 +712,7 @@ class AddFuel extends Component {
 
       let addRow = 0
       let count = 0
-      if (rateGrid.length > this.state.RateChange.FuelDetails.length) {
+      if (rateGrid.length >= this.state.RateChange.FuelDetails.length) {
         addRow = 1
       }
       if (addRow === 0) {
@@ -958,7 +960,7 @@ class AddFuel extends Component {
     return <>
       {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
   };
   /**
@@ -1249,7 +1251,7 @@ class AddFuel extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleFuel}
                                   valueDescription={this.state.fuel}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || this?.state?.rateGrid?.length > 0}
                                 />
                               </div>
                               {!isEditFlag && (
@@ -1493,9 +1495,9 @@ class AddFuel extends Component {
                                         <td>{item.country}</td>
                                         <td>{item.city}</td>
                                         <td>{item.StateLabel ? item.StateLabel : '-'}</td>
-                                        {this.state.isImport && <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
-                                        <td>{item?.RateLocalConversion ? checkForDecimalAndNull(item?.RateLocalConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                        {!this.state?.hidePlantCurrency && <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                                        {this.state.isImport && <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                        <td>{item?.RateLocalConversion ? checkForDecimalAndNull(item?.RateLocalConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                        {!this.state?.hidePlantCurrency && <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                                         {/* <td>{item.effectiveDate}</td> */}
                                         <td>
                                           {DayTime(item.effectiveDate).format(

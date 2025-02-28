@@ -25,7 +25,7 @@ import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
-import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
+import { checkNegativeValue, createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
 import { PreviousTabData } from '../../CostingHeaderTabs';
 import { TOOLING_ID } from '../../../../../config/masterData';
@@ -51,11 +51,16 @@ function PartCompoment(props) {
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
   const previousTab = useContext(PreviousTabData) || 0;
-  const { currencySource } = useSelector((state) => state?.costing);
+  const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
+    const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
+    if (hasNegativeValue) {
+      return false;
+    }
     let isOpen = IsOpen
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     dispatch(openCloseStatus({ RMC: !IsOpen }))
 
     if (isNFR && !openAllTabs) {
@@ -91,7 +96,8 @@ function PartCompoment(props) {
           PartId: item.PartId,
           AssemCostingId: item.AssemblyCostingId,
           subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
-          EffectiveDate: CostingEffectiveDate
+          EffectiveDate: CostingEffectiveDate,
+          isComponentCosting: item?.PartType === "Component" ? true : false
         }
         dispatch(savePartNumber(PartNumber))
         dispatch(setPartNumberArrayAPICALL([...partNumberArrayAPICall, PartNumber]))
@@ -154,6 +160,10 @@ function PartCompoment(props) {
   useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API
     if (!CostingViewMode && item.IsOpen && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
+      const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
+      if (hasNegativeValue) {
+        return false;
+      }
       let stCostingData = findSurfaceTreatmentData(ComponentItemData)
 
       let requestData = {
@@ -247,12 +257,12 @@ function PartCompoment(props) {
         </td>
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        {!isBreakupBoughtOutPartCostingFromAPI && <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalConversionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+        {!isBreakupBoughtOutPartCostingFromAPI && <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalConversionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.Quantity !== undefined ? checkForNull(item?.CostingPartDetails?.Quantity) : 1}</td>
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.TotalConversionCost), initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.TotalConversionCost)) * item?.CostingPartDetails?.Quantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.TotalConversionCost), initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+        {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.TotalConversionCost)) * item?.CostingPartDetails?.Quantity, initialConfiguration?.NoOfDecimalForPrice)}</td>}
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
         <td className="text-right"><div id="lock_icon" className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing." : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div></td>
       </tr>

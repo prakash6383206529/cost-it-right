@@ -106,7 +106,7 @@ function AddNpvCost(props) {
                 let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
 
                 // Set the value of the 'Total' input field to the calculated total cost
-                setValue('Total', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setValue('Total', checkForDecimalAndNull(total, initialConfiguration?.NoOfDecimalForPrice))
                 setTotalCost(total)
 
                 // If NPV percentage is disabled, calculate the NPV percentage based on the total cost and quantity input
@@ -120,7 +120,7 @@ function AddNpvCost(props) {
                 let npvPercent = (total * 100) / (props.netPOPrice * quantity)
 
                 // Set the value of the 'NpvPercentage' input field to the calculated NPV percentage
-                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration.NoOfDecimalForPrice))
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration?.NoOfDecimalForPrice))
 
             }
         }
@@ -137,7 +137,7 @@ function AddNpvCost(props) {
                 let NpvPercentage = e.target.value
                 let quantity = getValues('Quantity')
                 let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
-                setValue('Total', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setValue('Total', checkForDecimalAndNull(total, initialConfiguration?.NoOfDecimalForPrice))
                 setTotalCost(total)
                 errors.Total = []
             }
@@ -165,7 +165,7 @@ function AddNpvCost(props) {
                 let total = e.target.value
                 let quantity = getValues('Quantity')
                 let npvPercent = (total * 100) / (props.netPOPrice * quantity)
-                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration.NoOfDecimalForPrice))
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration?.NoOfDecimalForPrice))
             }
         } else {
 
@@ -266,7 +266,7 @@ function AddNpvCost(props) {
             setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
             setValue('NpvPercentage', Data.NpvPercentage)
             setValue('Quantity', Data.NpvQuantity)
-            setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration?.NoOfDecimalForPrice))
             setTotalCost(Data.NpvCost)
             setDisableTotalCost(false)
             setDisableAllFields(false)

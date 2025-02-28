@@ -25,6 +25,7 @@ function CostingApproveReject(props) {
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
 
+
   const { formState: { }, handleSubmit, setValue, reset } = useForm({
     mode: 'onChange', reValidateMode: 'onChange',
   })
@@ -50,7 +51,6 @@ function CostingApproveReject(props) {
   useEffect(() => {
     dispatch(getApprovalTypeSelectList('', () => { }))
   }, [])
-
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
     if (!props?.isRFQApproval) {
@@ -66,7 +66,7 @@ function CostingApproveReject(props) {
         let dataInFieldTemp = { ...dataInFields, Department: { label: approvalData[0]?.DepartmentName, value: approvalData[0]?.DepartmentId } }
         setDataInFields(dataInFieldTemp)
         setValue('dept', { label: approvalData[0]?.DepartmentName, value: approvalData[0]?.DepartmentId })
-        if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
+        if (initialConfiguration?.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
           setDisableReleaseStrategy(true)
           approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId, dataInFieldTemp)
         } else {
@@ -165,7 +165,6 @@ function CostingApproveReject(props) {
       }
 
       getApproversList(departmentAndApproverDetails.Department, levelDetailsTemp, departmentAndApproverDetails)
-
     } else {
       Toaster.warning("You don't have permission to send costing for approval.")
     }
@@ -173,6 +172,7 @@ function CostingApproveReject(props) {
 
   useEffect(() => {
     if (isResponseTrueObj?.Department && technologyLevelsList !== '' && type !== 'Reject' && !IsNotFinalLevel) {
+
       checkPermission(dataInFields?.ApprovalType?.value)
     }
   }, [isResponseTrueObj, technologyLevelsList, dataInFields?.ApprovalType])
@@ -189,7 +189,7 @@ function CostingApproveReject(props) {
         }
       }))
       setValue('dept', { label: approvalData[0]?.DepartmentName, value: approvalData[0]?.DepartmentId })
-      if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
+      if (initialConfiguration?.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
         setDisableReleaseStrategy(true)
         approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, (releaseStrategyDetails?.ApprovalTypeId ? releaseStrategyDetails?.ApprovalTypeId : 'approvalType'))
       } else {
@@ -357,6 +357,7 @@ function CostingApproveReject(props) {
   }), 600)
 
   const handleDepartmentChange = (value) => {
+
     let tempDropdownList = []
     let obj
     obj = {

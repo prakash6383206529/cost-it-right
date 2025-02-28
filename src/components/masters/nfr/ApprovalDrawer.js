@@ -115,9 +115,9 @@ const ApprovalDrawer = (props) => {
                     obj.vendorCode = item?.vendorCode
                     obj.vendorName = item?.vendorName
                     obj.vendorid = item?.value
-                    obj.PlantName = initialConfiguration.DefaultPlantName
-                    obj.PlantCode = initialConfiguration.DefaultPlantCode
-                    obj.PlantId = initialConfiguration.DefaultPlantId
+                    obj.PlantName = initialConfiguration?.DefaultPlantName
+                    obj.PlantCode = initialConfiguration?.DefaultPlantCode
+                    obj.PlantId = initialConfiguration?.DefaultPlantId
                     obj.CostingNumber = item?.SelectedCostingVersion?.CostingNumber
                     obj.CostingId = item?.SelectedCostingVersion?.CostingId
                     obj.Price = item?.SelectedCostingVersion?.Price
@@ -307,7 +307,7 @@ const ApprovalDrawer = (props) => {
                 "ApproverLevelId": approvalDropDown[0]?.levelId,
                 "ApproverLevel": approvalDropDown[0]?.levelName,
                 // "ApproverId": getValues("approver")?.value,
-                "ApproverIdList": initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [getValues("approver")?.value],
+                "ApproverIdList": initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [getValues("approver")?.value],
 
                 "SenderLevelId": levelDetails?.LevelId,
                 "SenderId": userData?.LoggedInUserId,
@@ -366,14 +366,14 @@ const ApprovalDrawer = (props) => {
                                     register={register}
                                     defaultValue={""}
                                     options={renderDropdownListing("Dept")}
-                                    disabled={initialConfiguration.IsMultipleUserAllowForApproval}
+                                    disabled={initialConfiguration?.IsMultipleUserAllowForApproval}
                                     mandatory={true}
                                     handleChange={handleDepartmentChange}
                                 // errors={errors.dept}
                                 />
                             </Col>
                             <Col md={props.hideTable ? 12 : 6}>
-                                {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                                {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                                     <AllApprovalField
                                         label="Approver"
                                         approverList={approvalDropDown}
@@ -392,7 +392,7 @@ const ApprovalDrawer = (props) => {
                                         options={approvalDropDown}
                                         handleChange={handleApproverChange}
                                         mandatory={true}
-                                        disabled={initialConfiguration.IsMultipleUserAllowForApproval}
+                                        disabled={initialConfiguration?.IsMultipleUserAllowForApproval}
                                     // handleChange={handleApproverChange}
                                     // errors={errors.approver}
                                     />}

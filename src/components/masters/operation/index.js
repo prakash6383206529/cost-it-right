@@ -130,6 +130,7 @@ class OperationsMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 MasterId={OPERATIONS_ID}
+                                                OnboardingApprovalId={'0'}
                                             />
                                         </TabPane>}
 

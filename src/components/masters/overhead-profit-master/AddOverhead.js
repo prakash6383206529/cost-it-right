@@ -291,8 +291,11 @@ class AddOverhead extends Component {
     if (label === 'OverheadApplicability') {
       costingHead && costingHead.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
-        if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) return false
-        temp.push({ label: item.Text, value: item.Value })
+         if (!this.state.isAssemblyCheckbox && item.Text.includes('Part Cost')) {
+          return false;
+        }if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) {
+          return false;
+        }temp.push({ label: item.Text, value: item.Value });
         return null;
       });
       return temp;
@@ -921,8 +924,22 @@ class AddOverhead extends Component {
   * @description Used for Surface Treatment
   */
   onPressAssemblyCheckbox = () => {
-    this.setState({ isAssemblyCheckbox: !this.state.isAssemblyCheckbox });
-  }
+    this.setState({ 
+      isAssemblyCheckbox: !this.state.isAssemblyCheckbox,
+      overheadAppli: [], 
+      isRM: false,
+      isCC: false,
+      isBOP: false,
+      isOverheadPercent: false,
+      isHideOverhead: false,
+      isHideBOP: false,
+      isHideCC: false,
+      isHideRM: false
+    });
+    
+    this.props.change('OverheadApplicability', '');
+  };
+  
   /**
   * @method render
   * @description Renders the component

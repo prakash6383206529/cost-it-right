@@ -190,15 +190,15 @@ const RejectedCostingSummaryTable = (props) => {
     let tempColorArray = [];
 
     temp = [
-      checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.netRM, initialConfiguration?.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.netBOP, initialConfiguration?.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration?.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration?.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration?.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration?.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration?.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration?.NoOfDecimalForPrice),
     ]
 
     let labelArray = temp.reduce((acc, item, index) => {
@@ -211,39 +211,39 @@ const RejectedCostingSummaryTable = (props) => {
     labelArray.forEach(item => {
       switch (item) {
         case 'RM':
-          dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
+          dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration?.NoOfDecimalForPrice))
           tempColorArray.push(colorArray[0])
           break;
         case 'BOP':
-          dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice))
+          dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration?.NoOfDecimalForPrice))
           tempColorArray.push(colorArray[1])
           break;
         case 'CC':
-          dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice))
+          dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration?.NoOfDecimalForPrice))
           tempColorArray.push(colorArray[2])
           break;
         case 'ST':
-          dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
+          dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration?.NoOfDecimalForPrice))
           tempColorArray.push(colorArray[3])
           break;
         case 'O&P':
-          dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
+          dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration?.NoOfDecimalForPrice))
           tempColorArray.push(colorArray[4])
           break;
         case 'P&F':
-          dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
+          dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice))
           tempColorArray.push(colorArray[5])
           break;
         case 'TC':
-          dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
+          dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration?.NoOfDecimalForPrice))
           tempColorArray.push(colorArray[6])
           break;
         case 'HUNDI/DIS':
-          dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
+          dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration?.NoOfDecimalForPrice))
           tempColorArray.push(colorArray[7])
           break;
         case 'ANY OTHER COST':
-          dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
+          dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration?.NoOfDecimalForPrice))
           tempColorArray.push(colorArray[8])
           break;
         default:
@@ -838,7 +838,7 @@ const RejectedCostingSummaryTable = (props) => {
         return accumulator + currentValue.GrossWeight
       }, 0)
     }
-    return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForInputOutput)
+    return checkForDecimalAndNull(arr, initialConfiguration?.NoOfDecimalForInputOutput)
   }
 
 
@@ -850,7 +850,7 @@ const RejectedCostingSummaryTable = (props) => {
       }, 0)
     }
 
-    return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForInputOutput)
+    return checkForDecimalAndNull(arr, initialConfiguration?.NoOfDecimalForInputOutput)
   }
   const reactToPrintTriggerDetail = useCallback(() => {
     return <button className="user-btn mr-1 mb-2 px-2" title='Detailed pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
@@ -1354,7 +1354,7 @@ const RejectedCostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    {(!data?.bestCost === true) && <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
+                                    {(!data?.bestCost === true) && <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration?.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
                                       <span className={`pie-chart-wrapper mt-3`}>
                                         {viewPieChart === index ? <button type='button' className='CancelIcon' title='Discard' onClick={() => setViewPieChart(null)}></button> : <button title='View Pie Chart' type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>}
                                         {viewPieChart === index && <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} /> </span>}
@@ -1472,7 +1472,7 @@ const RejectedCostingSummaryTable = (props) => {
                                 return (
                                   <td className={tableDataClass(data)}>
                                     {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? <span className='positive-sign'>+</span> : '' : '')}
-                                    <span title={data?.nTotalRMBOPCC}>{checkForDecimalAndNull(data?.nTotalRMBOPCC, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                    <span title={data?.nTotalRMBOPCC}>{checkForDecimalAndNull(data?.nTotalRMBOPCC, initialConfiguration?.NoOfDecimalForPrice)}</span>
                                     {
                                       (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -1509,10 +1509,10 @@ const RejectedCostingSummaryTable = (props) => {
                                     <td className={tableDataClass(data)}>
                                       <span className="d-block small-grey-text">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : data?.rm : '')}</span>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                       </span>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.scrapRate, viewCostingData[1]?.scrapRate)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                       </span>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>
                                         {/* try with component */}
@@ -1520,31 +1520,31 @@ const RejectedCostingSummaryTable = (props) => {
                                       </span>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(reducerFinish(viewCostingData[0]?.netRMCostView), reducerFinish(viewCostingData[1]?.netRMCostView))}`}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && reducerFinish(data?.netRMCostView))}>{(data?.netRMCostView && reducerFinish(data?.netRMCostView))}</span> : '')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                       </span>
                                       {data?.technologyId === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.ForgingScrapWeight, viewCostingData[1]?.ForgingScrapWeight)}`}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.ForgingScrapWeight && data?.ForgingScrapWeight)}>{(data?.ForgingScrapWeight ? data?.ForgingScrapWeight : "-")}</span> : '-')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
                                       {data?.technologyId === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.MachiningScrapWeight, viewCostingData[1]?.MachiningScrapWeight)}`}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.MachiningScrapWeight && data?.MachiningScrapWeight)}>{(data?.MachiningScrapWeight ? data?.MachiningScrapWeight : '-')}</span> : '-')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
                                       {data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.CastingWeight, viewCostingData[1]?.CastingWeight)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.CastingWeight)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.CastingWeight, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.CastingWeight)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.CastingWeight, initialConfiguration?.NoOfDecimalForPrice)}</span> : '-')}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
                                       {data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.MeltingLoss, viewCostingData[1]?.MeltingLoss)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.MeltingLoss)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.MeltingLoss)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration?.NoOfDecimalForPrice)}</span> : '-')}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
 
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.BurningLossWeight, viewCostingData[1]?.BurningLossWeight)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</span> : '')}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                       </span>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.ScrapWeight, viewCostingData[1]?.ScrapWeight)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</span> : '')}
                                       </span>
                                     </td>
                                   )
@@ -1570,7 +1570,7 @@ const RejectedCostingSummaryTable = (props) => {
                                   return (
                                     <td className={tableDataClass(data)}>
                                       {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? <span className='positive-sign'>+</span> : '' : '')}
-                                      <span title={data?.netRM}>{checkForDecimalAndNull(data?.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                      <span title={data?.netRM}>{checkForDecimalAndNull(data?.netRM, initialConfiguration?.NoOfDecimalForPrice)}</span>
                                       {
                                         (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                         <button
@@ -1600,7 +1600,7 @@ const RejectedCostingSummaryTable = (props) => {
                                   return (
                                     <td className={tableDataClass(data)}>
                                       {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netBOP > viewCostingData[1]?.netBOP ? <span className='positive-sign'>+</span> : '' : '')}
-                                      <span title={data?.netBOP}>{checkForDecimalAndNull(data?.netBOP, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                      <span title={data?.netBOP}>{checkForDecimalAndNull(data?.netBOP, initialConfiguration?.NoOfDecimalForPrice)}</span>
                                       {
                                         (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                         <button
@@ -1627,13 +1627,13 @@ const RejectedCostingSummaryTable = (props) => {
                                   return (
                                     <td className={tableDataClass(data)}>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.pCost, viewCostingData[1]?.pCost)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Process" : <span title={checkForDecimalAndNull(data?.pCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.pCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Process" : <span title={checkForDecimalAndNull(data?.pCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.pCost, initialConfiguration?.NoOfDecimalForPrice)}</span>) : '')}
                                       </span>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.oCost, viewCostingData[1]?.oCost)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Operation" : <span title={checkForDecimalAndNull(data?.oCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.oCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Operation" : <span title={checkForDecimalAndNull(data?.oCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.oCost, initialConfiguration?.NoOfDecimalForPrice)}</span>) : '')}
                                       </span>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.netOtherOperationCost, viewCostingData[1]?.netOtherOperationCost)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Other Operation" : <span title={checkForDecimalAndNull(data?.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Other Operation" : <span title={checkForDecimalAndNull(data?.netOtherOperationCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netOtherOperationCost, initialConfiguration?.NoOfDecimalForPrice)}</span>) : '')}
                                       </span>
                                     </td>
                                   )
@@ -1658,7 +1658,7 @@ const RejectedCostingSummaryTable = (props) => {
                                   return (
                                     <td className={tableDataClass(data)}>
                                       {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nConvCost > viewCostingData[1]?.nConvCost ? <span className='positive-sign'>+</span> : '' : '')}
-                                      <span title={data?.nConvCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                      <span title={data?.nConvCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nConvCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nConvCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
                                       {
                                         (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                         <button
@@ -1688,11 +1688,11 @@ const RejectedCostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.sTreatment, viewCostingData[1]?.sTreatment)}`}>
-                                    {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
+                                    {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.sTreatment, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.sTreatment, initialConfiguration?.NoOfDecimalForPrice)}</span>) : '')}
                                   </span>
                                   <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.tCost, viewCostingData[1]?.tCost)}`}>
                                     {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                      (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}</span>)
+                                      (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                       : '')}
                                   </span>
                                 </td>
@@ -1720,7 +1720,7 @@ const RejectedCostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nsTreamnt > viewCostingData[1]?.nsTreamnt ? <span className='positive-sign'>+</span> : '' : '')}
-                                  <span title={data?.netSurfaceTreatmentCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                  <span title={data?.netSurfaceTreatmentCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
                                   {
                                     (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
@@ -1775,7 +1775,7 @@ const RejectedCostingSummaryTable = (props) => {
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadPercentage : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
-                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
                                   </div>
                                   <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.profitOn.profitValue, viewCostingData[1]?.profitOn.profitValue)}`}>
@@ -1786,7 +1786,7 @@ const RejectedCostingSummaryTable = (props) => {
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitPercentage : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
-                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
                                   </div>
                                   <div style={pdfHead ? { marginTop: '-2px' } : {}} className={`d-flex ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.rejectionOn.rejectionValue, viewCostingData[1]?.rejectionOn.rejectionValue)}`}>
@@ -1797,7 +1797,7 @@ const RejectedCostingSummaryTable = (props) => {
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionPercentage : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
-                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
                                   </div>
                                   <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex  ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.iccOn.iccValue, viewCostingData[1]?.iccOn.iccValue)}`}>
@@ -1808,7 +1808,7 @@ const RejectedCostingSummaryTable = (props) => {
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccPercentage : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
-                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
                                   </div>
                                   <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.paymentTerms.paymentValue, viewCostingData[1]?.paymentTerms.paymentValue)}`}>
@@ -1819,7 +1819,7 @@ const RejectedCostingSummaryTable = (props) => {
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentPercentage : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
-                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
                                   </div>
                                 </td>
@@ -1843,7 +1843,7 @@ const RejectedCostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nOverheadProfit > viewCostingData[1]?.nOverheadProfit ? <span className='positive-sign'>+</span> : '' : '')}
-                                  <span title={data?.nOverheadProfit}>{checkForDecimalAndNull(data?.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                  <span title={data?.nOverheadProfit}>{checkForDecimalAndNull(data?.nOverheadProfit, initialConfiguration?.NoOfDecimalForPrice)}</span>
                                   {
                                     (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
@@ -1869,10 +1869,10 @@ const RejectedCostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   <span title={data?.packagingCost} className={`d-block small-grey-text w-fit ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.packagingCost, viewCostingData[1]?.packagingCost)}`}>
-                                    {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.packagingCost, initialConfiguration.NoOfDecimalForPrice) : '')}
+                                    {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.packagingCost, initialConfiguration?.NoOfDecimalForPrice) : '')}
                                   </span>
                                   <span title={data?.freight} className={`d-block small-grey-text w-fit ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.freight, viewCostingData[1]?.freight)}`}>
-                                    {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.freight, initialConfiguration.NoOfDecimalForPrice) : '')}
+                                    {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.freight, initialConfiguration?.NoOfDecimalForPrice) : '')}
                                   </span>
                                 </td>
                               )
@@ -1891,8 +1891,8 @@ const RejectedCostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPackagingAndFreight > viewCostingData[1]?.nPackagingAndFreight ? <span className='positive-sign'>+</span> : '' : '')}
-                                  <span title={data?.nPackagingAndFreight}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span>
-                                  {/* <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span> */}
+                                  <span title={data?.nPackagingAndFreight}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                                  {/* <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice) : ''}</span> */}
                                   {
                                     (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
@@ -1932,11 +1932,11 @@ const RejectedCostingSummaryTable = (props) => {
                                   </div>
                                   <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.toolMaintenanceCost, viewCostingData[1]?.toolMaintenanceCost)}`}>
                                     <span className="d-inline-block w-50 ">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.toolApplicabilityValue.toolTitle : '')}</span> &nbsp;{' '}
-                                    <span className="d-inline-block w-50 "> {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}</span>
+                                    <span className="d-inline-block w-50 "> {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}</span>
                                   </div>
 
                                   <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.toolPrice, viewCostingData[1]?.toolPrice)}`}>
-                                    {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.toolPrice, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.toolPrice, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                    {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.toolPrice, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.toolPrice, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                   </span>
                                   <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.amortizationQty, viewCostingData[1]?.amortizationQty)}`}>
                                     {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.amortizationQty : '')}
@@ -1962,7 +1962,7 @@ const RejectedCostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.totalToolCost > viewCostingData[1]?.totalToolCost ? <span className='positive-sign'>+</span> : '' : '')}
-                                  <span title={data?.totalToolCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.totalToolCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.totalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                  <span title={data?.totalToolCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.totalToolCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.totalToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
                                   {
                                     (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
@@ -2004,8 +2004,8 @@ const RejectedCostingSummaryTable = (props) => {
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.otherDiscountValue.dicountType : '')}
                                       </span>
                                       <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.otherDiscountValue.dicountType === "Percentage" ? data?.otherDiscountValue.discountApplicablity : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.otherDiscountValue.dicountType === "Percentage" ? <span title={checkForDecimalAndNull(data?.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.otherDiscountValue.dicountType === "Percentage" ? <span title={checkForDecimalAndNull(data?.otherDiscountValue.discountPercentValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.otherDiscountValue.discountPercentValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '-'}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.otherDiscountValue.discountValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.otherDiscountValue.discountValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div>
                                   </td>
                                   : ""
@@ -2037,8 +2037,8 @@ const RejectedCostingSummaryTable = (props) => {
                                         {data?.CostingHeading !== VARIANCE ? data?.anyOtherCostType : ''}
                                       </span>
                                       <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? data?.anyOtherCostApplicablity : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? <span title={checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}</span> : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? <span title={checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration?.NoOfDecimalForPrice)}</span> : '-'}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div>
                                   </td>
                                   : ""
@@ -2056,7 +2056,7 @@ const RejectedCostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   <span title={data?.BasicRate} className={`d-block small-grey-text w-fit ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.BasicRate, viewCostingData[1]?.BasicRate)}`}>
-                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.BasicRate, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                   </span>
 
                                 </td>
@@ -2090,8 +2090,8 @@ const RejectedCostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPackagingAndFreight > viewCostingData[1]?.nPackagingAndFreight ? <span className='positive-sign'>+</span> : '' : '')}
-                                  <span title={data?.nPackagingAndFreight}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span>
-                                  {/* <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span> */}
+                                  <span title={data?.nPackagingAndFreight}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                                  {/* <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice) : ''}</span> */}
                                   {
                                     (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
@@ -2117,7 +2117,7 @@ const RejectedCostingSummaryTable = (props) => {
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
-                                <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration?.NoOfDecimalForPrice)}</span>
                                 {(data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) && (initialConfiguration?.IsBasicRateAndCostingConditionVisible || initialConfiguration?.IsShowNpvCost) &&
                                   <button
                                     type="button"
@@ -2143,7 +2143,7 @@ const RejectedCostingSummaryTable = (props) => {
                               <td className={tableDataClass(data)}>
                                 <div>
                                   <span className={`small-grey-text mr-1 ${data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? `${data?.currency.currencyTitle}/${getConfigurationKey().BaseCurrency}` : '')}</span> {' '}
-                                  <span className="">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data?.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : '')}</span>
+                                  <span className="">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data?.currency.currencyValue, initialConfiguration?.NoOfDecimalForPrice) : '')}</span>
                                 </div>
                               </td>
                             )
@@ -2166,7 +2166,7 @@ const RejectedCostingSummaryTable = (props) => {
                                 <span title={(data?.currency?.currencyTitle) !== "-" ? (data?.nPOPriceWithCurrency) : data?.nPOPrice}><span className='currency-symbol'>
                                   {getCurrencySymbol(data?.currency.currencyTitle !== '-' ?
                                     data?.currency.currencyTitle : getConfigurationKey().BaseCurrency)}
-                                </span>{data?.nPOPriceWithCurrency !== null ? checkForDecimalAndNull(((data?.currency?.currencyTitle === "-") || ((data?.bestCost === true && data?.currency?.currencyTitle === undefined))) ? data?.nPOPrice : (data?.nPOPriceWithCurrency), initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
+                                </span>{data?.nPOPriceWithCurrency !== null ? checkForDecimalAndNull(((data?.currency?.currencyTitle === "-") || ((data?.bestCost === true && data?.currency?.currencyTitle === undefined))) ? data?.nPOPrice : (data?.nPOPriceWithCurrency), initialConfiguration?.NoOfDecimalForPrice) : '-'}</span> </td>
                             })}
                         </tr>
                       }
@@ -2182,7 +2182,7 @@ const RejectedCostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   <div>
-                                    <span className="">{data?.CostingHeading !== VARIANCE ? data?.NCCPartQuantity === '-' ? '-' : checkForDecimalAndNull(data?.NCCPartQuantity, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                    <span className="">{data?.CostingHeading !== VARIANCE ? data?.NCCPartQuantity === '-' ? '-' : checkForDecimalAndNull(data?.NCCPartQuantity, initialConfiguration?.NoOfDecimalForPrice) : ''}</span>
                                   </div>
                                 </td>
                               )

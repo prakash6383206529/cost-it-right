@@ -37,6 +37,7 @@ function TabSurfaceTreatment(props) {
         PartId: costData.PartId,
         AssemCostingId: vbcExistingCosting.AssemblyCostingId ? vbcExistingCosting.AssemblyCostingId : costData.CostingId,
         SubAsmCostingId: vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId,
+        isComponentCosting: costData?.PartType === "Component" ? true : false
       }
       dispatch(getSurfaceTreatmentTabData(data, true, res => {
         let tempArr = [];

@@ -45,13 +45,13 @@ const BOPCompareTable = (props) => {
         setIsLoader(true)
         let temp = []
         const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
-        const idArr = props?.selectedRows.map(item => item?.BoughtOutPartId);
-        const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
+        const idArr = props?.selectedRows?.map(item => item?.BoughtOutPartId);
+        const combinedArr = Array?.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
         dispatch(getViewBOPDetails(combinedArr, res => {
             setIsLoader(false)
             if (res) {
                 res?.data?.DataList?.map((item) => {
-                    temp.push(item)
+                    temp?.push(item)
                     return null
                 })
                 let dat = [...temp]
@@ -109,41 +109,35 @@ const BOPCompareTable = (props) => {
             ];
 
             if (showConvertedCurrency) {
-                sectionOneHeader.push(
+                sectionOneHeader?.push(
                     showConvertedCurrency ?
                         `Other Net Cost (${getConfigurationKey().BaseCurrency})` :
                         'Other Net Cost'
                 );
             } else {
-                sectionOneHeader.push('Other Net Cost');
+                sectionOneHeader?.push('Other Net Cost');
             }
 
-            viewBOPDetails?.map((item, index) => {
-                console.log(item)
-                // Section One Data
+            // Map the data with special handling for best cost rows
+            viewBOPDetails?.forEach((item, index) => {
+                // Section One Data with UOM fix
                 const formattedDataOne = [
                     item?.BoughtOutPartNumber || '',
                     item?.BoughtOutPartName || '',
                     item?.Currency || '',
                     item?.BoughtOutPartCategory || '',
-                    item?.UOM || '',
+                    // Special handling for UOM in best cost rows
+                    item.bestCost === "" ? " ": (item?.UOM || ''), // Fix for best cost UOM
                     item?.Plants || '',
-                    `${item?.Vendor} (${item?.VendorCode})`,
-                    item?.EffectiveDate ?
-                        DayTime(item?.EffectiveDate).format('DD/MM/YYYY') :
-                        '',
+                    item?.VendorCode ? `${item?.Vendor} (${item?.VendorCode})` : item?.Vendor || '',
+                    item?.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '',
                     showConvertedCurrency ?
                         item.bestCost === "" ?
                             item?.BasicRateConversion :
                             `${item?.BasicRate} (${item?.BasicRateConversion})` :
-                        item?.BasicRate,
-                    showConvertedCurrency ?
-                        item.bestCost === "" ?
-                            item?.OtherNetCostConversion :
-                            `${item?.OtherNetCost} (${item?.OtherNetCostConversion})` :
-                        item?.OtherNetCost
+                        item?.BasicRate || ''
                 ];
-                sectionOne.push(formattedDataOne);
+                sectionOne?.push(formattedDataOne);
 
                 // Section Two Data
                 const formattedDataTwo = [
@@ -154,21 +148,40 @@ const BOPCompareTable = (props) => {
                             `${item?.NetLandedCost} (${item?.NetLandedCostConversion})` :
                         item?.NetLandedCost
                 ];
-                sectionTwo.push(formattedDataTwo);
+                sectionTwo?.push(formattedDataTwo);
             });
 
-            // Section Three Data
-            sectionThree = viewBOPDetails?.map(item => [
-                item?.bestCost ? '' : (
-                    <div
-                        onClick={() => handleOpenSpecificationDrawerSingle(item.BoughtOutPartId)}
-                        className={'link'}
-                    >
-                        View Specifications
-                    </div>
-                ),
-                item.Remark || ''
-            ]);
+            // Section Three Data with safety checks
+            sectionThree = viewBOPDetails?.map(item => {
+                // Null check for item
+                if (!item) {
+                    return [null, ''];
+                }
+
+                // Safe check for bestCost property
+                const isBestCost = item?.bestCost === true || item?.bestCost === "";
+
+                // Safe check for BoughtOutPartId
+                const hasValidId = item?.BoughtOutPartId && 
+                                 typeof item?.BoughtOutPartId !== 'undefined';
+
+                return [
+                    // Only show View Specifications if:
+                    // 1. Not a best cost row
+                    // 2. Has valid BoughtOutPartId
+                    // 3. Not undefined/null
+                    !isBestCost && hasValidId ? (
+                        <div
+                            onClick={() => handleOpenSpecificationDrawerSingle(item?.BoughtOutPartId)}
+                            className={'link'}
+                        >
+                            View Specifications
+                        </div>
+                    ) : null,
+                    // Safe check for Remark
+                    typeof item?.Remark === 'string' ? item?.Remark : ''
+                ];
+            });
 
             // Main Header Data
             const mainHeader = viewBOPDetails?.map((item, index) => ({
@@ -179,7 +192,7 @@ const BOPCompareTable = (props) => {
                     item?.bestCost ? false : item?.IsShowCheckBoxForApproval :
                     false,
                 bestCost: item?.bestCost,
-                shouldCost: props?.uniqueShouldCostingId?.includes(item.BoughtOutPartId) ?
+                shouldCost: props?.uniqueShouldCostingId?.includes(item?.BoughtOutPartId) ?
                     "Should Cost" : "",
                 costingType: item?.CostingHead === "Zero Based" ?
                     "ZBC" :
@@ -191,37 +204,57 @@ const BOPCompareTable = (props) => {
 
             const sections = [
                 {
-                    header: sectionOneHeader,
-                    data: sectionOne,
-                    isHighlightedRow: true,
-                },
-                {
-                    header: ['Minimum Order Quantity', 'BOP Net Cost'],
-                    data: sectionTwo,
+                    header: sectionOneHeader || [],
+                    data: sectionOne || [],
                     isHighlightedRow: true,
                 },
                 {
                     header: [
-                        <span className="d-block small-grey-text p-relative">
-                            BOP Specification
-                            <button
-                                className="Balance mb-0 button-stick"
-                                type="button"
-                                onClick={handleOpenSpecificationDrawerMultiple}
-                            >
-                            </button>
-                        </span>,
-                        'Remark'
+                        "No. of Pieces",
+                        showConvertedCurrency ? 
+                            `Net Landed Cost (${getConfigurationKey()?.BaseCurrency || ''})` : 
+                            "Net Landed Cost"
                     ],
-                    data: sectionThree,
+                    data: sectionTwo || [],
+                    isHighlightedRow: true,
+                },
+                {
+                    header: ["Specifications", "Remarks"],
+                    data: sectionThree || [],
                     isHighlightedRow: false,
                 }
             ];
 
+            // Safely set state
             setSectionData(sections);
-            setMainHeadingData(mainHeader);
+            setMainHeadingData(mainHeader || []);
         }
     }, [viewBOPDetails, showConvertedCurrency]);
+
+    // Safe handler for specification drawer
+    const handleOpenSpecificationDrawerSingle = (id) => {
+        try {
+            if (!id) {
+                console.warn('Invalid BoughtOutPartId');
+                return;
+            }
+            setSelectedBopId([id]);
+            setOpenSpecification(true);
+        } catch (error) {
+            console.error('Error opening specification drawer:', error);
+        }
+    };
+
+    // Add cleanup on unmount
+    useEffect(() => {
+        return () => {
+            setOpenSpecification(false);
+            setSelectedBopId(null);
+            setSectionData([]);
+            setMainHeadingData([]);
+        };
+    }, []);
+
     const closeSpecificationDrawer = () => {
         setOpenSpecification(false);
     };
@@ -238,10 +271,6 @@ const BOPCompareTable = (props) => {
         }
     };
 
-    const handleOpenSpecificationDrawerSingle = (id) => {
-        setSelectedBopId([id]);
-        setOpenSpecification(true);
-    };
     const bestCostObjectFunction = (arrayList) => {
         if (!arrayList?.length) return [];
 
@@ -302,7 +331,7 @@ const BOPCompareTable = (props) => {
                 sum + checkForNull(minObject[key]), 0);
         }
 
-        returnArray.push(minObject);
+        returnArray?.push(minObject);
         return returnArray;
     };
 
@@ -316,8 +345,8 @@ const BOPCompareTable = (props) => {
 
         setSelectedItems(prevItems => {
             let newItems
-            if (prevItems.some(i => i.BoughtOutPartId === item?.BoughtOutPartId)) {
-                newItems = prevItems.filter(i => i.BoughtOutPartId !== item?.BoughtOutPartId)
+            if (prevItems?.some(i => i?.BoughtOutPartId === item?.BoughtOutPartId)) {
+                newItems = prevItems?.filter(i => i?.BoughtOutPartId !== item?.BoughtOutPartId)
             } else {
                 newItems = [...prevItems, item]
             }
@@ -326,8 +355,8 @@ const BOPCompareTable = (props) => {
 
         setSelectedIndices(prevIndices => {
             let newIndices
-            if (prevIndices.includes(index)) {
-                newIndices = prevIndices.filter(i => i !== index)
+            if (prevIndices?.includes(index)) {
+                newIndices = prevIndices?.filter(i => i !== index)
             } else {
                 newIndices = [...prevIndices, index]
             }
@@ -364,7 +393,7 @@ const BOPCompareTable = (props) => {
                     anchor={"right"}
                     closeDrawer={() => setOtherCostDrawer(false)}
                     rawMaterial={true}
-                    rmBasicRate={selectedItem?.BasicRatePerUOM}
+                    rmBasicRate={selectedItem?.BasicRate}
                     ViewMode={true}
                     rmTableData={selectedItem?.BoughtOutPartOtherCostDetailsSchema}
                     RowData={selectedItem}
@@ -372,6 +401,8 @@ const BOPCompareTable = (props) => {
                     settlementCurrency={selectedItem?.Currency}
                     isImpactedMaster={true}
                     disabled={true}
+                    isBOP={true}
+
 
                 />
             }

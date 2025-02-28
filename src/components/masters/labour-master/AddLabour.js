@@ -13,7 +13,7 @@ import Toaster from '../../common/Toaster'
 import { fetchCityDataAPI, fetchCountryDataAPI, fetchStateDataAPI, getAllCity, getCityByCountryAction, getExchangeRateSource, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, LABOUR_VENDOR_TYPE, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants'
-import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId } from '../../../helper/auth'
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -23,7 +23,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
-import { onFocus } from '../../../helper'
+import { getExchangeRateParams, onFocus } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
@@ -139,15 +139,17 @@ class AddLabour extends Component {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, IsEmployeContractual } = this.state;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual && costingTypeId === ZBCTypeId)) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual && costingTypeId === ZBCTypeId)) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const vendorValue = IsFetchExchangeRateVendorWiseForParts() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual && costingTypeId === ZBCTypeId)) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWiseForParts() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual && costingTypeId === ZBCTypeId)) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && ((IsEmployeContractual && costingTypeId === ZBCTypeId) && vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWiseForParts() && ((IsEmployeContractual && costingTypeId === ZBCTypeId) && vendorName?.length === 0 && client?.length === 0)) {
         return;
       }
+      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fieldsObj?.plantCurrency, toCurrency: reactLocalStorage?.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+
       if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-        this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
+        this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
           this.setState({
             currencyValue: checkForNull(res?.data?.Data?.CurrencyExchangeRate),
             ExchangeRateId: res?.data?.Data?.ExchangeRateId,
@@ -576,7 +578,7 @@ class AddLabour extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, labourType: true } })
         count++;
       }
-      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      if (fieldsObj?.LabourRateConversion === 0 || fieldsObj?.LabourRate === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, labourRate: true } })
         count++;
       }
@@ -844,7 +846,8 @@ class AddLabour extends Component {
   onSubmit = debounce((values) => {
     const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged, product, costingTypeId, client, country, city } = this.state
 
-    if (vendorName.length <= 0 && costingTypeId === VBCTypeId && this.state.IsEmployeContractual) {
+
+    if (vendorName.length <= 0 && costingTypeId === VBCTypeId && IsEmployeContractual) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
@@ -908,7 +911,7 @@ class AddLabour extends Component {
         ProductId: product.value,
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
-        VendorId: (IsEmployeContractual && (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId)) ? vendorName.value : '',
+        VendorId: (IsEmployeContractual && (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId)) ? vendorName.value : null,
         StateId: StateName.value,
         LabourDetails: gridTable,
         Plants: [
@@ -951,7 +954,7 @@ class AddLabour extends Component {
 
 
     const LabourRateConversion = checkForNull(fieldsObj?.LabourRate) * checkForNull(currencyValue)
-    this.props.change('LabourRateConversion', checkForDecimalAndNull(LabourRateConversion, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('LabourRateConversion', checkForDecimalAndNull(LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice));
 
   }
   handleExchangeRateSource = (newValue) => {
@@ -1226,7 +1229,7 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.countryHandler}
                             valueDescription={this.state.country}
-                            disabled={isViewMode || isEditFlag}
+                            disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
                           />
                         </div>
                       </Col>
@@ -1245,7 +1248,7 @@ class AddLabour extends Component {
                               required={true}
                               handleChangeDescription={this.stateHandler}
                               valueDescription={this.state?.StateName}
-                              disabled={isViewMode || isEditFlag}
+                              disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
                             />
                           </div>
                         </Col>}
@@ -1263,7 +1266,7 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.cityHandler}
                             valueDescription={this.state.city}
-                            disabled={isViewMode || isEditFlag}
+                            disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
                           />
                         </div>
                       </Col>
@@ -1310,7 +1313,7 @@ class AddLabour extends Component {
                           component={renderTextInputField}
                           disabled={true}
                           className=" "
-                          customClassName="withBorder mb-1"
+                          customClassName="withBorder mb-1 plant-currency"
                         />
                         {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
 
@@ -1381,8 +1384,9 @@ class AddLabour extends Component {
                               className=" "
                               customClassName="withBorder"
                             />
-                            {this.state.errorObj.labourRate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help'>This field is required.</div>}
-                          </div>
+                            {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRate &&
+                              <div className='text-help'>This field is required.</div>
+                            }                          </div>
                         </Col>
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
                           {<TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
@@ -1400,7 +1404,6 @@ class AddLabour extends Component {
                             className=" "
                             customClassName=" withBorder"
                           />
-                          {this.state?.errorObj?.LabourRateConversion && (this.props?.fieldsObj?.LabourRateConversion === undefined || Number(this.props?.fieldsObj?.LabourRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
                         <Col md="3">
                           <div className="form-group">
@@ -1526,10 +1529,10 @@ class AddLabour extends Component {
                                     <tr key={index}>
                                       <td>{item.MachineType}</td>
                                       <td>{item.LabourType}</td>
-                                      <td>{checkForDecimalAndNull(item?.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                      {!this?.state?.hidePlantCurrency && <td>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration.NoOfDecimalForPrice)}</td>}
-                                      <td>{checkForDecimalAndNull(item?.WorkingTime, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                                      <td>{checkForDecimalAndNull(item?.Efficiency, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                                      <td>{checkForDecimalAndNull(item?.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                      {!this?.state?.hidePlantCurrency && <td>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                      <td>{checkForDecimalAndNull(item?.WorkingTime, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                                      <td>{checkForDecimalAndNull(item?.Efficiency, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                       <td>
                                         {item.EffectiveDate ? DayTime(item.EffectiveDate).format(
                                           "DD/MM/YYYY"
@@ -1627,7 +1630,7 @@ class AddLabour extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const fieldsObj = selector(state, 'LabourRate', "plantCurrency", "LabourRateConversion", 'city', 'state', 'country')
+  const fieldsObj = selector(state, 'LabourRate', 'plantCurrency', 'LabourRateConversion', 'workingHours', 'Efficiency', 'city', 'state', 'country')
   const { supplier, machine, fuel, labour, auth, comman, part, client } = state
   const {
     VendorLabourTypeSelectList,

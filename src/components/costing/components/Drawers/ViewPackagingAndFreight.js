@@ -113,8 +113,8 @@ function ViewPackagingAndFreight(props) {
                 <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
-                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
-                {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
+                <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
+                {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
               {packagingData &&
                 packagingData.map((item, index) => {
@@ -127,9 +127,9 @@ function ViewPackagingAndFreight(props) {
                       {!isLogisticsTechnology && <td>
                         {item.IsPackagingCostFixed ? (item.PackagingCostPercentage ? item.PackagingCostPercentage : '-') : 'Fixed'}
                       </td>}
-                      <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td><div className='d-flex align-items-center'>{item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                      <td>{item.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.Quantity ? checkForDecimalAndNull(item?.Quantity, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td><div className='d-flex align-items-center'>{item.PackagingCost ? checkForDecimalAndNull(item?.PackagingCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                         {item?.CostingPackagingCalculationDetailsId !== 0 && item?.CostingPackagingCalculationDetailsId !== null && <button
                           className="CalculatorIcon cr-cl-icon ml-1"
                           type={"button"}
@@ -175,8 +175,8 @@ function ViewPackagingAndFreight(props) {
                 <th>{`Capacity`}</th>
                 <th>{`Rate/Percentage`}</th>
                 <th>{`Quantity`}</th>
-                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
-                {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
+                <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
+                {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
               {freightData &&
                 freightData.map((item, index) => {
@@ -186,31 +186,36 @@ function ViewPackagingAndFreight(props) {
                       <td>{item.DimensionName ? item.DimensionName : '-'}</td>
                       <td>{item.Criteria ? item.Criteria : '-'}</td>
                       <td>{item.Capacity ? item.Capacity : '-'}</td>
-                      <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
                       <td>
-                        {item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
-                        {((item?.CostingFreightCalculationDetailsId !== 0 && item?.CostingFreightCalculationDetailsId !== null) || item?.IsFreightDetailedBreakup) && <button
-                          className="CalculatorIcon cr-cl-icon ml-1"
-                          type={"button"}
-                          onClick={() => { getFreightCalculator(index) }}
-                        />}
-                      </td>
-                      {initialConfiguration.IsShowCRMHead && <td>{item.FreightCRMHead ? item.FreightCRMHead : '-'}</td>}
-                    </tr>
+                        {item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}
+                        {
+                          ((item?.CostingFreightCalculationDetailsId !== 0 && item?.CostingFreightCalculationDetailsId !== null) || item?.IsFreightDetailedBreakup) && <button
+                            className="CalculatorIcon cr-cl-icon ml-1"
+                            type={"button"}
+                            onClick={() => { getFreightCalculator(index) }}
+                          />
+                        }
+                      </td >
+                      {initialConfiguration?.IsShowCRMHead && <td>{item.FreightCRMHead ? item.FreightCRMHead : '-'}</td>
+                      }
+                    </tr >
                   )
                 })}
-              {freightData?.length === 0 && (
-                <tr>
-                  <td colSpan={9}>
-                    <NoContentFound title={EMPTY_DATA} />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
+              {
+                freightData?.length === 0 && (
+                  <tr>
+                    <td colSpan={9}>
+                      <NoContentFound title={EMPTY_DATA} />
+                    </td>
+                  </tr>
+                )
+              }
+            </tbody >
+          </Table >
+        </Col >
+      </Row >
     </>
   }
 

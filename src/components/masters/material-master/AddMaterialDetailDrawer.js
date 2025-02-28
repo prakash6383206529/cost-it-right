@@ -446,7 +446,7 @@ const AddMaterialDetailDrawer = (props) => {
                                         <>
                                             <button
                                                 type="button"
-                                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : ''} pull-left mr10`}
+                                                className={`user-btn ${initialConfiguration?.IsShowCRMHead ? '' : ''} pull-left mr10`}
                                                 onClick={handleAddUpdateButtonClick}
                                             >
                                                 <div className={"plus"}></div>ADD
@@ -454,7 +454,7 @@ const AddMaterialDetailDrawer = (props) => {
                                             </button>
                                             <button
                                                 type="button"
-                                                className={`ml-1 ${initialConfiguration.IsShowCRMHead ? '' : ''} reset-btn`}
+                                                className={`ml-1 ${initialConfiguration?.IsShowCRMHead ? '' : ''} reset-btn`}
                                                 onClick={() => resetData()}
                                             >
                                                 Reset

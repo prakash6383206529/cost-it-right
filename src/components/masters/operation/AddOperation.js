@@ -8,7 +8,7 @@ import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploa
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
-import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, userDetails } from "../../../helper/auth";
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
@@ -21,7 +21,7 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
-import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
+import { CheckApprovalApplicableMaster, getExchangeRateParams, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -156,24 +156,23 @@ class AddOperation extends Component {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
 
-      const callAPI = (from, to) => {
+      const callAPI = (from, to, costingType, vendorValue, clientValue) => {
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,
             costingType,
             DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
             vendorValue,
-            client.value,
+            clientValue,
             false,
             to,
             ExchangeSource?.label ?? null,
@@ -197,9 +196,12 @@ class AddOperation extends Component {
 
       if (isImport) {
         // First API call
-        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+
+        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
           // Second API call
-          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+          callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
             this.setState({
               plantCurrency: rate1,
               settlementCurrency: rate2,
@@ -212,7 +214,8 @@ class AddOperation extends Component {
         });
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
-        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+        callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
             this.handleCalculation(fieldsObj?.RateLocalConversion)
           });
@@ -223,7 +226,7 @@ class AddOperation extends Component {
   }
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
-    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+    if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
@@ -247,7 +250,7 @@ class AddOperation extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId,
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && !isDivision) {
+    if (this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -267,7 +270,7 @@ class AddOperation extends Component {
     if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isWelding === true) {
       this.calculateRate()
     }
-    if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
 
       this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
     }
@@ -703,7 +706,7 @@ class AddOperation extends Component {
   checkUniqCode = debounce((e) => {
     this.setState({ operationCode: e.target.value });
 
-    if (!this.props.initialConfiguration.IsAutoGeneratedOperationCode) { // When the key is false
+    if (!this.props.initialConfiguration?.IsAutoGeneratedOperationCode) { // When the key is false
       // Check if the operation code exists for the entered operation name
       this.props.checkAndGetOperationCode(e.target.value, this.state.operationName, res => {
 
@@ -740,8 +743,8 @@ class AddOperation extends Component {
 
 
   checkUniqCodeByName = debounce((e) => {
-    this.setState({ operationName: e.target.value })
     if (!this.props.initialConfiguration.IsAutoGeneratedOperationCode) {
+      this.setState({ operationName: e.target.value.trim() })
       this.props.checkAndGetOperationCode('', e.target.value, res => {
 
         if (res && res.status === 202) {
@@ -761,20 +764,22 @@ class AddOperation extends Component {
       });
     }
     else {
-      // this.setState({ isDisableCode: true })
-      this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
-        if (res && res.data && res.data.Result === false) {
-          this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
-
-        } else {
-          this.setState({ isDisableCode: !res.data.Result }, () => {
+      if (e.target.value.trim() !== this.state.operationName) {
+        this.setState({ operationName: e.target.value.trim() })
+        this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
+          if (res && res.data && res.data.Result === false) {
             this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
-            Toaster.warning(res.data.Message);
-          })
-        }
-      })
+
+          } else {
+            this.setState({ isDisableCode: !res.data.Result }, () => {
+              this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
+              Toaster.warning(res.data.Message);
+            })
+          }
+        })
+      }
     }
-  }, 600)
+  }, 1000)
 
   /**
   * @method setDisableFalseFunction
@@ -1068,7 +1073,7 @@ class AddOperation extends Component {
       Rate: values?.Rate ?? values?.RateLocalConversion,
       RateLocalConversion: values?.RateLocalConversion,
       RateConversion: values?.RateConversion,
-      LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
+      LabourRatePerUOM: initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
       Technology: technologyArray,
       Remark: remarks,
       Plant: /* costingTypeId === CBCTypeId ? cbcPlantArray : */ plantArray ?? [],
@@ -1273,7 +1278,7 @@ class AddOperation extends Component {
     return <>
       {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
   };
   /**
@@ -1447,13 +1452,13 @@ class AddOperation extends Component {
                               : this.state.selectedTechnology
                           }
                           options={this.renderListing("technology")}
-                          selectionChanged={this.handleTechnology}
+                          selectionChanged={isEditFlag ? () => { } : this.handleTechnology}
                           optionValue={(option) => option.Value}
                           optionLabel={(option) => option?.Text}
                           component={renderMultiSelectField}
                           mendatory={true}
                           validate={this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : []}
-                          className="multiselect-with-border"
+                          className={`multiselect-with-border ${isEditFlag ? 'cursor-allowed' : ''}`}
                           disabled={isEditFlag ? true : false}
                         />
                       </Col>
@@ -1482,7 +1487,7 @@ class AddOperation extends Component {
                           component={renderText}
                           required={true}
                           onChange={this.checkUniqCode}
-                          disabled={(isEditFlag || isDisableCode | initialConfiguration.IsAutoGeneratedOperationCode) ? true : false}
+                          disabled={(isEditFlag || isDisableCode | initialConfiguration?.IsAutoGeneratedOperationCode) ? true : false}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -1504,7 +1509,7 @@ class AddOperation extends Component {
 
                     <Row>
                       {/* might use later */}
-                      {(costingTypeId === ZBCTypeId && (!initialConfiguration.IsMultipleUserAllowForApproval && !IsSelectSinglePlant)) && (
+                      {(costingTypeId === ZBCTypeId && (!initialConfiguration?.IsMultipleUserAllowForApproval && !IsSelectSinglePlant)) && (
                         <Col md="3">
                           <Field
                             label="Plant (Code)"
@@ -1558,7 +1563,7 @@ class AddOperation extends Component {
 
                       )}
                       {
-                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === ZBCTypeId && IsSelectSinglePlant) || initialConfiguration.IsMultipleUserAllowForApproval) &&
+                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === ZBCTypeId && IsSelectSinglePlant) || initialConfiguration?.IsMultipleUserAllowForApproval) &&
                         <Col md="3">
                           <Field
                             label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
@@ -1742,13 +1747,13 @@ class AddOperation extends Component {
                         />
                       </Col>}
                       <Col md="3">
-                        {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate-local" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
-                        {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />}
+                        {/* {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate-local" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
+                        {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />} */}
                         <Field
                           label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                           name={"RateLocalConversion"}
                           type="text"
-                          id="rate-local"
+                          id={this?.state?.isWelding ? "rate" : "rate-local"}
                           placeholder={this.state.isImport ? '' : 'Enter'}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
@@ -1774,7 +1779,7 @@ class AddOperation extends Component {
                       </Col>}
 
 
-                      {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <Col md="3">
+                      {initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure && <Col md="3">
                         <Field
                           label={`Labour Rate/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}

@@ -237,8 +237,8 @@ class AddMoreDetails extends Component {
         stateId: this.state.stateId || null,
         cityId: this.state.cityId || null
       }
-      // this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
-      this.props.getFuelList(obj, () => { })
+      this.props.getFuelByPlant(obj, () => { })
+      //this.props.getFuelList(obj, () => { })
     }
     if (!this.props?.editDetails?.isEditFlag) {
       this.props.change('EquityPercentage', 100)
@@ -257,7 +257,7 @@ class AddMoreDetails extends Component {
         this.props.change('MachineNumber', Data.MachineNumber)
       })
     }
-    if (!getConfigurationKey().IsDivisionAllowedForDepartment && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
       this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     } else {
       this.setState({ finalApprovalLoader: false })
@@ -289,7 +289,7 @@ class AddMoreDetails extends Component {
   }
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
-    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+    if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
@@ -311,7 +311,7 @@ class AddMoreDetails extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.CostingTypeId),
       plantId: plantId
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && !isDivision) {
+    if (this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -524,8 +524,8 @@ class AddMoreDetails extends Component {
               stateId: this.state.stateId || null,
               cityId: this.state.cityId || null
             }
-            // this.props.getFuelByPlant(Data?.Plant[0]?.PlantId, () => { })
-            this.props.getFuelList(obj, () => { })
+            this.props.getFuelByPlant(obj, () => { })
+            // this.props.getFuelList(obj, () => { })
 
           }
           setTimeout(() => {
@@ -786,10 +786,6 @@ class AddMoreDetails extends Component {
           })
           const { selectedPlants } = this.state
           this.callLabourTypeApi()
-          // this.props.getFuelByPlant(
-          //   selectedPlants.value,
-          //   (res) => { },
-          // )
           let obj = {
             plantId: newValue?.value,
             vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
@@ -800,7 +796,8 @@ class AddMoreDetails extends Component {
             stateId: this.state.stateId || null,
             cityId: this.state.cityId || null
           }
-          this.props.getFuelList(obj, (res) => { })
+          //this.props.getFuelList(obj, (res) => { })
+          this.props.getFuelByPlant(obj, (res) => { })
 
         })
         if (effectiveDate) {
@@ -826,7 +823,7 @@ class AddMoreDetails extends Component {
                   machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
                   powerIdFromAPI: Data?.PowerId
                 })
-                this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+                this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice))
               } else {
                 //  if(IsUsesSolarPower)
                 machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data?.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
@@ -834,7 +831,7 @@ class AddMoreDetails extends Component {
                   machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
                   powerIdFromAPI: Data?.PowerId
                 })
-                this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+                this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
               }
             })
           }, 1000);
@@ -943,7 +940,7 @@ class AddMoreDetails extends Component {
     const { initialConfiguration } = this.props
     this.setState({ isOpenAvailability: false, NoOfWorkingHours: NoOfWorkingHours }, () => {
       if (calculatedEfficiency !== Infinity && calculatedEfficiency !== 'NaN') {
-        this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, initialConfiguration.NoOfDecimalForInputOutput))
+        this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, initialConfiguration?.NoOfDecimalForInputOutput))
       }
     })
 
@@ -1001,7 +998,7 @@ class AddMoreDetails extends Component {
               UOMName: responseData?.UOMName || 'UOM',
               FuelEntryId: responseData?.FuelEntryId || EMPTY_GUID
             })
-            this.props.change('FuelCostPerUnit', checkForDecimalAndNull(newFuelCostPerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('FuelCostPerUnit', checkForDecimalAndNull(newFuelCostPerUnit, this.props.initialConfiguration?.NoOfDecimalForPrice))
           })
         } else {
           Toaster.warning('Please select plant.')
@@ -1112,7 +1109,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId },
               powerIdFromAPI: Data?.PowerId
             })
-            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice))
           } else {
             //  if(IsUsesSolarPower)
             machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
@@ -1120,7 +1117,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId },
               powerIdFromAPI: Data?.PowerId
             })
-            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
           }
         })
       }, 1000);
@@ -1202,7 +1199,8 @@ class AddMoreDetails extends Component {
           stateId: this.state.stateId || null,
           cityId: this.state.cityId || null
         }
-        this.props.getFuelList(obj, () => { })
+        this.props.getFuelByPlant(obj, () => { })
+        //this.props.getFuelList(obj, () => { })
 
       }
       this.setState({ fuelType: [] })
@@ -1248,14 +1246,14 @@ class AddMoreDetails extends Component {
                 machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit },
                 powerIdFromAPI: Data?.PowerId
               })
-              this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
+              this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration?.NoOfDecimalForPrice))
             } else {
               machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
               this.setState({
                 machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit },
                 powerIdFromAPI: Data?.PowerId
               })
-              this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
+              this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, this.props.initialConfiguration?.NoOfDecimalForPrice))
             }
           })
         }, 1000);
@@ -1298,9 +1296,9 @@ class AddMoreDetails extends Component {
           this.setState({ labourDetailId: Data.LabourDetailId })
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
-            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
           } else {
-            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
           }
         })
       });
@@ -1326,7 +1324,7 @@ class AddMoreDetails extends Component {
       this.powerCost()
       this.handleLabourCalculation()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
       this.commonFunction()
     }
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
@@ -1349,7 +1347,7 @@ class AddMoreDetails extends Component {
     this.setState({
       machineFullValue: { ...machineFullValue, totalCost: machineFullValue.totalCost }
     })
-    this.props.change('TotalCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('TotalCost', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -1382,9 +1380,9 @@ class AddMoreDetails extends Component {
     //THIS IS TO SHOW ON FORM (VIEW PURPOSE)
 
     this.props.change('EquityPercentage', checkForNull(EquityPercentage))
-    this.props.change('LoanValue', checkForDecimalAndNull(calculatePercentage(LoanPercentage) * checkForNull(totalCost), initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('EquityValue', checkForDecimalAndNull(calculatePercentage(EquityPercentage) * checkForNull(totalCost), initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('RateOfInterestValue', checkForDecimalAndNull((calculatePercentage(LoanPercentage) * checkForNull(totalCost)) * calculatePercentage(RateOfInterestPercentage), initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('LoanValue', checkForDecimalAndNull(calculatePercentage(LoanPercentage) * checkForNull(totalCost), initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('EquityValue', checkForDecimalAndNull(calculatePercentage(EquityPercentage) * checkForNull(totalCost), initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('RateOfInterestValue', checkForDecimalAndNull((calculatePercentage(LoanPercentage) * checkForNull(totalCost)) * calculatePercentage(RateOfInterestPercentage), initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -1451,7 +1449,7 @@ class AddMoreDetails extends Component {
     //this.props.change('DepreciationAmount', Math.round(depreciationAmount))
     machineFullValue.depreciationAmount = depreciationAmount
     this.setState({ machineFullValue: { ...machineFullValue, depreciationAmount: machineFullValue.depreciationAmount } })
-    this.props.change('DepreciationAmount', checkForDecimalAndNull(depreciationAmount, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('DepreciationAmount', checkForDecimalAndNull(depreciationAmount, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -1474,7 +1472,7 @@ class AddMoreDetails extends Component {
       this.setState({
         machineFullValue: { ...machineFullValue, MaintananceCost: machineFullValue.MaintananceCost }
       })
-      this.props.change('AnnualMaintanceAmount', checkForDecimalAndNull(MaintananceCost, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('AnnualMaintanceAmount', checkForDecimalAndNull(MaintananceCost, initialConfiguration?.NoOfDecimalForPrice))
     }
 
     if (IsAnnualConsumableFixed) {
@@ -1483,7 +1481,7 @@ class AddMoreDetails extends Component {
       this.setState({
         machineFullValue: { ...machineFullValue, ConsumableCost: machineFullValue.ConsumableCost }
       })
-      this.props.change('AnnualConsumableAmount', checkForDecimalAndNull(ConsumableCost, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('AnnualConsumableAmount', checkForDecimalAndNull(ConsumableCost, initialConfiguration?.NoOfDecimalForPrice))
     }
 
     if (IsInsuranceFixed) {
@@ -1492,7 +1490,7 @@ class AddMoreDetails extends Component {
       this.setState({
         machineFullValue: { ...machineFullValue, InsuranceCost: machineFullValue.InsuranceCost }
       })
-      this.props.change('AnnualInsuranceAmount', checkForDecimalAndNull(InsuranceCost, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('AnnualInsuranceAmount', checkForDecimalAndNull(InsuranceCost, initialConfiguration?.NoOfDecimalForPrice))
     }
 
   }
@@ -1536,8 +1534,8 @@ class AddMoreDetails extends Component {
       }
     })
 
-    this.props.change('AnnualAreaCost', checkForDecimalAndNull(annualAreaCost, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('TotalMachineCostPerAnnum', checkForDecimalAndNull(TotalMachineCostPerAnnum, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('AnnualAreaCost', checkForDecimalAndNull(annualAreaCost, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('TotalMachineCostPerAnnum', checkForDecimalAndNull(TotalMachineCostPerAnnum, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -1555,7 +1553,7 @@ class AddMoreDetails extends Component {
       const ConsumptionPerYear = checkForNull(fieldsObj?.ConsumptionPerYear)
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
-      this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(fieldsObj.FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(fieldsObj.FuelCostPerUnit * ConsumptionPerYear, initialConfiguration?.NoOfDecimalForPrice))
     } else {
 
       // if (IsUsesSolarPower) {
@@ -1571,8 +1569,8 @@ class AddMoreDetails extends Component {
       const totalPowerCostPrYer = totalPowerCostPerHour * NumberOfWorkingHoursPerYear
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
       this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer, TotalPowerCostPerHour: totalPowerCostPerHour } })
-      this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration.NoOfDecimalForPrice))
-      this.props.change('TotalPowerCostPerHour', checkForDecimalAndNull(totalPowerCostPerHour, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration?.NoOfDecimalForPrice))
+      this.props.change('TotalPowerCostPerHour', checkForDecimalAndNull(totalPowerCostPerHour, initialConfiguration?.NoOfDecimalForPrice))
       // }
     }
   }
@@ -1626,7 +1624,7 @@ class AddMoreDetails extends Component {
     }
     this.setState({ machineRate: MachineRate })
     this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
-    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice) ? checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice) : '')
+    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration?.NoOfDecimalForPrice) ? checkForDecimalAndNull(MachineRate, initialConfiguration?.NoOfDecimalForPrice) : '')
   }
 
   /**
@@ -1922,7 +1920,7 @@ class AddMoreDetails extends Component {
       }, () => {
         this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0);
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0);
-        this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '');
+        this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration?.NoOfDecimalForPrice) : '');
         this.props.change("MachineRateLocalConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateLocalConversion : '');
         this.props.change("MachineRateConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateConversion : '');
       });
@@ -2029,7 +2027,7 @@ class AddMoreDetails extends Component {
       machineRate: ""
     }, () => {
 
-      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
+      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration?.NoOfDecimalForPrice) : '')
     });
 
   };
@@ -2051,7 +2049,7 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0);
       this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0);
-      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '');
+      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration?.NoOfDecimalForPrice) : '');
       this.props.change("MachineRateLocalConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateLocalConversion : '');
       this.props.change("MachineRateConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateConversion : '');
     });
@@ -2134,12 +2132,12 @@ class AddMoreDetails extends Component {
     const { plantCurrency, settlementCurrency, entryType } = this.state
     if (entryType) {
       const MachineRateLocalConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
-      this.props.change('MachineRateLocalConversion', checkForNull(MachineRateLocalConversion, initialConfiguration.NoOfDecimalForPrice));
+      this.props.change('MachineRateLocalConversion', checkForNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice));
       const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, settlementCurrency)
-      this.props.change('MachineRateConversion', checkForNull(MachineRateConversion, initialConfiguration.NoOfDecimalForPrice));
+      this.props.change('MachineRateConversion', checkForNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
     } else {
       const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
-      this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration.NoOfDecimalForPrice));
+      this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
     }
   }
   HandleMachineRateSelectedCurrency = (e) => {
@@ -2792,7 +2790,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
               powerIdFromAPI: Data?.PowerId
             })
-            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice))
           } else {
             //  if(IsUsesSolarPower)
             machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data?.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
@@ -2800,7 +2798,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
               powerIdFromAPI: Data?.PowerId
             })
-            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
           }
         })
       }, 1000);
@@ -3008,8 +3006,8 @@ class AddMoreDetails extends Component {
           stateId: this.state.stateId || null,
           cityId: this.state.cityId || null
         }
-        // this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
-        this.props.getFuelList(obj, () => { })
+        this.props.getFuelByPlant(obj, () => { })
+        //this.props.getFuelList(obj, () => { })
       }
       // this.props.change("MachineRate", "")
       // this.props.change("MachineRateLocalConversion", "")
@@ -3222,11 +3220,11 @@ class AddMoreDetails extends Component {
                             label={`Machine No.`}
                             name={"MachineNumber"}
                             type="text"
-                            placeholder={(isEditFlag || initialConfiguration.IsAutoGeneratedMachineNumber) ? '-' : 'Enter'}
-                            validate={initialConfiguration.IsAutoGeneratedMachineNumber ? [] : [required]}
+                            placeholder={(isEditFlag || initialConfiguration?.IsAutoGeneratedMachineNumber) ? '-' : 'Enter'}
+                            validate={initialConfiguration?.IsAutoGeneratedMachineNumber ? [] : [required]}
                             component={renderText}
-                            required={initialConfiguration.IsAutoGeneratedMachineNumber ? false : true}
-                            disabled={(isEditFlag || initialConfiguration.IsAutoGeneratedMachineNumber) ? true : false}
+                            required={initialConfiguration?.IsAutoGeneratedMachineNumber ? false : true}
+                            disabled={(isEditFlag || initialConfiguration?.IsAutoGeneratedMachineNumber) ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -5031,8 +5029,8 @@ class AddMoreDetails extends Component {
                                     <th>{`UOM`}</th>
                                     {/* <th>{`Output/Hr`}</th>     COMMENTED FOR NOW MAY BE USED LATER
                                     <th>{`Output/Annum`}</th> */}
-                                    <th>{`Machine Rate (${this.state.entryType && this.state?.currency?.label !== undefined ? this.state?.currency.label : this.state?.isImport ? "Currency" : this.state?.plantCurrency ? this.state?.plantCurrency : "Currency"})`}</th>
-                                    {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <th>{`Machine Rate (${this.state?.plantCurrency ? this.state?.plantCurrency : "Currency"})`}</th>}
+                                    <th>{`Machine Rate (${this.state.entryType && this.state?.currency?.label !== undefined ? this.state?.currency.label : this.state?.isImport ? "Currency" : this.props.fieldsObj?.plantCurrency ? this.props.fieldsObj?.plantCurrency : "Currency"})`}</th>
+                                    {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <th>{`Machine Rate (${this.props.fieldsObj?.plantCurrency ? this.props.fieldsObj?.plantCurrency : "Currency"})`}</th>}
                                     {(!(!this?.state?.entryType && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                     <th>{`Action`}</th>
                                   </tr>
@@ -5046,7 +5044,7 @@ class AddMoreDetails extends Component {
                                           <td>{item.processName}</td>
                                           <td className='UOM-label-container'>{displayUOM(item.UnitOfMeasurement)}</td>
                                           {/* <td>{item.OutputPerHours}</td>    COMMENTED FOR NOW MAY BE USED LATER
-                                          <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td> */}
+                                          <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration?.NoOfDecimalForInputOutput)}</td> */}
                                           <td>{checkForDecimalAndNull(item?.MachineRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                           {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <td>{checkForDecimalAndNull(item?.MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
                                           {(!(!this?.state?.entryType && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <td>{checkForDecimalAndNull(item?.MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
@@ -5204,7 +5202,7 @@ class AddMoreDetails extends Component {
 
                         {
                           !isViewMode && <>
-                            {(!isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar)) || (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !CostingTypePermission) ?
+                            {(!isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar)) || (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !CostingTypePermission) ?
                               <button id="AddMoreDetails_SendForApproval" type="submit"
                                 class="user-btn approval-btn save-btn mr5"
 

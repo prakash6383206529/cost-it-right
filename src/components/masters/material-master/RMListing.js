@@ -58,19 +58,24 @@ const RMListing = (props) => {
     isViewFlag: false,
     totalRecordCount: 0
   });
-
-  const params = useMemo(() => {
-    return {
-      data: {},
-      master: 'RawMaterial',
-      tabs: 'Material'
-    }
+  useEffect(() => {
+    getListData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllMaterialType', params);
+
+  // const params = useMemo(() => {
+  //   return {
+  //     data: {},
+  //     master: 'RawMaterial',
+  //     tabs: 'Material'
+  //   }
+  // }, []);
+
+  // const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllMaterialType', params);
 
   useEffect(() => {
-    if (rawMaterialTypeDataList&&rawMaterialTypeDataList?.length >= 0) {
+    if (rawMaterialTypeDataList && rawMaterialTypeDataList?.length >= 0) {
       setState((prev) => ({ ...prev, render: false }));
     }
   }, [rawMaterialTypeDataList]);

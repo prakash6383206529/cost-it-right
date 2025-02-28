@@ -139,46 +139,46 @@ class BulkUpload extends Component {
                 this.callDivisionApi(department[0].value)
             }
         })
-        if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+        if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
             })
-        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        } else if (!this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
-        if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+        if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
             })
-        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        } else if (!this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
-        if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+        if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
             })
-        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        } else if (!this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
-        if (this.props?.masterId === MACHINE_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+        if (this.props?.masterId === MACHINE_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
             })
-        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        } else if (!this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
@@ -197,7 +197,7 @@ class BulkUpload extends Component {
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) || this.state.costingTypeId === Number(ZBCADDMOREOPERATION) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) || this.state.costingTypeId === Number(VBCADDMOREOPERATION) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) || this.state.costingTypeId === Number(CBCADDMOREOPERATION) ? CBCTypeId : this.state.bopType === DETAILED_BOP ? VBCTypeId : this.state.costingTypeId),
             divisionId: divisionId
         }
-        if (!this.props.initialConfiguration.IsMultipleUserAllowForApproval) {
+        if (!this.props.initialConfiguration?.IsMultipleUserAllowForApproval) {
             this.props.checkFinalUser(obj, (res) => {
                 if (res?.data?.Result) {
                     this.setState({ IsFinalApprover: res?.data?.Data?.IsFinalApprover })
@@ -216,16 +216,16 @@ class BulkUpload extends Component {
      * @description called after render the component
     */
     componentDidUpdate(prevProps, prevState) {
-        if (this.props?.masterId === RM_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+        if (this.props?.masterId === RM_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
             this.commonFunction()
         }
-        if (this.props?.masterId === BOP_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+        if (this.props?.masterId === BOP_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
             this.commonFunction()
         }
-        if (this.props?.masterId === OPERATIONS_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+        if (this.props?.masterId === OPERATIONS_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
             this.commonFunction()
         }
-        if (this.props?.masterId === MACHINE_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+        if (this.props?.masterId === MACHINE_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
             this.commonFunction()
         }
 
@@ -949,7 +949,7 @@ class BulkUpload extends Component {
         let masterUploadData = {
             Records: fileName === 'Operation' ? updatedFileData : fileData,
             LoggedInUserId: loggedInUserId(),
-            IsFinalApprover: !this.props.initialConfiguration.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
+            IsFinalApprover: !this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
             CostingTypeId: costingTypeId,
             TypeOfEntry: this.props.masterId === RM_MASTER_ID && this.state.isImport ? ENTRY_TYPE_IMPORT : typeOfEntryId ? typeOfEntryId : 0,
             DivisionId: this.state.division?.value,
@@ -1431,7 +1431,7 @@ class BulkUpload extends Component {
                                         <button
                                             type="submit"
                                             className="submit-button save-btn"
-                                            disabled={(setDisable || noApprovalCycle) && (!this.props.initialConfiguration.IsMultipleUserAllowForApproval)}
+                                            disabled={(setDisable || noApprovalCycle) && (!this.props.initialConfiguration?.IsMultipleUserAllowForApproval)}
                                         >
                                             <div className={"save-icon"}></div>
                                             {isEditFlag ? 'Update' : 'Save'}
@@ -1557,7 +1557,7 @@ class BulkUpload extends Component {
                             <button
                                 type="submit"
                                 className="submit-button save-btn"
-                                disabled={this.props.initialConfiguration.IsMultipleUserAllowForApproval ? false : setDisable}
+                                disabled={this.props.initialConfiguration?.IsMultipleUserAllowForApproval ? false : setDisable}
                             >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? 'Update' : 'Save'}

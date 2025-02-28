@@ -1041,9 +1041,9 @@ function AddNfr(props) {
                                                     {dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.DisplayStatus : ''}
                                                 </div>
                                             </td>
-                                            <td>{checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.Price, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                            <td>{checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.Price, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                             <td><div className='out-sourcing-wrapper'>
-                                                {checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.OutsourcingCost, initialConfiguration.NoOfDecimalForPrice)}
+                                                {checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.OutsourcingCost, initialConfiguration?.NoOfDecimalForPrice)}
                                                 {dataItem?.SelectedCostingVersion && <button
                                                     type="button"
                                                     className={"add-out-sourcing"}

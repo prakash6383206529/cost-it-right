@@ -22,7 +22,8 @@ import {
   setOtherDiscountData,
   setCostingtype,
   setCurrencySource,
-  setExchangeRateSourceValue
+  setExchangeRateSourceValue,
+  exchangeRateReducer
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1699,6 +1700,7 @@ function CostingDetails(props) {
       dispatch(setSurfaceCostInOverheadProfit(false, () => { }))
       dispatch(setSurfaceCostInOverheadProfitRejection(false, () => { }))
       dispatch(setToolCostInOverheadProfit(false, () => { }))
+      dispatch(exchangeRateReducer({}))
     }
   }
 
@@ -1843,7 +1845,7 @@ function CostingDetails(props) {
             ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
-            VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+            VendorPlantId: initialConfiguration && initialConfiguration?.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
             CostingTypeId: VBCTypeId
           }
           tempArr.push(data)
@@ -1878,7 +1880,7 @@ function CostingDetails(props) {
               ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
-              VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+              VendorPlantId: initialConfiguration && initialConfiguration?.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
               CostingTypeId: VBCTypeId
             }
             tempArr.push(data)

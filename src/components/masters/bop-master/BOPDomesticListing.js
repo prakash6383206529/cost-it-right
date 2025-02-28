@@ -104,7 +104,7 @@ const BOPDomesticListing = (props) => {
   });
 
 
-  console.log(state?.isLoader, "LOADER", props?.isMasterSummaryDrawer, "MASTER SUMMARY DRAWER")
+
 
 
   useEffect(() => {
@@ -161,7 +161,9 @@ const BOPDomesticListing = (props) => {
     }
     let statusString = [props?.approvalStatus].join(",")
     const filterData = {
-      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props.ListFor, IsBOPAssociated: props?.isBOPAssociated,
+      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props?.isSimulation ? props?.ListFor : '', IsBOPAssociated: props?.isBOPAssociated,
+      Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+      // LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
       StatusId: statusString
     }
     const { isMasterSummaryDrawer } = props
@@ -188,7 +190,6 @@ const BOPDomesticListing = (props) => {
 
 
         dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
-          console.log("res", res)
 
           setState((prevState) => ({ ...prevState, isLoader: false, noData: false }))
           if (props.isSimulation) {
@@ -206,7 +207,6 @@ const BOPDomesticListing = (props) => {
           }
 
           if (res && res.status === 204) {
-            console.log("res in 204", res)
             setState((prevState) => ({
               ...prevState, totalRecordCount: 0, isLoader: false, tableData: []
               // pageNo: 0
@@ -498,6 +498,9 @@ const BOPDomesticListing = (props) => {
 
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    
+    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart === null || rowData?.IsRFQBoughtOutPart === undefined ? true : rowData?.IsRFQBoughtOutPart;
+
     let isEditbale = false
     let isDeleteButton = false
     if (permissions?.Edit) {
@@ -507,7 +510,7 @@ const BOPDomesticListing = (props) => {
     }
 
 
-    if (isRfq && isMasterSummaryDrawer) {
+    if (isRfq && isMasterSummaryDrawer && !IsRFQBoughtOutPart) {
       return (
         <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
@@ -528,8 +531,8 @@ const BOPDomesticListing = (props) => {
         {(!benchMark) && (
           <>
             {permissions?.View && <Button id={`bopDomesticListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
-            {isEditbale && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
-            {isDeleteButton && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+            {isEditbale && !IsRFQBoughtOutPart && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+            {isDeleteButton && !IsRFQBoughtOutPart && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
           </>
         )}
 
@@ -1030,7 +1033,7 @@ const BOPDomesticListing = (props) => {
       {state.analyticsDrawer && <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} />}
       {state.attachment && (<Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />)}
       {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />}
-      {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && !props.isMasterSummaryDrawer && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
+      {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration?.IsMasterApprovalAppliedConfigure && !props.isMasterSummaryDrawer && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
       {
         state.compareDrawer &&
         <RfqMasterApprovalDrawer

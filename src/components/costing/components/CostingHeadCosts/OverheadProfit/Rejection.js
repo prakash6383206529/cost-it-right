@@ -85,8 +85,8 @@ function Rejection(props) {
 
 
     useEffect(() => {
-        setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration.NoOfDecimalForPrice))
-        setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration?.NoOfDecimalForPrice))
+        setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice))
     }, [rejectionObj, rejectionRecovery.RejectionRecoveryNetCost])
 
 
@@ -208,8 +208,8 @@ function Rejection(props) {
                 case 'RM':
                 case 'Part Cost':
                     if ((partType && Text === 'Part Cost') || (!partType && Text === 'RM')) {
-                        setValue('RejectionCost', checkForDecimalAndNull(RM, initialConfiguration.NoOfDecimalForPrice))
-                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RejectionCost', checkForDecimalAndNull(RM, initialConfiguration?.NoOfDecimalForPrice))
+                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM * calculatePercentage(RejectionPercentage)), initialConfiguration?.NoOfDecimalForPrice))
                         setRejectionObj({
                             ...rejectionObj,
                             RejectionApplicabilityId: applicability.value,
@@ -222,8 +222,8 @@ function Rejection(props) {
                     break;
 
                 case 'BOP':
-                    setValue('RejectionCost', checkForDecimalAndNull(BOP, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(BOP, initialConfiguration?.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((BOP * calculatePercentage(RejectionPercentage)), initialConfiguration?.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
@@ -236,8 +236,8 @@ function Rejection(props) {
 
                 case 'CC':
                     let totalRejectionCost = CC + checkForNull(NetSurfaceTreatmentCost)
-                    setValue('RejectionCost', checkForDecimalAndNull(totalRejectionCost, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((totalRejectionCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(totalRejectionCost, initialConfiguration?.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((totalRejectionCost * calculatePercentage(RejectionPercentage)), initialConfiguration?.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
@@ -251,8 +251,8 @@ function Rejection(props) {
                 case 'RM + CC + BOP':
                 case 'Part Cost + CC + BOP':
                     if ((partType && Text === 'Part Cost + CC + BOP') || (!partType && Text === 'RM + CC + BOP')) {
-                        setValue('RejectionCost', checkForDecimalAndNull(RM_CC_BOP, initialConfiguration.NoOfDecimalForPrice))
-                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RejectionCost', checkForDecimalAndNull(RM_CC_BOP, initialConfiguration?.NoOfDecimalForPrice))
+                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration?.NoOfDecimalForPrice))
                         setRejectionObj({
                             ...rejectionObj,
                             RejectionApplicabilityId: applicability.value,
@@ -267,8 +267,8 @@ function Rejection(props) {
                 case 'RM + BOP':
                 case 'Part Cost + BOP':
                     if ((partType && Text === 'Part Cost + BOP') || (!partType && Text === 'RM + BOP')) {
-                        setValue('RejectionCost', checkForDecimalAndNull(RM_BOP, initialConfiguration.NoOfDecimalForPrice))
-                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RejectionCost', checkForDecimalAndNull(RM_BOP, initialConfiguration?.NoOfDecimalForPrice))
+                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration?.NoOfDecimalForPrice))
                         setRejectionObj({
                             ...rejectionObj,
                             RejectionApplicabilityId: applicability.value,
@@ -283,8 +283,8 @@ function Rejection(props) {
                 case 'RM + CC':
                 case 'Part Cost + CC':
                     if ((partType && Text === 'Part Cost + CC') || (!partType && Text === 'RM + CC')) {
-                        setValue('RejectionCost', checkForDecimalAndNull(RM_CC, initialConfiguration.NoOfDecimalForPrice))
-                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RejectionCost', checkForDecimalAndNull(RM_CC, initialConfiguration?.NoOfDecimalForPrice))
+                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC * calculatePercentage(RejectionPercentage)), initialConfiguration?.NoOfDecimalForPrice))
                         setRejectionObj({
                             ...rejectionObj,
                             RejectionApplicabilityId: applicability.value,
@@ -297,8 +297,8 @@ function Rejection(props) {
                     break;
 
                 case 'BOP + CC':
-                    setValue('RejectionCost', checkForDecimalAndNull(BOP_CC, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((BOP_CC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(BOP_CC, initialConfiguration?.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((BOP_CC * calculatePercentage(RejectionPercentage)), initialConfiguration?.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
@@ -311,7 +311,7 @@ function Rejection(props) {
 
                 case 'Fixed':
                     setValue('RejectionCost', '-')
-                    setValue('RejectionTotalCost', checkForDecimalAndNull(RejectionPercentage, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull(RejectionPercentage, initialConfiguration?.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
@@ -348,7 +348,7 @@ function Rejection(props) {
             CostApplicability += checkForNull(item.ScrapRate) * checkForNull(item.FinishWeight)
         })
         const rejectionRecoveryCost = CostApplicability * EffectiveRecovery / 100
-        setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecoveryCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecoveryCost, initialConfiguration?.NoOfDecimalForPrice))
         dispatch(setRejectionRecoveryData({
             ...rejectionRecovery,
             EffectiveRecoveryPercentage: EffectiveRecovery,
@@ -456,7 +456,7 @@ function Rejection(props) {
             setIsOpenRecoveryDrawer(false)
         } else if (type === 'submit') {
             setIsOpenRecoveryDrawer(false)
-            setValue('RejectionRecovery', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RejectionRecovery', checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice))
         }
     }
 
@@ -478,7 +478,7 @@ function Rejection(props) {
         }
     }
     // const RejectionRecoveryUI = useMemo(() => {
-    //     setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.rejectionRecoveryCost, initialConfiguration.NoOfDecimalForPrice))
+    //     setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.rejectionRecoveryCost, initialConfiguration?.NoOfDecimalForPrice))
     //     return <div className='d-flex align-items-center'>
     //         <TextFieldHookForm
     //             label={false}
@@ -512,7 +512,7 @@ function Rejection(props) {
                         {'Rejection:'}
                     </div>
                 </Col>
-                {initialConfiguration.IsShowCRMHead && <Col md="3">
+                {initialConfiguration?.IsShowCRMHead && <Col md="3">
                     <SearchableSelectHookForm
                         name={`crmHeadRejection`}
                         type="text"
@@ -558,7 +558,7 @@ function Rejection(props) {
                             </span>
                         </Col>
                         <Col md="2">
-                            <span className="head-text">
+                            <span className="head-text word-nowrap">
                                 Rejection Recovery Cost
                             </span>
                         </Col>

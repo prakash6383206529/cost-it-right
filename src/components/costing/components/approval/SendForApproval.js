@@ -160,7 +160,7 @@ const SendForApproval = (props) => {
         setSelectedApprover(Data.Value)
         setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
         if (tempDropdownList?.length !== 0) {
-          if (!initialConfiguration.IsMultipleUserAllowForApproval) {
+          if (!initialConfiguration?.IsMultipleUserAllowForApproval) {
             setValue('approver', { label: Data.Text, value: Data.Value })
           }
           setShowValidation(false)
@@ -178,7 +178,7 @@ const SendForApproval = (props) => {
     dispatch(getReasonSelectList((res) => { }))
     dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId, (res) => {
       setTechnologyLevelsList(res?.data?.Data)
-      if (initialConfiguration.IsReleaseStrategyConfigured) {
+      if (initialConfiguration?.IsReleaseStrategyConfigured) {
         dispatch(getApprovalTypeSelectList('', (departmentRes) => {
           let data = []
           viewApprovalData && viewApprovalData?.map(item => {
@@ -223,7 +223,6 @@ const SendForApproval = (props) => {
     requestObject.CostingId = requestArray
     setCostingIdArray(requestObject)
   }, [])
-
 
   useEffect(() => {
     if (deptList && deptList.length > 1 && approvalType && !getConfigurationKey().IsDivisionAllowedForDepartment) {
@@ -492,7 +491,7 @@ const SendForApproval = (props) => {
       Toaster.warning('Please upload file to send for approval.')
       return false
     }
-    if (initialConfiguration.IsMultipleUserAllowForApproval && approvalDropDown.length === 0) {
+    if (initialConfiguration?.IsMultipleUserAllowForApproval && approvalDropDown.length === 0) {
       Toaster.warning('There is no selected approver.')
       return false
     }
@@ -552,7 +551,7 @@ const SendForApproval = (props) => {
 
         // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
         // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
-        tempObj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [selectedApprover]
+        tempObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [selectedApprover]
         tempObj.SenderLevelId = levelDetails.LevelId
         tempObj.SenderLevel = levelDetails.Level
         tempObj.SenderId = userData.LoggedInUserId
@@ -612,7 +611,7 @@ const SendForApproval = (props) => {
         ApproverLevelId: selectedApproverLevelId.levelId,
         ApproverLevel: selectedApproverLevelId.levelName,
         // ApproverId: selectedApprover,
-        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [selectedApprover],
+        ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [selectedApprover],
         // ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
         // ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
         // ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
@@ -1044,7 +1043,7 @@ const SendForApproval = (props) => {
                           <div className="form-group">
                             <label>Basic Price</label>
                             <label className="form-control bg-grey input-form-control">
-                              {data.BasicRate && data.BasicRate !== '-' ? checkForDecimalAndNull(data.BasicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              {data.BasicRate && data.BasicRate !== '-' ? checkForDecimalAndNull(data.BasicRate, initialConfiguration?.NoOfDecimalForPrice) : 0}
                             </label >
                           </div >
                         </Col >}
@@ -1052,7 +1051,7 @@ const SendForApproval = (props) => {
                           <div className="form-group">
                             <label>Existing Price</label>
                             <label className="form-control bg-grey input-form-control">
-                              {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration?.NoOfDecimalForPrice) : 0}
                             </label>
                           </div>
                         </Col>
@@ -1060,7 +1059,7 @@ const SendForApproval = (props) => {
                           <div className="form-group">
                             <label>Revised Price</label>
                             <label className="form-control bg-grey input-form-control">
-                              {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration?.NoOfDecimalForPrice) : 0}
                             </label>
                           </div>
                         </Col>
@@ -1069,7 +1068,7 @@ const SendForApproval = (props) => {
                             <TooltipCustom id={"variance-tooltip"} disabledIcon={true} tooltipText={`Existing Price - Revised Price`} />
                             <label>Variance (w.r.t. Existing)</label>
                             <label id={"variance-tooltip"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
-                              {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration?.NoOfDecimalForPrice) : 0}
                             </label>
                           </div>
                         </Col>
@@ -1082,7 +1081,7 @@ const SendForApproval = (props) => {
                                 <label>Consumed Quantity</label>
                                 <div className="d-flex align-items-center">
                                   <label id={"consumed-quantity"} className="form-control bg-grey input-form-control">
-                                    {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
+                                    {checkForDecimalAndNull(data.consumptionQty, initialConfiguration?.NoOfDecimalForPrice)}
                                   </label>
                                   {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
                                 </div>
@@ -1093,7 +1092,7 @@ const SendForApproval = (props) => {
                                 <TooltipCustom id={"remaining-budgeted-quantity-formula"} disabledIcon={true} tooltipText={`Budgeted Quantity (Refer From Volume Master) - Consumed Quantity`} />
                                 <label>Remaining Budgeted Quantity</label>
                                 <label id={"remaining-budgeted-quantity-formula"} className="form-control bg-grey input-form-control">
-                                  {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                  {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration?.NoOfDecimalForPrice) : 0}
                                 </label>
                               </div>
                             </Col>
@@ -1103,7 +1102,7 @@ const SendForApproval = (props) => {
                                 <TooltipCustom id={"annual-formula"} disabledIcon={true} tooltipText={`Total Budget Quantity (Refer From Volume Master) * Variance`} />
                                 <label>Annual Impact</label>
                                 <label id={"annual-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                  {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration?.NoOfDecimalForPrice) : 0}
                                 </label>
                               </div>
                             </Col>
@@ -1113,7 +1112,7 @@ const SendForApproval = (props) => {
                                 <TooltipCustom id={"impact-for-year-formula"} disabledIcon={true} tooltipText={`(Total Budget Quantity (Refer From Volume Master) * Consumed Quantity) - Variance`} />
                                 <label>Impact for the Year</label>
                                 <label id={"impact-for-year-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                  {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration?.NoOfDecimalForPrice) : 0}
                                 </label>
                               </div>
                             </Col>
@@ -1122,7 +1121,7 @@ const SendForApproval = (props) => {
                               <div className="form-group">
                                 <label>Budgeted Price</label>
                                 <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.BudgetedPrice && data.BudgetedPrice ? checkForDecimalAndNull(data.BudgetedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                  {data.BudgetedPrice && data.BudgetedPrice ? checkForDecimalAndNull(data.BudgetedPrice, initialConfiguration?.NoOfDecimalForPrice) : 0}
                                 </label>
                               </div>
                             </Col>}
@@ -1130,7 +1129,7 @@ const SendForApproval = (props) => {
                               <div className="form-group">
                                 <label>Impact/Quarter (w.r.t. Budgeted Price)</label>
                                 <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.BudgetedPriceVariance && data.BudgetedPriceVariance ? checkForDecimalAndNull(data.BudgetedPriceVariance, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                  {data.BudgetedPriceVariance && data.BudgetedPriceVariance ? checkForDecimalAndNull(data.BudgetedPriceVariance, initialConfiguration?.NoOfDecimalForPrice) : 0}
                                 </label>
                               </div>
                             </Col>}
@@ -1161,7 +1160,7 @@ const SendForApproval = (props) => {
                         />
                       </div>
                     </Row> */}
-                    {getConfigurationKey().IsSAPConfigured && !props.isRfq && <Row className="px-3">
+                    {false && getConfigurationKey().IsSAPConfigured && !props.isRfq && <Row className="px-3">
                       <Col md="12">
                         <div className="left-border">{"SAP-Push Details"}</div>
                       </Col>
@@ -1182,7 +1181,7 @@ const SendForApproval = (props) => {
                       </Col>
                     </Row>
                     <Row className="px-3">
-                      {initialConfiguration.IsReleaseStrategyConfigured && <Col md="6">
+                      {initialConfiguration?.IsReleaseStrategyConfigured && <Col md="6">
                         <SearchableSelectHookForm
                           label={"Approval Type"}
                           name={"ApprovalType"}
@@ -1227,16 +1226,16 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={divisionList}
-                          disabled={((Object.keys(selectedDepartment).length === 0) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
+                          disabled={((Object.keys(selectedDepartment).length === 0) || (initialConfiguration?.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
                           mandatory={true}
                           handleChange={() => { }}
                           errors={errors.Division}
                         />
                       </Col>}
                       <Col md="6">
-                        {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                        {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                           <AllApprovalField
-                            label="Approver"
+                            label="Approver1"
                             approverList={approvalDropDown}
                             popupButton="View all"
                           />
@@ -1300,7 +1299,7 @@ const SendForApproval = (props) => {
                       }
 
                       {
-                        initialConfiguration.IsShowTentativeSaleRate && <Col md="6" className="d-flex align-items-center mb-3 ml-1 ">
+                        initialConfiguration?.IsShowTentativeSaleRate && <Col md="6" className="d-flex align-items-center mb-3 ml-1 ">
                           <span className="d-inline-block">
                             <label
                               className={`custom-checkbox mb-0`}
@@ -1452,7 +1451,7 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {initialConfiguration.IsLastRevisionDataVisible && viewApprovalData && viewApprovalData[0]?.costingTypeId === VBCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
+                    {initialConfiguration?.IsLastRevisionDataVisible && viewApprovalData && viewApprovalData[0]?.costingTypeId === VBCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
                     </button>}

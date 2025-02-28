@@ -412,12 +412,25 @@ export const checkPercentageValue = (value, msg = "Percentage value should not b
 }
 
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
-export const CheckIsCostingDateSelected = (costingDate, currency) => {
+export const CheckIsCostingDateSelected = (costingDate, currency, exchangeRateData = {}) => {
+
     const IsSelected = DayTime(costingDate).isValid() ? true : false;
     if (!IsSelected || currency?.label === null || currency?.label === undefined) {
         Toaster.warning('Please select Costing effective date and Currency.')
+        return true;
     }
-    return (!IsSelected || currency?.label === null || currency?.label === undefined);
+    if (!exchangeRateData?.plantExchangeRate && !exchangeRateData?.baseExchangeRate) {
+        let message = "Data does not exist in the Exchange Rate Master";
+        const plantPair = exchangeRateData?.plantFromCurrency !== exchangeRateData?.plantToCurrency
+            ? ` for ${exchangeRateData.plantFromCurrency} to ${exchangeRateData.plantToCurrency}` : '';
+        const basePair = exchangeRateData?.baseFromCurrency !== exchangeRateData?.baseToCurrency
+            ? `${plantPair ? ' and' : ' for'} ${exchangeRateData.baseFromCurrency} to ${exchangeRateData.baseToCurrency}` : '';
+
+        Toaster.warning(`${message}${plantPair}${basePair}. Please add it first and try again.`);
+        return true;
+    }
+
+    return false;
 }
 
 export const percentageOfNumber = (num, percentage) => {
@@ -450,7 +463,7 @@ export const decimalNumberLimit6 = value => {
 }
 export const decimalIntegerNumberLimit = (integerLimit, decimalLimit) => value => {
     let tempValue = value && Number('0' + String(value)?.replace(/^0+/, ''))
-    return tempValue && !(new RegExp(`^[0-9][0-9]{0,${integerLimit-1}}(\\.\\d{0,${decimalLimit}})?$`).test(tempValue))
+    return tempValue && !(new RegExp(`^[0-9][0-9]{0,${integerLimit - 1}}(\\.\\d{0,${decimalLimit}})?$`).test(tempValue))
         ? `Maximum length for integer is ${integerLimit} and for decimal is ${decimalLimit}` : undefined;
 }
 export const noDecimal = value =>
@@ -523,7 +536,6 @@ export const integerOnly = value =>
         ? 'Only integer values are allowed'
         : undefined;
 
-
 export const validateSpecialChars = (value) => {
     if (!value) return undefined;
 
@@ -564,4 +576,3 @@ export const validateFileName = (fileName) => {
 
     return true;
 };
-

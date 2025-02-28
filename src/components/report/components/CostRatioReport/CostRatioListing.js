@@ -221,8 +221,9 @@ const CostRatioListing = (props) => {
                                     <div className='column-data'> {vendorLabel} (Code)</div>
                                     <div className='column-data'>Plant (Code)</div>
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <div className='column-data'>Basic Price</div>}
-                                    <div className='column-data'> Net Cost</div>
-                                    <div className='column-data'>Net Cost (Currency)</div>
+                                    <div className='column-data'> Net Cost (Settlement Currency)</div>
+                                    <div className='column-data'>Net Cost (Plant Currency)</div>
+                                    <div className='column-data'>Net Cost (Base Currency)</div>
                                     <div className='column-data'>Graph</div>
                                 </th>
                                 {tableData && tableData.map((item, index) => {
@@ -234,19 +235,20 @@ const CostRatioListing = (props) => {
                                             <div className='column-data'>{item.EffectiveDate ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : '-'} </div>
                                             <div className='column-data'>{item.PartNumber ? item.PartNumber : '-'} </div>
                                             <div className='column-data'>{item.RevisionNumber ? item.RevisionNumber : '-'} </div>
-                                            <div className={`column-data code-container`} ref={divRef} >{(item?.VendorName && item?.VendorName !== '-' && item?.VendorCode && item?.VendorCode !== '-') ?<div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`}
-                                                        style={{ maxWidth: divRef?.current?.clientWidth }}>
-                                                        <span title={item?.VendorName + " (" + item?.VendorCode + ")"} className='name'>
-                                                            {item?.VendorName}
-                                                        </span>
-                                                        <span>({item?.VendorCode})</span>
-                                                    </div>
-                                                    : '-'}
+                                            <div className={`column-data code-container`} ref={divRef} >{(item?.VendorName && item?.VendorName !== '-' && item?.VendorCode && item?.VendorCode !== '-') ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`}
+                                                style={{ maxWidth: divRef?.current?.clientWidth }}>
+                                                <span title={item?.VendorName + " (" + item?.VendorCode + ")"} className='name'>
+                                                    {item?.VendorName}
+                                                </span>
+                                                <span>({item?.VendorCode})</span>
+                                            </div>
+                                                : '-'}
                                             </div>
                                             <div className='column-data code-container' ref={divRef} >{(item.PlantName || item.PlantCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name' title={item.PlantName + " (" + item.PlantCode + ")"}>{item.PlantName}</span> <span>({item.PlantCode})</span></div> : '-'}</div>
-                                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <div className='column-data'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)} {checkForDecimalAndNull(item.BasicRate, initialConfiguration.NoOfDecimalForPrice)} </div>}
-                                            <div className='column-data'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)} {checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice)} </div>
-                                            <div className='column-data'>{item.Currency ? getCurrencySymbol(item.Currency) : ''} {checkForDecimalAndNull(item.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice)}</div>
+                                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <div className='column-data'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)} {checkForDecimalAndNull(item.BasicRate, initialConfiguration?.NoOfDecimalForPrice)} </div>}
+                                            <div className='column-data'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)} {checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration?.NoOfDecimalForPrice)} </div>
+                                            <div className='column-data'>{getCurrencySymbol(item?.LocalCurrency)} {checkForDecimalAndNull(item.NetPOPriceLocalConversion, initialConfiguration?.NoOfDecimalForPrice)} </div>
+                                            <div className='column-data'>{getCurrencySymbol(item?.CostingCurrency)} {checkForDecimalAndNull(item.NetPOPriceConversion, initialConfiguration?.NoOfDecimalForPrice)} </div>
                                             <div className='column-data'>{item.NetPOPriceINR && <button className='view-pie-button btn-hyper-link ml-0' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><div className='mb-2'><strong>All value is showing in Percentage</strong></div><Costratiograph data={pieChartData} options={pieChartOption} /></span>View Graph</button>}</div>
 
                                         </th>
@@ -262,7 +264,7 @@ const CostRatioListing = (props) => {
                                     <div className='column-data'>Process Cost (%)</div>
                                     <div className='column-data'>Operation Cost (%)</div>
                                     <div className='column-data'>Other Operation Cost (%)</div>
-                                    <div className='column-data'>Conversion Cost (%)<div className='mb-3 ml-2'><TooltipCustom id="ConversionCost" tooltipText="Conversion Cost = (Process Cost + Operation Cost + Other Operation Cost)"/></div></div>
+                                    <div className='column-data'>Conversion Cost (%)<div className='mb-3 ml-2'><TooltipCustom id="ConversionCost" tooltipText="Conversion Cost = (Process Cost + Operation Cost + Other Operation Cost)" /></div></div>
                                     <div className='column-data'>Surface Cost (%)</div>
                                     <div className='column-data'>Overhead Cost (%)</div>
                                     <div className='column-data'>Profit Cost (%)</div>

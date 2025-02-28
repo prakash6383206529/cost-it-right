@@ -15,12 +15,12 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getIm
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, RAWMATERIALINDEX, } from '../../../config/constants';
+import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, RAWMATERIALINDEX, RAWMATERIALAPPROVALTYPEID, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { checkFinalUser, setCostingViewData, storePartNumber } from '../../costing/actions/Costing';
+import { checkFinalUser, resetExchangeRateData, setCostingViewData, storePartNumber } from '../../costing/actions/Costing';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
@@ -58,7 +58,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function SimulationApprovalSummary(props) {
     const { vendorLabel } = useLabels()
     const { isbulkUpload } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId, receiverId, fromDashboard } = props?.location?.state
+    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId, receiverId, SimulationHeadId, fromDashboard } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -154,6 +154,8 @@ function SimulationApprovalSummary(props) {
     const [costingIdArray, setCostingIdArray] = useState({})
 
 
+    const rmIndexedSimulationSummaryData = useSelector(state => state?.simulation?.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
+
     useEffect(() => {
         const reqParams = {
             approvalTokenNumber: approvalNumber,
@@ -166,7 +168,7 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         setLoader(false)
-        if (Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX)) {
+        if (Number(SimulationHeadId) === Number(RAWMATERIALAPPROVALTYPEID)) {
             dispatch(getApprovalSimulatedRawMaterialSummary(params, res => {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
@@ -265,16 +267,16 @@ function SimulationApprovalSummary(props) {
                 }
 
                 // const valueTemp = {
-                //     CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
-                //     impactPartNumber: SimulatedCostingList[0].PartNo,
-                //     plantCode: SimulatedCostingList[0].PlantCode,
-                //     vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
-                //     delta: SimulatedCostingList[0].Variance,
+                //     CostingHead: SimulatedCostingList[0]?.CostingHead === 'VBC' ? 1 : 0,
+                //     impactPartNumber: SimulatedCostingList[0]?.PartNo,
+                //     plantCode: SimulatedCostingList[0]?.PlantCode,
+                //     vendorId: SimulatedCostingList[0]?.CostingHead === 'VBC' ? SimulatedCostingList[0]?.VendorId : EMPTY_GUID,
+                //     delta: SimulatedCostingList[0]?.Variance,
                 //     quantity: 1
                 // }
                 setdataForAssemblyImpactForFg(SimulatedCostingList)
 
-                // if (initialConfiguration.IsReleaseStrategyConfigured) {
+                // if (initialConfiguration?.IsReleaseStrategyConfigured) {
                 //     let requestObject = {
                 //         "RequestFor": "SIMULATION",
                 //         "TechnologyId": SimulationTechnologyId,
@@ -316,7 +318,7 @@ function SimulationApprovalSummary(props) {
         if ((simulationData && Object.keys(simulationData)?.length > 0)) {
             let technologyIdTemp = simulationData?.SimulationTechnologyId
             if (simulationData?.IsExchangeRateSimulation) {
-                if (String(simulationData?.SimulationTechnologyId) === String(RMIMPORT) || String(simulationData?.SimulationTechnologyId) === String(BOPIMPORT)) {
+                if (String(simulationData?.SimulationTechnologyId) === String(RMIMPORT) || String(simulationData?.SimulationTechnologyId) === String(BOPIMPORT) || String(simulationData?.SimulationTechnologyId) === String(RAWMATERIALINDEX) || String(simulationData?.SimulationTechnologyId) === String(SURFACETREATMENT) || String(simulationData?.SimulationTechnologyId) === String(MACHINERATE) || String(simulationData?.SimulationTechnologyId) === String(OPERATIONS)) {
                     technologyIdTemp = EXCHNAGERATE
                 }
             } else {
@@ -384,7 +386,7 @@ function SimulationApprovalSummary(props) {
         if (count === 0 && effectiveDate && costingList && simulationDetail?.SimulationId) {
             setCount(1)
             if (costingList && costingList?.length > 0 && effectiveDate && Object.keys('simulationDetail'?.length > 0) && simulationDetail?.SimulationHeadId === VBCTypeId) {
-                dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                dispatch(getLastSimulationData(costingList[0]?.VendorId, effectiveDate, res => {
                     const structureOfData = {
                         ExchangeRateImpactedMasterDataList: [],
                         OperationImpactedMasterDataList: [],
@@ -509,7 +511,7 @@ function SimulationApprovalSummary(props) {
             objj3[1].SimulationStatusId = Data?.SimulationStatusId
             dispatch(setCostingViewData(objj3))
             setCompareCosting(true)
-            setTechnologyName(obj1[0].technology)
+            setTechnologyName(obj1[0]?.technology)
         }))
     }
 
@@ -1239,7 +1241,7 @@ function SimulationApprovalSummary(props) {
                         </Row >
 
                         {/* Code for approval workflow */}
-                        < ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={simulationDetail?.Token} approverData={dataForFetchingAllApprover} />
+                        <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={simulationDetail?.Token} approverData={dataForFetchingAllApprover} viewAll={() => setViewButton(true)} />
 
                         <Row>
                             <Col md="10"><div className="left-border">{'Amendment Details:'}</div></Col>
@@ -1489,17 +1491,18 @@ function SimulationApprovalSummary(props) {
                                                                 {(isOperation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="NewOperationCost" headerName="Revised Operation Cost" cellRenderer='newOperationFormatter'></AgGridColumn>}
                                                                 {(isOperation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCostVariance" headerName="Variance (Oper. Cost)" cellRenderer='OPVarianceFormatter'></AgGridColumn>}
 
-                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? headers?.NetCost : `Existing ${headers?.NetCost}`}></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={`Existing Net Cost (Currency)`}></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="NewPOPrice" cellRenderer='oldPOFormatter' headerName={`Revised Net Cost (Currency)`}></AgGridColumn>}
 
-                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName={header?.RevisedNetCost}></AgGridColumn>}
+                                                                {/* {String(SimulationTechnologyId) !== EXCHNAGERATE && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName={header?.RevisedNetCost}></AgGridColumn>} */}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="POVariance" headerName="Variance (w.r.t. Existing)" cellRenderer='POVarianceFormatter' ></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Existing RM Cost/pc" ></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="Revised RM Cost/pc" ></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="RMVariance" headerName="Variance (RM Cost)" cellRenderer='varianceFormatter' ></AgGridColumn>}
 
-                                                                {(isExchangeRate || (keysForDownloadSummary.IsExchangeRateSimulation && simulationDetail?.SimulationTechnologyId === EXCHNAGERATE)) && <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Existing Net Cost (in Currency)"></AgGridColumn>}
-                                                                {(isExchangeRate || (keysForDownloadSummary.IsExchangeRateSimulation && simulationDetail?.SimulationTechnologyId === EXCHNAGERATE)) && <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="Revised Net Cost (in Currency)"></AgGridColumn>}
+                                                                {/* {(isExchangeRate || (keysForDownloadSummary.IsExchangeRateSimulation && simulationDetail?.SimulationTechnologyId === EXCHNAGERATE)) && <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Existing Net Cost (in Currency)"></AgGridColumn>}
+                                                                {(isExchangeRate || (keysForDownloadSummary.IsExchangeRateSimulation && simulationDetail?.SimulationTechnologyId === EXCHNAGERATE)) && <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="Revised Net Cost (in Currency)"></AgGridColumn>} */}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="POVariance" headerName="Variance (w.r.t. Existing)" cellRenderer='POVarianceFormatter' ></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Existing Exchange Rate" ></AgGridColumn>}
@@ -1556,7 +1559,7 @@ function SimulationApprovalSummary(props) {
                             </>
                         }
                         {
-                            Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX) &&
+                            Number(SimulationHeadId) === Number(RAWMATERIALAPPROVALTYPEID) && rmIndexedSimulationSummaryData &&
                             <RMIndexationSimulation isApprovalSummary={true} />
                         }
                         {

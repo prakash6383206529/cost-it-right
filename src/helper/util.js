@@ -8,9 +8,13 @@ import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
   RAWMATERIALINDEX,
-  ENTRY_TYPE_IMPORT,
+  VBCTypeId,
+  RAW_MATERIAL,
+  BOP,
+  RAWMATERIAL,
+
 } from '../config/constants'
-import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
+import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
 import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID } from '../config/masterData';
@@ -961,7 +965,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.NetSurfaceTreatmentConversion = dataFromAPI?.NetSurfaceTreatmentConversion
   obj.NetFreightPackagingConversion = dataFromAPI?.NetFreightPackagingConversion
   obj.nTotalRMBOPCCLocalConversion = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCCLocalConversion ? dataFromAPI.NetTotalRMBOPCCLocalConversion : 0
-
+  obj.QuotationId = dataFromAPI?.QuotationId ?? null
+  obj.IsRfqCosting = dataFromAPI?.IsRFQCosting ?? false
   temp.push(obj)
   return temp
 }
@@ -1739,7 +1744,7 @@ export function checkTechnologyIdAndRfq(viewCostingData = []) {
 }
 // function to remove all spaces from a string
 export const removeSpaces = (str = '') => {
-  return str.replace(/\s+/g, '');
+  return str?.replace(/\s+/g, '');
 };
 export const getChangeHighlightClass = (originalValue, updatedValue) => {
   return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
@@ -1833,4 +1838,114 @@ export const calculateBestCost = (arrayList, showConvertedCurrency = false) => {
   }
 
   return [...finalArrayList, minObject];
+};
+
+
+export const canEnableFields = ({
+  plant,
+  technology,
+  type,
+  updateButtonPartNoTable,
+  isEditMode,
+  isViewMode,
+  isEditFlagReceived,     // Flag indicating if quotation is received
+  showSendButton,  // Add this parameter
+  isAddFlag       // Add this parameter
+}) => {
+
+  // First check if quotation is received - disable all fields
+  if (isEditFlagReceived) {
+    return false;
+  }
+
+  // Check for view mode - disable all fields
+  if (isViewMode) {
+    return false;
+  }
+
+  // For add mode or draft/predraft status
+  if (isAddFlag || showSendButton === 'Draft' || showSendButton === 'PreDraft') {
+    // For RM type, need both plant and technology
+    if (type === 'RM') {
+      return Object.keys(plant || {}).length > 0 &&
+        Object.keys(technology || {}).length > 0;
+    }
+    // For other types, only need plant
+    return Object.keys(plant || {}).length > 0;
+  }
+
+  // For grid edit operations
+  if (updateButtonPartNoTable && isEditMode && !isViewMode) {
+    // Disable fields even in edit mode if quotation is received
+
+    return true;
+  }
+
+
+  // For grid edit operations
+  if (updateButtonPartNoTable && isEditMode && !isViewMode) {
+    return true;
+  }
+
+  // Default case - fields should be disabled
+  return false;
+};
+// ... existing code ...
+
+export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendorId, clientValue, master = "", plantCurrency = "" }) => {
+  const isPlantAndTargetBothBase = plantCurrency === reactLocalStorage.getObject("baseCurrency") &&
+    toCurrency === reactLocalStorage.getObject("baseCurrency");
+
+  // Handle base currency conversion only for settlement currency, not when both are INR
+  if (toCurrency === reactLocalStorage.getObject("baseCurrency") &&
+    !isPlantAndTargetBothBase) {
+    return {
+      costingHeadTypeId: ZBCTypeId,
+      vendorId: null,
+      clientId: null
+    };
+  }
+
+  // Handle Raw Material case
+  if (master === RAWMATERIAL && defaultCostingTypeId === ZBCTypeId) {
+
+    const useVendorWise = IsFetchExchangeRateVendorWiseForZBCRawMaterial();
+    return {
+      costingHeadTypeId: useVendorWise ? VBCTypeId : defaultCostingTypeId,
+      vendorId: useVendorWise ? vendorId : EMPTY_GUID,
+      clientId: clientValue
+    };
+  }
+
+  // Handle BOP case
+  if (master === BOP) {
+    const useVendorWise = IsFetchExchangeRateVendorWiseForParts();
+    return {
+      costingHeadTypeId: useVendorWise ?
+        (defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId ? VBCTypeId : defaultCostingTypeId)
+        : ZBCTypeId,
+      vendorId: useVendorWise ? vendorId : EMPTY_GUID,
+      clientId: clientValue
+    };
+  }
+
+  // Handle default case
+  const isZBC = defaultCostingTypeId === ZBCTypeId;
+  const useVendorWise = IsFetchExchangeRateVendorWiseForParts();
+
+  if (isZBC) {
+    return {
+      costingHeadTypeId: ZBCTypeId,
+      vendorId: EMPTY_GUID,
+      clientId: clientValue
+    };
+  }
+
+  return {
+    costingHeadTypeId: useVendorWise ?
+      (defaultCostingTypeId === VBCTypeId ? VBCTypeId : defaultCostingTypeId)
+      : ZBCTypeId,
+    vendorId: useVendorWise ? vendorId : EMPTY_GUID,
+    clientId: clientValue
+  };
 };

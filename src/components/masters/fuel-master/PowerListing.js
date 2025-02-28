@@ -178,7 +178,7 @@ const PowerListing = (props) => {
 
   const costFormatter = (props) => {
     const cellValue = props?.value;
-    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : "";
+    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration?.NoOfDecimalForPrice) : "";
   };
 
   const onFloatingFilterChanged = (value) => {

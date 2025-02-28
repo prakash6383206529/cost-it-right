@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { handleDepartmentHeader, loggedInUserId, userDetails } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
-import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
+import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination, setTechnologyForSimulation, setIsMasterAssociatedWithCosting, checkFinalLevelApproverForApproval } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination, setTechnologyForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, checkFinalLevelApproverForApproval } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -35,8 +35,8 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 const gridOptions = {};
 function SimulationApprovalListing(props) {
 
-    const {vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels()
-    const { isDashboard,delegation } = props
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+    const { isDashboard, delegation } = props
     const [approvalData, setApprovalData] = useState('')
     const [selectedCostingHead, setSelectedCostingHead] = useState(null);
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -437,7 +437,7 @@ function SimulationApprovalListing(props) {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (rowData?.ReceiverId) {
             reactLocalStorage.setObject('receiverId', rowData.ReceiverId);
-          }
+        }
         return (
             <Fragment>
                 <div
@@ -453,14 +453,14 @@ function SimulationApprovalListing(props) {
     const combinedCostingHeadRenderer = (props) => {
         // Call the existing checkBoxRenderer
         hyphenFormatter(props);
-      
+
         // Get and localize the cell value
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-      
+
         // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
         return localizedValue;
-      };
+    };
     /**
     * @method hyphenFormatter
     */
@@ -503,8 +503,9 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         dispatch(setIsMasterAssociatedWithCosting(!rowObj?.IsSimulationWithOutCosting))
-        setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId ,receiverId:rowObj?.ReceiverId})
+        setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId, receiverId: rowObj?.ReceiverId, ExchangeRateSimulationTechnology: rowObj?.ExchangeRateSimulationTechnology, ExchangeRateSimulationTechnologyId: rowObj?.ExchangeRateSimulationTechnologyId })
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
+        dispatch(setSimulationApplicability({ label: rowObj?.ExchangeRateSimulationTechnology, value: rowObj?.ExchangeRateSimulationTechnologyId }))
         // dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))                //RE
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
             setStatusForLinkedToken(rowObj?.Status === 'Linked')
@@ -588,11 +589,10 @@ function SimulationApprovalListing(props) {
         setSelectedDataObj({ DisplayStatus: arr, DepartmentId: tempArrDepartmentId, TechnologyName: tempArrTechnology, SimulationTechnologyHead: tempArrSimulationTechnologyHead, CostingHead: costingHeadArray, ApprovalTypeId: approvalTypeArray, PlantId: plantIds, TokenNo: tokenArr })
         selectedRows && dispatch(setMasterForSimulation({ label: selectedRows[0]?.SimulationTechnologyHead, value: selectedRows[0]?.SimulationTechnologyId }))
 
-
         setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
 
         if (JSON.stringify(selectedRows) === JSON.stringify('')) return false
-        
+
         setSelectedRowData(selectedRows)
         // if (isSelected) {
         //     let tempArr = [...selectedRowData, row]
@@ -611,9 +611,9 @@ function SimulationApprovalListing(props) {
         }
         // return rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
     }
-const CheckFinalLevel = (value) => {
-    setShowFinalLevelButton(value)
-}
+    const CheckFinalLevel = (value) => {
+        setShowFinalLevelButton(value)
+    }
     const sendForApproval = () => {
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one approval to send for approval.')
@@ -695,14 +695,23 @@ const CheckFinalLevel = (value) => {
                             Toaster.warning("This user is not in the approval cycle")
                             return false
                         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                            let technologyIdTemp = ""
+                            if (approvalData?.IsExchangeRateSimulation) {
+                                technologyIdTemp = EXCHNAGERATE
+                            } else if (selectedRowData[0]?.IsExchangeRateSimulation) {
+                                technologyIdTemp = EXCHNAGERATE
+                            } else {
+                                technologyIdTemp = approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId
+                            }
+
                             let obj = {
                                 DepartmentId: res?.data?.Data?.DepartmentId ? res?.data?.Data?.DepartmentId : selectedRowData[0].DepartmentId ?? EMPTY_GUID,
                                 UserId: loggedInUserId(),
-                                TechnologyId: approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId,
+                                TechnologyId: technologyIdTemp,
                                 Mode: 'simulation',
                                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId ? res?.data?.Data?.ApprovalTypeId : selectedRowData[0].ApprovalTypeId),
                                 plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
-                                divisionId: selectedRowData[0].DivisionId ?? EMPTY_GUID,
+                                divisionId: selectedRowData[0].DivisionId ?? null,
                                 ReceiverId: selectedRowData[0]?.ReceiverId
                             }
                             dispatch(checkFinalUser(obj, res => {
@@ -764,10 +773,11 @@ const CheckFinalLevel = (value) => {
             }
         }))
 
+
     }
 
     // const closeDrawer = (e = '', type) => {
-        
+
     //     gridApi.deselectAll()
     //     setApproveDrawer(false)
     //     if (type !== 'cancel') {
@@ -791,11 +801,13 @@ const CheckFinalLevel = (value) => {
                 pathname: "/simulation",
                 state: {
                     isFromApprovalListing: true,
-                    approvalProcessId: approvalData.approvalProcessId,
-                    master: approvalData.SimulationTechnologyId,
+                    approvalProcessId: approvalData?.approvalProcessId,
+                    master: approvalData?.SimulationTechnologyId,
                     statusForLinkedToken: statusForLinkedToken,
-                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalData.SimulationHeadId),
-                    DepartmentId: approvalData.DepartmentId,
+                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalData?.SimulationHeadId),
+                    DepartmentId: approvalData?.DepartmentId,
+                    ExchangeRateSimulationTechnology: approvalData?.ExchangeRateSimulationTechnology,
+                    ExchangeRateSimulationTechnologyId: approvalData?.ExchangeRateSimulationTechnologyId,
                     preserveData: true
                 }
 
@@ -808,12 +820,13 @@ const CheckFinalLevel = (value) => {
             to={{
                 pathname: "/simulation-approval-summary",
                 state: {
-                    approvalNumber: approvalData.approvalNumber,
-                    approvalId: approvalData.approvalProcessId,
-                    SimulationTechnologyId: approvalData.SimulationTechnologyId,
-                    simulationId: approvalData.simulationId,
-                    receiverId:approvalData.receiverId,
-                    fromDashboard:isDashboard
+                    approvalNumber: approvalData?.approvalNumber,
+                    approvalId: approvalData?.approvalProcessId,
+                    SimulationTechnologyId: approvalData?.SimulationTechnologyId,
+                    SimulationHeadId: approvalData?.SimulationHeadId,
+                    simulationId: approvalData?.simulationId,
+                    receiverId: approvalData.receiverId,
+                    fromDashboard: isDashboard
                 }
             }}
         />
@@ -884,7 +897,7 @@ const CheckFinalLevel = (value) => {
         suppressFilterButton: true,
         component: CostingHeadDropdownFilter,
         onFilterChange: (originalValue, value) => {
-    
+
             setSelectedCostingHead(originalValue);
             setDisableFilter(false);
             setFloatingFilterData(prevState => ({
@@ -893,8 +906,8 @@ const CheckFinalLevel = (value) => {
             }));
         }
     };
-      
-    
+
+
     const frameworkComponents = {
         combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         // totalValueRenderer: this.buttonFormatter,
@@ -910,8 +923,7 @@ const CheckFinalLevel = (value) => {
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter,
         hyphenFormatter: hyphenFormatter,
-        statusFilter: SingleDropdownFloationFilter,
-        statusFilterCostingHead: CostingHeadDropdownFilter,
+        statusFilter: SingleDropdownFloationFilter
     };
 
     return (
@@ -993,7 +1005,7 @@ const CheckFinalLevel = (value) => {
                                     >
 
                                         <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
-                                        <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}               floatingFilterComponentParams={floatingFilterStatusCostingHead} 
+                                        <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
                                             floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>
                                         {/* // <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>                //RE */}
                                         {/* THIS FEILD WILL ALWAYS COME BEFORE */}
@@ -1023,9 +1035,9 @@ const CheckFinalLevel = (value) => {
                                         {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                                         <div className="d-flex pagination-button-container">
                                             <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                                            {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                            {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                            {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                            {pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                            {pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                            {pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
                                             <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                                         </div>
                                     </div>

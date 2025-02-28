@@ -155,8 +155,8 @@ function CommonApproval(props) {
 
     const getTableData = (skip = 0, take = 10, isPagination = true, dataObj, pageDropDownChange = false) => {
         //  API CALL FOR GETTING RM APPROVAL LIST
-        if (props.isDashboard) {
-            dataObj.DisplayStatus = props.status
+        if (props?.isDashboard) {
+            dataObj.DisplayStatus = props?.status
         }
         const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
         dataObj.IsCustomerDataShow = cbc
@@ -278,7 +278,7 @@ function CommonApproval(props) {
         gridOptions?.api?.setFilterModel(null);
 
         if (props?.OnboardingApprovalId === ONBOARDINGID) {
-            gridApi.sizeColumnsToFit();
+            // gridApi.sizeColumnsToFit();
         }
         for (var prop in floatingFilterData) {
 
@@ -305,25 +305,25 @@ function CommonApproval(props) {
 
 
     const createdOnFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell != null ? cell : '';
     }
 
     const priceFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return (
             <>
 
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration?.NoOfDecimalForPrice) : ''}
             </>
         )
     }
 
     const oldpriceFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return (
             <>
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration?.NoOfDecimalForPrice) : ''}
             </>
         )
     }
@@ -341,25 +341,25 @@ function CommonApproval(props) {
         }
     };
     const requestedOnFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell ? cell : '-';
     }
 
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return <div className={cell}>{row.DisplayStatus}</div>
     }
 
     const renderPlant = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
     }
 
     const renderVendor = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
@@ -368,7 +368,7 @@ function CommonApproval(props) {
     * @description Renders Costing head
     */
     const costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return (cellValue === true || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
     }
 
@@ -380,7 +380,7 @@ function CommonApproval(props) {
     */
     const effectiveDateFormatter = (props) => {
 
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
@@ -389,8 +389,8 @@ function CommonApproval(props) {
     * @description Renders buttons
     */
     const basicRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue ? cellValue : (row?.IsBreakupBoughtOutPart ? '-' : 0);
     }
 
@@ -399,8 +399,8 @@ function CommonApproval(props) {
     * @description Renders buttons
     */
     const netCostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue ? cellValue : (row?.IsBreakupBoughtOutPart ? '-' : 0);
     }
 
@@ -409,7 +409,7 @@ function CommonApproval(props) {
     * @description Renders buttons
     */
     const breakupFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue ? 'Yes' : 'No';
     }
 
@@ -418,7 +418,7 @@ function CommonApproval(props) {
     * @description Renders buttons
     */
     const technologyFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue ? cellValue : '-';
     }
 
@@ -427,7 +427,7 @@ function CommonApproval(props) {
     * @description Renders buttons
     */
     const shearingCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
 
@@ -436,7 +436,7 @@ function CommonApproval(props) {
     * @description Renders buttons
     */
     const freightCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
 
@@ -470,7 +470,7 @@ function CommonApproval(props) {
     * @description Renders Name link
     */
     const linkableFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let id = ''
         switch (master) {
             case RM_MASTER_ID:
@@ -495,32 +495,32 @@ function CommonApproval(props) {
                     case 1:
                         if (item?.RawMaterialId === props?.node?.data?.RawMaterialId) {
                             id = item?.RawMaterialId
-                            props.node.setSelected(true)
+                            props?.node.setSelected(true)
                         }
                         break;
                     case 2:
                         if (item?.BoughtOutPartId === props?.node?.data?.BoughtOutPartId) {
                             id = item?.BoughtOutPartId
-                            props.node.setSelected(true)
+                            props?.node.setSelected(true)
                         }
                         break;
                     case 3:
                         if (item?.OperationId === props?.node?.data?.OperationId) {
                             id = item?.OperationId
-                            props.node.setSelected(true)
+                            props?.node.setSelected(true)
                         }
                         break;
                     case 4:
                         if (item?.MachineId === props?.node?.data?.MachineId) {
                             id = item?.MachineId
-                            props.node.setSelected(true)
+                            props?.node.setSelected(true)
                         }
                         break;
                     default:
                         // code block
                         if (item?.ApprovalProcessId === props?.node?.data?.ApprovalProcessId) {
                             id = item?.ApprovalProcessId
-                            props.node.setSelected(true)
+                            props?.node.setSelected(true)
                         }
                 }
                 return null
@@ -719,7 +719,7 @@ function CommonApproval(props) {
             if (!checkCostingHeadSame && props?.OnboardingApprovalId !== ONBOARDINGID) {
                 Toaster.warning('Please select token with same costing head.')
                 return;
-            } else if (!(initialConfiguration.IsMultipleUserAllowForApproval ? checkPlantIdSame : true)) {
+            } else if (!(initialConfiguration?.IsMultipleUserAllowForApproval ? checkPlantIdSame : true)) {
                 Toaster.warning('Please select token with same plant.')
                 return;
             } else if (!checkApprovalTypeOfSupplier && props?.OnboardingApprovalId === ONBOARDINGID) {
@@ -751,7 +751,9 @@ function CommonApproval(props) {
             //params.api.sizeColumnsToFit();
 
         }
-        window.screen.width > 1920 && params.api.sizeColumnsToFit();
+        // window.screen.width > 1920
+        //  && 
+        // params.api.sizeColumnsToFit();
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -818,8 +820,8 @@ function CommonApproval(props) {
         * @description Renders buttons
         */
     const buttonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         let status = rowData.Status;
 
@@ -835,7 +837,7 @@ function CommonApproval(props) {
             <>
                 {isDeleteButton ? (
                     <Button
-                        id={`bopDomesticListing_delete${props.rowIndex}`}
+                        id={`bopDomesticListing_delete${props?.rowIndex}`}
                         className={"mr-1"}
                         variant="Delete"
                         onClick={() => deleteItem(cellValue)}
@@ -919,7 +921,7 @@ function CommonApproval(props) {
         default: 'Are you sure you want to delete?',
     };
     return (
-        <div className={` ${props.isDashboard ? '' : 'min-height100vh'} custom-pagination`}>
+        <div className={` ${props?.isDashboard ? '' : 'min-height100vh'} custom-pagination`}>
             {loader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
                 <Col md="8" lg="8" className="search-user-block mb-3">
@@ -932,7 +934,7 @@ function CommonApproval(props) {
                         <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                             <div className="refresh mr-0"></div>
                         </button>
-                        {!props.hidesendBtn && <button
+                        {!props?.hidesendBtn && <button
                             title="Send For Approval"
                             class="user-btn approval-btn"
                             onClick={sendForApproval}
@@ -1076,18 +1078,17 @@ function CommonApproval(props) {
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" ></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Cost"></AgGridColumn>}
                                     {/* {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer="linkableFormatter" headerName="Token No."></AgGridColumn>} */}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="ApprovalType" headerName='Type'></AgGridColumn>}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="VendorName" headerName={`${vendorLabel} (Code)`} ></AgGridColumn>}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="DeviationDuration" headerName='Deviation Duration' ></AgGridColumn>}
-                                    {/* {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="Department" headerName={`${handleDepartmentHeader()} (Code)`}></AgGridColumn>} */}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="ApprovalType" headerName='Type'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="VendorName" headerName={`${vendorLabel} (Code)`} ></AgGridColumn>}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="DeviationDuration" headerName='Deviation Duration' ></AgGridColumn>}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName={`Breakup ${showBopLabel()} `}></AgGridColumn>}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName={technologyLabel}></AgGridColumn>}
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     {props?.MasterId !== 0 && <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>}
                                     <AgGridColumn width="200" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
                                     {!props?.MasterId === BUDGET_ID && <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>}
-                                    {props?.OnboardingApprovalId !== ONBOARDINGID && <AgGridColumn field={getMasterField(props?.MasterId)} width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='actionRenderer'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId !== ONBOARDINGID && <AgGridColumn field={getMasterField(props?.MasterId)} width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='actionRenderer'></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!loader &&

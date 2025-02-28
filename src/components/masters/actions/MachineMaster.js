@@ -184,13 +184,17 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
 
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
-            VendorId: obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID,
-            PlantId: obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID,
-            CustomerId: obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID,
-            technology_id: data.technology_id,
-            StatusId: data.StatusId ? data.StatusId : '',
+            VendorId: data?.vendor_id ? data?.vendor_id : EMPTY_GUID,
+            PlantId: obj?.PlantId !== undefined ? obj?.PlantId : EMPTY_GUID,
+            CustomerId: obj?.CustomerId !== undefined ? obj?.CustomerId : EMPTY_GUID,
+            technology_id: data?.technology_id,
+            StatusId: data?.StatusId ? data?.StatusId : '',
             DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : '',
-            MachineEntryType: data.MachineEntryType
+            MachineEntryType: data.MachineEntryType,
+            Currency: data.Currency !== undefined ? data.Currency : "",
+            LocalCurrency: data.LocalCurrency !== undefined ? data.LocalCurrency : "",
+            EffectiveDate: data?.EffectiveDate !== undefined ? data?.EffectiveDate : "",
+            listFor:data?.ListFor?data?.ListFor:''
         });
         const queryParamsSecond = encodeQueryParamsAndLog({
             CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : '', Technology: obj.Technology !== undefined ? obj.Technology : '', Vendor: obj.VendorName !== undefined ? obj.VendorName : '', Plant: obj.Plant !== undefined ? obj.Plant : '', MachineNumber: obj.MachineNumber !== undefined ? obj.MachineNumber : '', MachineName: obj.MachineName !== undefined ? obj.MachineName : '',

@@ -387,7 +387,7 @@ class BOMViewer extends Component {
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
               >
                 <Row className="bom-action-row justify-content-end m-0">
-                  {(!isEditFlag || initialConfiguration.IsBOMEditable) &&
+                  {(!isEditFlag || initialConfiguration?.IsBOMEditable) &&
                     !isFromVishualAd && (
                       <Col md="auto" className="bg-white" >
                         {flowpoints.length > 1 &&

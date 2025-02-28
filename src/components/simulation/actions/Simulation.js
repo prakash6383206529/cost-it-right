@@ -64,7 +64,8 @@ import {
     GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
     SET_EFFECTIVE_DATE,
     SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV,
-    GET_SIMULATION_COSTING_STATUS
+    GET_SIMULATION_COSTING_STATUS,
+    SET_RAW_MATERIALS_EFFECTIVE_DATE
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -383,7 +384,7 @@ export function getAllSimulationApprovalList(data, callback) {
     }
 }
 
-export function getSimulationApprovalByDepartment(receiverId,callback) {
+export function getSimulationApprovalByDepartment(receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getAllSimulationApprovalDepartment}?receiverId=${receiverId}`, config());
@@ -1802,6 +1803,10 @@ export function getRMIndexationSimulationListing(data, skip, take, isPagination,
             GradeId: data.GradeId ? data.GradeId : null,
             CustomerId: data.CustomerId ? data.CustomerId : null,
             RawMaterialEntryType: data.RawMaterialEntryType ? data.RawMaterialEntryType : null,
+            Currency: data.Currency !== undefined ? data.Currency : "",
+            LocalCurrency: data.LocalCurrency !== undefined ? data.LocalCurrency : "",
+            EffectiveDate: data.EffectiveDate ? data.EffectiveDate : '',
+            ListFor: data.ListFor ? data.ListFor : '',
             // ScrapUnitOfMeasurement: obj.ScrapUnitOfMeasurement !== undefined ? obj.ScrapUnitOfMeasurement : '',
             // IsScrapUOMApply: obj.IsScrapUOMApply ? (obj.IsScrapUOMApply.toLowerCase() === 'yes' ? true : false) : '',
             // CalculatedFactor: obj.CalculatedFactor !== undefined ? obj.CalculatedFactor : '',
@@ -1913,6 +1918,7 @@ export function draftSimulationForRMMaster(data, callback) {
     };
 }
 export function updateSimulationRawMaterial(data, callback) {
+    console.log(data, "data")
     return (dispatch) => {
         const request = axios.put(API.updateSimulationRawMaterial, data, config());
         request.then((response) => {
@@ -2071,6 +2077,14 @@ export function getImpactedDataList(data, callback) {
             callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+        });
+    }
+}
+export function setRawmaterialsEffectiveDate(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_RAW_MATERIALS_EFFECTIVE_DATE,
+            payload: value,
         });
     }
 }

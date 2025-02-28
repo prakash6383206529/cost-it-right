@@ -5,6 +5,7 @@ import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from 
 import { checkPartNoExistInBop } from '../../costing/actions/Costing';
 
 const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module }) => {
+    
     const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state.pagination);
     const dispatch = useDispatch();
     let pageSizeValue;

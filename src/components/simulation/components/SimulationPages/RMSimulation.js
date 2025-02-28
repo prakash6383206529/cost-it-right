@@ -93,6 +93,7 @@ function RMSimulation(props) {
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft, simulationCostingStatus } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
 
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const { filteredRMData } = useSelector(state => state.material)
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 140,
@@ -210,26 +211,26 @@ function RMSimulation(props) {
 
     const setValueFunction = (check, tempList = []) => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
-
+        const filteredMasterId = masterList?.find(item => item?.Text === "RM Import")?.Value;
         let obj = {
             IsExchangeRateSimulation: check,
             SimulationRawMaterials: [],
             SimulationExchangeRates: [],
             SimulationIds: [],
             TechnologyId: technologyId,
-            SimulationTechnologyId: check ? RMIMPORT : selectedMasterForSimulation.value,
+            SimulationTechnologyId: check ? EXCHNAGERATE : selectedMasterForSimulation.value,
             //EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
             LoggedInUserId: loggedInUserId(),
             SimulationHeadId: list[0]?.CostingTypeId,
-            IsSimulationWithOutCosting: true,
+            IsSimulationWithOutCosting: false,
+            ExchangeRateSimulationTechnologyId: filteredMasterId
         };
 
         if (filteredRMData.plantId && filteredRMData.plantId.value) {
             obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         }
         let tempArr = []
-        if (String(selectedMasterForSimulation.value) === String(RMDOMESTIC) || String(selectedMasterForSimulation.value) === String(RMIMPORT)) {
-
+        if (String(selectedMasterForSimulation.value) === String(RMDOMESTIC) || String(selectedMasterForSimulation.value) === String(RMIMPORT) || String(selectedMasterForSimulation.value) === String(EXCHNAGERATE)) {
             list && list.map(item => {
                 if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && ((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : (Number(item.BasicRate)) !== Number(item.BasicRatePerUOM) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                     let tempObj = {
@@ -292,9 +293,14 @@ function RMSimulation(props) {
                 tempObj.PlantId = item.PlantId
                 tempObj.VendorId = item.VendorId
                 tempObj.Delta = 0
-                tempObj.OldScrapRatePerScrapUOM = 0
-                tempObj.NewScrapRatePerScrapUOM = 0
                 tempObj.NewRawMaterialId = (item.NewRawMaterialDetails && item.NewRawMaterialDetails.RawMaterialId) ? item.NewRawMaterialDetails.RawMaterialId : null
+                tempObj.OldScrapRatePerScrapUOM = item.ScrapRatePerScrapUOM
+                tempObj.NewScrapRatePerScrapUOM = item.NewScrapRatePerScrapUOM
+                tempObj.NewNetConditionCost = item.NewNetConditionCost || 0
+                tempObj.NewOtherNetCost = item.NewOtherNetCost || 0
+                tempObj.RawMaterialConditionsDetails = item.NewRawMaterialConditionCostDetails || []
+                tempObj.RawMaterialOtherCostDetails = item.NewRawMaterialOtherCostDetails || []
+
                 tempArr.push(tempObj)
 
                 return null;
@@ -387,7 +393,9 @@ function RMSimulation(props) {
         setIsDisable(true)
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
-                setValueFunction(true, res);
+                if (!res?.status && !res?.error) {
+                    setValueFunction(true, res);
+                }
             }))
         } else {
             setValueFunction(false, []);
@@ -633,11 +641,9 @@ function RMSimulation(props) {
         // const oldValue = Number(checkForDecimalAndNull(row?.EntryType === DOMESTIC ? row?.NetLandedCost : row?.NetLandedCostConversion, getConfigurationKey().NoOfDecimalForPrice));
         const oldValue = checkForDecimalAndNull(row?.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
 
-        const classGreen = newValue === oldValue ? 'form-class' :
-            newValue > oldValue ? 'red-value form-control' :
-                'green-value form-control';
+        const classGreen = ((checkForDecimalAndNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost) + checkForNull(row?.NewNetConditionCost))) > checkForDecimalAndNull(row?.NetLandedCost)) ? 'red-value form-control' : (checkForDecimalAndNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost) + checkForNull(row?.NewNetConditionCost)) < checkForDecimalAndNull(row?.NetLandedCost)) ? 'green-value form-control' : 'form-class'
 
-        return showValue(row, classGreen, NewBasicRate);
+        return showValue(row, classGreen, NewBasicRate)
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
     const NewBasicPriceFormmater = (props) => {
@@ -947,7 +953,8 @@ function RMSimulation(props) {
         const cell = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.OtherNetCost : props?.valueFormatted ? props.valueFormatted : props?.value;
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)
-        const classGreen = (checkForDecimalAndNull(row?.NewOtherNetCost) > checkForDecimalAndNull(row?.OtherNetCost)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewOtherNetCost) < checkForDecimalAndNull(row?.OtherNetCost)) ? 'green-value form-control' : 'form-class'
+
+        const classGreen = (checkForDecimalAndNull(row?.NewOtherNetCost, getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.OtherNetCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewOtherNetCost, getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OtherNetCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
         setRowIndex(props?.node?.rowIndex)
 
         return (
@@ -1049,8 +1056,13 @@ function RMSimulation(props) {
     }
 
     const zeroFormatter = (props) => {
-        const cellValue = props?.value;
+        const cellValue = checkForDecimalAndNull(props?.value, getConfigurationKey().NoOfDecimalForPrice);
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '0';
+    }
+
+    const localConversionFormatter = (props) => {
+        const cellValue = checkForNull(props?.value);
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     const frameworkComponents = {
@@ -1083,7 +1095,8 @@ function RMSimulation(props) {
         existingConditionCostFormatter: existingConditionCostFormatter,
         revisedConditionCostFormatter: revisedConditionCostFormatter,
         zeroFormatter: zeroFormatter,
-        netLanedCostFormatter: netLanedCostFormatter
+        netLanedCostFormatter: netLanedCostFormatter,
+        localConversionFormatter: localConversionFormatter
 
     };
 
@@ -1272,96 +1285,97 @@ function RMSimulation(props) {
                                                         floatingFilterComponentParams={floatingFilterStatus}
                                                         floatingFilterComponent="statusFilter"></AgGridColumn>
                                                 }
-                                                <AgGridColumn width={columnWidths.RawMaterialName} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.RawMaterialGradeName} field="RawMaterialGradeName" tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.RawMaterialSpecificationName} field="RawMaterialSpecificationName" tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.RawMaterialCode} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                                {!isImpactedMaster && <AgGridColumn width={columnWidths.Category} field="Category" tooltipField='Category' editable='false' headerName="Category"></AgGridColumn>}
-                                                {!isImpactedMaster && <AgGridColumn width={columnWidths.TechnologyName} field="TechnologyName" tooltipField='TechnologyName' editable='false' headerName={technologyLabel} ></AgGridColumn>}
-                                                {!isImpactedMaster && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={columnWidths.VendorCod} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName={`${vendorLabel} (Code)`} cellRenderer='vendorFormatter'></AgGridColumn>}
-                                                {!isImpactedMaster && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={columnWidths.CustomerName} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
-                                                {!isImpactedMaster && <AgGridColumn width={columnWidths.PlantCode} field="Plant (Code)" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
-                                                <AgGridColumn width={columnWidths.UnitOfMeasurementName} field="UnitOfMeasurementName" tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>
-                                                {isScrapUOMApplyTemp && <AgGridColumn width={150} field="ScrapUnitOfMeasurement" tooltipField='ScrapUnitOfMeasurement' editable='false' headerName="Scrap UOM" cellRenderer='hyphenFormatter'></AgGridColumn>}
-                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" width={columnWidths.CostingNumber}></AgGridColumn>}
-                                                {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" width={columnWidths.PartNumber}></AgGridColumn>}
+                                                {<AgGridColumn minWidth={120} field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                                                <AgGridColumn minWidth={columnWidths.RawMaterialName} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.RawMaterialGradeName} field="RawMaterialGradeName" tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.RawMaterialSpecificationName} field="RawMaterialSpecificationName" tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.RawMaterialCode} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                                {!isImpactedMaster && <AgGridColumn minWidth={columnWidths.Category} field="Category" tooltipField='Category' editable='false' headerName="Category"></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn minWidth={columnWidths.TechnologyName} field="TechnologyName" tooltipField='TechnologyName' editable='false' headerName={technologyLabel} ></AgGridColumn>}
+                                                {!isImpactedMaster && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn minWidth={columnWidths.VendorCod} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName={`${vendorLabel} (Code)`} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn minWidth={columnWidths.CustomerName} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn minWidth={columnWidths.PlantCode} field="Plant (Code)" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
+                                                <AgGridColumn minWidth={columnWidths.UnitOfMeasurementName} field="UnitOfMeasurementName" tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>
+                                                {isScrapUOMApplyTemp && <AgGridColumn minWidth={150} field="ScrapUnitOfMeasurement" tooltipField='ScrapUnitOfMeasurement' editable='false' headerName="Scrap UOM" cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" minWidth={columnWidths.PartNumber}></AgGridColumn>}
 
                                                 {/* {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>} */}
                                                 {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
-                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                <AgGridColumn field="Currency" minWidth={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                {(isImpactedMaster || props?.lastRevision) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>}
+
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
                                                     "Basic Rate (Currency)"
 
                                                 } marryChildren={true} >
-                                                    <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} cellRenderer='newBasicRateFormatter' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
 
-                                                {
-                                                    !isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={"Percentage"} marryChildren={true} width={240}>
-                                                        <AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter' headerComponent={'percentageHeader'}></AgGridColumn>
-                                                    </AgGridColumn>
-                                                }
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={
+                                                {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={"Percentage"} marryChildren={true} minWidth={240}>
+                                                    <AgGridColumn minWidth={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter' headerComponent={'percentageHeader'}></AgGridColumn>
+                                                </AgGridColumn>}
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} marryChildren={true} headerName={
                                                     "Scrap Rate (Currency)"
+
                                                 }>
-                                                    {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.ScrapRatePerScrapUOM} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatterPerScrapUOM' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>}
-                                                    {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.NewScrapRatePerScrapUOM} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRate}></AgGridColumn>}
-                                                    <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRateSecond} ></AgGridColumn>
+                                                    {isScrapUOMApplyTemp && <AgGridColumn minWidth={columnWidths.ScrapRatePerScrapUOM} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatterPerScrapUOM' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>}
+                                                    {isScrapUOMApplyTemp && <AgGridColumn minWidth={columnWidths.NewScrapRatePerScrapUOM} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRate}></AgGridColumn>}
+                                                    <AgGridColumn minWidth={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRateSecond} ></AgGridColumn>
                                                 </AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={300} headerName={
                                                     "Other Cost (Currency)"
 
                                                 } marryChildren={true} >
-                                                    {/* <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OtherNetCost" : 'isCostingSimulation' ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={'isCostingSimulation' ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn> */}
-                                                    <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={"isImpactedMaster ? OldOtherCost : OtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewOtherCost" : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' ></AgGridColumn>
+                                                    {/* <AgGridColumn minWidth={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OtherNetCost" : 'isCostingSimulation' ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={'isCostingSimulation' ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn> */}
+                                                    <AgGridColumn minWidth={150} cellRenderer='existingOtherCostFormatter' field={"isImpactedMaster ? OldOtherCost : OtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewOtherCost" : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' ></AgGridColumn>
                                                 </AgGridColumn>
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && list[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && list[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
                                                     "Basic Price (Currency)"
 
                                                 }>
-                                                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'NetCostWithoutConditionCost'} cellRenderer={'zeroFormatter'} editable='false' headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>}
-                                                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} cellRenderer={'zeroFormatter'} editable='false' headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>}
+                                                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn minWidth={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'NetCostWithoutConditionCost'} cellRenderer={'zeroFormatter'} editable='false' headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>}
+                                                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn minWidth={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} cellRenderer={'zeroFormatter'} editable='false' headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>}
                                                 </AgGridColumn>}
 
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && list[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && list[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={300} headerName={
                                                     "Condition Cost (Currency)"
 
                                                 } marryChildren={true} >
-                                                    {/* <AgGridColumn width={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "NetConditionCost" : 'isCostingSimulation' ? 'OldRawMaterialIndexationDetails.NetConditionCost' : "NetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={'isCostingSimulation' ? 'NewRawMaterialIndexationDetails.NetConditionCost' : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn> */}
-                                                    <AgGridColumn width={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "OldNetConditionCost" : "NetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewNetConditionCost" : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>
-                                                </AgGridColumn>
-                                                }
+                                                    {/* <AgGridColumn minWidth={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "NetConditionCost" : 'isCostingSimulation' ? 'OldRawMaterialIndexationDetails.NetConditionCost' : "NetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={'isCostingSimulation' ? 'NewRawMaterialIndexationDetails.NetConditionCost' : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn> */}
+                                                    <AgGridColumn minWidth={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "OldNetConditionCost" : "NetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewNetConditionCost" : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>
+                                                </AgGridColumn>}
 
-                                                {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"BOP Net Landed Cost Conversion"} marryChildren={true}>
-                                                <AgGridColumn width={120} field="OldRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Existing" colId='OldRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Revised" colId='NewRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
+                                                {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={"BOP Net Landed Cost Conversion"} marryChildren={true}>
+                                                <AgGridColumn minWidth={120} field="OldRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Existing" colId='OldRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn minWidth={120} field="NewRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Revised" colId='NewRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
                                             </AgGridColumn> */}
-                                                {getConfigurationKey()?.IsShowFreightAndShearingCostFields && <AgGridColumn width={columnWidths.RMFreightCost} field="RMFreightCost" tooltipField='RMFreightCost' editable='false' cellRenderer={'CostFormatter'} headerName="Freight Cost"></AgGridColumn>}
-                                                {getConfigurationKey()?.IsShowFreightAndShearingCostFields && <AgGridColumn width={columnWidths.RMShearingCost} field="RMShearingCost" tooltipField='RMShearingCost' editable='false' cellRenderer={'CostFormatter'} headerName="Shearing Cost" ></AgGridColumn>}
-                                                {technologyId === String(FORGING) && <AgGridColumn width={170} field="MachiningScrapRate" tooltipField='MachiningScrapRate' editable='false' headerName="Machining Scrap Rate" cellRenderer={'CostFormatter'}></AgGridColumn>}
-                                                {
-                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
-                                                        "Net Cost (Currency)"
-                                                    }>
-                                                        <AgGridColumn width={columnWidths.NetLandedCost} field="NetLandedCost" tooltipField='NetLandedCost' editable='false' cellRenderer={'netLanedCostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
-                                                        <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCost" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
-                                                    </AgGridColumn>
+                                                {getConfigurationKey()?.IsShowFreightAndShearingCostFields && <AgGridColumn minWidth={columnWidths.RMFreightCost} field="RMFreightCost" tooltipField='RMFreightCost' editable='false' cellRenderer={'CostFormatter'} headerName="Freight Cost"></AgGridColumn>}
+                                                {getConfigurationKey()?.IsShowFreightAndShearingCostFields && <AgGridColumn minWidth={columnWidths.RMShearingCost} field="RMShearingCost" tooltipField='RMShearingCost' editable='false' cellRenderer={'CostFormatter'} headerName="Shearing Cost" ></AgGridColumn>}
+                                                {technologyId === String(FORGING) && <AgGridColumn minWidth={170} field="MachiningScrapRate" tooltipField='MachiningScrapRate' editable='false' headerName="Machining Scrap Rate" cellRenderer={'CostFormatter'}></AgGridColumn>}
+                                                {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
+                                                    "Net Cost (Currency)"
+
+                                                }>
+                                                    <AgGridColumn minWidth={columnWidths.NetLandedCost} field="NetLandedCost" tooltipField='NetLandedCost' editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.NewNetLandedCost} field="NewNetLandedCost" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
+                                                </AgGridColumn>
                                                 }
                                                 {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
-                                                {/* {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}>
-                                                    <AgGridColumn width={120} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
+                                                {(isImpactedMaster || props?.lastRevision || (String(props?.masterId) === String(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT))) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Cost (Plant Currency)`}>
+                                                    <AgGridColumn minWidth={120} field="OldNetLandedCostLocalConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
-                                                } */}
+                                                }
                                                 {props.children}
-                                                <AgGridColumn width={columnWidths.EffectiveDate} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} ></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.EffectiveDate} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} ></AgGridColumn>
                                                 <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
                                             </AgGridReact >))

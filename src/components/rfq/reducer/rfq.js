@@ -15,8 +15,8 @@ const initialState = {
     getRfqToolingData: [],
     getTargetprice: {},
     toolingSpecificRowData: [],
-    bestCostingData: []
-
+    bestCostingData: [],
+    quotationIDForRFQ: ""
 };
 
 export default function RFQReducer(state = initialState, action) {
@@ -114,7 +114,7 @@ export default function RFQReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                SelectBopCategory: action.payload,
+                SelectBopCategory: action?.payload || [],
             }
         case SET_BOP_SPECIFIC_ROW_DATA:
 
@@ -145,12 +145,12 @@ export default function RFQReducer(state = initialState, action) {
                 loading: false,
                 toolingSpecificRowData: action.payload,
             }
-            case  GET_QUOTATION_LIST :
-                return {
-                    ...state,
-                    loading: false,
-                    quotationList: action.payload,
-                }
+        case GET_QUOTATION_LIST:
+            return {
+                ...state,
+                loading: false,
+                quotationList: action.payload,
+            }
         case BEST_COSTING_DATA:
             return {
                 ...state,

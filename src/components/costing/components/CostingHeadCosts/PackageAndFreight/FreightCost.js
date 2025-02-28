@@ -31,7 +31,7 @@ function FreightCost(props) {
 
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
-  const { CostingEffectiveDate, costingData, currencySource } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, costingData, currencySource, exchangeRateData } = useSelector(state => state.costing)
 
   useEffect(() => {
     props.setFreightCost(gridData, JSON.stringify(gridData) !== JSON.stringify((props?.data && props?.data?.length > 0 ? props?.data : [])) ? true : false)
@@ -50,7 +50,7 @@ function FreightCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setRowObjData({})
     setDrawerOpen(true)
     setIsAddFlag(true)
@@ -91,7 +91,7 @@ function FreightCost(props) {
     if (gridData[index]?.IsFreightDetailedBreakup === true && gridData[index]?.CostingFreightCalculationDetailsId) {
       dispatch(setFreightCalculatorAvailable(false));
     }
- 
+
     let tempArr = gridData && gridData.filter((el, i) => {
       if (i === index) return false;
       return true;
@@ -164,7 +164,7 @@ function FreightCost(props) {
                       <th>{`Rate/Percentage`}</th>
                       <th>{`Quantity`}</th>
                       <th>{`Cost`}</th>
-                      {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                      {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                       <th style={{ width: "130px", textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>

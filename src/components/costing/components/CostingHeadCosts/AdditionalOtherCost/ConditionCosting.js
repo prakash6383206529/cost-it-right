@@ -20,11 +20,11 @@ function ConditionCosting(props) {
     useEffect(() => {
         const sum = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantityConversion), 0);
 
-        setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+        setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
 
         const sumCurrency = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantity), 0);
 
-        setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
+        setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration?.NoOfDecimalForPrice))
     }, [props?.tableData])
 
     return (

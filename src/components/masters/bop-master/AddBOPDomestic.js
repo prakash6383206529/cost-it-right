@@ -12,7 +12,7 @@ import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelect
 import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
-import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -196,15 +196,12 @@ class AddBOPDomestic extends Component {
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource } = this.state;
-
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWiseForParts() && (vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
-      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
+      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, ZBCTypeId, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), null, null, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
         } else {
@@ -219,7 +216,7 @@ class AddBOPDomestic extends Component {
   }
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
-    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+    if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, null, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
@@ -242,7 +239,7 @@ class AddBOPDomestic extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && !isDivision) {
+    if (this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -264,7 +261,7 @@ class AddBOPDomestic extends Component {
       this.toolTipNetCost()
       this.handleCalculation()
     }
-    if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.commonFunction(this.state?.selectedPlants && this.state?.selectedPlants?.value)
     }
   }
@@ -372,14 +369,14 @@ class AddBOPDomestic extends Component {
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.props.change('BasicRate', checkForDecimalAndNull(Data.BasicRate, initialConfiguration.NoOfDecimalForPrice))
-          this.props.change('BasicPrice', checkForDecimalAndNull(Data.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice))
-          this.props.change('ConditionCost', checkForDecimalAndNull(Data.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
-          this.props.change('NetLandedCostBase', checkForDecimalAndNull(Data.NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('BasicRate', checkForDecimalAndNull(Data.BasicRate, initialConfiguration?.NoOfDecimalForPrice))
+          this.props.change('BasicPrice', checkForDecimalAndNull(Data.NetCostWithoutConditionCost, initialConfiguration?.NoOfDecimalForPrice))
+          this.props.change('ConditionCost', checkForDecimalAndNull(Data.NetConditionCost, initialConfiguration?.NoOfDecimalForPrice))
+          this.props.change('NetLandedCostBase', checkForDecimalAndNull(Data.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice))
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.change('plantCurrency', Data?.Currency)
           this.props.change('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
-          this.props.change("OtherCost", checkForDecimalAndNull(Data.OtherNetCost, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change("OtherCost", checkForDecimalAndNull(Data.OtherNetCost, initialConfiguration?.NoOfDecimalForPrice))
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           setTimeout(() => {
             let plantObj;
@@ -760,10 +757,10 @@ class AddBOPDomestic extends Component {
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     let netLandedCostPlantCurrency = checkForNull(sumBase) + checkForNull(basicPriceAndOtherCost)
     const netCostBaseCurrency = this.state.currencyValue * netLandedCostPlantCurrency
-    this.props.change("BasicPrice", checkForDecimalAndNull(basicPriceAndOtherCost, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCostPlantCurrency, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change("BasicPrice", checkForDecimalAndNull(basicPriceAndOtherCost, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCostPlantCurrency, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.setState({
       FinalBasicRateBaseCurrency: basicRateBaseCurrency,
       NetCostWithoutConditionCost: basicPriceBaseCurrency,
@@ -787,7 +784,7 @@ class AddBOPDomestic extends Component {
     // this.setState({
     //   BasicPrice: BasicPrice
     // })
-    // this.props.change('BasicPrice', BasicPrice !== 0 ? checkForDecimalAndNull(BasicPrice, initialConfiguration.NoOfDecimalForPrice) : 0)
+    // this.props.change('BasicPrice', BasicPrice !== 0 ? checkForDecimalAndNull(BasicPrice, initialConfiguration?.NoOfDecimalForPrice) : 0)
   }
 
   /**
@@ -1092,7 +1089,9 @@ class AddBOPDomestic extends Component {
       OtherNetCostLocalConversion: totalOtherCost,
       OtherNetCostConversion: OtherNetCostConversion,
       OtherNetCost: totalOtherCost,
-      BoughtOutPartOtherCostDetailsSchema: otherCostTableData
+      BoughtOutPartOtherCostDetailsSchema: otherCostTableData,
+      LocalCurrencyExchangeRate: null,
+      LocalExchangeRateId: null
     };
 
     // formData.BasicRate = FinalBasicRateBaseCurrency
@@ -1229,10 +1228,10 @@ class AddBOPDomestic extends Component {
     let netLandedCost = checkForNull(sum) + checkForNull(this.state.NetCostWithoutConditionCost)
     const netCostConversion = this.convertIntoBase(netLandedCost, this?.state?.currencyValue)
 
-    this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostConversion, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostConversion, initialConfiguration?.NoOfDecimalForPrice))
 
     this.setState({
       isOpenConditionDrawer: false,
@@ -1848,8 +1847,9 @@ class AddBOPDomestic extends Component {
                                 customClassName=" withBorder"
                               />
                             </Col></>}
-                          <Col md="3">
+                          {!isTechnologyVisible && (<Col md="3">
                             <div className='d-flex align-items-center'>
+
                               <div className="w-100">
                                 <Field
                                   label={`Other Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props?.fieldsObj?.plantCurrency ?? 'Currency'})`}
@@ -1882,7 +1882,7 @@ class AddBOPDomestic extends Component {
                                 />
                               </div>
                             </div>
-                          </Col>
+                          </Col>)}
 
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
@@ -2118,7 +2118,7 @@ class AddBOPDomestic extends Component {
                             buttonName="Cancel"
                           />
                           {!isViewMode && <>
-                            {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
+                            {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
                               <Button
                                 id="AddBOPDomestic_sendForApproval"
                                 type="submit"

@@ -332,7 +332,7 @@ function ManageSOBDrawer(props) {
                                   disabled={isDisable ? true : false}
                                 />
                               </td>
-                              <td>{checkForDecimalAndNull(item.WeightedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                              <td>{checkForDecimalAndNull(item.WeightedCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
 
                             </tr>
                           )
@@ -344,7 +344,7 @@ function ManageSOBDrawer(props) {
                           <td>{`${showBopLabel()} Cost`}</td>
                           <td>{''}</td>
                           <td>{`Net Cost (Weighted Average):`}</td>
-                          <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>
+                          <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration?.NoOfDecimalForPrice)}`}</td>
                         </tr>
                       }
 

@@ -304,7 +304,7 @@ export const MESSAGES = {
   FREIGHT_DELETE_ALERT: 'Are you sure you want to delete this Freight?',
   TRUCK_DIMENSIONS_UPDATE_SUCCESS: 'Truck dimensions updated successfully',
   TRUCK_DIMENSIONS_ADD_SUCCESS: 'Truck dimensions saved successfully',
-  
+
 
   //ADDITIONAL FREIGHT
   ADDITIONAL_FREIGHT_ADD_SUCCESS: 'Packaging added successfully',
@@ -425,8 +425,6 @@ export const MESSAGES = {
   LPSRATING_UNBLOCKED_SUCCESSFULLY: 'LPS Rating unblocked successfully',
 
 }
-
-
 export const AttachmentValidationInfo = (props) => {
   const { customClass } = props;
   const message = <div className="text-start">
@@ -440,3 +438,4 @@ export const AttachmentValidationInfo = (props) => {
     <TooltipCustom id="attachment-tooltip" width="400px" customClass={`${customClass} mt-1`} tooltipText={message} />
   </>
 }
+

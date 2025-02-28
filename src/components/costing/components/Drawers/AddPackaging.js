@@ -69,6 +69,7 @@ function AddPackaging(props) {
   const [showCalculator, setShowCalculator] = useState(false)
   const [openCalculator, setOpenCalculator] = useState(false)
   const [costingPackagingCalculationDetailsId, setCostingPackagingCalculationDetailsId] = useState(rowObjData?.CostingPackagingCalculationDetailsId ?? null)
+  const [totalTabCost, setTotalTabCost] = useState(checkForNull(CostingDataList.NetTotalRMBOPCC) + checkForNull(CostingDataList.NetSurfaceTreatmentCost) + checkForNull(CostingDataList.NetOverheadAndProfitCost));
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -192,6 +193,7 @@ function AddPackaging(props) {
   const handleApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
+      setValue('PackagingCost', '')
       calculateApplicabilityCost(newValue.label, true)
       if (newValue.label === 'Crate/Trolley') {
         setShowCalculator(true)
@@ -236,7 +238,7 @@ function AddPackaging(props) {
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
     const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost)
 
-
+    setTotalTabCost(totalTabCost)
     let totalPackagingCost = 0
     switch (Text) {
       case 'RM':
@@ -668,41 +670,38 @@ function AddPackaging(props) {
                     </Col>
                   }
 
-
-
                   {costingData.TechnologyId !== LOGISTICS && <Col md="12">
-                    <div className="packaging-cost-warpper">
+                    <div className="position-relative">
+                      {applicability?.label == 'Net Cost' && (
+                        <TooltipCustom
+                          id="Add_Packaging_Cost"
+                          width={"290px"}
+                          tooltipText={`Net Cost = ${checkForDecimalAndNull(totalTabCost, getConfigurationKey().NoOfDecimalForPrice)} (RM+CC+BOP + Surface Treatment + Overhead & Profit)`}
+                        />
+                      )}
                       <TextFieldHookForm
                         label="Packaging Cost"
                         name={'PackagingCost'}
+                        id="Add_Packaging_Cost"
                         Controller={Controller}
                         control={control}
                         register={register}
                         mandatory={applicability?.label === 'Fixed' ? true : false}
                         rules={{
-                          required: applicability?.label === 'Fixed' ? true : false,
+                          required: true,
                           validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
                         }}
                         handleChange={packingCostHandler}
                         defaultValue={''}
                         className=""
-                        customClassName={'withBorder w-100 mb-0'}
+                        customClassName={'withBorder mb-0'}
                         errors={errors.PackagingCost}
                         disabled={applicability?.label === 'Fixed' ? false : true}
                       />
-                      {showCalculator && <button
-                        id={`RM_calculator`}
-                        className={`CalculatorIcon mb-0 mt-1 ml-2 cr-cl-icon RM_calculator`}
-                        type={'button'}
-                        onClick={() => toggleWeightCalculator()}
-                        disabled={false}
-                      />}
                     </div>
-                  </Col>
+                  </Col>}
 
-                  }
-
-                  {initialConfiguration.IsShowCRMHead && <Col md="12">
+                  {initialConfiguration?.IsShowCRMHead && <Col md="12">
                     <SearchableSelectHookForm
                       name={`crmHeadPackaging`}
                       type="text"
@@ -747,7 +746,7 @@ function AddPackaging(props) {
                 </Row>
               </>
 
-            </form>
+            </form >
             {openCalculator && <PackagingCalculator
               isOpen={openCalculator}
               anchor={'right'}
@@ -755,11 +754,12 @@ function AddPackaging(props) {
               rowObjData={rowObjData}
               CostingViewMode={isEditFlag ? true : false}
               costingPackagingCalculationDetailsId={costingPackagingCalculationDetailsId}
-            />}
-          </div>
-        </Container>
-      </Drawer>
-    </div>
+            />
+            }
+          </div >
+        </Container >
+      </Drawer >
+    </div >
   );
 }
 

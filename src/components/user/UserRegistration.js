@@ -2355,7 +2355,7 @@ function UserRegistration(props) {
       }
     } else {
       let userData = {
-        UserName: !initialConfiguration.IsLoginEmailConfigure ? values.UserName.trim() : null,
+        UserName: !initialConfiguration?.IsLoginEmailConfigure ? values.UserName.trim() : null,
         Password: encryptedpassword.toString(),
         IsAdditionalAccess: IsShowAdditionalPermission,
         RoleId: role.value,
@@ -2902,7 +2902,7 @@ function UserRegistration(props) {
                         customClassName={'withBorder'}
                       />
                     </div>
-                    {!initialConfiguration.IsLoginEmailConfigure &&
+                    {!initialConfiguration?.IsLoginEmailConfigure &&
                       <div className="input-group col-md-3">
                         <TextFieldHookForm
                           name="UserName"
@@ -3210,7 +3210,7 @@ function UserRegistration(props) {
                                 type="text"
                                 label={`${handleDepartmentHeader()}`}
                                 errors={errors.DepartmentId}
-                                isMulti={initialConfiguration.IsMultipleDepartmentAllowed}
+                                isMulti={initialConfiguration?.IsMultipleDepartmentAllowed}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
