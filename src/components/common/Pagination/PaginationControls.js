@@ -5,6 +5,7 @@ import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from 
 import { checkPartNoExistInBop } from '../../costing/actions/Costing';
 
 const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module }) => {
+    
     const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state.pagination);
     const dispatch = useDispatch();
     let pageSizeValue;
@@ -108,7 +109,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
     return (
         <div className="d-flex pagination-button-container">
             <p>
-                <Button id="commonPagination_previous" variant="previous-btn" onClick={onBtPrevious} />
+                <Button id="commonPagination_previous" variant="previous-btn" onClick={onBtPrevious} disabled={Number(pageNo) === 1} />
             </p>
             {pageSize?.pageSize10 && (
                 <p className="next-page-pg custom-left-arrow">
@@ -126,7 +127,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
                 </p>
             )}
             <p>
-                <Button id="commonPagination_next" variant="next-btn" onClick={onBtNext} />
+                <Button id="commonPagination_next" variant="next-btn" onClick={onBtNext} disabled={pageNo >= Math.ceil(totalRecordCount / pageSizeValue)} />
             </p>
         </div>
     );

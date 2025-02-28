@@ -4,21 +4,22 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForNull, getCodeBySplitting, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
 import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField, validateForm } from "../../layout/FormInputs";
-import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountryAction } from '../../../actions/Common';
 import {
-  getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
+  getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByAddress, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
+  getPlantCurrencyByPlantIds,
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
-import { loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { calculatePercentageValue, onFocus, showDataOnHover } from '../../../helper';
+import { calculatePercentageValue, getExchangeRateParams, onFocus, showDataOnHover } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
@@ -34,6 +35,10 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
+import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
+import { getPlantUnitAPI } from '../actions/Plant';
+import Switch from 'react-switch'
+import WarningMessage from '../../common/WarningMessage';
 
 const selector = formValueSelector('AddPower');
 
@@ -41,7 +46,7 @@ class AddPower extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
-    this.state = {
+    this.initialState = {
       isEditFlag: false,
       isEditFlagForStateElectricity: false,
       PowerDetailID: '',
@@ -73,7 +78,8 @@ class AddPower extends Component {
       isEditSEBIndex: false,
 
       netContributionValue: 0,
-
+      netContributionConvertedInLocalCurrency: 0,
+      netContributionConvertedInBaseCurrency: 0,
       power: { minMonthlyCharge: '', AvgUnitConsumptionPerMonth: '', SEBCostPerUnit: '', TotalUnitCharges: '', SelfGeneratedCostPerUnit: '', },
       DropdownChanged: true,
       DataToChangeVendor: [],
@@ -84,6 +90,15 @@ class AddPower extends Component {
       AddChanged: true,
       setDisable: false,
       inputLoader: false,
+      isImport: false,
+      hidePlantCurrency: false,
+      settlementCurrency: null,
+      plantCurrency: null,
+      ExchangeSource: [],
+      currency: [],
+      plantExchangeRateId: '',
+      settlementExchangeRateId: '',
+      plantCurrencyID: '',
       errorObj: {
         minDemand: false,
         demandCharge: false,
@@ -102,7 +117,14 @@ class AddPower extends Component {
       client: [],
       costPerUnitTooltipText: 'Please fill in the mandatory fields of State Electricity Board Power Changes section, as the calculation will be based on them.',
       segCostUnittooltipText: 'Please select the Source of Power, as the calculation will be based on them.',
+      country: [],
+      city: [],
+      isDisabled: false,
+      showPlantWarning: false
+
     }
+    this.state = { ...this.initialState };
+
   }
 
   /**
@@ -112,31 +134,135 @@ class AddPower extends Component {
   componentDidMount() {
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (!this.state.isViewMode) {
+      this.props.getExchangeRateSource((res) => { })
       this.props.getPowerTypeSelectList(() => { })
       this.props.getUOMSelectList(() => { })
     }
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getAllCity(countryId => {
-        this.props.fetchStateDataAPI(countryId, () => { })
-      })
-      this.props.getPlantListByState('', () => { })
+      this.props.fetchCountryDataAPI(() => { })
+      this.props.fetchCityDataAPI(0, () => { })
       this.props.getPlantBySupplier('', () => { })
       this.props.getPowerDetailData('', () => { })
       this.props.getClientSelectList(() => { })
+      this.props.fetchStateDataAPI(0, () => { })
     }
     this.getDetails();
+    this.props.getCurrencySelectList(() => { })
   }
+  callPlantApi = () => {
+    const { city, StateName, country } = this.state;
+    const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India';
 
-  componentDidUpdate(prevProps) {
+    if (city.value) {
+      this.props.getPlantListByAddress(city.value, isStateOfCountryAvailable ? StateName.value : null, country.value, () => { })
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.SEBPowerCalculation()
       this.selfPowerCalculation()
       this.powerContributionCalculation()
       this.minMonthlyChargeCalculation()
     }
+    if (prevState.netContributionValue !== this.state.netContributionValue) {
+      this.handleCalculation(this.state?.netContributionValue)
+    }
   }
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
+  }
+
+  callExchangeRateAPI = () => {
+    const { fieldsObj } = this.props
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
+    const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
+    const toCurrency = reactLocalStorage.getObject("baseCurrency")
+    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    if (hasCurrencyAndDate) {
+      if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
+        return;
+      }
+
+      const callAPI = (from, to, costingType, vendorValue, clientValue) => {
+        
+        return new Promise((resolve) => {
+          this.props.getExchangeRateByCurrency(
+            from,
+            costingType,
+            DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
+            vendorValue,
+            clientValue,
+            false,
+            to,
+            ExchangeSource?.label ?? null,
+            res => {
+              resolve({
+                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                exchangeRateId: res?.data?.Data?.ExchangeRateId,
+                showWarning: Object.keys(res.data.Data).length === 0,
+                showPlantWarning: Object.keys(res.data.Data).length === 0
+              });
+            }
+          );
+        });
+      };
+
+      if (isImport) {
+        // First API call
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+        
+        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+          callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+            this.setState({
+              plantCurrency: rate1,
+              settlementCurrency: rate2,
+              plantExchangeRateId: exchangeRateId1,
+              settlementExchangeRateId: exchangeRateId2,
+              showPlantWarning: showPlantWarning1,
+              showWarning: showWarning2
+
+            }, () => {
+              this.handleCalculation(fieldsObj?.NetPowerCostPerUnit)
+            });
+          });
+        });
+      } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+        // Original single API call for non-import case
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+        callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
+          this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
+            this.handleCalculation(fieldsObj?.NetPowerCostPerUnitLocalConversion)
+          });
+        });
+      }
+    }
+
+  }
+  handleCalculation = (powerRate) => {
+
+    const { fieldsObj } = this.props
+    const { plantCurrency, settlementCurrency, isImport, netContributionValue, isDetailEntry } = this.state
+    const rate = isDetailEntry ? netContributionValue : powerRate
+
+    if (isImport) {
+      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      this.props.change('NetPowerCostPerUnitLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
+      const rateBaseCurrency = checkForNull(rate) * checkForNull(settlementCurrency)
+      this.props.change('NetPowerCostPerUnitConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+      this.setState({
+        netContributionConvertedInBaseCurrency: checkForNull(rateBaseCurrency), netContributionConvertedInLocalCurrency: checkForNull(ratePlantCurrency)
+      })
+    } else {
+      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+
+      this.props.change('NetPowerCostPerUnitConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+      this.setState({
+        netContributionConvertedInBaseCurrency: checkForNull(ratebaseCurrency), netContributionConvertedInLocalCurrency: checkForNull(netContributionValue)
+      })
+
+    }
+
   }
   /**
    * @method minMonthlyChargeCalculation
@@ -154,7 +280,7 @@ class AddPower extends Component {
         ...power, minMonthlyCharge: power.minMonthlyCharge
       }
     })
-    this.props.change('MinMonthlyCharge', minMonthlyCharge === 0 ? '' : checkForDecimalAndNull(minMonthlyCharge, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('MinMonthlyCharge', minMonthlyCharge === 0 ? '' : checkForDecimalAndNull(minMonthlyCharge, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -179,7 +305,7 @@ class AddPower extends Component {
       this.setState({
         power: { ...power, AvgUnitConsumptionPerMonth: power.AvgUnitConsumptionPerMonth }
       })
-      this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration.NoOfDecimalForInputOutput))
+      this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration?.NoOfDecimalForInputOutput))
     }
 
     //Formula for SEB COST PER UNIT calculation
@@ -191,7 +317,7 @@ class AddPower extends Component {
         this.setState({
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
-        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
       } else {
         const SEBCostPerUnit = checkForNull(((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth);
 
@@ -200,7 +326,7 @@ class AddPower extends Component {
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
         this.setState({ costPerUnitTooltipText: 'Cost per Unit = (Min Monthly Charge + (Avg. Unit Consumption per Month - Min Demand kW per Month) * Max Demand Charges per kW) / Avg. Unit Consumption per Month' })
-        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
       }
 
     }
@@ -214,7 +340,7 @@ class AddPower extends Component {
     this.setState({
       power: { ...power, TotalUnitCharges: power.TotalUnitCharges }
     })
-    this.props.change('TotalUnitCharges', checkForDecimalAndNull(TotalUnitCharges, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('TotalUnitCharges', checkForDecimalAndNull(TotalUnitCharges, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -237,7 +363,7 @@ class AddPower extends Component {
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
       })
-      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
     } else {
       const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
       const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
@@ -249,7 +375,7 @@ class AddPower extends Component {
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
       })
-      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
     }
 
   }
@@ -303,7 +429,7 @@ class AddPower extends Component {
         isEditFlagForStateElectricity: true
       })
     }
-    if (data && data.isEditFlag && data.IsVendor && false) {
+    if (data && data?.isEditFlag && data?.IsVendor) {
       this.setState({
         isEditFlag: false,
         isLoader: true,
@@ -325,11 +451,23 @@ class AddPower extends Component {
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
             })
             this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
+            this.props.change('NetPowerCostPerUnitLocalConversion', Data.NetPowerCostPerUnitLocalConversion)
+            this.props.change('NetPowerCostPerUnitConversion', Data.NetPowerCostPerUnitConversion)
+            this.props.change('plantCurrency', Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+            this.props.change('Country', Data.CountryName !== undefined ? { label: Data?.CountryName, value: Data?.CountryId } : {})
+            this.props.change('State', Data.StateName !== undefined ? { label: Data?.StateName, value: Data.StateId } : {})
+            this.props.change('City', Data.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : {})
+            if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+              this.setState({ hidePlantCurrency: false })
+            } else {
+              this.setState({ hidePlantCurrency: true })
+            }
           }, 200)
         }
       })
 
-    } else if (data && data.isEditFlag) {
+    }
+    else if (data && data.isEditFlag) {
       this.setState({
         isEditFlag: false,
         isLoader: true,
@@ -370,13 +508,21 @@ class AddPower extends Component {
           setTimeout(() => {
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-
+            this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
+            this.props.change('NetPowerCostPerUnitLocalConversion', Data.NetPowerCostPerUnitLocalConversion)
+            this.props.change('NetPowerCostPerUnitConversion', Data.NetPowerCostPerUnitConversion)
+            this.props.change('plantCurrency', Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+            this.props.change('Country', Data.CountryName !== undefined ? { label: Data?.CountryName, value: Data?.CountryId } : {})
+            this.props.change('State', Data.StateName !== undefined ? { label: Data?.StateName, value: Data.StateId } : {})
+            this.props.change('City', Data.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : {})
 
             this.setState({
               isEditFlag: true,
               isLoader: false,
               IsVendor: Data.IsVendor,
               netContributionValue: Data.NetPowerCostPerUnit,
+              netContributionConvertedInBaseCurrency: Data?.NetPowerCostPerUnitConversion,
+              netContributionConvertedInLocalCurrency: Data?.NetPowerCostPerUnitLocalConversion,
               isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
               selectedPlants: plantArray,
               StateName: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
@@ -386,12 +532,26 @@ class AddPower extends Component {
               costingTypeId: Data.CostingTypeId,
               client: { label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId },
               vendorName: { label: `${Data?.VendorName} (${Data?.VendorCode})`, value: Data?.VendorId },
+              ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],
+              settlementCurrency: Data?.ExchangeRate,
+              settlementExchangeRateId: Data?.ExchangeRateId,
+              isImport: Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
+              plantCurrency: Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantCurrencyID: Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              plantExchangeRateId: Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
+              city: Data?.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : [],
+              country: Data?.CountryName !== undefined ? { label: Data?.CountryName, value: Data?.CountryId } : [],
             }, () => this.setState({ isLoader: false }))
 
             if (!Data.IsDetailedForm) {
               this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
             }
-
+            if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+              this.setState({ hidePlantCurrency: false })
+            } else {
+              this.setState({ hidePlantCurrency: true })
+            }
           }, 200)
         }
       })
@@ -412,30 +572,18 @@ class AddPower extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'plant',
-      'clientName',
-      'DestinationSupplierId',
-      'Fuel',
-      'CityId',
-      'UnitOfMeasurementId',
-      'CountryId',
-      'StateId',
-      'Rate',
-      'EffectiveDate',
-
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddFuel', false, false, fieldName));
-    });
+    this.props.reset();
+    // Store current isImport value
+    const currentIsImport = this.state.isImport;
     this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag
+      ...this.initialState, costingTypeId: costingHeadFlag,
+      isImport: currentIsImport // Preserve isImport value
+    }, () => {
+      if (costingHeadFlag === CBCTypeId) {
+        //this.props.getClientSelectList(() => { })
+      }
     });
-    if (costingHeadFlag === CBCTypeId) {
-      // this.props.getClientSelectList(() => { })
-    }
-  }
+  };
 
   /**
   * @method handleVendorName
@@ -445,9 +593,12 @@ class AddPower extends Component {
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
-        const result = vendorName && vendorName.label ? getCodeBySplitting(vendorName.label) : '';
+        const result = vendorName && vendorName?.label ? getCodeBySplitting(vendorName?.label) : '';
         this.setState({ VendorCode: result })
         this.props.getPlantBySupplier(vendorName.value, () => { })
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
       });
     } else {
       this.setState({ vendorName: [] })
@@ -472,30 +623,88 @@ class AddPower extends Component {
       this.setState({ isOpenVendor: false })
     }
   }
-  /**
-  * @method handleState
-  * @description called
-  */
-  handleState = (newValue, actionMeta) => {
+  countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ StateName: newValue, selectedPlants: [] }, () => {
-        const { StateName } = this.state;
-        this.props.getPlantListByState(StateName.value, () => { })
-      })
+      this.setState({ country: newValue, StateName: [], city: [], selectedPlants: [] }, () => {
+        this.getAllCityData()
+      });
     } else {
-      this.setState({ StateName: [], selectedPlants: [] })
-      this.props.getPlantListByState('', () => { })
+      this.setState({ country: [], state: [], city: [] })
     }
+    this.setState({ DropdownChanged: false })
   };
+
+  /**
+  * @method stateHandler
+  * @description Used to handle state
+  */
+  stateHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ StateName: newValue, city: [] }, () => {
+        const { StateName } = this.state;
+        this.props.fetchCityDataAPI(StateName.value, () => { })
+      });
+    } else {
+      this.setState({ StateName: [], city: [] });
+    }
+
+  };
+
+  getAllCityData = () => {
+    const { country } = this.state;
+    if (country && country?.label !== 'India') {
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', (res) => { })
+    } else {
+      this.props.fetchStateDataAPI(country.value, () => { })
+    }
+  }
 
   /**
   * @method handlePlants
   * @description Used handle Plants
   */
   handlePlants = (e) => {
+    const plantValues = e?.map(plant => plant.Value);
     this.setState({ selectedPlants: e })
+    if (plantValues !== undefined) {
+      this.props.getPlantCurrencyByPlantIds(plantValues, (res) => {
+        let Data = res?.data?.Data;
+        if (res?.response?.status === 412) {
+          this.setState({ isDisabled: true });
+          return;
+        } else {
+          this.setState({ isDisabled: false });
+        }
+        this.props.change('plantCurrency', Data[0]?.Currency);
+        this.setState({ plantCurrencyID: Data[0]?.CurrencyId });
+        if (Data[0]?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.setState({ hidePlantCurrency: false });
+        } else {
+          this.setState({ hidePlantCurrency: true });
+        }
+        this.callExchangeRateAPI();
+      });
+    } else {
+      this.setState({ isDisabled: false });
+    }
+    // this.props.getPlantUnitAPI(e?.value, (res) => {
+    //   let Data = res?.data?.Data
+    //   if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+    //     this.props.change('plantCurrency', Data?.Currency)
+    //     this.setState({ hidePlantCurrency: false })
+    //     this.callExchangeRateAPI()
+    //   } else {
+    //     this.setState({ hidePlantCurrency: true })
+    //   }
+    // })
   }
-
+  handleExchangeRateSource = (newValue) => {
+    this.setState({ ExchangeSource: newValue }
+      , () => {
+        this.callExchangeRateAPI()
+      }
+    );
+  };
   /**
  * @method handleChange
  * @description Handle Effective Date
@@ -503,6 +712,8 @@ class AddPower extends Component {
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
+    }, () => {
+      this.callExchangeRateAPI()
     });
   };
 
@@ -510,6 +721,7 @@ class AddPower extends Component {
     if (e.target.value) {
       this.setState({ DropdownChanged: false })
     }
+    this.handleCalculation(e?.target?.value)
   }
 
   /**
@@ -529,6 +741,7 @@ class AddPower extends Component {
     }
     this.setState({ handleChange: false })
   };
+
   findSourceType = (clickedData, arr) => {
     let isSourceType = _.find(arr, function (obj) {
       if (obj.SourcePowerType === clickedData) {
@@ -772,11 +985,11 @@ class AddPower extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, unitGenerated: true } })
         count++;
       }
-      if (fieldsObj.SelfPowerContribution === undefined || Number(fieldsObj.SelfPowerContribution) === 0) {
+      if (fieldsObj?.SelfPowerContribution === undefined || Number(fieldsObj.SelfPowerContribution) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
         count++;
       }
-      if (source.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
+      if (source?.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
         count++;
       }
@@ -807,8 +1020,8 @@ class AddPower extends Component {
         PowerContributionPercentage: SelfPowerContribution,
 
         //DIESEL
-        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
-        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
+        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM?.value : '',
+        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM?.label : '',
         CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
         UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
         OtherCharges: 0,
@@ -870,7 +1083,7 @@ class AddPower extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
         count++;
       }
-      if (source.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
+      if (source?.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
         count++;
       }
@@ -904,8 +1117,8 @@ class AddPower extends Component {
         UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
         CostPerUnit: SelfGeneratedCostPerUnit,
         PowerContributionPercentage: SelfPowerContribution,
-        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
-        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
+        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM?.value : '',
+        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM?.label : '',
         CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
         UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
         OtherCharges: 0
@@ -1000,7 +1213,15 @@ class AddPower extends Component {
       });
     }
   }
-
+  handleCurrency = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ currency: newValue }, () => {
+        this.callExchangeRateAPI()
+      })
+    } else {
+      this.setState({ currency: [] })
+    }
+  };
   /**
   * @method deleteItem
   * @description used to Reset form
@@ -1060,17 +1281,43 @@ class AddPower extends Component {
     this.setState({ DeleteChanged: false })
     this.resetpowerKeyValue()
   }
+  cityHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ city: newValue }, () => {
+        this.callPlantApi()
+      });
+    } else {
+      this.setState({ city: [] });
+    }
+    this.setState({ DropdownChanged: false })
+  };
 
   /**
   * @method renderListing
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList, clientSelectList } = this.props;
+    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList, clientSelectList, exchangeRateSourceList, countryList, cityList, currencySelectList } = this.props;
     const temp = [];
 
     if (label === 'state') {
       stateList && stateList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      });
+      return temp;
+    }
+    if (label === 'country') {
+      countryList && countryList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      });
+      return temp;
+    }
+    if (label === 'city') {
+      cityList && cityList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -1109,6 +1356,21 @@ class AddPower extends Component {
 
     if (label === 'ClientList') {
       clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'ExchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+        if (item.Value === '--Exchange Rate Source Name--') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    } if (label === 'currency') {
+      currencySelectList && currencySelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -1162,8 +1424,12 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client } = this.state;
-
+      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country, isImport, netContributionConvertedInLocalCurrency, netContributionConvertedInBaseCurrency, netContributionValue } = this.state;
+    const NetContributionConvertedInBaseCurrency = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? netContributionConvertedInBaseCurrency : netContributionValue
+    const NetContributionConvertedInLocalCurrency = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? netContributionConvertedInLocalCurrency : netContributionValue
+    const NetPowerCostPerUnitConversion = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? this.props.fieldsObj?.NetPowerCostPerUnitConversion : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion
+    const NetPowerCostPerUnitLocalConversion = isDetailEntry ? NetContributionConvertedInLocalCurrency : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion
+    const { fieldsObj } = this.props
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -1181,18 +1447,17 @@ class AddPower extends Component {
     })
 
     let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
-
+    if (DataToChangeZ.NetPowerCostPerUnit === values.NetPowerCostPerUnit) {
+      Toaster.warning('Please change the data to save Power Details');
+      return false
+    }
     if (isEditFlag) {
-      if (IsVendor && false) {
-        if (DataToChangeVendor.NetPowerCostPerUnit === values.NetPowerCostPerUnit) {
-          this.cancel('cancel')
-          return false
-        }
+      if (IsVendor) {
         this.setState({ setDisable: true })
         let vendorDetailData = {
           PowerDetailId: PowerDetailID,
           VendorId: vendorName.value,
-          VendorName: vendorName.label,
+          VendorName: vendorName?.label,
           VendorCode: VendorCode,
           NetPowerCostPerUnit: values.NetPowerCostPerUnit,
           IsVendor: costingTypeId === VBCTypeId,
@@ -1251,11 +1516,13 @@ class AddPower extends Component {
           VendorId: vendorName.value,
           Plants: plantArray,
           StateId: StateName.value,
-          StateName: StateName.label,
+          StateName: StateName?.label,
           IsActive: true,
-          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : this.props.fieldsObj.NetPowerCostPerUnit,
+          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.state.isImport /* || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) */ ? this.props.fieldsObj.NetPowerCostPerUnit : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion),
           VendorPlant: [],
           EffectiveDate: effectiveDate,
+          CountryId: country?.value,
+          CityId: city?.value,
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1275,6 +1542,18 @@ class AddPower extends Component {
           ],
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
+          NetPowerCostPerUnitConversion: isDetailEntry ? NetContributionConvertedInBaseCurrency : NetPowerCostPerUnitConversion,
+          NetPowerCostPerUnitLocalConversion: NetPowerCostPerUnitLocalConversion,
+          PowerEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+          ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+          LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+          LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+          LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
+          LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+          ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+          ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+          CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+          Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
         }
 
         this.props.updatePowerDetail(requestData, (res) => {
@@ -1287,7 +1566,7 @@ class AddPower extends Component {
       }
 
     } else {
-      if (IsVendor && false) {
+      if (IsVendor) {
 
         this.setState({ setDisable: true })
         const vendorPowerData = {
@@ -1316,9 +1595,11 @@ class AddPower extends Component {
           PlantId: plantArray && plantArray[0]?.PlantId,
           Plants: plantArray,
           StateId: StateName.value,
-          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : this.props.fieldsObj.NetPowerCostPerUnit,
+          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.state.isImport /* || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) */ ? this.props.fieldsObj.NetPowerCostPerUnit : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion),
           VendorPlant: [],
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+          CountryId: country?.value,
+          CityId: city?.value,
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1338,6 +1619,18 @@ class AddPower extends Component {
           ],
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
+          NetPowerCostPerUnitConversion: isDetailEntry ? NetContributionConvertedInBaseCurrency : NetPowerCostPerUnitConversion,
+          NetPowerCostPerUnitLocalConversion: NetPowerCostPerUnitLocalConversion,
+          PowerEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+          ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+          LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+          LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+          LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
+          LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+          ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+          ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+          CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+          Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
         }
 
         this.props.createPowerDetail(formData, (res) => {
@@ -1364,12 +1657,44 @@ class AddPower extends Component {
 
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue }, () => {
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI();
+        }
+      });
     } else {
       this.setState({ client: [] })
     }
   };
+  importToggle = () => {
+    this.setState({ isImport: !this.state.isImport })
+  }
 
+  getTooltipTextForCurrency = () => {
+    const { fieldsObj } = this.props
+    const { settlementCurrency, plantCurrency, currency } = this.state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = fieldsObj?.plantCurrency ?? 'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
+
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '-';
+    const settlementCurrencyRate = settlementCurrency ?? '-';
+
+    // Generate tooltip text based on the condition
+    return <>
+      {!this.state?.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+    </>;
+  };
+  powerRateTitle = () => {
+    const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    return {
+      tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+    };
+  };
   /**
   * @method render
   * @description Renders the component
@@ -1377,7 +1702,7 @@ class AddPower extends Component {
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
-      checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry } = this.state;
+      checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry, hidePlantCurrency } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
@@ -1409,6 +1734,9 @@ class AddPower extends Component {
         }
       }
     };
+
+
+    const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India'
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1437,6 +1765,29 @@ class AddPower extends Component {
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
+                      <Row>
+                        <Col md="4" className="switch mb15">
+                          <label className="switch-level">
+                            <div className={"left-title"}>Domestic</div>
+                            <Switch
+                              onChange={this.importToggle}
+                              checked={this.state.isImport}
+                              id="normal-switch"
+                              disabled={isEditFlag}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#4DC771"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                            <div className={"right-title"}>Import</div>
+                          </label>
+                        </Col>
+
+                      </Row>
                       <Row>
 
                         <Col md="12">
@@ -1492,25 +1843,60 @@ class AddPower extends Component {
                             <h5>{'Power For:'}</h5>
                           </div>
                         </Col>
-                        {<Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
+                        <Col md="3">
+                          <div className="form-group inputbox withBorder ">
+                            <Field
+                              name="CountryId"
+                              type="text"
+                              label="Country"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('country')}
+                              validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.countryHandler}
+                              valueDescription={this.state.country}
+                              disabled={isViewMode || isEditFlag}
+                            />
+                          </div>
+                        </Col>
+
+                        {isStateOfCountryAvailable &&
+                          <Col md="3">
+                            <div className="form-group inputbox withBorder ">
                               <Field
-                                name="state"
+                                name="StateId"
                                 type="text"
                                 label="State"
                                 component={searchableSelect}
-                                placeholder={isEditFlag ? '-' : 'Select'}
+                                placeholder={'Select'}
                                 options={this.renderListing('state')}
                                 validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
                                 required={true}
-                                handleChangeDescription={this.handleState}
+                                handleChangeDescription={this.stateHandler}
                                 valueDescription={this.state.StateName}
-                                disabled={isEditFlag ? true : false}
+                                disabled={isViewMode || isEditFlag}
                               />
                             </div>
+                          </Col>}
+
+                        <Col md="3">
+                          <div className="form-group inputbox withBorder ">
+                            <Field
+                              name="CityId"
+                              type="text"
+                              label="City"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('city')}
+                              validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.cityHandler}
+                              valueDescription={this.state.city}
+                              disabled={isViewMode || isEditFlag}
+                            />
                           </div>
-                        </Col>}
+                        </Col>
 
 
                         {costingTypeId === VBCTypeId && <Col md="3">
@@ -1594,7 +1980,62 @@ class AddPower extends Component {
                             </div>
                           </div>
                         </Col>
+                        {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                          <Col md="3">
+                            <Field
+                              label="Exchange Rate Source"
+                              name="ExchangeSource"
+                              placeholder="Select"
+                              options={this.renderListing("ExchangeSource")}
+                              handleChangeDescription={this.handleExchangeRateSource}
+                              component={searchableSelect}
+                              className="multiselect-with-border"
+                              disabled={isEditFlag || isEditFlag}
+                              valueDescription={this.state?.ExchangeSource}
+                            />
+                          </Col>
+                        )}
+                        <Col md="3">
+                          {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          <Field
+                            name="plantCurrency"
+                            type="text"
+                            label="Plant Currency"
+                            placeholder={"-"}
+                            validate={[]}
+                            component={renderTextInputField}
+                            required={false}
+                            disabled={true}
+                            className=" "
+                            customClassName=" withBorder mb-1"
+                          />
+                          {this.state?.showPlantWarning && <WarningMessage dClass="mt-0" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
 
+                        </Col>
+                        {this.state?.isImport && <Col md="3">
+                          <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
+                          <Field
+                            name="Currency"
+                            type="text"
+                            label="Currency"
+                            component={searchableSelect}
+                            placeholder={isEditFlag ? '-' : "Select"}
+                            options={this.renderListing("currency")}
+                            validate={
+                              this.state.currency == null ||
+                                this.state.currency.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleCurrency}
+                            valueDescription={this.state.currency}
+                            disabled={isEditFlag ? true : false || isViewMode}
+                            customClassName="mb-1"
+                          >
+                            {this.state?.currency?.label && this.state?.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
+                          </Field>
+                        </Col>}
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
@@ -1615,7 +2056,7 @@ class AddPower extends Component {
                                     placeholder={isViewMode ? '-' : "Select Date"}
                                     onFocus={() => onFocus(this, true)}
                                     minDate={getEffectiveDateMinDate()}
-                                    maxDate={ getEffectiveDateMaxDate()}
+                                    maxDate={getEffectiveDateMaxDate()}
 
 
                                   />
@@ -1625,25 +2066,72 @@ class AddPower extends Component {
                           </div>
                         </Col>
 
-                        {!isDetailEntry && < Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
-                              <Field
-                                label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
-                                name={"NetPowerCostPerUnit"}
-                                type="text"
-                                placeholder={isViewMode ? '-' : 'Enter'}
-                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
-                                component={renderTextInputField}
-                                onChange={this.onNetCostChange}
-                                required={true}
-                                className=""
-                                customClassName=" withBorder"
-                                disabled={isViewMode}
-                              />
-                            </div>
-                          </div>
-                        </Col>}
+                        {!isDetailEntry &&
+                          <>
+                            {this.state.isImport && < Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})`}
+                                    name={"NetPowerCostPerUnit"}
+                                    type="text"
+                                    placeholder={isViewMode ? '-' : 'Enter'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    component={renderTextInputField}
+                                    onChange={this.onNetCostChange}
+                                    required={true}
+                                    className=""
+                                    customClassName=" withBorder"
+                                    disabled={isViewMode}
+                                  />
+                                </div>
+                              </div>
+                            </Col>}
+                            < Col md="3">
+                              {this.state.isImport && <TooltipCustom disabledIcon={true} id="cost-local" tooltipText={hidePlantCurrency ? this.powerRateTitle()?.toolTipTextNetCostBaseCurrency : this.powerRateTitle()?.tooltipTextPlantCurrency} />}
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                                    name={"NetPowerCostPerUnitLocalConversion"}
+                                    type="text"
+                                    id="cost-local"
+                                    placeholder={isViewMode || this.state.isImport ? '-' : 'Enter'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    component={renderTextInputField}
+                                    onChange={this.onNetCostChange}
+                                    required={true}
+                                    className=""
+                                    customClassName=" withBorder"
+                                    disabled={isViewMode || this.state.isImport}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+
+                            {!this.state.hidePlantCurrency && < Col md="3">
+                              <TooltipCustom disabledIcon={true} id="fuel-rate" tooltipText={this.state.isImport ? this.powerRateTitle()?.toolTipTextNetCostBaseCurrency : this.powerRateTitle()?.tooltipTextPlantCurrency} />
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
+                                    name={"NetPowerCostPerUnitConversion"}
+                                    id="fuel-rate"
+                                    type="text"
+                                    placeholder={'-'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    component={renderTextInputField}
+                                    // onChange={this.onNetCostChange}
+                                    required={true}
+                                    className=""
+                                    customClassName=" withBorder"
+                                    disabled={true}
+                                  />
+                                </div>
+                              </div>
+                            </Col>}
+                          </>
+                        }
 
                         <Col md="6" className={(costingTypeId === ZBCTypeId || isDetailEntry) ? "" : "mt30 pt-1"}>
                           <label id="AddPower_AddMoreDetails"
@@ -1716,7 +2204,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"MinMonthlyCharge"} disabledIcon={true} tooltipText={`Min Monthly Charge = Min Demand kW per Month * Demand Charges per kW`} />
+                                  <TooltipCustom id={"MinMonthlyCharge"} width="350px" disabledIcon={true} tooltipText={`Min Monthly Charge = Min Demand kW per Month * Demand Charges per kW`} />
                                   <Field
                                     label={`Min Monthly Charge`}
                                     name={"MinMonthlyCharge"}
@@ -1753,7 +2241,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"UnitConsumptionPerAnnum"} disabledIcon={true} tooltipText={`Unit Consumption per Annum = Avg. Unit Consumption per Month * 12`} />
+                                  <TooltipCustom id={"UnitConsumptionPerAnnum"} width="350px" disabledIcon={true} tooltipText={`Unit Consumption per Annum = Avg. Unit Consumption per Month * 12`} />
                                   <Field
                                     label={`Unit Consumption/Annum`}
                                     name={"UnitConsumptionPerAnnum"}
@@ -1792,7 +2280,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"SEBCostPerUnit"} width="260px" disabledIcon={true} tooltipText={this.state.costPerUnitTooltipText} />
+                                  <TooltipCustom id={"SEBCostPerUnit"} width="350px" disabledIcon={true} tooltipText={this.state.costPerUnitTooltipText} />
                                   <Field
                                     label={`Cost/Unit`}
                                     name={"SEBCostPerUnit"}
@@ -2054,7 +2542,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="260px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />
+                                  <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="350px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />
                                   <Field
                                     label={`Cost/Unit`}
                                     name={this.state.power.SelfGeneratedCostPerUnit === 0 ? '' : "SelfGeneratedCostPerUnit"}
@@ -2142,10 +2630,10 @@ class AddPower extends Component {
                                       return (
                                         <tr key={index}>
                                           <td>{item.SourcePowerType}</td>
-                                          <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                          <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
                                           <td>{item.PowerContributionPercentage}</td>
                                           {/* Ask which value to use for trim */}
-                                          <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForPrice)}</td>
+                                          <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration?.NoOfDecimalForPrice)}</td>
                                           <td>
                                             <button title='Edit' className="Edit mr-2" type={'button'} disabled={isViewMode} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
                                             <button title='Delete' className="Delete" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
@@ -2161,8 +2649,28 @@ class AddPower extends Component {
                                   <tr className="bluefooter-butn">
                                     <td></td>
                                     <td></td>
-                                    <td className="text-right"><label>{`Net Contribution Value:`}</label> </td>
-                                    <td><label> {checkForDecimalAndNull(netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label></td>
+
+                                    {this.state.isImport && (
+                                      <>
+                                        <th>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
+                                        <td>
+                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        </td>
+                                      </>
+                                    )}
+                                    <th>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
+                                    <td>
+                                      <label>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                    </td>
+                                    {!this.state.hidePlantCurrency && (
+                                      <>
+                                        <th>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</th>
+                                        <td>
+                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        </td>
+                                      </>
+                                    )}
+
                                     <td></td>
                                   </tr>
 
@@ -2194,7 +2702,7 @@ class AddPower extends Component {
                         </button>
                         {!isViewMode && <button id="AddPower_Save"
                           type="submit"
-                          disabled={isViewMode || setDisable}
+                          disabled={isViewMode || setDisable || this?.state?.isDisabled}
                           className="user-btn mr5 save-btn" >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}
@@ -2236,9 +2744,9 @@ function mapStateToProps(state) {
     'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'SEBCostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
     'DutyChargesAndFCA', 'TotalUnitCharges', 'SEBPowerContributaion', 'AssetCost', 'AnnualCost',
     'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'SelfGeneratedCostPerUnit',
-    'SelfPowerContribution', 'NetPowerCostPerUnit');
+    'SelfPowerContribution', 'NetPowerCostPerUnit', 'city', 'state', 'country', 'plantCurrency', 'NetPowerCostPerUnitLocalConversion', 'NetPowerCostPerUnitConversion', "NetPowerCostPerUnit", "Currency", "ExchangeSource", "NetPowerCostPerUnitLocalConversion", "NetPowerCostPerUnit", "SEBBaseCostPerUnitConversion", "SEBCostPerUnitLocalConversion");
 
-  const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList } = comman;
+  const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList, countryList, cityList, currencySelectList, exchangeRateSourceList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { plantSelectList, powerData } = fuel;
   const { initialConfiguration } = auth;
@@ -2263,7 +2771,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
-    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList, clientSelectList
+    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList, clientSelectList, countryList, cityList, currencySelectList, exchangeRateSourceList
   }
 }
 
@@ -2282,13 +2790,20 @@ export default connect(mapStateToProps, {
   updatePowerDetail,
   createVendorPowerDetail,
   updateVendorPowerDetail,
-  getPlantListByState,
+  getPlantListByAddress,
   getDieselRateByStateAndUOM,
   getPowerDetailData,
   getVendorPowerDetailData,
-  getAllCity,
-  fetchStateDataAPI,
   getClientSelectList,
+  getExchangeRateByCurrency,
+  getPlantUnitAPI,
+  getExchangeRateSource,
+  getCurrencySelectList,
+  fetchCountryDataAPI,
+  fetchCityDataAPI,
+  getCityByCountryAction,
+  fetchStateDataAPI,
+  getPlantCurrencyByPlantIds,
 })(reduxForm({
   form: 'AddPower',
   validate: validateForm,

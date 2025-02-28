@@ -11,6 +11,7 @@ export default function OtherDiscountTable(props) {
     const { tableData } = props
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const CostingViewMode = useContext(ViewCostingContext);
+    const { currencySource } = useSelector((state) => state?.costing);
     // const [state, setState] = useState({
     //     gridData: props.gridData.length !== 0 ? props.gridData : [],
     // })
@@ -19,11 +20,11 @@ export default function OtherDiscountTable(props) {
             <Table className="table mb-0 forging-cal-table" size="sm">
                 <thead>
                     <tr>
-                        {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                        {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                         <th>{`Description`}</th>
                         {/* <th>{`Other Cost Type`}</th> */}
                         <th>{`Applicability`}</th>
-                        <th>{`Applicability (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                        <th>{`Applicability (${currencySource?.label ?? initialConfiguration?.BaseCurrency})`}</th>
                         <th>{'Percentage (%)'}</th>
                         <th>{`Cost`}</th>
                         {!CostingViewMode && <th className='text-right'>{`Action`}</th>}
@@ -33,12 +34,12 @@ export default function OtherDiscountTable(props) {
                     {tableData.gridData && tableData.gridData.length !== 0 && tableData.gridData.map((item, index) => {
                         return (
                             <tr key={index} >
-                                {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
+                                {initialConfiguration?.IsShowCRMHead && <td>{item.CRMHead}</td>}
                                 <td>{item.Description}</td>
                                 <td>{item.ApplicabilityType}</td>
-                                <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                 <td>{item?.PercentageDiscountCost !== '' ? item?.PercentageDiscountCost : '-'}</td>
-                                <td>{checkForDecimalAndNull(item.NetCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td>{checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                 {!CostingViewMode && <td className='text-right'>
                                     <button
                                         className="Edit"
@@ -63,15 +64,15 @@ export default function OtherDiscountTable(props) {
 
                     {tableData.gridData && tableData.gridData.length === 0 ? (
                         <tr>
-                            <td colSpan={initialConfiguration.IsShowCRMHead ? 7 : 6}> <NoContentFound title={EMPTY_DATA} /></td>
+                            <td colSpan={initialConfiguration?.IsShowCRMHead ? 7 : 6}> <NoContentFound title={EMPTY_DATA} /></td>
                         </tr>
                     ) : (
                         <tr className='table-footer'>
-                            <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4} className='text-right'>
-                                Total Discount Cost ({reactLocalStorage.getObject("baseCurrency")}):
+                            <td colSpan={initialConfiguration?.IsShowCRMHead ? 5 : 4} className='text-right'>
+                                Total Discount Cost ({currencySource?.label ?? initialConfiguration?.BaseCurrency}):
                             </td>
                             <td colSpan={3}>
-                                {checkForDecimalAndNull(tableData.otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
+                                {checkForDecimalAndNull(tableData.otherCostTotal, initialConfiguration?.NoOfDecimalForPrice)}
                             </td>
                         </tr>
                     )}

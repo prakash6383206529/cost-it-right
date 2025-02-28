@@ -3,7 +3,7 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../../helper/auth"
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, ZBCTypeId } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FILE_URL } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import Toaster from '../../../common/Toaster';
@@ -38,6 +38,7 @@ import AnalyticsDrawer from '../../../masters/material-master/AnalyticsDrawer';
 import CustomCellRenderer from '../../../rfq/CommonDropdown';
 import { useLabels, useWithLocalization } from '../../../../helper/core';
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
+import RMIndexationSimulation from './RMIndexationSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -45,6 +46,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function RMIndexationSimulationListing(props) {
+
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, master } = props;
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -54,7 +56,7 @@ function RMIndexationSimulationListing(props) {
     const dispatch = useDispatch();
     const allrmIndexationSimulationList = useSelector((state) => state.material.allrmIndexationSimulationList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const { selectedRowForPagination, tokenForSimulation } = useSelector((state => state.simulation))
     const { globalTakes } = useSelector((state) => state.pagination);
     const rmIndexationSimulationList = useSelector((state) => state.simulation.rmIndexationSimulationList);
     const rmIndexationCostingSimulationList = useSelector((state) => state.simulation.rmIndexationCostingSimulationList);
@@ -83,8 +85,10 @@ function RMIndexationSimulationListing(props) {
     const [viewAttachment, setViewAttachment] = useState([])
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
+    const [editSelectedList, setEditSelectedList] = useState(false)
+    const [tempList, setTempList] = useState([])
     const { t } = useTranslation("common")
-    const { technologyLabel,vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+    const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -141,7 +145,7 @@ function RMIndexationSimulationListing(props) {
                     setloader(false)
                 }))
             } else {
-                if (isSimulation) {
+                if (isSimulation && !props?.isFromVerifyPage) {
                     props?.changeTokenCheckBox(false)
                 }
                 getDataList(floatingFilterData, 0, defaultPageSize, true)
@@ -167,7 +171,7 @@ function RMIndexationSimulationListing(props) {
         }
     }, [])
     const apiResponse = (res, isPagination,) => {
-        if (isSimulation) {
+        if (isSimulation && !props?.isFromVerifyPage) {
             props?.changeTokenCheckBox(true)
         }
         if (res && res.status === 200) {
@@ -251,7 +255,14 @@ function RMIndexationSimulationListing(props) {
             // statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
             // ListFor: ListFor,
             // StatusId: statusString,
-            isIndexationDetails: props?.type?.label === "Indexed" ? true : false
+            isIndexationDetails: props?.type?.label === "Indexed" ? true : false,
+            Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+            LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+            EffectiveDate: props?.minDate ? props?.minDate : '',
+            ListFor: props?.ListFor ? props?.ListFor : '',
+            vendorId: props?.vendorLabel?.value,
+
+
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         if (isPagination === true) {
@@ -263,6 +274,8 @@ function RMIndexationSimulationListing(props) {
                 apiResponse(res, isPagination)
             }))
         } else {
+
+            filterData.RawMaterialEntryType = props?.FromExchangeRate ? Number(ENTRY_TYPE_IMPORT) : null
             dispatch(getRMIndexationSimulationListing(filterData, skip, take, isPagination, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 apiResponse(res, isPagination)
@@ -460,6 +473,16 @@ function RMIndexationSimulationListing(props) {
         setShowPopup(false)
         setShowPopupBulk(false)
     }
+    const cancel = () => {
+        props?.cancelImportList();
+    };
+    const editSelectedData = () => {
+        setTempList(gridApi?.getSelectedRows())
+        setEditSelectedList(true)
+    };
+    const backToSimulation = (value) => {
+        setEditSelectedList(false)
+    };
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -539,7 +562,7 @@ function RMIndexationSimulationListing(props) {
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value = cell != null ? cell : '';
+        let value = cell != null ? cell : '-';
         return value
     }
 
@@ -750,7 +773,7 @@ function RMIndexationSimulationListing(props) {
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
 
-        if (isSimulation) {
+        if (isSimulation && !props?.isFromVerifyPage) {
             apply(uniqueArray, length)
         }
 
@@ -776,14 +799,14 @@ function RMIndexationSimulationListing(props) {
     const combinedCostingHeadRenderer = (props) => {
         // Call the existing checkBoxRenderer
         checkBoxRenderer(props);
-      
+
         // Get and localize the cell value
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-      
+
         // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
         return localizedValue;
-      };
+    };
     const checkBoxRenderer = (props) => {
         let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -855,9 +878,9 @@ function RMIndexationSimulationListing(props) {
         suppressFilterButton: true,
         component: CostingHeadDropdownFilter,
         onFilterChange: (originalValue, value) => {
-            setFloatingFilterData({...floatingFilterData, CostingHead: value})
+            setFloatingFilterData({ ...floatingFilterData, CostingHead: value })
             setDisableFilter(false)
-     
+
         }
     };
     const frameworkComponents = {
@@ -871,54 +894,35 @@ function RMIndexationSimulationListing(props) {
         hyphenFormatter: hyphenFormatter,
         attachmentFormatter: attachmentFormatter,
         combinedCostingHeadRenderer: combinedCostingHeadRenderer,
-        statusFilter : CostingHeadDropdownFilter
+        statusFilter: CostingHeadDropdownFilter
     }
     return (
-        <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-            {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
-                <>
-                    {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                    <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-2'}`}>
-                        <Col md="3" lg="3" className='mb-2'>
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                            {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
-                                buttonSpecificProp={{
-                                    id: "RMDomestic_Listing_Tour", onClick: toggleExtraData
-                                }}
-                                stepsSpecificProp={{
-                                    steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
-                                }} />)}
-                        </Col>
-                        <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
-                            {
-                                // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                                (!props.isMasterSummaryDrawer) &&
-                                <>
-                                    {isSimulation &&
+        <div>
+            {!editSelectedList && (
+                <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+                    {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
+                        <>
+                            {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+                            <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-2'}`}>
+                                <Col md="3" lg="3" className='mb-2'>
+                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
+                                        buttonSpecificProp={{
+                                            id: "RMDomestic_Listing_Tour", onClick: toggleExtraData
+                                        }}
+                                        stepsSpecificProp={{
+                                            steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                        }} />)}
+                                </Col>
+                                <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
+                                    {
+                                        // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
+                                        (!props.isMasterSummaryDrawer) &&
+                                        <>
+                                            {isSimulation &&
 
-                                        <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-
-                                            <Button
-                                                id="rmDomesticListing_filter"
-                                                className={"mr5 Tour_List_Filter"}
-                                                onClick={() => onSearch()}
-                                                title={"Filtered data"}
-                                                icon={"filter"}
-                                                disabled={disableFilter}
-                                            />
-                                        </div>
-                                    }
-                                    {!isSimulation &&
-                                        <div className="d-flex justify-content-end bd-highlight w100">
-
-                                            <>
-                                                {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
-                                                    <div className="warning-message d-flex align-items-center">
-                                                        {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                                    </div>
-                                                }
-                                                {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                                <div className="warning-message d-flex align-items-center">
+                                                    {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
 
                                                     <Button
                                                         id="rmDomesticListing_filter"
@@ -928,187 +932,245 @@ function RMIndexationSimulationListing(props) {
                                                         icon={"filter"}
                                                         disabled={disableFilter}
                                                     />
-                                                }
+                                                </div>
+                                            }
+                                            {!isSimulation &&
+                                                <div className="d-flex justify-content-end bd-highlight w100">
 
-                                                {AddAccessibility && (
-                                                    <Button
-                                                        id="rmDomesticListing_add"
-                                                        className={"mr5 Tour_List_Add"}
-                                                        onClick={formToggle}
-                                                        title={"Add"}
-                                                        icon={"plus"}
-                                                    />
-                                                )}
-                                                {BulkUploadAccessibility && (
-                                                    <Button
-                                                        id="rmDomesticListing_add"
-                                                        className={"mr5 Tour_List_BulkUpload"}
-                                                        onClick={bulkToggle}
-                                                        title={"Bulk Upload"}
-                                                        icon={"upload"}
-                                                    />
-                                                )}
-                                                {
-                                                    DownloadAccessibility &&
                                                     <>
+                                                        {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                                            <div className="warning-message d-flex align-items-center">
+                                                                {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                                            </div>
+                                                        }
+                                                        {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
 
-                                                        <Button
-                                                            className="mr5 Tour_List_Download"
-                                                            id={"rmDomesticListing_excel_download"}
-                                                            onClick={onExcelDownload}
-                                                            title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                                            icon={"download mr-1"}
-                                                            buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                                        />
-                                                        <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                            <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />
+                                                            <Button
+                                                                id="rmDomesticListing_filter"
+                                                                className={"mr5 Tour_List_Filter"}
+                                                                onClick={() => onSearch()}
+                                                                title={"Filtered data"}
+                                                                icon={"filter"}
+                                                                disabled={disableFilter}
+                                                            />
+                                                        }
 
-                                                        }>
-                                                            {onBtExport()}
-                                                        </ExcelFile>
+                                                        {AddAccessibility && (
+                                                            <Button
+                                                                id="rmDomesticListing_add"
+                                                                className={"mr5 Tour_List_Add"}
+                                                                onClick={formToggle}
+                                                                title={"Add"}
+                                                                icon={"plus"}
+                                                            />
+                                                        )}
+                                                        {BulkUploadAccessibility && (
+                                                            <Button
+                                                                id="rmDomesticListing_add"
+                                                                className={"mr5 Tour_List_BulkUpload"}
+                                                                onClick={bulkToggle}
+                                                                title={"Bulk Upload"}
+                                                                icon={"upload"}
+                                                            />
+                                                        )}
+                                                        {
+                                                            DownloadAccessibility &&
+                                                            <>
+
+                                                                <Button
+                                                                    className="mr5 Tour_List_Download"
+                                                                    id={"rmDomesticListing_excel_download"}
+                                                                    onClick={onExcelDownload}
+                                                                    title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                                    icon={"download mr-1"}
+                                                                    buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                                />
+                                                                <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                                    <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />
+
+                                                                }>
+                                                                    {onBtExport()}
+                                                                </ExcelFile>
+                                                            </>
+                                                        }
+
                                                     </>
+                                                </div>
+                                            }
+
+
+                                        </>
+
+                                    }
+                                    <Button
+                                        id={"rmDomesticListing_refresh"}
+                                        className={"Tour_List_Reset mr-1"}
+                                        onClick={() => resetState()}
+                                        title={"Reset Grid"}
+                                        icon={"refresh"}
+                                    />
+                                    {props.isSimulation && props.isFromVerifyPage && (
+                                        <button type="button" className={"apply"} onClick={cancel}                        >
+                                            <div className={"back-icon"}></div>Back
+                                        </button>
+                                    )}
+                                </Col>
+
+                            </Row>
+                            <Row>
+
+                                <Col>
+                                    <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(rmIndexationSimulationList && rmIndexationSimulationList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
+                                        <div className={`ag-theme-material `}>
+                                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                            {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+                                                style={{ height: '100%', width: '100%' }}
+                                                defaultColDef={defaultColDef}
+                                                floatingFilter={true}
+                                                domLayout='autoHeight'
+                                                rowData={props.isCostingSimulation ? rmIndexationCostingSimulationList : rmIndexationSimulationList}
+
+                                                pagination={true}
+                                                paginationPageSize={globalTakes}
+                                                onGridReady={onGridReady}
+                                                gridOptions={gridOptions}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                noRowsOverlayComponentParams={{
+                                                    title: EMPTY_DATA,
+                                                    imagClass: 'imagClass'
+                                                }}
+                                                frameworkComponents={frameworkComponents}
+                                                rowSelection={'multiple'}
+                                                onRowSelected={onRowSelect}
+                                                onFilterModified={onFloatingFilterChanged}
+                                                suppressRowClickSelection={true}
+                                                enableBrowserTooltips={true}
+                                            >
+                                                <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                                <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field={props.isCostingSimulation ? 'Technology' : 'TechnologyName'} headerName={technologyLabel}></AgGridColumn>
+                                                <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
+                                                <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} headerName="Grade"></AgGridColumn>
+                                                <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialSpecs' : "RawMaterialSpecificationName"} headerName="Spec"></AgGridColumn>
+                                                <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                                <AgGridColumn field="Category"></AgGridColumn>
+                                                <AgGridColumn field="MaterialType"></AgGridColumn>
+                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" width={250} headerName={`Raw Material Code (Source ${vendorLabel} Code)`} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
+                                                {props.isCostingSimulation && <AgGridColumn field="SourceVendorName" width={250} headerName={`Source ${vendorLabel} (Code)`} cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                                <AgGridColumn field={props.isCostingSimulation ? 'PlantCode' : "DestinationPlantName"} headerName="Plant (Code)"></AgGridColumn>
+                                                <AgGridColumn field={props.isCostingSimulation ? 'VendorCode' : "VendorName"} headerName={`${vendorLabel} (Code)`}></AgGridColumn>
+                                                {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                                                {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field={props.isCostingSimulation ? 'CustomerCode' : "CustomerName"} headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                <AgGridColumn field={props.isCostingSimulation ? 'UOM' : "UnitOfMeasurementName"} headerName='UOM'></AgGridColumn>
+                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                {!props.isCostingSimulation && <><AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                                    {props.isMasterSummaryDrawer && rmIndexationSimulationList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
+                                                    {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
+                                                    <AgGridColumn cellRenderer='costFormatter' field="NetCostWithoutConditionCost" headerName="Basic Price" ></AgGridColumn>
+                                                    <AgGridColumn cellRenderer='costFormatter' field="OtherNetCost" headerName="Other Net Cost" ></AgGridColumn>
+                                                    <AgGridColumn cellRenderer='costFormatter' field="NetConditionCost" headerName="Net Condition Cost" ></AgGridColumn>
+                                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
+
+                                                    <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn></>}
+                                                {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
+                                                <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                                                {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
+                                                {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
+                                            </AgGridReact>}
+                                            <div className='button-wrapper'>
+                                                {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />}
+                                                {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                                    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />
+
                                                 }
 
-                                            </>
+                                            </div>
                                         </div>
-                                    }
-
-
-                                </>
-
-                            }
-                            <Button
-                                id={"rmDomesticListing_refresh"}
-                                className={"Tour_List_Reset"}
-                                onClick={() => resetState()}
-                                title={"Reset Grid"}
-                                icon={"refresh"}
-                            />
-                        </Col>
-
-                    </Row>
-                    <Row>
-
-                        <Col>
-                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(rmIndexationSimulationList && rmIndexationSimulationList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                <div className={`ag-theme-material `}>
-                                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                    {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
-                                        style={{ height: '100%', width: '100%' }}
-                                        defaultColDef={defaultColDef}
-                                        floatingFilter={true}
-                                        domLayout='autoHeight'
-                                        rowData={props.isCostingSimulation ? rmIndexationCostingSimulationList : rmIndexationSimulationList}
-
-                                        pagination={true}
-                                        paginationPageSize={globalTakes}
-                                        onGridReady={onGridReady}
-                                        gridOptions={gridOptions}
-                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                        noRowsOverlayComponentParams={{
-                                            title: EMPTY_DATA,
-                                            imagClass: 'imagClass'
-                                        }}
-                                        frameworkComponents={frameworkComponents}
-                                        rowSelection={'multiple'}
-                                        onRowSelected={onRowSelect}
-                                        onFilterModified={onFloatingFilterChanged}
-                                        suppressRowClickSelection={true}
-                                        enableBrowserTooltips={true}
-                                    >
-                                        <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={combinedCostingHeadRenderer}
-                                         floatingFilterComponentParams={floatingFilterStatus} 
-                                         floatingFilterComponent="statusFilter"></AgGridColumn>
-                                        <AgGridColumn field={props.isCostingSimulation ? 'Technology' : 'TechnologyName'} headerName={technologyLabel}></AgGridColumn>
-                                        <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
-                                        <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} headerName="Grade"></AgGridColumn>
-                                        <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialSpecs' : "RawMaterialSpecificationName"} headerName="Spec"></AgGridColumn>
-                                        <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                        <AgGridColumn field="Category"></AgGridColumn>
-                                        <AgGridColumn field="MaterialType"></AgGridColumn>
-                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" width={250} headerName={`Raw Material Code (Source ${vendorLabel} Code)`} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
-                                        {props.isCostingSimulation && <AgGridColumn field="SourceVendorName" width={250} headerName={`Source ${vendorLabel} (Code)`} cellRenderer='hyphenFormatter'></AgGridColumn>}
-                                        <AgGridColumn field={props.isCostingSimulation ? 'PlantCode' : "DestinationPlantName"} headerName="Plant (Code)"></AgGridColumn>
-                                        <AgGridColumn field={props.isCostingSimulation ? 'VendorCode' : "VendorName"} headerName={`${vendorLabel} (Code)`}></AgGridColumn>
-                                        {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field={props.isCostingSimulation ? 'CustomerCode' : "CustomerName"} headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                        <AgGridColumn field={props.isCostingSimulation ? 'UOM' : "UnitOfMeasurementName"} headerName='UOM'></AgGridColumn>
-
-                                        {!props.isCostingSimulation && <><AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
-                                            <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                            <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
-                                            <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
-                                            <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
-                                            <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                            {props.isMasterSummaryDrawer && rmIndexationSimulationList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
-                                            {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                                            <AgGridColumn cellRenderer='costFormatter' field="OtherNetCost"  headerName="Other Net Cost" ></AgGridColumn>
-                                            {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn cellRenderer='costFormatter' field="NetConditionCost"  headerName="Net Condition Cost" ></AgGridColumn>} 
-                                            <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
-
-                                            <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn></>}
-                                        {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                        <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
-                                        <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-                                        {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
-                                        {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-                                    </AgGridReact>}
-                                    <div className='button-wrapper'>
-                                        {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />}
-                                        {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                            <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />
-
-                                        }
-
                                     </div>
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </>
-            }
+                                    {props.isSimulation && props.isFromVerifyPage && (
+                                        <Row>
+                                            <Col md="12" className="d-flex justify-content-end align-items-center">
+                                                <WarningMessage dClass="mr-5" message={`Please check the Raw Material that you want to edit.`} />
+                                                <Button className={"apply"} id={"operationListing_editSelectedData"} disabled={gridApi?.getSelectedRows()?.length === 0} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
+                                            </Col>
+                                        </Row>
+                                    )}
+                                </Col>
+                            </Row>
+                        </>
+                    }
 
-            <Suspense fallback={<div>Loading...</div>}>
-                {/* Render the lazily loaded component */}
-                {/* <MyLazyComponent /> */}
+                    <Suspense fallback={<div>Loading...</div>}>
+                        {/* Render the lazily loaded component */}
+                        {/* <MyLazyComponent /> */}
 
-            </Suspense>
+                    </Suspense>
 
-            {
-                analyticsDrawer &&
-                <AnalyticsDrawer
-                    isOpen={analyticsDrawer}
-                    ModeId={1}
-                    closeDrawer={closeAnalyticsDrawer}
-                    anchor={"right"}
-                    isReport={analyticsDrawer}
-                    selectedRowData={selectedRowData}
-                    isSimulation={true}
-                    //cellValue={cellValue}
-                    rowData={selectedRowData}
+                    {
+                        analyticsDrawer &&
+                        <AnalyticsDrawer
+                            isOpen={analyticsDrawer}
+                            ModeId={1}
+                            closeDrawer={closeAnalyticsDrawer}
+                            anchor={"right"}
+                            isReport={analyticsDrawer}
+                            selectedRowData={selectedRowData}
+                            isSimulation={true}
+                            //cellValue={cellValue}
+                            rowData={selectedRowData}
+                        />
+                    }
+
+                    {
+                        attachment && (
+                            <Attachament
+                                isOpen={attachment}
+                                index={viewAttachment}
+                                closeDrawer={closeAttachmentDrawer}
+                                anchor={'right'}
+                                gridListing={true}
+                            />
+                        )
+                    }
+
+                    {
+                        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
+                    }
+                    {
+                        showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
+                    }
+
+                </div >)}
+            {editSelectedList && (
+                <RMIndexationSimulation isOperation={true}
+                    backToSimulation={backToSimulation}
+                    // isbulkUpload={isbulkUpload}
+                    // rowCount={rowCount}
+                    list={tempList ? tempList : []}
+                    // technology={technology.label}
+                    // technologyId={technology.value}
+                    // master={master.label}
+                    tokenForMultiSimulation={
+                        tokenForSimulation?.length !== 0
+                            ? [{ SimulationId: tokenForSimulation?.value }]
+                            : []
+                    }
+                    isRMNonIndexSimulation={true}
+                    ListFor={props?.ListFor}
+                    effectiveDate={props?.effectiveDate}
+                    isEffectiveDateSelected={props?.isEffectiveDateSelected}
+                    minDate={props?.minDate}
+                    masterId={props?.FromExchangeRate ? props?.masterId : master?.value}
                 />
-            }
-
-            {
-                attachment && (
-                    <Attachament
-                        isOpen={attachment}
-                        index={viewAttachment}
-                        closeDrawer={closeAttachmentDrawer}
-                        anchor={'right'}
-                        gridListing={true}
-                    />
-                )
-            }
-
-            {
-                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
-            }
-            {
-                showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
-            }
-
-        </div >
+            )}
+        </div>
     );
 }
 

@@ -24,6 +24,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
+
 /** Export API */
 export const API = {
 
@@ -390,6 +391,7 @@ export const API = {
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
   getFuelByPlant: `${BASE_URL}/masters-fuel/get-fuel-by-plant`,
+  getFuelList: `${BASE_URL}/masters-fuel/get-fuel-list`,
   getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
   getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
   fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-json`,
@@ -401,10 +403,11 @@ export const API = {
   updatePowerDetail: `${BASE_URL}/masters-power/update-power-detail`,
   deletePowerDetail: `${BASE_URL}/masters-power/delete-power-detail`,
   getPowerDetailDataList: `${BASE_URL}/masters-power/get-all-power-details`,
-  getPlantListByState: `${BASE_URL}/masters-fuel/get-plant-by-state-select-list`,
+  getPlantListByAddress: `${BASE_URL}/masters-fuel/get-plants-select-list-by-address-details`,
   getDieselRateByStateAndUOM: `${BASE_URL}/masters-fuel/get-fuel-rate-by-state-uom`,
   getZBCPlantList: `${BASE_URL}/masters-fuel/get-all-zbc-plant-select-list`,
   getStateSelectList: `${BASE_URL}/masters-fuel/get-all-state-select-list`,
+  getPlantCurrencyByPlantIds: `${BASE_URL}/masters-plant/get-plants-currency`,
 
   createVendorPowerDetail: `${BASE_URL}/masters-power/create-vendor-power-details`,
   updateVendorPowerDetail: `${BASE_URL}/masters-power/update-vendor-power-detail`,
@@ -614,6 +617,7 @@ export const API = {
   getCostingPaymentTermDetail: `${BASE_URL}/costing/get-costing-payment-term-detail`,
   saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
   getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
+  saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1024,6 +1028,7 @@ export const API = {
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
   getExchangeRateDataList: `${BASE_URL}/masters-exchange-rate/get-all-exchange-rate`,
+  getExchangeRateDataListForSimulation: `${BASE_URL}/masters-exchange-rate/get-old-and-new-all-exchange-rate`,
   getExchangeRateData: `${BASE_URL}/masters-exchange-rate/get-exchange-rate-by-id`,
   deleteExchangeRate: `${BASE_URL}/masters-exchange-rate/delete-exchange-rate`,
   updateExchangeRate: `${BASE_URL}/masters-exchange-rate/update-exchange-rate`,
@@ -1493,6 +1498,7 @@ export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS'
 export const RAWMATERIAL_ADDED_FOR_COSTING = 'RAWMATERIAL_ADDED_FOR_COSTING'
 export const GET_MATERIAL_TYPE_DATA_SUCCESS = 'GET_MATERIAL_TYPE_DATA_SUCCESS'
 export const RAW_MATERIAL_DETAILS = 'RAW_MATERIAL_DETAILS'
+export const EXCHANGE_RATE_DETAILS = 'EXCHANGE_RATE_DETAILS'
 
 
 
@@ -1763,6 +1769,10 @@ export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
 export const GET_TCO_DATA = 'GET_TCO_DATA'
 export const SET_RFQ_COSTING_TYPE = 'SET_RFQ_COSTING_TYPE'
+export const SET_EXCHANGE_RATE_SOURCE = 'SET_EXCHANGE_RATE_SOURCE'
+export const SET_CURRENCY_SOURCE = 'SET_CURRENCY_SOURCE'
+export const SET_EXCHANGE_RATE_DATA = 'SET_EXCHANGE_RATE_DATA'
+
 //WEIGHT CALCULATION COSTING
 
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
@@ -1989,6 +1999,7 @@ export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS'
 export const GET_POWER_DATALIST_SUCCESS = 'GET_POWER_DATALIST_SUCCESS'
 export const GET_POWER_DATA_SUCCESS = 'GET_POWER_DATA_SUCCESS'
 export const GET_UOM_SELECTLIST_BY_UNITTYPE = 'GET_UOM_SELECTLIST_BY_UNITTYPE'
+export const GET_PLANT_CURRENCY_BY_PLANT_IDS = 'GET_PLANT_CURRENCY_BY_PLANT_IDS'
 
 //CURRENCY EXCHANGE
 export const GET_CURRENCY_SELECTLIST_SUCCESS = 'GET_CURRENCY_SELECTLIST_SUCCESS'
@@ -2063,6 +2074,8 @@ export const SET_EFFECTIVE_DATE = 'SET_EFFECTIVE_DATE';
 export const GET_SIMULATION_COSTING_STATUS = 'GET_SIMULATION_COSTING_STATUS'
 export const SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV = 'SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV'
 export const GET_IMPACTED_DATA_LIST = 'GET_IMPACTED_DATA_LIST'
+export const SET_RAW_MATERIALS_EFFECTIVE_DATE = 'SET_RAW_MATERIALS_EFFECTIVE_DATE';
+
 
 // ASSEMBLY TECHNOLOGY
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
@@ -2118,6 +2131,7 @@ export const GET_RFQ_TOOLING_DETAILS = "GET_RFQ_TOOLING_DETAILS"
 export const UPDATED_TOOLING_DATA = "UPDATED_TOOLING_DATA"
 export const SET_TOOLING_SPECIFIC_ROW_DATA = "SET_TOOLING_SPECIFIC_ROW_DATA"
 export const SET_SAP_DETAIL_KEYS = "SET_SAP_DETAIL_KEYS"
+export const BEST_COSTING_DATA = "BEST_COSTING_DATA"
 
 //AUCTION 
 export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
@@ -2148,6 +2162,8 @@ export const WAITING_FOR_APPROVAL = 'AwaitingApproval'
 export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
 export const RETURNED = 'Returned'
+export const NON_AWARDED = 'Non Awarded'
+export const AWARDED = 'Awarded'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
@@ -2411,6 +2427,8 @@ export const VIEW_COSTING_DATA = {
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'Net Cost (Effective from)',
   InfoCategory: 'Category',
+  ExchangeRateSourceName: 'Exchange Rate Source',
+  CostingCurrency: 'Currency',
   partType: 'Part Type',
   partNumber: 'Part Number',
   partName: 'Part Name',
@@ -3123,6 +3141,7 @@ export const statusOptionsSimulation = _.sortBy([
   { label: "Approved", value: "3" },
 ], ({ label }) => label.toLowerCase());
 
+export const ApprovedCostingStatus = ['8', '3', '9', '5', '16']
 
 export const statusOptions = _.sortBy([
   { label: "Approved By Assembly", value: "8" },
@@ -3254,8 +3273,25 @@ export const OPERATIONTYPE = Number(reactLocalStorage.getObject('masterType')[OP
 export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGETING])
 
 //CONSTANTS FOR ONBOARDING
-export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
-export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+// export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
+// export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+export const ONBOARDINGNAME = (() => {
+  const storedName = reactLocalStorage.getObject('onboardingName')
+  return (storedName &&
+    storedName !== 'null' &&
+    storedName !== 'undefined' &&
+    storedName !== null &&
+    storedName !== undefined) ? storedName : ''
+})()
+// export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+export const ONBOARDINGID = (() => {
+  const storedId = reactLocalStorage.getObject('onboardingId')
+  return (storedId &&
+    storedId !== 'null' &&
+    storedId !== 'undefined' &&
+    storedId !== null &&
+    storedId !== undefined) ? storedId : ''
+})()
 //CONSTANTS FOR MANAGE LEVELS RADIO BUTTON
 
 
@@ -3308,17 +3344,21 @@ export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = false
-export const customHavellsChanges = true
+export const customHavellsChanges = false
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = true
 export const effectiveDateRangeDayPrevious = 7
 export const effectiveDateRangeDayFuture = 7
+export const effectiveDateRangeDays = null
 // CONSTANT FOR COSTING ENTRY TYPE ID
 export const COMMODITYCOST = 'Commodity Cost'
 export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
+export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.33";
+export const VERSION = "V4.1.1";
+
+
 

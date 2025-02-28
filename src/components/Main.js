@@ -157,6 +157,7 @@ import VendorClassificationListing from "./vendorManagement/VendorClassification
 import Indexation from "./masters/indexation";
 import AuctionIndex from "./rfqAuction/AuctionIndex";
 import AddAuction from "./rfqAuction/AddAuction";
+import CostVariance from "./report/components/CostVariance/CostVariance";
 
 const CustomHeader = {
   "Content-Type": "application/x-www-form-urlencoded",
@@ -319,7 +320,8 @@ class Main extends Component {
         location.pathname === PRODUCT_ROLLOUT ||
         location.pathname === SUPPLIER_MANAGEMENT ||
         location.pathname === NFR_LISTING ||
-        location.pathname === ADD_AUCTION
+        location.pathname === ADD_AUCTION ||
+        location.pathname === lOGIN_AUDITS
         ? "w-100"
         : "";
 
@@ -709,6 +711,7 @@ class Main extends Component {
                         OUTSOURCING
                       )}
                     />
+                    <Route path="/cost-variance" component={CostVariance} />
                     <Route path="/sap-push-detail" component={SAPDetailList} />
                     <Route
                       path="/nfr-insights-details"

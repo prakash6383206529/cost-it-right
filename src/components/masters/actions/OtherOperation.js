@@ -19,6 +19,7 @@ import {
     GET_ALL_OPERATION_COMBINED_DATA_LIST,
     SET_OPERATION_DATA,
     GET_OPERATION_SELECTLIST,
+    EMPTY_GUID,
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -264,8 +265,13 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             technology_id: filterData.technology_id,
             ListFor: filterData.ListFor ? filterData.ListFor : '',
             StatusId: filterData.StatusId ? filterData.StatusId : '',
-            OperationType: obj.ForType,
-            DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : ""
+            OperationType: filterData.OperationType,
+            DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : "",
+            OperationEntryType: filterData.OperationEntryType,
+            Currency: filterData.Currency !== undefined ? filterData.Currency : "",
+            LocalCurrency: filterData.LocalCurrency !== undefined ? filterData.LocalCurrency : "",
+            Vendor_id: filterData.vendor_id !== undefined ? filterData.vendor_id : EMPTY_GUID,
+            EffectiveDate: filterData?.EffectiveDate !== undefined ? filterData?.EffectiveDate : "",
         });
         const queryParamsSecond = encodeQueryParamsAndLog({
             CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : "",
@@ -274,7 +280,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             Plant: obj.Plants !== undefined ? obj.Plants : "",
             OperationName: obj.OperationName !== undefined ? obj.OperationName : "",
             OperationCode: obj.OperationCode !== undefined ? obj.OperationCode : "",
-            UOM: obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : "",
+            UOM: obj?.UOM !== undefined ? obj?.UOM : "",
             Rate: obj.Rate !== undefined ? obj.Rate : "",
             EffectiveDate: obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate,
             applyPagination: isPagination,
@@ -286,6 +292,8 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             IsZeroDataShow: zbc,
             FromDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : "",
             ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : "",
+            Currency: obj.Currency !== undefined ? obj.Currency : "",
+            ExchangeRateSourceName: obj.ExchangeRateSourceName !== undefined ? obj.ExchangeRateSourceName : "",
             isRequestForPendingSimulation: obj.isRequestForPendingSimulation ? true : false
         });
         axios.get(`${API.getOperationsDataList}?loggedInUserId=${loggedInUserId()}&${QueryParams}&${queryParamsSecond}`, config())
@@ -403,7 +411,7 @@ export function deleteOperationAPI(OperationId, loggedInUserId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                apiErrors(error)
                 dispatch({ type: API_FAILURE });
             });
     };

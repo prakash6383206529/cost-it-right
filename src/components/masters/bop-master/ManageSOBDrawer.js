@@ -183,9 +183,18 @@ function ManageSOBDrawer(props) {
     * @description Used to Submit the form
     */
   const onSubmit = (values) => {
+    if (!effectiveDate) {
+      Toaster.warning('Please select Effective Date');
+      return;
+    }
 
     // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
+    const isDataUnchanged = JSON.stringify(GridData) === JSON.stringify(GridDataOldArray);
 
+    if (isDataUnchanged) {
+      Toaster.warning('Please change data to save SOB');
+      return;
+    }
 
     const sum = GridData.reduce((accummlator, el, currentIndex) => {
 
@@ -322,7 +331,7 @@ function ManageSOBDrawer(props) {
                                   disabled={isDisable ? true : false}
                                 />
                               </td>
-                              <td>{checkForDecimalAndNull(item.WeightedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                              <td>{checkForDecimalAndNull(item.WeightedCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
 
                             </tr>
                           )
@@ -334,7 +343,7 @@ function ManageSOBDrawer(props) {
                           <td>{`${showBopLabel()} Cost`}</td>
                           <td>{''}</td>
                           <td>{`Net Cost (Weighted Average):`}</td>
-                          <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>
+                          <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration?.NoOfDecimalForPrice)}`}</td>
                         </tr>
                       }
 

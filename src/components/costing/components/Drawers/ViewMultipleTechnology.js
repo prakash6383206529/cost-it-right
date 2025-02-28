@@ -98,13 +98,13 @@ function ViewMultipleTechnology(props) {
 
                                             <td> {item?.Quantity}</td>
                                             <td>
-                                                {checkForDecimalAndNull(item?.NetChildPartsCost, initialConfiguration.NoOfDecimalForPrice)}
+                                                {checkForDecimalAndNull(item?.NetChildPartsCost, initialConfiguration?.NoOfDecimalForPrice)}
                                             </td>
                                             <td>
-                                                {checkForDecimalAndNull(item?.NetBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}
+                                                {checkForDecimalAndNull(item?.NetBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice)}
                                             </td>
                                             <td>
-                                                {checkForDecimalAndNull(item?.NetChildPartsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}
+                                                {checkForDecimalAndNull(item?.NetChildPartsCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice)}
                                             </td>
                                             <td> {item?.PartTypeName !== BOUGHTOUTPART && <button
                                                 type="button"
@@ -168,6 +168,7 @@ function ViewMultipleTechnology(props) {
                 index={props?.index}
                 simulationMode={props?.simulationMode}
                 SimulationId={props?.SimulationId}
+                viewCostingData={props?.viewCostingData}
             />}
 
         </Fragment>

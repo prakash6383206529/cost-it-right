@@ -306,7 +306,9 @@ export function getApprovalList(filterData, skip, take, isPagination, obj, callb
       IsScrapUOMApply: obj.IsScrapUOMApply ? (obj.IsScrapUOMApply.toLowerCase() === 'yes' ? true : false) : '',
       CalculatedFactor: obj.CalculatedFactor,
       ScrapUnitOfMeasurement: obj.ScrapUnitOfMeasurement,
-      UOMToScrapUOMRatio: obj.UOMToScrapUOMRatio
+      UOMToScrapUOMRatio: obj.UOMToScrapUOMRatio,
+      CostingCurrency: obj.CostingCurrency,
+      ExchangeRateSourceName: obj.ExchangeRateSourceName
     });
     const request = axios.get(`${API.getApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
     request

@@ -58,6 +58,7 @@ const ClientListing = React.memo(() => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    totalRecordCount: 0
 
   });
 
@@ -151,7 +152,7 @@ const ClientListing = React.memo(() => {
           setState((prevState) => ({ ...prevState, tableData: [], isLoader: false, }));
         } else if (res && res.data && res.data.DataList) {
           const Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, }));
+          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false,totalRecordCount: Data?.length }));
         }
       })
     );
@@ -230,7 +231,7 @@ const ClientListing = React.memo(() => {
    */
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, prevState.noData), }));
+      setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, prevState.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
     }, 500);
   };
 
@@ -347,11 +348,10 @@ const ClientListing = React.memo(() => {
                     <>
                       <ExcelFile filename={Clientmaster} fileExtension={'.xls'}
                         element={
-                          <Button id={"Excel-Downloads-clientListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                          <Button id={"Excel-Downloads-clientListing"} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
 
                         }>
-                        {onBtExport()
-                        }
+                        {state?.totalRecordCount !== 0 ? onBtExport() : null}
                       </ExcelFile>
                     </>
 

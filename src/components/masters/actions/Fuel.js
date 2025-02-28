@@ -17,12 +17,15 @@ import {
     config,
     GET_POWER_DATA_LIST,
     GET_POWER_VENDOR_DATA_LIST,
-    EMPTY_GUID
+    EMPTY_GUID,
+    GET_PLANT_CURRENCY_BY_PLANT_IDS
 } from '../../../config/constants';
 import { loggedInUserId, userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import axiosInstance from '../../../utils/axiosInstance';
+import Toaster from '../../common/Toaster';
+import { MESSAGES } from '../../../config/message';
 
 // const config() = config;
 
@@ -91,7 +94,7 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
     const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission');
     return (dispatch) => {
         if (isAPICall) {
-            const request = axios.get(`${API.getFuelDetailDataList}?loggedInUserId=${loggedInUserId()}&fuelId=${data.fuelName}&stateId=${data.stateName}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
+            const request = axios.get(`${API.getFuelDetailDataList}?loggedInUserId=${loggedInUserId()}&fuelId=${data.fuelName}&stateId=${data.stateName}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&FuelEntryType=${data.FuelEntryType}&Currency=${data.Currency}&ExchangeRateSourceName=${data.ExchangeRateSourceName}`, config());
             request.then((response) => {
                 if (response && (response.data.Result === true || response.status === 204)) {
                     dispatch({
@@ -242,7 +245,7 @@ export function deleteFuelTypeAPI(index, Id, callback) {
 export function getFuelByPlant(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelByPlant}?loggedInUserId=${loggedInUserId()}&plantId=${obj.plantId ? obj.plantId : EMPTY_GUID}&vendorId=${obj.vendorId ? obj.vendorId : EMPTY_GUID}&customerId=${obj.customerId ? obj.customerId : EMPTY_GUID}&cityId=${obj.cityId ? obj.cityId : EMPTY_GUID}`, config());
+        const request = axios.get(`${API.getFuelByPlant}?loggedInUserId=${loggedInUserId()}&plantId=${obj.plantId ? obj.plantId : EMPTY_GUID}&vendorId=${obj.vendorId ? obj.vendorId : EMPTY_GUID}&customerId=${obj.customerId ? obj.customerId : EMPTY_GUID}&cityId=${obj.cityId ? obj.cityId : EMPTY_GUID}&stateId=${obj.stateId ? obj.stateId : null}&costingTypeId=${obj.costingTypeId ? obj.costingTypeId : null}&entryType=${obj.entryType ? obj.entryType : 0}&countryId=${obj.countryId ? obj.countryId : null}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -250,6 +253,29 @@ export function getFuelByPlant(obj, callback) {
                     payload: response.data.DataList,
                 });
                 callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function getFuelList(obj, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getFuelList}?plantId=${obj?.plantId ? obj?.plantId : EMPTY_GUID}&vendorId=${obj?.vendorId ? obj?.vendorId : EMPTY_GUID}&customerId=${obj?.customerId ? obj?.customerId : EMPTY_GUID}&cityId=${obj?.cityId ? obj?.cityId : EMPTY_GUID}&stateId=${obj?.stateId ? obj?.stateId : null}&costingTypeId=${obj?.costingTypeId ? obj?.costingTypeId : null}&entryType=${obj?.entryType ? obj?.entryType : 0}&countryId=${obj?.countryId ? obj?.countryId : null}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_FUEL_BY_PLANT,
+                    payload: response?.status === 204 ? [] : response?.data?.DataList,
+                });
+                callback(response);
+            } else if (response?.status === 204) {
+                dispatch({
+                    type: GET_FUEL_BY_PLANT,
+                    payload: []
+                });
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -293,7 +319,7 @@ export function getFuelListByState(ID, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_FULELIST_BY_STATE,
-                    payload: response.data.SelectList,
+                    payload: response.status === 204 ? [] : response.data.SelectList,
                 });
                 callback(response);
             }
@@ -406,7 +432,7 @@ export function getPowerDetailDataList(data, callback) {
     let stateID = data && data.stateID === undefined ? null : data.stateID;
     const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission');
     return (dispatch) => {
-        const request = axios.get(`${API.getPowerDetailDataList}?loggedInUserId=${loggedInUserId()}&plantId=${plantID}&stateId=${stateID}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
+        const request = axios.get(`${API.getPowerDetailDataList}?loggedInUserId=${loggedInUserId()}&plantId=${plantID}&stateId=${stateID}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&PowerEntryType=${data.PowerEntryType}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -449,15 +475,15 @@ export function getVendorPowerDetailDataList(data, callback) {
 }
 
 /**
- * @method getPlantListByState
+ * @method getPlantListByAddress
  * @description USED TO GET PLANT SELECT LIST BY STATE
  */
-export function getPlantListByState(ID, callback) {
+export function getPlantListByAddress(cityId, stateId, countryId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        if (ID !== '') {
+        if (cityId !== '') {
             //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getPlantListByState}/${ID}/${loggedInUser?.loggedInUserId}`, config());
+            const request = axios.get(`${API.getPlantListByAddress}?cityId=${cityId}&stateId=${stateId}&countryId=${countryId}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -650,3 +676,37 @@ export function getUOMByFuelId(data, callback) {
         });
     };
 }
+
+/**
+ * @method getPlantCurrencyByPlantIds
+ * @description get plant currency by plant ids
+ */
+export function getPlantCurrencyByPlantIds(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.post(`${API.getPlantCurrencyByPlantIds}`, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                dispatch({
+                    type: GET_PLANT_CURRENCY_BY_PLANT_IDS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else if (response.status === 204) {
+                dispatch({
+                    type: GET_PLANT_CURRENCY_BY_PLANT_IDS,
+                    payload: [],
+                });
+                callback(response);
+            } else {
+                Toaster.error(MESSAGES.SOME_ERROR);
+                callback({ response }); // Pass the response to the callback
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+

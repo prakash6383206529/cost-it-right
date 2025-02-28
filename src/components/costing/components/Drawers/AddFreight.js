@@ -28,8 +28,8 @@ function AddFreight(props) {
     Capacity: rowObjData && rowObjData.Capacity !== undefined ? { label: rowObjData.Capacity, value: rowObjData.Capacity } : [],
     Criteria: rowObjData && rowObjData.Criteria !== undefined ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : '',
     Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
-    Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForNull(rowObjData.Quantity) : '',
-    FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
+    Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForDecimalAndNull(rowObjData?.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+    FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? checkForDecimalAndNull(rowObjData.FreightCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     crmHeadFreight: rowObjData && rowObjData.FreightCRMHead !== undefined ? { label: rowObjData.FreightCRMHead, value: 1 } : '',
     IsFreightDetailedBreakup: rowObjData && rowObjData.IsFreightDetailedBreakup !== undefined ? rowObjData.IsFreightDetailedBreakup : false,
     TruckDimensions: rowObjData && rowObjData.DimensionName !== undefined ? { label: rowObjData.DimensionName, value: rowObjData.DimensionId } : [],
@@ -104,7 +104,7 @@ function AddFreight(props) {
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
-      setValue("Quantity", totalFinishWeight)
+      setValue("Quantity", checkForDecimalAndNull(totalFinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
       setTotalRMGrossWeight(totalGrossWeight)
 
     }
@@ -495,7 +495,7 @@ function AddFreight(props) {
       isShowDetailedBreakup: false,
       truckDimensions: null
     }));
-    setValue('TruckDimensions', ''  )
+    setValue('TruckDimensions', '')
     errors.FreightCost = {}
     errors.Rate = {}
   }
@@ -519,7 +519,8 @@ function AddFreight(props) {
         // Check if any existing entry matches the applicability for 'Percentage'
         return array.some(item =>
           item.FreightType === 'Percentage' &&
-          item.Criteria === obj.Criteria
+          item.Criteria === obj.Criteria &&
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true)
         );
 
       case 'Full Truck Load':
@@ -527,14 +528,16 @@ function AddFreight(props) {
         return array.some(item =>
           item.FreightType === 'Full Truck Load' &&
           item.Capacity === obj.Capacity &&
-          item.Criteria === obj.Criteria
+          item.Criteria === obj.Criteria &&
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true)
         );
 
       case 'Part Truck Load':
         // Check if any existing entry matches Criteria for 'Part Truck Load'
         return array.some(item =>
           item.FreightType === 'Part Truck Load' &&
-          item.Criteria === obj.Criteria
+          item.Criteria === obj.Criteria &&
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true)
         );
 
       default:
@@ -570,8 +573,11 @@ function AddFreight(props) {
       DimensionId: state?.truckDimensions?.value,
       IsFreightDetailedBreakup: state?.isShowDetailedBreakup
     }
-
-    if (doesObjectExist(gridData, formData) && !isEditFlag) {
+    if (checkForNull(formData?.FreightCost) === 0) {
+      Toaster.warning("Freight Cost cannot be zero.");
+      return false;
+    }
+    if (doesObjectExist(gridData, formData)) {
       Toaster.warning("Data already exists in the grid.")
       return false;
     }
@@ -583,7 +589,7 @@ function AddFreight(props) {
         ...prevState,
         isShowDetailedBreakup: false
       }));
-      Toaster.warning("Freight calculation requires 'No. of Parts per Crate' from Packaging Costing not found.");
+      Toaster.warning("Freight calculation requires 'No. of Parts per Crate'. Add the Packaging details to proceed with freight calculation.");
       return;
     }
 
@@ -910,7 +916,7 @@ function AddFreight(props) {
                     </div>
                   </Col>
 
-                  {initialConfiguration.IsShowCRMHead && <Col md="12">
+                  {initialConfiguration?.IsShowCRMHead && <Col md="12">
                     <SearchableSelectHookForm
                       name={`crmHeadFreight`}
                       type="text"

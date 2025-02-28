@@ -11,7 +11,7 @@ import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
 import { ErrorMessage } from '../SimulationUtils';
-import { VBC, VBCTypeId, CBCTypeId } from '../../../config/constants';
+import { VBC, VBCTypeId, CBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 import { simulationContext } from '.';
 import { useLabels } from '../../../helper/core';
@@ -24,6 +24,7 @@ function VerifyImpactDrawer(props) {
 
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
+
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
   const [shown, setshown] = useState(impactedMasterDataListForImpactedMaster.length <= 0 ? true : false)
   const [fgWiseAcc, setFgWiseAcc] = useState(false)
@@ -124,7 +125,7 @@ function VerifyImpactDrawer(props) {
                     <Table responsive className="border impact-drawer-table sub-table">
                       <tbody>
                         <tr>
-                          {CostingTypeId === CBCTypeId ? <th>Customer (Code):</th> : <th>{vendorLabel} (Code):</th>}
+                          {CostingTypeId === CBCTypeId ? <th>Customer (Code):</th> : CostingTypeId !== ZBCTypeId && <th>{vendorLabel} (Code):</th>}
                           {isSimulationWithCosting ? <th>Technology:</th> : <th>Association:</th>}
                           <th>Master:</th>
                           <th>Costing Head:</th>
@@ -135,8 +136,8 @@ function VerifyImpactDrawer(props) {
                       </tbody>
                       <tbody>
                         <tr>
-                          {CostingTypeId === CBCTypeId ? <td>{amendmentDetails.CustomerName}</td> : <td>{amendmentDetails.Vendor}</td>}
-                          {isSimulationWithCosting ? <td>{amendmentDetails?.Technology}</td> : <td>{'Non Associated'}</td>}
+                          {CostingTypeId === CBCTypeId ? <td>{amendmentDetails.CustomerName}</td> : CostingTypeId !== ZBCTypeId && CostingTypeId !== ZBCTypeId && <td>{amendmentDetails.Vendor}</td>}
+                          {isSimulationWithCosting ? <td>{amendmentDetails.Technology}</td> : <td>{'Non Associated'}</td>}
                           <td>{amendmentDetails?.SimulationAppliedOn}</td>
                           <td>{amendmentDetails?.CostingHead}</td>
                           <td>{amendmentDetails?.EffectiveDate === '' ? '-' : DayTime(amendmentDetails?.EffectiveDate).format('DD-MM-YYYY')}</td>

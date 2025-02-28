@@ -1,30 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Row, Col, Table } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPlantSelectListByType, getUOMSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, PartTypeIDFromAPI, ZBC, searchCount } from '../../../config/constants';
+import { EMPTY_DATA, FILE_URL, PartTypeIDFromAPI, ZBC, searchCount } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { AcceptableRMUOM, NFR_BOP_STANDARD_ID, NFR_BOP_STANDARD_LABEL, NFR_BOP_STANDARD_NAME, NFR_COMPONENT_CUSTOMIZED_ID, NFR_COMPONENT_CUSTOMIZED_LABEL, NFR_COMPONENT_CUSTOMIZED_NAME, NFR_RAW_MATERIAL_ID, NFR_RAW_MATERIAL_LABEL, NFR_RAW_MATERIAL_NAME, PART_TYPE_LIST_FOR_NFR } from '../../../config/masterData';
 import { getBoughtOutPartSelectList } from '../actions/Part';
 import { getPartSelectListByTechnology } from '../../costing/actions/Costing';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { getRMSpecificationDataList } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
 import AddRMDetails from './AddRMDetails';
 import { createNFRBOMDetails } from './actions/nfr'
-import { number, checkWhiteSpaces, decimalNumberLimit6 } from '../../../helper'
+import { number, checkWhiteSpaces, decimalNumberLimit6, validateFileName } from '../../../helper'
 import { Steps } from './TourMessages';
 import TourWrapper from "../../common/Tour/TourWrapper"
 import { useTranslation } from 'react-i18next';
+import Dropzone from 'react-dropzone-uploader';
+import LoaderCustom from '../../common/LoaderCustom';
+import redcrossImg from '../../../assests/images/red-cross.png'
+import { fileUploadQuotation } from '../../rfq/actions/rfq';
+import HeaderTitle from '../../common/HeaderTitle';
 
 function CreateManualNFR(props) {
     const { t } = useTranslation("Nfr")
-
+    const dropzone = useRef(null);
     const { handleSubmit, formState: { errors }, register, control, getValues, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange'
@@ -53,6 +58,9 @@ function CreateManualNFR(props) {
     const [selectedPartList, setSelectedPartList] = useState([]);
     const [selectedBOPList, setSelectedBOPList] = useState([]);
     const [selectedRMList, setSelectedRMList] = useState([]);
+    const [attachmentLoader, setAttachmentLoader] = useState(false)
+    const [files, setFiles] = useState([])
+    const [apiCallCounter, setApiCallCounter] = useState(0)
 
     useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
@@ -474,6 +482,106 @@ function CreateManualNFR(props) {
         }))
     }
 
+    const handleChangeStatus = ({ meta, file }, status) => {
+
+        if (status === 'removed') {
+            const removedFileName = file.name;
+            let tempArr = files && files.filter(item => item?.OriginalFileName !== removedFileName)
+            setFiles(tempArr)
+
+        }
+
+        if (status === 'done') {
+            let data = new FormData()
+            data.append('file', file)
+            if (!validateFileName(file.name)) {
+                dropzone.current.files.pop()
+                setDisableFalseFunction()
+                return false;
+            }
+            setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
+            setAttachmentLoader(true);
+
+            dispatch(fileUploadQuotation(data, (res) => {
+                if (res && res?.status !== 200) {
+                    this.dropzone.current.files.pop()
+                    this.setDisableFalseFunction()
+                    return false
+                }
+                setDisableFalseFunction()
+                if ('response' in res) {
+                    status = res && res?.response?.status
+                    dropzone.current.files.pop()
+                    setAttachmentLoader(false)
+                }
+                else {
+                    let Data = res.data[0]
+                    setFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+                }
+                setApiCallCounter(prevCounter => prevCounter - 1);
+
+                // Check if this is the last API call
+                if (apiCallCounter === 0) {
+                    setAttachmentLoader(false)
+
+                    setTimeout(() => {
+                        ;
+                    }, 500);
+                }
+
+            }))
+        }
+
+        if (status === 'rejected_file_type') {
+            Toaster.warning('Allowed only xls, doc, docx, pptx jpeg, pdf, zip files.');
+        } else if (status === 'error_file_size') {
+            setDisableFalseFunction()
+            setAttachmentLoader(false)
+            dropzone.current.files.pop()
+            Toaster.warning("File size greater than 20 mb not allowed")
+        } else if (status === 'error_validation'
+            || status === 'error_upload_params' || status === 'exception_upload'
+            || status === 'aborted' || status === 'error_upload') {
+            // setDisableFalseFunction()
+            setAttachmentLoader(false)
+            dropzone.current.files.pop()
+            Toaster.warning("Something went wrong")
+        }
+    }
+
+    const Preview = ({ meta }) => {
+        return (
+            <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+                {/* {Math.round(percent)}% */}
+            </span>
+        )
+    }
+
+    const deleteFile = (FileId, OriginalFileName) => {
+
+        if (FileId != null) {
+            let tempArr = files.filter((item) => item?.FileId !== FileId)
+            setFiles(tempArr);
+
+        }
+        if (FileId == null) {
+            let tempArr = files && files.filter(item => item?.FileName !== OriginalFileName)
+            setFiles(tempArr)
+
+        }
+        // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+        if (dropzone?.current !== null) {
+            dropzone.current.files.pop()
+        }
+    }
+
+    const setDisableFalseFunction = () => {
+        const loop = Number(dropzone.current.files?.length) - Number(files?.length)
+        if (Number(loop) === 1 || Number(dropzone.current.files?.length) === Number(files?.length)) {
+
+        }
+    }
+
     const loaderObj = { isLoader: inputLoader, }
 
     return (
@@ -772,6 +880,80 @@ function CreateManualNFR(props) {
                                                 </Table>
                                             </Col>
 
+                                        </Row>
+                                        <Row>
+                                            <HeaderTitle title={'Attachment:'} customClass="mt-3" />
+                                            <Col md="6" className="height152-label">
+                                                {/* <TooltipCustom id="uploadFile" tooltipText="Upload upto 4 file, size of each file upto 20MB" /> */}
+
+                                                <label>Upload Attachment (upload up to 4 files){/* <span className="asterisk-required"></span> */}  <AttachmentValidationInfo /> </label>
+                                                <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
+                                                    Maximum file upload limit has been reached.
+                                                </div>
+                                                <div id="addRFQ_uploadFile" className={`${files?.length >= 4 ? 'd-none' : ''}`}>
+                                                    <Dropzone
+                                                        ref={dropzone}
+                                                        onChangeStatus={handleChangeStatus}
+                                                        PreviewComponent={Preview}
+                                                        //onSubmit={this.handleSubmit}
+                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx,.zip, .docx,.pptx"
+                                                        initialFiles={[]}
+                                                        maxFiles={4}
+                                                        maxSizeBytes={20000000}  // 20 MB in bytes
+                                                        inputContent={(files, extra) =>
+                                                            extra.reject ? (
+                                                                "Image, audio and video files only"
+                                                            ) : (
+                                                                <div className="text-center">
+                                                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                                                    <span className="d-block">
+                                                                        Drag and Drop or{" "}
+                                                                        <span className="text-primary">Browse</span>
+                                                                        <br />
+                                                                        file to upload
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        }
+                                                        styles={{
+                                                            dropzoneReject: {
+                                                                borderColor: "red",
+                                                                backgroundColor: "#DAA",
+                                                            },
+                                                            inputLabel: (files, extra) =>
+                                                                extra.reject ? { color: "red" } : {},
+                                                        }}
+                                                        classNames="draper-drop"
+                                                        disabled={false}
+                                                    />
+                                                </div>
+                                            </Col>
+                                            <Col md="4" className=' p-relative'>
+                                                <div className={"attachment-wrapper"}>
+                                                    {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                                                    {files &&
+                                                        files.map((f) => {
+                                                            const withOutTild = f.FileURL?.replace("~", "");
+                                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                                            return (
+                                                                <div className={"attachment images"}>
+                                                                    <a href={fileURL} target="_blank" rel="noreferrer">
+                                                                        {f.OriginalFileName}
+                                                                    </a>
+                                                                    {
+
+                                                                        <img
+                                                                            alt={""}
+                                                                            className="float-right"
+                                                                            onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                                            src={redcrossImg}
+                                                                        ></img>
+                                                                    }
+                                                                </div>
+                                                            );
+                                                        })}
+                                                </div>
+                                            </Col>
                                         </Row>
                                         <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                             <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">

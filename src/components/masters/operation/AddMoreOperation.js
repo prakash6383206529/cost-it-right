@@ -11,13 +11,13 @@ import {
 } from "../../../helper/validation";
 
 import { AttachmentValidationInfo, MESSAGES } from "../../../config/message";
-import { loggedInUserId } from "../../../helper/auth";
-import { Row, Col } from 'reactstrap';
-import { CBCTypeId, CRMHeads, FILE_URL, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, userDetails } from "../../../helper/auth";
+import { Row, Col, Label } from 'reactstrap';
+import { CBCTypeId, CRMHeads, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FILE_URL, OPERATIONS_ID, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
 import HeaderTitle from "../../common/HeaderTitle";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions";
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions";
 import { getClientSelectList } from "../actions/Client";
 import { AcceptableOperationUOM, LOGISTICS } from "../../../config/masterData";
 import { getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common";
@@ -28,6 +28,14 @@ import Dropzone from "react-dropzone-uploader";
 import imgRedcross from '../../../assests/images/red-cross.png';
 import TooltipCustom from "../../common/Tooltip";
 import { useLabels } from "../../../helper/core";
+import { getUsersMasterLevelAPI } from "../../../actions/auth/AuthActions";
+import { CheckApprovalApplicableMaster, getExchangeRateParams, userTechnologyDetailByMasterId } from "../../../helper";
+import { checkFinalUser, getExchangeRateByCurrency } from "../../costing/actions/Costing";
+import MasterSendForApproval from "../MasterSendForApproval";
+import Button from "../../layout/Button";
+import { debounce } from "lodash";
+import Switch from 'react-switch'
+import { getPlantUnitAPI } from "../actions/Plant";
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
@@ -36,6 +44,7 @@ function AddMoreOperation(props) {
     const clientSelectList = useSelector(state => state.client.clientSelectList)
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const [technology, setTechnology] = useState("");
     const [isLoader, setIsLoader] = useState(false);
     const [isMaterialCostOpen, setIsMaterialCostOpen] = useState(false);
@@ -66,40 +75,64 @@ function AddMoreOperation(props) {
     let defaultValues = {
         remark: detailObject && detailObject.Remark ? detailObject.Remark : '',
         crmHeadWireRate: detailObject && detailObject.MaterialWireCRMHead && { label: detailObject.MaterialWireCRMHead, value: 1 },
-        wireRate: detailObject && detailObject.MaterialWireRate ? checkForDecimalAndNull(detailObject.MaterialWireRate, initialConfiguration.NoOfDecimalForPrice) : '',
-        consumptionWire: detailObject && detailObject.MaterialWireConsumption ? checkForDecimalAndNull(detailObject.MaterialWireConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
-        wireCost: detailObject && detailObject.MaterialWireCost ? checkForDecimalAndNull(detailObject.MaterialWireCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        wireRate: detailObject && detailObject.MaterialWireRate ? checkForDecimalAndNull(detailObject.MaterialWireRate, initialConfiguration?.NoOfDecimalForPrice) : '',
+        consumptionWire: detailObject && detailObject.MaterialWireConsumption ? checkForDecimalAndNull(detailObject.MaterialWireConsumption, initialConfiguration?.NoOfDecimalForPrice) : '',
+        wireCost: detailObject && detailObject.MaterialWireCost ? checkForDecimalAndNull(detailObject.MaterialWireCost, initialConfiguration?.NoOfDecimalForPrice) : '',
         crmHeadGasRate: detailObject && detailObject.MaterialGasCRMHead && { label: detailObject.MaterialGasCRMHead, value: 1 },
-        gasRate: detailObject && detailObject.MaterialGasRate ? checkForDecimalAndNull(detailObject.MaterialGasRate, initialConfiguration.NoOfDecimalForPrice) : '',
-        consumptionGas: detailObject && detailObject.MaterialGasConsumption ? checkForDecimalAndNull(detailObject.MaterialGasConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
-        gasCostWelding: detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        gasRate: detailObject && detailObject.MaterialGasRate ? checkForDecimalAndNull(detailObject.MaterialGasRate, initialConfiguration?.NoOfDecimalForPrice) : '',
+        consumptionGas: detailObject && detailObject.MaterialGasConsumption ? checkForDecimalAndNull(detailObject.MaterialGasConsumption, initialConfiguration?.NoOfDecimalForPrice) : '',
+        gasCostWelding: detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration?.NoOfDecimalForPrice) : '',
         //////////////////////////
         crmHeadPowerWelding: detailObject && detailObject.PowerCRMHead && { label: detailObject.PowerCRMHead, value: 1 },
-        electricityRate: detailObject && detailObject.PowerElectricityRate ? checkForDecimalAndNull(detailObject.PowerElectricityRate, initialConfiguration.NoOfDecimalForPrice) : '',
-        consumptionPower: detailObject && detailObject.PowerElectricityConsumption ? checkForDecimalAndNull(detailObject.PowerElectricityConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
-        electricityCostWelding: detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        electricityRate: detailObject && detailObject.PowerElectricityRate ? checkForDecimalAndNull(detailObject.PowerElectricityRate, initialConfiguration?.NoOfDecimalForPrice) : '',
+        consumptionPower: detailObject && detailObject.PowerElectricityConsumption ? checkForDecimalAndNull(detailObject.PowerElectricityConsumption, initialConfiguration?.NoOfDecimalForPrice) : '',
+        electricityCostWelding: detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration?.NoOfDecimalForPrice) : '',
         //////////////////////////
         crmHeadLabourWelding: detailObject && detailObject.LabourCRMHead && { label: detailObject.LabourCRMHead, value: 1 },
-        labourRate: detailObject && detailObject.LabourManPowerRate ? checkForDecimalAndNull(detailObject.LabourManPowerRate, initialConfiguration.NoOfDecimalForPrice) : '',
-        weldingShift: detailObject && detailObject.LabourManPowerConsumption ? checkForDecimalAndNull(detailObject.LabourManPowerConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
-        labourCost: detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        labourRate: detailObject && detailObject.LabourManPowerRate ? checkForDecimalAndNull(detailObject.LabourManPowerRate, initialConfiguration?.NoOfDecimalForPrice) : '',
+        weldingShift: detailObject && detailObject.LabourManPowerConsumption ? checkForDecimalAndNull(detailObject.LabourManPowerConsumption, initialConfiguration?.NoOfDecimalForPrice) : '',
+        labourCost: detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration?.NoOfDecimalForPrice) : '',
         //////////////////////////
         crmHeadConsumableMachineCost: detailObject && detailObject.ConsumableMachineCRMHead && { label: detailObject.ConsumableMachineCRMHead, value: 1 },
 
     }
-
-
+    const [state, setState] = useState({
+        isFinalApprovar: false,
+        disableSendForApproval: false,
+        CostingTypePermission: false,
+        finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !(getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) ? false : true,
+        approveDrawer: false,
+        approvalObj: {},
+        levelDetails: {},
+        isDateChanged: false,
+        disableAll: false,
+        showWarning: false,
+        plantCurrency: addMoreDetailObj.plantCurrencyState ?? 1,
+        settlementCurrency: addMoreDetailObj.settlementCurrency ?? 1,
+        plantExchangeRateId: null,
+        settlementExchangeRateId: null,
+        isImport: addMoreDetailObj?.isImport,
+        currency: addMoreDetailObj.currency ?? null,
+        ExchangeSource: null,
+        plantCurrencyID: null,
+        costingTypeId: addMoreDetailObj?.costingTypeId,
+        hidePlantCurrency: addMoreDetailObj?.hidePlantCurrency ?? false
+    })
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
     });
+    const fromCurrencyRef = useRef(null);
+    const plantCurrencyRef = useRef(1);
+    const settlementCurrencyRef = useRef(1);
+    const localCurrencyLabel = useRef(null)
+
 
     const fieldValues = useWatch({
         control,
         name: addMoreDetailObj?.useWatchArray
     })
-
     useEffect(() => {
         let obj = {}
         if (isWelding) {
@@ -114,8 +147,112 @@ function AddMoreOperation(props) {
             setRejectionReworkAndProfitCostPlating(obj)
             setNetCostPlating(obj)
         }
+        // callExchangeRateAPI(obj)
 
-    }, [fieldValues, includeInterestInRejection])
+    }, [fieldValues, includeInterestInRejection, fromCurrencyRef])
+    useEffect(() => {
+        fromCurrencyRef.current = fromCurrencyRef
+        settlementCurrencyRef.current = settlementCurrencyRef
+        plantCurrencyRef.current = plantCurrencyRef
+        localCurrencyLabel.current = localCurrencyLabel
+    }, [fromCurrencyRef, settlementCurrencyRef, plantCurrencyRef, localCurrencyLabel]);
+    useEffect(() => {
+        callExchangeRateAPI()
+    }, [localCurrencyLabel]);
+
+    const callExchangeRateAPI = (obj) => {
+        const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
+        const toCurrency = reactLocalStorage.getObject("baseCurrency");
+        const hasCurrencyAndDate = Boolean(localCurrencyLabel?.current && getValues('effectiveDate'));
+
+        if (hasCurrencyAndDate) {
+            if (IsFetchExchangeRateVendorWiseForParts() && (vendor?.length === 0 && client?.length === 0)) {
+                return;
+            }
+
+            const callAPI = (from, to, costingType, vendorValue, clientValue) => {
+                return new Promise((resolve) => {
+                    dispatch(getExchangeRateByCurrency(
+                        from,
+                        costingType,
+                        DayTime(getValues('effectiveDate')).format('YYYY-MM-DD'),
+                        vendorValue,
+                        clientValue,
+                        false,
+                        to,
+                        state.ExchangeSource?.label ?? null,
+                        res => {
+                            if (Object.keys(res.data.Data).length === 0) {
+                                setState(prevState => ({ ...prevState, showWarning: true }));
+                            } else {
+                                setState(prevState => ({ ...prevState, showWarning: false }));
+                            }
+                            resolve({
+                                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                                exchangeRateId: res?.data?.Data?.ExchangeRateId
+                            });
+                        }
+                    ));
+                });
+            };
+
+            if (state.isImport) {
+                // First API call
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: localCurrencyLabel?.current, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+
+                callAPI(fromCurrency, localCurrencyLabel?.current, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+
+                    callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+                        setState(prevState => ({
+                            ...prevState,
+                            plantCurrency: rate1,
+                            settlementCurrency: rate2,
+                            plantExchangeRateId: exchangeRateId1,
+                            settlementExchangeRateId: exchangeRateId2
+                        }));
+                        plantCurrencyRef.current = rate1
+                        settlementCurrencyRef.current = rate2
+                        if (isWelding) {
+                            obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
+                            setDataToSend(prevState => ({ ...prevState, ...obj }))
+                            setNetCostWelding(obj)
+                        } else if (other) {
+                            setRejectionReworkAndProfitCost()
+                        } else {
+                            obj = { ...setMaterialCostWelding(), ...setPowerCostWelding() }
+                            setDataToSend(prevState => ({ ...prevState, ...obj }))
+                            setRejectionReworkAndProfitCostPlating(obj)
+                            setNetCostPlating(obj)
+                        }
+                    });
+                });
+            } else if (localCurrencyLabel.current !== reactLocalStorage?.getObject("baseCurrency")) {
+                // Original single API call for non-import case
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+                callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId }) => {
+                    setState(prevState => ({
+                        ...prevState,
+                        plantCurrency: rate,
+                        plantExchangeRateId: exchangeRateId
+                    }));
+                    plantCurrencyRef.current = rate
+                    if (isWelding) {
+                        obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
+                        setDataToSend(prevState => ({ ...prevState, ...obj }))
+                        setNetCostWelding(obj)
+                    } else if (other) {
+                        setRejectionReworkAndProfitCost()
+                    } else {
+                        obj = { ...setMaterialCostWelding(), ...setPowerCostWelding() }
+                        setDataToSend(prevState => ({ ...prevState, ...obj }))
+                        setRejectionReworkAndProfitCostPlating(obj)
+                        setNetCostPlating(obj)
+                    }
+                });
+            }
+        }
+    };
 
     const setMaterialCostWelding = () => {
 
@@ -127,12 +264,12 @@ function AddMoreOperation(props) {
         let gasCost
         if (wireRate && consumptionWire) {
             wireCost = checkForNull(wireRate) * checkForNull(consumptionWire)
-            setValue('wireCost', checkForDecimalAndNull(wireCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('wireCost', checkForDecimalAndNull(wireCost, initialConfiguration?.NoOfDecimalForPrice))
         }
 
         if (gasRate && consumptionGas) {
             gasCost = checkForNull(gasRate) * checkForNull(consumptionGas)
-            setValue('gasCostWelding', checkForDecimalAndNull(gasCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('gasCostWelding', checkForDecimalAndNull(gasCost, initialConfiguration?.NoOfDecimalForPrice))
         }
         return { wireCost: wireCost, gasCost: gasCost }
     }
@@ -145,7 +282,7 @@ function AddMoreOperation(props) {
         let electricityCost
         if (electricityRate && consumptionPower) {
             electricityCost = checkForNull(electricityRate) * checkForNull(consumptionPower)
-            setValue('electricityCostWelding', checkForDecimalAndNull(electricityCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('electricityCostWelding', checkForDecimalAndNull(electricityCost, initialConfiguration?.NoOfDecimalForPrice))
         }
         return { electricityCost: electricityCost }
     }
@@ -157,7 +294,7 @@ function AddMoreOperation(props) {
         let labourCost
         if (labourRate && weldingShift) {
             labourCost = checkForNull(labourRate / weldingShift)
-            setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
         }
         return { labourCost: labourCost }
     }
@@ -173,7 +310,18 @@ function AddMoreOperation(props) {
         let interestDepriciationCost = checkForNull(Number(getValues('interestDepriciationCost')))
         let totalCost = wireCost + gasCost + electricityCost + labourCost + machineConsumableCost + welderCost + otherCostWelding + interestDepriciationCost
         setDataToSend(prevState => ({ ...prevState, netCostWelding: totalCost }))
-        setValue('netCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+        if (state.isImport) {
+            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(totalCost)
+            const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
+
+            setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
+        } else {
+            const rateConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
+            setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
+        }
     }
 
     const setRejectionReworkAndProfitCost = () => {
@@ -193,27 +341,37 @@ function AddMoreOperation(props) {
         let rejnReworkPercent = checkForNull(Number(getValues('rejnReworkPercent'))) / 100
         let profitPercent = checkForNull(Number(getValues('profitPercent'))) / 100
 
-        let netCost = 0
+        let RateLocalConversion = 0
         if (includeInterestInRejection) {
-            netCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation
+            RateLocalConversion = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation
 
         } else {
 
-            netCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + statuatoryLicense + rateOperation
+            RateLocalConversion = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + statuatoryLicense + rateOperation
         }
 
-        let rejectionReworkCost = netCost * rejnReworkPercent
-        let profitCost = netCost * profitPercent
+        let rejectionReworkCost = RateLocalConversion * rejnReworkPercent
+        let profitCost = RateLocalConversion * profitPercent
         setDataToSend(prevState => ({ ...prevState, rejectionReworkCostState: rejectionReworkCost, profitCostState: profitCost }))
-        setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
-        setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration?.NoOfDecimalForPrice))
 
         //SETTING NET COST NOW
         let profitCostState = checkForNull(profitCost)
         let otherCost = checkForNull(Number(getValues('otherCost')))
         let totalCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation + rejectionReworkCost + profitCostState + otherCost
-        setDataToSend(prevState => ({ ...prevState, netCost: totalCost }))
-        setValue('netCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+        setDataToSend(prevState => ({ ...prevState, RateLocalConversion: totalCost }))
+        if (state.isImport) {
+            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(totalCost)
+            const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
+            setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
+        } else {
+            const rateConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
+            setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
+        }
     }
 
 
@@ -230,13 +388,13 @@ function AddMoreOperation(props) {
         let rejnReworkPercent = checkForNull(Number(getValues('rejnReworkPercent'))) / 100
         let profitPercent = checkForNull(Number(getValues('profitPercent'))) / 100
 
-        let netCost = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense)
-        let rejectionReworkCost = netCost * rejnReworkPercent
-        let profitCost = netCost * profitPercent
+        let RateLocalConversion = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense)
+        let rejectionReworkCost = RateLocalConversion * rejnReworkPercent
+        let profitCost = RateLocalConversion * profitPercent
 
         setDataToSend(prevState => ({ ...prevState, rejectionReworkCostState: rejectionReworkCost, profitCostState: profitCost }))
-        setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
-        setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration?.NoOfDecimalForPrice))
 
         setNetCostPlating(obj)
     }
@@ -254,11 +412,21 @@ function AddMoreOperation(props) {
         let rejectionReworkCost = checkForNull(Number(getValues('rejoinReworkCost')))
         let profitCostState = checkForNull(Number(getValues('profitCost')))
 
-        let netCost = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense + rejectionReworkCost + profitCostState)
-        setDataToSend(prevState => ({ ...prevState, netCost: netCost }))
-        setValue('netCost', checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
-    }
+        let Rate = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense + rejectionReworkCost + profitCostState)
+        setDataToSend(prevState => ({ ...prevState, RateLocalConversion: Rate }))
+        if (state.isImport) {
+            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(Rate)
+            const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(Rate)
+            setValue('Rate', checkForDecimalAndNull(Rate, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
+        } else {
+            const rateConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(Rate)
+            setValue('RateLocalConversion', checkForDecimalAndNull(Rate, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
+        }
 
+    }
 
     useEffect(() => {
 
@@ -280,79 +448,98 @@ function AddMoreOperation(props) {
             obj.value = item.Value
             technologyTemp.push(obj)
         })
+        let plantArray
+        if (addMoreDetailObj && addMoreDetailObj?.plants?.length > 0) {
+            plantArray = addMoreDetailObj?.plants?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
+        }
 
+        setValue("OperationBasicRate", addMoreDetailObj?.weldingRate)
+        setValue("OperationConsumption", addMoreDetailObj?.consumption)
+        setValue("LabourRatePerUOM", addMoreDetailObj?.labourRatePerUOM)
+        setValue("Rate", addMoreDetailObj?.rate)
         setValue('technology', technologyTemp)
         setValue('operationName', addMoreDetailObj.operationName)
         setValue('description', addMoreDetailObj.description)
-        setValue('plant', { label: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Text : addMoreDetailObj?.destinationPlant.label, value: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Value : addMoreDetailObj?.destinationPlant.value })
+        setValue('plant', plantArray ?? [])
         setValue('vendorName', { label: addMoreDetailObj?.vendor?.label, value: addMoreDetailObj?.vendor?.value })
         setVendor({ label: addMoreDetailObj?.vendor?.label, value: addMoreDetailObj?.vendor?.value })
         setValue('uom', { label: addMoreDetailObj.UOM.label, value: addMoreDetailObj.UOM.value })
         setUom({ label: addMoreDetailObj.UOM.label, value: addMoreDetailObj.UOM.value })
-        setPlant({ label: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Text : addMoreDetailObj?.destinationPlant.label, value: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Value : addMoreDetailObj?.destinationPlant.value })
+        setPlant(plantArray ?? [])
         setValue('customer', { label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
         setClient({ label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
-
+        setValue('plantCurrency', addMoreDetailObj?.plantCurrency)
+        setState(prevState => ({ ...prevState, isImport: addMoreDetailObj?.isImport, currency: addMoreDetailObj?.currency, plantCurrencyID: addMoreDetailObj?.plantCurrencyID, ExchangeSource: addMoreDetailObj?.ExchangeSource, plantExchangeRateId: addMoreDetailObj?.plantExchangeRateId, settlementExchangeRateId: addMoreDetailObj?.settlementExchangeRateId, plantCurrency: addMoreDetailObj?.plantCurrencyState, settlementCurrency: addMoreDetailObj?.settlementCurrency }))
+        setValue('ExchangeSource', { label: addMoreDetailObj?.ExchangeSource?.label, value: addMoreDetailObj?.ExchangeSource?.value })
+        setValue('currency', { label: addMoreDetailObj?.currency?.label, value: addMoreDetailObj?.currency?.value })
+        fromCurrencyRef.current = props?.addMoreDetailObj.currency
+        plantCurrencyRef.current = addMoreDetailObj?.plantCurrencyState
+        settlementCurrencyRef.current = addMoreDetailObj?.settlementCurrency
+        localCurrencyLabel.current = addMoreDetailObj?.plantCurrency
         if (isEditFlag) {
             setValue('effectiveDate', DayTime(addMoreDetailObj.effectiveDate).$d)
             if (String(props?.addMoreDetailObj?.operationType?.label) === "Welding") {
                 setDataToSend(prevState => ({ ...prevState, netCostWelding: detailObject && detailObject.Rate ? detailObject.Rate : '', wireCostWelding: detailObject && detailObject.MaterialWireCost ? detailObject.MaterialWireCost : '', gasCostWelding: detailObject && detailObject.MaterialGasCost ? detailObject.MaterialGasCost : '', electricityCostWelding: detailObject && detailObject.PowerElectricityCost ? detailObject.PowerElectricityCost : '', labourCostWelding: detailObject && detailObject.LabourManPowerCost ? detailObject.LabourManPowerCost : '' }))
                 setFiles(detailObject?.Attachements)
-                setValue('machineConsumableCost', detailObject && detailObject.MachineConsumptionCost ? checkForDecimalAndNull(detailObject.MachineConsumptionCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('machineConsumableCost', detailObject && detailObject.MachineConsumptionCost ? checkForDecimalAndNull(detailObject.MachineConsumptionCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadConsumableWelderCost', detailObject && detailObject.ConsumableWelderCRMHead && { label: detailObject.ConsumableWelderCRMHead, value: 1 })
-                setValue('welderCost', detailObject && detailObject.WelderCost ? checkForDecimalAndNull(detailObject.WelderCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('welderCost', detailObject && detailObject.WelderCost ? checkForDecimalAndNull(detailObject.WelderCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadInterestDepriciationWelding', detailObject && detailObject.InterestAndDepriciationCRMHead && { label: detailObject.InterestAndDepriciationCRMHead, value: 1 })
-                setValue('interestDepriciationCost', detailObject && detailObject.InterestAndDepriciationCost ? checkForDecimalAndNull(detailObject.InterestAndDepriciationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('interestDepriciationCost', detailObject && detailObject.InterestAndDepriciationCost ? checkForDecimalAndNull(detailObject.InterestAndDepriciationCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadAdditionalOtherCostWelding', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
                 setValue('otherCostDescriptionWelding', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
-                setValue('otherCostWelding', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCostWelding', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
 
             } else {
-                setDataToSend(prevState => ({ ...prevState, netCost: detailObject && detailObject.Rate ? detailObject.Rate : '', rejectionReworkCostState: detailObject && detailObject.RejectionAndReworkCost ? detailObject.RejectionAndReworkCost : '', profitCostState: detailObject && detailObject.ProfitCRMCost ? detailObject.ProfitCRMCost : '' }))
+                setDataToSend(prevState => ({ ...prevState, RateLocalConversion: detailObject && detailObject.Rate ? detailObject.Rate : '', rejectionReworkCostState: detailObject && detailObject.RejectionAndReworkCost ? detailObject.RejectionAndReworkCost : '', profitCostState: detailObject && detailObject.ProfitCRMCost ? detailObject.ProfitCRMCost : '' }))
                 setIncludeInterestInRejection(detailObject?.IsIncludeInterestRateAndDepriciationInRejectionAndProfit)
                 setValue('crmHeadMaterialCost', detailObject && detailObject.MaterialGasCRMHead && { label: detailObject.MaterialGasCRMHead, value: 1 })
-                setValue('gasCost', detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('gasCost', detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadPower', detailObject && detailObject.PowerCRMHead && { label: detailObject.PowerCRMHead, value: 1 })
-                setValue('electricityCost', detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('electricityCost', detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 //////////
                 setValue('crmHeadLabour', detailObject && detailObject.LabourCRMHead && { label: detailObject.LabourCRMHead, value: 1 })
-                setValue('manPowerCost', detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('manPowerCost', detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadLabourStaffCost', detailObject && detailObject.LabourStaffCRMHead && { label: detailObject.LabourStaffCRMHead, value: 1 })
-                setValue('staffCost', detailObject && detailObject.LabourStaffCost ? checkForDecimalAndNull(detailObject.LabourStaffCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('staffCost', detailObject && detailObject.LabourStaffCost ? checkForDecimalAndNull(detailObject.LabourStaffCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 //////////
                 setValue('crmHeadConsumableMaintenanceCost', detailObject && detailObject.ConsumableMaintenanceCRMHead && { label: detailObject.ConsumableMaintenanceCRMHead, value: 1 })
-                setValue('maintenanceCost', detailObject && detailObject.ConsumableMaintenanceCost ? checkForDecimalAndNull(detailObject.ConsumableMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('maintenanceCost', detailObject && detailObject.ConsumableMaintenanceCost ? checkForDecimalAndNull(detailObject.ConsumableMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadConsumableCost', detailObject && detailObject.ConsumableCRMHead && { label: detailObject.ConsumableCRMHead, value: 1 })
-                setValue('consumablesCost', detailObject && detailObject.ConsumableCost ? checkForDecimalAndNull(detailObject.ConsumableCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('consumablesCost', detailObject && detailObject.ConsumableCost ? checkForDecimalAndNull(detailObject.ConsumableCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadWaterCost', detailObject && detailObject.ConsumableWaterCRMHead && { label: detailObject.ConsumableWaterCRMHead, value: 1 })
-                setValue('waterCost', detailObject && detailObject.ConsumableWaterCost ? checkForDecimalAndNull(detailObject.ConsumableWaterCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('waterCost', detailObject && detailObject.ConsumableWaterCost ? checkForDecimalAndNull(detailObject.ConsumableWaterCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadJigStripping', detailObject && detailObject.ConsumableJigStrippingCRMHead && { label: detailObject.ConsumableJigStrippingCRMHead, value: 1 })
-                setValue('jigStripping', detailObject && detailObject.ConsumableJigStrippingCost ? checkForDecimalAndNull(detailObject.ConsumableJigStrippingCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('jigStripping', detailObject && detailObject.ConsumableJigStrippingCost ? checkForDecimalAndNull(detailObject.ConsumableJigStrippingCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadInterest', detailObject && detailObject.InterestCRMHead && { label: detailObject.InterestCRMHead, value: 1 })
-                setValue('interestCost', detailObject && detailObject.InterestCost ? checkForDecimalAndNull(detailObject.InterestCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('interestCost', detailObject && detailObject.InterestCost ? checkForDecimalAndNull(detailObject.InterestCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadDepriciation', detailObject && detailObject.DepriciationCRMHead && { label: detailObject.DepriciationCRMHead, value: 1 })
-                setValue('depriciationCost', detailObject && detailObject.DepriciationCost ? checkForDecimalAndNull(detailObject.DepriciationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('depriciationCost', detailObject && detailObject.DepriciationCost ? checkForDecimalAndNull(detailObject.DepriciationCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadOtherOperation', detailObject && detailObject.OtherOperationCRMHead && { label: detailObject.OtherOperationCRMHead, value: 1 })
                 setValue('OtherOperationName', detailObject && detailObject.OtherOperationName && { label: detailObject.OtherOperationName, value: detailObject.OtherOperationIdRef })
-                setValue('rateOperation', detailObject && detailObject.OtherOperationCost ? checkForDecimalAndNull(detailObject.OtherOperationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('rateOperation', detailObject && detailObject.OtherOperationCost ? checkForDecimalAndNull(detailObject.OtherOperationCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadStatuaryLicense', detailObject && detailObject.StatuatoryAndLicenseCRMHead && { label: detailObject.StatuatoryAndLicenseCRMHead, value: 1 })
-                setValue('statuatoryLicense', detailObject && detailObject.StatuatoryAndLicenseCost ? checkForDecimalAndNull(detailObject.StatuatoryAndLicenseCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('statuatoryLicense', detailObject && detailObject.StatuatoryAndLicenseCost ? checkForDecimalAndNull(detailObject.StatuatoryAndLicenseCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadRejoinRework', detailObject && detailObject.RejectionAndReworkCRMHead && { label: detailObject.RejectionAndReworkCRMHead, value: 1 })
-                setValue('rejnReworkPercent', detailObject && detailObject.RejectionAndReworkPercentage ? checkForDecimalAndNull(detailObject.RejectionAndReworkPercentage, initialConfiguration.NoOfDecimalForPrice) : '',)
-                setValue('rejoinReworkCost', detailObject && detailObject.RejectionAndReworkCost ? checkForDecimalAndNull(detailObject.RejectionAndReworkCost, initialConfiguration.NoOfDecimalForPrice) : '')
+                setValue('rejnReworkPercent', detailObject && detailObject.RejectionAndReworkPercentage ? checkForDecimalAndNull(detailObject.RejectionAndReworkPercentage, initialConfiguration?.NoOfDecimalForPrice) : '',)
+                setValue('rejoinReworkCost', detailObject && detailObject.RejectionAndReworkCost ? checkForDecimalAndNull(detailObject.RejectionAndReworkCost, initialConfiguration?.NoOfDecimalForPrice) : '')
                 setValue('crmHeadProfit', detailObject && detailObject.ProfitCRMHead && { label: detailObject.ProfitCRMHead, value: 1 })
-                setValue('profitPercent', detailObject && detailObject.ProfitCRMPercentage ? checkForDecimalAndNull(detailObject.ProfitCRMPercentage, initialConfiguration.NoOfDecimalForPrice) : '')
-                setValue('profitCost', detailObject && detailObject.ProfitCRMCost ? checkForDecimalAndNull(detailObject.ProfitCRMCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('profitPercent', detailObject && detailObject.ProfitCRMPercentage ? checkForDecimalAndNull(detailObject.ProfitCRMPercentage, initialConfiguration?.NoOfDecimalForPrice) : '')
+                setValue('profitCost', detailObject && detailObject.ProfitCRMCost ? checkForDecimalAndNull(detailObject.ProfitCRMCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadOtherCost', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
-                setValue('otherCost', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCost', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration?.NoOfDecimalForPrice) : '',)
                 setValue('otherCostDescription', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
             }
 
             setTimeout(() => {
-                setValue('netCost', detailObject && detailObject.Rate ? checkForDecimalAndNull(detailObject.Rate, initialConfiguration.NoOfDecimalForPrice) : '',)
+                if (detailObject?.OperationEntryType === ENTRY_TYPE_IMPORT) {
+                    setValue('Rate', detailObject && detailObject?.Rate ? checkForDecimalAndNull(detailObject?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '',)
+                }
+                setValue('RateLocalConversion', detailObject && detailObject.RateLocalConversion ? checkForDecimalAndNull(detailObject.RateLocalConversion, initialConfiguration?.NoOfDecimalForPrice) : '',)
+                setValue('RateConversion', detailObject && detailObject.RateConversion ? checkForDecimalAndNull(detailObject.RateConversion, initialConfiguration?.NoOfDecimalForPrice) : '',)
             }, 600);
 
         } else {
@@ -368,13 +555,80 @@ function AddMoreOperation(props) {
         dispatch(getOperationPartSelectList(() => { }))
 
     }, [])
+    const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
+        if (!isViewMode && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
+                setTimeout(() => {
+                    commonFunction(plantId, isDivision, res?.data?.Data?.MasterLevels)
+                }, 500);
+            }))
+        }
+    }
+    const commonFunction = (plantId = EMPTY_GUID, isDivision = false, masterLevels = []) => {
+        let levelDetailsTemp = []
+        levelDetailsTemp = userTechnologyDetailByMasterId(addMoreDetailObj?.costingTypeId, OPERATIONS_ID, masterLevels)
+        setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
+        let obj = {
+            DepartmentId: userDetails().DepartmentId,
+            UserId: loggedInUserId(),
+            TechnologyId: OPERATIONS_ID,
+            Mode: 'master',
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(addMoreDetailObj?.costingTypeId),
+            plantId: plantId
+        }
+        if (getConfigurationKey().IsMasterApprovalAppliedConfigure && !isDivision) {
+            dispatch(checkFinalUser(obj, (res) => {
+                if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+
+                    setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
+                }
+                else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+                } else {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: false }))
+                }
+            }))
+        }
+        setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
+    }
+    const handleOperationAPI = (formData, isEdit) => {
+        const apiFunction = isEdit ? updateOperationAPI : createOperationsAPI;
+        const successMessage = isEdit ? MESSAGES.OPERATION_UPDATE_SUCCESS : MESSAGES.OPERATION_ADD_SUCCESS;
+
+        dispatch(apiFunction(formData, (res) => {
+            if (res?.data?.Result) {
+                Toaster.success(successMessage);
+                props?.cancel('submit');
+            }
+        }));
+    };
 
 
-    const onSubmit = (values) => {
-
+    const onSubmit = debounce(handleSubmit((values) => {
         let technologyArray = []
-        let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
+        // let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
+        if (isEditFlag) {
+            // Compare all relevant fields with original data
+            const hasNoChanges = (
+                checkForDecimalAndNull(values?.netCost) === checkForDecimalAndNull(dataObj?.Rate) &&
+                (values?.remark || '') === (dataObj?.Remark || '') &&
+                (values?.description || '') === (dataObj?.Description || '') &&
+                JSON.stringify(files) === JSON.stringify(dataObj?.Attachements) &&
+                (values?.operationName || '') === (dataObj?.OperationName || '') &&
+                (values?.operationCode || '') === (dataObj?.OperationCode || '') &&
+                checkForDecimalAndNull(values?.LabourRatePerUOM) === checkForDecimalAndNull(dataObj?.LabourRatePerUOM) &&
+                checkForDecimalAndNull(values?.OperationBasicRate) === checkForDecimalAndNull(dataObj?.OperationBasicRate) &&
+                checkForDecimalAndNull(values?.OperationConsumption) === checkForDecimalAndNull(dataObj?.OperationConsumption) &&
+                DayTime(dataObj?.EffectiveDate).format('DD/MM/YYYY') === DayTime(values?.effectiveDate).format('DD/MM/YYYY')
+            );
 
+            if (hasNoChanges) {
+                Toaster.warning('Please change the data to save Operation Details');
+                return false;
+            }
+        }
+        let plantArray = Array?.isArray(plant) ? plant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+            plant ? [{ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' }] : [];
         values && values.technology && values.technology.map((item, index) => {
             let obj = {}
             obj.Technology = item.Label
@@ -393,12 +647,15 @@ function AddMoreOperation(props) {
             VendorId: addMoreDetailObj.costingTypeId === VBCTypeId ? vendor.value : null,
             UnitOfMeasurementId: uom.value,
             IsSurfaceTreatmentOperation: addMoreDetailObj?.isSurfaceTreatment,
-
-            Rate: isWelding ? dataToSend.netCostWelding : dataToSend.netCost,
-            LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
+            Rate: isWelding ? dataToSend.netCostWelding : (values.Rate ? values?.Rate : values?.RateLocalConversion),
+            RateLocalConversion: values?.RateLocalConversion,
+            RateConversion: values?.RateConversion,
+            LabourRatePerUOM: initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? values?.LabourRatePerUOM : '',
+            OperationBasicRate: values?.OperationBasicRate,
+            OperationConsumption: values?.OperationConsumption,
             Technology: technologyArray,
             Remark: values.remark ? values.remark : '',
-            Plant: plantArray,
+            Plant: plantArray ? plantArray : [],
             Attachements: files,
             LoggedInUserId: loggedInUserId(),
             EffectiveDate: DayTime(values.effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
@@ -467,59 +724,52 @@ function AddMoreOperation(props) {
             IsDetailedEntry: true,
             IsIncludeInterestRateAndDepriciationInRejectionAndProfit: includeInterestInRejection,
             InterestAndDepriciationCRMHead: values?.crmHeadInterestDepriciationWelding?.label,
-            InterestAndDepriciationCost: values?.interestDepriciationCost
-
+            InterestAndDepriciationCost: values?.interestDepriciationCost,
+            OperationEntryType: state.isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+            ExchangeRateSourceName: state.ExchangeSource?.label || null,
+            LocalCurrencyId: state.isImport ? state?.plantCurrencyID : null,
+            LocalCurrency: state.isImport ? localCurrencyLabel.current : null,
+            LocalExchangeRateId: state.isImport ? state?.plantExchangeRateId : null,
+            LocalCurrencyExchangeRate: state.isImport ? state?.plantCurrency : null,
+            ExchangeRate: state.isImport ? state?.settlementCurrency : state?.plantCurrency,
+            ExchangeRateId: state.isImport ? state?.settlementExchangeRateId : state?.plantExchangeRateId,
+            CurrencyId: state.isImport ? state.currency?.value : state?.plantCurrencyID,
+            Currency: state.isImport ? state?.currency?.label : localCurrencyLabel.current,
         }
 
+        let isFinancialDataChange = false;
         if (isEditFlag) {
-            let temp = Object.keys(formData).filter((item) => item.includes('CRMHead'))
-            let isFinancialDataChange = false
+            isFinancialDataChange = Object.keys(formData)
+                .filter(item => item.includes('Cost') || (item.includes('CRMHead') && initialConfiguration?.IsShowCRMHead) || item.includes('Rate')) // Filter keys that include 'Cost', 'CRMHead', or 'Rate'
+                .some(item => dataObj[item] && String(dataObj[item]) !== String(formData[item]));
 
-            temp.map((item) => {
-                if (dataObj[item] && String(dataObj[item]) !== String(formData[item])) {
-                    isFinancialDataChange = true
-                }
-                return null
-            })
+
 
             if (isFinancialDataChange) {
-                formData.IsFinancialDataChanged = true
+                formData.IsFinancialDataChanged = true;
                 if (DayTime(dataObj.EffectiveDate).format('DD/MM/YYYY') === DayTime(values.effectiveDate).format('DD/MM/YYYY')) {
-                    Toaster.warning('Please update the effective date')
-                    return false
-                } else {
-                    dispatch(updateOperationAPI(formData, (res) => {
-                        if (res?.data?.Result) {
-                            Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-                            props?.cancel('submit')
-                        }
-                    }))
+                    Toaster.warning('Please update the effective date');
+                    return false;
                 }
-            } else {
-                dispatch(updateOperationAPI(formData, (res) => {
-                    if (res?.data?.Result) {
-                        Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-                        props?.cancel('submit')
-                    }
-                }))
             }
-
-        } else {
-            dispatch(createOperationsAPI(formData, (res) => {
-                if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-                    props?.cancel('submit')
-                }
-            }))
         }
-    }
+        if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !state.isFinalApprovar && !isFinancialDataChange) {
+            // this.allFieldsInfoIcon(true)
+            formData.IsSendForApproval = true
+            setState(prevState => ({
+                ...prevState, approveDrawer: true, approvalObj: formData
+            }))
+        } else {
+            formData.IsSendForApproval = false;
+            handleOperationAPI(formData, isEditFlag);
+        }
+    }), 500);
 
 
     const cancel = () => {
         props.cancelAddMoreDetails()
 
     }
-
     const searchableSelectType = (label) => {
 
         let temp = [];
@@ -573,6 +823,14 @@ function AddMoreOperation(props) {
 
         if (label === 'crmHead') {
             temp = CRMHeads
+            return temp;
+        }
+        if (label === 'currency') {
+            currencySelectList && currencySelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
             return temp;
         }
 
@@ -630,6 +888,31 @@ function AddMoreOperation(props) {
     const handlePlant = (value) => {
         if (value && value !== '') {
             setPlant(value)
+            dispatch(getPlantUnitAPI(value?.value, (res) => {
+                let Data = res?.data?.Data
+                localCurrencyLabel.current = Data?.Currency
+                setValue('plantCurrency', Data?.Currency)
+                setState(prevState => ({ ...prevState, plantCurrencyID: Data?.CurrencyId }))
+
+                if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+                    setState(prevState => ({ ...prevState, hidePlantCurrency: false }))
+                } else {
+                    setState(prevState => ({ ...prevState, hidePlantCurrency: true }))
+                }
+                callExchangeRateAPI()
+            }))
+
+        }
+    }
+    const handleExchangeRateSource = (newValue) => {
+        setState(prevState => ({ ...prevState, ExchangeSource: newValue }))
+        callExchangeRateAPI()
+    };
+    const handleCurrency = (newValue) => {
+        if (newValue && newValue !== '') {
+            fromCurrencyRef.current = newValue
+            setState(prevState => ({ ...prevState, currency: newValue }))
+            callExchangeRateAPI()
         }
     }
 
@@ -778,25 +1061,25 @@ function AddMoreOperation(props) {
         let label;
         switch (value) {
             case 'wireRate':
-                label = isWelding ? `Wire Rate` : `Ni Rate`
+                label = isWelding ? `Wire Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Ni Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'wireCost':
-                label = isWelding ? `Wire Cost` : `Cost`
+                label = isWelding ? `Wire Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'gasRate':
-                label = isWelding ? `Gas Rate` : `Ni Scrap Rate`
+                label = isWelding ? `Gas Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Ni Scrap Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'consumablesCost':
-                label = other ? `Consumables Cost` : `Office Exp`
+                label = other ? `Consumables Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Office Exp (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'waterCost':
-                label = other ? `Water Cost` : `Additional Chemical Cost`
+                label = other ? `Water Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Additional Chemical Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'jigStripping':
-                label = other ? `Jig Stripping` : `CETP Charge`
+                label = other ? `Jig Stripping (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `CETP Charge (${state.isImport ? 'Currency' : getValues('plantCurrency') ?? 'Currency'})`
                 break;
             case 'statuatoryLicense':
-                label = other ? `Statuatory & License` : `Fixed Cost`
+                label = other ? `Statuatory & License (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Fixed Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             default:
                 label = ''
@@ -807,7 +1090,38 @@ function AddMoreOperation(props) {
     const getAccordianClassName = (value) => {
         return `accordian-content form-group row mx-0 w-100 ${value ? '' : 'd-none'}`
     }
+    const closeApprovalDrawer = (e = '', type) => {
+        setState(prevState => ({ ...prevState, approveDrawer: false, setDisable: false, isEditBuffer: true }))
+        if (type === 'submit') {
+            props?.cancel('submit')
+        }
+    }
+    const handleEffectiveDate = (e) => {
+        callExchangeRateAPI()
+    }
+    const OperationRateTitle = () => {
+        return {
+            tooltipTextPlantCurrency: `Rate * Plant Currency Rate (${state?.plantCurrency ?? ''})`,
+            toolTipTextNetCostBaseCurrency: `Rate * Currency Rate (${state?.settlementCurrency ?? ''})`,
+        };
+    };
+    const getTooltipTextForCurrency = () => {
+        const { settlementCurrency, plantCurrency, currency } = state
+        const currencyLabel = currency?.label ?? 'Currency';
+        const plantCurrencyLabel = getValues('plantCurrency') ?? 'Plant Currency';
+        const baseCurrency = reactLocalStorage.getObject("baseCurrency");
 
+        // Check the exchange rates or provide a default placeholder if undefined
+        const plantCurrencyRate = plantCurrency ?? '-';
+        const settlementCurrencyRate = settlementCurrency ?? '-';
+
+        // Generate tooltip text based on the condition
+        return <>
+            {!state?.hidePlantCurrency
+                ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+                : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        </>;
+    };
     return (
         <div className="container-fluid">
             {isLoader && <Loader />}
@@ -822,9 +1136,75 @@ function AddMoreOperation(props) {
                             </div>
 
                         </div>
-                        <form
-                            onSubmit={handleSubmit(onSubmit)}
-                        >
+                        <form>
+                            <Row>
+                                <Col md="4" className="switch mt-4 mb15">
+                                    <label className="switch-level">
+                                        <div className={"left-title"}>Domestic</div>
+                                        <Switch
+                                            onChange={() => { }}
+                                            checked={state.isImport}
+                                            id="normal-switch"
+                                            disabled={true}
+                                            background="#4DC771"
+                                            onColor="#4DC771"
+                                            onHandleColor="#ffffff"
+                                            offColor="#4DC771"
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            height={20}
+                                            width={46}
+                                        />
+                                        <div className={"right-title"}>Import</div>
+                                    </label>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="12">
+                                    {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            className='zero-based'
+                                            id='zeroBased'
+                                            checked={
+                                                state.costingTypeId === ZBCTypeId ? true : false
+                                            }
+                                            onClick={() => { }}
+                                            disabled={true}
+                                        />{" "}
+                                        <span>Zero Based</span>
+                                    </Label>}
+                                    {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            className='vendor-based'
+                                            id='vendorBased'
+                                            checked={
+                                                state.costingTypeId === VBCTypeId ? true : false
+                                            }
+                                            onClick={() => { }}
+                                            disabled={true}
+                                        />{" "}
+                                        <span>{vendorLabel} Based</span>
+                                    </Label>}
+                                    {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            className='customer-based'
+                                            id='customerBased'
+                                            checked={
+                                                state.costingTypeId === CBCTypeId ? true : false
+                                            }
+                                            onClick={() => { }}
+                                            disabled={true}
+                                        />{" "}
+                                        <span>Customer Based</span>
+                                    </Label>}
+                                </Col>
+                            </Row>
                             <div className="">
                                 <HeaderTitle
                                     title={'Operation:'}
@@ -929,7 +1309,7 @@ function AddMoreOperation(props) {
                                                 required: false,
                                                 validate: {
                                                     acceptAllExceptSingleSpecialCharacter,
-                                                    maxLength25,
+                                                    maxLength80,
                                                     checkWhiteSpaces,
                                                 }
                                             }}
@@ -963,6 +1343,43 @@ function AddMoreOperation(props) {
                                             disabled={isViewMode || isEditFlag}
                                         />
                                     </div>
+                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col className="col-md-15">
+                                        <SearchableSelectHookForm
+                                            name="ExchangeSource"
+                                            label="Exchange Rate Source"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{ required: false }}
+                                            placeholder={'Select'}
+                                            options={searchableSelectType("ExchangeSource")}
+                                            handleChange={handleExchangeRateSource}
+                                            disabled={(isViewMode || isEditFlag) ? true : false}
+                                            errors={errors.ExchangeSource}
+                                        />
+                                    </Col>}
+                                    <Col className="col-md-15">
+                                        {getValues('plantCurrency') && !state.hidePlantCurrency && !state.isImport && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${getValues('plantCurrency')} = ${state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                                        <TextFieldHookForm
+                                            name="plantCurrency"
+                                            label="Plant Currency"
+                                            placeholder={'-'}
+                                            defaultValue={''}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: false,
+                                            }}
+                                            mandatory={false}
+                                            disabled={true}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                            handleChange={() => { }}
+                                            errors={errors.plantCurrency}
+                                        />
+                                    </Col>
 
                                     {addMoreDetailObj.costingTypeId === VBCTypeId && <div className="input-group col-md-3 input-withouticon" >
                                         <AsyncSearchableSelectHookForm
@@ -1029,12 +1446,34 @@ function AddMoreOperation(props) {
                                             valueDescription={uom}
                                         />
                                     </div>
+                                    {state.isImport && <Col className="col-md-15">
+                                        <TooltipCustom id="currency" tooltipText={getTooltipTextForCurrency()} />
+                                        <SearchableSelectHookForm
+                                            name="currency"
+                                            label="Currency"
+                                            errors={errors.currency}
+                                            id="currency"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            rules={{
+                                                required: true,
+                                            }}
+                                            placeholder={'Select'}
+                                            options={searchableSelectType("currency")}
+                                            handleChange={handleCurrency}
+                                            disabled={isEditFlag || isViewMode}
+                                        />
+                                    </Col>}
                                     <div className="col-md-3 mb-5">
                                         <div className="inputbox date-section">
                                             <DatePickerHookForm
                                                 name={`effectiveDate`}
                                                 label={'Effective Date'}
-                                                handleChange={() => { }}
+                                                handleChange={(date) => {
+                                                    handleEffectiveDate(date);
+                                                }}
                                                 rules={{ required: false }}
                                                 Controller={Controller}
                                                 control={control}
@@ -1078,31 +1517,33 @@ function AddMoreOperation(props) {
                                     <div className={getAccordianClassName(isMaterialCostOpen)}>
 
                                         {other &&
-                                            <><Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadMaterialCost"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadMaterialCost}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
+                                            <>
+                                                {initialConfiguration?.IsShowCRMHead &&
+                                                    <Col md="3" className="mb-3">
+                                                        <SearchableSelectHookForm
+                                                            name="crmHeadMaterialCost"
+                                                            type="text"
+                                                            label="CRM Head"
+                                                            errors={errors.crmHeadMaterialCost}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                            }}
+                                                            placeholder={'Select'}
+                                                            options={searchableSelectType('crmHead')}
+                                                            required={false}
+                                                            handleChange={() => { }}
+                                                            disabled={isViewMode}
+                                                        />
 
-                                            </Col>
+                                                    </Col>}
                                                 <Col md="3">
 
                                                     <NumberFieldHookForm
-                                                        label={`Gas Cost`}
+                                                        label={`Gas Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'gasCost'}
                                                         Controller={Controller}
                                                         control={control}
@@ -1127,7 +1568,7 @@ function AddMoreOperation(props) {
                                             </>}
 
                                         {(isWelding || isPlating) && <>
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadWireRate"
                                                     type="text"
@@ -1147,7 +1588,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
                                                     label={getLabel('wireRate')}
@@ -1199,12 +1640,16 @@ function AddMoreOperation(props) {
 
 
                                             <Col md="3">
-                                                <TooltipCustom id={"wireRate"} disabledIcon={true} width={"230px"} tooltipText={`${getLabel('wireCost')} = ${getLabel('wireRate')} * Consumption`} />
-
+                                                <TooltipCustom
+                                                    id={"wireCostTooltip"}
+                                                    disabledIcon={true}
+                                                    width={"230px"}
+                                                    tooltipText={`${getLabel('wireCost')} = ${getLabel('wireRate')} * Consumption`}
+                                                />
                                                 <NumberFieldHookForm
                                                     label={getLabel('wireCost')}
                                                     name={'wireCost'}
-                                                    id={"wireRate"}
+                                                    id={"wireCostTooltip"}
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
@@ -1227,7 +1672,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
 
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadGasRate"
                                                     type="text"
@@ -1246,8 +1691,8 @@ function AddMoreOperation(props) {
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
-                                            </Col>
-                                            <Col md="3">
+                                            </Col>}
+                                            <Col md="3" className="mb-3">
 
                                                 <NumberFieldHookForm
                                                     label={getLabel('gasRate')}
@@ -1273,7 +1718,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
 
-                                            <Col md="3">
+                                            <Col md="3" className="mb-3">
                                                 <NumberFieldHookForm
                                                     label={`Consumption`}
                                                     name={'consumptionGas'}
@@ -1299,10 +1744,10 @@ function AddMoreOperation(props) {
                                             </Col>
 
                                             <Col md="3">
-                                                <TooltipCustom id={"gasCostWelding"} width={"230px"} disabledIcon={true} tooltipText={`Cost = ${getLabel('gasRate')} * Consumption`} />
+                                                <TooltipCustom id={"gasCostWelding"} width={"350px"} disabledIcon={true} tooltipText={`Cost = ${getLabel('gasRate')} * Consumption`} />
 
                                                 <NumberFieldHookForm
-                                                    label={`Cost`}
+                                                    label={`Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     id={"gasCostWelding"}
                                                     name={'gasCostWelding'}
                                                     Controller={Controller}
@@ -1347,7 +1792,7 @@ function AddMoreOperation(props) {
                                 {
                                     <div className={getAccordianClassName(isPowerCostOpen)}>
 
-                                        {other && <><Col md="3">
+                                        {other && <> {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                             <SearchableSelectHookForm
                                                 name="crmHeadPower"
                                                 type="text"
@@ -1367,10 +1812,10 @@ function AddMoreOperation(props) {
                                                 disabled={isViewMode}
                                             />
 
-                                        </Col>
+                                        </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Electricity Cost`}
+                                                    label={`Electricity Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'electricityCost'}
                                                     id={"electricityCost"}
                                                     Controller={Controller}
@@ -1396,7 +1841,7 @@ function AddMoreOperation(props) {
 
                                         {(isWelding || isPlating) && <>
 
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadPowerWelding"
                                                     type="text"
@@ -1416,11 +1861,11 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Electricity Rate`}
+                                                    label={`Electricity Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'electricityRate'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1469,9 +1914,9 @@ function AddMoreOperation(props) {
                                             </Col>
 
                                             <Col md="3">
-                                                <TooltipCustom id={"electricityCostWelding"} width={"230px"} disabledIcon={true} tooltipText={`Electricity Cost = Electricity Rate * Consumption`} />
+                                                <TooltipCustom id={"electricityCostWelding"} width={"350px"} disabledIcon={true} tooltipText={`Electricity Cost = Electricity Rate * Consumption`} />
                                                 <NumberFieldHookForm
-                                                    label={`Electricity Cost`}
+                                                    label={`Electricity Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'electricityCostWelding'}
                                                     Controller={Controller}
                                                     id={"electricityCostWelding"}
@@ -1516,7 +1961,7 @@ function AddMoreOperation(props) {
                                     <div className={getAccordianClassName(isLabourCostOpen)}>
 
                                         {(other || isPlating) && <>
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadLabour"
                                                     type="text"
@@ -1536,11 +1981,11 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`ManPower Cost`}
+                                                    label={`ManPower Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'manPowerCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1564,7 +2009,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
 
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadLabourStaffCost"
                                                     type="text"
@@ -1584,11 +2029,11 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Staff Cost`}
+                                                    label={`Staff Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'staffCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1613,7 +2058,7 @@ function AddMoreOperation(props) {
 
                                         {isWelding &&
                                             <>
-                                                <Col md="3">
+                                                {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                     <SearchableSelectHookForm
                                                         name="crmHeadLabourWelding"
                                                         type="text"
@@ -1633,11 +2078,11 @@ function AddMoreOperation(props) {
                                                         disabled={isViewMode}
                                                     />
 
-                                                </Col>
+                                                </Col>}
                                                 <Col md="3">
 
                                                     <NumberFieldHookForm
-                                                        label={`Labour Rate`}
+                                                        label={`Labour Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'labourRate'}
                                                         Controller={Controller}
                                                         control={control}
@@ -1686,9 +2131,9 @@ function AddMoreOperation(props) {
                                                 </Col>
 
                                                 <Col md="3">
-                                                    <TooltipCustom id={"labourCost"} width={"230px"} disabledIcon={true} tooltipText={`Labour Cost = Labour Rate / Welding/Shift`} />
+                                                    <TooltipCustom id={"labourCost"} width={"350px"} disabledIcon={true} tooltipText={`Labour Cost = Labour Rate / Welding/Shift`} />
                                                     <NumberFieldHookForm
-                                                        label={`Labour Cost`}
+                                                        label={`Labour Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'labourCost'}
                                                         id={"labourCost"}
                                                         Controller={Controller}
@@ -1734,7 +2179,7 @@ function AddMoreOperation(props) {
                                 {
                                     <div className={getAccordianClassName(isConsumablesCostOpen)}>
 
-                                        {(other || isPlating) && <><Col md="3">
+                                        {(other || isPlating) && <>{initialConfiguration?.IsShowCRMHead && <Col md="3" className="mb-4">
                                             <SearchableSelectHookForm
                                                 name="crmHeadConsumableMaintenanceCost"
                                                 type="text"
@@ -1754,10 +2199,10 @@ function AddMoreOperation(props) {
                                                 disabled={isViewMode}
                                             />
 
-                                        </Col>
+                                        </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Maintenance Cost`}
+                                                    label={`Maintenance Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'maintenanceCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1779,7 +2224,7 @@ function AddMoreOperation(props) {
                                                 />
                                             </Col>
 
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadConsumableCost"
                                                     type="text"
@@ -1799,7 +2244,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
@@ -1825,28 +2270,28 @@ function AddMoreOperation(props) {
                                                 />
                                             </Col>
 
+                                            {initialConfiguration?.IsShowCRMHead &&
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadWaterCost"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadWaterCost}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
 
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadWaterCost"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadWaterCost}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-
-                                            </Col>
+                                                </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
                                                     label={getLabel('waterCost')}
@@ -1871,27 +2316,27 @@ function AddMoreOperation(props) {
                                                 />
 
                                             </Col>
-
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadJigStripping"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadJigStripping}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-                                            </Col>
+                                            {initialConfiguration?.IsShowCRMHead &&
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadJigStripping"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadJigStripping}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
+                                                </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
@@ -1920,7 +2365,7 @@ function AddMoreOperation(props) {
 
 
                                         {isWelding && <>
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadConsumableMachineCost"
                                                     type="text"
@@ -1940,11 +2385,11 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Machine Consumable Cost`}
+                                                    label={`Machine Consumable Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'machineConsumableCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1966,32 +2411,32 @@ function AddMoreOperation(props) {
                                                 />
                                             </Col>
 
+                                            {initialConfiguration?.IsShowCRMHead &&
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadConsumableWelderCost"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadConsumableWelderCost}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
 
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadConsumableWelderCost"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadConsumableWelderCost}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-
-                                            </Col>
+                                                </Col>}
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Welder Cost`}
+                                                    label={`Welder Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'welderCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2037,7 +2482,7 @@ function AddMoreOperation(props) {
                                 {true &&
                                     <div className={getAccordianClassName(isInterestCostOpen)}>
 
-                                        {other && <> <Col md="3">
+                                        {other && <>   {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                             <SearchableSelectHookForm
                                                 name="crmHeadInterest"
                                                 type="text"
@@ -2057,11 +2502,11 @@ function AddMoreOperation(props) {
                                                 disabled={isViewMode}
                                             />
 
-                                        </Col>
+                                        </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Interest  Cost`}
+                                                    label={`Interest  Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'interestCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2083,31 +2528,31 @@ function AddMoreOperation(props) {
                                                 />
                                             </Col>
 
+                                            {initialConfiguration?.IsShowCRMHead &&
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadDepriciation"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadDepriciation}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
 
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadDepriciation"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadDepriciation}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-
-                                            </Col>
+                                                </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Depreciation Cost`}
+                                                    label={`Depreciation Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'depriciationCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2148,7 +2593,7 @@ function AddMoreOperation(props) {
                                             </label>
                                         </>}
 
-                                        {isWelding && <>
+                                        {isWelding && <>  {initialConfiguration?.IsShowCRMHead &&
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadInterestDepriciationWelding"
@@ -2168,12 +2613,12 @@ function AddMoreOperation(props) {
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
-                                            </Col>
+                                            </Col>}
 
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Interest And Depreciation Cost`}
+                                                    label={`Interest And Depreciation Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'interestDepriciationCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2216,28 +2661,28 @@ function AddMoreOperation(props) {
                                 </Col>
                                 {true &&
                                     <div className={getAccordianClassName(isOtherOperationCostOpen)}>
+                                        {initialConfiguration?.IsShowCRMHead &&
+                                            <Col md="3">
+                                                <SearchableSelectHookForm
+                                                    name="crmHeadOtherOperation"
+                                                    type="text"
+                                                    label="CRM Head"
+                                                    errors={errors.crmHeadOtherOperation}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={false}
+                                                    rules={{
+                                                        required: false,
+                                                    }}
+                                                    placeholder={'Select'}
+                                                    options={searchableSelectType('crmHead')}
+                                                    required={false}
+                                                    handleChange={() => { }}
+                                                    disabled={isViewMode}
+                                                />
 
-                                        <Col md="3">
-                                            <SearchableSelectHookForm
-                                                name="crmHeadOtherOperation"
-                                                type="text"
-                                                label="CRM Head"
-                                                errors={errors.crmHeadOtherOperation}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                rules={{
-                                                    required: false,
-                                                }}
-                                                placeholder={'Select'}
-                                                options={searchableSelectType('crmHead')}
-                                                required={false}
-                                                handleChange={() => { }}
-                                                disabled={isViewMode}
-                                            />
-
-                                        </Col>
+                                            </Col>}
 
                                         <Col md="3">
                                             <SearchableSelectHookForm
@@ -2262,7 +2707,7 @@ function AddMoreOperation(props) {
 
                                         <Col md="3">
                                             <NumberFieldHookForm
-                                                label={`Rate`}
+                                                label={`Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                 name={'rateOperation'}
                                                 Controller={Controller}
                                                 control={control}
@@ -2306,8 +2751,8 @@ function AddMoreOperation(props) {
                                     <div className={getAccordianClassName(isOtherCostOpen)}>
 
                                         {(other || isPlating) &&
-                                            <>
-                                                <Col md="3">
+                                            <>  {initialConfiguration?.IsShowCRMHead &&
+                                                <Col md="3" className="mb-4">
                                                     <SearchableSelectHookForm
                                                         name="crmHeadStatuaryLicense"
                                                         type="text"
@@ -2327,7 +2772,7 @@ function AddMoreOperation(props) {
                                                         disabled={isViewMode}
                                                     />
 
-                                                </Col>
+                                                </Col>}
                                                 <Col md="3">
                                                     <NumberFieldHookForm
                                                         label={getLabel(`statuatoryLicense`)}
@@ -2351,29 +2796,28 @@ function AddMoreOperation(props) {
                                                         disabled={isViewMode ? true : false}
                                                     />
                                                 </Col>
+                                                {initialConfiguration?.IsShowCRMHead &&
+                                                    <Col md="3">
+                                                        <SearchableSelectHookForm
+                                                            name="crmHeadRejoinRework"
+                                                            type="text"
+                                                            label="CRM Head"
+                                                            errors={errors.crmHeadRejoinRework}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                            }}
+                                                            placeholder={'Select'}
+                                                            options={searchableSelectType('crmHead')}
+                                                            required={false}
+                                                            handleChange={() => { }}
+                                                            disabled={isViewMode}
+                                                        />
 
-
-                                                <Col md="3">
-                                                    <SearchableSelectHookForm
-                                                        name="crmHeadRejoinRework"
-                                                        type="text"
-                                                        label="CRM Head"
-                                                        errors={errors.crmHeadRejoinRework}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        mandatory={false}
-                                                        rules={{
-                                                            required: false,
-                                                        }}
-                                                        placeholder={'Select'}
-                                                        options={searchableSelectType('crmHead')}
-                                                        required={false}
-                                                        handleChange={() => { }}
-                                                        disabled={isViewMode}
-                                                    />
-
-                                                </Col>
+                                                    </Col>}
                                                 <Col md="3">
 
                                                     <NumberFieldHookForm
@@ -2406,9 +2850,9 @@ function AddMoreOperation(props) {
 
 
                                                 <Col md="3">
-                                                    <TooltipCustom id={"rejoinReworkCost"} disabledIcon={true} width={"270px"} tooltipText={`Rejection & Rework Cost = Statuatory & License * Rejection & Rework / 100`} />
+                                                    <TooltipCustom id={"rejoinReworkCost"} disabledIcon={true} width={"350px"} tooltipText={`Rejection & Rework Cost = Statuatory & License * Rejection & Rework / 100`} />
                                                     <NumberFieldHookForm
-                                                        label={`Rejection & Rework Cost`}
+                                                        label={`Rejection & Rework Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'rejoinReworkCost'}
                                                         Controller={Controller}
                                                         id={"rejoinReworkCost"}
@@ -2432,28 +2876,28 @@ function AddMoreOperation(props) {
 
                                                 </Col>
 
+                                                {initialConfiguration?.IsShowCRMHead &&
+                                                    <Col md="3">
+                                                        <SearchableSelectHookForm
+                                                            name="crmHeadProfit"
+                                                            type="text"
+                                                            label="CRM Head"
+                                                            errors={errors.crmHeadProfit}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                            }}
+                                                            placeholder={'Select'}
+                                                            options={searchableSelectType('crmHead')}
+                                                            required={false}
+                                                            handleChange={() => { }}
+                                                            disabled={isViewMode}
+                                                        />
 
-                                                <Col md="3">
-                                                    <SearchableSelectHookForm
-                                                        name="crmHeadProfit"
-                                                        type="text"
-                                                        label="CRM Head"
-                                                        errors={errors.crmHeadProfit}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        mandatory={false}
-                                                        rules={{
-                                                            required: false,
-                                                        }}
-                                                        placeholder={'Select'}
-                                                        options={searchableSelectType('crmHead')}
-                                                        required={false}
-                                                        handleChange={() => { }}
-                                                        disabled={isViewMode}
-                                                    />
-
-                                                </Col>
+                                                    </Col>}
                                                 <Col md="3">
                                                     <NumberFieldHookForm
                                                         label={`Profit %`}
@@ -2484,9 +2928,9 @@ function AddMoreOperation(props) {
 
 
                                                 <Col md="3">
-                                                    <TooltipCustom id={"profitCost"} disabledIcon={true} width={"270px"} tooltipText={`Profit Cost = Statuatory & License * Profit  / 100`} />
+                                                    <TooltipCustom id={"profitCost"} disabledIcon={true} width={"350px"} tooltipText={`Profit Cost = Statuatory & License * Profit  / 100`} />
                                                     <NumberFieldHookForm
-                                                        label={`Profit Cost`}
+                                                        label={`Profit Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         id={"profitCost"}
                                                         name={'profitCost'}
                                                         Controller={Controller}
@@ -2509,7 +2953,7 @@ function AddMoreOperation(props) {
                                                     />
                                                 </Col>
 
-                                                {other && <><Col md="3">
+                                                {other && <>  {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                     <SearchableSelectHookForm
                                                         name="crmHeadOtherCost"
                                                         type="text"
@@ -2529,7 +2973,7 @@ function AddMoreOperation(props) {
                                                         disabled={isViewMode}
                                                     />
 
-                                                </Col>
+                                                </Col>}
 
                                                     <Col md="3">
                                                         <TextFieldHookForm
@@ -2558,7 +3002,7 @@ function AddMoreOperation(props) {
 
                                                     <Col md="3">
                                                         <NumberFieldHookForm
-                                                            label={`Other Cost`}
+                                                            label={`Other Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                             name={'otherCost'}
                                                             Controller={Controller}
                                                             control={control}
@@ -2584,7 +3028,7 @@ function AddMoreOperation(props) {
                                             </>}
 
                                         {(isWelding || false) && <>
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadAdditionalOtherCostWelding"
                                                     type="text"
@@ -2603,7 +3047,7 @@ function AddMoreOperation(props) {
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
-                                            </Col>
+                                            </Col>}
 
                                             <Col md="3">
                                                 <TextFieldHookForm
@@ -2632,7 +3076,7 @@ function AddMoreOperation(props) {
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Other Cost`}
+                                                    label={`Other Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'otherCostWelding'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2658,33 +3102,68 @@ function AddMoreOperation(props) {
                                     </div>
                                 }
                             </Row>
-
-                            <TooltipCustom id={"netCost"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />
-                            <Col md="3">
+                            {state.isImport && <Col className="col-md-15">
+                                {<TooltipCustom id={"Rate"} width="350px" disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />}
                                 <NumberFieldHookForm
-                                    label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
-                                    name={'netCost'}
+                                    label={`Rate (${state.currency?.label ?? 'Currency'})`}
+                                    name={'Rate'}
+                                    id={"Rate"}
                                     Controller={Controller}
-                                    id={"netCost"}
                                     control={control}
                                     register={register}
                                     mandatory={false}
-                                    rules={{
-                                        required: false,
-                                        pattern: {
-                                            value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                            message: 'Maximum length for integer is 4 and for decimal is 7',
-                                        },
-                                    }}
                                     handleChange={() => { }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
-                                    errors={errors.netCost}
+                                    errors={errors.Rate}
                                     disabled={true}
                                 />
-                            </Col>
+                            </Col>}
 
+
+
+                            <>
+                                {!state.isImport && <TooltipCustom id={"RateLocalConversion"} width="350px" disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />}
+                                {state.isImport && <TooltipCustom disabledIcon={true} width="350px" id={"RateLocalConversion"} tooltipText={state.hidePlantCurrency ? OperationRateTitle()?.toolTipTextNetCostBaseCurrency : OperationRateTitle()?.tooltipTextPlantCurrency} />}
+                                <Col className="col-md-15">
+                                    <NumberFieldHookForm
+                                        label={`Rate (${getValues('plantCurrency') ?? 'Currency'})`}
+                                        name={'RateLocalConversion'}
+                                        Controller={Controller}
+                                        id={"RateLocalConversion"}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.RateLocalConversion}
+                                        disabled={true}
+                                    />
+                                </Col>
+                            </>
+                            {!state.hidePlantCurrency &&
+                                <>
+                                    <TooltipCustom disabledIcon={true} id="operation-rate" width="350px" tooltipText={state.isImport ? OperationRateTitle()?.toolTipTextNetCostBaseCurrency : OperationRateTitle()?.tooltipTextPlantCurrency} />
+                                    <Col className="col-md-15">
+                                        <NumberFieldHookForm
+                                            label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                                            name={'RateConversion'}
+                                            id="operation-rate"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.RateConversion}
+                                            disabled={true}
+                                        />
+                                    </Col></>}
 
                             <Row>
                                 <Col md="12">
@@ -2721,7 +3200,7 @@ function AddMoreOperation(props) {
                                     <div className={`alert alert-danger mt-2 ${files.length === initialConfiguration.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit reached.
                                     </div>
-                                    <div className={`${files.length >= initialConfiguration.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                                    <div className={`${files.length >= initialConfiguration?.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                                         <Dropzone
                                             ref={dropzone}
                                             onChangeStatus={handleChangeStatus}
@@ -2729,7 +3208,7 @@ function AddMoreOperation(props) {
                                             disabled={isViewMode}
                                             accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                             initialFiles={[]}
-                                            maxFiles={initialConfiguration.MaxMasterFilesToUpload}
+                                            maxFiles={initialConfiguration?.MaxMasterFilesToUpload}
                                             maxSizeBytes={2000000}
                                             inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
                                                 <i className="text-primary fa fa-cloud-upload"></i>
@@ -2790,16 +3269,51 @@ function AddMoreOperation(props) {
                                         CANCEL
                                     </button>
 
-                                    {!isViewMode && <button
-                                        type="submit"
-                                        disabled={isViewMode}
-                                        className="user-btn save-btn">
-                                        <div className={"save-icon"}></div>
-                                        {isEditFlag ? 'UPDATE' : 'SAVE'}
-                                    </button>}
+                                    {!isViewMode && <>
+                                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !state.isFinalApprovar) && getConfigurationKey().IsMasterApprovalAppliedConfigure) || (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !state.CostingTypePermission) ?
+                                            <Button
+                                                id="addRMDomestic_sendForApproval"
+                                                type="button"
+                                                className="approval-btn mr5"
+                                                disabled={isViewMode || state.disableSendForApproval}
+                                                onClick={onSubmit}
+                                                icon={(!state.disableSendForApproval) ? "send-for-approval" : "save-icon"}
+                                                buttonName={(!state.disableSendForApproval) ? "Send For Approval" : isEditFlag ? "Update" : "Save"}
+                                            />
+                                            :
+                                            <Button
+                                                id="addRMDomestic_updateSave"
+                                                type="button"
+                                                className="mr5"
+                                                disabled={isViewMode || state.disableSendForApproval}
+                                                onClick={onSubmit}
+                                                icon={"save-icon"}
+                                                buttonName={isEditFlag ? "Update" : "Save"}
+                                            />
+                                        }
+                                    </>}
                                 </div>
                             </div>
-
+                            {
+                                state.approveDrawer && (
+                                    <MasterSendForApproval
+                                        isOpen={state.approveDrawer}
+                                        closeDrawer={closeApprovalDrawer}
+                                        isEditFlag={false}
+                                        masterId={OPERATIONS_ID}
+                                        type={'Sender'}
+                                        anchor={"right"}
+                                        approvalObj={state.approvalObj}
+                                        isBulkUpload={false}
+                                        levelDetails={state.levelDetails}
+                                        // Technology={state.Technology}
+                                        handleOperation={handleOperationAPI}
+                                        commonFunction={finalUserCheckAndMasterLevelCheckFunction}
+                                        isEdit={isEditFlag}
+                                        costingTypeId={addMoreDetailObj.costingTypeId}
+                                    />
+                                )
+                            }
                         </form>
                     </div>
                 </div>

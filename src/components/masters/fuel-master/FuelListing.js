@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { getFuelDetailDataList, deleteFuelDetailAPI } from "../actions/Fuel";
-import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import "react-input-range/lib/css/index.css";
@@ -25,6 +25,8 @@ import { ApplyPermission } from ".";
 import Button from "../../layout/Button";
 import { checkMasterCreateByCostingPermission } from "../../common/CommonFunctions";
 import { useLabels, useWithLocalization } from "../../../helper/core";
+import Switch from 'react-switch'
+
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -47,6 +49,8 @@ const FuelListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    isImport: false,
+    totalRecordCount: 0
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -58,13 +62,13 @@ const FuelListing = (props) => {
     }
   }, [permissions]);
 
-  const getDataList = (fuelName = 0, stateName = 0) => {
-    const filterData = { fuelName: fuelName, stateName: stateName, };
+  const getDataList = (fuelName = 0, stateName = 0, FuelEntryType = false) => {
+    const filterData = { fuelName: fuelName, stateName: stateName, FuelEntryType: FuelEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,/*  Currency: Currency, ExchangeRateSourceName: ExchangeRateSourceName */ };
     dispatch(getFuelDetailDataList(true, filterData, (res) => {
       setState((prevState) => ({ ...prevState, isLoader: false }));
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, }));
+        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, totalRecordCount: Data?.length }));
       } else if (res && res.response && res.response.status === 412) {
         setState((prevState) => ({ ...prevState, tableData: [], isLoader: false, }));
       } else {
@@ -126,7 +130,7 @@ const FuelListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       fuelDataList.length !== 0 &&
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
     }, 500);
   };
 
@@ -143,7 +147,8 @@ const FuelListing = (props) => {
   };
 
   const closeBulkUploadDrawer = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: false }), () => { getDataList(0, 0); });
+    setState((prevState) => ({ ...prevState, isBulkUpload: false, isLoader: true }));
+    getDataList(0, 0);
   };
 
 
@@ -200,8 +205,13 @@ const FuelListing = (props) => {
     let tempArr = [];
     tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr = tempArr && tempArr.length > 0 ? tempArr : fuelDataList ? fuelDataList : [];
-
-    return returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl_LOCALIZATION, tempArr);
+    const filteredLabels = FUELLISTING_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr);
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -224,7 +234,10 @@ const FuelListing = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell != null ? cell : "-";
   };
-
+  const importToggle = () => {
+    setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
+    getDataList(0, 0, !state.isImport)
+  }
   const ExcelFile = ReactExport.ExcelFile;
 
   const isFirstColumn = (params) => {
@@ -258,9 +271,9 @@ const FuelListing = (props) => {
                     <ExcelFile
                       filename={"Fuel"}
                       fileExtension={".xls"}
-                      element={<Button id={"Excel-Downloads-fuelListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}
+                      element={<Button id={"Excel-Downloads-fuelListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}
                     >
-                      {onBtExport()}
+                      {state?.totalRecordCount !== 0 ? onBtExport() : null}
                     </ExcelFile>
                   </>
                 )}
@@ -279,6 +292,27 @@ const FuelListing = (props) => {
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
+            <Row>
+              <Col md="4" className="switch mb15">
+                <label className="switch-level">
+                  <div className="left-title">Domestic</div>
+                  <Switch
+                    onChange={importToggle}
+                    checked={state.isImport}
+                    id="normal-switch"
+                    background="#4DC771"
+                    onColor="#4DC771"
+                    onHandleColor="#ffffff"
+                    offColor="#4DC771"
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    height={20}
+                    width={46}
+                  />
+                  <div className="right-title">Import</div>
+                </label>
+              </Col>
+            </Row>
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}            >
               {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
               <AgGridReact
@@ -298,9 +332,13 @@ const FuelListing = (props) => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
+                <AgGridColumn field="CostingHead"minWidth={170} headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+
                 <AgGridColumn field="FuelName" headerName="Fuel" width={250} cellRenderer={"costingHeadFormatter"}></AgGridColumn>
                 <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={"commonCostFormatter"}></AgGridColumn>

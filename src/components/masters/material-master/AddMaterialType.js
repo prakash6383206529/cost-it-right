@@ -15,6 +15,7 @@ import { debounce } from 'lodash';
 import { MESSAGES } from '../../../config/message';
 import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, decimalLengthFour, hashValidation, positiveAndDecimalNumber, required } from '../../../helper';
 import AddMaterialTypeDetail from './AddMaterialTypeDetail';
+import { checkForNull } from '../../../helper/validation';
 
 const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFlag }) => {
   const { t } = useTranslation("RawMaterialMaster");
@@ -97,8 +98,23 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
 
   const onSubmit = debounce(values => {
     if (isEditFlag) {
-      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType && materialTypeData?.materialTypeData?.MaterialCommodityStandardDetails?.length === state.tableData?.length) {
-        cancel('cancel');
+      const isMaterialTypeUnchanged = materialTypeData?.materialTypeData?.MaterialType === values?.MaterialType;
+      const isDensityUnchanged = checkForNull(materialTypeData?.materialTypeData?.Density) === checkForNull(values?.CalculatedDensityValue);
+      const originalCommodities = materialTypeData?.materialTypeData?.MaterialCommodityStandardDetails || [];
+      const newCommodities = state?.tableData || [];
+
+      const areCommoditiesUnchanged =
+        originalCommodities.length === newCommodities?.length &&
+        originalCommodities?.every((original, index) => {
+          const newItem = newCommodities[index];
+          return (
+            original?.CommodityStandardName === newItem?.CommodityStandardName &&
+            checkForNull(original?.Percentage) === checkForNull(newItem?.Percentage)
+          );
+        });
+
+      if (isMaterialTypeUnchanged && isDensityUnchanged && areCommoditiesUnchanged) {
+        Toaster.warning("Please change data to save Material Details");
         return false;
       }
 

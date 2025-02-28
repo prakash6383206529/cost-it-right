@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Row, Col, Table } from 'reactstrap';
+import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3, decimalNumberLimit,
@@ -9,17 +9,17 @@ import {
   validateFileName
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, renderNumberInputField, validateForm } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, getExchangeRateSource, getCurrencySelectList, } from '../../../actions/Common';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
   getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, getProcessGroupByMachineId, setGroupProcessList, setProcessList,
   checkAndGetMachineNumber
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
-import { getFuelByPlant, } from '../actions/Fuel';
+import { getFuelByPlant, getFuelList, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads, GUIDE_BUTTON_SHOW, LOGISTICS } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads, GUIDE_BUTTON_SHOW, LOGISTICS, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -45,13 +45,15 @@ import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
-import { costingTypeIdToApprovalTypeIdFunction, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import WarningMessage from '../../common/WarningMessage';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next'
 import Button from '../../layout/Button';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { getPlantUnitAPI } from '../actions/Plant';
+import { LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -69,7 +71,7 @@ class AddMoreDetails extends Component {
       isDateChange: false,
       selectedTechnology: editDetails.selectedTechnology ?? [],
       selectedPlants: Object.keys(editDetails.selectedPlants).length > 0 ? editDetails.selectedPlants : {},
-      machineType: [],
+      machineType: editDetails?.machineType ?? [],
       isOpenMachineType: false,
       machineRate: "",
       disableMachineType: false,
@@ -142,12 +144,12 @@ class AddMoreDetails extends Component {
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
-      finalApprovalLoader: true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !(getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) ? false : true,
       showPopup: false,
       levelDetails: {},
       selectedCustomer: editDetails.selectedCustomer ?? [],
       selectedVedor: editDetails.vendorName ?? [],
-      costingTypeId: editDetails?.costingTypeId,
+      costingTypeId: editDetails?.costingTypeId || null,
       CostingTypeId: editDetails?.costingTypeId,
       vendorId: null,
       customerId: null,
@@ -169,6 +171,19 @@ class AddMoreDetails extends Component {
         processGroupTour: false
       },
       UniqueProcessId: [],
+      ExchangeSource: editDetails?.ExchangeSource || {},
+      entryType: editDetails?.entryType || null,
+      powerIsImport: false,
+      //plantCurrency: editDetails?.fieldsObj?.plantCurrency || "",
+      currency: editDetails?.currency ?? null,
+      plantCurrency: editDetails?.plantCurrency || null,
+      settlementCurrency: editDetails?.settlementCurrency || null,
+      plantExchangeRateId: editDetails?.plantExchangeRateId || '',
+      settlementExchangeRateId: editDetails?.settlementExchangeRateId || '',
+      plantCurrencyID: editDetails?.plantCurrencyID || '',
+      hidePlantCurrency: false,
+      showPlantWarning: false,
+      disableEffectiveDate: false
     }
     this.dropzone = React.createRef();
   }
@@ -186,31 +201,73 @@ class AddMoreDetails extends Component {
     this.props.getProcessesSelectList(() => { })
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
+    this.props.getExchangeRateSource(() => { })
 
+    this.props.change('plantCurrency', editDetails?.fieldsObj?.plantCurrency ?? '')
+    this.props.change('ExchangeSource', editDetails?.ExchangeSource ?? {})
+    this.props.change('EffectiveDate', editDetails?.fieldsObj?.EffectiveDate ?? "")
+    this.props.change('MachineName', editDetails?.fieldsObj?.MachineName ?? "")
+    this.props.change('MachineNumber', editDetails?.fieldsObj?.MachineNumber ?? "")
+    this.props.change('Specification', editDetails?.fieldsObj?.Specification ?? "")
+    this.props.change('TonnageCapacity', editDetails?.fieldsObj?.TonnageCapacity ?? "")
+    //this.props.change('MachineType', editDetails?.fieldsObj?.MachineType ?? "")
+    //this.props.change('currency', editDetails?.currency ?? {})
     if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
-      this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+      const PlantId = Array.isArray(this.state.selectedPlants) ? this.state.selectedPlants[0]?.value : this.state.selectedPlants?.value;
+      if (editDetails?.machineType?.value) {
+        const data = {
+          machineTypeId: editDetails?.machineType?.value ? editDetails?.machineType?.value : '',
+          plantId: PlantId,
+          effectiveDate: editDetails?.fieldsObj?.EffectiveDate ? editDetails?.fieldsObj.EffectiveDate : '',
+          vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
+          customerId: this.state?.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
+          costingTypeId: this.state?.CostingTypeId || null,
+
+
+        }
+        this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
+      }
+      let obj = {
+        plantId: PlantId,
+        vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
+        customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
+        costingTypeId: this.state.CostingTypeId || null,
+        entryType: this.state.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+        countryId: this.state.countryId || null,
+        stateId: this.state.stateId || null,
+        cityId: this.state.cityId || null
+      }
+      this.props.getFuelByPlant(obj, () => { })
+      //this.props.getFuelList(obj, () => { })
     }
     if (!this.props?.editDetails?.isEditFlag) {
       this.props.change('EquityPercentage', 100)
     }
     /*WHEN DATE IS COME FROM FIRST FORM */
-    this.props.change('effectiveDate', editDetails.selectedEffectiveDate)
+    this.props.change('MachineName', editDetails?.fieldsObj?.MachineName)
+    this.props.change('MachineNumber', editDetails?.fieldsObj?.MachineNumber)
+    this.props.change('TonnageCapacity', editDetails?.fieldsObj?.TonnageCapacity)
+    this.props.change('Description', editDetails?.fieldsObj?.Description)
+    this.props.change('Specification', editDetails?.fieldsObj?.Specification)
+    this.props.change('EffectiveDate', editDetails?.selectedEffectiveDate)
+    this.setState({ machineType: editDetails?.machineType })
     if (initialConfiguration.IsAutoGeneratedMachineNumber && editDetails && editDetails.isEditFlag === false) {
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
         this.props.change('MachineNumber', Data.MachineNumber)
       })
     }
-    if (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID,null, (res) => {
-        setTimeout(() => {
-          this.commonFunction()
-        }, 100);
-      })
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     } else {
       this.setState({ finalApprovalLoader: false })
     }
     this.getDetails()
+    this.props.getCurrencySelectList(() => { })
+
+    // if (this.props.fieldsObj !== prevProps.fieldsObj) {
+    //   this.handleCalculation()
+    // }
   }
 
   closeApprovalDrawer = (e = '', type) => {
@@ -221,6 +278,7 @@ class AddMoreDetails extends Component {
       setTimeout(() => {
         let formData = this.state.formDataState
         formData.isViewFlag = true
+        formData.hidePlant = this.state?.hidePlantCurrency
         this.props.hideMoreDetailsForm(formData)
         //Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
         this.cancel()
@@ -229,8 +287,19 @@ class AddMoreDetails extends Component {
 
     }
   }
-
-  commonFunction(plantId = EMPTY_GUID) {
+  finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
+    const { initialConfiguration } = this.props
+    if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction(plantId, isDivision)
+        }, 100);
+      })
+    } else {
+      this.setState({ finalApprovalLoader: false })
+    }
+  }
+  commonFunction(plantId = EMPTY_GUID, isDivision = false) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.CostingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -242,7 +311,7 @@ class AddMoreDetails extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.CostingTypeId),
       plantId: plantId
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -263,12 +332,18 @@ class AddMoreDetails extends Component {
       if (nextProps.data !== this.props.data) {
         const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
         if (selectedPlants && Object.keys(selectedPlants)?.length > 0) {
+          const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
           this.handlePlants(selectedPlants)
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value ? machineType?.value : '',
-              plantId: selectedPlants?.value ? selectedPlants?.value : '',
-              effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
+              plantId: PlantId,
+              effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : '',
+              vendorId: selectedVedor?.value ? selectedVedor?.value : '',
+              customerId: selectedCustomer?.value ? selectedCustomer?.value : '',
+              costingTypeId: costingTypeId || null,
+
+
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
           }
@@ -410,22 +485,48 @@ class AddMoreDetails extends Component {
             this.setState({ UniqueProcessId: uniqueSet })
 
           })
+          if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.setState({ hidePlantCurrency: false })
+          } else {
+            this.setState({ hidePlantCurrency: true })
+          }
+          this.props.change('plantCurrency', Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('TotalFuelCostPerYear', Data.TotalFuelCostPerYear ? Data.TotalFuelCostPerYear : '')
           this.props.change('ConsumptionPerYear', Data.ConsumptionPerYear ? Data.ConsumptionPerYear : '')
           this.props.change('FuelCostPerUnit', Data.FuelCostPerUnit ? Data.FuelCostPerUnit : '')
           this.setState({ minDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
-          const { machineType, effectiveDate } = this.state;
+          const { machineType, effectiveDate, selectedCustomer, selectedVedor, costingTypeId } = this.state;
+          let plantObj;
+          if (Data && Data?.Plant?.length > 0) {
+            plantObj = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
+          }
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value,
               plantId: Data.Plant[0].PlantId,
-              effectiveDate: effectiveDate
+              effectiveDate: effectiveDate,
+              vendorId: selectedVedor?.value ? selectedVedor?.value : '',
+              customerId: selectedCustomer?.value ? selectedCustomer?.value : '',
+              costingTypeId: costingTypeId || null,
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
           }
+          const PlantId = Array.isArray(this.state.selectedPlants) ? this.state.selectedPlants[0]?.value : this.state.selectedPlants?.value;
           if (Data && Data.Plant[0]?.PlantId) {
-            this.props.getFuelByPlant(Data?.Plant[0]?.PlantId, () => { })
+            let obj = {
+              plantId: PlantId,
+              vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
+              customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
+              costingTypeId: this.state.CostingTypeId || null,
+              powerIsImport: this.state.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+              countryId: this.state.countryId || null,
+              stateId: this.state.stateId || null,
+              cityId: this.state.cityId || null
+            }
+            this.props.getFuelByPlant(obj, () => { })
+            // this.props.getFuelList(obj, () => { })
+
           }
           setTimeout(() => {
             const { machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList, fuelDataByPlant } = this.props;
@@ -442,7 +543,10 @@ class AddMoreDetails extends Component {
                 NumberOfLabour: el.NumberOfLabour,
                 LabourCost: el.LabourCost,
                 LabourDetailId: el.LabourDetailId,
-                LabourCRMHead: el.LabourCRMHead
+                LabourCRMHead: el.LabourCRMHead,
+                MachineRate: el.MachineRate,
+                MachineRateLocalConversion: el?.MachineRateLocalConversion,
+                MachineRateConversion: el?.MachineRateConversion
               }
             })
 
@@ -455,6 +559,8 @@ class AddMoreDetails extends Component {
                 OutputPerHours: el.OutputPerHours,
                 OutputPerYear: el.OutputPerYear,
                 MachineRate: el.MachineRate,
+                MachineRateLocalConversion: el?.MachineRateLocalConversion,
+                MachineRateConversion: el?.MachineRateConversion
               }
             })
 
@@ -482,7 +588,7 @@ class AddMoreDetails extends Component {
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
-              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
+              selectedPlants: plantObj ? plantObj : [],
               DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? new Date(DayTime(Data.DateOfPurchase)) : '',
               IsAnnualMaintenanceFixed: Data.IsMaintanceFixed === true ? false : true,
               IsAnnualConsumableFixed: Data.IsConsumableFixed === true ? false : true,
@@ -504,6 +610,15 @@ class AddMoreDetails extends Component {
               crmHeads: crmHeadObj,
               updateCrmHeadObj: crmHeadObj,
               IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost,
+              ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
+              plantCurrency: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantExchangeRateId: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRateId : Data?.ExchangeRateId,
+              settlementCurrency: Data?.ExchangeRate,
+              settlementExchangeRateId: Data?.ExchangeRateId,
+              plantCurrencyID: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              entryType: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
+              //currency: Data?.Currency
               // selectedPlants: Data?.Plant ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : null
 
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
@@ -539,7 +654,7 @@ class AddMoreDetails extends Component {
   renderListing = (label) => {
     const { technologySelectList, plantSelectList,
       UOMSelectList, machineTypeSelectList, processSelectList, ShiftTypeSelectList,
-      DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelDataByPlant, } = this.props;
+      DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelDataByPlant, currencySelectList, exchangeRateSourceList } = this.props;
 
     const temp = [];
     if (label === 'technology') {
@@ -617,6 +732,22 @@ class AddMoreDetails extends Component {
       });
       return temp;
     }
+    if (label === 'ExchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+        if (item.Value === '--Exchange Rate Source Name--') return false
+
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    } if (label === 'currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   }
 
   /**
@@ -624,7 +755,8 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
-    const { IsUsesSolarPower, machineFullValue, effectiveDate } = this.state;
+    const { fieldsObj } = this.props
+    const { IsUsesSolarPower, machineFullValue, effectiveDate, costingTypeId, currency, entryType, ExchangeSource, selectedCustomer, selectedVedor } = this.state;
     if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
       this.commonFunction(newValue ? newValue.value : '')
     }
@@ -633,21 +765,55 @@ class AddMoreDetails extends Component {
     if (!editMode) {
       if (newValue && newValue !== '') {
         this.setState({ selectedPlants: newValue }, () => {
+          this.props.getPlantUnitAPI(newValue?.value, (res) => {
+            let Data = res?.data?.Data
+            this.props.change('plantCurrency', Data?.Currency)
+            //this.setState({ plantCurrency: Data?.Currency })
+            this.setState({ plantCurrencyID: Data?.CurrencyId })
+            this.props.editDetails?.callExchangeRateAPI(costingTypeId, Data?.Currency, currency, entryType, ExchangeSource, effectiveDate, selectedCustomer, selectedVedor, newValue)
+              .then(result => {
+                if (result) {
+                  this.setState({ ...result, showWarning: result.showWarning, showPlantWarning: result.showPlantWarning }, () => {
+                    this.handleCalculation(this.fieldsObj?.MachineRate);
+                  });
+                }
+              });
+            if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+              this.setState({ hidePlantCurrency: false })
+            } else {
+              this.setState({ hidePlantCurrency: true })
+            }
+          })
           const { selectedPlants } = this.state
           this.callLabourTypeApi()
-          this.props.getFuelByPlant(
-            selectedPlants.value,
-            (res) => { },
-          )
+          let obj = {
+            plantId: newValue?.value,
+            vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
+            customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
+            costingTypeId: this.state.CostingTypeId || null,
+            entryType: this.state.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+            countryId: this.state.countryId || null,
+            stateId: this.state.stateId || null,
+            cityId: this.state.cityId || null
+          }
+          //this.props.getFuelList(obj, (res) => { })
+          this.props.getFuelByPlant(obj, (res) => { })
+
         })
         if (effectiveDate) {
+          const baseCurrency = reactLocalStorage.getObject("baseCurrency")
+          const data = this.props.data ?? {};
           setTimeout(() => {
-            let obj = {}
-            obj.plantId = newValue?.value
-            obj.effectiveDate = effectiveDate
-            obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
-            obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
-            obj.customerId = this.state.customerId ? this.state.customerId : ''
+            let obj = {
+              plantId: newValue?.value,
+              effectiveDate: effectiveDate,
+              costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
+              vendorId: this.state.vendorId ? this.state.vendorId : '',
+              customerId: this.state.customerId ? this.state.customerId : '',
+              toCurrency: fieldsObj?.plantCurrency,
+              ExchangeSource: data?.ExchangeRateSourceName || "",
+              entryType: data?.entryType === "Import" ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+            }
             this.props.getPowerCostUnit(obj, res => {
               let Data = res?.data?.DynamicData;
               if (res && res.data && res.data.Message !== '') {
@@ -657,7 +823,7 @@ class AddMoreDetails extends Component {
                   machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
                   powerIdFromAPI: Data?.PowerId
                 })
-                this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+                this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice))
               } else {
                 //  if(IsUsesSolarPower)
                 machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data?.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
@@ -665,7 +831,7 @@ class AddMoreDetails extends Component {
                   machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
                   powerIdFromAPI: Data?.PowerId
                 })
-                this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+                this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
               }
             })
           }, 1000);
@@ -689,7 +855,10 @@ class AddMoreDetails extends Component {
       const data = {
         machineTypeId: 0,
         plantId: 0,
-        effectiveDate: ''
+        effectiveDate: '',
+        vendorId: '',
+        customerId: '',
+        costingTypeId: null,
       }
       this.setState({ machineType: [], labourGrid: [], })
       if (newValue.value) {
@@ -708,11 +877,15 @@ class AddMoreDetails extends Component {
 
 
   callLabourTypeApi = () => {
-    const { machineType, selectedPlants, effectiveDate } = this.state;
+    const { machineType, selectedPlants, effectiveDate, selectedCustomer, selectedVedor, costingTypeId } = this.state;
+    const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
     const data = {
       machineTypeId: machineType?.value,
-      plantId: selectedPlants?.value,
-      effectiveDate: effectiveDate
+      plantId: PlantId,
+      effectiveDate: effectiveDate,
+      vendorId: selectedVedor?.value ? selectedVedor?.value : '',
+      customerId: selectedCustomer?.value ? selectedCustomer?.value : '',
+      costingTypeId: costingTypeId || null,
     }
     if (machineType && machineType.value && (Array.isArray(machineType) ? machineType.length > 0 : machineType) && selectedPlants && effectiveDate) {
       this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
@@ -767,7 +940,7 @@ class AddMoreDetails extends Component {
     const { initialConfiguration } = this.props
     this.setState({ isOpenAvailability: false, NoOfWorkingHours: NoOfWorkingHours }, () => {
       if (calculatedEfficiency !== Infinity && calculatedEfficiency !== 'NaN') {
-        this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, initialConfiguration.NoOfDecimalForInputOutput))
+        this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, initialConfiguration?.NoOfDecimalForInputOutput))
       }
     })
 
@@ -794,46 +967,45 @@ class AddMoreDetails extends Component {
 
   handleFuelType = (newValue, actionMeta) => {
     const { machineFullValue, effectiveDate } = this.state;
+    const { data } = this.props;
+    this.props.change('FuelCostPerUnit', 0)
+
     if (newValue && newValue !== '') {
       this.setState({ fuelType: newValue }, () => {
-        const { fuelType, selectedPlants } = this.state;
-
+        const { fuelType, selectedPlants, currency, ExchangeSource, costingTypeId, vendorId, customerId, selectedCustomer, selectedVedor } = this.state;
+        const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
         if (selectedPlants) {
-
-          const data = {
+          const requestData = {
             fuelId: fuelType.value,
-            plantId: selectedPlants?.value,
-            effectiveDate: DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('DD/MM/YYYY') : ''
+            plantId: PlantId,
+            effectiveDate: DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('YYYY-MM-DD') : '',
+            toCurrency: this.props.fieldsObj?.plantCurrency,
+            ExchangeSource: ExchangeSource?.label || "",
+            costingTypeId: costingTypeId || '',
+            vendorId: selectedVedor?.value || '',
+            customerId: selectedCustomer?.value || '',
+            entryType: this?.state?.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
           }
-          this.props.getFuelUnitCost(data, res => {
-            let Data = res?.data?.Data;
+          this.props.getFuelUnitCost(requestData, res => {
+            let responseData = res?.data?.Data;
             if (res && res?.data && res?.data?.Message !== '') {
               Toaster.warning(res.data.Message)
-              machineFullValue.FuelCostPerUnit = (Data.UnitCost ? Data.UnitCost : 0)
-              this.setState({
-                machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit },
-                UOMName: Data?.UOMName ? Data?.UOMName : 'UOM',
-                FuelEntryId: Data?.FuelEntryId ? Data?.FuelEntryId : EMPTY_GUID
-              })
-              this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.UnitCost, this.props.initialConfiguration.NoOfDecimalForPrice))
-            } else {
-              machineFullValue.FuelCostPerUnit = (Data.UnitCost ? Data.UnitCost : 0)
-              this.setState({
-                machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit },
-                UOMName: Data?.UOMName ? Data?.UOMName : 'UOM',
-                FuelEntryId: Data?.FuelEntryId ? Data?.FuelEntryId : EMPTY_GUID
-              })
-              this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.UnitCost, this.props.initialConfiguration.NoOfDecimalForPrice))
             }
+            const newFuelCostPerUnit = responseData?.UnitCost || 0;
+            const newMachineFullValue = { ...machineFullValue, FuelCostPerUnit: newFuelCostPerUnit };
+            this.setState({
+              machineFullValue: newMachineFullValue,
+              UOMName: responseData?.UOMName || 'UOM',
+              FuelEntryId: responseData?.FuelEntryId || EMPTY_GUID
+            })
+            this.props.change('FuelCostPerUnit', checkForDecimalAndNull(newFuelCostPerUnit, this.props.initialConfiguration?.NoOfDecimalForPrice))
           })
-
         } else {
           Toaster.warning('Please select plant.')
         }
-
       });
     } else {
-      this.setState({ fuelType: [], })
+      this.setState({ fuelType: [] })
       this.props.change('FuelCostPerUnit', 0)
     }
   }
@@ -893,21 +1065,41 @@ class AddMoreDetails extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
+    const { fieldsObj } = this.props
+    const { IsUsesSolarPower, machineFullValue, effectiveDate, costingTypeId, currency, entryType, ExchangeSource, selectedCustomer, selectedVedor, selectedPlants } = this.state;
     this.setState({
       effectiveDate: date,
       isDateChange: true,
-    }, () => this.callLabourTypeApi());
-    const { IsUsesSolarPower, machineFullValue, selectedPlants } = this.state;
+    }, () => {
+      this.callLabourTypeApi()
+      this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, ExchangeSource, date, selectedCustomer, selectedVedor, selectedPlants)
+        .then(result => {
+          if (result) {
+            this.setState({ ...result, showWarning: result.showWarning, showPlantWarning: result.showPlantWarning }, () => {
+              this.handleCalculation(this.fieldsObj?.MachineRate);
+            });
+          }
+        });
+
+    });
     const { initialConfiguration } = this.props
 
     if (Object.keys(selectedPlants)?.length > 0) {
+      const baseCurrency = reactLocalStorage.getObject("baseCurrency")
+      const data = this.props.data ?? {};
+      const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
       setTimeout(() => {
-        let obj = {}
-        obj.plantId = this.state.selectedPlants?.value
-        obj.effectiveDate = date
-        obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
-        obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
-        obj.customerId = this.state.customerId ? this.state.customerId : ''
+        let obj = {
+          plantId: PlantId,
+          effectiveDate: date,
+          costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
+          vendorId: this.state.vendorId ? this.state.vendorId : '',
+          customerId: this.state.customerId ? this.state.customerId : '',
+          toCurrency: fieldsObj?.plantCurrency,
+          ExchangeSource: data?.ExchangeRateSourceName || "",
+          entryType: data?.entryType === "Import" ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+
+        }
         this.props.getPowerCostUnit(obj, res => {
           let Data = res?.data?.DynamicData;
           if (res && res.data && res.data.Message !== '') {
@@ -917,7 +1109,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId },
               powerIdFromAPI: Data?.PowerId
             })
-            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice))
           } else {
             //  if(IsUsesSolarPower)
             machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
@@ -925,7 +1117,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit, powerId: Data?.PowerId },
               powerIdFromAPI: Data?.PowerId
             })
-            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
           }
         })
       }, 1000);
@@ -995,7 +1187,21 @@ class AddMoreDetails extends Component {
       this.props.change('ConsumptionPerYear', 0)
       this.props.change('TotalFuelCostPerYear', 0)
       if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
-        this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+        //this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+        const PlantId = Array.isArray(this.state.selectedPlants) ? this.state.selectedPlants[0]?.value : this.state.selectedPlants?.value;
+        let obj = {
+          plantId: PlantId,
+          vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
+          customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
+          costingTypeId: this.state.CostingTypeId || null,
+          entryType: this.state.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+          countryId: this.state.countryId || null,
+          stateId: this.state.stateId || null,
+          cityId: this.state.cityId || null
+        }
+        this.props.getFuelByPlant(obj, () => { })
+        //this.props.getFuelList(obj, () => { })
+
       }
       this.setState({ fuelType: [] })
     }
@@ -1014,13 +1220,22 @@ class AddMoreDetails extends Component {
       const { IsUsesSolarPower, selectedPlants, machineFullValue, effectiveDate } = this.state;
       // if (IsUsesSolarPower) {
       if (selectedPlants) {
+        const baseCurrency = reactLocalStorage.getObject("baseCurrency")
+        const data = this.props.data ?? {};
+        const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
         setTimeout(() => {
-          let obj = {}
-          obj.plantId = selectedPlants?.value
-          obj.effectiveDate = effectiveDate
-          obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
-          obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
-          obj.customerId = this.state.customerId ? this.state.customerId : ''
+
+          let obj = {
+            plantId: PlantId,
+            effectiveDate: effectiveDate,
+            costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
+            vendorId: this.state.vendorId ? this.state.vendorId : '',
+            customerId: this.state.customerId ? this.state.customerId : '',
+            toCurrency: this.props.fieldsObj?.plantCurrency,
+            ExchangeSource: data?.ExchangeRateSourceName || "",
+            entryType: data?.entryType === "Import" ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+
+          }
           this.props.getPowerCostUnit(obj, res => {
             let Data = res.data.DynamicData;
             if (res && res.data && res.data.Message !== '') {
@@ -1031,14 +1246,14 @@ class AddMoreDetails extends Component {
                 machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit },
                 powerIdFromAPI: Data?.PowerId
               })
-              this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
+              this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration?.NoOfDecimalForPrice))
             } else {
               machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
               this.setState({
                 machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit },
                 powerIdFromAPI: Data?.PowerId
               })
-              this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
+              this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, this.props.initialConfiguration?.NoOfDecimalForPrice))
             }
           })
         }, 1000);
@@ -1060,20 +1275,30 @@ class AddMoreDetails extends Component {
   labourHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ labourType: newValue }, () => {
-        const { labourType, machineType, selectedPlants, effectiveDate } = this.state;
-        const data = {
+        const { labourType, machineType, selectedPlants, effectiveDate, selectedCustomer, selectedVedor } = this.state;
+        const baseCurrency = reactLocalStorage.getObject("baseCurrency")
+        const { data } = this.props ?? {}
+        const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
+        const dataObj = {
           labourTypeId: labourType.value,
           machineTypeId: machineType.value,
-          plantId: selectedPlants?.value
+          plantId: PlantId,
+          customerId: selectedCustomer?.value,
+          vendorId: selectedVedor?.value,
+          effectiveDate: effectiveDate,
+          costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
+          toCurrency: this.props.fieldsObj?.plantCurrency,
+          ExchangeSource: data?.ExchangeRateSourceName || "",
+
         }
-        this.props.getLabourCost(data, effectiveDate, res => {
+        this.props.getLabourCost(dataObj, effectiveDate, res => {
           let Data = res.data.DynamicData;
           this.setState({ labourDetailId: Data.LabourDetailId })
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
-            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
           } else {
-            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
           }
         })
       });
@@ -1099,8 +1324,11 @@ class AddMoreDetails extends Component {
       this.powerCost()
       this.handleLabourCalculation()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
       this.commonFunction()
+    }
+    if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      this.handleCalculation()
     }
   }
 
@@ -1119,7 +1347,7 @@ class AddMoreDetails extends Component {
     this.setState({
       machineFullValue: { ...machineFullValue, totalCost: machineFullValue.totalCost }
     })
-    this.props.change('TotalCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('TotalCost', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -1152,9 +1380,9 @@ class AddMoreDetails extends Component {
     //THIS IS TO SHOW ON FORM (VIEW PURPOSE)
 
     this.props.change('EquityPercentage', checkForNull(EquityPercentage))
-    this.props.change('LoanValue', checkForDecimalAndNull(calculatePercentage(LoanPercentage) * checkForNull(totalCost), initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('EquityValue', checkForDecimalAndNull(calculatePercentage(EquityPercentage) * checkForNull(totalCost), initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('RateOfInterestValue', checkForDecimalAndNull((calculatePercentage(LoanPercentage) * checkForNull(totalCost)) * calculatePercentage(RateOfInterestPercentage), initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('LoanValue', checkForDecimalAndNull(calculatePercentage(LoanPercentage) * checkForNull(totalCost), initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('EquityValue', checkForDecimalAndNull(calculatePercentage(EquityPercentage) * checkForNull(totalCost), initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('RateOfInterestValue', checkForDecimalAndNull((calculatePercentage(LoanPercentage) * checkForNull(totalCost)) * calculatePercentage(RateOfInterestPercentage), initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -1221,7 +1449,7 @@ class AddMoreDetails extends Component {
     //this.props.change('DepreciationAmount', Math.round(depreciationAmount))
     machineFullValue.depreciationAmount = depreciationAmount
     this.setState({ machineFullValue: { ...machineFullValue, depreciationAmount: machineFullValue.depreciationAmount } })
-    this.props.change('DepreciationAmount', checkForDecimalAndNull(depreciationAmount, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('DepreciationAmount', checkForDecimalAndNull(depreciationAmount, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -1244,7 +1472,7 @@ class AddMoreDetails extends Component {
       this.setState({
         machineFullValue: { ...machineFullValue, MaintananceCost: machineFullValue.MaintananceCost }
       })
-      this.props.change('AnnualMaintanceAmount', checkForDecimalAndNull(MaintananceCost, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('AnnualMaintanceAmount', checkForDecimalAndNull(MaintananceCost, initialConfiguration?.NoOfDecimalForPrice))
     }
 
     if (IsAnnualConsumableFixed) {
@@ -1253,7 +1481,7 @@ class AddMoreDetails extends Component {
       this.setState({
         machineFullValue: { ...machineFullValue, ConsumableCost: machineFullValue.ConsumableCost }
       })
-      this.props.change('AnnualConsumableAmount', checkForDecimalAndNull(ConsumableCost, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('AnnualConsumableAmount', checkForDecimalAndNull(ConsumableCost, initialConfiguration?.NoOfDecimalForPrice))
     }
 
     if (IsInsuranceFixed) {
@@ -1262,7 +1490,7 @@ class AddMoreDetails extends Component {
       this.setState({
         machineFullValue: { ...machineFullValue, InsuranceCost: machineFullValue.InsuranceCost }
       })
-      this.props.change('AnnualInsuranceAmount', checkForDecimalAndNull(InsuranceCost, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('AnnualInsuranceAmount', checkForDecimalAndNull(InsuranceCost, initialConfiguration?.NoOfDecimalForPrice))
     }
 
   }
@@ -1306,8 +1534,8 @@ class AddMoreDetails extends Component {
       }
     })
 
-    this.props.change('AnnualAreaCost', checkForDecimalAndNull(annualAreaCost, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('TotalMachineCostPerAnnum', checkForDecimalAndNull(TotalMachineCostPerAnnum, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('AnnualAreaCost', checkForDecimalAndNull(annualAreaCost, initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('TotalMachineCostPerAnnum', checkForDecimalAndNull(TotalMachineCostPerAnnum, initialConfiguration?.NoOfDecimalForPrice))
   }
 
   /**
@@ -1325,7 +1553,7 @@ class AddMoreDetails extends Component {
       const ConsumptionPerYear = checkForNull(fieldsObj?.ConsumptionPerYear)
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
-      this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(fieldsObj.FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(fieldsObj.FuelCostPerUnit * ConsumptionPerYear, initialConfiguration?.NoOfDecimalForPrice))
     } else {
 
       // if (IsUsesSolarPower) {
@@ -1341,8 +1569,8 @@ class AddMoreDetails extends Component {
       const totalPowerCostPrYer = totalPowerCostPerHour * NumberOfWorkingHoursPerYear
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
       this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer, TotalPowerCostPerHour: totalPowerCostPerHour } })
-      this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration.NoOfDecimalForPrice))
-      this.props.change('TotalPowerCostPerHour', checkForDecimalAndNull(totalPowerCostPerHour, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration?.NoOfDecimalForPrice))
+      this.props.change('TotalPowerCostPerHour', checkForDecimalAndNull(totalPowerCostPerHour, initialConfiguration?.NoOfDecimalForPrice))
       // }
     }
   }
@@ -1396,7 +1624,7 @@ class AddMoreDetails extends Component {
     }
     this.setState({ machineRate: MachineRate })
     this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
-    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice) ? checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice) : '')
+    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration?.NoOfDecimalForPrice) ? checkForDecimalAndNull(MachineRate, initialConfiguration?.NoOfDecimalForPrice) : '')
   }
 
   /**
@@ -1639,7 +1867,9 @@ class AddMoreDetails extends Component {
 
       const NumberOfWorkingHoursPerYear = checkForDecimalAndNull(fieldsObj?.NumberOfWorkingHoursPerYear)
       const TotalMachineCostPerAnnum = checkForDecimalAndNull(fieldsObj?.TotalMachineCostPerAnnum)
-
+      // const MachineRate = fieldsObj.MachineRate
+      const MachineRateConversion = fieldsObj?.MachineRateConversion
+      const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion ?? fieldsObj.MachineRate
       // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
       if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
         Toaster.warning('Machine Rate cannot be zero or negative')
@@ -1666,12 +1896,17 @@ class AddMoreDetails extends Component {
         OutputPerHours: OutputPerHours,
         OutputPerYear: OutputPerYear,
         MachineRate: MachineRate,
+        MachineRateConversion: MachineRateConversion,
+        MachineRateLocalConversion: MachineRateLocalConversion,
       })
 
       this.setState({ IsFinancialDataChanged: true })
       if (tempArray?.length > 0) {
+
         this.setState({ disableAllForm: true })
       } else {
+
+
         this.setState({ disableAllForm: false })
 
       }
@@ -1680,17 +1915,23 @@ class AddMoreDetails extends Component {
         processGrid: tempArray,
         processName: [],
         UOM: isProcessGroup ? UOM : [],
-        lockUOMAndRate: isProcessGroup
+        lockUOMAndRate: isProcessGroup,
+        disableEffectiveDate: true
       }, () => {
-        this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0)
-        this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
-        this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
+        this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0);
+        this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0);
+        this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration?.NoOfDecimalForPrice) : '');
+        this.props.change("MachineRateLocalConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateLocalConversion : '');
+        this.props.change("MachineRateConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateConversion : '');
       });
       if (!getConfigurationKey().IsMachineProcessGroup) {
         this.setState({ machineRate: "" })
       }
       this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false } }) // RESETING THE STATE MACHINERATE
     }, 200);
+    this.props.change("MachineRateLocalConversion", '')
+    this.props.change("MachineRateConversion", '')
+    this.props.change("MachineRate", '')
   }
 
   /**
@@ -1700,7 +1941,8 @@ class AddMoreDetails extends Component {
   updateProcessGrid = () => {
     const { processName, UOM, processGrid, processGridEditIndex } = this.state;
     const { fieldsObj } = this.props
-
+    const MachineRateConversion = fieldsObj?.MachineRateConversion
+    const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion ?? fieldsObj.MachineRate
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
     let skipEditedItem = processGrid.filter((el, i) => {
       if (i === processGridEditIndex) return false;
@@ -1767,6 +2009,8 @@ class AddMoreDetails extends Component {
       UnitOfMeasurement: UOM.label,
       UnitOfMeasurementId: UOM.value,
       MachineRate: MachineRate,
+      MachineRateConversion: MachineRateConversion,
+      MachineRateLocalConversion: MachineRateLocalConversion,
     }
 
     tempArray = Object.assign([...processGrid], { [processGridEditIndex]: tempData })
@@ -1783,7 +2027,7 @@ class AddMoreDetails extends Component {
       machineRate: ""
     }, () => {
 
-      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
+      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration?.NoOfDecimalForPrice) : '')
     });
 
   };
@@ -1795,16 +2039,19 @@ class AddMoreDetails extends Component {
   resetProcessGridData = () => {
     const { isProcessGroup, UOM } = this.state
     const { fieldsObj } = this.props;
-
+    const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion ?? fieldsObj.MachineRate
+    const MachineRateConversion = fieldsObj?.MachineRateConversion
     this.setState({
       processName: [],
       UOM: isProcessGroup && this.state.processGrid.length !== 0 ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
     }, () => {
-      this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0)
-      this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
+      this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0);
+      this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0);
+      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration?.NoOfDecimalForPrice) : '');
+      this.props.change("MachineRateLocalConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateLocalConversion : '');
+      this.props.change("MachineRateConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateConversion : '');
     });
   };
 
@@ -1825,7 +2072,9 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', tempData.OutputPerHours)
       this.props.change('OutputPerYear', tempData.OutputPerYear)
-      this.props.change('MachineRate', checkForDecimalAndNull(tempData.MachineRate, getConfigurationKey().NoOfDecimalForPrice))
+      this.props.change('MachineRate', checkForDecimalAndNull(tempData.MachineRate, getConfigurationKey().NoOfDecimalForPrice),
+        this.props.change("MachineRateLocalConversion", tempData?.MachineRateLocalConversion),
+        this.props.change("MachineRateConversion", tempData?.MachineRateConversion))
     })
   }
 
@@ -1857,6 +2106,9 @@ class AddMoreDetails extends Component {
     } else {
       this.setState({ lockUOMAndRate: isProcessGroup })
     }
+    if (tempData && tempData?.length === 0) {
+      this.setState({ disableEffectiveDate: false })
+    }
     this.setState({
       processGrid: tempData,
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
@@ -1871,14 +2123,27 @@ class AddMoreDetails extends Component {
   }
 
 
-  handleCalculation = () => {
-    const { fieldsObj } = this.props
+  handleCalculation = (ratebaseCurrency) => {
+    const { fieldsObj, initialConfiguration } = this.props
     const NoOfPieces = checkForNull(fieldsObj.NumberOfPieces)
     const BasicRate = checkForNull(fieldsObj.BasicRate)
     const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
     this.props.change('NetLandedCost', NetLandedCost)
+    const { plantCurrency, settlementCurrency, entryType } = this.state
+    if (entryType) {
+      const MachineRateLocalConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
+      this.props.change('MachineRateLocalConversion', checkForNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice));
+      const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, settlementCurrency)
+      this.props.change('MachineRateConversion', checkForNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
+    } else {
+      const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
+      this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
+    }
   }
-
+  HandleMachineRateSelectedCurrency = (e) => {
+    const value = e.target.value;
+    this.setState({ currency: value })
+  }
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -1999,6 +2264,8 @@ class AddMoreDetails extends Component {
       data.isViewFlag = true
       data.Id = this.state.MachineID ? this.state.MachineID : editDetails.Id
       data.isEditFlag = true
+      data.hidePlant = this.state?.hidePlantCurrency
+
       this.props.hideMoreDetailsForm({}, data)
     } else {
 
@@ -2021,6 +2288,42 @@ class AddMoreDetails extends Component {
   closePopUp = () => {
     this.setState({ showPopup: false })
   }
+  handleCurrency = (newValue) => {
+    const { fieldsObj } = this.props;
+    const { costingTypeId, selectedCustomer, selectedVedor, effectiveDate, ExchangeSource, currency, entryType, selectedPlants } = this.state;
+
+    if (newValue && newValue !== '') {
+
+      this.setState({ currency: newValue }, () => {
+        this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, newValue, entryType, ExchangeSource, effectiveDate, selectedCustomer, selectedVedor, selectedPlants)
+          .then(result => {
+            if (result) {
+              this.setState({ ...result, showWarning: result?.showWarning, showPlantWarning: result.showPlantWarning }, () => {
+                this.props.editDetails?.handleCalculation(this.fieldsObj?.MachineRate);
+              });
+            }
+          });
+
+      });
+    } else {
+      this.setState({ currency: [] })
+    }
+  };
+  handleMachineDetailsAPI = (data, isUpdate = false) => {
+    const apiCall = isUpdate ? this.props.updateMachineDetails : this.props.createMachineDetails;
+    apiCall(data, (res) => {
+      if (res?.data?.Result) {
+        data.isViewFlag = true;
+        data.hidePlant = this.state?.hidePlantCurrency
+        this.props.hideMoreDetailsForm(data);
+        Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+        if (!isUpdate) {
+          this.cancel();
+        }
+      }
+    });
+  }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -2038,14 +2341,16 @@ class AddMoreDetails extends Component {
     }
 
     const { editDetails, fieldsObj } = this.props;
-    const { DataToChange, IsIncludeMachineRateDepreciation } = this.state
+    const { DataToChange, IsIncludeMachineRateDepreciation, entryType } = this.state
+
 
     const userDetail = userDetails()
 
     let technologyArray = selectedTechnology && [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }]
 
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
-
+    let plantArray = Array?.isArray(selectedPlants) ? selectedPlants?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+      selectedPlants ? [{ PlantId: selectedPlants?.value, PlantName: selectedPlants?.label, PlantCode: '' }] : [];
     let requestData = {
       IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
       CostingTypeId: this.state.CostingTypeId,
@@ -2118,7 +2423,7 @@ class AddMoreDetails extends Component {
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-      Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+      Plant: plantArray ? plantArray : [],
       selectedPlants: selectedPlants,
       DestinationPlantId: '',
       Attachements: updatedFiles,
@@ -2144,11 +2449,21 @@ class AddMoreDetails extends Component {
       MachineFloorCRMHead: crmHeads.MachineFloorCRMHead ? crmHeads.MachineFloorCRMHead : '',
       OtherYearlyCRMHead: crmHeads.OtherYearlyCRMHead ? crmHeads.OtherYearlyCRMHead : '',
       PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
-      FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : ''
-      // LabourDetailId: labourType.value
+      FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : '',
+      // LabourDetailId: labourType.value,
+      MachineEntryType: entryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+      ExchangeSource: this.state.ExchangeSource || null,
+      LocalCurrencyId: entryType ? this.state?.plantCurrencyID : null,
+      LocalCurrency: entryType ? this.props?.fieldsObj?.plantCurrency : null,
+      ExchangeRate: entryType ? this.state?.settlementCurrency : this.state?.plantCurrency,
+      LocalCurrencyExchangeRate: entryType ? this.state?.plantCurrency : null,
+      CurrencyId: entryType ? this.state.currency?.value : this.state?.plantCurrencyID,
+      Currency: entryType ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+      ExchangeRateId: entryType ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+      LocalExchangeRateId: entryType ? this.state?.plantExchangeRateId : null
     }
 
-    if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
+    if (isEditFlag && (this.state.isFinalApprovar || CheckApprovalApplicableMaster(MACHINE_MASTER_ID) !== true)) {               //editDetails.isIncompleteMachine &&
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
 
@@ -2157,14 +2472,8 @@ class AddMoreDetails extends Component {
         if (this.state.isDateChange) {
           let MachineData = { ...requestData, MachineId: editDetails.Id }
           this.props.reset()
-          this.props.updateMachineDetails(MachineData, (res) => {
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-              MachineData.isViewFlag = true
-              this.props.hideMoreDetailsForm(MachineData)
-              //this.cancel();
-            }
-          })         //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+          this.handleMachineDetailsAPI(MachineData, true)
+          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
         }
         else {
           this.setState({ setDisable: false })
@@ -2181,14 +2490,7 @@ class AddMoreDetails extends Component {
       } else {
         let MachineData = { ...requestData, MachineId: editDetails.Id }
         this.props.reset()
-        this.props.updateMachineDetails(MachineData, (res) => {
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-            MachineData.isViewFlag = true
-            this.props.hideMoreDetailsForm(MachineData)
-            //this.cancel();
-          }
-        })
+        this.handleMachineDetailsAPI(MachineData, true)
       }
 
     }
@@ -2199,6 +2501,7 @@ class AddMoreDetails extends Component {
 
     //       }
     // } 
+
     else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -2277,7 +2580,7 @@ class AddMoreDetails extends Component {
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+        Plant: plantArray ?? [],
         selectedPlants: selectedPlants,
         DestinationPlantId: '',
         Attachements: files,
@@ -2304,7 +2607,17 @@ class AddMoreDetails extends Component {
         MachineFloorCRMHead: crmHeads.MachineFloorCRMHead ? crmHeads.MachineFloorCRMHead : '',
         OtherYearlyCRMHead: crmHeads.OtherYearlyCRMHead ? crmHeads.OtherYearlyCRMHead : '',
         PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
-        FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : ''
+        FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : '',
+        MachineEntryType: entryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+        ExchangeSource: this.state.ExchangeSource || null,
+        LocalCurrencyId: entryType ? this.state?.plantCurrencyID : null,
+        LocalCurrency: entryType ? this.props?.fieldsObj?.plantCurrency : null,
+        ExchangeRate: entryType ? this.state?.settlementCurrency : this.state?.plantCurrency,
+        LocalCurrencyExchangeRate: entryType ? this.state?.plantCurrency : null,
+        CurrencyId: entryType ? this.state.currency?.value : this.state?.plantCurrencyID,
+        Currency: entryType ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+        ExchangeRateId: entryType ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+        LocalExchangeRateId: entryType ? this.state?.plantExchangeRateId : null
       }
 
       let finalObj = {
@@ -2314,8 +2627,8 @@ class AddMoreDetails extends Component {
         MachineId: MachineID,
         IsVendor: false,
       }
-      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        if (IsFinancialDataChanged && isEditFlag) {
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && (!this.state.isFinalApprovar || !userDetails().Role === 'SuperAdmin')) {
+        if (IsFinancialDataChanged) {
 
           if (this.state.isDateChange) {
             this.setState({ approveDrawer: true, approvalObj: finalObj, formDataState: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
@@ -2324,30 +2637,23 @@ class AddMoreDetails extends Component {
             this.setState({ setDisable: false })
             Toaster.warning('Please update the effective date')
           }
-        } else if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
-          && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
-          && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
-          && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
-        ) {
-
-          Toaster.warning('Please change data to send Machine for approval')
-          return false
+        }
+        if (isEditFlag) {
+          if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
+            && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+            && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
+            && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
+          ) {
+            Toaster.warning('Please change data to send Machine for approval')
+            return false
+          }
         } else {
-
           this.setState({ approveDrawer: true, approvalObj: finalObj, formDataState: formData })
         }
 
       } else {
-
         this.props.reset()
-        this.props.createMachineDetails(formData, (res) => {
-          if (res.data.Result) {
-            formData.isViewFlag = true
-            this.props.hideMoreDetailsForm(formData)
-            Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-            this.cancel()
-          }
-        });
+        this.handleMachineDetailsAPI(formData, false)
       }
 
     }
@@ -2429,7 +2735,23 @@ class AddMoreDetails extends Component {
 
     this.setState({ isVariableCostOpen: !isVariableCostOpen })
   }
+  handleExchangeRateSource = (newValue) => {
+    const { fieldsObj } = this.props
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, entryType, selectedPlants, selectedCustomer, selectedVedor } = this.state;
+    this.setState({ ExchangeSource: newValue }
+      , () => {
+        this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, newValue, effectiveDate, selectedCustomer, selectedVedor, selectedPlants)
+          .then(result => {
+            if (result) {
+              this.setState({ ...result, showWarning: result.showWarning, showPlantWarning: result.showPlantWarning }, () => {
+                this.handleCalculation(this.fieldsObj?.MachineRate);
+              });
+            }
+          });
+      }
 
+    );
+  };
   /**
   * @method powerToggle
   * @description POWER OPEN  AND CLOSE
@@ -2444,14 +2766,21 @@ class AddMoreDetails extends Component {
       return false;
     }
     if (!isPowerOpen) {
-
+      const baseCurrency = reactLocalStorage.getObject("baseCurrency")
+      const data = this.props.data ?? {};
+      const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
       setTimeout(() => {
-        let obj = {}
-        obj.plantId = this.state.selectedPlants?.value
-        obj.effectiveDate = effectiveDate
-        obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
-        obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
-        obj.customerId = this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : ''
+        let obj = {
+          plantId: PlantId,
+          effectiveDate: effectiveDate,
+          costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
+          vendorId: this.state.vendorId ? this.state.vendorId : '',
+          customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
+          toCurrency: fieldsObj?.plantCurrency,
+          ExchangeSource: data?.ExchangeRateSourceName || "",
+          entryType: data?.entryType === "Import" ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+
+        }
         this.props.getPowerCostUnit(obj, res => {
           let Data = res?.data?.DynamicData;
           if (res && res.data && res.data.Message !== '') {
@@ -2461,7 +2790,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
               powerIdFromAPI: Data?.PowerId
             })
-            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice))
           } else {
             //  if(IsUsesSolarPower)
             machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data?.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
@@ -2469,7 +2798,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
               powerIdFromAPI: Data?.PowerId
             })
-            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration?.NoOfDecimalForPrice))
           }
         })
       }, 1000);
@@ -2546,10 +2875,36 @@ class AddMoreDetails extends Component {
   * @description for machine rate label with dynamic uom change
   */
 
-  DisplayMachineRateLabel = () => {
-    return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
+  // DisplayMachineRateLabel = () => {
+  //   return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
+  // }
+  DisplayMachineRateBaseCurrencyLabel = () => {
+    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
   }
+  DisplayMachineRateLabel = () => {
+    const { data } = this.props;
+    const { UOM } = this.state;
+    let currencyLabel = '';
 
+    if (data?.entryType === 'Domestic') {
+      currencyLabel = this?.props?.fieldsObj?.plantCurrency || 'Currency';
+    } else if (data?.entryType === 'Import') {
+      currencyLabel = this?.state?.currency?.label || 'Currency';
+    } else {
+      currencyLabel = 'Currency';
+    }
+
+    return <>Machine Rate/{(UOM && UOM.length !== 0) ? displayUOM(UOM?.label) : "UOM"} ({currencyLabel})</>
+  }
+  DisplayMachineRatePlantCurrencyLabel = () => {
+    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Currency"})</>
+  }
+  DisplayMachineCostLabel = () => {
+    const { UOM, entryType } = this.state;
+    let currencyLabel = !entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+      (this?.state?.currency?.label || 'Currency')
+    return <>Machine Cost ({currencyLabel})</>
+  }
   handleChangeIncludeMachineRateDepreciation = (value) => {
     this.setState({ IsIncludeMachineRateDepreciation: !this.state.IsIncludeMachineRateDepreciation })
     this.handleProcessCalculation()
@@ -2637,7 +2992,53 @@ class AddMoreDetails extends Component {
         return "Invalid UOM";
     }
   }
+  ImportToggle = () => {
+    this.setState({ powerIsImport: !this.state.powerIsImport }, () => {
+      if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
+        const PlantId = Array.isArray(this.state.selectedPlants) ? this.state.selectedPlants[0]?.value : this.state.selectedPlants?.value;
+        let obj = {
+          plantId: PlantId,
+          vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
+          customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
+          costingTypeId: this.state.CostingTypeId || null,
+          entryType: this.state.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+          countryId: this.state.countryId || null,
+          stateId: this.state.stateId || null,
+          cityId: this.state.cityId || null
+        }
+        this.props.getFuelByPlant(obj, () => { })
+        //this.props.getFuelList(obj, () => { })
+      }
+      // this.props.change("MachineRate", "")
+      // this.props.change("MachineRateLocalConversion", "")
+      // this.props.change("MachineRateConversion", "")
+      // this.callExchangeRateAPI()
+    })
+  }
+  machineRateTitle = () => {
+    return {
+      tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+    };
+  };
+  getTooltipTextForCurrency = () => {
+    const { fieldsObj } = this.props
+    const { settlementCurrency, plantCurrency, currency } = this.state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = fieldsObj?.plantCurrency ?? 'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
 
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '-';
+    const settlementCurrencyRate = settlementCurrency ?? '-';
+
+    // Generate tooltip text based on the condition
+    return <>
+      {!this.state?.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+    </>;
+  };
 
   /**
    * @method render
@@ -2645,8 +3046,13 @@ class AddMoreDetails extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated, t, data } = this.props;
+
+
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, CostingTypePermission, disableSendForApproval, tourContainer, entryType } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
+
     return (
       <>
         {(isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -2671,6 +3077,28 @@ class AddMoreDetails extends Component {
                           />
                           }
                         </h2>
+                        <Row>
+                          <Col md="4" className="switch mt-3 mb15">
+                            <label className="switch-level">
+                              <div className="left-title">Domestic</div>
+                              <Switch
+                                //onChange={this.ImportToggle}
+                                checked={this.state.entryType}
+                                id="normal-switch"
+                                disabled={true}
+                                background="#4DC771"
+                                onColor="#4DC771"
+                                onHandleColor="#ffffff"
+                                offColor="#4DC771"
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                height={20}
+                                width={46}
+                              />
+                              <div className="right-title">Import</div>
+                            </label>
+                          </Col>
+                        </Row>
                       </div >
                     </div >
                   </div >}
@@ -2681,7 +3109,48 @@ class AddMoreDetails extends Component {
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
+                      <Row>
+                        <Col md="12">
+                          {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id="AddMachineRate_zeroBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <input
+                              type="radio"
+                              name="costingHead"
+                              checked={
+                                this?.state?.costingTypeId === ZBCTypeId ? true : false
+                              }
+                              onClick={() =>
+                                this.onPressVendor(ZBCTypeId)
+                              }
+                              disabled={true}
+                            />{" "}
+                            <span>Zero Based</span>
+                          </Label>}
+                          {reactLocalStorage.getObject('CostingTypePermission').vbc && <Label id="AddMachineRate_vendorBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <input
+                              type="radio"
+                              name="costingHead"
+                              checked={
+                                this?.state?.costingTypeId === VBCTypeId ? true : false
+                              }
 
+                              disabled={true}
+                            />{" "}
+                            <span>{VendorLabel} Based</span>
+                          </Label>}
+                          {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddMachineRate_customerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            <input
+                              type="radio"
+                              name="costingHead"
+                              checked={
+                                this?.state?.costingTypeId === CBCTypeId ? true : false
+                              }
+
+                              disabled={true}
+                            />{" "}
+                            <span>Customer Based</span>
+                          </Label>}
+                        </Col>
+                      </Row >
                       <Row>
                         <Col md="12">
                           <HeaderTitle
@@ -2730,16 +3199,32 @@ class AddMoreDetails extends Component {
 
                           />
                         </Col>
+                        {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                          <Col md="3">
+                            <Field
+                              label="Exchange Rate Source"
+                              name="ExchangeSource"
+                              placeholder="Select"
+                              options={this.renderListing("ExchangeSource")}
+                              handleChangeDescription={this.handleExchangeRateSource}
+                              component={searchableSelect}
+                              valueDescription={this.state?.ExchangeSource}
+
+                              className="multiselect-with-border"
+                              disabled={isEditFlag || isViewFlag || isViewMode}
+                            />
+                          </Col>
+                        )}
                         <Col md="3">
                           <Field
                             label={`Machine No.`}
                             name={"MachineNumber"}
                             type="text"
-                            placeholder={(isEditFlag || initialConfiguration.IsAutoGeneratedMachineNumber) ? '-' : 'Enter'}
-                            validate={initialConfiguration.IsAutoGeneratedMachineNumber ? [] : [required]}
+                            placeholder={(isEditFlag || initialConfiguration?.IsAutoGeneratedMachineNumber) ? '-' : 'Enter'}
+                            validate={initialConfiguration?.IsAutoGeneratedMachineNumber ? [] : [required]}
                             component={renderText}
-                            required={initialConfiguration.IsAutoGeneratedMachineNumber ? false : true}
-                            disabled={(isEditFlag || initialConfiguration.IsAutoGeneratedMachineNumber) ? true : false}
+                            required={initialConfiguration?.IsAutoGeneratedMachineNumber ? false : true}
+                            disabled={(isEditFlag || initialConfiguration?.IsAutoGeneratedMachineNumber) ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -2908,7 +3393,7 @@ class AddMoreDetails extends Component {
 
                         <Col md="3">
                           <Field
-                            label={`Machine Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                            label={this.DisplayMachineCostLabel()}
                             name={"MachineCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -2922,7 +3407,8 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Accessories Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                            label={`Accessories Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                              (this?.state?.currency?.label || 'Currency')})`}
                             name={"AccessoriesCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -2936,7 +3422,8 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Installation Charges (${reactLocalStorage.getObject("baseCurrency")})`}
+                            label={`Installation Charges (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                              (this?.state?.currency?.label || 'Currency')})`}
                             name={"InstallationCharges"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -2950,7 +3437,8 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3"> <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = (Machine Cost + Accessories Cost + Installation Charges)"} />
                           <Field
-                            label={`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                            label={`Total Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                              (this?.state?.currency?.label || 'Currency')})`}
                             name={this.props.fieldsObj.TotalCost === 0 ? '' : "TotalCost"}
                             type="text"
                             id="total-cost"
@@ -2963,6 +3451,45 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
+                        <Col Col md="3" className='p-relative'>
+                          {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.entryType && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          <Field
+                            label="Plant Currency"
+                            name="plantCurrency"
+                            type="text"
+                            placeholder="-"
+                            component={renderText}
+                            disabled={true}
+                            className=" "
+                            customClassName="withBorder mb-1"
+                          />
+                          {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                        </Col>
+
+                        {this.state?.entryType && <Col md="3">
+                          <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
+                          <Field
+                            name="Currency"
+                            type="text"
+                            label="Currency"
+                            component={searchableSelect}
+                            id="currency"
+                            placeholder={isEditFlag ? '-' : "Select"}
+                            options={this.renderListing("currency")}
+                            validate={
+                              this.state.currency == null ||
+                                this.state.currency.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleCurrency}
+                            valueDescription={this.state.currency}
+                            disabled={isEditFlag ? true : false || isViewMode || isViewFlag}
+                            customClassName="mb-1"
+                          >{this.state?.currency?.label && this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                          </Field>
+                        </Col>}
                         <Col md="3">
                           <div className="form-group">
                             <div className="inputbox date-section">
@@ -2982,7 +3509,7 @@ class AddMoreDetails extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged}
+                                disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged || this.state.disableEffectiveDate}
                               />
                             </div>
                           </div>
@@ -3065,7 +3592,7 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="EquityPercentage" tooltipText={"Equity (Owned) (%) = 100 - (Loan %)"} />
+                              <TooltipCustom disabledIcon={true} width="350px" tooltipClass={'machine-tooltip'} id="EquityPercentage" tooltipText={"Equity (Owned) (%) = 100 - (Loan %)"} />
                               <Field
                                 label={`Equity (Owned) (%)`}
                                 name={"EquityPercentage"}
@@ -3111,7 +3638,7 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="LoanValue" tooltipText={"Loan Value = (Loan %) / 100 * Total Cost"} />
+                              <TooltipCustom disabledIcon={true} width="350px" tooltipClass={'machine-tooltip'} id="LoanValue" tooltipText={"Loan Value = (Loan %) / 100 * Total Cost"} />
                               <Field
                                 label={`Loan Value`}
                                 name={this.props.fieldsObj.LoanValue === 0 ? '-' : "LoanValue"}
@@ -3127,7 +3654,7 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="EquityValue" tooltipText={"Equity Value = (Equity %) / 100 * Total Cost"} />
+                              <TooltipCustom disabledIcon={true} width="350px" tooltipClass={'machine-tooltip'} id="EquityValue" tooltipText={"Equity Value = (Equity %) / 100 * Total Cost"} />
                               <Field
                                 label={`Equity Value`}
                                 name={this.props.fieldsObj.EquityValue === 0 ? '-' : "EquityValue"}
@@ -3145,7 +3672,7 @@ class AddMoreDetails extends Component {
 
 
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'250px'} tooltipText={"Interest Value = (Loan %) / 100 * Total Cost * (Rate of Interest %) / 100"} />
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'350px'} tooltipText={"Interest Value = (Loan %) / 100 * Total Cost * (Rate of Interest %) / 100"} />
                               <Field
                                 label={`Interest Value`}
                                 name={this.props.fieldsObj.RateOfInterestValue === 0 ? '-' : "RateOfInterestValue"}
@@ -3230,7 +3757,7 @@ class AddMoreDetails extends Component {
                                 name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[hashValidation, maxValue24]}
+                                validate={[hashValidation, positiveAndDecimalNumber, maxValue24]}
                                 component={renderText}
                                 required={false}
                                 disabled={disableAllForm}
@@ -3277,7 +3804,7 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'340px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hrs/Shift * No. of Working days/Annum * (Availability %) / 100'} />
+                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'350px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hrs/Shift * No. of Working days/Annum * (Availability %) / 100'} />
                               <Field
                                 label={`No. of Working Hrs/Annum`}
                                 name={this.props.fieldsObj.NumberOfWorkingHoursPerYear === 0 ? '-' : "NumberOfWorkingHoursPerYear"}
@@ -3392,7 +3919,8 @@ class AddMoreDetails extends Component {
                               </Col>}
                             <Col md="3">
                               <Field
-                                label={`Cost of Scrap (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Cost of Scrap (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"CastOfScrap"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3432,9 +3960,10 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'340px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
+                              <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'350px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
                               <Field
-                                label={`Depreciation Amount (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Depreciation Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.DepreciationAmount === 0 ? '-' : "DepreciationAmount"}
                                 type="text"
                                 id="DepreciationAmount"
@@ -3533,7 +4062,8 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               {this.state.IsAnnualMaintenanceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualMaintanceAmount" tooltipText={`Annual Maintenance Amount = ((Machine Cost + Accessories Cost) * Annual Maintenance Percentage / 100)`} />}
                               <Field
-                                label={`Annual Maintenance Amount (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Annual Maintenance Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"AnnualMaintanceAmount"}
                                 id="AnnualMaintanceAmount"
                                 type="text"
@@ -3601,7 +4131,8 @@ class AddMoreDetails extends Component {
                               {this.state.IsAnnualConsumableFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualConsumableAmount" tooltipText={`Annual Consumable Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
 
                               <Field
-                                label={`Annual Consumable Amount (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Annual Consumable Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"AnnualConsumableAmount"}
                                 id="AnnualConsumableAmount"
                                 type="text"
@@ -3669,7 +4200,8 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               {this.state.IsInsuranceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualInsuranceAmount" tooltipText={`Insurance Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
                               <Field
-                                label={`Insurance Amount (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Insurance Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"AnnualInsuranceAmount"}
                                 id="AnnualInsuranceAmount"
                                 type="text"
@@ -3743,10 +4275,11 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualAreaCost" tooltipText={`Annual Area Cost = Building Cost * Machine Floor Area`} />
+                              <TooltipCustom disabledIcon={true} width={"350px"} id="AnnualAreaCost" tooltipText={`Annual Area Cost = Building Cost * Machine Floor Area`} />
 
                               <Field
-                                label={`Annual Area Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Annual Area Cost  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.AnnualAreaCost === 0 ? '-' : "AnnualAreaCost"}
                                 type="text"
                                 id="AnnualAreaCost"
@@ -3777,7 +4310,8 @@ class AddMoreDetails extends Component {
 
                             <Col md="3">
                               <Field
-                                label={`Other Yearly Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Other Yearly Cost  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3790,10 +4324,11 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} width={"300px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost (${reactLocalStorage.getObject("baseCurrency")}) = Annual Maintenance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Consumable Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Insurance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Area Cost (${reactLocalStorage.getObject("baseCurrency")}) + Other Yearly Cost (${reactLocalStorage.getObject("baseCurrency")})`} />
+                              <TooltipCustom disabledIcon={true} width={"350px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost (${reactLocalStorage.getObject("baseCurrency")}) = Annual Maintenance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Consumable Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Insurance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Area Cost (${reactLocalStorage.getObject("baseCurrency")}) + Other Yearly Cost (${reactLocalStorage.getObject("baseCurrency")})`} />
 
                               <Field
-                                label={`Total Machine Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Total Machine Cost/Annum  (${!entryType ? (this.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.TotalMachineCostPerAnnum === 0 ? '-' : "TotalMachineCostPerAnnum"}
                                 type="text"
                                 id="TotalMachineCostPerAnnum"
@@ -3816,6 +4351,7 @@ class AddMoreDetails extends Component {
                           <HeaderTitle
                             title={'Power:'}
                             customClass={'Personal-Details'} />
+
                           {isPowerOpen && (
                             <div>
                               <Button
@@ -3830,12 +4366,36 @@ class AddMoreDetails extends Component {
                               />
                               }
                             </div>)}
+                          {/* {this.state?.entryType &&  */}<Row>
+                            <Col md="4" className="switch mt-4 mr-3">
+                              <label className="switch-level mb-0">
+                                <div className="left-title">Domestic</div>
+                                <Switch
+                                  onChange={this.ImportToggle}
+                                  checked={this.state.powerIsImport}
+                                  id="normal-switch"
+                                  disabled={data.isEditFlag || isViewFlag || disableAllForm ? true : false}
+                                  background="#4DC771"
+                                  onColor="#4DC771"
+                                  onHandleColor="#ffffff"
+                                  offColor="#4DC771"
+                                  uncheckedIcon={false}
+                                  checkedIcon={false}
+                                  height={20}
+                                  width={46}
+                                />
+                                <div className="right-title">Import</div>
+                              </label>
+                            </Col>
+                          </Row>
+                          {/* } */}
                         </Col>
                         <Col md="6">
                           <div className={'right-details text-right'}>
                             <button className="btn btn-small-primary-circle ml-1" onClick={this.powerToggle} type="button">{isPowerOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                           </div>
                         </Col>
+
                         {isPowerOpen && <div className="accordian-content row mx-0 w-100">
 
 
@@ -3860,6 +4420,8 @@ class AddMoreDetails extends Component {
                               <div className={'right-title'}>Yes</div>
                             </label>
                           </Col>
+                          {/* <TooltipCustom disabledIcon={true} width={"250px"} id="FuelPowerContainer" tooltipText={`Fuel data can only be fetched if the selected plant's country and city match.`} /> */}
+
                           {this.state.IsUsesFuel &&
                             <>
                               {getConfigurationKey().IsShowCRMHead && <Col md="3">
@@ -3922,7 +4484,7 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom disabledIcon={true} width={"300px"} id="TotalFuelCostPerYear" tooltipText={`Total Power Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}) = Fuel Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOMName}) * Consumption/Annum (${reactLocalStorage.getObject("baseCurrency")})`} />
+                                <TooltipCustom disabledIcon={true} width={"350px"} id="TotalFuelCostPerYear" tooltipText={`Total Power Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}) = Fuel Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOMName}) * Consumption/Annum (${reactLocalStorage.getObject("baseCurrency")})`} />
                                 <Field
                                   label={`Total Power Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                                   name={"TotalFuelCostPerYear"}
@@ -4020,10 +4582,11 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom disabledIcon={true} id="TotalPowerCostPerHour" width={"240px"} tooltipText={'Power Cost/Hour = (Efficiency %) * Power Rating * Cost/Unit'} />
+                                <TooltipCustom disabledIcon={true} id="TotalPowerCostPerHour" width={"350px"} tooltipText={'Power Cost/Hour = (Efficiency %) * Power Rating * Cost/Unit'} />
 
                                 <Field
-                                  label={`Power Cost/Hour (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  label={`Power Cost/Hour  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                    (this?.state?.currency?.label || 'Currency')})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerHour === 0 ? '-' : "TotalPowerCostPerHour"}
                                   type="text"
                                   placeholder={'-'}
@@ -4038,7 +4601,8 @@ class AddMoreDetails extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Power Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  label={`Power Cost/Annum  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                    (this?.state?.currency?.label || 'Currency')})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
@@ -4119,7 +4683,8 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Cost/Annum  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"LabourCostPerAnnum"}
                                 type="text"
                                 placeholder={'-'}
@@ -4150,9 +4715,10 @@ class AddMoreDetails extends Component {
                               {this.state.errorObj.peopleCount && (this.props.fieldsObj.NumberOfLabour === undefined || Number(this.props.fieldsObj.NumberOfLabour) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                             </Col>
                             <Col md="2">
-                              <TooltipCustom disabledIcon={true} id="LabourCost" tooltipText={`Total Cost = Cost/Annum * No. of People`} />
+                              <TooltipCustom disabledIcon={true} width="350px" id="LabourCost" tooltipText={`Total Cost = Cost/Annum * No. of People`} />
                               <Field
-                                label={`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Total Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.LabourCost === 0 ? '-' : "LabourCost"}
                                 type="text"
                                 id="LabourCost"
@@ -4170,7 +4736,7 @@ class AddMoreDetails extends Component {
                                   <button
                                     type="button"
                                     disabled={disableAllForm}
-                                    className={'btn btn-primary mt30 pull-left mr5'}
+                                    className={'btn btn-primary mt30 pull-left mr10'}
                                     onClick={this.updateLabourGrid}
                                   >Update</button>
 
@@ -4186,7 +4752,7 @@ class AddMoreDetails extends Component {
                                   <button id="AddMoreDetails_Labour_Add"
                                     type="button"
                                     disabled={disableAllForm}
-                                    className={'user-btn mt30 pull-left mr5'}
+                                    className={'user-btn mt30 pull-left mr15'}
                                     onClick={this.labourTableHandler}>
                                     <div className={'plus'}></div>ADD</button>
                                   <button
@@ -4358,59 +4924,103 @@ class AddMoreDetails extends Component {
 
                             } */}
 
-                            <Col className="d-flex col-auto UOM-label-container p-relative">
+
+                            <Col md="7" className="UOM-label-container p-relative">
                               {this.state.UOM.type === TIME && <TooltipCustom disabledIcon={true} id="machineRate" tooltipClass={'machine-rate'} tooltipText={this.machineRateTooltip()} />}
-                              <div className="machine-rate-filed pr-3">
-                                <Field
-                                  label={this.DisplayMachineRateLabel()}
-                                  name={"MachineRate"}
-                                  type="text"
-                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                                  component={renderText}
-                                  // onChange={this.handleMachineRate}
-                                  required={true}
-                                  disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                  id="machineRate"
-                                  placeholder={this.state.UOM.type === TIME ? '-' : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : "Enter"}
-                                />
-                                {this.state.errorObj.processMachineRate && (this.props.fieldsObj.MachineRate === undefined || this.state.UOM.type === TIME ? true : Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                              <Row>
+                                <Col md="4">
+                                  <div className="machine-rate-filed pr-3">
+                                    <Field
+                                      label={this.DisplayMachineRateLabel()}
+                                      name={"MachineRate"}
+                                      type="text"
+                                      validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                                      component={renderText}
+                                      // onChange={this.handleMachineRate}
+                                      required={true}
+                                      disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
+                                      className=" "
+                                      customClassName=" withBorder"
+                                      id="machineRate"
+                                      placeholder={this.state.UOM.type === TIME ? '-' : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : "Enter"}
+                                    />
+                                    {this.state.errorObj.processMachineRate && (this.props.fieldsObj.MachineRate === undefined || this.state.UOM.type === TIME ? true : Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
 
-                              </div>
-                              <div className="btn-mr-rate pt-2 pr-0 col-auto">
-                                {this.state.isEditIndex ?
-                                  <>
-                                    <button
-                                      type="button"
-                                      disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
-                                      className={'btn btn-primary pull-left mr5'}
-                                      onClick={this.updateProcessGrid}
-                                    >Update</button>
+                                  </div>
+                                </Col>
+                                {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <Col md="4" className='UOM-label-container p-relative'>
+                                  <TooltipCustom disabledIcon={true} width="350px" id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
+                                  <Field
+                                    label={this.DisplayMachineRatePlantCurrencyLabel()}
+                                    name={"MachineRateLocalConversion"}
+                                    type="text"
+                                    id="machine-rate-plant"
+                                    placeholder={isViewMode || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
+                                    validate={[number, maxLength10, decimalLengthsix, hashValidation]}
+                                    component={renderText}
+                                    onChange={this.handleMachineRatePlantCurrency}
+                                    required={true}
+                                    disabled={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                  {this.state.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                                </Col>}
+                                {(!(!this?.state?.entryType && this?.state?.hidePlantCurrency)) && <Col md="4" className='UOM-label-container p-relative'>
+                                  <TooltipCustom disabledIcon={true} width="350px" id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
+                                  <Field
+                                    label={this.DisplayMachineRateBaseCurrencyLabel()}
+                                    name={"MachineRateConversion"}
+                                    id="machine-rate"
+                                    type="text"
+                                    placeholder={isViewMode || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
+                                    validate={[number, maxLength10, decimalLengthsix, hashValidation]}
+                                    component={renderText}
+                                    onChange={this.handleMachineRateBasicCurrency}
+                                    required={true}
+                                    disabled={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                  {this.state?.errorObj?.MachineRateConversion && (this.props?.fieldsObj?.MachineRateConversion === undefined || Number(this.props?.fieldsObj?.MachineRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                                </Col>}
+                                <Col md="4">
+                                  <div className="btn-mr-rate pt-2 pr-0 col-auto">
+                                    {this.state.isEditIndex ?
+                                      <>
+                                        <button
+                                          type="button"
+                                          disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
+                                          className={'btn btn-primary pull-left mr5'}
+                                          onClick={this.updateProcessGrid}
+                                        >Update</button>
 
-                                    <button
-                                      type="button"
-                                      disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
-                                      className={'reset-btn pull-left'}
-                                      onClick={this.resetProcessGridData}
-                                    >Cancel</button>
-                                  </>
-                                  :
-                                  <>
-                                    <button id="AddMoreDetails_Process_Add"
-                                      type="button"
-                                      className={'user-btn pull-left'}
-                                      disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
-                                      onClick={this.processTableHandler}>
-                                      <div className={'plus'}></div>ADD</button>
-                                    <button
-                                      type="button"
-                                      disabled={this.state.isViewMode}
-                                      className={'reset-btn pull-left ml5'}
-                                      onClick={this.resetProcessGridData}
-                                    >Reset</button> </>}
-                              </div>
+                                        <button
+                                          type="button"
+                                          disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
+                                          className={'reset-btn pull-left'}
+                                          onClick={this.resetProcessGridData}
+                                        >Cancel</button>
+                                      </>
+                                      :
+                                      <>
+                                        <button id="AddMoreDetails_Process_Add"
+                                          type="button"
+                                          className={'user-btn pull-left mr10'}
+                                          disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
+                                          onClick={this.processTableHandler}>
+                                          <div className={'plus'}></div>ADD</button>
+                                        <button
+                                          type="button"
+                                          disabled={this.state.isViewMode}
+                                          className={'reset-btn pull-left ml5'}
+                                          onClick={this.resetProcessGridData}
+                                        >Reset</button> </>
+                                    }
+                                  </div></Col >
+                              </Row >
                             </Col >
+
                             <Col md="12">
                               <Table className="table border" size="sm" >
                                 <thead>
@@ -4419,7 +5029,9 @@ class AddMoreDetails extends Component {
                                     <th>{`UOM`}</th>
                                     {/* <th>{`Output/Hr`}</th>     COMMENTED FOR NOW MAY BE USED LATER
                                     <th>{`Output/Annum`}</th> */}
-                                    <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                    <th>{`Machine Rate (${this.state.entryType && this.state?.currency?.label !== undefined ? this.state?.currency.label : this.state?.isImport ? "Currency" : this.props.fieldsObj?.plantCurrency ? this.props.fieldsObj?.plantCurrency : "Currency"})`}</th>
+                                    {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <th>{`Machine Rate (${this.props.fieldsObj?.plantCurrency ? this.props.fieldsObj?.plantCurrency : "Currency"})`}</th>}
+                                    {(!(!this?.state?.entryType && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                     <th>{`Action`}</th>
                                   </tr>
                                 </thead>
@@ -4432,8 +5044,10 @@ class AddMoreDetails extends Component {
                                           <td>{item.processName}</td>
                                           <td className='UOM-label-container'>{displayUOM(item.UnitOfMeasurement)}</td>
                                           {/* <td>{item.OutputPerHours}</td>    COMMENTED FOR NOW MAY BE USED LATER
-                                          <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td> */}
-                                          <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                          <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration?.NoOfDecimalForInputOutput)}</td> */}
+                                          <td>{checkForDecimalAndNull(item?.MachineRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                          {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <td>{checkForDecimalAndNull(item?.MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                          {(!(!this?.state?.entryType && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <td>{checkForDecimalAndNull(item?.MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
                                           <td>
                                             <button title='Edit' className="Edit mr-2" type={'button'} disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated) || UniqueProcessId?.includes(item.ProcessId)} onClick={() => this.editItemDetails(index)} />
                                             <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(index) || (isEditFlag && isMachineAssociated)} disabled={UniqueProcessId?.includes(item.ProcessId) || this.state.isViewMode} />
@@ -4492,7 +5106,7 @@ class AddMoreDetails extends Component {
                           }
                         </Row >
                       }
-                      <Row>
+                      < Row >
                         <Col md="12" className="filter-block">
                           <div className="mb-2">
                             <h5>{'Remarks & Attachments:'}</h5>
@@ -4588,7 +5202,7 @@ class AddMoreDetails extends Component {
 
                         {
                           !isViewMode && <>
-                            {(!isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar)) || (initialConfiguration.IsMasterApprovalAppliedConfigure &&  CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true &&!CostingTypePermission) ?
+                            {(!isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar)) || (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !CostingTypePermission) ?
                               <button id="AddMoreDetails_SendForApproval" type="submit"
                                 class="user-btn approval-btn save-btn mr5"
 
@@ -4669,6 +5283,9 @@ class AddMoreDetails extends Component {
               IsImportEntry={false}
               costingTypeId={this.state.CostingTypeId}
               levelDetails={this.state.levelDetails}
+              commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
+              handleOperation={this.handleMachineDetailsAPI}
+              isEdit={this.state.isEditFlag}
             />
           )
         }
@@ -4683,7 +5300,7 @@ class AddMoreDetails extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, material, machine, labour, fuel, auth } = state;
+  const { comman, material, machine, labour, fuel, auth, } = state;
   const fieldsObj = selector(state, 'MachineCost', 'AccessoriesCost', 'InstallationCharges', 'LabourCostPerAnnum', 'TotalCost',
     'LoanPercentage', 'LoanValue', 'EquityPercentage', 'EquityValue', 'RateOfInterestPercentage', 'RateOfInterestValue',
     'WorkingHoursPerShift', 'NumberOfWorkingDaysPerYear', 'EfficiencyPercentage', 'NumberOfWorkingHoursPerYear',
@@ -4695,10 +5312,10 @@ function mapStateToProps(state) {
     'FuelCostPerUnit', 'ConsumptionPerYear',
     'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification', 'LoanCRMHead',
     'InterestCRMHead', 'WorkingShiftCRMHead', 'DepreciationCRMHead', 'AnnualMaintanceCRMHead', 'AnnualConsumableCRMHead', 'AnnualInsuranceCRMHead', 'BuildingCRMHead',
-    'MachineFloorCRMHead', 'OtherYearlyCRMHead', 'PowerCRMHead', 'FuelCRMHead');
+    'MachineFloorCRMHead', 'OtherYearlyCRMHead', 'PowerCRMHead', 'FuelCRMHead', "MachineRateConversion", "MachineRateLocalConversion", "plantCurrency", "Currency", "ExchangeSource");
 
   const { technologySelectList, plantSelectList, UOMSelectList,
-    ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
+    ShiftTypeSelectList, DepreciationTypeSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
 
   const { labourTypeByMachineTypeSelectList } = labour;
@@ -4757,11 +5374,10 @@ function mapStateToProps(state) {
       Remark: machineData.Remark,
     }
   }
-
   return {
     vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
     machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-    initialConfiguration, labourTypeByMachineTypeSelectList, fuelDataByPlant, fieldsObj, initialValues, loading, processGroupApiData, userMasterLevelAPI
+    initialConfiguration, labourTypeByMachineTypeSelectList, fuelDataByPlant, fieldsObj, initialValues, loading, processGroupApiData, userMasterLevelAPI, exchangeRateSourceList, currencySelectList
   }
 
 }
@@ -4782,6 +5398,7 @@ export default connect(mapStateToProps, {
   getDepreciationTypeSelectList,
   getLabourTypeByMachineTypeSelectList,
   getFuelByPlant,
+  getFuelList,
   getFuelUnitCost,
   getLabourCost,
   getPowerCostUnit,
@@ -4795,7 +5412,10 @@ export default connect(mapStateToProps, {
   setGroupProcessList,
   setProcessList,
   getUsersMasterLevelAPI,
-  checkAndGetMachineNumber
+  checkAndGetMachineNumber,
+  getPlantUnitAPI,
+  getExchangeRateSource,
+  getCurrencySelectList
 })(reduxForm({
   form: 'AddMoreDetails',
   validate: validateForm,

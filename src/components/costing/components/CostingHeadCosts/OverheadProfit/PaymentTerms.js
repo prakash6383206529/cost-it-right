@@ -31,7 +31,7 @@ const PaymentTerms = React.memo((props) => {
     const dispatch = useDispatch()
     const { CostingEffectiveDate } = useSelector(state => state.costing)
     const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms ? true : false)
-    const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
+    const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail?.PaymentTermApplicability, value: PaymentTermDetail?.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
     const [tempPaymentTermObj, setTempPaymentTermObj] = useState(PaymentTermDetail)
 
@@ -83,7 +83,7 @@ const PaymentTerms = React.memo((props) => {
             setValue('RepaymentPeriodPercentage', interestRate);
             setValue('RepaymentPeriodFixed', interestRate);
             setValue('paymentRemark', getCostingPaymentDetails?.PaymentTermDetail ? getCostingPaymentDetails?.PaymentTermDetail?.Remark : "");
-            setValue('RepaymentPeriodCost', getCostingPaymentDetails?.PaymentTermDetail ? checkForDecimalAndNull(getCostingPaymentDetails?.PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
+            setValue('RepaymentPeriodCost', getCostingPaymentDetails?.PaymentTermDetail ? checkForDecimalAndNull(getCostingPaymentDetails?.PaymentTermDetail?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '')
         }
     }, [IsPaymentTermsApplicable])
     useEffect(() => {
@@ -136,8 +136,8 @@ const PaymentTerms = React.memo((props) => {
                 plantId: getPlantId(),
                 customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
                 effectiveDate: CostingEffectiveDate ? DayTime(CostingEffectiveDate).format('DD/MM/YYYY') : '',
-                rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
-                rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
+                rawMaterialGradeId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
+                rawMaterialChildId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
                 technologyId: null,
             };
             dispatch(getPaymentTermsDataByHeads(reqParams, res => {
@@ -148,8 +148,8 @@ const PaymentTerms = React.memo((props) => {
                     setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
                     setValue('RepaymentPeriodFixed', Data.InterestRate !== null ? Data.InterestRate : 0)
                     setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
-                    checkPaymentTermApplicability(Data.PaymentTermApplicability)
-                    setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+                    checkPaymentTermApplicability(Data?.PaymentTermApplicability)
+                    setPaymentTermsApplicability({ label: Data?.PaymentTermApplicability, value: Data?.PaymentTermApplicability })
                 } else if (res.status === 204) {
                     setLoader(false)
                     setValue('RepaymentPeriodDays', '')
@@ -169,11 +169,11 @@ const PaymentTerms = React.memo((props) => {
             setValue('RepaymentPeriodPercentage', interestRate);
             setValue('RepaymentPeriodFixed', interestRate);
             setValue('paymentRemark', getCostingPaymentDetails?.PaymentTermDetail ? getCostingPaymentDetails?.PaymentTermDetail?.Remark : "");
-            setValue('RepaymentPeriodCost', getCostingPaymentDetails?.PaymentTermDetail ? checkForDecimalAndNull(getCostingPaymentDetails?.PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
-            // setValue('ApplicabilityCost', getCostingPaymentDetails? checkForDecimalAndNull(getCostingPaymentDetails?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice) : '')
+            setValue('RepaymentPeriodCost', getCostingPaymentDetails?.PaymentTermDetail ? checkForDecimalAndNull(getCostingPaymentDetails?.PaymentTermDetail?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '')
+            // setValue('ApplicabilityCost', getCostingPaymentDetails? checkForDecimalAndNull(getCostingPaymentDetails?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice) : '')
             setPaymentTermInterestRateId(getCostingPaymentDetails?.PaymentTermDetail?.InterestRateId !== EMPTY_GUID ? getCostingPaymentDetails?.PaymentTermDetail.InterestRateId : null);
-            checkPaymentTermApplicability(getCostingPaymentDetails?.PaymentTermDetail.PaymentTermApplicability);
-            setPaymentTermsApplicability({ label: getCostingPaymentDetails?.PaymentTermDetail.PaymentTermApplicability, value: getCostingPaymentDetails?.PaymentTermDetail?.PaymentTermApplicability });
+            checkPaymentTermApplicability(getCostingPaymentDetails?.PaymentTermDetail?.PaymentTermApplicability);
+            setPaymentTermsApplicability({ label: getCostingPaymentDetails?.PaymentTermDetail?.PaymentTermApplicability, value: getCostingPaymentDetails?.PaymentTermDetail?.PaymentTermApplicability });
         }
 
         else {
@@ -209,7 +209,7 @@ const PaymentTerms = React.memo((props) => {
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
             const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
-            const TotalCost = checkForNull(data?.totalCost - data?.NetDiscountsCost) + checkForNull(data?.AnyOtherCost)
+            const TotalCost = checkForNull(data?.totalCost) - checkForNull(data?.NetDiscountsCost ? data?.NetDiscountsCost : data?.HundiOrDiscountValue) + checkForNull(data?.AnyOtherCost)
             const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
             const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
             const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
@@ -218,7 +218,7 @@ const PaymentTerms = React.memo((props) => {
                 case 'RM':
                 case 'Part Cost':
                     if ((partType && Text === 'Part Cost') || (!partType && Text === 'RM')) {
-                        setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration?.NoOfDecimalForPrice))
                         setTempPaymentTermObj({
                             ...tempPaymentTermObj,
                             NetCost: checkForNull(headerCosts?.NetRawMaterialsCost * RepaymentCost),
@@ -234,7 +234,7 @@ const PaymentTerms = React.memo((props) => {
                     break;
 
                 case 'BOP':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * RepaymentCost), initialConfiguration?.NoOfDecimalForPrice))
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(headerCosts.NetBoughtOutPartCost * RepaymentCost),
@@ -248,7 +248,7 @@ const PaymentTerms = React.memo((props) => {
                     break;
 
                 case 'CC':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration?.NoOfDecimalForPrice))
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(ConversionCostForCalculation * RepaymentCost),
@@ -264,7 +264,7 @@ const PaymentTerms = React.memo((props) => {
                 case 'RM + CC':
                 case 'Part Cost + CC':
                     if ((partType && Text === 'Part Cost + CC') || (!partType && Text === 'RM + CC')) {
-                        setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMCC * RepaymentCost), initialConfiguration?.NoOfDecimalForPrice))
                         setTempPaymentTermObj({
                             ...tempPaymentTermObj,
                             NetCost: checkForNull(RMCC * RepaymentCost),
@@ -281,7 +281,7 @@ const PaymentTerms = React.memo((props) => {
                 case 'RM + BOP':
                 case 'Part Cost + BOP':
                     if ((partType && Text === 'Part Cost + BOP') || (!partType && Text === 'RM + BOP')) {
-                        setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOP * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOP * RepaymentCost), initialConfiguration?.NoOfDecimalForPrice))
                         setTempPaymentTermObj({
                             ...tempPaymentTermObj,
                             NetCost: checkForNull(RMBOP * RepaymentCost),
@@ -296,7 +296,7 @@ const PaymentTerms = React.memo((props) => {
                     break;
 
                 case 'BOP + CC':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((BOPCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((BOPCC * RepaymentCost), initialConfiguration?.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
@@ -313,7 +313,7 @@ const PaymentTerms = React.memo((props) => {
                 case 'RM + CC + BOP':
                 case 'Part Cost + CC + BOP':
                     if ((partType && Text === 'Part Cost + CC + BOP') || (!partType && Text === 'RM + CC + BOP')) {
-                        setValue('RepaymentPeriodCost', checkForDecimalAndNull(((RMBOPCC) * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RepaymentPeriodCost', checkForDecimalAndNull(((RMBOPCC) * RepaymentCost), initialConfiguration?.NoOfDecimalForPrice))
 
                         setTempPaymentTermObj({
                             ...tempPaymentTermObj,
@@ -329,7 +329,7 @@ const PaymentTerms = React.memo((props) => {
                     break;
 
                 case 'Fixed':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(getValues("RepaymentPeriodFixed"), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(getValues("RepaymentPeriodFixed"), initialConfiguration?.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
@@ -342,7 +342,7 @@ const PaymentTerms = React.memo((props) => {
                     break;
 
                 case 'Annual ICC (%)':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOPCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOPCC * RepaymentCost), initialConfiguration?.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
 
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
@@ -359,7 +359,7 @@ const PaymentTerms = React.memo((props) => {
 
                 case 'Total Cost + Other Cost - Discount':
 
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(checkForNull(TotalCost) * checkForNull(RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(checkForNull(TotalCost) * checkForNull(RepaymentCost), initialConfiguration?.NoOfDecimalForPrice))
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(TotalCost) * checkForNull(RepaymentCost),
@@ -454,7 +454,7 @@ const PaymentTerms = React.memo((props) => {
             {loader && <LoaderCustom />}
             {IsPaymentTermsApplicable &&
                 <>
-                    {initialConfiguration.IsShowCRMHead && <Col md="3">
+                    {initialConfiguration?.IsShowCRMHead && <Col md="3">
                         <SearchableSelectHookForm
                             name={`crmHeadPayment`}
                             type="text"
@@ -485,7 +485,7 @@ const PaymentTerms = React.memo((props) => {
                                 </Col>
                                 {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
                                     <span className="head-text">
-                                        Repayment Period(No. of Days)
+                                        Repayment Period (No. of Days)
                                     </span>
                                 </Col>}
                                 <Col md="3">

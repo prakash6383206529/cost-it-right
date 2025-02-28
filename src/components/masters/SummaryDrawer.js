@@ -11,7 +11,7 @@ import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, BUDGET_ID, APPROVED_STATUS, ZBCTypeId, INR, SUPPLIER_MANAGEMENT_ID, ONBOARDINGID, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, BUDGET_ID, APPROVED_STATUS, ZBCTypeId, INR, SUPPLIER_MANAGEMENT_ID, ONBOARDINGID, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
 import { checkForNull, getCodeBySplitting, getConfigurationKey, loggedInUserId, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
@@ -26,8 +26,10 @@ import DayTime from '../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import InitiateUnblocking from '../vendorManagement/InitiateUnblocking';
 import { ErrorMessage } from '../simulation/SimulationUtils';
+import ViewDrawer from '../costing/components/approval/ViewDrawer';
 
 function SummaryDrawer(props) {
+
     const { approvalData } = props
     const dispatch = useDispatch()
     /**
@@ -51,7 +53,7 @@ function SummaryDrawer(props) {
     const [approvalDetails, setApprovalDetails] = useState({})
 
 
-
+    const [viewButton, setViewButton] = useState(false)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
     const [loader, setLoader] = useState(true)
@@ -76,7 +78,7 @@ function SummaryDrawer(props) {
     const [isRfq, setIsRfq] = useState(false)
     const [quotationId, setQuotationId] = useState('')
     const [divisionId, setDivisionId] = useState('')
-const [hideApproveReject,setHideApproveReject]=useState(false)
+    const [hideApproveReject, setHideApproveReject] = useState(false)
 
 
 
@@ -85,14 +87,15 @@ const [hideApproveReject,setHideApproveReject]=useState(false)
         let CostingTypeId = ''
         setLoader(true)
 
-        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props?.masterId, props?.OnboardingApprovalId,approvalData?.receiverId, res => {
+        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props?.masterId, props?.OnboardingApprovalId, approvalData?.receiverId, res => {
 
             const Data = res.data.Data
             const QuotationId = Data?.QuotationId
             setQuotationId(QuotationId)
             setIsRfq(QuotationId !== null ? true : false)
             setApprovalLevelStep(Data?.MasterSteps)
-            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId, DepartmentId: Data?.DepartmentId })
+
+            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId, DepartmentId: Data?.DepartmentId, DepartmentName: Data?.DepartmentName })
             setLoader(false)
             let masterPlantId = ''
             if (checkForNull(props?.masterId) === RM_MASTER_ID) {
@@ -102,7 +105,7 @@ const [hideApproveReject,setHideApproveReject]=useState(false)
                 masterPlantId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.MasterApprovalPlantId
                 Data?.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 setShowPushButton(Data?.IsPushedButtonShow)
-                if (Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
+                if (Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.RawMaterialEntryType === ENTRY_TYPE_DOMESTIC) {
                     setShowImport(false)
                 } else {
                     setShowImport(true)
@@ -112,8 +115,9 @@ const [hideApproveReject,setHideApproveReject]=useState(false)
                 setFiles(Data?.ImpactedMasterDataList.BOPListResponse[0].Attachements)
                 setBopDataResponse(Data?.ImpactedMasterDataList.BOPListResponse)
                 masterPlantId = Data?.ImpactedMasterDataList.BOPListResponse[0]?.MasterApprovalPlantId
-                if (Data?.ImpactedMasterDataList.BOPListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
+                if (Data?.ImpactedMasterDataList.BOPListResponse[0]?.EntryType === ENTRY_TYPE_DOMESTIC) {
                     setShowImport(false)
+
                 } else {
                     setShowImport(true)
                 }
@@ -188,7 +192,7 @@ const [hideApproveReject,setHideApproveReject]=useState(false)
             setIsOnboardingApproval(true)
         }
 
-        dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.masterId,approvalData?.receiverId, res => {
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.masterId, approvalData?.receiverId, res => {
             if (res && res.data && res.data.Result) {
                 setFinalLevelUser(res.data.Data?.IsFinalApprover)
                 let levelDetailsTemp = []
@@ -199,15 +203,14 @@ const [hideApproveReject,setHideApproveReject]=useState(false)
 
     }, [])
     // const [approvalData, setApprovalData] = useState('')
-
     const closeApproveRejectDrawer = (e, type) => {
-        if(type!=='cancel'){
+        if (type !== 'cancel') {
             setHideApproveReject(true)
         }
         setApprovalDrawer(false)
         setRejectDrawer(false)
-        if (type === 'submit') {
-            cancel('submit')
+        if (type === 'submit' || type === 'reject') {
+            cancel(type)
         }
     }
 
@@ -227,8 +230,26 @@ const [hideApproveReject,setHideApproveReject]=useState(false)
             }
         }))
     }, 500)
+    // const getPartType = (masterId) => {
+    //     switch (checkForNull(masterId)) {
+    //         case RM_MASTER_ID:
+    //             return 'Raw Material';
+    //         case BOP_MASTER_ID:
+    //             return 'BOP';
+    //         case OPERATIONS_ID:
+    //             return 'Operation';
+    //         case MACHINE_MASTER_ID:
+    //             return 'Machine';
+    //         case BUDGET_ID:
+    //             return 'Budget';
+    //         default:
+    //             return '';
+    //     }
+    // }
 
-
+    const closeViewDrawer = (e = '') => {
+        setViewButton(false)
+    }
     return (
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
@@ -237,34 +258,35 @@ const [hideApproveReject,setHideApproveReject]=useState(false)
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    {/* <h3>{`Master Summary (Token No.${approvalDetails.Token}):`}</h3> */}
                                     <h3>{`${approvalDetails?.ApprovalTypeId === LPSAPPROVALTYPEID ? 'LPS' : (approvalDetails?.ApprovalTypeId === CLASSIFICATIONAPPROVALTYPEID ? 'Classification' : 'Master')} Summary (Token No.${approvalDetails?.Token ?? ''}):`}</h3>
-
-
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
                                     className={'close-button right'}>
                                 </div>
+
                             </Col>
+
+
                         </Row>
+
                         {loader ? <LoaderCustom /> :
                             <Row className="mx-0 mb-3">
                                 {getConfigurationKey()?.IsSAPConfigured && <ErrorMessage module={isRMApproval ? 'RM' : isBOPApproval ? 'BOP' : ''} id={approvalData?.id} />}
                                 <Col>
-                                    <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} approverData={dataForFetchingAllApprover} />
+                                    <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} approverData={dataForFetchingAllApprover} viewAll={() => setViewButton(true)} />
 
 
                                     {isRMApproval && <>
                                         {showImport ?
-                                            <RMImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                            <RMImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} rmDataResponse={rmDataResponse} />
                                             :
                                             <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} rmDataResponse={rmDataResponse} />
                                         }
                                     </>}
                                     {isBOPApproval && <>
                                         {showImport ?
-                                            <BOPImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                            <BOPImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} bopDataResponse={bopDataResponse} />
                                             :
                                             <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} bopDataResponse={bopDataResponse} />
                                         }
@@ -337,8 +359,19 @@ const [hideApproveReject,setHideApproveReject]=useState(false)
                 // approvalObj={approvalObj}
                 />
             }
+            {
+                viewButton && <ViewDrawer
+                    approvalLevelStep={approvalLevelStep}
+                    isOpen={viewButton}
+                    closeDrawer={closeViewDrawer}
+                    anchor={'top'}
+                    approvalNo={approvalDetails?.Token}
+                    isSimulation={true}
+                />
+            }
         </div >
     );
 }
 
 export default SummaryDrawer;
+// HP3-I1368

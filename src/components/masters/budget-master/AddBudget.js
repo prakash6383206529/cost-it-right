@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Label, Button, Tooltip } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
-import { getCurrencySelectList, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common'
+import { getCurrencySelectList, getExchangeRateSource, getPlantSelectListByType, getVendorNameByVendorSelectList, plantSelectList } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
-import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from '../../../helper/auth'
-import { BOUGHTOUTPARTSPACING, BUDGET_ID, CBCTypeId, EMPTY_GUID, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, userDetails } from '../../../helper/auth'
+import { BOUGHTOUTPARTSPACING, BUDGET_ID, CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -20,15 +20,14 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown, autoCompleteDropdownPart, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions'
 import { useEffect } from 'react'
 import { useState } from 'react'
-import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
+import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCostingHead, updateBudget } from '../actions/Budget'
 import { checkFinalUser, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting'
 import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
 import MasterSendForApproval from '../MasterSendForApproval'
-import { userTechnologyDetailByMasterId } from '../../../helper'
-import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
+import { CheckApprovalApplicableMaster, getExchangeRateParams, userTechnologyDetailByMasterId } from '../../../helper'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import WarningMessage from '../../common/WarningMessage'
 import { getSelectListPartType } from '../actions/Part'
@@ -37,6 +36,12 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { useTranslation } from 'react-i18next'
 import { Steps } from './TourMessages'
 import { useLabels } from '../../../helper/core'
+import { getPlantUnitAPI } from '../actions/Plant'
+import DayTime from '../../common/DayTimeWrapper'
+import ReactSwitch from 'react-switch'
+import { useRef } from "react";
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
+
 const gridOptions = {};
 function AddBudget(props) {
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset } = useForm({
@@ -45,6 +50,7 @@ function AddBudget(props) {
     });
 
     const { t } = useTranslation("BudgetMaster")
+    const fromCurrencyRef = useRef(null);
 
     const [selectedPlants, setSelectedPlants] = useState([]);
     const [vendorName, setVendorName] = useState([]);
@@ -61,18 +67,17 @@ function AddBudget(props) {
     const [showErrorOnFocus, setShowErrorOnFocus] = useState(false);
     const [costingTypeId, setCostingTypeId] = useState(ZBCTypeId);
     const [client, setClient] = useState([]);
-    const [isPartNumberNotSelected, setIsPartNumberNotSelected] = useState(false);
-    const [showErrorOnFocusPart, setShowErrorOnFocusPart] = useState(false);
     const [conditionAcc, setConditionAcc] = useState(false);
     const [partName, setPartName] = useState('');
     const [IsVendor, setIsVendor] = useState(false);
     const [isLoader, setIsLoader] = useState(true);
     const [currentPrice, setCurrentPrice] = useState(0);
     const [totalSum, setTotalSum] = useState(0);
+
     const [count, setCount] = useState(0);
-    const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
     const [vendorFilter, setVendorFilter] = useState([]);
-    const [currency, setCurrency] = useState(0);
+    const [currency, setCurrency] = useState({});
+
     const [showPopup, setShowPopup] = useState(false);
     const [currencyExchangeRate, setCurrencyExchangeRate] = useState(1);
     const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
@@ -88,7 +93,7 @@ function AddBudget(props) {
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
     const currencySelectList = useSelector((state) => state.comman.currencySelectList)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-
+    const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList)
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
     const [partType, setPartType] = useState([]);
@@ -97,7 +102,19 @@ function AddBudget(props) {
     const [disableCurrency, setDisableCurrency] = useState(true);
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const isViewMode = props.data.isViewMode
+    const [budgetedEntryType, setBudgetedEntryType] = useState(false)
+    const [showWarning, setShowWarning] = useState(false)
+    const [plantCurrencyID, setPlantCurrencyID] = useState('')
+    const [hidePlantCurrency, setHidePlantCurrency] = useState(false)
+    const [settlementCurrency, setSettlementCurrency] = useState(null)
+    const [plantExchangeRateId, setPlantExchangeRateId] = useState('')
+    const [settlementExchangeRateId, setSettlementExchangeRateId] = useState('')
+    const [plantCurrency, setPlantCurrency] = useState(null)
+    const [ExchangeSource, setExchangeSource] = useState()
+    const [costConverSionInLocalCurrency, setCostConverSionInLocalCurrency] = useState(false)
+    const [showPlantWarning, setShowPlantWarning] = useState(false)
     const { vendorLabel } = useLabels()
+    const [budgetingId, setBudgetingId] = useState(0)
     useEffect(() => {
         setCostingTypeId(getCostingTypeIdByCostingPermission())
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
@@ -110,12 +127,25 @@ function AddBudget(props) {
 
         getDetail()
         commonFunction();
-        dispatch(getUsersMasterLevelAPI(loggedInUserId(), BUDGET_ID,null, (res) => { }))
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), BUDGET_ID, null, (res) => { }))
         dispatch(getSelectListPartType((res) => {
             setPartTypeList(res?.data?.SelectList)
         }))
+        dispatch(getExchangeRateSource((res) => { }))
     }, [])
+    useEffect(() => {
+        handleCalculation();
+    }, [plantCurrency, settlementCurrency]);
+    useEffect(() => {
+        if (!isViewMode && !isEditFlag) {
+            callExchangeRateAPI()
+        }
+    }, [currency, year, ExchangeSource, fromCurrencyRef, costConverSionInLocalCurrency, vendorName, client]);
 
+    // ... existing code ...
+    useEffect(() => {
+        fromCurrencyRef.current = fromCurrencyRef
+    }, [fromCurrencyRef]);
     const commonFunction = (plantId = '') => {
         let obj = {
             TechnologyId: BUDGET_ID,
@@ -125,7 +155,7 @@ function AddBudget(props) {
             approvalTypeId: costingTypeId,
             plantId: plantId,
         }
-        if (initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             dispatch(checkFinalUser(obj, res => {
                 if (res.data?.Result) {
                     setIsFinalApprover(res.data?.Data?.IsFinalApprover)
@@ -209,6 +239,15 @@ function AddBudget(props) {
             })
             return temp
         }
+        if (label === 'ExchangeSource') {
+            exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+                if (item.Value === '--Exchange Rate Source Name--') return false
+
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
     }
     /**
     * @method onPressVendor
@@ -216,8 +255,13 @@ function AddBudget(props) {
     */
     const onPressVendor = (costingHeadFlag) => {
         setVendorName([])
+        setClient([])
         setCostingTypeId(costingHeadFlag)
-
+        setShowPlantWarning(false)
+        setShowWarning(false)
+        let arr = ['PartType', 'plantCurrency', 'ExchangeSource', 'totalSumCurrency', 'totalSumPlantCurrency', 'totalSum', 'currentPrice', 'currency', 'FinancialYear', 'PartNumber', 'clientName', 'DestinationPlant', 'vendorName', 'Plant', '']
+        arr.map(label => setValue(label, null || ''))
+        setPart([])
         if (costingHeadFlag === VBCTypeId) {
             setIsVendor(!IsVendor)
         }
@@ -251,9 +295,25 @@ function AddBudget(props) {
     const handlePlants = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setSelectedPlants(newValue)
+            dispatch(getPlantUnitAPI(newValue?.value, (res) => {
+                let Data = res?.data?.Data
+                setValue("plantCurrency", Data?.Currency)
+                fromCurrencyRef.current = Data?.Currency
+                setPlantCurrencyID(Data?.CurrencyId)
+                if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+                    setHidePlantCurrency(false)
+                } else {
+                    setHidePlantCurrency(true)
+                }
+            }));
+            callExchangeRateAPI()
             commonFunction(newValue.value)
         } else {
             setSelectedPlants([])
+            setPlantCurrency(null)
+            setPlantCurrencyID('')
+            setPlantExchangeRateId('')
+            setSettlementExchangeRateId('')
         }
     }
 
@@ -265,6 +325,10 @@ function AddBudget(props) {
         if (newValue && newValue !== '') {
             setVendorName(newValue)
             setDisableCurrency(false)
+            setTimeout(() => {
+                callExchangeRateAPI()
+
+            }, 100)
         } else {
             setVendorName([])
         }
@@ -293,6 +357,8 @@ function AddBudget(props) {
             setDisableCurrency(false)
             setValue('currency', '')
             setCurrency([])
+
+
         } else {
             setYear([])
         }
@@ -306,6 +372,7 @@ function AddBudget(props) {
         if (newValue && newValue !== '') {
             setClient(newValue)
             setDisableCurrency(false)
+            callExchangeRateAPI()
         } else {
             setClient([])
         }
@@ -426,7 +493,6 @@ function AddBudget(props) {
 
 
     const onCellValueChanged = (value) => {
-
         let temp = []
         tableData && tableData.map((item) => {
             if (item.Text == value.data.Text) {
@@ -439,16 +505,27 @@ function AddBudget(props) {
         temp.map((item, ind) => {
             total = Number(total) + Number(checkForNull(item.Sum))
         })
-
-        // setValue('currentPrice', total + currentPrice)
-
         setTotalSum((total + currentPrice))
-        setValue('totalSum', checkForDecimalAndNull(total + currentPrice, getConfigurationKey().NoOfDecimalForPrice))
-        if (currencyExchangeRate > 1) {
-            setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice) / currencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice))
-        }
-    }
 
+        if (costConverSionInLocalCurrency) {
+            setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        } else {
+            setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+
+        }
+        // setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+        // if (settlementCurrency !== null || plantCurrency !== null) {
+        //     setValue("totalSumPlantCurrency", checkForDecimalAndNull(((total + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        //     setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        // }
+
+    }
+    const ImportToggle = () => {
+        setBudgetedEntryType(!budgetedEntryType)
+    }
     /**
      * @method getDetail
      * @description USED TO GET VOLUME DETAIL
@@ -483,6 +560,7 @@ function AddBudget(props) {
 
                         temp.push(obj)
                     })
+                    setCostConverSionInLocalCurrency(Data?.CurrencyId !== null ? true : false)
 
                     setIsEditFlag(true)
                     setSelectedPlants({
@@ -492,7 +570,11 @@ function AddBudget(props) {
                     setValue('Plant', { label: `${Data.PlantName}(${Data.PlantCode})`, value: Data?.PlantId })
                     setCostingTypeId(Data.CostingHeadId)
                     setTotalSum(Data.BudgetedPoPrice)
-                    setValue('totalSum', Data.BudgetedPoPrice)
+                    if (Data?.CurrencyId !== null) {
+                        setValue("totalSumCurrency", Data?.BudgetedPoPrice)
+                    }
+                    setValue("totalSumPlantCurrency", Data?.BudgetedPoPriceLocalConversion)
+                    setValue('totalSum', Data?.BudgetedPoPriceInCurrency)
                     setYear({ label: Data.FinancialYear, value: 0 })
                     setPart({ label: Data.PartNumber, value: Data.PartId })
                     setClient({ label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId })
@@ -501,12 +583,36 @@ function AddBudget(props) {
                     setValue('currentPrice', Data.NetPoPrice)
                     setValue('FinancialYear', { label: Data.FinancialYear, value: 0 })
                     setValue('currency', { label: Data.Currency, value: Data.CurrencyId })
+                    setCurrency({ label: Data?.Currency, value: Data?.CurrencyId })
+                    setValue("plantCurrency", Data?.LocalCurrency)
                     setPartType({ label: Data.PartType, value: Data?.PartTypeId })
+                    setExchangeSource({ label: Data.ExchangeRateSourceName, valu: Data.ExchangeRateSourceName })
+                    setValue("ExchangeSource", { label: Data.ExchangeRateSourceName, valu: Data.ExchangeRateSourceName })
+                    setExchangeSource({ label: Data.ExchangeRateSourceName, valu: Data.ExchangeRateSourceName })
+                    setCurrentPrice(Data?.NetPoPrice)
+                    setPlantCurrencyID(Data?.CurrencyId !== null ? Data?.LocalCurrencyId : Data?.CurrencyId)
+                    setCostConverSionInLocalCurrency(Data?.CurrencyId !== null ? true : false)
+                    setPlantCurrency(Data?.CurrencyId !== null ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate)
+                    setPlantExchangeRateId(Data?.CurrencyId !== null ? Data?.LocalExchangeRateId : Data?.ExchangeRateId)
+                    setSettlementCurrency(Data?.ExchangeRate)
+                    setSettlementExchangeRateId(Data?.ExchangeRateId)
+                    // LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
+                    //     LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
+                    //         ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
+                    //             ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
+                    if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+                        setHidePlantCurrency(false)
+                    } else {
+                        setHidePlantCurrency(true)
+                    }
+                    setBudgetingId(Data?.BudgetingId)
 
                     setTimeout(() => {
                         setTableData(temp)
                         setIsLoader(false)
                     }, 300);
+                    commonFunction(Data?.PlantId ?? "");
+
                 }
             }))
         } else {
@@ -545,7 +651,7 @@ function AddBudget(props) {
         props.hideForm(type)
     }
 
-    const allInputFieldsName = ['Plant', 'FinancialYear', 'totalSumCurrency', 'currency', 'totalSum', 'clientName',]
+    const allInputFieldsName = ['Plant', 'FinancialYear', 'totalSumCurrency', 'currency', 'totalSum', 'clientName', , "totalSumPlantCurrency"]
     const cancelHandler = () => {
         let count = 0;
         allInputFieldsName.forEach((item) => {
@@ -570,32 +676,129 @@ function AddBudget(props) {
     const handleCurrencyChange = (newValue) => {
         if (newValue && newValue !== '') {
             setCurrency(newValue)
+            setCostConverSionInLocalCurrency(true)
+            // if (getValues("plantCurrency") !== newValue?.label) {
+            //     setHidePlantCurrency(false)
+            // } else {
+            //     setHidePlantCurrency(true)
+            // }
 
-            const finalYear = year?.label && year?.label?.slice(0, 4);
-            let date = (`${finalYear}-04-01`);
-            const vendorValue = IsFetchExchangeRateVendorWise() ? vendorName?.value : EMPTY_GUID
-            const costingType = IsFetchExchangeRateVendorWise() ? costingTypeId : ZBCTypeId
+        } else {
+            setCostConverSionInLocalCurrency(false)
 
-            if (finalYear) {
-                dispatch(getExchangeRateByCurrency(newValue.label, costingType, date, vendorValue, client?.value, true, res => {
-                    if (res && res?.data && res?.data?.Result && Object.keys(res?.data?.Data)?.length > 0) {
-                        let Data = res?.data?.Data;
-                        setCurrencyExchangeRate(Data.CurrencyExchangeRate)
-                        if (getValues('totalSum')) {
-                            setValue('totalSumCurrency', checkForDecimalAndNull((getValues('totalSum') / Data.CurrencyExchangeRate), getConfigurationKey().NoOfDecimalForPrice))
-                        }
-                    }
-                }))
-            }
         }
     }
+    const callExchangeRateAPI = () => {
+        const finalYear = year?.label && year?.label?.slice(0, 4);
+        let date = (`${finalYear}-04-01`);
+        const plantCurrency = getValues('plantCurrency')
+
+        const hasCurrencyAndDate = plantCurrency && date;
+        const fromCurrency = getValues("plantCurrency")
+        if (hasCurrencyAndDate && finalYear) {
+            if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
+                return;
+            }
+            const callAPI = (from, to, costingType, vendorValue, clientValue) => {
+                return new Promise((resolve) => {
+                    dispatch(getExchangeRateByCurrency(
+                        from,
+                        costingType,
+                        date,
+                        vendorValue,
+                        clientValue,
+                        true,
+                        to,
+                        getValues("ExchangeSource")?.label ?? "",
+                        res => {
+                            if (Object.keys(res.data.Data).length === 0) {
+                                setShowWarning(true)
+                            } else {
+                                setShowWarning(false)
+                            }
+                            resolve({
+                                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                                exchangeRateId: res?.data?.Data?.ExchangeRateId,
+                                showWarning: Object.keys(res.data.Data).length === 0,
+                                showPlantWarning: Object.keys(res.data.Data).length === 0
+                            });
+                        }
+                    ));
+                });
+            };
 
 
+            if (costConverSionInLocalCurrency && Object.keys(currency).length !== 0) {
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
+                callAPI(currency?.label, plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
+                    callAPI(plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+                        setPlantCurrency(rate1);
+                        setSettlementCurrency(rate2);
+                        setPlantExchangeRateId(exchangeRateId1);
+                        setSettlementExchangeRateId(exchangeRateId2);
+                        setShowPlantWarning(showPlantWarning1)
+                        setShowWarning(showWarning2)
+
+                    });
+                });
+            } else if (!costConverSionInLocalCurrency && fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
+                callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning, showWarning }) => {
+                    setPlantCurrency(rate1);
+                    setPlantExchangeRateId(exchangeRateId1);
+                    setShowPlantWarning(showPlantWarning)
+                    setShowWarning(showWarning)
+
+                });
+            }
+        }
+    };
+
+    const handleCalculation = (rate = "") => {
+
+        if (costConverSionInLocalCurrency) {
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        } else {
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+
+        }
+    }
     /**
      * @method onSubmit
      * @description Used to Submit the form
      */
     const onSubmit = debounce((values) => {
+        // Add check for data changes when updating
+        if (isEditFlag) {
+            const hasNoChanges = (
+                selectedPlants?.value === DataChanged?.PlantId && part?.value === DataChanged?.PartId && year?.label === DataChanged?.FinancialYear &&
+                costingTypeId === DataChanged?.CostingHeadId && partType?.label === DataChanged?.PartType && checkForDecimalAndNull(totalSum, initialConfiguration.NoOfDecimalForPrice) ===
+                checkForDecimalAndNull(DataChanged.BudgetedPoPrice, initialConfiguration.NoOfDecimalForPrice) &&
+                checkForDecimalAndNull(currentPrice, initialConfiguration.NoOfDecimalForPrice) ===
+                checkForDecimalAndNull(DataChanged.NetPoPrice, initialConfiguration.NoOfDecimalForPrice) &&
+                // Optional fields - need to handle null cases
+                ((!vendorName?.value && !DataChanged?.VendorId) || vendorName?.value === DataChanged?.VendorId) &&
+                ((!client?.value && !DataChanged?.CustomerId) || client?.value === DataChanged?.CustomerId) &&
+                ((!currency?.value && !DataChanged?.CurrencyId) || currency?.value === DataChanged?.CurrencyId) &&
+                // Condition data comparison - handle null case
+                (!DataChanged?.ConditionsData ? conditionTableData.length === 0 :
+                    conditionTableData.length === DataChanged?.ConditionsData?.length &&
+                    conditionTableData.every((condition, index) =>
+                        checkForDecimalAndNull(condition.ConditionCost, initialConfiguration.NoOfDecimalForPrice) ===
+                        checkForDecimalAndNull(DataChanged?.ConditionsData[index]?.ConditionCost, initialConfiguration?.NoOfDecimalForPrice)
+                    )
+                )
+            );
+
+            if (hasNoChanges) {
+                Toaster.warning('Please change the data to save the Budget.');
+                return false;
+            }
+        }
 
         let startYear = year.label.slice(0, 4);
         let endYear = year.label.slice(-4);
@@ -625,23 +828,76 @@ function AddBudget(props) {
             temp.push(obj)
         })
 
+        let formData = {
+            LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label,
+            NetPoPrice: values?.currentPrice,
+            //  BudgetedPoPrice: totalSum,
+            BudgetedPoPrice: totalSum,
+            BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+            BudgetedPoPriceInCurrency: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+            CostingHeadId: costingTypeId,
+            PartId: part.value,
+            PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
+            PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp,
+            ConditionsData: conditionTableData,
+            ExchangeRateSourceName: ExchangeSource?.label,
+            CurrencyId: costConverSionInLocalCurrency ? currency?.value : null,
+            Currency: costConverSionInLocalCurrency ? currency?.label : getValues("plantCurrency"),
+            LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
+            LocalCurrency: costConverSionInLocalCurrency ? getValues("plantCurrency") : null,
+            LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
+            ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
+            ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
+            NetPoPriceConversion: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+            NetPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
+            BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
 
+        }
         if (isEditFlag) {
-
-            let formData = { BudgetingId: BudgetId, LoggedInUserId: loggedInUserId(), FinancialYear: DataChanged.FinancialYear, NetPoPrice: values.currentPrice, BudgetedPoPrice: totalSum, BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate, CostingHeadId: costingTypeId, PartId: DataChanged.PartId, RevisionNumber: DataChanged.RevisionNumber, PlantId: DataChanged.PlantId, VendorId: DataChanged.VendorId, CustomerId: DataChanged.CustomerId, BudgetingPartCostingDetails: temp }
-
-            dispatch(updateBudget(formData, (res) => {
-                setSetDisable(false)
-                if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.BUDGET_UPDATE_SUCCESS)
-                    cancel('submit')
-                }
-            }))
+            if (isFinalApprover) {
+                dispatch(updateBudget(formData, (res) => {
+                    setSetDisable(false)
+                    if (res?.data?.Result) {
+                        Toaster.success(MESSAGES.BUDGET_UPDATE_SUCCESS)
+                        cancel('submit')
+                    }
+                }))
+            } else {
+                setApprovalObj(formData)
+                setTimeout(() => {
+                    setApproveDrawer(true)
+                }, 300);
+            }
 
         } else {
 
-            let formData = { LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label, NetPoPrice: values.currentPrice, BudgetedPoPrice: totalSum, BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate, CostingHeadId: costingTypeId, PartId: part.value, PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value, PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp, CurrencyId: currency.value, Currency: currency.label, ConditionsData: conditionTableData }
-            if (isFinalApprover) {
+            let formData = {
+                LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label,
+                NetPoPrice: values?.currentPrice,
+                //  BudgetedPoPrice: totalSum,
+                BudgetedPoPrice: totalSum,
+                BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+                BudgetedPoPriceInCurrency: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+                CostingHeadId: costingTypeId,
+                PartId: part.value,
+                PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
+                PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp,
+                ConditionsData: conditionTableData,
+                ExchangeRateSourceName: ExchangeSource?.label,
+                CurrencyId: costConverSionInLocalCurrency ? currency?.value : null,
+                Currency: costConverSionInLocalCurrency ? currency?.label : getValues("plantCurrency"),
+                LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
+                LocalCurrency: costConverSionInLocalCurrency ? getValues("plantCurrency") : null,
+                LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
+                ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
+                ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
+                NetPoPriceConversion: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
+                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
+
+            }
+
+            if (isFinalApprover || (userDetails().Role === 'SuperAdmin') || (!initialConfiguration?.IsMasterApprovalAppliedConfigure)) {
                 dispatch(createBudget(formData, (res) => {
                     setSetDisable(false)
                     if (res?.data?.Result) {
@@ -650,16 +906,12 @@ function AddBudget(props) {
                     }
                 }))
             } else {
-
                 setApprovalObj(formData)
-
                 setTimeout(() => {
                     setApproveDrawer(true)
                 }, 300);
-
             }
         }
-
     }, 500)
 
     const handleKeyDown = function (e) {
@@ -681,9 +933,22 @@ function AddBudget(props) {
                 let TotalSum = checkForNull(res?.data?.DataList[0]?.NetPOPrice) + checkForNull(totalSum)
                 setValue('currentPrice', checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
                 setCurrentPrice(checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
-                setTotalSum(TotalSum * (currencyExchangeRate))
-                setValue('totalSum', TotalSum * (currencyExchangeRate))
-                setValue('totalSumCurrency', (TotalSum) / (currencyExchangeRate))
+                setTotalSum(TotalSum)
+
+                if (costConverSionInLocalCurrency) {
+
+                    setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+                } else {
+
+                    setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+
+                }
+                // setValue('totalSum', checkForNull(TotalSum * plantCurrency))on
+                // setValue('totalSumCurrency', TotalSum)
+                // setValue("totalSumPlantCurrency", checkForNull(TotalSum * settlementCurrency))
             }))
         }
     }
@@ -755,8 +1020,21 @@ function AddBudget(props) {
         let finalNewSum = Number(sum) + Number(totalSum) - totalConditionCost
 
         setTotalSum(finalNewSum)
-        setValue('totalSum', finalNewSum)
-        setValue('totalSumCurrency', (finalNewSum) / currencyExchangeRate)
+        // setValue('totalSum', checkForNull(finalNewSum * plantCurrency))
+        // setValue("totalSumCurrency", finalNewSum)
+        // setValue('totalSumPlantCurrency', checkForNull((finalNewSum) * settlementCurrency))
+
+        if (costConverSionInLocalCurrency) {
+
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        } else {
+
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+
+        }
 
         setTimeout(() => {
             setTotalConditionCost(sum)
@@ -786,7 +1064,12 @@ function AddBudget(props) {
     const tooltipToggle = () => {
         setViewTooltip(!viewTooltip)
     }
+    const handleExchangeRateSource = (e) => {
+        setExchangeSource(e)
+        callExchangeRateAPI()
 
+
+    }
     return (
         <>
             <div className={`ag-grid-react`}>
@@ -814,6 +1097,28 @@ function AddBudget(props) {
                                                                 }).ADD_BUDGET
                                                             }} />}
                                                     </h1>
+                                                    <Row>
+                                                        <Col md="4" className="switch mb15">
+                                                            <label className="switch-level">
+                                                                <div className={"left-title"}>Domestic</div>
+                                                                <ReactSwitch
+                                                                    onChange={ImportToggle}
+                                                                    checked={budgetedEntryType}
+                                                                    id="normal-switch"
+                                                                    disabled={isViewMode || isEditFlag}
+                                                                    background="#4DC771"
+                                                                    onColor="#4DC771"
+                                                                    onHandleColor="#ffffff"
+                                                                    offColor="#4DC771"
+                                                                    uncheckedIcon={false}
+                                                                    checkedIcon={false}
+                                                                    height={20}
+                                                                    width={46}
+                                                                />
+                                                                <div className={"right-title"}>Import</div>
+                                                            </label>
+                                                        </Col>
+                                                    </Row>
                                                 </div>
                                             </div>
                                         </div>
@@ -831,7 +1136,7 @@ function AddBudget(props) {
                                                                 onClick={() =>
                                                                     onPressVendor(ZBCTypeId)
                                                                 }
-                                                                disabled={isViewMode ? true : false}
+                                                                disabled={isViewMode ? true : false || isEditFlag}
                                                             />{" "}
                                                             <span>Zero Based</span>
                                                         </Label>}
@@ -845,7 +1150,7 @@ function AddBudget(props) {
                                                                 onClick={() =>
                                                                     onPressVendor(VBCTypeId)
                                                                 }
-                                                                disabled={isViewMode ? true : false}
+                                                                disabled={isViewMode ? true : false || isEditFlag}
                                                             />{" "}
                                                             <span>{vendorLabel} Based</span>
                                                         </Label>}
@@ -859,7 +1164,7 @@ function AddBudget(props) {
                                                                 onClick={() =>
                                                                     onPressVendor(CBCTypeId)
                                                                 }
-                                                                disabled={isViewMode ? true : false}
+                                                                disabled={isViewMode ? true : false || isEditFlag}
                                                             />{" "}
                                                             <span>Customer Based</span>
                                                         </Label>}
@@ -888,40 +1193,41 @@ function AddBudget(props) {
                                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                                         //validate={(role == null || role.length === 0) ? [required] : []}
                                                                         required={true}
-                                                                        disabled={isViewMode ? true : false}
+                                                                        disabled={isViewMode || isEditFlag}
                                                                         handleChange={handlePlants}
                                                                         valueDescription={selectedPlants}
                                                                     />
                                                                 </div>
                                                             </>)
                                                             )}
+
                                                             {costingTypeId === VBCTypeId && (<>
                                                                 <Col md="3">
-                                                                    <label>{vendorLabel} (Code)<span className="asterisk-required">*</span></label>
-                                                                    <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                                                                        <div className="fullinput-icon p-relative">
-                                                                            {inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                                                            <AsyncSelect
-                                                                                id="AddBudget_vendorName"
-                                                                                name="vendorName"
-                                                                                //ref={this.myRef}
-                                                                                //key={this.state.updateAsyncDropdown}
-                                                                                loadOptions={vendorFilterList}
-                                                                                onChange={(e) => handleVendorName(e)}
-                                                                                value={vendorName}
-                                                                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                                                                isDisabled={(isViewMode) ? true : false}
-                                                                                onKeyDown={(onKeyDown) => {
-                                                                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                                                                }}
-                                                                                onBlur={() => setShowErrorOnFocus(true)}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                    {((showErrorOnFocus && vendorName.length === 0) || isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                                                                    <AsyncSearchableSelectHookForm
+                                                                        label={`${vendorLabel} (Code)`}
+                                                                        id='AddBudget_vendorName'
+                                                                        name={"vendorName"}
+                                                                        placeholder={"Select"}
+                                                                        Controller={Controller}
+                                                                        value={vendorName}
+                                                                        control={control}
+                                                                        rules={{ required: true }}
+                                                                        register={register}
+                                                                        defaultValue={vendorName?.length !== 0 ? vendorName : ""}
+                                                                        asyncOptions={vendorFilterList}
+                                                                        mandatory={true}
+                                                                        loadOptions={vendorFilterList}
+                                                                        handleChange={(e) => handleVendorName(e)}
+                                                                        errors={errors.vendorName}
+                                                                        disabled={isViewMode}
+                                                                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                                        isLoading={{
+                                                                            isLoader: inputLoader,
+                                                                            loaderClass: ''
+                                                                        }}
+                                                                    />
                                                                 </Col>
-                                                            </>
-                                                            )}
+                                                            </>)}
 
 
                                                             {((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
@@ -980,6 +1286,46 @@ function AddBudget(props) {
                                                                 </>
                                                             )}
                                                             <Col className="col-md-15">
+                                                                <TextFieldHookForm
+                                                                    name="plantCurrency"
+                                                                    label="Plant Currency"
+                                                                    placeholder={'-'}
+                                                                    defaultValue={''}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    rules={{
+                                                                        required: false,
+                                                                    }}
+                                                                    mandatory={false}
+                                                                    disabled={true}
+                                                                    className=" "
+                                                                    customClassName=" withBorder mb-1"
+                                                                    handleChange={() => { }}
+                                                                    errors={errors.plantCurrency}
+                                                                />
+                                                                {showPlantWarning && <WarningMessage dClass="mt-0" message={`${getValues("plantCurrency")} rate is not present in the Exchange Master`} />}
+
+                                                            </Col>
+                                                            {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                                                                <Col className="col-md-15">
+                                                                    <SearchableSelectHookForm
+                                                                        label={"Exchange Rate Source"}
+                                                                        name={"ExchangeSource"}
+                                                                        placeholder={"Select"}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        rules={{ required: true }}
+                                                                        register={register}
+                                                                        defaultValue={partType.length !== 0 ? partType : ""}
+                                                                        options={renderListing('ExchangeSource')}
+                                                                        mandatory={true}
+                                                                        handleChange={handleExchangeRateSource}
+                                                                        errors={errors.ExchangeSource}
+                                                                        disabled={isViewMode ? true : false || isEditFlag ? true : false}
+                                                                    />
+                                                                </Col>)}
+                                                            <Col className="col-md-15">
                                                                 <SearchableSelectHookForm
                                                                     label={"Part Type"}
                                                                     name={"PartType"}
@@ -993,31 +1339,30 @@ function AddBudget(props) {
                                                                     mandatory={true}
                                                                     handleChange={handlePartTypeChange}
                                                                     errors={errors.PartType}
-                                                                    disabled={isViewMode ? true : false}
+                                                                    disabled={isViewMode || isEditFlag}
                                                                 />
                                                             </Col>
-                                                            <Col md="3">
-                                                                <label>{"Part No. (Revision No.)"}<span className="asterisk-required">*</span></label>
-                                                                <div className="d-flex justify-space-between align-items-center async-select">
-                                                                    <div className="fullinput-icon p-relative">
-                                                                        <AsyncSelect
-                                                                            id='AddBudget_PartNumber'
-                                                                            name="PartNumber"
-                                                                            //ref={this.myRef}
-                                                                            //key={updateAsyncDropdown}
-                                                                            loadOptions={partFilterList}
-                                                                            onChange={(e) => handlePartName(e)}
-                                                                            value={part}
-                                                                            noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                                                            onKeyDown={(onKeyDown) => {
-                                                                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                                                            }}
-                                                                            isDisabled={(isViewMode || partType.length === 0) ? true : false}
-                                                                            onBlur={() => setShowErrorOnFocusPart(true)}
-                                                                        />
-                                                                        {((showErrorOnFocusPart && part.length === 0) || isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                                                                    </div>
-                                                                </div>
+                                                            <Col className="col-md-3 p-relative">
+                                                                <AsyncSearchableSelectHookForm
+                                                                    label={"Part No. (Revision No.)"}
+                                                                    id='AddBudget_PartNumber'
+                                                                    name={"PartNumber"}
+                                                                    placeholder={"Select"}
+                                                                    Controller={Controller}
+                                                                    value={part}
+                                                                    control={control}
+                                                                    rules={{ required: true }}
+                                                                    register={register}
+                                                                    defaultValue={part?.length !== 0 ? part : ""}
+                                                                    asyncOptions={partFilterList}
+                                                                    mandatory={true}
+                                                                    loadOptions={partFilterList}
+                                                                    handleChange={(e) => handlePartName(e)}
+                                                                    errors={errors.PartNumber}
+                                                                    disabled={(isViewMode || partType.length === 0) ? true : false || isEditFlag}
+                                                                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                                />
+
                                                             </Col>
 
                                                             <div className="col-md-3 p-relative">
@@ -1040,7 +1385,7 @@ function AddBudget(props) {
                                                                     //validate={(role == null || role.length === 0) ? [required] : []}
                                                                     required={true}
                                                                     handleChange={handleFinancialYear}
-                                                                    disabled={isViewMode ? true : false}
+                                                                    disabled={isViewMode ? true : false || isEditFlag}
                                                                 />
 
                                                             </div>
@@ -1053,19 +1398,22 @@ function AddBudget(props) {
                                                                     Controller={Controller}
                                                                     control={control}
                                                                     register={register}
-                                                                    mandatory={false}
+                                                                    mandatory={budgetedEntryType ? true : false}
                                                                     rules={{
-                                                                        required: false,
+                                                                        required: budgetedEntryType ? true : false,
                                                                     }}
                                                                     //component={searchableSelect}
                                                                     placeholder={'Select'}
                                                                     options={renderListing("currency")}
                                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                                                     //validate={(role == null || role.length === 0) ? [required] : []}
-                                                                    required={false}
+                                                                    required={budgetedEntryType ? true : false}
                                                                     handleChange={handleCurrencyChange}
                                                                     disabled={disableCurrency || isViewMode ? true : false}
+                                                                    customClassName="mb-1"
                                                                 />
+                                                                {currency?.label && showWarning && <WarningMessage dClass="mt-1" message={`${currency?.label} rate is not present in the Exchange Master`} />}
+
                                                                 <button id='AddBudget_checkbox' className='user-btn budget-tick-btn' type='button' onClick={getCostingPrice} disabled={isViewMode ? true : false} >
                                                                     <div className='save-icon' ></div>
                                                                 </button>
@@ -1078,12 +1426,34 @@ function AddBudget(props) {
                                                 <Row>
                                                     <Col md="12">
                                                         <Row className='align-items-center'>
-                                                            <Col md="4">
+                                                            <Col md="3">
                                                                 <div className="left-border">{"Budgeting Details:"}</div>
                                                             </Col>
-                                                            <Col md="8">
+                                                            {/* <Col md="3">
                                                                 <div className='budgeting-details'>
-                                                                    <label className='w-fit'>Current Price:</label>
+                                                                    <label className='w-fit'>{`Current Price (${getValues("plantCurrency") ?? "Plant Currency"}:)`}</label>
+                                                                    <NumberFieldHookForm
+                                                                        label=""
+                                                                        name={"currentPrice"}
+                                                                        errors={errors.currentLocalPrice}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        register={register}
+                                                                        disableErrorOverflow={true}
+                                                                        mandatory={false}
+                                                                        rules={{
+                                                                            required: false,
+                                                                        }}
+                                                                        handleChange={() => { }}
+                                                                        disabled={true}
+                                                                        customClassName={'withBorder'}
+                                                                    />
+                                                                </div>
+
+                                                            </Col> */}
+                                                            <Col md="9">
+                                                                <div className='budgeting-details'>
+                                                                    <label className='w-fit'>{`Current Price :`}</label>
                                                                     <NumberFieldHookForm
                                                                         label=""
                                                                         name={"currentPrice"}
@@ -1103,6 +1473,29 @@ function AddBudget(props) {
                                                                 </div>
 
                                                             </Col>
+
+                                                            {/* <Col md="3">
+                                                                <div className='budgeting-details'>
+                                                                    <label className='w-fit'>{`Current Price ${currency?.label ? `(${currency.label})` : '(Currency)'}:`}</label>
+                                                                    <NumberFieldHookForm
+                                                                        label=""
+                                                                        name={"currentPrice"}
+                                                                        errors={errors.currentSettlmentPrice}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        register={register}
+                                                                        disableErrorOverflow={true}
+                                                                        mandatory={false}
+                                                                        rules={{
+                                                                            required: false,
+                                                                        }}
+                                                                        handleChange={() => { }}
+                                                                        disabled={true}
+                                                                        customClassName={'withBorder'}
+                                                                    />
+                                                                </div>
+
+                                                            </Col> */}
                                                         </Row>
                                                     </Col>
 
@@ -1168,32 +1561,33 @@ function AddBudget(props) {
                                                             <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
                                                     </>}
 
-                                                    <Col md="9">
-                                                        {currency && currency?.label ?
-                                                            <div className='budgeting-details  mt-2 '>
-                                                                <label className='w-fit'>{`Total Sum ${currency?.label ? `(${currency.label})` : '(Currency)'}:`}</label>
-                                                                <NumberFieldHookForm
-                                                                    label=""
-                                                                    name={"totalSumCurrency"}
-                                                                    errors={errors.totalSumCurrency}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    register={register}
-                                                                    disableErrorOverflow={true}
-                                                                    mandatory={false}
-                                                                    rules={{
-                                                                        required: false,
-                                                                    }}
-                                                                    handleChange={() => { }}
-                                                                    disabled={true}
-                                                                    customClassName={'withBorder'}
-                                                                />
-                                                            </div> : <></>
-                                                        }
-                                                    </Col>
-                                                    <Col md="3">
+
+                                                    {(!hidePlantCurrency && costConverSionInLocalCurrency) && <Col md="4">
+                                                        {/* {currency && currency?.label ? */}
+                                                        <div className='budgeting-details  mt-2 '>
+                                                            <label className='w-fit'>{`Total Sum (${getValues("plantCurrency") ?? "Currency"}):`}</label>
+                                                            <NumberFieldHookForm
+                                                                label=""
+                                                                name={"totalSumPlantCurrency"}
+                                                                errors={errors.totalSumPlantCurrency}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                disableErrorOverflow={true}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                disabled={true}
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </div>  <></>
+                                                        {/* } */}
+                                                    </Col>}
+                                                    {(!(!costConverSionInLocalCurrency && reactLocalStorage.getObject("baseCurrency") === getValues("plantCurrency"))) && <Col md="4">
                                                         <div className='budgeting-details  mt-2 mb-2'>
-                                                            <label className='w-fit'>Total Sum:</label>
+                                                            <label className='w-fit'>{`Total Sum (${reactLocalStorage.getObject("baseCurrency")})):`}</label>
                                                             <NumberFieldHookForm
                                                                 label=""
                                                                 name={"totalSum"}
@@ -1211,6 +1605,29 @@ function AddBudget(props) {
                                                                 customClassName={'withBorder'}
                                                             />
                                                         </div>
+                                                    </Col>}
+                                                    <Col md="4">
+                                                        {/* {currency && currency?.label ? */}
+                                                        <div className='budgeting-details  mt-2 '>
+                                                            <label className='w-fit'>{`Total Sum (${currency?.label ? `(${currency.label})` : getValues("plantCurrency")}):`}</label>
+                                                            <NumberFieldHookForm
+                                                                label=""
+                                                                name={"totalSumCurrency"}
+                                                                errors={errors.totalSumCurrency}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                disableErrorOverflow={true}
+                                                                mandatory={true}
+                                                                rules={{
+                                                                    required: true,
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                disabled={true}
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </div>  <></>
+                                                        {/* } */}
                                                     </Col>
 
                                                 </Row>
@@ -1241,8 +1658,7 @@ function AddBudget(props) {
                                                         <div className={"cancel-icon"}></div>{" "}
                                                         {"Cancel"}
                                                     </button>
-
-                                                    {!isFinalApprover ?
+                                                    {!userDetails().Role === 'SuperAdmin' && !isFinalApprover && initialConfiguration?.IsMasterApprovalAppliedConfigure ?
                                                         <button type="submit"
                                                             id='AddBudget_SendForApproval'
                                                             className="user-btn approval-btn save-btn mr5"

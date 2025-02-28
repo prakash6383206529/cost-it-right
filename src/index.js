@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { msalConfig } from "./authConfig";
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
 import Toaster from './components/common/Toaster';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
@@ -65,11 +66,15 @@ msalInstance.handleRedirectPromise().then(authResult => {
 
 // Store initialization with support for Redux DevTools
 const store = createStoreWithMiddleware(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+// Initialize QueryClient
+const queryClient = new QueryClient();
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App instance={msalInstance} />
+      <QueryClientProvider client={queryClient}>
+        <App instance={msalInstance} />
+      </QueryClientProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

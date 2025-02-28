@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getLabourDataList, deleteLabour } from '../actions/Labour';
 import AddLabour from './AddLabour';
@@ -21,7 +21,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import Button from '../../layout/Button';
@@ -60,6 +60,11 @@ function LabourListing(props) {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    effectiveDate: '',
+    selectedVendor: [],
+    selectedCustomer: [],
+    costingTypeId: ZBCTypeId,
+    totalRecordCount: 0
   });
   const dispatch = useDispatch();
   const { labourDataList, topAndLeftMenuData } = useSelector(state => ({ labourDataList: state.labour.labourDataList, topAndLeftMenuData: state.auth.topAndLeftMenuData, }));
@@ -99,13 +104,23 @@ function LabourListing(props) {
 
 
 
-  const getTableListData = (employment_terms = '', state = 0, plant = '', labour_type = 0, machine_type = 0) => {
+  const getTableListData = (employment_terms = '', state = 0, plant = '', labour_type = 0, machine_type = 0, effectiveDate = '', vendorId = '', customerId = '', costingHeadId = '', selectedPart = '') => {
     let filterData = {
       employment_terms: employment_terms,
       state: state,
       plant: plant,
       labour_type: labour_type,
       machine_type: machine_type,
+      isCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc,
+      isVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc,
+      isZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
+      effectiveDate: /* DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('YYYY-MM-DD') :  */'',
+      vendorId: "",
+      customerId: "",
+      costingHeadId: null,
+      partId: "",
+      isRequestForCosting: null,
+      baseCostingId: null,
     }
     dispatch(getLabourDataList(true, filterData, (res) => {
       setState((prevState) => ({ ...prevState, isLoader: false }))
@@ -113,7 +128,7 @@ function LabourListing(props) {
         setState((prevState) => ({ ...prevState, tableData: [] }))
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        setState((prevState) => ({ ...prevState, tableData: Data, }))
+        setState((prevState) => ({ ...prevState, tableData: Data, totalRecordCount: Data?.length }))
       } else {
       }
     }))
@@ -217,7 +232,7 @@ function LabourListing(props) {
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      labourDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
+      labourDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }))
     }, 500);
   }
 
@@ -243,7 +258,7 @@ function LabourListing(props) {
   const closeBulkUploadDrawer = (event, type) => {
     setState((prevState) => ({ ...prevState, isBulkUpload: false }))
     if (type !== 'cancel') {
-      getTableListData('' ,0 ,'' ,0,0 ) 
+      getTableListData('', 0, '', 0, 0)
     }
   }
 
@@ -267,7 +282,13 @@ function LabourListing(props) {
     let tempArr = []
     tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (labourDataList ? labourDataList : [])
-    return returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
+    const filteredLabels = LABOUR_DOWNLOAD_EXCEl.filter(column => {
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr)
   };
   const handleShown = () => {
     setState((prevState) => ({ ...prevState, shown: !state.shown }))
@@ -372,9 +393,9 @@ function LabourListing(props) {
                     <>
 
                       <ExcelFile filename={'Labour'} fileExtension={'.xls'} element={
-                        <Button id={"Excel-Downloads-labourListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                        <Button id={"Excel-Downloads-labourListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                       }>
-                        {onBtExport()}
+                        {state?.totalRecordCount !== 0 ? onBtExport() : null}
                       </ExcelFile>
                     </>
                   }
@@ -413,12 +434,16 @@ function LabourListing(props) {
               suppressRowClickSelection={true}
             >
               <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+              <AgGridColumn field="CostingHead"minWidth={170} headerName="Costing Head"></AgGridColumn>
+
               <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
               <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
               <AgGridColumn field="State" headerName="State"></AgGridColumn>
               <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
               <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
+              {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+
               <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
               <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
               <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

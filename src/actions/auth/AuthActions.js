@@ -92,7 +92,8 @@ export function TokenAPI(requestData, callback) {
             UserName: requestData.username,
             Password: requestData.password,
             RememberMe: requestData.rememberMe || false,
-            IPAddress: await getLocalIPAddress(), // Fetch local IP using WebRTC
+            // IPAddress: await getLocalIPAddress(), // Fetch local IP using WebRTC
+            IPAddress: '', // Fetch local IP using WebRTC
             MacAddress: '', // Populate this field if you have the MAC address, otherwise remove it.
             UserAgent: `${browserName} ${browserVersion}`,
             Token: requestData.Token,
@@ -1129,10 +1130,11 @@ export function getAllTechnologyAPI(callback, data, manageLevel = false) {
  * @method getSimulationTechnologySelectList
  * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
  */
-export function getSimulationTechnologySelectList(callback, data) {
+export function getSimulationTechnologySelectList(callback, data, manageLevel = false) {
+    const listFor = manageLevel ? data ?? "" : data ?? "users"
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${data ?? 'Users'}`, config());
+        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${listFor}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

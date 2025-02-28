@@ -56,7 +56,7 @@ import {
     AddAssemblyOrComponentHeaderData,
     SAP_PUSH_HEADER_DATA
 } from '../../config/masterData';
-import { CheckApprovalApplicableMaster, checkForSameFileUpload, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
+import { CheckApprovalApplicableMaster, checkForSameFileUpload, RFQ_KEYS, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
@@ -121,7 +121,7 @@ class BulkUpload extends Component {
     componentDidMount() {
 
         this.setState({ costingTypeId: this.props?.fileName === "Interest Rate" ? VBCTypeId : getCostingTypeIdByCostingPermission() })
-        this.props.getAllMasterApprovalDepartment('',(res) => {
+        this.props.getAllMasterApprovalDepartment('', (res) => {
             const Data = res?.data?.SelectList
             const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
             const updateList = Data && Data.filter(item => Departments.includes(item.Text))
@@ -139,46 +139,46 @@ class BulkUpload extends Component {
                 this.callDivisionApi(department[0].value)
             }
         })
-        if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId,'', (res) => {
+        if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
             })
-        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        } else if (!this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
-        if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId,'', (res) => {
+        if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
             })
-        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        } else if (!this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
-        if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId,'', (res) => {
+        if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
             })
-        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        } else if (!this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
-        if (this.props?.masterId === MACHINE_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+        if (this.props?.masterId === MACHINE_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
             })
-        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        } else if (!this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
@@ -197,7 +197,7 @@ class BulkUpload extends Component {
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) || this.state.costingTypeId === Number(ZBCADDMOREOPERATION) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) || this.state.costingTypeId === Number(VBCADDMOREOPERATION) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) || this.state.costingTypeId === Number(CBCADDMOREOPERATION) ? CBCTypeId : this.state.bopType === DETAILED_BOP ? VBCTypeId : this.state.costingTypeId),
             divisionId: divisionId
         }
-        if (!this.props.initialConfiguration.IsMultipleUserAllowForApproval) {
+        if (!this.props.initialConfiguration?.IsMultipleUserAllowForApproval) {
             this.props.checkFinalUser(obj, (res) => {
                 if (res?.data?.Result) {
                     this.setState({ IsFinalApprover: res?.data?.Data?.IsFinalApprover })
@@ -216,16 +216,16 @@ class BulkUpload extends Component {
      * @description called after render the component
     */
     componentDidUpdate(prevProps, prevState) {
-        if (this.props?.masterId === RM_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+        if (this.props?.masterId === RM_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
             this.commonFunction()
         }
-        if (this.props?.masterId === BOP_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+        if (this.props?.masterId === BOP_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
             this.commonFunction()
         }
-        if (this.props?.masterId === OPERATIONS_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+        if (this.props?.masterId === OPERATIONS_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
             this.commonFunction()
         }
-        if (this.props?.masterId === MACHINE_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+        if (this.props?.masterId === MACHINE_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
             this.commonFunction()
         }
 
@@ -489,7 +489,7 @@ class BulkUpload extends Component {
                         case String(LABOURBULKUPLOAD):
                             const localizedLabour = this.localizeHeaders(Labour);
                             masterDataArray = localizedLabour
-                            checkForFileHead = checkForSameFileUpload(localizedLabour, fileHeads)
+                            checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(localizedLabour), fileHeads)
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
@@ -591,8 +591,15 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(ASSEMBLYORCOMPONENTSRFQ):
-                            checkForFileHead = checkForSameFileUpload(AddAssemblyOrComponentHeaderData, fileHeads)
-                            break
+                            const headers = !RFQ_KEYS?.SHOW_N100_HAVELLS
+                                ? AddAssemblyOrComponentHeaderData.filter(h =>
+                                    !['PartDesignSourceName', 'N100Timeline'].includes(h.value)
+                                )
+                                : AddAssemblyOrComponentHeaderData;
+                            checkForFileHead = checkForSameFileUpload(headers, fileHeads)
+                            break;
+
+
                         case String(BOUGHTOUTPARTSRFQ):
                             checkForFileHead = checkForSameFileUpload(AddBoughtOutPartsHeaderData, fileHeads)
 
@@ -600,16 +607,7 @@ class BulkUpload extends Component {
                         case String(RAWMATERIALSRFQ):
 
                             checkForFileHead = checkForSameFileUpload(AddRawMaterialHeaderData, fileHeads)
-
                             break
-
-
-
-
-
-                        //checkForFileHead = checkForSameFileUpload(AddRFQUpload, fileHeads)
-
-
                         case String(OVERHEADBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedOverheadVBC = this.localizeHeaders(OverheadVBC);
@@ -745,24 +743,27 @@ class BulkUpload extends Component {
                                 } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
-                                if (fileHeads[i] === 'InsertPartNumber' || fileHeads[i] === 'BOPNumber' || fileHeads[i] === 'InsertNumber') {
+                                if (fileHeads[i] === `${showBopLabel()}PartNumber` || fileHeads[i] === 'BOPNumber' || fileHeads[i] === `${showBopLabel()}Number`) {
                                     fileHeads[i] = 'BoughtOutPartNumber'
                                 }
-                                if (fileHeads[i] === 'InsertPartName' || fileHeads[i] === 'BOPName' || fileHeads[i] === 'InsertName') {
+                                if (fileHeads[i] === `${showBopLabel()}PartName` || fileHeads[i] === 'BOPName' || fileHeads[i] === `${showBopLabel()}Name`) {
 
                                     fileHeads[i] = 'BoughtOutPartName'
 
                                 }
-                                if (fileHeads[i] === `Insert${VendorLabel}`) {
+                                if (fileHeads[i] === 'Exchange Rate Source') {
+                                    fileHeads[i] = 'ExchangeRateSourceName'
+                                }
+                                if (fileHeads[i] === `${showBopLabel()}${VendorLabel}`) {
                                     fileHeads[i] = `BOP${VendorLabel}`
                                 }
-                                if (fileHeads[i] === 'InsertCategory') {
+                                if (fileHeads[i] === `${showBopLabel()}Category`) {
                                     fileHeads[i] = 'CategoryName'
                                 }
                                 if (fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
-                                if (fileHeads[i] === `Insert${VendorLabel}`) {
+                                if (fileHeads[i] === `${showBopLabel()}${VendorLabel}`) {
                                     fileHeads[i] = `BOP${VendorLabel}`
                                 }
                                 if (fileName === 'Product Component' && fileHeads[i] === 'PreferredForImpactCalculation') {
@@ -829,6 +830,15 @@ class BulkUpload extends Component {
                                 }
                                 if (fileHeads[i] === 'To Currency') {
                                     fileHeads[i] = 'ToCurrency'
+                                }
+                                if (fileHeads[i] === `IsBreakup${showBopLabel()}`) {
+                                    fileHeads[i] = `IsBreakupBoughtOutPart`
+                                }
+                                if (fileHeads[i] === 'OverheadRMCost/PartCost') {
+                                    fileHeads[i] = 'OverheadRMPercentage'
+                                }
+                                if (fileHeads[i] === 'ProfitRMCost/PartCost') {
+                                    fileHeads[i] = 'ProfitRMPercentage'
                                 }
                                 const key = this.getValueFromMasterData(fileHeads[i], masterDataArray)
 
@@ -937,7 +947,7 @@ class BulkUpload extends Component {
         let masterUploadData = {
             Records: fileName === 'Operation' ? updatedFileData : fileData,
             LoggedInUserId: loggedInUserId(),
-            IsFinalApprover: !this.props.initialConfiguration.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
+            IsFinalApprover: !this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
             CostingTypeId: costingTypeId,
             TypeOfEntry: this.props.masterId === RM_MASTER_ID && this.state.isImport ? ENTRY_TYPE_IMPORT : typeOfEntryId ? typeOfEntryId : 0,
             DivisionId: this.state.division?.value,
@@ -1416,7 +1426,7 @@ class BulkUpload extends Component {
                                         <button
                                             type="submit"
                                             className="submit-button save-btn"
-                                            disabled={(setDisable || noApprovalCycle) && (!this.props.initialConfiguration.IsMultipleUserAllowForApproval)}
+                                            disabled={(setDisable || noApprovalCycle) && (!this.props.initialConfiguration?.IsMultipleUserAllowForApproval)}
                                         >
                                             <div className={"save-icon"}></div>
                                             {isEditFlag ? 'Update' : 'Save'}
@@ -1542,7 +1552,7 @@ class BulkUpload extends Component {
                             <button
                                 type="submit"
                                 className="submit-button save-btn"
-                                disabled={this.props.initialConfiguration.IsMultipleUserAllowForApproval ? false : setDisable}
+                                disabled={this.props.initialConfiguration?.IsMultipleUserAllowForApproval ? false : setDisable}
                             >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? 'Update' : 'Save'}

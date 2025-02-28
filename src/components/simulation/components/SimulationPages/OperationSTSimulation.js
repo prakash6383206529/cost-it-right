@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -22,11 +22,12 @@ import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
-import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 import { useLabels } from '../../../../helper/core';
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
 import { setResetCostingHead } from '../../../../actions/Common';
+import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -66,7 +67,10 @@ function OperationSTSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const costingHeadFilter = useSelector(state => state?.common?.costingHeadFilter)
     useEffect(() => {
 
@@ -108,8 +112,8 @@ function OperationSTSimulation(props) {
         }
     }, [])
     useEffect(() => {
-        if (list && list.length >= 0) {
-            gridRef.current.api.sizeColumnsToFit();
+        if (list && list?.length >= 0) {
+            gridRef?.current?.api.sizeColumnsToFit();
             let maxDate = getMaxDate(list)
             setMaxDate(maxDate?.EffectiveDate)
         }
@@ -175,7 +179,10 @@ function OperationSTSimulation(props) {
     }
     const ageValueGetterRate = (params) => {
         let row = params.data
-        row.NewRate = row.ForType === 'Welding' ? row?.NewOperationBasicRate * row?.OperationConsumption : row.NewRate
+        if (row.ForType === 'Welding') {
+            const consumption = row?.OperationConsumption || 1
+            row.NewRate = row?.NewOperationBasicRate * consumption
+        }
         return row.NewRate
     }
 
@@ -394,6 +401,10 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return isImpactedMaster ? row?.OldOperationConsumption : row?.OperationConsumption
     }
+    const localConversionFormatter = (props) => {
+        const cellValue = checkForNull(props?.value);
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
@@ -414,11 +425,26 @@ function OperationSTSimulation(props) {
         consumptionFormatter: consumptionFormatter,
         statusFilter: CostingHeadDropdownFilter,
 
+        localConversionFormatter: localConversionFormatter
     };
-
 
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
+
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
+                if (!res?.status && !res?.error) {
+                    setValueFunction(true, res);
+                }
+            }))
+        } else {
+            setValueFunction(false, []);
+        }
+        setShowTooltip(false)
+    }, 500);
+    const setValueFunction = (isExchangeRate, res) => {
+        const masterText = simulationApplicability?.label === APPLICABILITY_OPERATIONS_SIMULATION ? APPLICABILITY_OPERATIONS_SIMULATION : APPLICABILITY_SURFACE_TREATMENT_SIMULATION
+        const filteredMasterId = masterList?.find(item => item?.Text === masterText)?.Value;
         if (!isEffectiveDateSelected) {
             setIsWarningMessageShow(true)
             return false
@@ -445,11 +471,14 @@ function OperationSTSimulation(props) {
         setIsDisable(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         let obj = {}
-        obj.SimulationTechnologyId = selectedMasterForSimulation.value
+        obj.SimulationTechnologyId = isExchangeRate ? EXCHNAGERATE : selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
         obj.SimulationHeadId = list[0].CostingTypeId
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
+        obj.SimulationIds = tokenForMultiSimulation
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        obj.ExchangeRateSimulationTechnologyId = filteredMasterId
 
         let tempArr = []
         arr && arr.map(item => {
@@ -467,10 +496,11 @@ function OperationSTSimulation(props) {
             tempArr.push(tempObj)
             return null
         })
-
-        obj.SimulationIds = tokenForMultiSimulation
-        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         obj.SimulationSurfaceTreatmentAndOperation = tempArr
+        if (isExchangeRate) {
+            obj.SimulationExchangeRates = res
+            obj.IsExchangeRateSimulation = true
+        }
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             setIsDisable(false)
             if (res?.data?.Result) {
@@ -478,8 +508,7 @@ function OperationSTSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
-        setShowTooltip(false)
-    }, 500);
+    }
     const floatingFilterStatus = {
         maxValue: 1,
         suppressFilterButton: true,
@@ -640,24 +669,34 @@ function OperationSTSimulation(props) {
                                                     floatingFilterComponentParams={floatingFilterStatus}
                                                     floatingFilterComponent="statusFilter"></AgGridColumn>}
                                                 <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>
+                                                {<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
                                                 {!isImpactedMaster && <><AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
                                                 {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName={vendorLabel + " (Code)"} minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
                                                 {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn></>}
-                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn minWidth={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {operationTypes.includes('Welding') && <AgGridColumn field="OperationConsumption" editable='false' headerName="Consumption" minWidth={190} cellRenderer='consumptionFormatter'></AgGridColumn>}
+                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                <AgGridColumn field="Currency" minWidth={150} cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                {(isImpactedMaster || lastRevision) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>}
+
                                                 {operationTypes.includes('Welding') && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={320} headerName="Welding Material Rate/Kg" marryChildren={true} >
                                                     <AgGridColumn minWidth={150} field="" editable={false} headerName="Existing" colId="oldOperationBasicRate" cellRenderer='oldBasicRateFormatter'></AgGridColumn>
                                                     <AgGridColumn minWidth={150} field="NewOperationBasicRate" editable={EditableCallbackForNewBasicRate} headerName="Revised" colId='newOperationBasicRate' headerComponent={'revisedRateHeader'} cellRenderer='newWeldingRateFormatter'></AgGridColumn>
                                                 </AgGridColumn>}
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate (Currency)" marryChildren={true} >
                                                     <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer='oldRateFormatter'></AgGridColumn>
                                                     <AgGridColumn minWidth={120} editable={operationTypes.includes('Welding') || EditableCallbackForNewBasicRate} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedRateHeader'} cellRenderer='rateFormatter' valueGetter={ageValueGetterRate}
                                                     >
 
                                                     </AgGridColumn>
                                                 </AgGridColumn>
+                                                {(isImpactedMaster || lastRevision) && String(props?.masterId) === String(EXCHNAGERATE) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Rate (Plant Currency)`}>
+                                                    <AgGridColumn minWidth={120} field="OldOperationBasicRateLocalConversion" editable='false' headerName="Existing" colId='OldOperationNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="NewOperationBasicRateLocalConversion" editable='false' headerName="Revised" colId='NewOperationNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
+                                                </AgGridColumn>
+                                                }
                                                 {props.children}
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>

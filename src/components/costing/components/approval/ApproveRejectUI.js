@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { getReasonSelectList, setSAPData } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, AllApprovalField } from '../../../layout/HookFormInputs'
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails } from '../../../../helper'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails, validateFileName } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { FILE_URL, RAWMATERIALINDEX, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
 import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -74,7 +74,7 @@ function ApproveRejectUI(props) {
 
   useEffect(() => {
     if (getConfigurationKey().IsReleaseStrategyConfigured && (!setDataFromSummary || disableReleaseStrategy)) {
-let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
+      let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
       setValue('ApprovalType', appTypeId ? { label: appTypeId?.Text, value: appTypeId?.Value } : '')
       //setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
       setValue('dept', dataInFields?.Department ? { label: dataInFields.Department.label, value: dataInFields.Department.value } : '')
@@ -82,9 +82,14 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
 
     } else if (!getConfigurationKey().IsDivisionAllowedForDepartment || type === 'Approve') {
       if (type === 'Approve') {
-         if (isSimulationApprovalListing) {
+        if (isSimulationApprovalListing) {
           setValue('dept', selectedRowData && selectedRowData.length !== 0 ?
             { label: selectedRowData[0]?.DepartmentName, value: selectedRowData[0]?.DepartmentId } : '')
+        } else if (!isSimulationApprovalListing && approvalData?.length > 0) {
+          setValue('dept', {
+            label: approvalData[0]?.DepartmentName || '',
+            value: approvalData[0]?.DepartmentId || ''
+          })
         } else {
           setValue('dept', simulationDetail ? { label: simulationDetail.DepartmentName || '', value: simulationDetail.DepartmentId || '' } : '')
         }
@@ -241,6 +246,7 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
 
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
+    const fileName = file.name;
     setIsDisable(true)
     setAttachmentLoader(true)
     if (status === 'removed') {
@@ -255,21 +261,32 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
-      setIsDisable(true)
+      if (!validateFileName(fileName)) {
+        dropzone.current.files.pop()
+        setDisableFalseFunction()
+        return false;
+      }
       dispatch(uploadSimulationAttachment(data, (res) => {
-        if (res?.includes("Error")) {
+        if (res && res?.status !== 200) {
+          setDisableFalseFunction()
           dropzone.current.files.pop()
           setAttachmentLoader(false)
-          setDisableFalseFunction()
           return false
-      }
+        }
         setDisableFalseFunction()
-        let Data = res?.data[0]
-        files.push(Data)
-        setFiles(files)
-        setTimeout(() => {
-          setIsOpen(!IsOpen)
-        }, 500);
+        if ('response' in res) {
+          status = res && res?.response?.status
+          dropzone.current.files.pop()
+        }
+        else {
+          let Data = res.data[0]
+          files.push(Data)
+          setAttachmentLoader(false)
+          setFiles(files)
+          setTimeout(() => {
+            setIsOpen(!IsOpen)
+          }, 500);
+        }
       }))
     }
 
@@ -337,7 +354,7 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            {props?.isDisable&& <LoaderCustom customClass="approve-reject-drawer-loader" />}
+            {props?.isDisable && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form
             >
               <Row className="drawer-heading">
@@ -355,7 +372,7 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
               </Row>
 
               <Row className="ml-0">
-                {
+                {/* {
                   type === 'Sender' && getConfigurationKey().IsSAPConfigured &&
 
                   <Col md="12" className="simulation-sap-approval">
@@ -374,7 +391,7 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
 
                     </Row>
                   </Col>
-                }
+                } */}
 
                 {getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown && <Col md="6">
                   <SearchableSelectHookForm
@@ -409,11 +426,11 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID)&&!showApprovalDropdown()) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false) || type === 'Approve'}
+                        disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID) && !showApprovalDropdown()) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false) || type === 'Approve'}
                       />
                     </div>}
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                      {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField
                           label="Approver"
                           approverList={approvalDropDown}
@@ -432,10 +449,10 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
                           options={approvalDropDown}
                           mandatory={true}
                           handleChange={handleApproverChange}
-                          disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID)&&!showApprovalDropdown()))}
+                          disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID) && !showApprovalDropdown()))}
                           errors={errors.approver}
                         />}
-                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : initialConfiguration.IsMultipleUserAllowForApproval ? "There are no further highest level users associated with this company. Kindly contact the admin team for support." : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
+                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : initialConfiguration?.IsMultipleUserAllowForApproval ? "There are no further highest level users associated with this company. Kindly contact the admin team for support." : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
                     </div>
                   </>
                 )}
@@ -457,7 +474,7 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? true : (!(userData.Department.length > 1 && reasonId !== REASON_ID)&&!showApprovalDropdown()) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false) || type === 'Approve')}
+                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? true : (!(userData.Department.length > 1 && reasonId !== REASON_ID) && !showApprovalDropdown()) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false) || type === 'Approve')}
 
                       />
                     </div>}
@@ -479,7 +496,7 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
                       />
                     </div>}
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                      {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField
                           label="Approver"
                           approverList={getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown ? getValues('ApprovalType') ? approvalDropDown : [] : approvalDropDown}
@@ -499,7 +516,7 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
                           mandatory={true}
                           handleChange={handleApproverChange}
                           errors={errors.approver}
-                          disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID)&&!showApprovalDropdown()))}
+                          disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID) && !showApprovalDropdown()))}
                         />}
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `This user is not in approval cycle for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type, Please contact admin to add approver for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>

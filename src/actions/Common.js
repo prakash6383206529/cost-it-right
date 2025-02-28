@@ -81,6 +81,11 @@ import { MESSAGES } from '../config/message';
 import Toaster from '../components/common/Toaster';
 import axiosInstance from '../utils/axiosInstance';
 import { loggedInUserId } from '../helper';
+import { useDispatch } from 'react-redux';
+import { useQuery, useQueryClient } from 'react-query';
+import { getAllRMDataList, getMaterialTypeDataListAPI, getRMSpecificationDataList } from '../components/masters/actions/Material';
+import { getBOPDataList } from '../components/masters/actions/BoughtOutParts';
+import { useMemo } from 'react';
 
 // const config() = config;
 
@@ -1536,7 +1541,7 @@ export function getPartSelectList(partNumber, callback) {
 }
 
 // costing head filter
-export function setCostingHeadFilter(data,CostingHeadOptions) {
+export function setCostingHeadFilter(data, CostingHeadOptions) {
   return (dispatch) => {
     dispatch({
       type: SET_COSTING_HEAD_FILTER,
@@ -1550,6 +1555,7 @@ export function setCostingHeadFilter(data,CostingHeadOptions) {
 }
 
 export function agGridStatus(data, id, arr = [], arrReports = []) {
+
   return (dispatch) => {
     dispatch({
       type: STATUS_COLUMN_DATA,
@@ -1955,8 +1961,56 @@ export function getTaxCodeSelectList(callback) {
   };
 }
 
+const rmAPICalling = (params, dispatch) => {
+  const { tabs } = params;
+  console.log("tabs333", tabs?.trim())
+  switch (tabs?.trim()) {
+    case "Domestic":
+    case "Import":
+      dispatch(getAllRMDataList(params?.data, params?.skip, params?.take, params?.isPagination, params?.obj, params?.isImport, () => { }))
+      break;
+    case "Specification":
+      dispatch(getRMSpecificationDataList(params?.data, () => { }))
+      break;
+    case "Material":
+      dispatch(getMaterialTypeDataListAPI(() => { }))
+      break;
+    default:
+      break;
+  }
+}
+
+
+
+// ... existing code ...
+
+// export const apiCallingFunction = (params, dispatch) => {
+//   const { master, isMasterSummaryDrawer } = params;
+//   if (isMasterSummaryDrawer) {
+//     return;
+//   }
+
+//   switch (master?.trim()) {
+//     case "RawMaterial":
+//       rmAPICalling(params, dispatch)
+//       break;
+//     default:
+//       break;
+//   }
+// }
+
+// // ... existing code ...
+
+// export function useFetchAPICall(keyName, params = {}) {
+//   const dispatch = useDispatch();
+//   return useQuery([[keyName], params], () => apiCallingFunction(params, dispatch), {
+//     staleTime: Infinity,
+//     onSuccess: (data) => {
+//     }
+//   });
+// }
 export function checkDivisionByPlantAndGetDivisionIdByPart(data, callback) {
-  const requestData = { loggedInUserId: loggedInUserId() , ...data }
+  const requestData = { loggedInUserId: loggedInUserId(), ...data }
   return (dispatch) => {
     const request = axiosInstance.post(API.checkDivisionByPlantAndGetDivisionIdByPart, requestData, config())
     request
@@ -1976,4 +2030,3 @@ export function checkDivisionByPlantAndGetDivisionIdByPart(data, callback) {
       })
   }
 }
-

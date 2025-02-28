@@ -923,7 +923,7 @@ function AddNfr(props) {
                         />
                     </Col>
                     <Col md="3">
-                        <TooltipCustom customClass="ml-1 add-nfr-tooltip" id="variance" tooltipText="Vendors should not exceed a selection limit of 4" />
+                        <TooltipCustom customClass="ml-1 add-nfr-tooltip" width="350px" id="variance" tooltipText="Vendors should not exceed a selection limit of 4" />
                         <AsyncSearchableSelectHookForm
                             label={`${vendorLabel} (Code)`}
                             name={"VendorName"}
@@ -1041,9 +1041,9 @@ function AddNfr(props) {
                                                     {dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.DisplayStatus : ''}
                                                 </div>
                                             </td>
-                                            <td>{checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.Price, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                            <td>{checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.Price, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                             <td><div className='out-sourcing-wrapper'>
-                                                {checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.OutsourcingCost, initialConfiguration.NoOfDecimalForPrice)}
+                                                {checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.OutsourcingCost, initialConfiguration?.NoOfDecimalForPrice)}
                                                 {dataItem?.SelectedCostingVersion && <button
                                                     type="button"
                                                     className={"add-out-sourcing"}

@@ -1,8 +1,8 @@
-import React, { lazy, Suspense, useRef } from 'react';
+import React, { lazy, Suspense, useMemo, useRef } from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { deleteRawMaterialAPI, getAllRMDataList } from '../actions/Material';
+import { deleteRawMaterialAPI, getAllRMDataList, setReducerRMListing } from '../actions/Material';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../helper/auth"
 import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, MASTERS, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -20,7 +20,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { disabledClass, getApprovalTypeSelectList, getGridHeight, setResetCostingHead } from '../../../actions/Common';
+import { disabledClass, useFetchAPICall, getApprovalTypeSelectList, getGridHeight, setResetCostingHead } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
@@ -72,25 +72,24 @@ function RMDomesticListing(props) {
     // const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
     // const [pageNo, setPageNo] = useState(1)
-    const [pageNoNew, setPageNoNew] = useState(1)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
     const [inRangeDate, setinRangeDate] = useState([])
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", NetConditionCost: "", NetCostWithoutConditionCost: "", MachiningScrapRate: "", IsScrapUOMApply: "", ScrapUnitOfMeasurement: "", CalculatedFactor: "", ScrapRatePerScrapUOM: "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", NetConditionCost: "", NetCostWithoutConditionCost: "", MachiningScrapRate: "", IsScrapUOMApply: "", ScrapUnitOfMeasurement: "", CalculatedFactor: "", ScrapRatePerScrapUOM: "", Currency: "", ExchangeRateSourceName: "", OtherNetCost: "" })
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
     const [showExtraData, setShowExtraData] = useState(false)
-    const [render, setRender] = useState(false)
+    const [render, setRender] = useState(true)
 
-    const { t } = useTranslation("MasterLabel")
+    const { t } = useTranslation(["MasterLabel", "common"])
     const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
-    const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined ? true : false
-
+    const [pageRecord, setPageRecord] = useState(0);
+    const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -128,16 +127,58 @@ function RMDomesticListing(props) {
 
     };
 
+    // const params = useMemo(() => {
+    //     let obj = { ...floatingFilterData }
+
+    //     if (obj?.EffectiveDate) {
+    //         if (obj.EffectiveDate.dateTo) {
+    //             let temp = []
+    //             temp.push(DayTime(obj.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+    //             temp.push(DayTime(obj.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+    //             obj.dateArray = temp
+    //         }
+    //     }
+
+    //     obj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : ''
+    //     obj.Currency = floatingFilterData?.Currency
+    //     obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+    //     obj.OtherNetCost = floatingFilterData?.OtherNetCost
+    //     obj.StatusId = [props?.approvalStatus].join(",")
+    //     let data = {
+    //         StatusId: [props?.approvalStatus].join(","),
+    //         net_landed_min_range: value.min,
+    //         net_landed_max_range: value.max,
+    //         ListFor: ListFor,
+    //     }
+
+    //     return {
+    //         data: { technologyId: props?.technology ?? null },
+    //         skip: 0,
+    //         take: globalTakes,
+    //         isPagination: true,
+    //         obj: obj,
+    //         isImport: false,
+    //         dataObj: obj,
+    //         master: 'RawMaterial',
+    //         tabs: 'Domestic',
+    //         isMasterSummaryDrawer: props?.isMasterSummaryDrawer
+    //     }
+    // }, []);
+
+    // const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
 
     useEffect(() => {
         if (rmDataList?.length > 0) {
             setTotalRecordCount(rmDataList[0].TotalRecordCount)
+            setRender(false)
         }
         else {
+            setRender(false)
             setNoData(false)
         }
 
     }, [rmDataList, dispatch])
+
 
 
     useEffect(() => {
@@ -153,7 +194,6 @@ function RMDomesticListing(props) {
                     props?.changeTokenCheckBox(false)
                 }
                 getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
-
             }
             setvalue({ min: 0, max: 0 });
         }
@@ -182,7 +222,7 @@ function RMDomesticListing(props) {
     */
     const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
         const { isSimulation } = props
-
+        setPageRecord(skip)
         if (filterModel?.EffectiveDate && !isReset) {
 
             if (filterModel.EffectiveDate.dateTo) {
@@ -195,7 +235,8 @@ function RMDomesticListing(props) {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [props?.approvalStatus].join(",")
+        let statusString = [props?.approvalStatus]
+
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
             plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
@@ -215,10 +256,15 @@ function RMDomesticListing(props) {
             setloader(true)
         }
         dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+        dataObj.Currency = floatingFilterData?.Currency
+        dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+        dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
+        dataObj.StatusId = statusString
         if (isSimulation && getConfigurationKey().IsDivisionAllowedForDepartment) {
             dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
         }
         if (!props.isMasterSummaryDrawer) {
+
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 if (isSimulation) {
@@ -300,6 +346,7 @@ function RMDomesticListing(props) {
         setTimeout(() => {
             if (rmDataList.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
         setDisableFilter(false)
@@ -374,9 +421,7 @@ function RMDomesticListing(props) {
 
         // setPageNo(1)
         dispatch(updatePageNumber(1))
-        setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
-        // setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
         getDataList(null, null, null, null, null, 0, 0, globalTakes, true, floatingFilterData)
     }
@@ -406,7 +451,6 @@ function RMDomesticListing(props) {
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(updatePageNumber(1))
-        setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
         getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
         dispatch(setSelectedRowForPagination([]))
@@ -451,12 +495,15 @@ function RMDomesticListing(props) {
     const confirmDelete = (ID) => {
         const loggedInUser = loggedInUserId()
         dispatch(deleteRawMaterialAPI(ID, loggedInUser, (res) => {
-            if (res !== undefined && res.status === 417 && res.data.Result === false) {
-                Toaster.error(res.data.Message)
-            } else if (res && res.data && res.data.Result === true) {
+            if (res && res?.data && res?.data?.Result === true) {
+                dispatch(setSelectedRowForPagination([]));
+                if (gridApi) {
+                    gridApi.deselectAll();
+                }
+                reactLocalStorage.remove('selectedRow');
                 Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-                setDataCount(0)
-                resetState()
+                getDataList(null, null, null, null, null, 0, pageRecord, globalTakes, true, floatingFilterData, false);
+                setDataCount(0);
             }
         }));
         setShowPopup(false)
@@ -477,6 +524,7 @@ function RMDomesticListing(props) {
     * @description Renders buttons
     */
     const handleCompareDrawer = (data) => {
+
         setCompareDrawer(true)
         setRowDataForCompare([data])
     }
@@ -487,13 +535,13 @@ function RMDomesticListing(props) {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
         let isDeleteButton = false
-
+        const IsRFQRawMaterial = Boolean(rowData?.IsRFQRawMaterial);
         if (EditAccessibility) {
             isEditbale = true
         } else {
             isEditbale = false
         }
-        if (isRfq && isMasterSummaryDrawer) {
+        if (isRfq && isMasterSummaryDrawer && !IsRFQRawMaterial) {
             return (
                 <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
@@ -528,14 +576,14 @@ function RMDomesticListing(props) {
                             onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
                             title={"View"}
                         />}
-                        {isEditbale && <Button
+                        {isEditbale && !IsRFQRawMaterial && <Button
                             id={`rmDomesticListing_edit${props.rowIndex}`}
                             className={"mr-1 Tour_List_Edit"}
                             variant="Edit"
                             onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
                             title={"Edit"}
                         />}
-                        {isDeleteButton && <Button
+                        {isDeleteButton && !IsRFQRawMaterial && <Button
                             id={`rmDomesticListing_delete${props.rowIndex}`}
                             className={"mr-1 Tour_List_Delete"}
                             variant="Delete"
@@ -729,7 +777,13 @@ function RMDomesticListing(props) {
         //tempArr = gridApi && gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
-        return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+        const filteredLabels = RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+            if (column.value === "ExchangeRateSourceName") {
+                return getConfigurationKey().IsSourceExchangeRateNameVisible
+            }
+            return true;
+        })
+        return returnExcelColumn(filteredLabels, tempArr)
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -922,13 +976,19 @@ function RMDomesticListing(props) {
 
 
     }
+
+
+
+
+
+
     return (
         <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
                     {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                     <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-2'}`}>
-                        <Col md="3" lg="3" className='mb-2'>
+                        <Col md="6" lg="6" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                                 buttonSpecificProp={{
@@ -938,7 +998,7 @@ function RMDomesticListing(props) {
                                     steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
                                 }} />)}
                         </Col>
-                        <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
+                        <Col md="6" lg="6" className="mb-3 d-flex justify-content-end">
                             {
                                 // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                 (!props.isMasterSummaryDrawer) &&
@@ -1008,6 +1068,7 @@ function RMDomesticListing(props) {
                                                             title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                             icon={"download mr-1"}
                                                             buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                            disabled={totalRecordCount === 0}
                                                         />
                                                         <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                                                             <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />
@@ -1085,7 +1146,8 @@ function RMDomesticListing(props) {
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                         {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
-
+                                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                        <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                                         <AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -1094,9 +1156,8 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         {props.isMasterSummaryDrawer && rmDataList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
                                         {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                                        {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>)}
-                                        {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>)}
-                                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>}
+                                        {/* {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>} */}
+                                        <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
                                         <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
@@ -1185,6 +1246,8 @@ function RMDomesticListing(props) {
                     type={'Raw Material'}
                     quotationId={props.quotationId}
                     closeDrawer={closeCompareDrawer}
+                    summaryDrawer={props?.isMasterSummaryDrawer}
+
                 // selectedRow = {props.bopDataResponse}
                 />
 

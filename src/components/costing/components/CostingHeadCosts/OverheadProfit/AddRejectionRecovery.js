@@ -38,9 +38,11 @@ function AddRejectionRecovery(props) {
         netRejectionRecovery: rejectionRecovery?.RejectionRecoveryNetCost,
     }
     )
+    const [isReset, setIsReset] = useState(false)
     const CostingViewMode = useContext(ViewCostingContext);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const dispatch = useDispatch()
+    const costingHead = useSelector(state => state.comman.costingHead)
 
     const toggleDrawer = (event, formData = {}) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -57,9 +59,9 @@ function AddRejectionRecovery(props) {
         const temp = [];
 
         if (label === 'recoveryApplicability') {
-            REJECTION_RECOVERY_APPLICABILITY && REJECTION_RECOVERY_APPLICABILITY.map(item => {
-                if (isPartType?.label === ASSEMBLYNAME && item.value === '24') return false;
-                temp.push({ label: item.label, value: item.value })
+            costingHead && costingHead?.map(item => {
+                if (!REJECTION_RECOVERY_APPLICABILITY?.includes(item.Text)) return false;
+                temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
             return temp;
@@ -72,33 +74,41 @@ function AddRejectionRecovery(props) {
                 ...state,
                 rejectionApplicabilityType: e.label,
                 rejectionApplicabilityTypeValue: e.value,
+                netRejectionRecovery: '',
+                rejectionRecoveryPercentage: '',
+                effectiveRecoveryPercentage: '',
+                recoveryCostApplicability: '',
             })
-            if (e.label === 'Fixed') {
-                setValue('RejectionRecoveryPercentage', '')
-                setValue('EffectiveRecoveryPercentage', '')
-                setValue('RecoveryCostApplicability', '')
-            }
         } else {
             setState({
                 ...state,
                 rejectionApplicabilityTypeValue: '',
                 rejectionApplicabilityType: '',
-                rejectionRecoveryPercentage: '',
-                effectiveRecoveryPercentage: '',
-                recoveryCostApplicability: '',
-                netRejectionRecovery: '',
             })
         }
-
+        setState({
+            ...state,
+            rejectionApplicabilityType: e.label,
+            rejectionApplicabilityTypeValue: e.value,
+            netRejectionRecovery: '',
+            rejectionRecoveryPercentage: '',
+            effectiveRecoveryPercentage: '',
+            recoveryCostApplicability: '',
+        })
+        setValue('NetRejectionRecovery', '');
+        setValue('RejectionRecoveryPercentage', '')
+        setValue('EffectiveRecoveryPercentage', '')
+        setValue('RecoveryCostApplicability', '')
     }
 
     useEffect(() => {
         if (Object.keys(rejectionRecovery).length > 0) {
             setValue('RejectionRecoveryApplicability', rejectionRecovery?.ApplicabilityType ? { label: rejectionRecovery?.ApplicabilityType, value: rejectionRecovery?.ApplicabilityIdRef } : '')
-            setValue('RejectionRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.Value, initialConfiguration.NoOfDecimalForPrice))
-            setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('NetRejectionRecovery', checkForDecimalAndNull(rejectionRecovery?.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RejectionRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.Value, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.EffectiveRecoveryPercentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('NetRejectionRecovery', checkForDecimalAndNull(rejectionRecovery?.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice))
+            setIsReset(rejectionRecovery?.RejectionRecoveryNetCost ? true : false)
         }
     }, [rejectionRecovery])
 
@@ -108,9 +118,9 @@ function AddRejectionRecovery(props) {
         CostingPartDetails.CostingRawMaterialsCost?.map(item => {
             CostApplicability += checkForNull(item.ScrapRate) * checkForNull(item.FinishWeight)
         })
-        setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(EffectiveRecovery, initialConfiguration.NoOfDecimalForPrice))
-        setValue('RecoveryCostApplicability', checkForDecimalAndNull(CostApplicability, initialConfiguration.NoOfDecimalForPrice))
-        setValue('NetRejectionRecovery', checkForDecimalAndNull(CostApplicability * EffectiveRecovery / 100, initialConfiguration.NoOfDecimalForPrice))
+        setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(EffectiveRecovery, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('RecoveryCostApplicability', checkForDecimalAndNull(CostApplicability, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('NetRejectionRecovery', checkForDecimalAndNull(CostApplicability * EffectiveRecovery / 100, initialConfiguration?.NoOfDecimalForPrice))
 
         setState({
             ...state,
@@ -307,7 +317,7 @@ function AddRejectionRecovery(props) {
                                             type={'button'}
                                             className="undo cancel-btn"
                                             onClick={ResetAndSave}
-                                            disabled={CostingViewMode} >
+                                            disabled={CostingViewMode || !isReset} >
                                             <div className={"undo-icon"}></div> {'Reset & Save'}
                                         </button>
 

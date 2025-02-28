@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap';
-import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, PREDRAFT, RECEIVED, REJECTED, RETURNED, RFQ, RFQVendor, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
+import { APPROVED, AWARDED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, NON_AWARDED, PREDRAFT, RECEIVED, REJECTED, RETURNED, RFQ, RFQVendor, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -12,11 +12,10 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
-import { PaginationWrapper } from '.././common/commonPagination'
 import { getQuotationList, cancelRfqQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
-import { checkPermission, encodeQueryParamsAndLog, getConfigurationKey, getTimeZone, loggedInUserId, removeSpaces, searchNocontentFilter, setLoremIpsum, userDetails } from '../../helper';
+import { checkPermission, encodeQueryParamsAndLog, getConfigurationKey, getTimeZone, loggedInUserId, removeSpaces, RFQ_KEYS, searchNocontentFilter, setLoremIpsum, showBopLabel, userDetails } from '../../helper';
 import DayTime from '../common/DayTimeWrapper';
 import Attachament from '../costing/components/Drawers/Attachament';
 import { useRef } from 'react';
@@ -36,6 +35,7 @@ import WarningMessage from '../common/WarningMessage';
 import { useLabels } from '../../helper/core';
 import Button from '../layout/Button';
 import RemarkHistoryDrawer from './RemarkHistoryDrawer';
+//import { statusDropdownforRfq } from '../../config/masterData';
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
@@ -47,13 +47,12 @@ function RfqListing(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
-    const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
-    const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [noData, setNoData] = useState(false)
     const [viewRfq, setViewRfq] = useState(false)
+    const [closeViewRfq, setCloseViewRfq] = useState(false)
     const [viewRfqData, setViewRfqData] = useState("")
     const [addAccessibility, setAddAccessibility] = useState(false);
     const [editAccessibility, setEditAccessibility] = useState(false);
@@ -63,6 +62,7 @@ function RfqListing(props) {
     const [viewAttachment, setViewAttachment] = useState([])
     const [deleteId, setDeleteId] = useState('');
     const { t } = useTranslation("Common");
+    const [showAddFrom, setShowAddFrom] = useState(false)
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
     const [permissionDataPart, setPermissionDataPart] = useState()
@@ -71,27 +71,26 @@ function RfqListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const { globalTakes } = useSelector((state) => state.pagination);
     const [warningMessage, setWarningMessage] = useState(false)
-
     const [disableFilter, setDisableFilter] = useState(true)
     const [remarkHistoryDrawer, setRemarkHistoryDrawer] = useState(false)
     const [remarkRowData, setRemarkRowData] = useState([])
     const [floatingFilterData, setFloatingFilterData] = useState({
         QuotationNumber: "",
-    PartType: "",
-    PartNumber: "",
-    RawMaterial: "",
-    NoOfQuotationReceived: "",
-    VendorName: "", // Will be mapped to vendorCode in API call
-    PlantName: "", // Will be mapped to plantCode in API call
-    TechnologyName: "",
-    RaisedBy: "",
-    RaisedOn: "",
-    PartDataSentDate: "",
-    VisibilityMode: "",
-    VisibilityDate: "",
-    VisibilityDuration: "",
-    LastSubmissionDate: "",
-    Status: "",
+        PartType: "",
+        PartNumber: "",
+        RawMaterial: "",
+        NoOfQuotationReceived: "",
+        VendorName: "", // Will be mapped to vendorCode in API call
+        PlantName: "", // Will be mapped to plantCode in API call
+        TechnologyName: "",
+        RaisedBy: "",
+        RaisedOn: "",
+        PartDataSentDate: "",
+        VisibilityMode: "",
+        VisibilityDate: "",
+        VisibilityDuration: "",
+        LastSubmissionDate: "",
+        Status: "",
         BoughtOutPart: "", // Will be mapped to boughtOutPart in API call
         PRNumber: "",
         Notes: "",
@@ -105,6 +104,8 @@ function RfqListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const history = useHistory();
     const location = useLocation();
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const hideRemarkHistoryIcon = initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
 
 
     useEffect(() => {
@@ -122,18 +123,20 @@ function RfqListing(props) {
     useEffect(() => {
         dispatch(agGridStatus("", ""))
         // setloader(true)
-        getDataList()
+        getDataList(0, globalTakes, true)
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
-
     useEffect(() => {
-
-        if (statusColumnData && statusColumnData.data) {
-            setDisableFilter(false)
-            setWarningMessage(true)
-            setFloatingFilterData(prevState => ({ ...prevState, Status: removeSpaces(statusColumnData.data) }))
+        // Only set filter if coming from status column and not from ViewRfq close
+        if (statusColumnData?.data && !closeViewRfq && !viewRfq) {
+            setDisableFilter(false);
+            setWarningMessage(true);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                Status: removeSpaces(statusColumnData.data)
+            }));
         }
-    }, [statusColumnData])
+    }, [statusColumnData, closeViewRfq]);
     useEffect(() => {
         const { source, quotationId } = location.state || {};
 
@@ -158,8 +161,8 @@ function RfqListing(props) {
     }, []);
     // Create base filter params
     const baseFilterParams = {
-        date: "", 
-        inRangeInclusive: true, 
+        date: "",
+        inRangeInclusive: true,
         filterOptions: ['equals', 'inRange'],
         browserDatePicker: true,
         minValidYear: 2000,
@@ -169,7 +172,7 @@ function RfqListing(props) {
     const createDateComparator = (fieldName) => (filterLocalDateAtMidnight, cellValue) => {
         var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
         var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
-        
+
         setDate(newDate, fieldName);
 
         // Handle radio button click
@@ -188,8 +191,8 @@ function RfqListing(props) {
             Number(dateParts[0])
         );
 
-        return filterLocalDateAtMidnight.getTime() === cellDate.getTime() ? 0 
-             : cellDate < filterLocalDateAtMidnight ? -1 : 1;
+        return filterLocalDateAtMidnight.getTime() === cellDate.getTime() ? 0
+            : cellDate < filterLocalDateAtMidnight ? -1 : 1;
     };
 
     // Simplified filter params
@@ -214,15 +217,15 @@ function RfqListing(props) {
     };
 
     /**
-      * @method applyPermission
-      * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
-      */
+     * @method applyPermission
+     * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+     */
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === RFQ);
-            const accessData = Data && Data.Pages.find(el => el.PageName === RFQ)
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el?.ModuleName === RFQ);
+            const accessData = Data && Data.Pages.find(el => el?.PageName === RFQ)
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-            const accessDataVendor = Data && Data.Pages.find(el => el.PageName === RFQVendor)
+            const accessDataVendor = Data && Data.Pages.find(el => el?.PageName === RFQVendor)
             const permmisionDataVendor = accessDataVendor && accessDataVendor.Actions && checkPermission(accessDataVendor.Actions)
 
             if (permmisionData !== undefined || permmisionDataVendor !== undefined) {
@@ -240,8 +243,8 @@ function RfqListing(props) {
     }
 
     const setDate = (date, column) => {
-        
-        
+
+
         // Map column names to state fields
         const fieldMapping = {
             'RaisedOn': 'RaisedOn',
@@ -249,22 +252,22 @@ function RfqListing(props) {
             'VisibilityDate': 'VisibilityDate',
             'LastSubmissionDate': 'LastSubmissionDate'
         };
-    
+
         // Get the correct field name
         const fieldName = fieldMapping[column] || column;
-        
-        setFloatingFilterData(prevState => ({ 
-            ...prevState, 
+
+        setFloatingFilterData(prevState => ({
+            ...prevState,
             [fieldName]: date // Use the mapped field name
         }));
     };
 
-    const getDataList = useCallback((skip = 0, take = 10, isPagination = true) => {
+    const getDataList = useCallback((skip = 0, take = 10, isPagination = true, isReset = false) => {
         if (isPagination) {
             setloader(true)
         }
-        
-        
+
+
         // Construct query parameters
         const queryParams = {
             departmentCode: userDetails()?.DepartmentCode,
@@ -274,25 +277,24 @@ function RfqListing(props) {
             skip: skip,
             take: take,
             // Add all filter parameters
-            quotationNumber: floatingFilterData?.QuotationNumber || '',
-            partNumber: floatingFilterData?.PartNumber || '',
-            rawMaterial: floatingFilterData?.RawMaterial || '',
-            boughtOutPart: floatingFilterData?.BoughtOutPart || '',
-            noOfQuotationReceived: floatingFilterData?.NoOfQuotationReceived || '',
-            vendorCode: floatingFilterData?.VendorName || '',
-            plantCode: floatingFilterData?.PlantName || '',
+            quotationNumber: floatingFilterData.QuotationNumber || '',
+            partNumber: floatingFilterData.PartNumber || '',
+            rawMaterial: floatingFilterData.RawMaterial || '',
+            boughtOutPart: floatingFilterData.BoughtOutPart || '',
+            noOfQuotationReceived: floatingFilterData.NoOfQuotationReceived || '',
+            vendorCode: floatingFilterData.VendorName || '',
+            plantCode: floatingFilterData.PlantName || '',
             technologyName: floatingFilterData.TechnologyName || '',
-            raisedBy: floatingFilterData?.RaisedBy || '',
-            raisedOn: floatingFilterData?.RaisedOn || '',
-            lastSubmissionDate: floatingFilterData?.LastSubmissionDate || '',
-            visibilityMode: floatingFilterData?.VisibilityMode || '',
-            visibilityDate: floatingFilterData?.VisibilityDate || '',
-            visibilityDuration: floatingFilterData?.VisibilityDuration || '',
-            status: floatingFilterData?.Status || '',
-            partType: floatingFilterData?.PartType || '',
+            raisedBy: floatingFilterData.RaisedBy || '',
+            raisedOn: floatingFilterData.RaisedOn || '',
+            lastSubmissionDate: floatingFilterData.LastSubmissionDate || '',
+            visibilityMode: floatingFilterData.VisibilityMode || '',
+            visibilityDate: floatingFilterData.VisibilityDate || '',
+            visibilityDuration: floatingFilterData.VisibilityDuration || '',
+            status: floatingFilterData.Status || '',
+            partType: floatingFilterData.PartType || '',
             partDataSentDate: floatingFilterData.PartDataSentDate || '',
-            notes: floatingFilterData?.Remark || '',
-            prNumber: floatingFilterData?.PRNumber || ''
+            notes: floatingFilterData.Remark || ''
         };
 
         const encodedQueryParams = encodeQueryParamsAndLog(queryParams);
@@ -316,8 +318,8 @@ function RfqListing(props) {
                 if (res) {
                     const isReset = !Object.values(floatingFilterData).some(value => value !== "");
                     setTimeout(() => {
-                        isReset ? 
-                            gridOptions?.api?.setFilterModel({}) : 
+                        isReset ?
+                            gridOptions?.api?.setFilterModel({}) :
                             gridOptions?.api?.setFilterModel(filterModel);
                     }, 300);
                     setWarningMessage(false);
@@ -347,16 +349,17 @@ function RfqListing(props) {
 
     const onFloatingFilterChanged = useCallback((value) => {
         setDisableFilter(false);
-        
+
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model);
 
+        // Show warning if filter changed but not applied
+        if (!isFilterButtonClicked) {
+            setWarningMessage(true);
+        }
 
-    // Show warning when filter is being used but not yet applied
-    if (!isFilterButtonClicked) {
-        setWarningMessage(true);
-    }        // Handle filter changes
-        if (value?.filterInstance?.appliedModel === null || 
+        // Handle filter changes
+        if (value?.filterInstance?.appliedModel === null ||
             value?.filterInstance?.appliedModel?.filter === "") {
             // Clear the filter value
             setFloatingFilterData(prev => ({
@@ -366,7 +369,7 @@ function RfqListing(props) {
         } else {
             // Handle date fields
             const dateFields = ['RaisedOn', 'PartDataSentDate', 'VisibilityDate', 'LastSubmissionDate'];
-            
+
             if (dateFields.includes(value.column.colId)) {
                 const dateValue = value.filterInstance.appliedModel.dateFrom;
                 setFloatingFilterData(prev => ({
@@ -377,7 +380,7 @@ function RfqListing(props) {
                 // Handle non-date fields
                 setFloatingFilterData(prev => ({
                     ...prev,
-                    [value.column.colId]: value?.filterInstance?.appliedModel?.filter
+                    [value.column.colId]: value.filterInstance.appliedModel.filter
                 }));
             }
         }
@@ -393,18 +396,11 @@ function RfqListing(props) {
     const resetState = () => {
         setNoData(false)
         dispatch(agGridStatus("", ""))
-        gridOptions?.api?.setQuickFilter(null)
-        gridOptions?.api?.deselectAll();
-        // setinRangeDate([])
-        
-        
-        if(!isFilterButtonClicked){
 
-            setWarningMessage(true)
-        }
+        // setinRangeDate([])
+        setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        
 
         for (var prop in floatingFilterData) {
 
@@ -416,27 +412,29 @@ function RfqListing(props) {
                 floatingFilterData[prop] = ""
             }
         }
-        
-        
-        dispatch(updateCurrentRowIndex(0))
-        dispatch(updatePageNumber(1))
-        getDataList(0, 10, true)
-        dispatch(resetStatePagination())
+
         setFloatingFilterData(floatingFilterData)
-      
+        setWarningMessage(false)
+        dispatch(updatePageNumber(1))
+        dispatch(updateCurrentRowIndex(10))
+        getDataList(0, 10, true)
+        dispatch(setSelectedRowForPagination([]))
         dispatch(updateGlobalTake(10))
         dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
-       
+        reactLocalStorage.setObject('selectedRow', {})
+
     }
 
-    const onSearch = useCallback(() => {
+    const onSearch = () => {
         setNoData(false)
+        setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
         dispatch(updateCurrentRowIndex(10))
+        gridOptions?.columnApi?.resetColumnState();
         getDataList(0, globalTakes, true)
-    }, [globalTakes, getDataList])
-  
+    }
+
     /**
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
@@ -461,7 +459,9 @@ function RfqListing(props) {
         suppressFilterButton: true,
         component: "RFQ",
         onFilterChange: handleFilterChange,
-    }
+        // Add the filtered status options
+        // values: getFilteredStatusDropdown
+    };
     //**  HANDLE TOGGLE EXTRA DATA */
     const toggleExtraData = (showTour) => {
         setRender(true)
@@ -478,17 +478,19 @@ function RfqListing(props) {
     * @method editItemDetails
     * @description edit material type
     */
-    const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
+    const viewOrEditItemDetails = (Id, rowData = {}, isViewMode, isEditMode) => {
 
         let data = {
-            isEditFlag: !isViewMode,
+            isEditFlag: isEditMode,
             isViewFlag: isViewMode,
             rowData: rowData,
-            Id: Id
+            Id: Id,
+            isAddFlag: false // Explicitly set this to false for edit mode
+
         }
-        setIsEdit(true)
         setAddRfqData(data)
-        setAddRfq(true)
+        setShowAddFrom(true)
+        resetState()
     }
 
     const cancelItem = (id) => {
@@ -524,45 +526,128 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
-
         const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
-        let status = rowData?.Status
+        let status = rowData?.Status;
+
+
+
+        // Helper function to check if quotation is complete
+        const isQuotationComplete = () => {
+            return rowData?.CostingReceived === rowData?.TotalCostingCount &&
+                rowData?.TotalCostingCount > 0;
+        };
+
+        // Helper function to check if status allows editing
+        const isEditableStatus = () => {
+            // Non-editable statuses
+            const nonEditableStatuses = [
+                APPROVED,
+                REJECTED,
+                AWARDED,
+                NON_AWARDED,
+                CANCELLED
+            ];
+
+            // If status is in non-editable list, return false
+            if (nonEditableStatuses.includes(status)) {
+                return false;
+            }
+
+            // For RECEIVED status
+            if (status === RECEIVED) {
+                // Allow edit if submission date is valid AND quotation is not complete
+                return !isQuotationComplete();
+            }
+
+            // For UNDER_REVISION status
+            if (status === UNDER_REVISION) {
+                // Don't allow edit if quotation is complete
+                return !isQuotationComplete();
+            }
+
+            // Only allow edit for DRAFT, PREDRAFT, and SENT statuses
+            return [DRAFT, PREDRAFT, SENT].includes(status);
+        };
 
         return (
             <>
-                {(viewAccessibility || permissionData?.permissionDataVendor?.View) && <button title='View' className="View mr-1 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {((status !== APPROVED && status !== CANCELLED) && (editAccessibility || permissionData?.permissionDataVendor?.Edit)) && <button title='Edit' className="Edit mr-1 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED && status !== RECEIVED) && rowData?.IsShowCancelIcon && <button title='Cancel' className="CancelIcon mr-1  Tour_List_Cancel" type={'button'} onClick={() => cancelItem(cellValue)} />}
-                {/* (status !== PREDRAFT) &&  */<button title='Remark History' id='ViewRfq_remarkHistory' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
+                {/* View button */}
+                {(viewAccessibility || permissionData?.permissionDataVendor?.View) &&
+                    <button
+                        title='View'
+                        className="View mr-1 Tour_List_View"
+                        type={'button'}
+                        onClick={() => viewOrEditItemDetails(cellValue, rowData, true, false)}
+                    />
+                }
 
+                {/* Edit button */}
+                {isEditableStatus() && (editAccessibility || permissionData?.permissionDataVendor?.Edit) &&
+                    <button
+                        title='Edit'
+                        className="Edit mr-1 Tour_List_Edit"
+                        type={'button'}
+                        onClick={() => viewOrEditItemDetails(cellValue, rowData, false, true)}
+                    />
+                }
+
+                {/* Cancel button */}
+                {(status === DRAFT || status === PREDRAFT || status === SENT) &&
+                    rowData?.IsShowCancelIcon &&
+                    <button
+                        title='Cancel'
+                        className="CancelIcon mr-1 Tour_List_Cancel"
+                        type={'button'}
+                        onClick={() => cancelItem(cellValue)}
+                    />
+                }
+
+                {/* Remark History button */}
+                {hideRemarkHistoryIcon &&
+                    <button
+                        title='Remark History'
+                        id='ViewRfq_remarkHistory'
+                        className="btn-history-remark mr-1"
+                        type={'button'}
+                        onClick={() => getRemarkHistory(cellValue, rowData)}
+                    >
+                        <div className='history-remark'></div>
+                    </button>
+                }
             </>
-        )
+        );
     };
-
-
     const formToggle = () => {
-        setAddRfq(true)
+        setShowAddFrom(true)
         let data = {
             isAddFlag: true,
+            isEditFlag: false,
+            isViewFlag: false,
+
         }
         setAddRfqData(data)
     }
 
     const closeDrawer = () => {
         setAddRfqData({})
-        setAddRfq(false)
-        getDataList()
-        setIsEdit(false)
+        setShowAddFrom(false)
+        // setAddRfq(false)
+        resetState()
 
     }
 
-    const closeDrawerViewRfq = (value) => {
-        value === true ? setViewRfq(true) : setViewRfq(false)
-        // setViewRfq(false)
-        getDataList()
 
-    }
+    const closeDrawerViewRfq = () => {
+        dispatch(agGridStatus("", ""));
+        setFloatingFilterData(prev => ({
+            ...prev,
+            Status: ""
+        }));
+        setViewRfq(false);
+        setCloseViewRfq(true);
+        resetState()
+    };
 
 
     const onGridReady = (params) => {
@@ -572,11 +657,6 @@ function RfqListing(props) {
         params.api.paginationGoToPage(0);
     };
 
-
-    const onPageSizeChanged = (newPageSize) => {
-        gridApi.paginationSetPageSize(Number(newPageSize));
-
-    };
 
 
     const onFilterTextBoxChanged = (e) => {
@@ -650,7 +730,7 @@ function RfqListing(props) {
         const cellValue = props?.value;
         return cellValue ? cellValue : '-';
     }
-    
+
 
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
@@ -661,7 +741,7 @@ function RfqListing(props) {
         const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
     }
-   
+
 
     const attachmentFormatter = (props) => {
         const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
@@ -691,17 +771,12 @@ function RfqListing(props) {
         )
 
     }
- 
+
 
     const viewDetails = (rowData) => {
-
         setViewRfqData(rowData)
-
         setViewRfq(true)
-        // this.setState({
-        //     UserId: UserId,
-        //     isOpen: true,
-        // })
+        resetState()
 
     }
 
@@ -743,8 +818,8 @@ function RfqListing(props) {
 
     return (
         <>
-            {!addRfq && permissionData !== undefined &&
-                <div className={`ag-grid-react grid-parent-wrapper p-relative  ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+            {!showAddFrom && permissionData !== undefined &&
+                <div className={`ag-grid-react report-grid p-relative  ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
@@ -767,7 +842,7 @@ function RfqListing(props) {
                                                 <>
                                                     {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                                         <div className="warning-message d-flex align-items-center">
-                                                            {warningMessage&& (<><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>)}
+                                                            {warningMessage && (<><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>)}
                                                         </div>
                                                     }
                                                     {
@@ -835,52 +910,29 @@ function RfqListing(props) {
                                                     enableBrowserTooltips={true}
                                                 >
                                                     <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                                    {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
+                                                    {initialConfiguration?.RFQManditField?.IsShowNFRNo && <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn>}
                                                     <AgGridColumn field="PartType" headerName="Part Type" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                     <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRendererFramework={CustomCellRenderer} />
-                                                    <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material Name-Grade-Specification" width={230} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
-                                                    <AgGridColumn field="BoughtOutPart" headerName="Bought Out Part Name" width={200} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
-                                                    <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                    {RFQ_KEYS?.SHOW_RM && <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material Name-Grade-Specification" width={230} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
+                                                    {RFQ_KEYS?.SHOW_BOP && <AgGridColumn field="BoughtOutPart" headerName={`${showBopLabel()} Name (${showBopLabel()} No.)`} width={200} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
+                                                    {initialConfiguration?.RFQManditField?.IsShowPRNumber && (RFQ_KEYS?.SHOW_BOP || RFQ_KEYS?.SHOW_TOOLING) && <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
 
                                                     <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                     <AgGridColumn field="VendorName" tooltipField="VendorName" headerName={vendorLabel + " (Code)"} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
                                                     <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                     <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
-                                                    <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
-                                                    <AgGridColumn 
-                                                        field="RaisedOn" 
-                                                        headerName="Raised On"
-                                                        cellRenderer="dateFormatter"
-                                                        filter="agDateColumnFilter"
-                                                        filterParams={raisedOnFilterParams}
-                                                    />
-                                                    <AgGridColumn 
-                                                        field="PartDataSentDate" 
-                                                        headerName="RFI Date"
-                                                        cellRenderer="dateFormatter"
-                                                        filter="agDateColumnFilter"
-                                                        filterParams={partDataSentFilterParams}
-                                                    />
-
+                                                    {initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>}
+                                                    <AgGridColumn field="RaisedBy" headerName='Raised By' cellRenderer='dashFormatter' ></AgGridColumn>
+                                                    <AgGridColumn field="RaisedOn" headerName="Raised On" cellRenderer="dateFormatter" filter="agDateColumnFilter" filterParams={raisedOnFilterParams} />
+                                                    {initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn field="PartDataSentDate" headerName="RFI Date" cellRenderer="dateFormatter" filter="agDateColumnFilter" filterParams={partDataSentFilterParams} />}
                                                     <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
-                                                    <AgGridColumn 
-                                                        field="VisibilityDate" 
-                                                        headerName="Visibility Date"
-                                                        cellRenderer="dateFormatter"
-                                                        filter="agDateColumnFilter"
-                                                        filterParams={visibilityDateFilterParams}
-                                                    />
+                                                    <AgGridColumn field="VisibilityDate" headerName="Visibility Date" cellRenderer="dateFormatter" filter="agDateColumnFilter" filterParams={visibilityDateFilterParams} />
                                                     <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
                                                     {/* <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn> */}
-                                                    <AgGridColumn 
-                                                        field="LastSubmissionDate" 
-                                                        headerName="Last Submission Date"
-                                                        cellRenderer="dateFormatter"
-                                                        filter="agDateColumnFilter"
-                                                        filterParams={lastSubmissionDateFilterParams}
-                                                    />
-                                                    <AgGridColumn field="QuotationNumber"floatingFilter={false} headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="LastSubmissionDate" headerName="Last Submission Date" cellRenderer="dateFormatter" filter="agDateColumnFilter" filterParams={lastSubmissionDateFilterParams} />
+                                                    <AgGridColumn field="QuotationNumber" floatingFilter={false} headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                     <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                    {/* <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ} /> */}
                                                     <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
                                                     {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
@@ -907,7 +959,6 @@ function RfqListing(props) {
                         <ViewRfq
                             data={viewRfqData}
                             isOpen={viewRfq}
-                            getDataList={getDataList}
                             closeDrawer={closeDrawerViewRfq}
                         />
 
@@ -921,22 +972,22 @@ function RfqListing(props) {
             }
             <ApplyPermission.Provider value={permissionData}>
 
-                {addRfq &&
+                {showAddFrom &&
 
                     <AddRfq
                         data={addRfqData}
-                        //hideForm={hideForm}
-                        AddAccessibilityRMANDGRADE={true}
-                        EditAccessibilityRMANDGRADE={true}
                         isRMAssociated={true}
-                        isOpen={addRfq}
+                        isOpen={showAddFrom}
                         anchor={"right"}
-                        isEditFlag={isEdit}
+                        isEditFlag={addRfqData?.isEditFlag}
+                        isViewFlag={addRfqData?.isViewFlag}
+                        isAddFlag={addRfqData?.isAddFlag}
                         closeDrawer={closeDrawer}
                     />
 
                 }
             </ApplyPermission.Provider>
+
 
             {
                 attachment && (
@@ -958,11 +1009,12 @@ function RfqListing(props) {
                     isRMAssociated={true}
                     isOpen={remarkHistoryDrawer}
                     anchor={"right"}
-                    isEditFlag={isEdit}
+                    isEditFlag={showAddFrom?.isEditFlag}
                     rfqListing={true}
                     closeDrawer={closeRemarkDrawer}
                 />
             }
+
 
         </>
     );

@@ -9154,6 +9154,16 @@ iframe {
   min-height: inherit !important;
 }
 
+#addRMDomestic_RMToggle.plus-icon-square,
+#addRMDomestic_vendorToggle.plus-icon-square {
+  margin-top: 15px;
+}
+
+.pa-1 {
+  position: absolute;
+  top: 115px;
+}
+
 
 .pending-simulation-alert {
   background: #fff9e600;

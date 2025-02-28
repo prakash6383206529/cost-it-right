@@ -104,7 +104,8 @@ const AddFreight = (props) => {
     isEditDimension: false,
     isShowTruckDimensions: false,
     hideEditDimension: true,
-    disableAll: true,
+    disableAll: props.data.isEditFlag ? false : true,
+    callUpdate: false,
   });
   const dispatch = useDispatch();
   const cityList = useSelector(state => state.comman.cityList);
@@ -141,43 +142,49 @@ const AddFreight = (props) => {
       reactLocalStorage?.setObject('vendorData', []);
     };
   }, []);
-  // useEffect(() => {
-  //   const hasRequiredFields = (
-  //     (state.costingTypeId === ZBCTypeId) ||
-  //     (state.costingTypeId === CBCTypeId && state?.client) ||
-  //     (state.costingTypeId === VBCTypeId && state?.vendorName)
-  //   );
-  //   if (hasRequiredFields && state?.effectiveDate && state?.Plant) {
-  //     setState(prev => ({ ...prev, disableAll: false }));
-  //     let data = {
-  //       ...state,
-  //       freightId: null,
-  //       EffectiveDate: state?.effectiveDate,
-  //       PlantId: state?.Plant?.value,
-  //       CustomerId: state?.client?.value,
-  //       VendorId: state?.vendorName?.value,
-  //       CostingTypeId: state?.costingTypeId
-  //     }
-  //     // dispatch(getFreightData(data, (res) => {
-  //     //   if (res?.status === 200) {
-  //     //     let data = res?.data?.Data;
-  //     //     setState(prev => ({
-  //     //       ...prev, dataToChange: data,
-  //     //       gridTable: data?.FullTruckLoadDetails ?? [],
-  //     //       IsFreightAssociated: data?.IsFreightAssociated
-  //     //     }));
-  //     //   } else {
-  //     //     setState(prev => ({
-  //     //       ...prev,
-  //     //       gridTable: [],
-  //     //       IsFreightAssociated: false
-  //     //     }));
-  //     //   }
-  //     // }));
-  //   } else {
-  //     setState(prev => ({ ...prev, disableAll: true }));
-  //   }
-  // }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate]);
+  useEffect(() => {
+    if (!(props.data.isEditFlag || state.isViewMode)) {
+      const hasRequiredFields = (
+        (state.costingTypeId === ZBCTypeId) ||
+        (state.costingTypeId === CBCTypeId && state?.client) ||
+        (state.costingTypeId === VBCTypeId && state?.vendorName)
+      );
+      if (hasRequiredFields && state?.effectiveDate && state?.Plant) {
+        setState(prev => ({ ...prev, disableAll: false }));
+        let data = {
+          ...state,
+          freightId: null,
+          EffectiveDate: state?.effectiveDate,
+          PlantId: state?.Plant?.value,
+          CustomerId: state?.client?.value,
+          VendorId: state?.vendorName?.value,
+          CostingTypeId: state?.costingTypeId
+        }
+        dispatch(getFreightData(data, (res) => {
+          if (res?.status === 200) {
+            let data = res?.data?.Data;
+            setState(prev => ({
+              ...prev, dataToChange: data,
+              gridTable: data?.FullTruckLoadDetails ?? [],
+              IsFreightAssociated: data?.IsFreightAssociated,
+              callUpdate: data?.FullTruckLoadDetails && data?.FullTruckLoadDetails?.length > 0 ? true : false,
+              freightID: data?.FreightId
+            }));
+          } else {
+            setState(prev => ({
+              ...prev,
+              gridTable: [],
+              IsFreightAssociated: false,
+              callUpdate: false,
+              freightID: null
+            }));
+          }
+        }));
+      } else {
+        setState(prev => ({ ...prev, disableAll: true }));
+      }
+    }
+  }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate]);
 
   /**
   * @method onPressVendor
@@ -263,7 +270,7 @@ const AddFreight = (props) => {
         ...prev,
         isEditFlag: false,
         isLoader: true,
-        FreightID: data.Id,
+        freightID: data.Id,
       }));
       let obj = {
         freightId: data.Id,
@@ -276,7 +283,7 @@ const AddFreight = (props) => {
       dispatch(getFreightData(obj, (res) => {
         if (res && res.data && res.data.Result) {
           setState(prev => ({ ...prev, isLoader: false }));
-          const Data = res.data.Data[0];
+          const Data = res.data.Data;
           setState(prev => ({ ...prev, DataToChange: Data, gridTable: Data?.FullTruckLoadDetails }));
           setValueMainForm('Plants', { label: Data.PlantName, value: Data.PlantId });
           setValueMainForm('EffectiveDate', DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '');
@@ -599,8 +606,8 @@ const AddFreight = (props) => {
       Rate: checkForNull(Rate) || 0,
       FreightLoadType: Load?.label,
       EFreightLoadType: Load?.value,
-      DimensionsName: truckDimensions?.label,
-      DimensionId: truckDimensions?.value,
+      DimensionsName: isShowTruckDimensions ? truckDimensions?.label : null,
+      DimensionId: isShowTruckDimensions ? truckDimensions?.value : null,
       IsShowDimesions: isShowTruckDimensions
     };
 
@@ -779,7 +786,7 @@ const AddFreight = (props) => {
    */
   const onSubmit = debounce(handleSubmitMainForm((values) => {
     const { vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation, client,
-      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId } = state;
+      freightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId } = state;
 
     const formValues = getValuesMainForm();
     if (state.effectiveDate === '' || !state.effectiveDate) {
@@ -801,11 +808,11 @@ const AddFreight = (props) => {
 
     const userDetail = userDetails();
 
-    if (isEditFlag) {
+    if (isEditFlag || state.callUpdate) {
       if (
-        DataToChange.LoadingUnloadingCharges === formValues.LoadingUnloadingCharges &&
-        DataToChange.PartTruckLoadRatePerCubicFeet === formValues.PartTruckLoadRatePerCubicFeet &&
-        DataToChange.PartTruckLoadRatePerKilogram === formValues.PartTruckLoadRatePerKilogram &&
+        DataToChange?.LoadingUnloadingCharges === formValues?.LoadingUnloadingCharges &&
+        DataToChange?.PartTruckLoadRatePerCubicFeet === formValues?.PartTruckLoadRatePerCubicFeet &&
+        DataToChange?.PartTruckLoadRatePerKilogram === formValues?.PartTruckLoadRatePerKilogram &&
         (AddUpdate && HandleChanged) &&
         DeleteChanged
       ) {
@@ -814,11 +821,11 @@ const AddFreight = (props) => {
       }
 
       const requestData = {
-        FreightId: FreightID,
+        FreightId: freightID,
         IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
-        LoadingUnloadingCharges: formValues.LoadingUnloadingCharges,
-        PartTruckLoadRatePerKilogram: formValues.PartTruckLoadRatePerKilogram,
-        PartTruckLoadRatePerCubicFeet: formValues.PartTruckLoadRatePerCubicFeet,
+        LoadingUnloadingCharges: formValues?.LoadingUnloadingCharges,
+        PartTruckLoadRatePerKilogram: formValues?.PartTruckLoadRatePerKilogram,
+        PartTruckLoadRatePerCubicFeet: formValues?.PartTruckLoadRatePerCubicFeet,
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
         PlantId: state.Plant?.value,
@@ -851,9 +858,9 @@ const AddFreight = (props) => {
         SourceCityId: sourceLocation.value,
         DestinationCityId: destinationLocation.value,
         IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
-        LoadingUnloadingCharges: formValues.LoadingUnloadingCharges,
-        PartTruckLoadRatePerKilogram: formValues.PartTruckLoadRatePerKilogram,
-        PartTruckLoadRatePerCubicFeet: formValues.PartTruckLoadRatePerCubicFeet,
+        LoadingUnloadingCharges: formValues?.LoadingUnloadingCharges,
+        PartTruckLoadRatePerKilogram: formValues?.PartTruckLoadRatePerKilogram,
+        PartTruckLoadRatePerCubicFeet: formValues?.PartTruckLoadRatePerCubicFeet,
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
@@ -1137,7 +1144,7 @@ const AddFreight = (props) => {
                               </label>
                             </Col>
                             {state.isShowTruckDimensions && <Col md="2">
-                              <div className="d-flex justify-space-between inputwith-icon form-group">
+                              <div className="d-flex justify-space-between truck-dimensions inputwith-icon form-group">
                                 <SearchableSelectHookForm
                                   name="TruckDimensions"
                                   label="Truck Dimensions (mm)"
@@ -1333,7 +1340,7 @@ const AddFreight = (props) => {
                           onClick={handleSubmitMainForm(onSubmit)}
                         >
                           <div className={"save-icon"}></div>
-                          {isEditFlag ? "Update" : "Save"}
+                          {isEditFlag || state.callUpdate ? "Update" : "Save"}
                         </button>}
                       </div>
                     </Row>

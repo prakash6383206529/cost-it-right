@@ -255,7 +255,7 @@ div[class$="MenuList"] {
 
         .multi-select-container__value-container {
           height: 30px !important;
-          overflow-y: auto !important;
+          overflow: auto !important;
           max-width: 100% !important;
         }
       }
@@ -270,4 +270,41 @@ div[class$="MenuList"] {
     height: auto !important;
   }
 
+}
+
+.truck-dimensions {
+  @media (max-width: $max1367) {
+    margin-right: -37px;
+  }
+
+  label {
+    white-space: nowrap;
+  }
+}
+
+.extra-approver {
+  position: absolute;
+  top: 31%;
+  right: -17px;
+  width: fit-content;
+  color: $colorPrimary;
+  font-size: 16px;
+  font-weight: 600;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.plant-currency {
+  min-height: auto !important;
+
+  .text-help {
+    position: absolute;
+    bottom: 1px;
+  }
+}
+
+.cursor-allowed {
+  pointer-events: auto !important;
 }

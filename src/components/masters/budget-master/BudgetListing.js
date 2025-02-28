@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Container } from 'reactstrap'
 import { MESSAGES } from '../../../config/message'
-import { BUDGETING, defaultPageSize, EMPTY_DATA, FILE_URL } from '../../../config/constants'
+import { BUDGETING, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FILE_URL } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { deleteBudget, getBudgetDataList, getPartCostingHead, } from '../actions/Budget'
 import { BUDGET_DOWNLOAD_EXCEl, Vendor } from '../../../config/masterData'
@@ -34,6 +34,8 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
 import { useLabels, useWithLocalization } from '../../../helper/core'
+import { getConfigurationKey } from '../../../helper'
+import Switch from 'react-switch'
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -74,12 +76,14 @@ function BudgetListing(props) {
     const [noData, setNoData] = useState(false)
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
+    const [pageRecord, setPageRecord] = useState(0);
     const [showPopup, setShowPopup] = useState(false);
     const [deletedId, setDeletedId] = useState('');
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
     const { globalTakes } = useSelector(state => state.pagination)
     const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const [isImport, setIsImport] = useState(false)
     const dispatch = useDispatch();
     const { t } = useTranslation("common")
     const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
@@ -140,13 +144,17 @@ function BudgetListing(props) {
      * @method getTableListData
      * @description Get user list data
      */
-    const getTableListData = (skip = 0, take = 10, isPagination = true) => {
+    const getTableListData = (skip = 0, take = 10, isPagination = true, BudgetedEntryType = false) => {
+        setPageRecord(skip);
         if (isPagination === true || isPagination === null) setIsLoader(true)
         let dataObj = { ...floatingFilterData }
+        //dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+
         const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
         dataObj.IsCustomerDataShow = cbc
         dataObj.IsVendorDataShow = vbc
         dataObj.IsZeroDataShow = zbc
+        dataObj.BudgetedEntryType = BudgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC
         dispatch(getBudgetDataList(skip, take, isPagination, dataObj, (res) => {
             if (isPagination === true || isPagination === null) setIsLoader(false)
             if (res && isPagination === false) {
@@ -222,12 +230,14 @@ function BudgetListing(props) {
     */
     const confirmDelete = (ID) => {
         dispatch(deleteBudget(ID, (res) => {
-            if (res !== undefined && res.status === 417 && res.data.Result === false) {
-                Toaster.error(res.data.Message)
-            } else if (res && res.data && res.data.Result === true) {
+            if (res && res?.data && res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_BUDGET_SUCCESS);
-                setDataCount(0)
-                resetState()
+                dispatch(setSelectedRowForPagination([]));
+                if (gridApi) {
+                    gridApi.deselectAll();
+                }
+                getTableListData(pageRecord, globalTakes, true);
+                setDataCount(0);
             }
         }));
         setShowPopup(false)
@@ -277,8 +287,19 @@ function BudgetListing(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            for (const key in item) {
+                if (item[key] === null || item[key] === undefined || item[key] === "") {
+                    item[key] = "-"; // Set to hyphen if data is not available
+                }
+            }
+
+            return item;
+
+        })
         return (
-            <ExcelSheet data={TempData} name={'Budget'}>
+            <ExcelSheet data={temp} name={'Budget'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -332,7 +353,13 @@ function BudgetListing(props) {
         //tempArr = gridApi && gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (volumeDataListForDownload ? volumeDataListForDownload : [])
-        return returnExcelColumn(BUDGET_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+        const filteredLabels = BUDGET_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+            if (column.value === "ExchangeRateSourceName") {
+                return getConfigurationKey().IsSourceExchangeRateNameVisible
+            }
+            return true;
+        })
+        return returnExcelColumn(filteredLabels, tempArr)
     };
 
     /**
@@ -372,6 +399,7 @@ function BudgetListing(props) {
         setTimeout(() => {
             if (volumeDataList?.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
         setDisableFilter(false)
@@ -531,6 +559,11 @@ function BudgetListing(props) {
     const toggleDrawer = () => {
         setBulkUploadBtn(false)
     }
+    const importToggle = () => {
+        setIsImport(!isImport)
+        getTableListData(0, defaultPageSize, true, !isImport)
+
+    }
     /**
      * @method render
      * @description Renders the component
@@ -544,6 +577,7 @@ function BudgetListing(props) {
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
                         <form noValidate>
                             <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} blue-before`}>
+
                                 <Col md="9" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight">
                                         {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
@@ -575,18 +609,38 @@ function BudgetListing(props) {
                                             <>
                                                 <Button className="user-btn mr5 Tour_List_Download" id={"budgetListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                     icon={"download mr-1"}
+                                                    disabled={totalRecordCount === 0}
                                                     buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 />
                                                 <ExcelFile filename={'Budget'} fileExtension={'.xls'} element={
                                                     <Button id={"Excel-Downloads-volume"} className="p-absolute" />
                                                 }>
-                                                    {onBtExport()}
+                                                    {totalRecordCount !== 0 ? onBtExport() : null}
                                                 </ExcelFile>
                                             </>
                                         }
                                         <Button id={"budgetListing_refresh"} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 
                                     </div>
+                                </Col>
+                                <Col md="4" className="switch mb15">
+                                    <label className="switch-level">
+                                        <div className="left-title">Domestic</div>
+                                        <Switch
+                                            onChange={importToggle}
+                                            checked={isImport}
+                                            id="normal-switch"
+                                            background="#4DC771"
+                                            onColor="#4DC771"
+                                            onHandleColor="#ffffff"
+                                            offColor="#4DC771"
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            height={20}
+                                            width={46}
+                                        />
+                                        <div className="right-title">Import</div>
+                                    </label>
                                 </Col>
                             </Row>
                         </form>
@@ -623,14 +677,16 @@ function BudgetListing(props) {
                                     suppressRowClickSelection={true}
                                     enableBrowserTooltips={true}
                                 >
-                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer}   floatingFilterComponentParams={floatingFilterStatus} 
-                                            floatingFilterComponent="statusFilter"></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer} floatingFilterComponentParams={floatingFilterStatus}
+                                        floatingFilterComponent="statusFilter"></AgGridColumn>
                                     <AgGridColumn field="vendorNameWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>
                                     <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="partNoWithRevNo" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
                                     <AgGridColumn field="FinancialYear" headerName="Financial Year"></AgGridColumn>
+                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                    <AgGridColumn field="Currency" headerName="Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="NetPoPrice" headerName="Net Cost"></AgGridColumn>
                                     <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}

@@ -15,6 +15,7 @@ import { AWAITING_APPROVAL_ID, FullTruckLoad, PENDING_FOR_APPROVAL_ID, REJECTEDI
 import FormFieldsRenderer from '../../../common/FormFieldsRenderer'
 import HeaderTitle from '../../../common/HeaderTitle'
 import LoaderCustom from '../../../common/LoaderCustom'
+import { getTruckDimensionsById } from '../../../masters/actions/Freight'
 function FreightCalculator(props) {
     const { rowObjData, truckDimensions, freightType, noOfComponentsPerCrate, rate } = props
     const [state, setState] = useState({
@@ -142,16 +143,19 @@ function FreightCalculator(props) {
             setValue('NoOfComponentsPerBinOrTrolley', noOfComponentsPerCrate)
             setValue('TripRate', rate)
         }
-        if (truckDimensions?.label) {
-            const dimensions = truckDimensions?.label?.match(/L\((\d+)\),\s*B\((\d+)\),\s*H\((\d+)\)/);
-            if (dimensions) {
-                setState(prevState => ({
-                    ...prevState,
-                    truckLength: parseFloat(dimensions[1]),
-                    truckBreadth: parseFloat(dimensions[2]),
-                    truckHeight: parseFloat(dimensions[3])
-                }))
-            }
+        if (truckDimensions && truckDimensions?.value) {
+            dispatch(getTruckDimensionsById(truckDimensions?.value, (res) => {
+                if (res && res?.data?.DataList && res?.data?.DataList?.length > 0) {
+                    let tempData = res?.data?.DataList[0]
+                    setState(prevState => ({
+                        ...prevState,
+                        truckLength: tempData?.Length,
+                        truckBreadth: tempData?.Breadth,
+                        truckHeight: tempData?.Height
+                    }))
+                }
+            }))
+
         }
         if (freightType === FullTruckLoad) {
             setValue('Utilization', 100)
@@ -202,22 +206,29 @@ function FreightCalculator(props) {
             }
         }
     }, [])
+    const inputFields = ['BinLength', 'BinBreadth', 'BinHeight', 'TrolleyLength', 'TrolleyBreadth', 'TrolleyHeight']
     const calclulationFieldValues = useWatch({
         control: control,
-        name: ['Utilization'],
+        name: ['Utilization', 'BinAlignment', 'TrolleyAlignment', ...inputFields],
         defaultValue: []
     })
     useEffect(() => {
-        calculateTotalCost()
-    }, [state.noOfBins, state.totalNoOfBins, calclulationFieldValues, state.noOfTrolleys])
+        if (!CostingViewMode) {
+            calculateTotalCost()
+            if (state?.binAlignment) {
+                calculateBinsAndTrolleys('bin', state?.binAlignment)
+            }
+            if (state?.trolleyAlignment) {
+                calculateBinsAndTrolleys('trolley', state?.trolleyAlignment)
+            }
+        }
+    }, [state.noOfBins, state.totalNoOfBins, calclulationFieldValues, state.noOfTrolleys, state.binAlignment, state.trolleyAlignment])
+
     const setFormValues = (data) => {
         setValue('CarrierType', data?.CarrierType ? { label: data?.CarrierType, value: data?.CarrierTypeId } : [])
-        setValue('TrolleyLength', checkForDecimalAndNull(data?.TrolleyLength, NoOfDecimalForInputOutput))
-        setValue('TrolleyBreadth', checkForDecimalAndNull(data?.TrolleyBreadth, NoOfDecimalForInputOutput))
-        setValue('TrolleyHeight', checkForDecimalAndNull(data?.TrolleyHeight, NoOfDecimalForInputOutput))
-        setValue('BinLength', checkForDecimalAndNull(data?.BinLength, NoOfDecimalForInputOutput))
-        setValue('BinBreadth', checkForDecimalAndNull(data?.BinBreadth, NoOfDecimalForInputOutput))
-        setValue('BinHeight', checkForDecimalAndNull(data?.BinHeight, NoOfDecimalForInputOutput))
+        inputFields.forEach(field => {
+            setValue(field, checkForDecimalAndNull(data[field], NoOfDecimalForInputOutput))
+        })
         setValue('BinAlignment', { label: data?.BinAlignment, value: data?.BinAlignment })
         setValue('TrolleyAlignment', { label: data?.TrolleyAlignment, value: data?.TrolleyAlignment })
         setValue('NoOfTrolleys', checkForDecimalAndNull(data?.NumberOfTrolleys, NoOfDecimalForInputOutput))
@@ -440,6 +451,7 @@ function FreightCalculator(props) {
         control: control,
         register: register,
         errors: errors,
+        colSize: "3"
     }
     const dimensionAndCarrierType = [
         { label: t('truckDimensions', { defaultValue: 'Truck Dimensions (mm)' }), name: 'TruckDimensions', mandatory: false, searchable: false, disabled: true },
@@ -528,18 +540,19 @@ function FreightCalculator(props) {
         ...(state.carrierType?.label === "Bin And Trolley" ? [
             { label: t('totalNoOfBins', { defaultValue: 'Total no. of bins' }), name: 'TotalNoOfBins', mandatory: true, searchable: false, disabled: true, tooltip: { text: 'Total no. of bins = No. of trolleys * No. of bins per trolley', width: '250px', disabledIcon: true } }
         ] : []),
-        { label: t('noOfComponentsPerBinOrTrolley', { defaultValue: 'No. of components per bin/trolley' }), name: 'NoOfComponentsPerBinOrTrolley', mandatory: true, searchable: false, disabled: true, tooltip: { text: 'Coming from packaging calculator(No. of components per crate/trolley)', width: '250px', disabledIcon: true } },
+        { label: t('noOfComponentsPerBinOrTrolley', { defaultValue: 'No. of components per bin/trolley' }), name: 'NoOfComponentsPerBinOrTrolley', mandatory: false, searchable: false, disabled: true, tooltip: { text: 'Coming from packaging calculator(No. of components per crate/trolley)', width: '250px', disabledIcon: true } },
         { label: t('utilization', { defaultValue: 'Utilization (%)' }), name: 'Utilization', percentageLimit: true, mandatory: true, searchable: false, disabled: (state.hideUtilization || CostingViewMode) },
         { label: t('noOfBinsorTrolleysPerTruck', { defaultValue: 'No. of Bins/Trolleys per truck' }), name: 'NoOfBinsRequiredPerVehicle', mandatory: false, searchable: false, disabled: true, tooltip: { text: `No. of bins/trolleys per truck = (${state.carrierType?.label === "Bin And Trolley" ? 'Total no. of bins' : 'No. of bins'} * Utilization)/100`, width: '250px', disabledIcon: true } },
         { label: t('tripRate', { defaultValue: 'Trip rate' }), name: 'TripRate', mandatory: false, searchable: false, disabled: true, tooltip: { text: 'Coming from freight master', width: '250px', disabledIcon: true } },
         { label: t('totalCost', { defaultValue: 'Total cost' }), name: 'TotalCost', mandatory: false, searchable: false, disabled: true, tooltip: { text: `Total cost = Trip rate / (No. of components per bin/trolley * No. of bins/trolleys per truck)`, width: '250px', disabledIcon: true } },
     ]
+    const isBinAndTrolley = state.carrierType?.label === "Bin And Trolley"
     return (
         <Drawer anchor={props.anchor} open={props.isOpen}
         >
             {state.isLoader && <LoaderCustom customClass={"loader-center"} />}
             <Container>
-                <div className={`drawer-wrapper layout-min-width-860px`}>
+                <div className={`drawer-wrapper layout-min-width-960px`}>
                     <Row className="drawer-heading">
                         <Col>
                             <div className={'header-wrapper left'}>
@@ -551,58 +564,63 @@ function FreightCalculator(props) {
                             ></div>
                         </Col>
                     </Row>
-                    <Row>
+                    <Row className="freight-cost-calculator-warpper">
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <Row className="freight-cost-calculator-warpper">
+                            <Row >
                                 <FormFieldsRenderer
                                     fieldProps={fieldProps}
                                     fields={dimensionAndCarrierType}
                                 />
                             </Row>
-                            {(state.carrierType?.label === 'Trolley' || state.carrierType?.label === "Bin And Trolley") && <Row>
-                                <Col md="12" className={'mt25'}>
-                                    <HeaderTitle className="border-bottom"
-                                        title={'Trolley Dimension'}
-                                        customClass={'underLine-title'}
-                                    />
+                            <Row>
+
+                            </Row>
+                            <Row>
+                                <Col className={isBinAndTrolley ? "pr-0 right-seperate-border" : ""} md={isBinAndTrolley ? "6" : "12"}>
+                                    {(state.carrierType?.label === 'Trolley' || isBinAndTrolley) && <>
+
+                                        <HeaderTitle className="border-bottom"
+                                            title={'Trolley Dimension'}
+                                            customClass={'underLine-title'}
+                                        />
+
+                                        <FormFieldsRenderer
+                                            fieldProps={{ ...fieldProps, colSize: isBinAndTrolley ? "4" : "3" }}
+                                            fields={trolleyDimensionFields}
+                                            truckLength={state.truckLength}
+                                            truckBreadth={state.truckBreadth}
+                                            truckHeight={state.truckHeight}
+                                            fromCalculator={true}
+                                            getFormValues={getValues}
+                                            isTrolley={true}
+                                        />
+                                    </>}
                                 </Col>
-                                <Col md="12">
-                                    <FormFieldsRenderer
-                                        fieldProps={fieldProps}
-                                        fields={trolleyDimensionFields}
-                                        truckLength={state.truckLength}
-                                        truckBreadth={state.truckBreadth}
-                                        truckHeight={state.truckHeight}
-                                        fromCalculator={true}
-                                        getFormValues={getValues}
-                                        isTrolley={true}
-                                    />
+                                <Col className={isBinAndTrolley ? "pr-0" : ""} md={isBinAndTrolley ? "6" : "12"}>
+                                    {(state.carrierType?.label === 'Bin' || isBinAndTrolley) && <>
+                                        <HeaderTitle className="border-bottom"
+                                            title={'Bin Dimension'}
+                                            customClass={'underLine-title'}
+                                        />
+                                        <FormFieldsRenderer
+                                            fieldProps={{ ...fieldProps, colSize: isBinAndTrolley ? "4" : "3" }}
+                                            fields={binDimensionFields}
+                                            truckLength={state.truckLength}
+                                            truckBreadth={state.truckBreadth}
+                                            truckHeight={state.truckHeight}
+                                            fromCalculator={true}
+                                            getFormValues={getValues}
+                                            isBin={true}
+                                        />
+                                    </>}
                                 </Col>
-                            </Row>}
-                            {(state.carrierType?.label === 'Bin' || state.carrierType?.label === "Bin And Trolley") && <Row>
-                                <Col md="12" className={'mt25'}>
-                                    <HeaderTitle className="border-bottom"
-                                        title={'Bin Dimension'}
-                                        customClass={'underLine-title'}
-                                    />
-                                </Col>
-                                <Col md="12">
-                                    <FormFieldsRenderer
-                                        fieldProps={fieldProps}
-                                        fields={binDimensionFields}
-                                        truckLength={state.truckLength}
-                                        truckBreadth={state.truckBreadth}
-                                        truckHeight={state.truckHeight}
-                                        fromCalculator={true}
-                                        getFormValues={getValues}
-                                        isBin={true}
-                                    />
-                                </Col>
-                            </Row>}
+                            </Row>
+
+
                             <Row>
                                 <Col md="12" className='mt-2'>
                                     <label id="AddFreight_TruckDimensions"
-                                        className={`custom-checkbox w-auto mb-0 mt-4 `}
+                                        className={`custom-checkbox w-auto mb-0`}
                                         onChange={onShowAlignment}
                                     >
                                         Alignment
@@ -620,10 +638,11 @@ function FreightCalculator(props) {
                                 </Col>
                             </Row>
                             {state.isShowAlignment && <Row>
-                                <Col md="12" className='mt-2'>
+                                <Col md="12" className='mt-2 pr-0'>
                                     <FormFieldsRenderer
                                         fieldProps={fieldProps}
                                         fields={alignmentFields}
+                                        colSize={"3"}
                                     />
                                 </Col>
                             </Row>}

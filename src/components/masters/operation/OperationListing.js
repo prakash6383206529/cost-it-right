@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, FILE_URL } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, FILE_URL, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getOperationsDataList, deleteOperationAPI, setOperationList } from '../actions/OtherOperation';
 import AddOperation from './AddOperation';
@@ -36,6 +36,9 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import Switch from 'react-switch'
+import OperationSTSimulation from '../../simulation/components/SimulationPages/OperationSTSimulation';
+
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -64,7 +67,7 @@ const OperationListing = (props) => {
         selectedRowDataAnalytics: [],
         inRangeDate: [],
         //states for pagination purpose
-        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '', ForType: '' },
+        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UOM: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '', ForType: '' },
         warningMessage: false,
         filterModel: {},
         totalRecordCount: 0,
@@ -83,8 +86,12 @@ const OperationListing = (props) => {
         showExtraData: false,
         render: false,
         permissionData: {},
+        isImport: false,
+        editSelectedList: false,
+
 
     })
+    const [pageRecord, setPageRecord] = useState(0)
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const { t } = useTranslation("common")
     const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
@@ -92,7 +99,7 @@ const OperationListing = (props) => {
     const { operationList, allOperationList, operationDataHold } = useSelector(state => state.otherOperation);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { globalTakes } = useSelector(state => state.pagination);
-    const { selectedRowForPagination, simulationCostingStatus } = useSelector(state => state.simulation);
+    const { selectedRowForPagination, simulationCostingStatus, tokenForSimulation } = useSelector(state => state.simulation);
     useEffect(() => {
         if (!topAndLeftMenuData) {
             setState(prevState => ({ ...prevState, isLoader: true }));
@@ -165,7 +172,8 @@ const OperationListing = (props) => {
         }
     }
 
-    const getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 10, isPagination = true, dataObj) => {
+    const getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 10, isPagination = true, dataObj, OperationEntryType = false) => {
+        setPageRecord(skip)
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
 
         if (state.filterModel?.EffectiveDate) {
@@ -180,9 +188,13 @@ const OperationListing = (props) => {
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [props?.approvalStatus].join(",")
 
-        let filterData = { operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: vendor_id, ListFor: props.ListFor, StatusId: statusString }        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
+        let filterData = {
+            operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: !isSimulation ? vendor_id : isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : '', ListFor: props.ListFor, StatusId: statusString, OperationEntryType: !isSimulation ? (OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC) : props?.FromExchangeRate ? ENTRY_TYPE_IMPORT : null, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+            LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+            EffectiveDate: isSimulation && props?.minDate ? props?.minDate : '',
+        }        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
-            if (props.isSimulation) {
+            if (props.isSimulation && !props?.isFromVerifyPage) {
                 props?.changeTokenCheckBox(false)
             }
 
@@ -193,6 +205,8 @@ const OperationListing = (props) => {
             } else {
                 filterData.OperationType = ''
             }
+            dataObj.Currency = state.floatingFilterData?.Currency
+            dataObj.ExchangeRateSourceName = state.floatingFilterData?.ExchangeRateSourceName
             if (props.isSimulation) {
                 dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
             }
@@ -201,7 +215,7 @@ const OperationListing = (props) => {
             // dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
             dispatch(getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
                 setState(prevState => ({ ...prevState, noData: false }))
-                if (props.isSimulation) {
+                if (props.isSimulation && !props?.isFromVerifyPage) {
                     props?.changeTokenCheckBox(true)
                 }
                 setState(prevState => ({ ...prevState, isLoader: false }))
@@ -269,7 +283,7 @@ const OperationListing = (props) => {
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (operationList?.length !== 0) {
-                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
             }
         }, 500);
         setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -320,13 +334,13 @@ const OperationListing = (props) => {
 
     const onSearch = () => {
         dispatch(updatePageNumber(1));
-        dispatch(updateCurrentRowIndex(0));
+        dispatch(updateCurrentRowIndex(10));
         setState((prevState) => ({
             ...prevState, warningMessage: false,
             //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0, 
             noData: false,
         }));
-        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     };
 
     const resetState = () => {
@@ -396,16 +410,22 @@ const OperationListing = (props) => {
     * @description confirm delete item
     */
     const confirmDeleteItem = (ID) => {
-        const loggedInUser = loggedInUserId()
+        const loggedInUser = loggedInUserId();
         dispatch(deleteOperationAPI(ID, loggedInUser, (res) => {
-            if (res.data.Result === true) {
+            if (res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
-                resetState()
-                setState(prevState => ({ ...prevState, dataCount: 0 }))
+                dispatch(setSelectedRowForPagination([]));
+                if (state?.gridApi) {
+                    state?.gridApi?.deselectAll();
+                }
+                getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData);
+                setState((prevState) => ({ ...prevState, dataCount: 0 }));
             }
         }));
-        setState(prevState => ({ ...prevState, showPopup: false }))
-    }
+        setState((prevState) => ({ ...prevState, showPopup: false }));
+    };
+
+
     const onPopupConfirm = () => {
         confirmDeleteItem(state.deletedId);
     }
@@ -598,10 +618,12 @@ const OperationListing = (props) => {
 
     const onGridReady = (params) => {
         setState(prevState => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
+
         if (props.isSimulation || props.isMasterSummaryDrawer) {
+
             window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         }
-        window.screen.width >= 1921 && params.api.sizeColumnsToFit()
+        window.screen.width > 1920 && params.api.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
 
         const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
@@ -640,7 +662,14 @@ const OperationListing = (props) => {
         //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allOperationList ? allOperationList : [])
-        return returnExcelColumn(OPERATION_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+        const filteredLabels = OPERATION_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+            if (column.value === "ExchangeRateSourceName") {
+                return getConfigurationKey().IsSourceExchangeRateNameVisible
+            }
+            return true;
+        })
+        return returnExcelColumn(filteredLabels, tempArr)
+
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -763,7 +792,7 @@ const OperationListing = (props) => {
         let finalArr = selectedRows
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "OperationId")
-        if (props.isSimulation) {
+        if (props.isSimulation && !props?.isFromVerifyPage) {
 
             props.apply(uniqueArray, length)
         }
@@ -795,6 +824,13 @@ const OperationListing = (props) => {
         checkboxSelection: isFirstColumn,
         headerCheckboxSelection: (props.isSimulation || props.benchMark) ? isFirstColumn : false,
     };
+
+    const importToggle = () => {
+        setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
+        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData, !state.isImport)
+
+    }
+
     const floatingFilterStatus = {
         maxValue: 1,
         suppressFilterButton: true,
@@ -803,6 +839,15 @@ const OperationListing = (props) => {
             setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
             setState((prevState) => ({ ...prevState, disableFilter: false }));
         }
+    }
+    const cancel = () => {
+        props?.cancelImportList();
+    };
+    const editSelectedData = () => {
+        setState((prevState) => ({ ...prevState, editSelectedList: true, tempList: state.gridApi?.getSelectedRows() ? state.gridApi?.getSelectedRows() : [], }));
+    };
+    const backToSimulation = (value) => {
+        setState((prevState) => ({ ...prevState, editSelectedList: false }));
     };
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
@@ -816,157 +861,215 @@ const OperationListing = (props) => {
         statusFilter: CostingHeadDropdownFilter
     };
     return (
-        <div className={`${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-            {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-            <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
-                <form>
-                    <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
-                        <Col md="3" lg="3">
-                            <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                            {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
-                                buttonSpecificProp={{ id: "Operation_Listing_Tour", onClick: toggleExtraData }}
-                                stepsSpecificProp={{
-                                    steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
-                                }} />)}
-                        </Col>
-                        <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                    <div className="warning-message d-flex align-items-center">
-                                        {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                    </div>
-                                }
+        <div>
+            {!state?.editSelectedList && (
+                <div className={`${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+                    {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+                    <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
+                        <form>
+                            {!props?.isSimulation && <Row>
+                                <Col md="4" className="switch mt-3 mb-1">
+                                    <label className="switch-level">
+                                        <div className="left-title">Domestic</div>
+                                        <Switch
+                                            onChange={importToggle}
+                                            checked={state.isImport}
+                                            id="normal-switch"
 
-                                { }
-                                {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                    <Button id="operationListing_filter" className={"user-btn mr5 Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
+                                            background="#4DC771"
+                                            onColor="#4DC771"
+                                            onHandleColor="#ffffff"
+                                            offColor="#4DC771"
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            height={20}
+                                            width={46}
+                                        />
+                                        <div className="right-title">Import</div>
+                                    </label>
+                                </Col>
+                            </Row>}
+                            <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-2'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
+                                <Col md="3" lg="3">
+                                    <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
+                                        buttonSpecificProp={{ id: "Operation_Listing_Tour", onClick: toggleExtraData }}
+                                        stepsSpecificProp={{
+                                            steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                        }} />)}
+                                </Col>
+                                <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+                                        {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                            <div className="warning-message d-flex align-items-center">
+                                                {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            </div>
+                                        }
 
-                                }
-                                {(!isSimulation && !props?.benchMark) && <>
+                                        { }
+                                        {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                            <Button id="operationListing_filter" className={"user-btn mr5 Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
 
-                                    {state.shown ?
-                                        <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => setState(prevState => ({ ...prevState, shown: !state.shown }))}>
-                                            <div className="cancel-icon-white"></div>
-                                        </button>
-                                        // <Button type="button" className="user-btn mr5 filter-btn-top" onClick={handleShown()} icon="cancel-icon-white"/>
+                                        }
+                                        {(!isSimulation && !props?.benchMark) && <>
 
-                                        :
-                                        ""
-                                    }
+                                            {state.shown ?
+                                                <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => setState(prevState => ({ ...prevState, shown: !state.shown }))}>
+                                                    <div className="cancel-icon-white"></div>
+                                                </button>
+                                                // <Button type="button" className="user-btn mr5 filter-btn-top" onClick={handleShown()} icon="cancel-icon-white"/>
 
-                                    {permissionData?.Add && !props?.isMasterSummaryDrawer && (
-                                        <Button id="operationListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
+                                                :
+                                                ""
+                                            }
 
-                                    )}
-                                    {permissionData?.BulkUpload && !props?.isMasterSummaryDrawer && (
+                                            {permissionData?.Add && !props?.isMasterSummaryDrawer && (
+                                                <Button id="operationListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 
-                                        <Button id="operationListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
-                                    )}
-                                    {
-                                        permissionData?.Download && !props?.isMasterSummaryDrawer &&
-                                        <>
+                                            )}
+                                            {permissionData?.BulkUpload && !props?.isMasterSummaryDrawer && (
 
-                                            <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                                                icon={"download mr-1"}
-                                                buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                                            />
+                                                <Button id="operationListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+                                            )}
+                                            {
+                                                permissionData?.Download && !props?.isMasterSummaryDrawer &&
+                                                <>
 
-                                            <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
-                                                <Button id={"Excel-Downloads-operation"} className="p-absolute" />}>
+                                                    <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                                        icon={"download mr-1"}
+                                                        buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                                    />
 
-                                                {onBtExport()}
-                                            </ExcelFile>
+                                                    <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
+                                                        <Button id={"Excel-Downloads-operation"} className="p-absolute" />}>
+
+                                                        {onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                            }
                                         </>
+                                        }
+                                    </div>
+
+                                    <Button id={"operationListing_refresh"} className="Tour_List_Reset mr-2" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                                    {props.isSimulation && props.isFromVerifyPage && (
+                                        <button type="button" className={"apply"} onClick={cancel}                        >
+                                            <div className={"back-icon"}></div>Back
+                                        </button>
+                                    )}
+                                </Col>
+
+                            </Row>
+                        </form>
+                        <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
+                            <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                {(!state.render && !state.isLoader) && Object.keys(permissionData).length > 0 && <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
+                                    rowData={state.showExtraData ? [...setLoremIpsum(state.tableData[0]), ...state.tableData] : state.tableData}
+
+
+                                    pagination={true}
+
+                                    paginationPageSize={globalTakes}
+                                    onGridReady={onGridReady}
+                                    gridOptions={gridOptions}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    //onSelectionChanged={onRowSelect}
+                                    onRowSelected={onRowSelect}
+                                    suppressRowClickSelection={true}
+                                    onFilterModified={onFloatingFilterChanged}
+                                    enableBrowserTooltips={true}
+                                >
+                                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
+                                    {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                                    {getConfigurationKey().IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                    <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>
+                                    <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="Plants" headerName="Plant (Code)" ></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                    <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                                    <AgGridColumn field="Rate" headerName={`Rate`} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper ag-grid-action-container"} width={150} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                    {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
+                                </AgGridReact>}
+                                <div className='button-wrapper'>
+                                    {!state.isLoader &&
+                                        <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
                                     }
-                                </>
-                                }
+                                    {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                        <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
+
+                                    }
+                                </div>
                             </div>
-
-                            <Button id={"operationListing_refresh"} className="Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
-
-                        </Col>
-
-                    </Row>
-                </form>
-                <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
-                    <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
-                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                        {(!state.render && !state.isLoader) && (props.isMasterSummaryDrawer || Object.keys(permissionData).length > 0) && <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter={true}
-                            domLayout='autoHeight'
-                            rowData={state.showExtraData ? [...setLoremIpsum(state.tableData[0]), ...state.tableData] : state.tableData}
-                            pagination={true}
-                            paginationPageSize={globalTakes}
-                            onGridReady={onGridReady}
-                            gridOptions={gridOptions}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                                title: EMPTY_DATA,
-                                imagClass: 'imagClass'
-                            }}
-                            frameworkComponents={frameworkComponents}
-                            rowSelection={'multiple'}
-                            //onSelectionChanged={onRowSelect}
-                            onRowSelected={onRowSelect}
-                            suppressRowClickSelection={true}
-                            onFilterModified={onFloatingFilterChanged}
-                            enableBrowserTooltips={true}
-                        >
-                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-
-                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}
-                                floatingFilterComponentParams={floatingFilterStatus}
-                                floatingFilterComponent="statusFilter"></AgGridColumn>
-                            {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
-                            {getConfigurationKey().IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                            <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>
-                            <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="Plants" headerName="Plant (Code)" ></AgGridColumn>
-                            <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                            {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                            <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                            <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                            {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper ag-grid-action-container"} width={150} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                            {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
-                            {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-                        </AgGridReact>}
-                        <div className='button-wrapper'>
-                            {!state.isLoader &&
-                                <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
-                            }
-                            {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
-
-                            }
                         </div>
+                        {props.isSimulation && props.isFromVerifyPage && (
+                            <Row>
+                                <Col md="12" className="d-flex justify-content-end align-items-center">
+                                    <WarningMessage dClass="mr-5" message={`Please check the Operation that you want to edit.`} />
+                                    <Button className={"apply"} id={"operationListing_editSelectedData"} disabled={state.gridApi?.getSelectedRows()?.length === 0} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
+                                </Col>
+                            </Row>
+                        )}
+
+                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Operation'} isZBCVBCTemplate={true} messageLabel={'Operation'} anchor={'right'} masterId={OPERATIONS_ID} />}
+
+                        {
+                            state.analyticsDrawer &&
+                            <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={3} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowDataAnalytics} isSimulation={true}
+                                rowData={state.selectedRowDataAnalytics}
+                            />
+                        }
+                        {state.attachment && (<Attachament
+                            isOpen={state.attachment}
+                            index={state.viewAttachment}
+                            closeDrawer={closeAttachmentDrawer}
+                            anchor={'right'}
+                            gridListing={true}
+                        />
+                        )
+                        }
+
                     </div>
+                    {
+                        state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`} />
+                    }
                 </div>
-
-                {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Operation'} isZBCVBCTemplate={true} messageLabel={'Operation'} anchor={'right'} masterId={OPERATIONS_ID} />}
-
-                {
-                    state.analyticsDrawer &&
-                    <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={3} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowDataAnalytics} isSimulation={true}
-                        rowData={state.selectedRowDataAnalytics}
-                    />
-                }
-                {state.attachment && (<Attachament
-                    isOpen={state.attachment}
-                    index={state.viewAttachment}
-                    closeDrawer={closeAttachmentDrawer}
-                    anchor={'right'}
-                    gridListing={true}
+            )}
+            {state?.editSelectedList && (
+                <OperationSTSimulation isOperation={true}
+                    backToSimulation={backToSimulation}
+                    // isbulkUpload={isbulkUpload}
+                    // rowCount={rowCount}
+                    list={state?.tempList ? state?.tempList : []}
+                    // technology={technology.label}
+                    // technologyId={technology.value}
+                    // master={master.label}
+                    tokenForMultiSimulation={
+                        tokenForSimulation?.length !== 0
+                            ? [{ SimulationId: tokenForSimulation?.value }]
+                            : []
+                    }
                 />
-                )
-                }
-
-            </div>
-            {
-                state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`} />
-            }
+            )}
         </div>
     );
 }

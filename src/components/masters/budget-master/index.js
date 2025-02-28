@@ -90,7 +90,7 @@ function BudgetMaster() {
                                     </NavLink>
                                 </NavItem>
 
-                                {CheckApprovalApplicableMaster(OPERATIONS_ID) && <NavItem>
+                                {CheckApprovalApplicableMaster(BUDGET_ID) && <NavItem>
                                     <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                                         Approval Status
                                     </NavLink>
@@ -126,6 +126,7 @@ function BudgetMaster() {
                                             DeleteAccessibility={DeleteAccessibility}
                                             DownloadAccessibility={DownloadAccessibility}
                                             MasterId={BUDGET_ID}
+                                            OnboardingApprovalId={'0'}
                                         />
                                     </TabPane>}
                             </TabContent>

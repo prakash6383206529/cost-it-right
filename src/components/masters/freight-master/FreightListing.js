@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -15,13 +15,14 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { getLocalizedCostingHeadValue, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import { ApplyPermission } from '.';
 import Button from '../../layout/Button';
 import DayTime from '../../common/DayTimeWrapper';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import Switch from 'react-switch'
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 import { setResetCostingHead } from '../../../actions/Common';
 const gridOptions = {};
@@ -33,8 +34,8 @@ const FreightListing = (props) => {
     tableData: [],
     isBulkUpload: false,
     shown: false,
-    costingHead: [],
     destinationLocation: [],
+    costingHead: [],
     sourceLocation: [],
     vendor: [],
     isLoader: false,
@@ -42,11 +43,13 @@ const FreightListing = (props) => {
     deletedId: '',
     selectedRowData: false,
     noData: false,
-    dataCount: 0
+    dataCount: 0,
+    isImport: false,
+    totalRecordCount: 0
   })
   const permissions = useContext(ApplyPermission);
   const { freightDetail } = useSelector((state) => state.freight);
-  const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   const { costingHeadFilter } = useSelector((state) => state?.comman);
 
   useEffect(() => {
@@ -61,7 +64,7 @@ const FreightListing = (props) => {
   }, [props.stopApiCallOnCancel])
   //for static dropdown
   useEffect(() => {
-   
+
     if (costingHeadFilter && costingHeadFilter?.data) {
       const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
       if (matchedOption) {
@@ -69,7 +72,7 @@ const FreightListing = (props) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ costingHeadFilter]);
+  }, [costingHeadFilter]);
   useEffect(() => {
     return () => {
       dispatch(setResetCostingHead(true, "costingHead"))
@@ -79,14 +82,14 @@ const FreightListing = (props) => {
   * @method getDataList
   * @description GET DETAILS OF BOP DOMESTIC
   */
-  const getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
+  const getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0, FreightEntryType = false) => {
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
-    const filterData = { freight_for: freight_for, vendor_id: vendor_id, source_city_id: source_city_id, destination_city_id: destination_city_id, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc }
+    const filterData = { freight_for: freight_for, vendor_id: vendor_id, source_city_id: source_city_id, destination_city_id: destination_city_id, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc, FreightEntryType: FreightEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC }
     dispatch(getFreightDataList(filterData, (res) => {
       setState((prevState) => ({ ...prevState, isLoader: false }))
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
+        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, totalRecordCount: Data?.length }))
       } else if (res && res.response && res.response.status === 412) {
         setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
       } else {
@@ -139,7 +142,7 @@ const FreightListing = (props) => {
      */
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      freightDetail.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
+      freightDetail.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }))
     }, 500);
   }
   /**
@@ -163,19 +166,19 @@ const FreightListing = (props) => {
     suppressFilterButton: true,
     component: CostingHeadDropdownFilter,
     onFilterChange: (originalValue, value) => {
-      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
       setState((prevState) => ({ ...prevState, disableFilter: false }));
     }
-};
-  
+  };
+
   const combinedCostingHeadRenderer = (props) => {
     // Call the existing checkBoxRenderer
     costingHeadFormatter(props);
-  
+
     // Get and localize the cell value
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-  
+
     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
     return localizedValue;
   };
@@ -213,28 +216,31 @@ const FreightListing = (props) => {
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
     // Map TempData to replace "NA" with "-"
-    let temp = [];  
+    let temp = [];
     temp = TempData && TempData.map((item) => {
-        const newItem = { ...item }; // Create a copy of the object to avoid mutating original data
-        for (let key in newItem) {
-         if (newItem[key] === 'NA'||newItem[key] === ' '||newItem[key] === null||newItem[key] === undefined) {
-                newItem[key] = '-';
-            }
-          }
-        return newItem;
+      const newItem = { ...item }; // Create a copy of the object to avoid mutating original data
+      if (newItem.VendorName === '-') {
+        newItem.VendorName = ' '
+      }
+      for (let key in newItem) {
+        if (newItem[key] === 'NA' || newItem[key] === ' ' || newItem[key] === null || newItem[key] === undefined) {
+          newItem[key] = '-';
+        }
+      }
+      return newItem;
     });
-    
 
- return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
-       {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-     </ExcelSheet>);
+
+    return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+    </ExcelSheet>);
   }
 
 
-  
+
   const onGridReady = (params) => {
     state.gridApi = params.api;
-    state.gridApi.sizeColumnsToFit();
+    // state.gridApi.sizeColumnsToFit();
     setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
     params.api.paginationGoToPage(0);
   };
@@ -251,7 +257,13 @@ const FreightListing = (props) => {
     let tempArr = []
     tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (freightDetail ? freightDetail : [])
-    return returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+    const filteredLabels = FREIGHT_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr)
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -283,7 +295,8 @@ const FreightListing = (props) => {
     filter: true,
     sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: isFirstColumn
+    checkboxSelection: isFirstColumn,
+    onFilterChanged: onFloatingFilterChanged
   };
 
   const frameworkComponents = {
@@ -295,17 +308,42 @@ const FreightListing = (props) => {
     effectiveDateFormatter: effectiveDateFormatter,
     statusFilter: CostingHeadDropdownFilter,
   };
+  const importToggle = () => {
+    setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
+    getDataList(null, null, null, null, !state.isImport)
+
+  }
 
   return (
     <div className={`ag-grid-react grid-parent-wrapper ${permissions.Download ? "show-table-btn" : ""}`}>
       {state.isLoader && <LoaderCustom />}
       <form noValidate>
+
         <Row className="pt-4">
+          <Col md="4" className="switch mb15">
+            <label className="switch-level">
+              <div className="left-title">Domestic</div>
+              <Switch
+                onChange={importToggle}
+                checked={state.isImport}
+                id="normal-switch"
+                background="#4DC771"
+                onColor="#4DC771"
+                onHandleColor="#ffffff"
+                offColor="#4DC771"
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={20}
+                width={46}
+              />
+              <div className="right-title">Import</div>
+            </label>
+          </Col>
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
-                             {/* Add button */}
-                             {permissions.Add && (
+                {/* Add button */}
+                {permissions.Add && (
                   <Button
                     id="freightListing_add"
                     className={"user-btn mr5"}
@@ -326,13 +364,14 @@ const FreightListing = (props) => {
                           id={"Excel-Downloads-freightListing"}
                           title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                           type="button"
+                          disabled={state?.totalRecordCount === 0}
                           className={'user-btn mr5'}
                           icon={"download mr-1"}
                           buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                         />
                       }
                     >
-                      {onBtExport()}
+                      {state?.totalRecordCount !== 0 ? onBtExport() : null}
                     </ExcelFile>
                   </>
                 )}
@@ -353,8 +392,8 @@ const FreightListing = (props) => {
         <Col>
           <div
             className={`ag-grid-wrapper height-width-wrapper ${(freightDetail && freightDetail.length <= 0) || noData
-                ? "overlay-contain"
-                : ""
+              ? "overlay-contain"
+              : ""
               }`}
           >
             <div className="ag-grid-header">
@@ -367,6 +406,7 @@ const FreightListing = (props) => {
                 onChange={(e) => onFilterTextBoxChanged(e)}
               />
             </div>
+
             <div className={`ag-theme-material`}>
               {noData && (
                 <NoContentFound
@@ -384,7 +424,7 @@ const FreightListing = (props) => {
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={"customNoRowsOverlay"}
-                onFilterModified={() => { }}
+                onFilterModified={onFloatingFilterChanged}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
                   imagClass: "imagClass",
@@ -394,27 +434,13 @@ const FreightListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}   floatingFilterComponentParams={floatingFilterStatus} 
-                                            floatingFilterComponent="statusFilter"></AgGridColumn>
+                <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
+                  floatingFilterComponent="statusFilter"></AgGridColumn>
                 <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
-                <AgGridColumn
-                  field="VendorName"
-                  headerName={`${vendorLabel} (Code)`}
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="Plant"
-                  headerName="Plant (Code)"
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                {reactLocalStorage.getObject("CostingTypePermission").cbc && (
-                  <AgGridColumn
-                    field="CustomerName"
-                    headerName="Customer (Code)"
-                    cellRenderer={"hyphenFormatter"}
-                  ></AgGridColumn>
-                )}
-
+                <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                {reactLocalStorage.getObject("CostingTypePermission").cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
+                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 {/* New Columns */}
                 <AgGridColumn
                   field="Load"
@@ -437,20 +463,8 @@ const FreightListing = (props) => {
                   valueGetter={(params) => params.data?.RateCriteria || "-"}
                 ></AgGridColumn>
                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
-                <AgGridColumn
-                  field="EffectiveDate"
-                  headerName="Effective Date"
-                  cellRenderer={"effectiveDateFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  width="200px"
-                  field="FreightId"
-                  cellClass="ag-grid-action-container"
-                  headerName="Action"
-                  type="rightAligned"
-                  floatingFilter={false}
-                  cellRenderer={"totalValueRenderer"}
-                ></AgGridColumn>
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"}></AgGridColumn>
+                <AgGridColumn width="220px" field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
             </div>

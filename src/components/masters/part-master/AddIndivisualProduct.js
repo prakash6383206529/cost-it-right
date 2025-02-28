@@ -284,7 +284,7 @@ class AddIndivisualProduct extends Component {
 
         if (isEditFlag) {
             if (DropdownChanged && ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && DataToCheck.ProductHierarchyValueDetailsIdRef === ProductHierarachyValueId) {
-                this.cancel('cancel')
+                Toaster.warning('Please change data to save the Product');
                 return false;
             }
             this.setState({ setDisable: true })
@@ -374,7 +374,7 @@ class AddIndivisualProduct extends Component {
     */
     render() {
         const { handleSubmit, initialConfiguration, t, productHierarchyData } = this.props;
-        const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Name'
+        const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Product'
         const { isEditFlag, isViewMode, setDisable } = this.state;
         return (
             <>
@@ -452,7 +452,7 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
 
                                                     {initialConfiguration &&
-                                                        initialConfiguration.IsGroupCodeDisplay && (
+                                                        initialConfiguration?.IsGroupCodeDisplay && (
                                                             <Col md="3" className="d-flex">
                                                                 <Field
                                                                     label={`Group Code`}
@@ -599,19 +599,19 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
                                                     <Col md="3">
                                                         <label>
-                                                            Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)
+                                                            Upload Files (upload up to {initialConfiguration?.MaxMasterFilesToUpload} files)
                                                         </label>
-                                                        <div className={`alert alert-danger mt-2 ${this.state.files.length === initialConfiguration.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
+                                                        <div className={`alert alert-danger mt-2 ${this.state.files.length === initialConfiguration?.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                                                             Maximum file upload limit reached.
                                                         </div>
-                                                        <div id="AddIndivisualPart_UploadFiles" className={`${this.state.files.length >= initialConfiguration.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                                                        <div id="AddIndivisualPart_UploadFiles" className={`${this.state.files.length >= initialConfiguration?.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                                                             <Dropzone
                                                                 ref={this.dropzone}
                                                                 onChangeStatus={this.handleChangeStatus}
                                                                 PreviewComponent={this.Preview}
                                                                 accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                                                 initialFiles={this.state.initialFiles}
-                                                                maxFiles={initialConfiguration.MaxMasterFilesToUpload}
+                                                                maxFiles={initialConfiguration?.MaxMasterFilesToUpload}
                                                                 maxSizeBytes={2000000}
                                                                 disabled={isViewMode}
                                                                 inputContent={(files, extra) =>

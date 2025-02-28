@@ -3,13 +3,18 @@ import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import DayTime from '../components/common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { checkForDecimalAndNull, checkForNull } from './validation'
+import { checkForDecimalAndNull, checkForNull, isNumber } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
   RAWMATERIALINDEX,
+  VBCTypeId,
+  RAW_MATERIAL,
+  BOP,
+  RAWMATERIAL,
+
 } from '../config/constants'
-import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
+import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
 import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID } from '../config/masterData';
@@ -884,6 +889,84 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
   obj.InfoCategory = dataFromAPI?.InfoCategory ? dataFromAPI?.InfoCategory : '-'
   obj.TaxCodeList = dataFromAPI?.CostingPartDetails?.TaxCodeList ? dataFromAPI?.CostingPartDetails?.TaxCodeList : []
+  obj.ExchangeRateSourceName = dataFromAPI?.ExchangeRateSourceName
+  obj.CostingCurrency = dataFromAPI?.CostingCurrency
+
+  obj.NetRawMaterialsCostLocalConversion = dataFromAPI?.NetRawMaterialsCostLocalConversion
+  obj.NetBoughtOutPartCostLocalConversion = dataFromAPI?.NetBoughtOutPartCostLocalConversion
+  obj.NetConversionCostLocalConversion = dataFromAPI?.NetConversionCostLocalConversion
+  obj.NetProcessCostLocalConversion = dataFromAPI?.NetProcessCostLocalConversion
+  obj.NetOperationCostLocalConversion = dataFromAPI?.NetOperationCostLocalConversion
+  obj.NetOtherOperationCostLocalConversion = dataFromAPI?.NetOtherOperationCostLocalConversion
+  obj.NetTotalRMBOPCCLocalConversion = dataFromAPI?.NetTotalRMBOPCCLocalConversion
+  obj.NetSurfaceTreatmentCostLocalConversion = dataFromAPI?.NetSurfaceTreatmentCostLocalConversion
+  obj.TransportationCostLocalConversion = dataFromAPI?.TransportationCostLocalConversion
+  obj.NetFreightPackagingCostLocalConversion = dataFromAPI?.NetFreightPackagingCostLocalConversion
+  obj.NetToolCostLocalConversion = dataFromAPI?.NetToolCostLocalConversion
+  obj.NetDiscountsCostLocalConversion = dataFromAPI?.NetDiscountsCostLocalConversion
+  obj.NetOtherCostLocalConversion = dataFromAPI?.NetOtherCostLocalConversion
+  obj.SurfaceTreatmentCostLocalConversion = dataFromAPI?.SurfaceTreatmentCostLocalConversion
+  obj.NetOverheadAndProfitCostLocalConversion = dataFromAPI?.NetOverheadAndProfitCostLocalConversion
+  obj.OverheadCostLocalConversion = dataFromAPI?.OverheadCostLocalConversion
+  obj.ProfitCostLocalConversion = dataFromAPI?.ProfitCostLocalConversion
+  obj.RejectionCostLocalConversion = dataFromAPI?.RejectionCostLocalConversion
+  obj.ICCCostLocalConversion = dataFromAPI?.ICCCostLocalConversion
+  obj.PaymentTermCostLocalConversion = dataFromAPI?.PaymentTermCostLocalConversion
+  obj.PackagingCostLocalConversion = dataFromAPI?.PackagingCostLocalConversion
+  obj.FreightCostLocalConversion = dataFromAPI?.FreightCostLocalConversion
+  obj.NetChildPartsCostLocalConversion = dataFromAPI?.NetChildPartsCostLocalConversion
+  obj.MasterBatchRMPriceLocalConversion = dataFromAPI?.MasterBatchRMPriceLocalConversion
+  obj.MasterBatchTotalLocalConversion = dataFromAPI?.MasterBatchTotalLocalConversion
+  obj.TotalCostBeforeDiscountAndOtherCostLocalConversion = dataFromAPI?.TotalCostBeforeDiscountAndOtherCostLocalConversion
+  obj.DiscountCostLocalConversion = dataFromAPI?.DiscountCostLocalConversion
+  obj.OtherCostLocalConversion = dataFromAPI?.OtherCostLocalConversion
+  obj.RawMaterialCostWithCutOffLocalConversion = dataFromAPI?.RawMaterialCostWithCutOffLocalConversion
+  obj.NetLabourCostLocalConversion = dataFromAPI?.NetLabourCostLocalConversion
+  obj.IndirectLaborCostLocalConversion = dataFromAPI?.IndirectLaborCostLocalConversion
+  obj.StaffCostLocalConversion = dataFromAPI?.StaffCostLocalConversion
+  obj.NetRawMaterialsCostConversion = isBestCost ? dataFromAPI?.NetRawMaterialsCost : dataFromAPI?.NetRawMaterialsCostConversion
+  obj.NetBoughtOutPartCostConversion = isBestCost ? dataFromAPI?.NetBoughtOutPartCost : dataFromAPI?.NetBoughtOutPartCostConversion
+  obj.NetConversionCostConversion = isBestCost ? dataFromAPI?.NetConversionCost : dataFromAPI?.NetConversionCostConversion
+  obj.NetProcessCostConversion = isBestCost ? dataFromAPI?.NetProcessCost : dataFromAPI?.NetProcessCostConversion
+  obj.NetOperationCostConversion = isBestCost ? dataFromAPI?.NetOperationCost : dataFromAPI?.NetOperationCostConversion
+  obj.NetOtherOperationCostConversion = isBestCost ? dataFromAPI?.NetOtherOperationCost : dataFromAPI?.NetOtherOperationCostConversion
+  obj.NetTotalRMBOPCCConversion = isBestCost ? dataFromAPI?.NetTotalRMBOPCC : dataFromAPI?.NetTotalRMBOPCCConversion
+  obj.NetSurfaceTreatmentCostConversion = isBestCost ? dataFromAPI?.NetSurfaceTreatmentCost : dataFromAPI?.NetSurfaceTreatmentCostConversion
+  obj.TransportationCostConversion = isBestCost ? dataFromAPI?.TransportationCost : dataFromAPI?.TransportationCostConversion
+  obj.NetFreightPackagingCostConversion = isBestCost ? dataFromAPI?.NetFreightPackagingCost : dataFromAPI?.NetFreightPackagingCostConversion
+  obj.NetToolCostConversion = isBestCost ? dataFromAPI?.NetToolCost : dataFromAPI?.NetToolCostConversion
+  obj.NetDiscountsCostConversion = isBestCost ? dataFromAPI?.NetDiscountsCost : dataFromAPI?.NetDiscountsCostConversion
+  obj.NetOtherCostConversion = isBestCost ? dataFromAPI?.NetOtherCost : dataFromAPI?.NetOtherCostConversion
+  obj.SurfaceTreatmentCostConversion = isBestCost ? dataFromAPI?.SurfaceTreatmentCost : dataFromAPI?.SurfaceTreatmentCostConversion
+  obj.NetOverheadAndProfitCostConversion = isBestCost ? dataFromAPI?.NetOverheadAndProfitCost : dataFromAPI?.NetOverheadAndProfitCostConversion
+  obj.OverheadCostConversion = isBestCost ? dataFromAPI?.OverheadCost : dataFromAPI?.OverheadCostConversion
+  obj.ProfitCostConversion = dataFromAPI?.ProfitCostConversion
+  obj.RejectionCostConversion = dataFromAPI?.RejectionCostConversion
+  obj.ICCCostConversion = dataFromAPI?.ICCCostConversion
+  obj.PaymentTermCostConversion = dataFromAPI?.PaymentTermCostConversion
+  obj.PackagingCostConversion = dataFromAPI?.PackagingCostConversion
+  obj.FreightCostConversion = dataFromAPI?.FreightCostConversion
+  obj.NetChildPartsCostConversion = dataFromAPI?.NetChildPartsCostConversion
+  obj.MasterBatchRMPriceConversion = dataFromAPI?.MasterBatchRMPriceConversion
+  obj.MasterBatchTotalConversion = dataFromAPI?.MasterBatchTotalConversion
+  obj.TotalCostBeforeDiscountAndOtherCostConversion = dataFromAPI?.TotalCostBeforeDiscountAndOtherCostConversion
+  obj.DiscountCostConversion = dataFromAPI?.DiscountCostConversion
+  obj.OtherCostConversion = dataFromAPI?.OtherCostConversion
+  obj.RawMaterialCostWithCutOffConversion = dataFromAPI?.RawMaterialCostWithCutOffConversion
+  obj.NetLabourCostConversion = dataFromAPI?.NetLabourCostConversion
+  obj.IndirectLaborCostConversion = dataFromAPI?.IndirectLaborCostConversion
+  obj.StaffCostConversion = dataFromAPI?.StaffCostConversion
+  obj.LocalCurrency = dataFromAPI?.LocalCurrency
+  obj.NetPOPriceLocalConversion = dataFromAPI?.NetPOPriceLocalConversion
+  obj.NetPOPriceConversion = dataFromAPI?.NetPOPriceConversion
+  obj.BasicRateConversion = dataFromAPI?.BasicRateConversion
+  obj.NetToolCostConversion = isBestCost ? dataFromAPI?.NetToolCost : dataFromAPI?.NetToolCostConversion
+  obj.NetOverheadAndProfitConversion = dataFromAPI?.NetOverheadAndProfitConversion
+  obj.NetSurfaceTreatmentConversion = dataFromAPI?.NetSurfaceTreatmentConversion
+  obj.NetFreightPackagingConversion = dataFromAPI?.NetFreightPackagingConversion
+  obj.nTotalRMBOPCCLocalConversion = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCCLocalConversion ? dataFromAPI.NetTotalRMBOPCCLocalConversion : 0
+  obj.QuotationId = dataFromAPI?.QuotationId ?? null
+  obj.IsRfqCosting = dataFromAPI?.IsRFQCosting ?? false
   temp.push(obj)
   return temp
 }
@@ -1006,10 +1089,10 @@ export function isRMDivisorApplicable(technology) {
 
 
 
-export function findLostWeight(tableVal) {
+export function findLostWeight(tableVal, isPlastic = false) {
   let sum = 0
   tableVal && tableVal.map(item => {
-    if (Number(item.LossOfType) === 2) {
+    if (Number(item.LossOfType) === 2 && isPlastic) {
       return false
     } else {
       sum = sum + item.LossWeight
@@ -1163,11 +1246,11 @@ export const displayUOM = (value) => {
   return value
 }
 export const labelWithUOMAndCurrency = (label, UOM, currency) => {
-  return <>{label}({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</>
+  return <>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</>
 }
 
 export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
-  return <>{label}({UOM ? displayUOM(UOM) : 'UOM'}/{ScrapUOM ? displayUOM(ScrapUOM) : 'UOM'})</>
+  return <>{label} ({UOM ? displayUOM(UOM) : 'UOM'}/{ScrapUOM ? displayUOM(ScrapUOM) : 'UOM'})</>
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
@@ -1379,7 +1462,7 @@ export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalF
     return conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
   } else if (id.includes("Combined")) {
     text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>{showBopLabel()} cost is not included for {showBopLabel()} part type</p>}</>;
-    return (arr[0]?.IsRMCutOffApplicable === true) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
+    return (arr[0]?.IsRMCutOffApplicable === true && id.includes("RM")) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
   }
 }
 
@@ -1390,16 +1473,19 @@ export function showRMScrapKeys(technology) {
       obj.showForging = true
       obj.showCircleJali = false
       obj.showScrap = false
+      obj.name = 'Forging Scrap Rate'
       break;
     case SHEETMETAL:
       obj.showForging = false
       obj.showCircleJali = true
       obj.showScrap = false
+      obj.name = 'Circle Jali Scrap Rate'
       break;
     default:
       obj.showForging = false
       obj.showCircleJali = false
       obj.showScrap = true
+      obj.name = 'Scrap Rate'
       break;
   }
   return obj
@@ -1416,20 +1502,18 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
   const updatedLabels = bopLabels.map(label => ({
     ...label,
     [labelName]: label[labelName]?.replace(bopRegex, bopReplacement),
-    // value: label.value?.replace(bopRegex, bopReplacement),
 
+    // const updatedTempData = bopData.map(dataItem => {
+    //   const newDataItem = {};
+    //   for (let key in dataItem) {
+    //     if (dataItem.hasOwnProperty(key)) {
+    //       const newKey = key?.replace(bopRegex, bopReplacement);
+    //       newDataItem[newKey] = dataItem[key];
+    //     }
+    //   }
+    //   return newDataItem;
+    // });
   }));
-
-  // const updatedTempData = bopData.map(dataItem => {
-  //   const newDataItem = {};
-  //   for (let key in dataItem) {
-  //     if (dataItem.hasOwnProperty(key)) {
-  //       const newKey = key?.replace(bopRegex, bopReplacement);
-  //       newDataItem[newKey] = dataItem[key];
-  //     }
-  //   }
-  //   return newDataItem;
-  // });
   return { updatedLabels };
 }
 /**
@@ -1660,7 +1744,7 @@ export function checkTechnologyIdAndRfq(viewCostingData = []) {
 }
 // function to remove all spaces from a string
 export const removeSpaces = (str = '') => {
-  return str.replace(/\s+/g, '');
+  return str?.replace(/\s+/g, '');
 };
 export const getChangeHighlightClass = (originalValue, updatedValue) => {
   return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
@@ -1684,3 +1768,184 @@ export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel, zeroBa
 //     window.top.location = window.self.location;
 //   }
 // };
+export const RFQ_KEYS = {
+  RM_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsRMMandatoryForParts,
+  SPECIFICATION_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsSpecificationMandatory,
+  ANNUAL_FORECAST_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsAnnualForecastMandatory,
+  REMARKS_ATTACHMENT_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsRemarksAndAttachmentMandatory,
+  SHOW_N100_HAVELLS: getConfigurationKey()?.RFQManditFields?.IsShowN100andHavellsAndProprietaryType,
+  VISIBILITY_CONDITION: getConfigurationKey()?.RFQManditFields?.IsVisibilityConditionMandatory,
+  SHOW_RM: getConfigurationKey()?.RFQManditFields?.IsShowRMForRFQ,
+  SHOW_BOP: getConfigurationKey()?.RFQManditFields?.IsShowBOPForRFQ,
+  SHOW_TOOLING: getConfigurationKey()?.RFQManditFields?.IsShowToolingForRFQ
+};
+export const calculateBestCost = (arrayList, showConvertedCurrency = false) => {
+  if (!arrayList?.length) return [];
+
+  // First, remove any existing bestCost items to prevent duplicates
+  const finalArrayList = _.cloneDeep(arrayList).filter(item => !item.bestCost);
+
+  // If array is empty after filtering, return original array
+  if (!finalArrayList.length) return arrayList;
+
+  // Check if currency conversion needed
+  const isSameCurrency = _.map(finalArrayList, 'Currency')
+    .every(element => element === getConfigurationKey().BaseCurrency);
+
+  const minObject = {
+    ...finalArrayList[0],
+    attachment: [],
+    bestCost: true
+  };
+
+  // Rest of your existing logic...
+  if (isSameCurrency) {
+    const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+    Object.keys(minObject).forEach(key => minObject[key] = "");
+
+    keys.forEach(key => {
+      minObject[key] = Math.min(...finalArrayList
+        .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+    });
+
+    minObject.nPOPrice = keys.reduce((sum, key) =>
+      sum + checkForNull(minObject[key]), 0);
+  }
+  else if (!showConvertedCurrency) {
+    Object.keys(minObject).forEach(key => minObject[key] = "");
+
+    const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+
+    conversionKeys.forEach(key => {
+      minObject[key] = Math.min(...finalArrayList
+        .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+    });
+
+    minObject.bestCost = "";
+  }
+  else {
+    const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+
+    Object.keys(minObject).forEach(key => minObject[key] = "");
+
+    conversionKeys.forEach(key => {
+      minObject[key] = Math.min(...finalArrayList
+        .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+    });
+
+    minObject.nPOPrice = conversionKeys.reduce((sum, key) =>
+      sum + checkForNull(minObject[key]), 0);
+  }
+
+  return [...finalArrayList, minObject];
+};
+
+
+export const canEnableFields = ({
+  plant,
+  technology,
+  type,
+  updateButtonPartNoTable,
+  isEditMode,
+  isViewMode,
+  isEditFlagReceived,     // Flag indicating if quotation is received
+  showSendButton,  // Add this parameter
+  isAddFlag       // Add this parameter
+}) => {
+
+  // First check if quotation is received - disable all fields
+  if (isEditFlagReceived) {
+    return false;
+  }
+
+  // Check for view mode - disable all fields
+  if (isViewMode) {
+    return false;
+  }
+
+  // For add mode or draft/predraft status
+  if (isAddFlag || showSendButton === 'Draft' || showSendButton === 'PreDraft') {
+    // For RM type, need both plant and technology
+    if (type === 'RM') {
+      return Object.keys(plant || {}).length > 0 &&
+        Object.keys(technology || {}).length > 0;
+    }
+    // For other types, only need plant
+    return Object.keys(plant || {}).length > 0;
+  }
+
+  // For grid edit operations
+  if (updateButtonPartNoTable && isEditMode && !isViewMode) {
+    // Disable fields even in edit mode if quotation is received
+
+    return true;
+  }
+
+
+  // For grid edit operations
+  if (updateButtonPartNoTable && isEditMode && !isViewMode) {
+    return true;
+  }
+
+  // Default case - fields should be disabled
+  return false;
+};
+// ... existing code ...
+
+export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendorId, clientValue, master = "", plantCurrency = "" }) => {
+  const isPlantAndTargetBothBase = plantCurrency === reactLocalStorage.getObject("baseCurrency") &&
+    toCurrency === reactLocalStorage.getObject("baseCurrency");
+
+  // Handle base currency conversion only for settlement currency, not when both are INR
+  if (toCurrency === reactLocalStorage.getObject("baseCurrency") &&
+    !isPlantAndTargetBothBase) {
+    return {
+      costingHeadTypeId: ZBCTypeId,
+      vendorId: null,
+      clientId: null
+    };
+  }
+
+  // Handle Raw Material case
+  if (master === RAWMATERIAL && defaultCostingTypeId === ZBCTypeId) {
+
+    const useVendorWise = IsFetchExchangeRateVendorWiseForZBCRawMaterial();
+    return {
+      costingHeadTypeId: useVendorWise ? VBCTypeId : defaultCostingTypeId,
+      vendorId: useVendorWise ? vendorId : EMPTY_GUID,
+      clientId: clientValue
+    };
+  }
+
+  // Handle BOP case
+  if (master === BOP) {
+    const useVendorWise = IsFetchExchangeRateVendorWiseForParts();
+    return {
+      costingHeadTypeId: useVendorWise ?
+        (defaultCostingTypeId === VBCTypeId || defaultCostingTypeId === ZBCTypeId ? VBCTypeId : defaultCostingTypeId)
+        : ZBCTypeId,
+      vendorId: useVendorWise ? vendorId : EMPTY_GUID,
+      clientId: clientValue
+    };
+  }
+
+  // Handle default case
+  const isZBC = defaultCostingTypeId === ZBCTypeId;
+  const useVendorWise = IsFetchExchangeRateVendorWiseForParts();
+
+  if (isZBC) {
+    return {
+      costingHeadTypeId: ZBCTypeId,
+      vendorId: EMPTY_GUID,
+      clientId: clientValue
+    };
+  }
+
+  return {
+    costingHeadTypeId: useVendorWise ?
+      (defaultCostingTypeId === VBCTypeId ? VBCTypeId : defaultCostingTypeId)
+      : ZBCTypeId,
+    vendorId: useVendorWise ? vendorId : EMPTY_GUID,
+    clientId: clientValue
+  };
+};

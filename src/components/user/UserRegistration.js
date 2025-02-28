@@ -897,7 +897,6 @@ function UserRegistration(props) {
 
     if (role && role.value) {
 
-
       setIsShowAdditionalPermission(!IsShowAdditionalPermission)
       setModules([])
 
@@ -909,7 +908,6 @@ function UserRegistration(props) {
         }
         getUserPermission(UserId)
       } else {
-
         if (!e) {
           setIsPermissionLoading(true)
         }
@@ -2357,7 +2355,7 @@ function UserRegistration(props) {
       }
     } else {
       let userData = {
-        UserName: !initialConfiguration.IsLoginEmailConfigure ? values.UserName.trim() : null,
+        UserName: !initialConfiguration?.IsLoginEmailConfigure ? values.UserName.trim() : null,
         Password: encryptedpassword.toString(),
         IsAdditionalAccess: IsShowAdditionalPermission,
         RoleId: role.value,
@@ -2904,7 +2902,7 @@ function UserRegistration(props) {
                         customClassName={'withBorder'}
                       />
                     </div>
-                    {!initialConfiguration.IsLoginEmailConfigure &&
+                    {!initialConfiguration?.IsLoginEmailConfigure &&
                       <div className="input-group col-md-3">
                         <TextFieldHookForm
                           name="UserName"
@@ -3120,7 +3118,7 @@ function UserRegistration(props) {
                       />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         label="ZipCode"
                         name={"ZipCode"}
                         errors={errors.ZipCode}
@@ -3212,7 +3210,7 @@ function UserRegistration(props) {
                                 type="text"
                                 label={`${handleDepartmentHeader()}`}
                                 errors={errors.DepartmentId}
-                                isMulti={initialConfiguration.IsMultipleDepartmentAllowed}
+                                isMulti={initialConfiguration?.IsMultipleDepartmentAllowed}
                                 Controller={Controller}
                                 control={control}
                                 register={register}

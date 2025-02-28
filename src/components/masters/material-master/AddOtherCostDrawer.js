@@ -5,21 +5,26 @@ import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../src/com
 import { useForm, Controller } from 'react-hook-form'
 import NoContentFound from '../../../../src/components/common/NoContentFound'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull, hashValidation } from "../../../../src/helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull, hashValidation, maxLength80 } from "../../../../src/helper/validation";
 import { useDispatch, useSelector } from 'react-redux'
 import { COMMODITYCOST, EMPTY_DATA, RAWMATERIALCOST } from '../../../../src/config/constants'
 import Toaster from '../../../../src/components/common/Toaster';
 import { getCostingCondition } from '../../../actions/Common'
-import { getCostingConditionTypes } from '../../common/CommonFunctions'
+import { generateCombinations, getCostingConditionTypes } from '../../common/CommonFunctions'
 
 function AddOtherCostDrawer(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
-    const { currency, rmBasicRate, isFromImport, isFromMaster, RowData, RowIndex } = props
-    const Currency = props?.RowData?.IndexCurrency
+
+
+    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP, RawMaterialNonIndexed = false, bopBasicRate } = props
+    const Currency = RawMaterialNonIndexed ? settlementCurrency : ((isBOP && isImport) ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency) || 'Currency'
+    const CurrencyLabel = RawMaterialNonIndexed ? settlementCurrency : (!props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency) || 'Currency'
+
     const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
+
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [disableAllFields, setDisableAllFields] = useState(true)
     const [editIndex, setEditIndex] = useState('')
@@ -28,6 +33,7 @@ function AddOtherCostDrawer(props) {
     const [totalCostCurrency, setTotalCostCurrency] = useState('')
     const [totalCostBase, setTotalCostBase] = useState('')
     const [disableCurrency, setDisableCurrency] = useState(false)
+    const [availableApplicabilities, setAvailableApplicabilities] = useState(["Basic Rate"]);
     const [RawMaterialCommodityIndexRateAndOtherCostDetailsId, setRawMaterialCommodityIndexRateAndOtherCostDetailsId] = useState('')
     const ExchangeRate = RowData?.ExchangeRate
     const BasicRateIndexCurrency = RowData?.BasicRate
@@ -73,11 +79,11 @@ function AddOtherCostDrawer(props) {
 
     }, [tableData]);
     useEffect(() => {
-        if (props.rawMaterial === true) {
+        if (props.rawMaterial === true || isBOP) {
             setTableData(props.rmTableData)
         } else {
 
-            if (Array.isArray(props.RowData.RawMaterialCommodityIndexRateDetailsRequest)) {
+            if (Array.isArray(props.RowData?.RawMaterialCommodityIndexRateDetailsRequest)) {
                 const filteredData = props?.tableData?.filter(item =>
                     props.RowData.RawMaterialCommodityIndexRateDetailsRequest.some(req =>
                         req.RawMaterialCommodityIndexRateAndOtherCostDetailsId === item.RawMaterialCommodityIndexRateAndOtherCostDetailsId
@@ -92,9 +98,9 @@ function AddOtherCostDrawer(props) {
     useEffect(() => {
         dispatch(getCostingCondition('', conditionTypeId, (res) => {
             if (res?.data?.DataList) {
-                const temp = res.data.DataList.map((item) => ({
-                    label: item.CostingConditionNumber,
-                    value: item.CostingConditionMasterId,
+                const temp = res?.data?.DataList?.map((item) => ({
+                    label: item?.CostingConditionNumber,
+                    value: item?.CostingConditionMasterId,
                 }));
                 setState((prevState) => ({
                     ...prevState,
@@ -103,6 +109,18 @@ function AddOtherCostDrawer(props) {
             }
         }));
     }, [])
+    useEffect(() => {
+        updateAvailableApplicabilities();
+    }, [tableData, state.costDropdown]);
+    const updateAvailableApplicabilities = () => {
+        const newApplicabilities = ["Basic Rate"];
+        tableData?.forEach(item => {
+            if (item.CostHeaderName !== "Basic Rate" && !newApplicabilities.includes(item.CostHeaderName)) {
+                newApplicabilities.push(item.CostHeaderName);
+            }
+        });
+        setAvailableApplicabilities(newApplicabilities);
+    };
     const editData = (indexValue, operation) => {
         if (operation === 'delete') {
             handleDelete(indexValue);
@@ -134,9 +152,9 @@ function AddOtherCostDrawer(props) {
             value: selectedData.Applicability
         });
         setValue('ApplicabilityCostCurrency', selectedData.ApplicabilityCost);
-        setValue('ApplicabilityBaseCost', selectedData.ApplicabilityCostConversion);
+        setValue('ApplicabilityBaseCost', isBOP ? selectedData.ApplicabilityCost : selectedData.ApplicabilityCostConversion);
         setValue('CostCurrency', selectedData.NetCost);
-        setValue('CostBaseCurrency', selectedData.NetCostConversion);
+        setValue('CostBaseCurrency', isBOP || RawMaterialNonIndexed ? selectedData?.NetCost : selectedData.NetCostConversion);
         setValue('CostDescription', selectedData.Description);
         setValue('Remark', selectedData.Remark);
         setRawMaterialCommodityIndexRateAndOtherCostDetailsId(selectedData?.RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null)
@@ -185,13 +203,13 @@ function AddOtherCostDrawer(props) {
             } else if (type === "Fixed") {
                 cssClass = 'mb-3';
             } else {
-                cssClass = 'mt-4 pt-1';
+                cssClass = 'mt-4 pt-1 mb-5 pb-3';
             }
             if (props.isFromMaster) {
                 if (type === "Percentage") {
                     cssClass = 'mb-3';
                 } else {
-                    cssClass = 'mt-4 pt-1';
+                    cssClass = 'mt-4 pt-1 mb-5 pb-1';
                 }
             }
         }
@@ -200,7 +218,7 @@ function AddOtherCostDrawer(props) {
     const applicabilityChange = (e) => {
 
         // Handle Basic Rate separately
-        if (e?.value === 'Basic Rate') {
+        if (e?.label === 'Basic Rate') {
             let basicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency * ExchangeRate
             setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(BasicRateIndexCurrency, initialConfiguration?.NoOfDecimalForPrice));
             setValue('ApplicabilityBaseCost', checkForDecimalAndNull(basicRate, initialConfiguration?.NoOfDecimalForPrice));
@@ -210,7 +228,7 @@ function AddOtherCostDrawer(props) {
 
         // For other applicabilities
         // Check which applicabilities are selected
-        const selectedApplicabilities = e?.value.split(' + ');
+        const selectedApplicabilities = e?.label?.split(' + ');
 
         // Calculate total cost currency for selected applicabilities
         let totalCostCurrency = 0;
@@ -224,17 +242,15 @@ function AddOtherCostDrawer(props) {
             if (Applicability === 'Basic Rate') {
                 return;
             }
-
             const item = tableData.find(item => item?.CostHeaderName === Applicability);
             if (item) {
-                totalCostCurrency += props.rawMaterial ? item?.NetCostConversion : item?.NetCost;
-
+                totalCostCurrency += props.rawMaterial ? Number(item?.NetCostConversion) : Number(item?.NetCost);
                 if (selectedApplicabilities.includes('Basic Rate')) {
                     // totalCostCurrency += BasicRateIndexCurrency;
                     totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency
                     total = checkForNull(totalCostCurrency) + checkForNull(totalBasicRate)
                 } else {
-                    total = totalCostCurrency
+                    total = checkForNull(totalCostCurrency)
                 }
             } else {
                 // Add missing Applicability to the array
@@ -299,45 +315,18 @@ function AddOtherCostDrawer(props) {
     * @description RENDER LISTING IN DROPDOWN
     */
     const renderListing = (label) => {
-
         if (label === 'Type') {
-
             return [
                 { label: "Percentage", value: "Percentage" },
                 { label: "Fixed", value: 'Fixed' }
             ]
         }
-
         return [];
     }
-    const applicabilities = [
-        { label: "Basic Rate", value: "Basic Rate" },
-        { label: "Premium Cost", value: "Premium Cost" },
-        { label: "Custom Duty", value: "Custom Duty" },
-        { label: "Shipping Line Charges", value: "Shipping Line Charges" },
-        { label: "Processing Cost", value: "Processing Cost" },
-        { label: "Import Freight", value: "Import Freight" },
-        { label: "Yield Loss", value: "Yield Loss" },
-    ];
 
-    const combinations = [];
-
-    function generateCombinations(arr, index, current) {
-        for (let i = index; i < arr.length; i++) {
-            const newCombination = [...current, arr[i]];
-            combinations.push({
-                label: newCombination.map(item => item.label).join(" + "),
-                value: newCombination.map(item => item.value).join(" + ")
-            });
-            generateCombinations(arr, i + 1, newCombination);
-        }
-    }
-
-    generateCombinations(applicabilities, 0, []);
-
+    const combinations = generateCombinations(availableApplicabilities, "Basic Rate");
 
     const onSubmit = data => {
-
         addData();
     }
     const addData = () => {
@@ -350,7 +339,15 @@ function AddOtherCostDrawer(props) {
         const remark = getValues('Remark');
         const costDescription = getValues('CostDescription');
 
+        // Check for form errors first
+        if (Object.keys(errors).length > 0) {
+            Toaster.warning('Please fix all validation errors before adding.');
+            return false;
+        }
 
+
+        // If 'Type' is not provided, return false
+        if (!type || !cost || !remark || !costDescription) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
             if (!applicability || !applicabilityBaseCost || !percentage || percentage === 0) {
@@ -377,13 +374,15 @@ function AddOtherCostDrawer(props) {
             CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '',
             Remark: getValues('Remark')
         };
-
         // If the CostHeaderName is 'Discount Cost', prepend '-' sign
         if (newData.CostHeaderName === 'Discount Cost') {
+            if (newData.NetCost === rmBasicRate) {
+                Toaster.warning('Discount should not be equal to Basic rate')
+                return false
+            }
             newData.NetCost = `-${newData.NetCost}`;
             newData.NetCostConversion = `-${newData.NetCostConversion}`;
         }
-
         // Assuming 'tableData' is an array of objects and you want to add MaterialCommodityStandardDetailsId separately,
         // you can structure your updated data as follows:
         const updatedData = {
@@ -524,6 +523,8 @@ function AddOtherCostDrawer(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
+                                                    validate: { checkWhiteSpaces, hashValidation, maxLength80 },
+
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={""}
@@ -551,7 +552,6 @@ function AddOtherCostDrawer(props) {
                                                 errors={errors.Type}
                                                 disabled={props.ViewMode}
                                             />
-
                                         </Col>
 
                                         {
@@ -578,13 +578,11 @@ function AddOtherCostDrawer(props) {
                                                     />
                                                 </Col>
                                                 {!props.rawMaterial && <Col md={3} className={'px-2'}>
-
                                                     <TextFieldHookForm
                                                         label={`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}
                                                         name={'ApplicabilityCostCurrency'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
-
                                                         control={control}
                                                         register={register}
                                                         mandatory={true}
@@ -603,7 +601,7 @@ function AddOtherCostDrawer(props) {
                                                 <Col md={3} className={'px-2'}>
 
                                                     <TextFieldHookForm
-                                                        label={`Applicability Cost (${props?.isFromImport ? props?.currency?.label : reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`} 
+                                                        label={`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}
                                                         name={'ApplicabilityBaseCost'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
@@ -674,7 +672,7 @@ function AddOtherCostDrawer(props) {
                                         <Col md={3} className={'px-2'}>
 
                                             <TextFieldHookForm
-                                                label={`Cost (${props?.isFromImport ? props?.currency?.label : reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}
+                                                label={`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}
                                                 name={'CostBaseCurrency'}
                                                 id={'cost-by-percent'}
                                                 Controller={Controller}
@@ -704,8 +702,8 @@ function AddOtherCostDrawer(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    validate: { checkWhiteSpaces, hashValidation },
-                                                    maxLength: 80
+                                                    validate: { checkWhiteSpaces, hashValidation, maxLength80 }
+
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={""}
@@ -718,9 +716,9 @@ function AddOtherCostDrawer(props) {
                                         <Col md="3" className={toggleCondition()}>
                                             <button
                                                 type="submit"
-                                                className={"user-btn  pull-left mt-1"}
+                                                className={"user-btn  pull-left mt-1 mr10"}
                                                 // onClick={addData}
-                                                disabled={props.ViewMode}
+                                                disabled={props.ViewMode || props?.disabled}
                                             >
                                                 {isEditMode ? "" : <div className={"plus"}></div>} {isEditMode ? "UPDATE" : 'ADD'}
                                             </button>
@@ -728,7 +726,7 @@ function AddOtherCostDrawer(props) {
                                                 type="button"
                                                 className={"reset-btn pull-left mt-1 ml5"}
                                                 onClick={() => resetData("reset")}
-                                                disabled={props.ViewMode}
+                                                disabled={props.ViewMode || props?.disabled}
                                             >
                                                 {isEditMode ? "CANCEL" : 'RESET'}
                                             </button>
@@ -742,14 +740,14 @@ function AddOtherCostDrawer(props) {
                                                     <th>{`Cost Description`}</th>
                                                     <th>{`Type`}</th>
                                                     <th>{`Applicability`}</th>
-                                                    {!props.rawMaterial && <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    <th>{`Applicability Cost (${props?.isFromImport ? props?.currency?.label : reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}</th>
+                                                    {(!props.rawMaterial || isBOP) && <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    {!isBOP && <th>{`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
                                                     <th>{`Percentage (%)`}</th>
-                                                    {!props.rawMaterial && <th>{`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    <th>{`Cost (${props?.isFromImport ? props?.currency?.label : reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}</th>
+                                                    {(!props.rawMaterial || isBOP) && <th>{`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    {!isBOP && <th>{`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
                                                     <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
-                                                </tr>
+                                                </tr >
 
                                                 {tableData && tableData.map((item, index) => (
                                                     <Fragment key={index}>
@@ -758,31 +756,35 @@ function AddOtherCostDrawer(props) {
                                                             <td>{item.Description}</td>
                                                             <td>{item.Type}</td>
                                                             <td>{item.Applicability}</td>
-                                                            {!props.rawMaterial && <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>}
-                                                            <td>{checkForDecimalAndNull(item?.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                                                            <td>{item.Value !== '-' ? checkForDecimalAndNull(item?.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                                                            {!props.rawMaterial && <td>{item?.NetCost !== '-' ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
-                                                            <td>{item?.NetCostConversion !== '-' ? checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                                            {(!props.rawMaterial || isBOP) && <td>{item.ApplicabilityCost}</td>}
+                                                            {!isBOP && <td>{item.ApplicabilityCostConversion}</td>}
+                                                            <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                                            {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                                            {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ? RawMaterialNonIndexed ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                                                             <td>{item.Remark}</td>
-                                                            {!props.hideAction && (
-                                                                <td>
-                                                                    <div className='text-right'>
-                                                                        <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={props.ViewMode} />
-                                                                        <button title='Delete' className="Delete mr-1" type='button' onClick={() => editDeleteData(index, 'delete')} disabled={props.ViewMode} />
-                                                                    </div>
-                                                                </td>
-                                                            )}
-                                                        </tr>
-                                                    </Fragment>
+                                                            {
+                                                                !props.hideAction && (
+                                                                    <td>
+                                                                        <div className='text-right'>
+                                                                            <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={props.ViewMode} />
+                                                                            <button title='Delete' className="Delete mr-1" type='button' onClick={() => editDeleteData(index, 'delete')} disabled={props.ViewMode} />
+                                                                        </div>
+                                                                    </td>
+                                                                )
+                                                            }
+                                                        </tr >
+                                                    </Fragment >
                                                 ))}
 
-                                                {tableData && tableData.length === 0 && (
-                                                    <tr>
-                                                        <td colSpan="10">
-                                                            <NoContentFound title={EMPTY_DATA} />
-                                                        </td>
-                                                    </tr>
-                                                )}
+                                                {
+                                                    tableData && tableData.length === 0 && (
+                                                        <tr>
+                                                            <td colSpan="10">
+                                                                <NoContentFound title={EMPTY_DATA} />
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                }
 
                                                 <tr className='table-footer'>
                                                     <td colSpan={props.rawMaterial ? 6 : 7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
@@ -794,34 +796,34 @@ function AddOtherCostDrawer(props) {
                                                         </td>
                                                     }
                                                     <td colSpan={3} className="text-left">
-                                                        {checkForDecimalAndNull(totalCostBase, initialConfiguration?.NoOfDecimalForPrice)}
+                                                        {checkForDecimalAndNull((isBOP || RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({(isImport ? settlementCurrency : plantCurrency) ?? initialConfiguration?.BaseCurrency})
                                                     </td>
                                                 </tr>
-                                            </tbody>
-                                        </Table>
-                                    </Col>
+                                            </tbody >
+                                        </Table >
+                                    </Col >
 
                                 </div >
                                 <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                     <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                         <button
                                             type={'button'}
-                                            className="reset cancel-btn mr5"
-                                            onClick={cancel} >
+                                            className="reset cancel-btn mr15"
+                                            onClick={cancel || props?.disabled} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
                                             type={'button'}
                                             className="submit-button save-btn"
                                             onClick={() => props.closeDrawer('Save', tableData, totalCostCurrency, totalCostBase, RowIndex)}
-                                            disabled={props.ViewMode}
+                                            disabled={props.ViewMode || props?.disabled}
                                         >
                                             <div className={"save-icon"}></div>
                                             {'Save'}
                                         </button>
                                     </div>
                                 </Row>
-                            </form>
+                            </form >
                         </div >
                     </Container >
                 </div >

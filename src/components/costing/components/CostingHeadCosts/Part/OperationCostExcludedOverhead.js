@@ -5,7 +5,7 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, MASS } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, EMPTY_GUID, MASS } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -40,7 +40,7 @@ function OperationCostExcludedOverhead(props) {
   const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC, currencySource,exchangeRateData } = useSelector(state => state.costing)
   const [openOperationForm, setOpenOperationForm] = useState(false)
 
   useEffect(() => {
@@ -69,7 +69,7 @@ function OperationCostExcludedOverhead(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
@@ -105,11 +105,13 @@ function OperationCostExcludedOverhead(props) {
           OperationCost: OperationCost,
           IsOtherOperation: true,
           UOMType: el.UOMType,
+          ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+          CurrencyExchangeRate: el.CurrencyExchangeRate
         }
       })
       let tempArr = [...GridArray, ...rowArray]
       tempArr && tempArr.map((el, index) => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
+        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration?.NoOfDecimalForInputOutput))
         return null
       })
       setGridData(tempArr)
@@ -282,14 +284,14 @@ function OperationCostExcludedOverhead(props) {
 
   const netCost = (item) => {
     const cost = (checkForNull(item.Rate) * checkForNull(item.Quantity)) + (checkForNull(item.LabourRate) * checkForNull(item.LabourQuantity));
-    return checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+    return checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice);
   }
 
   /**
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
-  let temp = ErrorObjRMCC
+  let temp = ErrorObjRMCC ? ErrorObjRMCC : {}
   if (Object.keys(errors).length > 0 && counter < 2) {
     temp.OperationGridFields = errors.OperationGridFields;
     dispatch(setRMCCErrors(temp))
@@ -349,9 +351,9 @@ function OperationCostExcludedOverhead(props) {
                     icon={"plus"}
                     buttonName={"OTHER OPER"}
                   />
-                  <TooltipCustom customClass="mt-2 mr-2" id={`other-operation-defination`} width="350px" tooltipText={"'Other operations' are tasks or activities within a business process where the costs associated with overhead and profit are not taken into consideration when determining the financial outcomes or profitability."} />
                 </div>
               }
+              <TooltipCustom customClass="mt-2 mr-2" id={`other-operation-defination`} width="350px" tooltipText={"'Other operations' are tasks or activities within a business process where the costs associated with overhead and profit are not taken into consideration when determining the financial outcomes or profitability."} />
             </Col>
           </Row>
           <Row>
@@ -359,7 +361,7 @@ function OperationCostExcludedOverhead(props) {
 
             <Col md="12">
               <Table className="table cr-brdr-main costing-operation-cost-section p-relative" size="sm" onDragOver={onMouseLeave} onDragEnd={onDragComplete} >
-                <thead className={`${initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'} ${headerPinned ? 'sticky-headers' : ''}`}>
+                <thead className={`${initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'} ${headerPinned ? 'sticky-headers' : ''}`}>
                   <tr>
                     <th>{`Operation Name`}</th>
                     <th>{`Operation Code`}</th>
@@ -367,13 +369,13 @@ function OperationCostExcludedOverhead(props) {
                     <th>{`Rate`}</th>
                     <th >{`Quantity`}</th>
                     {initialConfiguration &&
-                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      initialConfiguration?.IsOperationLabourRateConfigure &&
                       <th>{`Labour Rate`}</th>}
                     {initialConfiguration &&
-                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      initialConfiguration?.IsOperationLabourRateConfigure &&
                       <th>{`Labour Quantity`}</th>}
                     <th>{`Net Cost`}</th>
-                    {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                    {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                     <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -401,7 +403,7 @@ function OperationCostExcludedOverhead(props) {
                                     required: true,
                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
-                                  defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
+                                  defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder error-label mb-0'}
                                   handleChange={(e) => {
@@ -414,10 +416,10 @@ function OperationCostExcludedOverhead(props) {
                               }
                             </td>
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
-                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
+                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
                               <td>
                                 {
                                   item.IsLabourRateExist ?
@@ -446,7 +448,7 @@ function OperationCostExcludedOverhead(props) {
                                 }
                               </td>}
                             <td>{netCost(item)}</td>
-                            {initialConfiguration.IsShowCRMHead && <td>
+                            {initialConfiguration?.IsShowCRMHead && <td>
                               <SearchableSelectHookForm
                                 name={`crmHeadOtherOperation${index}`}
                                 type="text"
@@ -481,15 +483,15 @@ function OperationCostExcludedOverhead(props) {
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
-                            <td>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            <td>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
-                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
+                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
-                            <td><div className='w-fit' id={`other-operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`other-operation-cost${index}`} customClass="header-tooltip" tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />  {netCost(item)}</div></td>
-                            {initialConfiguration.IsShowCRMHead && <td>
+                            <td><div className='w-fit' id={`other-operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`other-operation-cost${index}`} customClass="header-tooltip" tooltipText={initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />  {netCost(item)}</div></td>
+                            {initialConfiguration?.IsShowCRMHead && <td>
                               <SearchableSelectHookForm
                                 name={`crmHeadOtherOperation${index}`}
                                 type="text"
@@ -551,7 +553,7 @@ function OperationCostExcludedOverhead(props) {
                   }
                   {gridData && gridData.length === 0 &&
                     <tr>
-                      <td colSpan={7}>
+                      <td colSpan={12}>
                         <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>

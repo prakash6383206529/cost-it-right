@@ -110,7 +110,7 @@ function CostReportForm(props) {
         obj.TechnologyName = getValues('Technology')?.label
         obj.PartNo = getValues('Part')?.label
         obj.ShowRevisionNumber = getValues('Revision')?.label ? getValues('Revision')?.label : '-'
-        obj.Vendor = getValues('vendor')?.label ? getValues('Vendor')?.label : '-'
+        obj.Vendor = getValues('Vendor')?.label ? getValues('Vendor')?.label : '-'
         obj.Plant = getValues('Plant')?.label ? getValues('Plant')?.label : '-'
         obj.productCategory = getValues('productCategory')?.label ? getValues('productCategory')?.label : '-'
         obj.productCategoryId = getValues('productCategory')?.value ? getValues('productCategory')?.value : '-'
@@ -139,7 +139,8 @@ function CostReportForm(props) {
     const handleFromDate = (value) => {
         setEffectiveDate(value)
         setMinDate(value)
-        dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
+        const obj = {...costReportFormData,fromDate: value}
+        dispatch(getFormGridData(obj))
         // dispatch(getFormGridData({ ...costReportFormData, EffectiveDate: value }))      //RE
 
     }
@@ -152,7 +153,8 @@ function CostReportForm(props) {
 
         setMaxDate(value)
         setToDate(value)
-        dispatch(getFormGridData({ ...costReportFormData, toDate: value }))
+        const obj = {...costReportFormData,toDate: value}
+        dispatch(getFormGridData(obj))
     }
 
     /**

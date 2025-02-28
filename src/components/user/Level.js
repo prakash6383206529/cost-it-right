@@ -73,7 +73,7 @@ const Level = (props) => {
 
         dispatch(getAllTechnologyAPI(() => { }, '', true))
       } else if (Number(state?.levelType) === SIMULATION_LEVEL) {
-        dispatch(getSimulationTechnologySelectList(() => { }))
+        dispatch(getSimulationTechnologySelectList(() => { }, '', true))
       }
       onPressRadioLevel(state?.levelType)
       dispatch(getAllLevelAPI(() => { setState((prevState) => ({ ...prevState, isLoader: isEditFlag ? true : false })) }))
@@ -282,7 +282,7 @@ const Level = (props) => {
       dispatch(getAllTechnologyAPI(() => { }, '', true))
     } else if (Number(levelId) === SIMULATION_LEVEL) {
 
-      dispatch(getSimulationTechnologySelectList(() => { }))
+      dispatch(getSimulationTechnologySelectList(() => { }, '', true))
     }
     setState((prevState) => ({ ...prevState, levelType: levelId, technology: [], level: [], approvalTypeObject: [] }));
   };

@@ -48,7 +48,7 @@ const IndivisualPartListing = (props) => {
     showPopup: false,
     gridColumnApi: null,
     dataCount: 0,
-    totalRecordCount: 1,
+    totalRecordCount: 0,
     // currentRowIndex: 0,
     // pageNoNew: 1,
     // globalTake: defaultPageSize,
@@ -78,6 +78,7 @@ const IndivisualPartListing = (props) => {
   const { newPartsListing, allNewPartsListing } = useSelector((state) => state.part);
   const { initialConfiguration } = useSelector((state) => state.auth);
   const { currentRowIndex, globalTakes } = useSelector((state) => state.pagination);
+  const [skipRecord, setSkipRecord] = useState(0)
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const permissions = useContext(ApplyPermission);
   useEffect(() => {
@@ -105,7 +106,7 @@ const IndivisualPartListing = (props) => {
 
   const getTableListData = (skip, take, obj, isPagination) => {
     setState((prevState) => ({ ...prevState, isLoader: true }));
-
+    setSkipRecord(skip);
     let constantFilterData = state.filterModel;
     dispatch(
       getPartDataList(skip, take, obj, isPagination, (res) => {
@@ -180,7 +181,7 @@ const IndivisualPartListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {  // <-- this may introduce asynchronous behavior
       if (newPartsListing?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), disableFilter: false }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), disableFilter: false,totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -321,18 +322,19 @@ const IndivisualPartListing = (props) => {
   };
 
   const confirmDeleteItem = (ID) => {
-
-
     const loggedInUser = loggedInUserId()
     dispatch(deletePart(ID, loggedInUser, (res) => {
-      if (res.data.Result === true) {
+      if (res?.data?.Result) {
+        dispatch(setSelectedRowForPagination([]));
+        if (state?.gridApi) {
+          state?.gridApi?.deselectAll();
+        }
         Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
-        //getTableListData();
-        getTableListData(currentRowIndex, defaultPageSize, state.floatingFilterData, true)
+        getTableListData(skipRecord, globalTakes, state?.floatingFilterData, true)
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
       }
     }));
-    setState((prevState) => ({ ...prevState, showPopup: false }))
+    setState((prevState) => ({ ...prevState, showPopup: false, }))
   }
 
 
@@ -377,7 +379,7 @@ const IndivisualPartListing = (props) => {
         {permissions.View && (
           <button
             title="View"
-            className="View Tour_List_View"
+            className="View Tour_List_View mr-2"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, rowData)}
           />
@@ -774,7 +776,7 @@ const IndivisualPartListing = (props) => {
                 )}
                 {permissions.Download && (
                   <>
-                    <Button className="mr5 Tour_List_Download" id={"individualPartListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                    <Button className="mr5 Tour_List_Download" id={"individualPartListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                     />
                     <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-component-part"} className="p-absolute" />}>
                       {onBtExport()}

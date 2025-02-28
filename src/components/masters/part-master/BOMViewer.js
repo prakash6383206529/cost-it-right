@@ -231,8 +231,10 @@ class BOMViewer extends Component {
         selectedPartType: childData.selectedPartType,
         PartId: childData.PartId,
         Input: childData.Input,
-        Technology: childData?.Technology || '',
-        RevisionNo: childData?.RevisionNo || null
+        Technology: childData && childData?.Technology !== undefined ? childData?.Technology?.label : '',
+        RevisionNo: childData?.RevisionNo || null,
+        IsBreakupBoughtOutPart: childData?.IsBreakupBoughtOutPart
+
       })
 
       tempArray && tempArray.map((el, i) => {
@@ -385,7 +387,7 @@ class BOMViewer extends Component {
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
               >
                 <Row className="bom-action-row justify-content-end m-0">
-                  {(!isEditFlag || initialConfiguration.IsBOMEditable) &&
+                  {(!isEditFlag || initialConfiguration?.IsBOMEditable) &&
                     !isFromVishualAd && (
                       <Col md="auto" className="bg-white" >
                         {flowpoints.length > 1 &&
@@ -515,7 +517,8 @@ class BOMViewer extends Component {
                                 Part Type:<strong title={el?.PartType}>{el?.PartType}</strong>
                               </p>
                               <p>
-                                {this.props.t('TechnologyLabel', { defaultValue: 'Technology' })}:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.Technology}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.Technology || '-'}</strong>
+                                {this.props.t('TechnologyLabel', { defaultValue: 'Technology' })}:
+                                <strong title={el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology}>{el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology || '-'}</strong>
                               </p>
                               <p>
                                 Revision No:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo || '-'}</strong>

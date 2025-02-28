@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import AddMaterialType from "./AddMaterialType";
@@ -27,6 +27,7 @@ import { useRef } from "react";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
+import { useFetchAPICall } from "../../../actions/Common";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -52,14 +53,32 @@ const RMListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    render: false,
+    render: true,
     showExtraData: false,
-    isViewFlag: false
+    isViewFlag: false,
+    totalRecordCount: 0
   });
   useEffect(() => {
     getListData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+
+  // const params = useMemo(() => {
+  //   return {
+  //     data: {},
+  //     master: 'RawMaterial',
+  //     tabs: 'Material'
+  //   }
+  // }, []);
+
+  // const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllMaterialType', params);
+
+  useEffect(() => {
+    if (rawMaterialTypeDataList && rawMaterialTypeDataList?.length >= 0) {
+      setState((prev) => ({ ...prev, render: false }));
+    }
+  }, [rawMaterialTypeDataList]);
 
   /**+-
    * @method getListData
@@ -69,7 +88,7 @@ const RMListing = (props) => {
     setState((prevState) => ({ ...prevState, isLoader: true }));
     dispatch(
       getMaterialTypeDataListAPI((res) =>
-        setState((prevState) => ({ ...prevState, isLoader: false }))
+        setState((prevState) => ({ ...prevState, isLoader: false, totalRecordCount: res?.data?.DataList?.length }))
       )
     );
   };
@@ -93,7 +112,7 @@ const RMListing = (props) => {
     setTimeout(() => {
       rawMaterialTypeDataList.length !== 0 &&
         setState((prevState) => ({
-          ...prevState, noData: searchNocontentFilter(value, prevState.noData),
+          ...prevState, noData: searchNocontentFilter(value, prevState.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount()
         }));
     }, 500);
   };
@@ -130,9 +149,7 @@ const RMListing = (props) => {
   const confirmDelete = (ID) => {
     dispatch(
       deleteMaterialTypeAPI(ID, (res) => {
-        if (res.status === 417 && res.data.Result === false) {
-          Toaster.error(res.data.Message);
-        } else if (res && res.data && res.data.Result === true) {
+        if (res && res?.data && res?.data?.Result === true) {
           Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
           setState((prevState) => ({ ...prevState, dataCount: 0 }));
           getListData();
@@ -294,6 +311,7 @@ const RMListing = (props) => {
    * @description Resets the state
    */
   const resetState = () => {
+    getListData();
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
@@ -339,19 +357,17 @@ const RMListing = (props) => {
             <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )}
           {permissions.Download && (
-            <>
               <>
                 <ExcelFile
                   filename={"Rm Material"}
                   fileExtension={".xls"}
                   element={
-                    <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                    <Button id={"Excel-Downloads-Rm Material"}  disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                   }
                 >
-                  {onBtExport()}
+                 {state?.totalRecordCount !== 0 ? onBtExport() : null}
                 </ExcelFile>
               </>
-            </>
           )}
           <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
         </Col>

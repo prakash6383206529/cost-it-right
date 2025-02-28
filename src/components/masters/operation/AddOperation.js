@@ -5,15 +5,15 @@ import { Row, Col, Label, } from 'reactstrap';
 import { required, getCodeBySplitting, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number, hashValidation, checkForNull, checkForDecimalAndNull, validateFileName } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, focusOnError, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
-import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, userDetails } from "../../../helper/auth";
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC, IsSelectSinglePlant } from '../../../config/constants';
 import { AcceptableOperationUOM, LOGISTICS } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -21,11 +21,11 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
-import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
-import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
+import { CheckApprovalApplicableMaster, getExchangeRateParams, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
+import { getCostingSpecificTechnology, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -38,6 +38,8 @@ import Button from '../../layout/Button';
 import TooltipCustom from '../../common/Tooltip';
 import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
+import { getPlantUnitAPI } from '../actions/Plant';
+import Switch from 'react-switch'
 
 const selector = formValueSelector('AddOperation');
 
@@ -47,7 +49,7 @@ class AddOperation extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
-    this.state = {
+    this.initialState = {
       selectedTechnology: [],
       selectedPlants: [],
       isVendorNameNotSelected: false,
@@ -90,7 +92,7 @@ class AddOperation extends Component {
       showErrorOnFocus: false,
       operationName: '',
       operationCode: '',
-      finalApprovalLoader: true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !(getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) ? false : true,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -102,8 +104,22 @@ class AddOperation extends Component {
       detailObject: {},
       CostingTypePermission: false,
       disableSendForApproval: false,
-      isWelding: false
+      isWelding: false,
+      isImport: false,
+      hidePlantCurrency: false,
+      settlementCurrency: 1,
+      plantCurrency: 1,
+      ExchangeSource: [],
+      currency: null,
+      plantExchangeRateId: '',
+      settlementExchangeRateId: '',
+      plantCurrencyID: '',
+      showWarning: false,
+      showPlantWarning: false,
+      isLoader: false
     }
+    this.state = { ...this.initialState };
+
   }
 
   /**
@@ -127,18 +143,93 @@ class AddOperation extends Component {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
-      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
+      this.props.getExchangeRateSource((res) => { })
+      this.props.getCurrencySelectList(() => { })
+      if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+        this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
+      }
     }
     this.getDetail()
 
   }
+  callExchangeRateAPI = () => {
+    const { fieldsObj } = this.props
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
 
-  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+
+    const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
+    const toCurrency = reactLocalStorage.getObject("baseCurrency")
+    const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
+    if (hasCurrencyAndDate) {
+      if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
+        return false;
+      }
+
+      const callAPI = (from, to, costingType, vendorValue, clientValue) => {
+        return new Promise((resolve) => {
+          this.props.getExchangeRateByCurrency(
+            from,
+            costingType,
+            DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
+            vendorValue,
+            clientValue,
+            false,
+            to,
+            ExchangeSource?.label ?? null,
+            res => {
+              const isEmptyData = Object.keys(res?.data?.Data || {}).length === 0;
+              const isPlantCurrencyOrNotImport = to === this.props.fieldsObj.plantCurrency || !isImport;
+              this.setState(
+                isPlantCurrencyOrNotImport
+                  ? { showPlantWarning: isEmptyData }
+                  : { showWarning: isEmptyData }
+              );
+              // Resolve with an object containing both values
+              resolve({
+                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                exchangeRateId: res?.data?.Data?.ExchangeRateId
+              });
+            }
+          );
+        });
+      };
+
+      if (isImport) {
+        // First API call
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+
+        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+          // Second API call
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+          callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+            this.setState({
+              plantCurrency: rate1,
+              settlementCurrency: rate2,
+              plantExchangeRateId: exchangeRateId1,
+              settlementExchangeRateId: exchangeRateId2
+            }, () => {
+              this.handleCalculation(fieldsObj?.Rate)
+            });
+          });
+        });
+      } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+        // Original single API call for non-import case
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+        callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId }) => {
+          this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
+            this.handleCalculation(fieldsObj?.RateLocalConversion)
+          });
+        });
+      }
+    }
+
+  }
+  finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
-    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null,(res) => {
+    if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null, (res) => {
         setTimeout(() => {
-          this.commonFunction(plantId)
+          this.commonFunction(plantId, isDivision)
         }, 100);
       })
     } else {
@@ -147,7 +238,7 @@ class AddOperation extends Component {
   }
 
 
-  commonFunction(plantId = EMPTY_GUID) {
+  commonFunction(plantId = EMPTY_GUID, isDivision = false) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, OPERATIONS_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -159,7 +250,7 @@ class AddOperation extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId,
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -179,7 +270,8 @@ class AddOperation extends Component {
     if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isWelding === true) {
       this.calculateRate()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+
       this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
     }
   }
@@ -191,7 +283,7 @@ class AddOperation extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { costingSpecifiTechnology, plantSelectList, UOMSelectList, clientSelectList } = this.props;
+    const { costingSpecifiTechnology, plantSelectList, UOMSelectList, clientSelectList, exchangeRateSourceList, currencySelectList } = this.props;
     const temp = [];
 
     if (label === 'technology') {
@@ -244,37 +336,48 @@ class AddOperation extends Component {
       temp.push({ label: "Ni Cr Plating", value: 4 })
       return temp;
     }
+    if (label === 'ExchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+        if (item.Value === '--Exchange Rate Source Name--') return false
+
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+    if (label === 'currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   }
   /**
    * @method onPressVendor
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'technology',
-      'Plant',
-      'DestinationPlant',
-      'UnitOfMeasurementId',
-      'vendorName',
-      'clientName',
-      'Rate',
-      'EffectiveDate',
-      'operationType',
-      'WeldingRate',
-      'Consumption',
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddOperation', false, false, fieldName));
-    });
+    this.props.reset();
+    this.setState({ isLoader: true });
+    const currentIsImport = this.state.isImport;
+    const finalApprovalLoader = this.state.finalApprovalLoader
     this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag
+      ...this.initialState, costingTypeId: costingHeadFlag,
+      isImport: currentIsImport,
+      finalApprovalLoader: finalApprovalLoader
+    }, () => {
+      if (costingHeadFlag === CBCTypeId) {
+        this.props.getClientSelectList(() => {
+          this.setState({ isLoader: false });
+        });
+      } else {
+        this.setState({ isLoader: false });
+      }
     });
-    if (costingHeadFlag === CBCTypeId) {
-      this.props.getClientSelectList(() => { })
-    }
-  }
 
+  };
   /**
   * @method handleTechnology
   * @description Used handle technology
@@ -288,8 +391,27 @@ class AddOperation extends Component {
   * @description Used handle Plants
   */
   handlePlants = (e) => {
-    this.setState({ selectedPlants: e })
-  }
+    if (e && e !== '') {
+      this.setState({ selectedPlants: e })
+      if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+
+        this.commonFunction(e?.value)
+      }
+      this.props.getPlantUnitAPI(e?.value, (res) => {
+        let Data = res?.data?.Data
+        this.props.change('plantCurrency', Data?.Currency)
+        this.setState({ plantCurrencyID: Data?.CurrencyId })
+        this.callExchangeRateAPI()
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.setState({ hidePlantCurrency: false })
+        } else {
+          this.setState({ hidePlantCurrency: true })
+        }
+      })
+    } else {
+      this.setState({ selectedPlants: [] })
+    }
+  };
 
   /**
   * @method handleVendorName
@@ -300,12 +422,22 @@ class AddOperation extends Component {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
+
       });
     } else {
       this.setState({ vendorName: [] })
     }
   };
-
+  handleExchangeRateSource = (newValue) => {
+    this.setState({ ExchangeSource: newValue }
+      , () => {
+        this.callExchangeRateAPI()
+      }
+    );
+  };
   vendorToggler = () => {
     this.setState({ isOpenVendor: true })
   }
@@ -404,10 +536,22 @@ class AddOperation extends Component {
     this.setState({
       effectiveDate: date,
       isDateChange: true,
+    }, () => {
+      this.callExchangeRateAPI()
     })
-
   }
-
+  handleCalculation = (rate) => {
+    const { plantCurrency, settlementCurrency, isImport } = this.state
+    if (isImport) {
+      const ratePlantCurrency = convertIntoCurrency(rate, plantCurrency)
+      this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
+      const rateBaseCurrency = convertIntoCurrency(rate, settlementCurrency)
+      this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    } else {
+      const ratebaseCurrency = convertIntoCurrency(rate, plantCurrency)
+      this.props.change('RateConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    }
+  }
   calculateRate = (value) => {
     const { fieldsObj } = this.props
     const weldingRate = fieldsObj?.WeldingRate
@@ -421,12 +565,18 @@ class AddOperation extends Component {
     } else if (weldingRate && consumption) {
       rate = weldingRate * consumption; // Multiply normally if both values are present
     }
+    if (this.state.isImport) {
+      this.props.change('Rate', checkForDecimalAndNull(rate, getConfigurationKey().NoOfDecimalForPrice));
+    } else {
+      this.props.change('RateLocalConversion', checkForDecimalAndNull(rate, getConfigurationKey().NoOfDecimalForPrice));
+    }
+    this.handleCalculation(rate)
 
-    this.props.change('Rate', checkForDecimalAndNull(rate, getConfigurationKey().NoOfDecimalForPrice));
   }
 
 
   handleRateChange = (value) => {
+    this.handleCalculation(value?.target?.value)
     if (this.state.isEditFlag && Number(this.state.DataToChange?.Rate) === Number(value?.target?.value)) {
       this.setState({ IsFinancialDataChanged: false })
 
@@ -476,7 +626,6 @@ class AddOperation extends Component {
           this.props.change('OperationName', Data.OperationName ? Data.OperationName : '')
           this.props.change('OperationCode', Data.OperationCode ? Data.OperationCode : '')
           this.props.change('Description', Data.Description ? Data.Description : '')
-          this.props.change('Rate', Data.Rate ? Data.Rate : '')
           this.props.change('Remark', Data.Remark ? Data.Remark : '')
           this.props.change('WeldingRate', Data.OperationBasicRate ? Data.OperationBasicRate : '')
           this.props.change('Consumption', Data.OperationConsumption ? Data.OperationConsumption : '')
@@ -487,13 +636,24 @@ class AddOperation extends Component {
             return technologyArray;
           })
           let plantArray = [];
-          Data && Data.Plant.map((item) => {
-            plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-            return plantArray;
-          })
-          this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0].Value)
+          if (Data && Data?.Plant?.length > 0) {
+            plantArray = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
+          }
+          // this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0].Value)
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
+          }
+          this.props.change('plantCurrency', Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+          this.props.change('RateLocalConversion', Data?.RateLocalConversion)
+          this.props.change('RateConversion', Data?.RateConversion)
+          if (Data?.OperationEntryType === ENTRY_TYPE_IMPORT) {
+            this.props.change('Rate', Data?.Rate)
+
+          }
+          if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.setState({ hidePlantCurrency: false })
+          } else {
+            this.setState({ hidePlantCurrency: true })
           }
           setTimeout(() => {
             this.setState({
@@ -504,6 +664,7 @@ class AddOperation extends Component {
               selectedTechnology: technologyArray,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               selectedPlants: plantArray,
+              destinationPlant: plantArray ?? [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               oldUOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
@@ -513,9 +674,17 @@ class AddOperation extends Component {
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+              //destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               dataToChange: Data,
-              operationType: { label: Data.ForType, value: 1 }
+              operationType: { label: Data.ForType, value: 1 },
+              ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],
+              settlementCurrency: Data?.ExchangeRate,
+              settlementExchangeRateId: Data?.ExchangeRateId,
+              isImport: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
+              plantCurrency: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantCurrencyID: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              plantExchangeRateId: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -537,7 +706,7 @@ class AddOperation extends Component {
   checkUniqCode = debounce((e) => {
     this.setState({ operationCode: e.target.value });
 
-    if (!this.props.initialConfiguration.IsAutoGeneratedOperationCode) { // When the key is false
+    if (!this.props.initialConfiguration?.IsAutoGeneratedOperationCode) { // When the key is false
       // Check if the operation code exists for the entered operation name
       this.props.checkAndGetOperationCode(e.target.value, this.state.operationName, res => {
 
@@ -574,8 +743,8 @@ class AddOperation extends Component {
 
 
   checkUniqCodeByName = debounce((e) => {
-    this.setState({ operationName: e.target.value })
     if (!this.props.initialConfiguration.IsAutoGeneratedOperationCode) {
+      this.setState({ operationName: e.target.value.trim() })
       this.props.checkAndGetOperationCode('', e.target.value, res => {
 
         if (res && res.status === 202) {
@@ -595,20 +764,22 @@ class AddOperation extends Component {
       });
     }
     else {
-      // this.setState({ isDisableCode: true })
-      this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
-        if (res && res.data && res.data.Result === false) {
-          this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
-
-        } else {
-          this.setState({ isDisableCode: !res.data.Result }, () => {
+      if (e.target.value.trim() !== this.state.operationName) {
+        this.setState({ operationName: e.target.value.trim() })
+        this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
+          if (res && res.data && res.data.Result === false) {
             this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
-            Toaster.warning(res.data.Message);
-          })
-        }
-      })
+
+          } else {
+            this.setState({ isDisableCode: !res.data.Result }, () => {
+              this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
+              Toaster.warning(res.data.Message);
+            })
+          }
+        })
+      }
     }
-  }, 600)
+  }, 1000)
 
   /**
   * @method setDisableFalseFunction
@@ -717,10 +888,27 @@ class AddOperation extends Component {
   }
 
   handleDestinationPlant = (newValue) => {
-    this.setState({ destinationPlant: newValue })
-    if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-      this.commonFunction(newValue ? newValue.value : '')
+    if (newValue && newValue !== '') {
+      this.setState({ destinationPlant: newValue })
+      if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+
+        this.commonFunction(newValue ? newValue.value : '')
+      }
+      this.props.getPlantUnitAPI(newValue?.value, (res) => {
+        let Data = res?.data?.Data
+        this.props.change('plantCurrency', Data?.Currency)
+        this.setState({ plantCurrencyID: Data?.CurrencyId })
+        this.callExchangeRateAPI()
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.setState({ hidePlantCurrency: false })
+        } else {
+          this.setState({ hidePlantCurrency: true })
+        }
+      })
+    } else {
+      this.setState({ destinationPlant: [] })
     }
+
   }
   /**
   * @method handleClient
@@ -728,8 +916,16 @@ class AddOperation extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
-    } else {
+      this.setState({ client: newValue }
+        , () => {
+          if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.callExchangeRateAPI()
+          }
+        }
+      );
+    }
+
+    else {
       this.setState({ client: [] })
     }
   };
@@ -770,16 +966,57 @@ class AddOperation extends Component {
   closePopUp = () => {
     this.setState({ showPopup: false })
   }
+
+  handleOperationAPI = (formData, isUpdate) => {
+    const apiCall = isUpdate ? this.props.updateOperationAPI : this.props.createOperationsAPI;
+    const successMessage = isUpdate ? MESSAGES.OPERATION_UPDATE_SUCCESS : MESSAGES.OPERATION_ADD_SUCCESS;
+    // Add moreOperationData to formData
+    const updatedFormData = {
+      ...formData,
+      ...this.state.moreOperationData
+    };
+    apiCall(updatedFormData, (res) => {
+      this.setState({ setDisable: false });
+      if (res?.data?.Result) {
+        Toaster.success(successMessage);
+        this.cancel('submit');
+      }
+    });
+  }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
     const { selectedPlants, vendorName, files,
-      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
+      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag, isImport } = this.state;
     const { initialConfiguration } = this.props;
     const userDetailsOperation = JSON.parse(localStorage.getItem('userDetail'))
     const userDetail = userDetails()
+    if (isEditFlag) {
+
+      const hasNoChanges = (
+        checkForDecimalAndNull(values?.Rate) === checkForDecimalAndNull(DataToChange?.Rate) &&
+        (values?.Remark || '') === (DataToChange?.Remark || '') &&
+        (UOM?.value || '') === (oldUOM?.value || '') &&
+        (values?.Description || '') === (DataToChange?.Description || '') &&
+        JSON.stringify(files) === JSON.stringify(DataToChange?.Attachements) &&
+        (values?.OperationName || '') === (DataToChange?.OperationName || '') &&
+        (values?.OperationCode || '') === (DataToChange?.OperationCode || '') &&
+        checkForDecimalAndNull(values?.LabourRatePerUOM) === checkForDecimalAndNull(DataToChange?.LabourRatePerUOM) &&
+        checkForDecimalAndNull(values?.WeldingRate) === checkForDecimalAndNull(DataToChange?.OperationBasicRate) &&
+        checkForDecimalAndNull(values?.Consumption) === checkForDecimalAndNull(DataToChange?.OperationConsumption) &&
+        !isDateChange
+      );
+
+      if (hasNoChanges) {
+        this.setState({ setDisable: false });
+        Toaster.warning('Please change the data to save Operation Details');
+        return false;
+      }
+    }
+
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -793,25 +1030,27 @@ class AddOperation extends Component {
       technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
       return technologyArray;
     })
-    let plantArray = []
-    if (costingTypeId === VBCTypeId || (costingTypeId === ZBCTypeId && initialConfiguration?.IsMultipleUserAllowForApproval)) {
-      plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    } else {
-      selectedPlants && selectedPlants.map((item) => {
-        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-        return plantArray
-      })
-    }
-    let cbcPlantArray = []
-    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
-      cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    }
-    else {
-      userDetailsOperation?.Plants.map((item) => {
-        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-        return cbcPlantArray
-      })
-    }
+    //const plantArray = []
+    let plantArray = Array?.isArray(destinationPlant) ? destinationPlant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+      destinationPlant ? [{ PlantId: destinationPlant?.value, PlantName: destinationPlant?.label, PlantCode: '' }] : [];
+    // if (costingTypeId === VBCTypeId || (costingTypeId === ZBCTypeId && initialConfiguration?.IsMultipleUserAllowForApproval)) {
+    //   plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    // } else {
+    //   selectedPlants && selectedPlants.map((item) => {
+    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+    //     return plantArray
+    //   })
+    // }
+    // let cbcPlantArray = []
+    // if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+    //   cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    // }
+    // else {
+    //   userDetailsOperation?.Plants.map((item) => {
+    //     cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
+    //     return cbcPlantArray
+    //   })
+    // }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
     let updatedFiles = files.map((file) => {
@@ -831,11 +1070,13 @@ class AddOperation extends Component {
       UnitOfMeasurementId: UOM.value,
       IsSurfaceTreatmentOperation: isSurfaceTreatment,
       //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
-      Rate: values.Rate,
-      LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
+      Rate: values?.Rate ?? values?.RateLocalConversion,
+      RateLocalConversion: values?.RateLocalConversion,
+      RateConversion: values?.RateConversion,
+      LabourRatePerUOM: initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
       Technology: technologyArray,
       Remark: remarks,
-      Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      Plant: /* costingTypeId === CBCTypeId ? cbcPlantArray : */ plantArray ?? [],
       Attachements: isEditFlag ? updatedFiles : files,
       LoggedInUserId: loggedInUserId(),
       EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
@@ -844,7 +1085,17 @@ class AddOperation extends Component {
       IsDetailedEntry: false,
       ForType: this.state.operationType?.label,
       OperationBasicRate: values.WeldingRate,
-      OperationConsumption: values.Consumption
+      OperationConsumption: values.Consumption,
+      OperationEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+      ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+      LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+      LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+      LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
+      LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+      ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+      ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+      CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+      Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
@@ -857,13 +1108,7 @@ class AddOperation extends Component {
       if (IsFinancialDataChanged) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateOperationAPI(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-              this.cancel('submit')
-            }
-          });
+          this.handleOperationAPI(formData, true)
           return false
 
         } else {
@@ -880,13 +1125,7 @@ class AddOperation extends Component {
           return false
         }
         else {
-          this.props.updateOperationAPI(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-              this.cancel('submit')
-            }
-          });
+          this.handleOperationAPI(formData, true)
         }
       }
     } else {/** Add new detail for creating operation master **/
@@ -906,6 +1145,7 @@ class AddOperation extends Component {
       }
 
       this.setState({ setDisable: true })
+
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
 
@@ -934,25 +1174,8 @@ class AddOperation extends Component {
           }))
         }
       } else {
-        this.props.createOperationsAPI(formData, (res) => {
-          this.setState({ setDisable: false })
-          if (res.data.Result) {
-            Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-            //this.clearForm()
-            this.cancel('submit')
-          }
-        })
+        this.handleOperationAPI(formData, false)
       }
-
-      // this.props.createOperationsAPI(formData, (res) => {
-      //   this.setState({ setDisable: false })
-      //   if (res?.data?.Result) {
-      //     Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-      //     this.cancel();
-      //   }
-      // });
-
-
     }
 
   }, 500)
@@ -968,6 +1191,8 @@ class AddOperation extends Component {
     const { fieldsObj } = this.props
     const { selectedPlants, operationType, selectedTechnology, UOM, destinationPlant, isSurfaceTreatment, OperationId } = this.state
     let isPlant = selectedPlants.length > 0 || destinationPlant.label ? true : false
+    let plantArray = Array?.isArray(destinationPlant) ? destinationPlant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+      destinationPlant ? [{ PlantId: destinationPlant?.value, PlantName: destinationPlant?.label, PlantCode: '' }] : [];
     if (operationType && selectedTechnology.length > 0 && fieldsObj.OperationName && UOM.label && fieldsObj.EffectiveDate && isPlant) {
       let obj = {}
       obj.operationType = this.state.operationType
@@ -975,7 +1200,7 @@ class AddOperation extends Component {
       obj.operationName = fieldsObj.OperationName
       obj.operationCode = fieldsObj.OperationCode
       obj.description = fieldsObj.Description
-      obj.plants = this.state.selectedPlants
+      obj.plants = plantArray ?? []
       obj.UOM = this.state.UOM
       obj.vendor = this.state.vendorName
       obj.effectiveDate = this.state.effectiveDate
@@ -984,7 +1209,20 @@ class AddOperation extends Component {
       obj.customer = this.state.client
       obj.isSurfaceTreatment = isSurfaceTreatment
       obj.OperationId = OperationId
-
+      obj.isImport = this.state.isImport
+      obj.currency = this.state.currency
+      obj.plantCurrencyState = this.state.plantCurrency
+      obj.settlementCurrency = this.state.settlementCurrency
+      obj.plantExchangeRateId = this.state.plantExchangeRateId
+      obj.settlementExchangeRateId = this.state.settlementExchangeRateId
+      obj.ExchangeSource = this.state.ExchangeSource
+      obj.plantCurrencyID = this.state.plantCurrencyID
+      obj.plantCurrency = this.props.fieldsObj?.plantCurrency
+      obj.hidePlantCurrency = this.state?.hidePlantCurrency
+      obj.labourRatePerUOM = fieldsObj?.LabourRatePerUOM || ''
+      obj.rate = fieldsObj?.Rate || ''
+      obj.consumption = fieldsObj?.Consumption || ''
+      obj.weldingRate = fieldsObj?.WeldingRate || ''
       if (String(this.state.operationType.label) === "Ni Cr Plating") {
 
         obj.useWatchArray = ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent']
@@ -1002,15 +1240,57 @@ class AddOperation extends Component {
     this.setState({ addMoreDetails: false })
 
   }
+  importToggle = () => {
+    this.setState({ isImport: !this.state.isImport })
+  }
+  /**
+* @method handleCurrency
+* @description called
+*/
+  handleCurrency = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ currency: newValue }, () => {
+        this.callExchangeRateAPI()
+      })
+    } else {
+      this.setState({ currency: [] })
+    }
+  };
+  OperationRateTitle = () => {
+    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    return {
+      tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+    };
+  };
+  getTooltipTextForCurrency = () => {
+    const { fieldsObj } = this.props
+    const { settlementCurrency, plantCurrency, currency } = this.state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = fieldsObj?.plantCurrency ?? 'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
 
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '-';
+    const settlementCurrencyRate = settlementCurrency ?? '-';
+
+    // Generate tooltip text based on the condition
+    return <>
+      {!this.state?.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+    </>;
+  };
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval, hidePlantCurrency, isDetailEntry } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
+
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -1072,6 +1352,29 @@ class AddOperation extends Component {
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
+                    <Row>
+                      <Col md="4" className="switch mt-2 mb15">
+                        <label className="switch-level">
+                          <div className={"left-title"}>Domestic</div>
+                          <Switch
+                            onChange={this.importToggle}
+                            checked={this.state.isImport}
+                            id="normal-switch"
+                            disabled={isEditFlag}
+                            background="#4DC771"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#4DC771"
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            height={20}
+                            width={46}
+                          />
+                          <div className={"right-title"}>Import</div>
+                        </label>
+                      </Col>
+
+                    </Row>
                     <Row>
                       <Col md="12">
                         {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id="Add_operation_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
@@ -1149,13 +1452,13 @@ class AddOperation extends Component {
                               : this.state.selectedTechnology
                           }
                           options={this.renderListing("technology")}
-                          selectionChanged={this.handleTechnology}
+                          selectionChanged={isEditFlag ? () => { } : this.handleTechnology}
                           optionValue={(option) => option.Value}
-                          optionLabel={(option) => option.Text}
+                          optionLabel={(option) => option?.Text}
                           component={renderMultiSelectField}
                           mendatory={true}
                           validate={this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : []}
-                          className="multiselect-with-border"
+                          className={`multiselect-with-border ${isEditFlag ? 'cursor-allowed' : ''}`}
                           disabled={isEditFlag ? true : false}
                         />
                       </Col>
@@ -1164,7 +1467,7 @@ class AddOperation extends Component {
                           label={`Operation Name`}
                           name={"OperationName"}
                           type="text"
-                          placeholder={isEditFlag ? '-' : "Select"}
+                          placeholder={isEditFlag ? '-' : "Enter"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
                           onChange={this.checkUniqCodeByName}
                           component={renderText}
@@ -1184,7 +1487,7 @@ class AddOperation extends Component {
                           component={renderText}
                           required={true}
                           onChange={this.checkUniqCode}
-                          disabled={(isEditFlag || isDisableCode | initialConfiguration.IsAutoGeneratedOperationCode) ? true : false}
+                          disabled={(isEditFlag || isDisableCode | initialConfiguration?.IsAutoGeneratedOperationCode) ? true : false}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -1194,10 +1497,10 @@ class AddOperation extends Component {
                           label={`Description`}
                           name={"Description"}
                           type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
-                          disabled={isViewMode ? true : false}
+                          disabled={isViewMode ? true : false || isDetailEntry}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -1206,7 +1509,7 @@ class AddOperation extends Component {
 
                     <Row>
                       {/* might use later */}
-                      {(costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
+                      {(costingTypeId === ZBCTypeId && (!initialConfiguration?.IsMultipleUserAllowForApproval && !IsSelectSinglePlant)) && (
                         <Col md="3">
                           <Field
                             label="Plant (Code)"
@@ -1222,7 +1525,7 @@ class AddOperation extends Component {
                             mendatory={true}
                             validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                             className="multiselect-with-border"
-                            disabled={isEditFlag ? true : false}
+                            disabled={isEditFlag ? true : false || isViewMode}
                           />
                         </Col>
                       )}
@@ -1260,7 +1563,7 @@ class AddOperation extends Component {
 
                       )}
                       {
-                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration.IsMultipleUserAllowForApproval) &&
+                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === ZBCTypeId && IsSelectSinglePlant) || initialConfiguration?.IsMultipleUserAllowForApproval) &&
                         <Col md="3">
                           <Field
                             label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
@@ -1278,6 +1581,83 @@ class AddOperation extends Component {
                           />
                         </Col>
                       }
+                      {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                        <Col md="3">
+                          <Field
+                            label="Exchange Rate Source"
+                            name="ExchangeSource"
+                            placeholder="Select"
+                            options={this.renderListing("ExchangeSource")}
+                            handleChangeDescription={this.handleExchangeRateSource}
+                            component={searchableSelect}
+                            className="multiselect-with-border"
+                            disabled={isEditFlag || isViewMode}
+                            valueDescription={this.state.ExchangeSource}
+                          />
+                        </Col>
+                      )}
+                      {<Col md="3">
+                        {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.isImport && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                        <Field
+                          name="plantCurrency"
+                          type="text"
+                          label="Plant Currency"
+                          placeholder={"-"}
+                          validate={[]}
+                          component={renderTextInputField}
+                          required={false}
+                          disabled={true}
+                          className=" "
+                          customClassName=" withBorder mb-1"
+                        />
+                        {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                      </Col>}
+                      {this.state.isImport && <Col md="3">
+                        <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
+                        <Field
+                          name="Currency"
+                          type="text"
+                          label="Currency"
+                          id="currency"
+                          component={searchableSelect}
+                          placeholder={isEditFlag ? '-' : "Select"}
+                          options={this.renderListing("currency")}
+                          validate={
+                            this.state.currency == null ||
+                              this.state.currency.length === 0
+                              ? [required]
+                              : []
+                          }
+                          required={true}
+                          handleChangeDescription={this.handleCurrency}
+                          valueDescription={this.state.currency}
+                          disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
+                          customClassName="mb-1"
+                        >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
+                        </Field>
+                      </Col>}
+                      <Col md="3">
+                        <div className="inputbox date-section form-group">
+                          <Field
+                            label="Effective Date"
+                            name="EffectiveDate"
+                            selected={this.state.effectiveDate}
+                            onChange={this.handleEffectiveDateChange}
+                            type="text"
+                            validate={[required]}
+                            minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                            autoComplete={'off'}
+                            required={true}
+                            changeHandler={(e) => {
+                            }}
+                            component={renderDatePicker}
+                            className=" "
+                            disabled={isViewMode || !this.state.IsFinancialDataChanged}
+                            customClassName=" withBorder"
+                            placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
+                          />
+                        </div>
+                      </Col>
                       {costingTypeId === CBCTypeId && (
                         <Col md="3">
                           <Field
@@ -1313,7 +1693,7 @@ class AddOperation extends Component {
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated)}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                         />
                       </Col>
                       {this.state.isWelding &&
@@ -1327,7 +1707,7 @@ class AddOperation extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
-                              disabled={isViewMode || (isEditFlag && isOperationAssociated)}
+                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'WeldingRate') }}
                               className=" "
                               customClassName=" withBorder"
@@ -1342,17 +1722,17 @@ class AddOperation extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
-                              disabled={isViewMode || (isEditFlag && isOperationAssociated)}
+                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'Consumption') }}
                               className=" "
                               customClassName=" withBorder"
                             />
                           </Col>
                         </>}
-                      <Col md="3">
-                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Rate = Welding Material Rate/Kg * Consumption'} />}
+                      {this.state.isImport && <Col md="3">
+                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
                         <Field
-                          label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
                           name={"Rate"}
                           type="text"
                           id="rate"
@@ -1360,49 +1740,58 @@ class AddOperation extends Component {
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
                           required={true}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
-                          className=" "
-                          customClassName=" withBorder"
-                        />
-                      </Col>
-                      {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <Col md="3">
-                        <Field
-                          label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
-                          name={"LabourRatePerUOM"}
-                          type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
-                          validate={[positiveAndDecimalNumber, maxLength10, number]}
-                          component={renderTextInputField}
-                          disabled={isEditFlag ? true : false}
                           className=" "
                           customClassName=" withBorder"
                         />
                       </Col>}
                       <Col md="3">
-                        <div className="inputbox date-section form-group">
-                          <Field
-                            label="Effective Date"
-                            name="EffectiveDate"
-                            selected={this.state.effectiveDate}
-                            maxDate={getEffectiveDateMaxDate()}
-
-                            onChange={this.handleEffectiveDateChange}
-                            type="text"
-                            validate={[required]}
-                            minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
-                            autoComplete={'off'}
-                            required={true}
-                            changeHandler={(e) => {
-                            }}
-                            component={renderDatePicker}
-                            className=" "
-                            disabled={isViewMode || !this.state.IsFinancialDataChanged}
-                            customClassName=" withBorder"
-                            placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
-                          />
-                        </div>
+                        {/* {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate-local" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
+                        {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />} */}
+                        <Field
+                          label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                          name={"RateLocalConversion"}
+                          type="text"
+                          id={this?.state?.isWelding ? "rate" : "rate-local"}
+                          placeholder={this.state.isImport ? '' : 'Enter'}
+                          validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
+                          required={true}
+                          disabled={this.state.isImport ? true : false || isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
+                          onChange={this.handleRateChange}
+                          className=" "
+                          customClassName=" withBorder"
+                        />
                       </Col>
+                      {!hidePlantCurrency && <Col md="3">
+                        <TooltipCustom disabledIcon={true} width="350px" id="operation-rate" tooltipText={this.state.isImport ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />
+                        <Field
+                          name="RateConversion"
+                          type="text"
+                          id="operation-rate"
+                          label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          component={renderTextInputField}
+                          disabled={true}
+                          className=" "
+                          customClassName=" withBorder"
+                        />
+                      </Col>}
+
+
+                      {initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure && <Col md="3">
+                        <Field
+                          label={`Labour Rate/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}`}
+                          name={"LabourRatePerUOM"}
+                          type="text"
+                          placeholder={isViewMode ? '-' : "Enter"}
+                          validate={[positiveAndDecimalNumber, maxLength10, number]}
+                          component={renderTextInputField}
+                          disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
+                          className=" "
+                          customClassName=" withBorder"
+                        />
+                      </Col>}
                     </Row>
                     <Row>
                       <Col md="8" className="mb-5 pb-1 st-operation">
@@ -1533,7 +1922,7 @@ class AddOperation extends Component {
                         {"Cancel"}
                       </button>
                       {!isViewMode && <>
-                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state?.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || ((initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) && !CostingTypePermission) ?
                           <button id="AddOperation_SendForApproval" type="submit"
                             class="user-btn approval-btn save-btn mr5"
                             disabled={isViewMode || setDisable || disableSendForApproval}
@@ -1554,11 +1943,11 @@ class AddOperation extends Component {
                         }
                       </>}
                     </div>
-                  </Row>}
-                </form>
-              </div>
-            </div>
-          </div>
+                  </Row >}
+                </form >
+              </div >
+            </div >
+          </div >
         </div >}
 
         {
@@ -1570,12 +1959,11 @@ class AddOperation extends Component {
             cancel={this.cancel}
             isEditFlag={this.state.isEditFlag}
             isViewMode={this.state.isViewMode}
+            callExchangeRateAPI={this.callExchangeRateAPI}
           />
         }
-
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
-
         }
         {
           isOpenVendor && (
@@ -1615,6 +2003,8 @@ class AddOperation extends Component {
               costingTypeId={this.state.costingTypeId}
               levelDetails={this.state.levelDetails}
               commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
+              handleOperation={this.handleOperationAPI}
+              isEdit={this.state.isEditFlag}
             />
           )
         }
@@ -1630,8 +2020,8 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption');
-  const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion", 'Rate', 'RateLocalConversion', 'LabourRatePerUOM');
+  const { plantSelectList, filterPlantList, UOMSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration, userMasterLevelAPI } = auth;
@@ -1648,7 +2038,7 @@ function mapStateToProps(state) {
   return {
     plantSelectList, UOMSelectList,
     operationData, filterPlantList, vendorWithVendorCodeSelectList, fieldsObj,
-    initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI
+    initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI, exchangeRateSourceList, currencySelectList
   }
 }
 
@@ -1671,7 +2061,11 @@ export default connect(mapStateToProps, {
   getCostingSpecificTechnology,
   getClientSelectList,
   getUsersMasterLevelAPI,
-  getVendorNameByVendorSelectList
+  getVendorNameByVendorSelectList,
+  getExchangeRateByCurrency,
+  getPlantUnitAPI,
+  getExchangeRateSource,
+  getCurrencySelectList
 })(reduxForm({
   form: 'AddOperation',
   validate: validateForm,

@@ -163,13 +163,13 @@ export function createMachine(data, callback) {
  */
 export function copyMachine(MachineId, callback) {
     return (dispatch) => {
-        
+
         // This will go through axiosInstance's encryption interceptor
         const request = axiosInstance.post(
             `${API.copyMachine}?machineId=${MachineId}&loggedInUserId=${loggedInUserId()}`,
             config()
-        );       
-        
+        );
+
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS });
@@ -191,12 +191,17 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
             loggedInUserId: loggedInUserId(),
-            VendorId: obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID,
-            PlantId: obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID,
-            CustomerId: obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID,
-            technology_id: data.technology_id,
-            StatusId: data.StatusId ? data.StatusId : '',
+            VendorId: data?.vendor_id ? data?.vendor_id : EMPTY_GUID,
+            PlantId: obj?.PlantId !== undefined ? obj?.PlantId : EMPTY_GUID,
+            CustomerId: obj?.CustomerId !== undefined ? obj?.CustomerId : EMPTY_GUID,
+            technology_id: data?.technology_id,
+            StatusId: data?.StatusId ? data?.StatusId : '',
             DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : '',
+            MachineEntryType: data.MachineEntryType,
+            Currency: data.Currency !== undefined ? data.Currency : "",
+            LocalCurrency: data.LocalCurrency !== undefined ? data.LocalCurrency : "",
+            EffectiveDate: data?.EffectiveDate !== undefined ? data?.EffectiveDate : "",
+            listFor: data?.ListFor ? data?.ListFor : ''
         });
         const queryParamsSecond = encodeQueryParamsAndLog({
             CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : '', Technology: obj.Technology !== undefined ? obj.Technology : '', Vendor: obj.VendorName !== undefined ? obj.VendorName : '', Plant: obj.Plant !== undefined ? obj.Plant : '', MachineNumber: obj.MachineNumber !== undefined ? obj.MachineNumber : '', MachineName: obj.MachineName !== undefined ? obj.MachineName : '',
@@ -204,6 +209,8 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
             take: take, CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '', IsCustomerDataShow: obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false, IsVendorDataShow: obj?.IsVendorDataShow, IsZeroDataShow: obj?.IsZeroDataShow,
             FromDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : '', ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : '', TechnologyId: obj.TechnologyId !== undefined ? obj.TechnologyId : '',
             UOM: obj.UOM !== undefined ? obj.UOM : '',
+            ExchangeRateSourceName: obj.ExchangeRateSourceName !== undefined ? obj?.ExchangeRateSourceName : "",
+            Currency: obj.Currency !== undefined ? obj.Currency : "",
             isRequestForPendingSimulation: obj?.isRequestForPendingSimulation ? true : false
         });
         // const queryParams = `VendorId=${obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID}&PlantId=${obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID}&CustomerId=${obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID}&technology_id=${data.technology_id}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
@@ -455,7 +462,7 @@ export function checkAndGetMachineNumber(number, callback) {
 export function getFuelUnitCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `loggedInUserId=${loggedInUserId()}&fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}`
+        const queryParams = `loggedInUserId=${loggedInUserId()}&fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.ExchangeSource}&costingTypeId=${data?.costingTypeId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&entryType=${data?.entryType}`
         axios.get(`${API.getFuelUnitCost}?${queryParams}`, config())
             .then((response) => {
                 if (response && response.data && response.data.Result === true) {
@@ -476,7 +483,7 @@ export function getFuelUnitCost(data, callback) {
 export function getLabourCost(data, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `loggedInUserId=${loggedInUserId()}&labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`
+        const queryParams = `loggedInUserId=${loggedInUserId()}&labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.ExchangeSource}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&costingTypeId=${data?.costingTypeId}`
         axios.get(`${API.getLabourCost}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
@@ -497,7 +504,7 @@ export function getLabourCost(data, date, callback) {
 export function getPowerCostUnit(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?loggedInUserId=${loggedInUserId()}&plantId=${obj.plantId}&effectiveDate=${DayTime(obj.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}&costingTypeId=${obj.costingTypeId}&vendorId=${obj.vendorId}&customerId=${obj.customerId}`, config())
+        axios.get(`${API.getPowerCostUnit}?loggedInUserId=${loggedInUserId()}&plantId=${obj?.plantId}&effectiveDate=${DayTime(obj.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}&costingTypeId=${obj?.costingTypeId}&vendorId=${obj?.vendorId}&customerId=${obj?.customerId}&toCurrency=${obj?.toCurrency}&exchangeRateSourceName=${obj?.exchangeRateSourceName}&entryType=${obj?.entryType}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);

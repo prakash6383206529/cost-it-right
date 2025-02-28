@@ -6,9 +6,10 @@ import LoaderCustom from '../../common/LoaderCustom';
 import RMCompareTable from '../../rfq/compareTable/RMCompareTable';
 import BOPCompareTable from '../../rfq/compareTable/BOPCompareTable';
 import { rfqGetBestCostingDetails } from '../../rfq/actions/rfq';
-import { useDispatch } from 'react-redux';
-import { formViewData } from '../../../helper';
+import { useDispatch, useSelector } from 'react-redux';
+import { calculateBestCost, formViewData } from '../../../helper';
 import _ from 'lodash';
+
 
 const RfqMasterApprovalDrawer = (props) => {
   
@@ -20,19 +21,14 @@ const RfqMasterApprovalDrawer = (props) => {
     reValidateMode: 'onChange',
   });
   const { selectedRows } = props
+  
   useEffect(() => {
-    let tempObj = []
-    let temp = []
     dispatch(rfqGetBestCostingDetails(selectedRows[0]?.BestCostAndShouldCostMasterDetails?.BestCostId, (res) => {
-      tempObj = formViewData(res?.data?.Data, '', true)
-      tempObj[0].bestCost = true
-      temp.push(tempObj[0])
+      }))
+  uniqueShouldCost()
+}, [])
 
-    }))
-    uniqueShouldCost()
-  }
-    , [])
-  const onSubmit = handleSubmit((data) => {
+const onSubmit = handleSubmit((data) => {
     // Handle form submission
     
     props.closeDrawer();
@@ -82,6 +78,7 @@ const RfqMasterApprovalDrawer = (props) => {
             selectedRows={props.selectedRows[0].BestCostAndShouldCostMasterDetails?.RawMaterialIdList}
             quotationId={props.quotationId}
             uniqueShouldCostingId={uniqueShouldCostingId}
+            RfqMasterApprovalDrawer={true}
           />}
           {props.type === 'Bought Out Part' && <BOPCompareTable
             // checkCostingSelected={checkCostingSelected}
@@ -89,6 +86,7 @@ const RfqMasterApprovalDrawer = (props) => {
             selectedRows={props.selectedRows[0].BestCostAndShouldCostMasterDetails.BoughtOutPartIdList}
             uniqueShouldCostingId={uniqueShouldCostingId}
             quotationId={props.quotationId}
+            RfqMasterApprovalDrawer={true}
           />}
         </div>
       </div>

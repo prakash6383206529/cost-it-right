@@ -223,7 +223,7 @@ function TabToolCost(props) {
         setTimeout(() => {
           setLoader(false)
         }, 200);
-        if (res?.data && res?.data?.DataList[0]?.ProcessOrOperation) {
+        if (res?.data && res?.data?.DataList) {
           setGridData(res.data.DataList)
 
         }
@@ -386,7 +386,7 @@ function TabToolCost(props) {
 
   const decimalFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)
+    return checkForDecimalAndNull(cellValue, initialConfiguration?.NoOfDecimalForPrice)
   }
 
   const frameworkComponents = {
@@ -493,7 +493,7 @@ function TabToolCost(props) {
                 <Col md="3" className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
                   <div>
                     {"Net Tool Cost:"}
-                    <span className="d-inline-block pl-1 font-weight-500">{IsApplicableProcessWise ? checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice) : (ToolTabData && ToolTabData.map((item) => checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)))}</span>
+                    <span className="d-inline-block pl-1 font-weight-500">{IsApplicableProcessWise ? checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice) : (ToolTabData && ToolTabData.map((item) => checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice)))}</span>
                   </div>
                   {IsApplicableProcessWise &&
                     <>
@@ -576,7 +576,7 @@ function TabToolCost(props) {
                               >
                                 {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                 {/* <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn> */}
-                                {initialConfiguration.IsShowCRMHead && <AgGridColumn field="ToolCRMHead" headerName="CRM Head"></AgGridColumn>}
+                                {initialConfiguration?.IsShowCRMHead && <AgGridColumn field="ToolCRMHead" headerName="CRM Head"></AgGridColumn>}
                                 <AgGridColumn field="BOMLevel" headerName="BOMLevel"></AgGridColumn>
                                 <AgGridColumn field="ParentPartNumber" headerName="Parent Part Number"></AgGridColumn>
                                 <AgGridColumn field="ChildPartNumber" headerName="Child Part Number"></AgGridColumn>

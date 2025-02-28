@@ -1,7 +1,7 @@
 @import "./abstracts/variable";
 @import "./abstracts/mixin";
-@import '../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss';
-@import '../../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss';
+@import "../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "../../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
 
 // @mixin icons($path, $width: 26px, $height: 26px, $background-size: contain, $shadowColor: transparent, $borderColor: transparent) {
 //     background: transparent url($path) 0% 0% no-repeat padding-box;
@@ -55,19 +55,17 @@
 
 .View {
     @include icons("../../images/Group-8858.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
-
 }
 
 .cost-movement {
     @include icons("../../images/cost-movement.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     @include extra-icon-styles;
-
 }
 
 .view-masters {
     @include icons("../../images/view-master.png", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     @include extra-icon-styles;
-    border-radius: 3px
+    border-radius: 3px;
 }
 
 .Comment-box {
@@ -77,7 +75,7 @@
 .pushed-action-btn {
     @include icons("../../images/pushed-sap.png", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
     @include extra-icon-styles;
-    border-radius: 3px
+    border-radius: 3px;
 }
 
 .pie-chart {
@@ -106,7 +104,10 @@
 }
 
 .hirarchy-btn {
-    @include icons("../../images/hirarchy-btn.svg", $background-size: none, $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    @include icons("../../images/hirarchy-btn.svg",
+        $background-size: none,
+        $shadowColor: #0cbeeb,
+        $borderColor: #bbe8f9);
     background-color: #cef2fb;
     margin-left: 5px;
     border-radius: 4px;
@@ -200,17 +201,17 @@
 
     &:disabled {
         border: none !important;
-        opacity: 0.5;
+        opacity: 0.8;
     }
 }
 
 .blurPlus-icon-square {
     @extend .plus-icon-square;
     @include icons("../../images/bluradd.png", 43px, 35px, none);
-    margin-top: 8px;
+    margin-top: 0px;
 
     &:is(button) {
-        @include icons("../../images/bluradd.png", 26px, 24px, none);
+        @include icons("../../images/bluradd.png", 22px, 22px, none);
         margin-left: 10px;
 
         &:focus {
@@ -226,7 +227,6 @@
     background-position: center right;
     pointer-events: none;
 }
-
 
 .calculate-icon {
     @include icons("../../images/tool.svg", 43px, 35px);
@@ -310,7 +310,7 @@
 }
 
 .refresh-icon {
-    @include icons("../../images/refresh_icon.svg");
+    @include icons("../../images/refresh_icon.svg", 22px, 22px);
 }
 
 .download {
@@ -365,7 +365,7 @@
 .group-process {
     @include icons("../../images/group-process.svg");
     margin-right: 5px;
-    border-radius: 4px
+    border-radius: 4px;
 }
 
 .trashred-icon {
@@ -381,7 +381,6 @@
 .approve-save-tick {
     @include icons("../../images/check-green.svg", 13px, 11px);
     margin: auto;
-
 }
 
 .filter {
@@ -415,7 +414,6 @@
 .Copy.All {
     @include icons("../../images/Copy.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
     @include extra-icon-styles;
-
 }
 
 .Create {
@@ -487,19 +485,19 @@
 }
 
 .zoom-in-hover {
-    @include icons("../../images/plus-icon.svg", 10px, 10px)
+    @include icons("../../images/plus-icon.svg", 10px, 10px);
 }
 
 .zoom-in {
-    @include icons("../../images/zoom-in.svg", 10px, 10px)
+    @include icons("../../images/zoom-in.svg", 10px, 10px);
 }
 
 .zoom-out {
-    @include icons("../../images/zoom-out.svg", 14px, 14px)
+    @include icons("../../images/zoom-out.svg", 14px, 14px);
 }
 
 .zoom-out-hover {
-    @include icons("../../images/zoom-out-hover.svg", 16px, 16px)
+    @include icons("../../images/zoom-out-hover.svg", 16px, 16px);
 }
 
 .history-remark {
@@ -509,9 +507,8 @@
 }
 
 .link-icon {
-    @include icons("../../images/link.svg", 20px, 20px)
+    @include icons("../../images/link.svg", 20px, 20px);
 }
-
 
 .all-modules {
     @include icons("../../images/all-modules.png", 24px, 24px);
@@ -524,7 +521,7 @@
 }
 
 .arrow-previous {
-    @include icons("../../images/caret-down.svg", 20px, 20px, );
+    @include icons("../../images/caret-down.svg", 20px, 20px);
     margin-top: 3px;
     transform: rotate(90deg);
 
@@ -561,7 +558,7 @@
 }
 
 .broken-link-icon {
-    @include icons("../../images/broken-link.svg", 18px, 18px)
+    @include icons("../../images/broken-link.svg", 18px, 18px);
 }
 
 .excel-btn.user-btn {
@@ -719,12 +716,12 @@
 @keyframes rightArrow {
     0% {
         -webkit-transform: translateX(0);
-        opacity: 1
+        opacity: 1;
     }
 
     100% {
         -webkit-transform: translateX(-0.4em);
-        opacity: 1
+        opacity: 1;
     }
 }
 
@@ -736,7 +733,7 @@
 .costing-action.text-right {
     padding-right: 15px !important;
 
-    @media screen and (min-width:$middleDesktop) {
+    @media screen and (min-width: $middleDesktop) {
         padding-right: 30px !important;
     }
 }
@@ -836,7 +833,6 @@
         &:focus {
             box-shadow: none !important;
             border-color: transparent !important;
-
         }
 
         .cross-light {
@@ -854,12 +850,11 @@
     &:focus {
         box-shadow: 0 0 5px #7959f6 !important;
         border: 1px solid #e4defd !important;
-        ;
     }
 }
 
 .approve-icon {
-    background-color: #DBF4E2;
+    background-color: #dbf4e2;
     width: 26px;
     height: 26px;
     border-radius: 4px;
@@ -867,9 +862,8 @@
     margin-bottom: 5px;
 
     &:focus {
-        box-shadow: 0 0 5px #4DC771 !important;
-        border: 1px solid #DBF4E2 !important;
-        ;
+        box-shadow: 0 0 5px #4dc771 !important;
+        border: 1px solid #dbf4e2 !important;
     }
 }
 
@@ -933,8 +927,15 @@
         position: absolute;
         top: 5px;
         left: 5px;
-
     }
+}
+
+#addRMDomestic_otherToggle.blurPlus-icon-square {
+    margin-left: 5px !important;
+}
+
+#addBOPImport_condition.plus-icon-square {
+    margin-top: 0;
 }
 
 .microsot-logo {

@@ -18,30 +18,31 @@ import LossStandardTable from '../LossStandardTable'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { sourceCurrencyFormatter } from '../../Drawers/processCalculatorDrawer/CommonFormula'
 
 function ColdForging(props) {
   const { rmRowData, CostingViewMode, item } = props
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const defaultValues = {
-    finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    forgedWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgedWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    BilletDiameter: WeightCalculatorRequest && WeightCalculatorRequest.BilletDiameter !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BilletDiameter, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    BilletLength: WeightCalculatorRequest && WeightCalculatorRequest.BilletLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BilletLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    InputLength: WeightCalculatorRequest && WeightCalculatorRequest.InputLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.InputLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    NoOfPartsPerLength: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPartsPerLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfPartsPerLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    EndBitLength: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.EndBitLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    EndBitLoss: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLoss !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.EndBitLoss, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    TotalInputWeight: WeightCalculatorRequest && WeightCalculatorRequest.TotalInputWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalInputWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    ScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    ScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    NetRMCostComponent: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    forgingScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgingScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    machiningScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.MachiningScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    forgingScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapRecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgingScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    machiningScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapRecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.MachiningScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
-    forgingScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgingScrapCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    machiningScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.MachiningScrapCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    forgedWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgedWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    BilletDiameter: WeightCalculatorRequest && WeightCalculatorRequest.BilletDiameter !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BilletDiameter, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    BilletLength: WeightCalculatorRequest && WeightCalculatorRequest.BilletLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BilletLength, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    InputLength: WeightCalculatorRequest && WeightCalculatorRequest.InputLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.InputLength, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    NoOfPartsPerLength: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPartsPerLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfPartsPerLength, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    EndBitLength: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.EndBitLength, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    EndBitLoss: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLoss !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.EndBitLoss, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    TotalInputWeight: WeightCalculatorRequest && WeightCalculatorRequest.TotalInputWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalInputWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    ScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    ScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, initialConfiguration?.NoOfDecimalForPrice) : '',
+    NetRMCostComponent: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, initialConfiguration?.NoOfDecimalForPrice) : '',
+    forgingScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgingScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    machiningScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.MachiningScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    forgingScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapRecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgingScrapRecoveryPercentage, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    machiningScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapRecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.MachiningScrapRecoveryPercentage, initialConfiguration?.NoOfDecimalForInputOutput) : '',
+    forgingScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgingScrapCost, initialConfiguration?.NoOfDecimalForPrice) : '',
+    machiningScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.MachiningScrapCost, initialConfiguration?.NoOfDecimalForPrice) : '',
   }
 
   const {
@@ -56,7 +57,7 @@ function ColdForging(props) {
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
-  const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
+  const { forgingCalculatorMachiningStockSectionValue, currencySource } = useSelector(state => state.costing)
 
   const fieldValues = useWatch({
     control,
@@ -107,8 +108,8 @@ function ColdForging(props) {
     obj.forgedWeight = forgedWeight
     obj.machiningScrapWeight = machiningScrapWeight
     setDataSend(obj)
-    setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration.NoOfDecimalForInputOutput))
-    setValue('machiningScrapWeight', checkForDecimalAndNull(machiningScrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
+    setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput))
+    setValue('machiningScrapWeight', checkForDecimalAndNull(machiningScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput))
     setForgeWeightValue(forgedWeight)
   }
 
@@ -195,8 +196,8 @@ function ColdForging(props) {
     obj.TotalInputWeight = TotalInputWeight
     obj.ForgingScrapWeight = ForgingScrapWeight
     setDataSend(obj)
-    setValue('TotalInputWeight', checkForDecimalAndNull(TotalInputWeight, initialConfiguration.NoOfDecimalForInputOutput))
-    setValue('forgingScrapWeight', checkForDecimalAndNull(ForgingScrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
+    setValue('TotalInputWeight', checkForDecimalAndNull(TotalInputWeight, initialConfiguration?.NoOfDecimalForInputOutput))
+    setValue('forgingScrapWeight', checkForDecimalAndNull(ForgingScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput))
   }
 
   /**
@@ -212,7 +213,7 @@ function ColdForging(props) {
     let obj = dataSend
     obj.ScrapWeight = ScrapWeight
     setDataSend(obj)
-    setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
+    setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput))
 
   }
   /**
@@ -225,8 +226,8 @@ function ColdForging(props) {
     const forgingScrapRecoveryPercent = checkForNull(getValues('forgingScrapRecoveryPercent'))
     const machiningScrapRecoveryPercent = checkForNull(getValues('machiningScrapRecoveryPercent'))
 
-    const forgingScrapCost = ((forgingScrapWeight * forgingScrapRecoveryPercent) / 100) * rmRowData?.ScrapRate
-    const machiningScrapCost = ((machiningScrapWeight * machiningScrapRecoveryPercent) / 100) * rmRowData?.MachiningScrapRate
+    const forgingScrapCost = checkForNull(forgingScrapWeight) * checkForNull(rmRowData?.ScrapRate)
+    const machiningScrapCost = checkForNull(machiningScrapWeight) * checkForNull(rmRowData?.MachiningScrapRate)
     const ScrapCost = forgingScrapCost + machiningScrapCost
     let obj = dataSend
     obj.ScrapCost = ScrapCost
@@ -687,9 +688,9 @@ function ColdForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'forging-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Cost = ((Forging Scrap Weight * Forging Scrap Recovery (%)) / 100) * Forging Scrap Rate'} />
+                <TooltipCustom disabledIcon={true} id={'forging-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Cost = Forging Scrap Weight * Forging Scrap Rate'} />
                 <TextFieldHookForm
-                  label={`Forging Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                  label={`Forging Scrap Cost (${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'forgingScrapCost'}
                   Controller={Controller}
                   control={control}
@@ -752,9 +753,9 @@ function ColdForging(props) {
               </Col>
 
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = ((Machining Scrap Weight * Forging Scrap Recovery (%)) / 100) * Machining Scrap Rate'} />
+                <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = Machining Scrap Weight * Machining Scrap Rate'} />
                 <TextFieldHookForm
-                  label={`Machining Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                  label={`Machining Scrap Cost (${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'machiningScrapCost'}
                   Controller={Controller}
                   control={control}
@@ -792,7 +793,7 @@ function ColdForging(props) {
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'scrap-cost'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Cost = (Forging Scrap Cost + Machining Scrap Cost)'} />
                 <TextFieldHookForm
-                  label={`Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                  label={`Scrap Cost (${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'ScrapCost'}
                   Controller={Controller}
                   control={control}
@@ -811,7 +812,7 @@ function ColdForging(props) {
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'rm-cost'} tooltipClass={'weight-of-sheet'} tooltipText={' Net RM Cost = (Total Input Weight * RM Rate - Scrap Cost)'} />
                 <TextFieldHookForm
-                  label={`Net RM Cost/Component (${reactLocalStorage.getObject("baseCurrency")})`}
+                  label={`Net RM Cost/Component (${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'NetRMCostComponent'}
                   Controller={Controller}
                   control={control}

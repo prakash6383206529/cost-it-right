@@ -36,15 +36,15 @@ function Tool(props) {
 
   // BELOW CODE NEED TO BE USED WHEN OVERALL APPLICABILITY TREATED INSIDE GRID.
   const defaultValues = {
-    ToolMaintenanceCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    ToolCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    ToolMaintenanceCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice) : '',
+    ToolCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolCost, initialConfiguration?.NoOfDecimalForPrice) : '',
     Life: ObjectForOverAllApplicability && ObjectForOverAllApplicability.Life !== undefined ? ObjectForOverAllApplicability.Life : '',
-    NetToolCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.NetToolCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.NetToolCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    NetToolCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.NetToolCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.NetToolCost, initialConfiguration?.NoOfDecimalForPrice) : '',
     toolCostType: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCostType !== undefined ? { label: ObjectForOverAllApplicability.ToolCostType, value: ObjectForOverAllApplicability.ToolCostTypeId } : [],
-    maintanencePercentage: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenancePercentage !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenancePercentage, initialConfiguration.NoOfDecimalForPrice) : '',
-    MaintananceCostApplicability: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolApplicabilityCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolApplicabilityCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    ToolAmortizationCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    maintanenceToolCost: (ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined && ObjectForOverAllApplicability.ToolCostType === 'Fixed') ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    maintanencePercentage: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenancePercentage !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenancePercentage, initialConfiguration?.NoOfDecimalForPrice) : '',
+    MaintananceCostApplicability: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolApplicabilityCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice) : '',
+    ToolAmortizationCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice) : '',
+    maintanenceToolCost: (ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined && ObjectForOverAllApplicability.ToolCostType === 'Fixed') ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice) : '',
     crmHeadTool: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCRMHead && { label: ObjectForOverAllApplicability.ToolCRMHead, value: 1 }
   }
 
@@ -155,8 +155,8 @@ function Tool(props) {
       const Life = checkForNull(getValues('Life'))
       const ToolAmortizationCost = checkForNull(ToolCost / Life)
 
-      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice))
+      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration?.NoOfDecimalForPrice))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -216,8 +216,8 @@ function Tool(props) {
       const Life = checkForNull(getValues('Life'))
       const ToolAmortizationCost = checkForNull(ToolCost / Life)
 
-      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice))
+      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration?.NoOfDecimalForPrice))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -261,8 +261,8 @@ function Tool(props) {
       const Life = checkForNull(event.target.value)
       const ToolAmortizationCost = ToolCost / Life
 
-      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice))
+      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration?.NoOfDecimalForPrice))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -402,8 +402,8 @@ function Tool(props) {
       switch (Text) {
         case 'RM':
         case 'Part Cost':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
+          setValue('MaintananceCostApplicability', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
@@ -416,8 +416,8 @@ function Tool(props) {
           break;
 
         case 'BOP':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
+          setValue('MaintananceCostApplicability', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
@@ -429,8 +429,8 @@ function Tool(props) {
           break;
 
         case 'CC':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull(((ConversionCostForCalculation) * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
+          setValue('MaintananceCostApplicability', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull(((ConversionCostForCalculation) * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
@@ -443,8 +443,8 @@ function Tool(props) {
 
         case 'RM + CC + BOP':
         case 'Part Cost + CC + BOP':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOPCC * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
+          setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOPCC * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
@@ -457,8 +457,8 @@ function Tool(props) {
 
         case 'RM + BOP':
         case 'Part Cost + BOP':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOP * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
+          setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOP * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
@@ -471,8 +471,8 @@ function Tool(props) {
 
         case 'RM + CC':
         case 'Part Cost + CC':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMCC * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
+          setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMCC * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
@@ -484,8 +484,8 @@ function Tool(props) {
           break;
 
         case 'BOP + CC':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((BOPCC * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice))
+          setValue('MaintananceCostApplicability', checkForDecimalAndNull(BOPCC, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull((BOPCC * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
@@ -499,7 +499,7 @@ function Tool(props) {
         case 'Fixed':
 
           setValue('MaintananceCostApplicability', '-')
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull(maintanenceToolCost, initialConfiguration.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull(maintanenceToolCost, initialConfiguration?.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
@@ -511,8 +511,8 @@ function Tool(props) {
           break;
 
         case 'Net Cost':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(totalTabCost, initialConfiguration.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull(totalTabCost * calculatePercentage(maintanencePercentage), initialConfiguration.NoOfDecimalForPrice))
+          setValue('MaintananceCostApplicability', checkForDecimalAndNull(totalTabCost, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull(totalTabCost * calculatePercentage(maintanencePercentage), initialConfiguration?.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
@@ -549,8 +549,8 @@ function Tool(props) {
     //  const applicabilityCost =  getValues('MaintananceCostApplicability')
     const applicabilityCost = toolObj?.ToolApplicabilityCost
 
-    setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
-    setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolAmortizationCost)), initialConfiguration.NoOfDecimalForPrice))
+    setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
+    setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolAmortizationCost)), initialConfiguration?.NoOfDecimalForPrice))
 
     const zeroIndex = 0;
     let rowArray = {
@@ -646,7 +646,7 @@ function Tool(props) {
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.ToolCost}</td>
                               <td>{item.Life}</td>
-                              <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                              <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
                               <td>
                                 <button title='Edit' className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
                                 <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
@@ -886,7 +886,7 @@ function Tool(props) {
                   </Col>
                   {/* // check here @ashok */}
                   {
-                    initialConfiguration.IsShowCRMHead && <Col md="3">
+                    initialConfiguration?.IsShowCRMHead && <Col md="3">
                       <SearchableSelectHookForm
                         name={`crmHeadTool`}
                         type="text"

@@ -15,6 +15,7 @@ import { colorArray } from '../../../dashboard/ChartsDashboard';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { useLabels } from '../../../../helper/core';
+import { filterParams } from '../../../common/DateFilter';
 
 function CostMovementGraph(props) {
     const { ModeId, importEntry } = props
@@ -71,12 +72,12 @@ function CostMovementGraph(props) {
                 let barDataSet = []
                 let lineDataSet = []
 
-                res.data.Data && res.data.Data.map((item, index) => {
-                    item.Data.map((ele) => {
-                        ele.PlantNameWithCode = `${ele.PlantName} (${ele.PlantCode})`
-                        ele.VendorNameWithCode = `${ele.VendorName} (${ele.VendorCode})`
+                res?.data?.Data && res?.data?.Data?.map((item, index) => {
+                    item?.Data?.map((ele) => {
+                        ele.PlantNameWithCode = `${ele?.PlantName} (${ele?.PlantCode})`
+                        ele.VendorNameWithCode = (ele?.VendorName && ele?.VendorCode && ele?.VendorCode !== 0) ? `${ele?.VendorName} (${ele?.VendorCode})` : null
                         grid.push(ele)
-                        allEffectiveDates.push((ele.EffectiveDate))       //SETTING ALL DATES IN ALLEFFECTIVEDATE ARRAY
+                        allEffectiveDates.push((ele?.EffectiveDate))       //SETTING ALL DATES IN ALLEFFECTIVEDATE ARRAY
                     })
 
                 })
@@ -136,7 +137,7 @@ function CostMovementGraph(props) {
                                     }
                                 })
 
-                                perPartData = Object.assign([...perPartData], { [dateIndex]: checkForDecimalAndNull(ele.NetPOPrice, initialConfiguration.NoOfDecimalForPrice) })  //SETTING VALUE AT DATE INDEX
+                                perPartData = Object.assign([...perPartData], { [dateIndex]: checkForDecimalAndNull(ele.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) })  //SETTING VALUE AT DATE INDEX
                             }
                         })
                     })
@@ -248,14 +249,32 @@ function CostMovementGraph(props) {
 
     const state = {
         labels: dateRangeArray,
-        datasets: lineDataSets
+        datasets: lineDataSets.map(dataset => ({
+            ...dataset,
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                font: {
+                    weight: 'bold'
+                }
+            }
+        }))
+    };
 
-    }
 
 
     const data1 = {
         labels: [...dateRangeArray],
-        datasets: barDataSets
+        datasets: barDataSets?.map(dataset => ({
+            ...dataset,
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                font: {
+                    weight: 'bold'
+                }
+            }
+        }))
     };
 
     const effectiveDateFormatter = (props) => {
@@ -285,13 +304,14 @@ function CostMovementGraph(props) {
     }
 
     const POPriceFormatter = (props) => {
-        const cellValue = props?.value;
-        const currencySymbol = getCurrencySymbol(getConfigurationKey().BaseCurrency)
+        const cellValue = checkForDecimalAndNull(props?.value, initialConfiguration.NoOfDecimalForPrice);
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
     }
 
     const POPriceCurrencyFormatter = (props) => {
-        const cellValue = props?.value;
+        const cellValue = checkForDecimalAndNull(props?.value, initialConfiguration.NoOfDecimalForPrice);
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
@@ -300,6 +320,18 @@ function CostMovementGraph(props) {
     // const rowSpan = (params) => { //DONT DELETE (WILL BE USED FOR ROW MERGING LATER)
     //     return 5
     // }
+    const getYAxisMaxWithPadding = (datasets) => {
+        // Find the maximum value across all datasets
+        const maxValue = Math.max(...datasets.flatMap(dataset => 
+            dataset.data.filter(value => value !== null && value !== undefined)
+        ));
+        
+        // Add 20% padding above the maximum value
+        const padding = maxValue * 0.1;
+        // Round up to the next nice number
+        return Math.ceil((maxValue + padding) / 5) * 5;
+    };
+
     const lineChartOptions = {
         plugins: {
             legend: {
@@ -327,8 +359,8 @@ function CostMovementGraph(props) {
                             label += ': ';
                         }
                         if (context.parsed.y !== null) {
-                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
-                        }
+                            label += new Intl.NumberFormat('en-US', {style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR', minimumFractionDigits: initialConfiguration?.NoOfDecimalForPrice,maximumFractionDigits: initialConfiguration?.NoOfDecimalForPrice
+                            }).format(context.parsed.y);                      }
                         return label;
                     }
                 }
@@ -365,6 +397,11 @@ function CostMovementGraph(props) {
             //         left: 15
             //     }
             // },
+            datalabels: {
+                display: true,
+                color: '#000',
+                offset: 5
+            },
         },
 
         scales: {
@@ -390,7 +427,11 @@ function CostMovementGraph(props) {
                 minRatation: 180,
             },
             y: {
-                min: 0
+                min: 0,
+                max: getYAxisMaxWithPadding(lineDataSets),
+                ticks: {
+                    stepSize: 5
+                }
             },
 
         },
@@ -411,6 +452,11 @@ function CostMovementGraph(props) {
                     }
                 }
             },
+            datalabels: {
+                display: true,
+                color: '#000',
+                offset: 5
+            },
             tooltip: {
                 callbacks: {
                     label: function (context) {
@@ -421,8 +467,10 @@ function CostMovementGraph(props) {
                             label += ': ';
                         }
                         if (context.parsed.y !== null) {
-                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
-                        }
+                            label += new Intl.NumberFormat('en-US', {
+                                style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR', minimumFractionDigits: initialConfiguration?.NoOfDecimalForPrice,
+                                maximumFractionDigits: initialConfiguration?.NoOfDecimalForPrice
+                            }).format(context.parsed.y);                       }
                         return label;
                     }
                 }
@@ -460,6 +508,13 @@ function CostMovementGraph(props) {
                 }
             },
 
+            y: {
+                min: 0,
+                max: getYAxisMaxWithPadding(barDataSets),
+                ticks: {
+                    stepSize: 5
+                }
+            }
         },
     }
 
@@ -509,7 +564,7 @@ function CostMovementGraph(props) {
                                                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" headerName="Basic Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NetPOPrice" headerName="Net Cost" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NetPOPriceCurrency" headerName="Net Cost (Currency)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' floatingFilter={true}></AgGridColumn>}
+                                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
                                         </div>

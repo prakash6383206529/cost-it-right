@@ -5,7 +5,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getExchangeRateDataList, deleteExchangeRate } from '../actions/ExchangeRateMaster';
+import { getExchangeRateDataList, deleteExchangeRate, getExchangeRateDataListForSimulation } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter } from '../../../helper/util';
@@ -23,7 +23,7 @@ import { getListingForSimulationCombined } from '../../simulation/actions/Simula
 import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
-import { loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import Button from '../../layout/Button';
 import { screenWidth, useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
@@ -58,7 +58,8 @@ const ExchangeRateListing = (props) => {
         deletedId: '',
         selectedRowData: false,
         noData: false,
-        dataCount: 0
+        dataCount: 0,
+        totalRecordCount: 0
 
     });
     const { exchangeRateDataList } = useSelector((state) => state.exchangeRate);
@@ -69,7 +70,6 @@ const ExchangeRateListing = (props) => {
     useEffect(() => {
         applyPermission(topAndLeftMenuData);
         setState((prevState) => ({ ...prevState, isLoader: true }));
-
         const fetchData = async () => {
             if (props.isSimulation) {
                 if (props.selectionForListingMasterAPI === 'Combined') {
@@ -146,9 +146,31 @@ const ExchangeRateListing = (props) => {
     * @description Get list data
     */
     const getTableListData = (currencyId = 0) => {
-        let filterData = { currencyId: currencyId, costingHeadId: currencyId, vendorId: filteredRMData?.VendorId ? filteredRMData?.VendorId : '', customerId: filteredRMData?.CustomerId ? filteredRMData?.CustomerId : '', isBudgeting: currencyId, currency: '', isRequestForSimulation: props.isSimulation ? true : false, }
-        if (props.isSimulation) {
+        let filterData = { currencyId: currencyId, costingHeadId: currencyId, vendorId: props.isSimulation ? filteredRMData?.VendorId ? filteredRMData?.VendorId : '' : '', customerId: props.isSimulation ? filteredRMData?.CustomerId ? filteredRMData?.CustomerId : '' : '', isBudgeting: currencyId, currency: '', isRequestForSimulation: props.isSimulation ? true : false, }
+        if (props.isSimulation/* &&(!getConfigurationKey()?.IsExchangeRateEditableForSimulation) */) {
             props?.changeTokenCheckBox(false)
+            filterData.isAssociatedWithCosting = props?.isBOPAssociated ? true : false // Except for BOP with associated costing it will go false in all cases
+            filterData.exchangeRateSimulationTechnologyId = props?.applicabilityMasterId
+            dispatch(getExchangeRateDataListForSimulation(true, filterData, res => {
+                if (res.status === 204 && res.data === '') {
+                    setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
+                } else if (res && res.data && res.data.DataList) {
+                    let Data = res.data.DataList;
+                    setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
+
+                }
+            }));
+        } else {
+
+            dispatch(getExchangeRateDataList(true, filterData, res => {
+                if (res.status === 204 && res.data === '') {
+                    setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
+                } else if (res && res.data && res.data.DataList) {
+                    let Data = res.data.DataList;
+                    setState((prevState) => ({ ...prevState, tableData: Data, totalRecordCount: Data?.length, isLoader: false }))
+
+                }
+            }));
         }
         dispatch(getExchangeRateDataList(true, filterData, res => {
             if (props.isSimulation) {
@@ -158,7 +180,7 @@ const ExchangeRateListing = (props) => {
                 setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
+                setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, totalRecordCount: Data?.length }))
 
             }
         }));
@@ -268,7 +290,7 @@ const ExchangeRateListing = (props) => {
    */
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
-            exchangeRateDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
+            exchangeRateDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }))
         }, 500);
     }
 
@@ -394,7 +416,7 @@ const ExchangeRateListing = (props) => {
 
     return (
         <>
-            <div className={`ag-grid-react grid-parent-wrapper exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+            <div className={`ag-grid-react grid-parent-wrapper exchange-rate ${props.isSimulation ? "mt-5" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <div className="container-fluid">
                     <ScrollToTop pointProp="go-to-top" />
                     {state.isLoader && <LoaderCustom />}
@@ -410,9 +432,9 @@ const ExchangeRateListing = (props) => {
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-exchangeRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-exchangeRateListing"} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                                                 }>
-                                                    {onBtExport()}
+                                                    {state?.totalRecordCount !== 0 ? onBtExport() : null}
                                                 </ExcelFile>
                                             </>
 
@@ -453,7 +475,7 @@ const ExchangeRateListing = (props) => {
                                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                 <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
                                 <AgGridColumn field="ToCurrency" headerName="To Currency" minWidth={135}></AgGridColumn>
-                                <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>
+                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>}
                                 <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")}) `} minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="BankRate" headerName={`Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`} minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission (%) " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -468,7 +490,7 @@ const ExchangeRateListing = (props) => {
                     </div>
                 </div>
             </div>
-            {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} />}
+            {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={MESSAGES.EXCHANGE_DELETE_ALERT} />}
         </ >
     );
 }

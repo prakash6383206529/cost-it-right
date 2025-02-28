@@ -10,7 +10,7 @@ import Toaster from '../../../common/Toaster';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
-import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter, showRMScrapKeys } from '../../../../helper';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -19,11 +19,13 @@ import _ from 'lodash';
 import { IsNFR } from '../CostingDetails';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useLabels } from '../../../../helper/core';
+import WarningMessage from '../../../common/WarningMessage';
+import { sourceCurrencyFormatter } from './processCalculatorDrawer/CommonFormula';
 const gridOptions = {};
 
 function AddRM(props) {
   const { vendorLabel } = useLabels()
-  const { IsApplyMasterBatch, Ids, rmNameList, item } = props;
+  const { IsApplyMasterBatch, Ids, rmNameList, item, selectedRM } = props;
 
   const { handleSubmit } = useForm({
     mode: 'onChange',
@@ -40,7 +42,7 @@ function AddRM(props) {
 
   const costData = useContext(costingInfoContext)
 
-  const { rmDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { rmDrawerList, CostingEffectiveDate, currencySource } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
   const isNFR = useContext(IsNFR);
 
@@ -80,12 +82,7 @@ function AddRM(props) {
 
   const netLandedFormat = (props) => {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return checkForDecimalAndNull(rowData.NetLandedCostCombine, getConfigurationKey().NoOfDecimalForPrice)
-  }
-
-  const netLandedConversionFormat = (props) => {
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return rowData.NetLandedCostCurrency !== '-' ? checkForDecimalAndNull(rowData.NetLandedCostCurrency, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return rowData?.IsValidExchangeRate ? (rowData.NetLandedCostCombine ? checkForDecimalAndNull(rowData.NetLandedCostCombine, getConfigurationKey().NoOfDecimalForPrice) : '-') : '-'
   }
 
   const currencyFormatter = (props) => {
@@ -174,10 +171,16 @@ function AddRM(props) {
   const onSubmit = data => { }
 
   const isFirstColumn = (params) => {
+    const rowData = params?.valueFormatted ? params.valueFormatted : params?.data;
+    const allRMsSelected = rmDrawerList?.every(rm => Ids.includes(rm.RawMaterialId));
+    const isSelectedMasterBatch = params.data && selectedRM === params.data.RawMaterialId;
+    if (allRMsSelected || isSelectedMasterBatch) {
+      return false;
+    }
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-    return thisIsFirstColumn;
+    return rowData?.IsValidExchangeRate === true ? thisIsFirstColumn : false;
   }
 
 
@@ -219,7 +222,6 @@ function AddRM(props) {
     // effectiveDateRenderer: this.effectiveDateFormatter,
     // costingHeadRenderer: this.costingHeadFormatter,
     netLandedFormat: netLandedFormat,
-    netLandedConversionFormat: netLandedConversionFormat,
     currencyFormatter: currencyFormatter,
     //  specificationFormat: specificationFormat,
     customLoadingOverlay: LoaderCustom,
@@ -319,6 +321,9 @@ function AddRM(props) {
                         <div className="refresh mr-0"></div>
                       </button>
                     </div>
+                    <div className="d-flex justify-content-end">
+                      <WarningMessage message={"Please add the exchange rate for the selected currency in the exchange rate master for the record where the net cost field is marked as '-'."} />
+                    </div>
                     <div className="ag-theme-material p-relative">
                       {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                       <AgGridReact
@@ -357,9 +362,8 @@ function AddRM(props) {
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UOM"></AgGridColumn>
                         <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'priceFormatter'}></AgGridColumn>
-                        <AgGridColumn field="ScrapRate" headerName='Scrap Rate/UOM' cellRenderer={'priceFormatter'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCostCurrency" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
+                        <AgGridColumn field="ScrapRate" headerName={showRMScrapKeys(costData?.TechnologyId)?.name} cellRenderer={'priceFormatter'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCombine" headerName={`Net Cost ${sourceCurrencyFormatter(currencySource?.label)}/UOM`} cellRenderer={'netLandedFormat'}></AgGridColumn>
 
                       </AgGridReact >
                       {< PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}

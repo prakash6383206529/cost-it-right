@@ -5,15 +5,15 @@ import TooltipCustom from '../common/Tooltip';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../layout/HookFormInputs';
 import { number, checkWhiteSpaces, decimalIntegerNumberLimit, nonZero } from '../../helper';
 
-const FormFieldsRenderer = ({fields, fieldProps, buttonProps }) => {
-    const {  control, register, errors, containerClassName = "", colSize = "4" } = fieldProps;
+const FormFieldsRenderer = ({ fields, fieldProps, buttonProps }) => {
+    const { control, register, errors, containerClassName = "", colSize } = fieldProps;
     // const { buttonProps } = buttonProps;
     return (
         <Row className={containerClassName}>
             {fields.map(item => {
                 const { tooltip, name, label } = item || {};
                 return (
-                    <Col md={colSize} key={name}>
+                    <Col md={colSize ?? '4'} key={name}>
                         {item?.tooltip && (
                             <TooltipCustom
                                 width={tooltip?.width}
@@ -48,10 +48,10 @@ const FormFieldsRenderer = ({fields, fieldProps, buttonProps }) => {
                                 Controller={Controller}
                                 control={control}
                                 register={register}
-                                mandatory={item.mandatory}  
+                                mandatory={item.mandatory}
                                 rules={{
                                     required: item.mandatory,
-                                    validate: item.mandatory ? { nonZero, number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(5,2), ...(item.disabled ? {} : {}) } : {},
+                                    validate: item.mandatory ? { nonZero, number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(5, 2), ...(item.disabled ? {} : {}) } : {},
                                     max: item.percentageLimit ? {
                                         value: 100,
                                         message: 'Percentage value should be equal to 100'

@@ -24,6 +24,7 @@ import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next'
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -123,6 +124,7 @@ class AddSpecification extends Component {
       // }
     }
   }
+
 
   /**
   * @method handleRawMaterial
@@ -380,11 +382,16 @@ class AddSpecification extends Component {
   onSubmit = debounce((values) => {
     const { RawMaterial, material, RMGrade, DataToChange, DropdownChanged } = this.state;
     const { ID, isEditFlag } = this.props;
+    const queryClient = new QueryClient();
 
     if (isEditFlag) {
-      if (DataToChange.Specification === values.Specification && DropdownChanged) {
-        this.cancel('cancel')
-        return false
+      const noChanges = DataToChange?.Specification === values?.Specification &&
+        DataToChange?.RawMaterialId === RawMaterial?.value &&
+        DataToChange?.GradeId === RMGrade?.value;
+
+      if (noChanges) {
+        Toaster.warning("Please change data to save specification Details");
+        return false;
       }
       this.setState({ setDisable: true })
       let formData = {
@@ -404,6 +411,7 @@ class AddSpecification extends Component {
       this.props.updateRMSpecificationAPI(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
+          queryClient.invalidateQueries('MastersRawMaterial_GetAllRawMaterialSpecifications');
           Toaster.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
           this.toggleDrawer('', '', 'submit')
         }
@@ -422,6 +430,7 @@ class AddSpecification extends Component {
       this.props.createRMSpecificationAPI(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
+          queryClient.invalidateQueries('MastersRawMaterial_GetAllRawMaterialSpecifications');
           Toaster.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
           this.toggleDrawer('', formData, 'submit')
         }
@@ -553,15 +562,17 @@ class AddSpecification extends Component {
                             />
                           )
                           : AddAccessibilityRMANDGRADE && (
-                            <Button
-                              id="RawMaterialName-add"
-                              className="mt40 right"
-                              variant="plus-icon-square"
-                              onClick={() => this.rawMaterialToggler("")}
-                            />
+                            <div className='d-flex justify-content-center align-items-center'>
+                              <Button
+                                id="RawMaterialName-add"
+                                className="mb-3"
+                                variant="plus-icon-square"
+                                onClick={() => this.rawMaterialToggler("")}
+                              /></div>
                           )}
                       </div>
                     </Col>
+
                   </Row>
                   <Row>
                     <Col md="12">
@@ -597,9 +608,10 @@ class AddSpecification extends Component {
                           AddAccessibilityRMANDGRADE &&
                           <Button
                             id="GradeId-add"
-                            className="mt-2"
-                            variant={`${this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? "blurPlus-icon-square" : "plus-icon-square"}`}
+                            className="mt-1"
+                            variant={`${this.state?.RawMaterial == null || this.state?.RawMaterial?.length === 0 ? "blurPlus-icon-square" : "plus-icon-square"}`}
                             onClick={() => this.gradeToggler("")}
+                            disabled={this.state?.RawMaterial == null || this.state?.RawMaterial?.length === 0}
                           />
                         }
                       </div>
@@ -686,7 +698,7 @@ class AddSpecification extends Component {
                       <div className="text-right ">
                         <Button
                           id="rm-specification-cancel"
-                          className="mr-2"
+                          className="mr15"
                           variant={"cancel-btn"}
                           disabled={setDisable}
                           onClick={this.cancelHandler}

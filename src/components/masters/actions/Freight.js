@@ -55,7 +55,7 @@ export function createFreight(data, callback) {
  */
 export function getFreightDataList(filterData, callback) {
     return (dispatch) => {
-        const queryParams = `loggedInUserId=${loggedInUserId()}&freight_for=${filterData.freight_for}&vendor_id=${filterData.vendor_id}&source_city_id=${filterData.source_city_id}&destination_city_id=${filterData.destination_city_id}&IsCustomerDataShow=${filterData?.IsCustomerDataShow}&IsVendorDataShow=${filterData?.IsVendorDataShow}&IsZeroDataShow=${filterData?.IsZeroDataShow}`
+        const queryParams = `loggedInUserId=${loggedInUserId()}&freight_for=${filterData.freight_for}&vendor_id=${filterData.vendor_id}&source_city_id=${filterData.source_city_id}&destination_city_id=${filterData.destination_city_id}&IsCustomerDataShow=${filterData?.IsCustomerDataShow}&IsVendorDataShow=${filterData?.IsVendorDataShow}&IsZeroDataShow=${filterData?.IsZeroDataShow}&FreightEntryType=${filterData?.FreightEntryType}`
         const request = axios.get(`${API.getFreightDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204)
@@ -78,28 +78,28 @@ export function getFreightDataList(filterData, callback) {
 export function getFreightData(freightId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-            dispatch({ type: API_REQUEST });
-            axios.get(`${API.getFreightData}/${freightId}/${loggedInUser?.loggedInUserId}`, config())
-                .then((response) => {
-                    if (response) {
-                        dispatch({
-                            type: GET_FREIGHT_DATA_SUCCESS,
-                            payload: response.data.Data,
-                        });
-                        callback(response);
-                    }
-                }).catch((error) => {
-                    dispatch({ type: API_FAILURE });
-                    apiErrors(error);
-                });
-    
-            dispatch({
-                type: GET_FREIGHT_DATA_SUCCESS,
-                payload: {},
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getFreightData}/${freightId}/${loggedInUser?.loggedInUserId}`, config())
+            .then((response) => {
+                if (response) {
+                    dispatch({
+                        type: GET_FREIGHT_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
             });
-            callback();
-        }
-    };
+
+        dispatch({
+            type: GET_FREIGHT_DATA_SUCCESS,
+            payload: {},
+        });
+        callback();
+    }
+};
 
 
 /**
@@ -358,7 +358,7 @@ export function getTruckDimensionsSelectList(callback) {
 export function saveAndUpdateTruckDimensions(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-axiosInstance.post(API.saveTruckDimensions, requestData, config())
+        axiosInstance.post(API.saveTruckDimensions, requestData, config())
             .then((response) => {
                 if (response) {
                     callback(response);

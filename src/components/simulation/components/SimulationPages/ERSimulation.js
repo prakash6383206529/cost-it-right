@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
-import { runVerifyExchangeRateSimulation, setExchangeRateListBeforeDraft } from '../../actions/Simulation';
+import { runVerifyExchangeRateSimulation, setExchangeRateListBeforeDraft, setRawmaterialsEffectiveDate } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,7 +17,7 @@ import VerifySimulation from '../VerifySimulation';
 import _, { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import ReactExport from 'react-export-excel';
-import { APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RAWMATERIAL_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { getCurrencySelectList } from '../../../../actions/Common';
 import RMImportListing from '../../../masters/material-master/RMImportListing';
 import { setFilterForRM } from '../../../masters/actions/Material';
@@ -29,6 +29,10 @@ import TooltipCustom from '../../../common/Tooltip';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '..';
 import LoaderCustom from '../../../common/LoaderCustom';
+import OperationListing from '../../../masters/operation/OperationListing';
+import MachineRateListing from '../../../masters/machine-master/MachineRateListing';
+import RMIndexationSimulationListing from './RMIndexationSimulationListing';
+import { getMinDate } from '../../SimulationUtils';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -38,9 +42,11 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
+
     const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
 
     const { list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
+
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -58,6 +64,16 @@ function ERSimulation(props) {
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
+    const [fromListData, setFromListData] = useState('')
+    const [toListData, setToListData] = useState('')
+    const [showOperationsList, setShowOperationsList] = useState(false);
+    const [showMachineRatesList, setShowMachineRatesList] = useState(false);
+    const [showSurfaceTreatmentList, setShowSurfaceTreatmentList] = useState(false);
+    const [showRawMaterialsList, setShowRawMaterialsList] = useState(false);
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
+    const [minDate, setMinDate] = useState('')
+    const [hasUserMadeEdits, setHasUserMadeEdits] = useState(false);
+
     const dispatch = useDispatch()
     const columnWidths = {
 
@@ -78,10 +94,14 @@ function ERSimulation(props) {
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
-            item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
-            return null
+            if (/* !getConfigurationKey().IsExchangeRateEditableForSimulation|| */item?.NewExchangeRateId === null) {
+                //if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
+                item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
+                return null
+                //}
+            }
         })
-    }, [])
+    }, [list])
     useEffect(() => {
         if (handleEditMasterPage) {
             handleEditMasterPage(showEditMaster, showverifyPage)
@@ -91,7 +111,13 @@ function ERSimulation(props) {
         const entryWithLargestDate = _.maxBy(list, entry => new Date(entry.EffectiveDate));
         setLargestDate(entryWithLargestDate?.EffectiveDate)
     }, [list])
-
+    useEffect(() => {
+        if (props?.list.length > 0) {
+            let tempList = [...list]
+            const minDate = getMinDate(tempList);
+            setMinDate(minDate?.EffectiveDate); // This will update the minDate for the DatePicker
+        }
+    }, [list])
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const { simulationApplicability } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation, selectedCustomerSimulation } = useSelector(state => state.simulation)
@@ -185,6 +211,10 @@ function ERSimulation(props) {
     const cancelImportList = () => {
         setShowRMMasterList(false)
         setShowBOPMasterList(false)
+        setShowOperationsList(false)
+        setShowMachineRatesList(false)
+        setShowRawMaterialsList(false)
+        setShowSurfaceTreatmentList(false)
     }
 
     const closeDrawer = (e = '') => {
@@ -202,7 +232,8 @@ function ERSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
+
+        window.screen.width >= 1260 && params.api.sizeColumnsToFit();
         var allColumnIds = [];
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
@@ -248,7 +279,13 @@ function ERSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewCurrencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newCurrencyExchangeRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell ? Number(cell) : Number(row.CurrencyExchangeRate)} >{cell ? Number(cell) : Number(row.CurrencyExchangeRate)}</span>
+                        <span
+                            id={`newCurrencyExchangeRate-${props.rowIndex}`}
+                            className={`${!isbulkUpload ? 'form-control' : ''}`}
+                            title={cell ? Number(cell) : Number(row.NewCurrencyExchangeRate)}
+                        >
+                            {cell ? Number(cell) : Number(row.NewCurrencyExchangeRate)}
+                        </span>
                 }
             </>
         )
@@ -267,7 +304,10 @@ function ERSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        setSelectedRowData(selectedRows)
+
+        setSelectedRowData(selectedRows);
+
+
     }
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
@@ -281,17 +321,20 @@ function ERSimulation(props) {
         }
         let count = 0
         let listData = []
+
         list && list?.map((item) => {
             if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
                 count = count + 1
                 listData.push(item)
+
             }
             return null
         })
+
         setShowTooltip(false)
 
         if (count === 0) {
-            Toaster.warning("Please change the basic rate and proceed to the next page.")
+            Toaster.warning("Please change the Exchange rate and proceed to the next page.")
             return false
         }
 
@@ -323,32 +366,87 @@ function ERSimulation(props) {
     }, 500)
 
     const selectRM = debounce(() => {
-        let count = 0
-        let listData = []
-        list && list?.map((item) => {
-            if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
-                count = count + 1
-                listData.push(item)
-            }
-            return null
-        })
-        setShowTooltip(false)
-
-        if (count === 0) {
-            Toaster.warning(`Please change the basic rate and proceed to the next page to select ${simulationApplicability?.label}`)
+        if (simulationApplicability?.value === 'RM' && !isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
             return false
         }
+        // Check if user has made any edits
+        // if (!hasUserMadeEdits) {
+        //     Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
+        //     return false;
+        // }
+        let count = 0
+        let listData = []
+        let fromListData = ''
+        let toListData = ''
+        let hasValidEdits = false;
+
+        list && list?.map((item) => {
+            if (item.NewExchangeRateId === null &&
+                checkForNull(item?.NewCurrencyExchangeRate) === checkForNull(item?.CurrencyExchangeRate)) {
+                hasValidEdits = true;
+                count = count + 1;
+                // listData.push(item);
+                // fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
+                // toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
+            }
+            listData.push(item);
+            fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency;
+            toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency;
+
+
+            return null;
+        });
+        if (/* !hasUserMadeEdits ||  */hasValidEdits) {
+
+            Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`);
+            return false;
+        }
+        setFromListData(fromListData)
+        setToListData(toListData)
+
+        setShowTooltip(false)
+
+        // if (count === 0) {
+        //     Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`)
+        //     return false
+        // }
+
         dispatch(setExchangeRateListBeforeDraft(listData))
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(listData, 'Currency') }))
-        if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
-            setShowRMMasterList(true)
-        } else {
-            setShowBOPMasterList(true)
+        switch (simulationApplicability?.value) {
+            case APPLICABILITY_RM_SIMULATION:
+                setShowRMMasterList(true);
+                break;
+            case APPLICABILITY_BOP_SIMULATION:
+            case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
+                setShowBOPMasterList(true);
+                break;
+            case APPLICABILITY_OPERATIONS_SIMULATION:
+                setShowOperationsList(true);
+                break;
+            case APPLICABILITY_MACHINE_RATES_SIMULATION:
+                setShowMachineRatesList(true);
+                break;
+            case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
+                setShowSurfaceTreatmentList(true);
+                break;
+            case APPLICABILITY_RAWMATERIAL_SIMULATION:
+                setShowRawMaterialsList(true);
+                break;
+            default:
         }
     }, 500)
 
     const onBtExport = () => {
         return returnExcelColumn(EXCHANGE_IMPACT_DOWNLOAD_EXCEl, list)
+    };
+    const onCellValueChanged = (params) => {
+        if (params.column.colId === 'NewCurrencyExchangeRate') {
+            if (Number(params.data.NewCurrencyExchangeRate) !== Number(params.data.CurrencyExchangeRate)) {
+                setHasUserMadeEdits(true);
+            }
+        }
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -368,13 +466,14 @@ function ERSimulation(props) {
 
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
+        dispatch(setRawmaterialsEffectiveDate(date))
         setIsEffectiveDateSelected(true)
         setIsWarningMessageShow(false)
     }
 
     return (
         <div>
-            {!showRMMasterList && !showBOPMasterList && <div className={`ag-grid-react`}>
+            {!showRMMasterList && !showBOPMasterList && !showOperationsList && !showMachineRatesList && !showSurfaceTreatmentList && !showRawMaterialsList && <div className={`ag-grid-react`}>
 
                 {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"exchangesdRate-tooltip"} >{"To edit revised exchange rate please double click on the field."}</Tooltip>}
                 {
@@ -423,17 +522,26 @@ function ERSimulation(props) {
                                             suppressRowClickSelection={true}
                                             onFilterModified={onFloatingFilterChanged}
                                             enableBrowserTooltips={true}
+                                            onCellValueChanged={onCellValueChanged}
+
 
                                         >
-                                            <AgGridColumn field="Currency" editable='false' headerName="Currency" width={columnWidths.Currency}></AgGridColumn>
-                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" width={columnWidths.CostingNumber}></AgGridColumn>}
-                                            {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" width={columnWidths.PartNumber}></AgGridColumn>}
-                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" width={columnWidths.BankRate}></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " width={columnWidths.BankCommissionPercentage}></AgGridColumn>
-                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" width={columnWidths.CustomRate}></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate" marryChildren={true} >
-                                                <AgGridColumn width={columnWidths.CurrencyExchangeRate} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
-                                                <AgGridColumn width={columnWidths.NewCurrencyExchangeRate} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={!isImpactedMaster} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                            <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
+                                            <AgGridColumn field="ToCurrency" headerName="To Currency" minWidth={135}></AgGridColumn>
+                                            {/* <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={columnWidths.Currency}></AgGridColumn> */}
+                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
+                                            {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" minWidth={columnWidths.PartNumber}></AgGridColumn>}
+                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={columnWidths.BankRate}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={columnWidths.BankCommissionPercentage}></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={columnWidths.CustomRate}></AgGridColumn>
+                                            {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Exchange Rate" marryChildren={true} >
+                                                <AgGridColumn minWidth={columnWidths.CurrencyExchangeRate} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn minWidth={columnWidths.NewCurrencyExchangeRate} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={(params) => {
+                                                    return !isImpactedMaster &&
+                                                        getConfigurationKey()?.IsExchangeRateEditableForSimulation &&
+                                                        !params?.data?.NewExchangeRateId;
+                                                }} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                             </AgGridColumn>}
 
                                             {isImpactedMaster && <>
@@ -456,46 +564,55 @@ function ERSimulation(props) {
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
                                     <div className="d-flex align-items-center">
-                                        {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ?
-                                            <><div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
-                                                <DatePicker
-                                                    name="EffectiveDate"
-                                                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                                                    id="EffectiveDate"
-                                                    onChange={handleEffectiveDateChange}
-                                                    showMonthDropdown
-                                                    showYearDropdown
-                                                    dropdownMode='select'
-                                                    dateFormat="dd/MM/yyyy"
-                                                    placeholderText="Select effective date"
-                                                    className="withBorder"
-                                                    autoComplete={"off"}
-                                                    disabledKeyboardNavigation
-                                                    onChangeRaw={(e) => e.preventDefault()}
-                                                    minDate={new Date(largestDate)}
-                                                />
-                                            </div>
+                                        {(simulationApplicability?.value === APPLICABILITY_PART_SIMULATION || simulationApplicability?.value === APPLICABILITY_RAWMATERIAL_SIMULATION) ? (
+                                            <>
+                                                <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
+                                                    <DatePicker
+                                                        name="EffectiveDate"
+                                                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                        id='EffectiveDate'
+                                                        onChange={handleEffectiveDateChange}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dropdownMode='select'
+                                                        dateFormat="dd/MM/yyyy"
+                                                        placeholderText="Select effective date"
+                                                        className="withBorder"
+                                                        autoComplete={"off"}
+                                                        disabledKeyboardNavigation
+                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                        minDate={new Date(largestDate)}
+                                                    />
+                                                </div>
                                                 {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                                <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn verifySimulation" id={"verify-btn"} disabled={isDisable}>
-                                                    <div className={"Run-icon"}>
-                                                    </div>{" "}
-                                                    {"Verify"}
-                                                </button>
-                                            </> :
+                                                {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ? (
+                                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn verifySimulation" id={"verify-btn"} disabled={isDisable}>
+                                                        <div className={"Run-icon"}>
+                                                        </div>{" "}
+                                                        {"Verify"}
+                                                    </button>
+                                                ) : (
+                                                    <>
+                                                        <TooltipCustom id={"next-button"} disabledIcon={true} tooltipText={`Select the ${simulationApplicability?.label} on next page.`} />
+                                                        <button onClick={selectRM} type="button" className="user-btn mr5 next-icon" disabled={isDisable} id={"next-button"}>
+                                                            <div>
+                                                            </div>{" "}
+                                                            Next
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </>
+                                        ) : (
                                             <>
                                                 <TooltipCustom id={"next-button"} disabledIcon={true} tooltipText={`Select the ${simulationApplicability?.label} on next page.`} />
                                                 <button onClick={selectRM} type="button" className="user-btn mr5 next-icon" disabled={isDisable} id={"next-button"}>
                                                     <div>
                                                     </div>{" "}
                                                     Next
-                                                </button></>
-                                        }
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
-                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn">
-                                <div className={"Run"}>
-                                </div>{" "}
-                                {"RUN SIMULATION"}
-                            </button> */}
                                 </div>
                             </Row>
                         }
@@ -531,8 +648,15 @@ function ERSimulation(props) {
                 ListFor='simulation'
                 approvalStatus={APPROVED_STATUS}
                 // stopUnrequiredCalls={true}
+                fromListData={fromListData}
+                toListData={toListData}
                 isFromVerifyPage={true}
                 cancelImportList={cancelImportList}
+                vendorLabel={props?.vendor}
+                FromExchangeRate={true}
+                minDate={minDate}
+
+
             />}
             {showBOPMasterList &&
                 <BOPImportListing
@@ -545,13 +669,81 @@ function ERSimulation(props) {
                     // changeSetLoader={changeSetLoader}
                     // changeTokenCheckBox={changeTokenCheckBox}
                     // isReset={isReset}
-                    ListFor={'simulation'}
-                    // isBOPAssociated={association?.value === ASSOCIATED ? true : false}
+                    ListFor={isMasterAssociatedWithCosting ? 'simulation' : 'master'}
+                    isBOPAssociated={isMasterAssociatedWithCosting ? true : false}
                     approvalStatus={APPROVED_STATUS}
-                    // callBackLoader={callBackLoader}
+                    // callBackLoader={callBackLoader}  
+                    fromListData={fromListData}
+                    toListData={toListData}
                     isFromVerifyPage={true}
                     cancelImportList={cancelImportList}
+                    vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+                    minDate={minDate}
+
+
                 />}
+            {(showOperationsList || showSurfaceTreatmentList) && (
+                <OperationListing
+                    isSimulation={true}
+                    isMasterSummaryDrawer={false}
+                    ListFor={'simulation'}
+                    approvalStatus={APPROVED_STATUS}
+                    isFromVerifyPage={true}
+                    cancelImportList={cancelImportList}
+                    selectionForListingMasterAPI={props?.selectionForListingMasterAPI}
+                    isOperationST={showSurfaceTreatmentList ? SURFACETREATMENT : OPERATIONS}
+                    fromListData={fromListData}
+                    toListData={toListData}
+                    vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+                    minDate={minDate}
+
+
+
+                />
+            )}
+
+            {showMachineRatesList && (
+                <MachineRateListing
+                    isSimulation={true}
+                    isMasterSummaryDrawer={false}
+                    ListFor={'simulation'}
+                    approvalStatus={APPROVED_STATUS}
+                    isFromVerifyPage={true}
+                    cancelImportList={cancelImportList}
+                    selectionForListingMasterAPI={props?.selectionForListingMasterAPI}
+                    fromListData={fromListData}
+                    toListData={toListData}
+                    vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+                    minDate={minDate}
+
+
+
+
+                />
+            )}
+            {showRawMaterialsList && (
+                <RMIndexationSimulationListing
+                    isSimulation={true}
+                    isMasterSummaryDrawer={false}
+                    ListFor={'simulation'}
+                    approvalStatus={APPROVED_STATUS}
+                    isFromVerifyPage={true}
+                    cancelImportList={cancelImportList}
+                    fromListData={fromListData}
+                    toListData={toListData}
+                    effectiveDate={effectiveDate}
+                    isEffectiveDateSelected={isEffectiveDateSelected}
+                    minDate={minDate}
+                    vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+                    masterId={props?.masterId}
+
+
+                />
+            )}
         </div >
     );
 }

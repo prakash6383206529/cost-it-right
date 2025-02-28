@@ -265,31 +265,11 @@ const UsersListing = (props) => {
 		function callback(res) {
 			setState((prevState) => ({ ...prevState, isLoader: false }));
 
-			let isReset = true;
-			Object.keys(floatingFilterData || {}).forEach((prop) => {
-				if (floatingFilterData[prop] !== "") {
-					isReset = false;
-				}
-			});
-
-			setTimeout(() => {
-				if (isReset) {
-					gridOptions?.api?.setFilterModel({});
-				} else {
-					gridOptions?.api?.setFilterModel(filterModel ?? {});
-				}
-			}, 300);
-
-			if (res?.status === 204 && !res?.data) {
-				setTotalRecordCount(0);
-				dispatch(updatePageNumber(0));
-				setState((prevState) => ({
-					...prevState,
-					noData: true,
-					userData: [],
-					dataCount: 0
-				}));
-			} else if (res?.data?.DataList) {
+			if (res.status === 204 && res?.data === '') {
+				setTotalRecordCount(0)
+				dispatch(updatePageNumber(0))
+				setState((prevState) => ({ ...prevState, noData: true, userData: [], dataCount: 0 }));
+			} else if (res && res?.data && res?.data?.DataList) {
 				let Data = res?.data?.DataList;
 				setTotalRecordCount(Data[0]?.TotalRecordCount ?? 0);
 				setWarningMessage(false);
@@ -451,7 +431,8 @@ const UsersListing = (props) => {
 			}
 			return item;
 		});
-	}
+	};
+
 
 	const returnExcelColumn = (data = [], TempData) => {
 		if (!TempData || TempData?.length === 0) {

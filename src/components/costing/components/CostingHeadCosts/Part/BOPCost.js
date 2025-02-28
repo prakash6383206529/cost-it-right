@@ -5,7 +5,7 @@ import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, EMPTY_GUID } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean, getConfigurationKey, NoSignNoDecimalMessage, showBopLabel } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -58,6 +58,8 @@ function BOPCost(props) {
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
   const { t } = useTranslation("Costing")
+  const { currencySource,exchangeRateData } = useSelector((state) => state?.costing);
+
   // useEffect(() => {
   //   setValue('BOPHandlingCharges', item?.CostingPartDetails?.BOPHandlingCharges)
   // }, [])
@@ -78,11 +80,11 @@ function BOPCost(props) {
       let BOPHandlingCharges = BOPHandlingType === 'Percentage' ? calculatePercentageValue(totalBOPCost, bopHandlingPercentage) : item?.CostingPartDetails?.BOPHandlingCharges
       setValue('BOPHandlingType', item?.CostingPartDetails?.BOPHandlingChargeType ? { label: item?.CostingPartDetails?.BOPHandlingChargeType, value: item?.CostingPartDetails?.BOPHandlingChargeType } : {})
       if (BOPHandlingType === 'Percentage') {
-        setValue('BOPHandlingCharges', checkForDecimalAndNull((gridData?.length !== 0) ? calculatePercentageValue(totalBOPCost, bopHandlingPercentage) : 0, initialConfiguration.NoOfDecimalForPrice))
-        setValue('BOPHandlingPercentage', checkForDecimalAndNull(((gridData?.length !== 0) ? bopHandlingPercentage : 0), initialConfiguration.NoOfDecimalForPrice))
+        setValue('BOPHandlingCharges', checkForDecimalAndNull((gridData?.length !== 0) ? calculatePercentageValue(totalBOPCost, bopHandlingPercentage) : 0, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('BOPHandlingPercentage', checkForDecimalAndNull(((gridData?.length !== 0) ? bopHandlingPercentage : 0), initialConfiguration?.NoOfDecimalForPrice))
       } else {
-        setValue('BOPHandlingCharges', checkForDecimalAndNull(((gridData?.length !== 0) ? item?.CostingPartDetails?.BOPHandlingCharges : 0), initialConfiguration.NoOfDecimalForPrice))
-        setValue('BOPHandlingFixed', checkForDecimalAndNull(((gridData?.length !== 0) ? item?.CostingPartDetails?.BOPHandlingCharges : 0), initialConfiguration.NoOfDecimalForPrice))
+        setValue('BOPHandlingCharges', checkForDecimalAndNull(((gridData?.length !== 0) ? item?.CostingPartDetails?.BOPHandlingCharges : 0), initialConfiguration?.NoOfDecimalForPrice))
+        setValue('BOPHandlingFixed', checkForDecimalAndNull(((gridData?.length !== 0) ? item?.CostingPartDetails?.BOPHandlingCharges : 0), initialConfiguration?.NoOfDecimalForPrice))
       }
       if (!CostingViewMode && !IsLocked) {
         const BOPHandlingFields = {
@@ -136,9 +138,9 @@ function BOPCost(props) {
   //       return false;
   //     }
 
-  //     setValue('BOPHandlingCharges', checkForDecimalAndNull(calculatePercentageValue(netBOPCost(gridData), bopHandlingPercentage), initialConfiguration.NoOfDecimalForPrice))
+  //     setValue('BOPHandlingCharges', checkForDecimalAndNull(calculatePercentageValue(netBOPCost(gridData), bopHandlingPercentage), initialConfiguration?.NoOfDecimalForPrice))
   //   } else {
-  //     setValue('BOPHandlingCharges', checkForDecimalAndNull(bopHandlingPercentage, initialConfiguration.NoOfDecimalForPrice))     //////////
+  //     setValue('BOPHandlingCharges', checkForDecimalAndNull(bopHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice))     //////////
   //   }
   // }, [IsApplyBOPHandlingCharges]);
 
@@ -165,7 +167,7 @@ function BOPCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
@@ -183,10 +185,12 @@ function BOPCost(props) {
           BOPPartNumber: el.BoughtOutPartNumber,
           BOPPartName: el.BoughtOutPartName,
           Currency: el.Currency !== '-' ? el.Currency : INR,
-          LandedCostINR: (el.EntryType === 'Domestic') ? el.NetLandedCost : el.NetLandedCostConversion,
+          LandedCostINR: el.NetLandedCost,
           Quantity: 1,
-          NetBoughtOutPartCost: (el.EntryType === 'Domestic') ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
-          BoughtOutPartUOM: el.UOM
+          NetBoughtOutPartCost: el.NetLandedCost,
+          BoughtOutPartUOM: el.UOM,
+          ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+          CurrencyExchangeRate: el.CurrencyExchangeRate
         }
       })
 
@@ -323,11 +327,11 @@ function BOPCost(props) {
           setValue('BOPHandlingCharges', 0)
           return false;
         }
-        setValue('BOPHandlingCharges', checkForDecimalAndNull(calculatePercentageValue(netBOPCost(gridData), bopHandlingPercentage), initialConfiguration.NoOfDecimalForPrice))
-        setValue('BOPHandlingPercentage', checkForDecimalAndNull(item?.CostingPartDetails?.BOPHandlingPercentage, initialConfiguration.NoOfDecimalForPrice))     //////////
+        setValue('BOPHandlingCharges', checkForDecimalAndNull(calculatePercentageValue(netBOPCost(gridData), bopHandlingPercentage), initialConfiguration?.NoOfDecimalForPrice))
+        setValue('BOPHandlingPercentage', checkForDecimalAndNull(item?.CostingPartDetails?.BOPHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice))     //////////
       } else {
-        setValue('BOPHandlingCharges', checkForDecimalAndNull(item?.CostingPartDetails?.BOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice))     //////////
-        setValue('BOPHandlingFixed', checkForDecimalAndNull(item?.CostingPartDetails?.BOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice))     //////////
+        setValue('BOPHandlingCharges', checkForDecimalAndNull(item?.CostingPartDetails?.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice))     //////////
+        setValue('BOPHandlingFixed', checkForDecimalAndNull(item?.CostingPartDetails?.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice))     //////////
       }
       if (!CostingViewMode && !IsLocked) {
         const BOPHandlingFields = {
@@ -375,7 +379,7 @@ function BOPCost(props) {
         BOPHandling = value
         setErrorMessage(message)
       }
-      setValue('BOPHandlingCharges', checkForDecimalAndNull(BOPHandling, initialConfiguration.NoOfDecimalForPrice))
+      setValue('BOPHandlingCharges', checkForDecimalAndNull(BOPHandling, initialConfiguration?.NoOfDecimalForPrice))
       setTimeout(() => {
         const Params = {
           BOMLevel: item.BOMLevel,
@@ -471,7 +475,7 @@ function BOPCost(props) {
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
 
-  let temp = ErrorObjRMCC
+  let temp = ErrorObjRMCC ? ErrorObjRMCC : {}
   if (Object.keys(errors).length > 0 && counter < 2) {
     temp.bopGridFields = errors.bopGridFields;
     dispatch(setRMCCErrors(temp))
@@ -526,10 +530,10 @@ function BOPCost(props) {
                       <th>{`${showBopLabel()} Part No.`}</th>
                       <th>{`${showBopLabel()} Part Name`}</th>
                       <th>{`UOM`}</th>
-                      <th>{`${showBopLabel()} Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                      <th>{`${showBopLabel()} Cost (${currencySource?.label ? currencySource?.label : initialConfiguration?.BaseCurrency})`}</th>
                       <th>{`Quantity`}</th>
                       <th>{`Net ${showBopLabel()} Cost`}</th>
-                      {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                      {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                       <th><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                     </tr>
                   </thead>
@@ -543,7 +547,7 @@ function BOPCost(props) {
                               <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                               <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                               <td>{item.BoughtOutPartUOM}</td>
-                              <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
+                              <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
                                 {
                                   item.BoughtOutPartUOM === 'Number' ?
@@ -592,8 +596,8 @@ function BOPCost(props) {
                                     />
                                 }
                               </td>
-                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
-                              {initialConfiguration.IsShowCRMHead && <td>
+                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                              {initialConfiguration?.IsShowCRMHead && <td>
                                 <SearchableSelectHookForm
                                   name={`crmHeadBop${index}`}
                                   type="text"
@@ -627,10 +631,10 @@ function BOPCost(props) {
                               <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
                               <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                               <td>{item.BoughtOutPartUOM}</td>
-                              <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
-                              <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
-                              {initialConfiguration.IsShowCRMHead && <td>
+                              <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice) : ''}</td>
+                              <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                              {initialConfiguration?.IsShowCRMHead && <td>
                                 <SearchableSelectHookForm
                                   name={`crmHeadBop${index}`}
                                   type="text"

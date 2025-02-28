@@ -14,6 +14,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import SOPListing from './SOPListing';
 import _ from 'lodash';
 import DayTime from '../../common/DayTimeWrapper';
+import { getConfigurationKey } from '../../../helper';
 
 const PartSpecificationDrawer = (props) => {
     const gridOptions = {};
@@ -128,7 +129,7 @@ const PartSpecificationDrawer = (props) => {
                     <Row className="drawer-heading">
                         <Col>
                             <div className="header-wrapper left">
-                                <h3>{`${props.type === 'BOP' ? 'BOP' : 'TCO'} Specification Detail`}</h3>
+                                <h3>{`${getConfigurationKey()?.IsShowTCO ? props.type === 'BOP' ? 'BOP' : 'TCO' : ''} Specification Detail`}</h3>
                             </div>
                             <div onClick={toggleDrawer} className="close-button right"></div>
                         </Col>
@@ -137,112 +138,115 @@ const PartSpecificationDrawer = (props) => {
                         <LoaderCustom customClass="loader-center" /> :
                         <>
                             <Col md="12">
-                                <HeaderTitle title="Specifications" customClass="mt-3" />
-                                {rowData?.length > 0 && (
-                                    <Row className="mt-1 part-detail-wrapper">
-                                        {props.type !== 'BOP' && props.partType !== 'Tooling' && (<Col md="3">
-                                            <TextFieldHookForm
-                                                label="Havells Design Part"
-                                                name="HavellsDesignPart"
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                disabled={true}
-                                                defaultValue={partSpecificationRFQData?.HavellsDesignPart || ""}
-                                                className=""
-                                                customClassName="withBorder"
-                                                errors={errors.Specification}
-                                            />
-                                        </Col>)}
-                                        {props.type !== 'BOP' && props.partType !== 'Tooling' && (<Col md="3">
-                                            <TextFieldHookForm
-                                                label="Target Price"
-                                                name="TargetPrice"
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                defaultValue={partSpecificationRFQData?.TargetPrice || ""}
-                                                className=""
-                                                customClassName="withBorder"
-                                                errors={errors.Description}
-                                                disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>)}
-                                        <Col md="3">
-                                            <TextFieldHookForm
-                                                label="UOM"
-                                                name="UOMSymbol"
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                defaultValue={partSpecificationRFQData?.UOMSymbol || ""}
-                                                className=""
-                                                customClassName="withBorder"
-                                                errors={errors.Description}
-                                                disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <TextFieldHookForm
-                                                label="Date"
-                                                name="TimeLine"
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                defaultValue={partSpecificationRFQData?.TimeLine ? DayTime(partSpecificationRFQData?.TimeLine).format('DD/MM/YYYY') : ""}
-                                                className=""
-                                                customClassName="withBorder"
-                                                errors={errors.Description}
-                                                disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>
-                                        {props.type !== 'BOP' && (<Col md="3">
-                                            <TextFieldHookForm
-                                                label={props?.partType === 'Tooling' ? "Tool Number" : "Part Number"}
-                                                name="PartNumber"
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                defaultValue={partSpecificationRFQData?.SOPQuantityDetails?.PartNumber || ""}
-                                                className=""
-                                                customClassName="withBorder"
-                                                errors={errors.Description}
-                                                disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>)}
-                                        {props?.partType === TOOLING && (<Col md="3">
-                                            <TextFieldHookForm
-                                                label={"Tool Life"}
-                                                name="toolLife"
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                defaultValue={partSpecificationRFQData?.AdditionalDetailsForPart
-                                                    ?.ToolLife
-                                                    || ""}
-                                                className=""
-                                                customClassName="withBorder"
-                                                errors={errors.Description}
-                                                disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>)}
-                                    </Row>
-                                )}
+                                {getConfigurationKey()?.IsShowTCO && <>
+
+                                    <HeaderTitle title="Specifications" customClass="mt-3" />
+                                    {rowData?.length > 0 && (
+                                        <Row className="mt-1 part-detail-wrapper">
+                                            {props.type !== 'BOP' && props.partType !== 'Tooling' && (<Col md="3">
+                                                <TextFieldHookForm
+                                                    label="Havells Design Part"
+                                                    name="HavellsDesignPart"
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    disabled={true}
+                                                    defaultValue={partSpecificationRFQData?.HavellsDesignPart || ""}
+                                                    className=""
+                                                    customClassName="withBorder"
+                                                    errors={errors.Specification}
+                                                />
+                                            </Col>)}
+                                            {props.type !== 'BOP' && props.partType !== 'Tooling' && (<Col md="3">
+                                                <TextFieldHookForm
+                                                    label="Target Price"
+                                                    name="TargetPrice"
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    defaultValue={partSpecificationRFQData?.TargetPrice || ""}
+                                                    className=""
+                                                    customClassName="withBorder"
+                                                    errors={errors.Description}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>)}
+                                            <Col md="3">
+                                                <TextFieldHookForm
+                                                    label="UOM"
+                                                    name="UOMSymbol"
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    defaultValue={partSpecificationRFQData?.UOMSymbol || ""}
+                                                    className=""
+                                                    customClassName="withBorder"
+                                                    errors={errors.Description}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <TextFieldHookForm
+                                                    label="Date"
+                                                    name="TimeLine"
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    defaultValue={partSpecificationRFQData?.TimeLine ? DayTime(partSpecificationRFQData?.TimeLine).format('DD/MM/YYYY') : ""}
+                                                    className=""
+                                                    customClassName="withBorder"
+                                                    errors={errors.Description}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>
+                                            {props.type !== 'BOP' && (<Col md="3">
+                                                <TextFieldHookForm
+                                                    label={props?.partType === 'Tooling' ? "Tool Number" : "Part Number"}
+                                                    name="PartNumber"
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    defaultValue={partSpecificationRFQData?.SOPQuantityDetails?.PartNumber || ""}
+                                                    className=""
+                                                    customClassName="withBorder"
+                                                    errors={errors.Description}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>)}
+                                            {props?.partType === TOOLING && (<Col md="3">
+                                                <TextFieldHookForm
+                                                    label={"Tool Life"}
+                                                    name="toolLife"
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    defaultValue={partSpecificationRFQData?.AdditionalDetailsForPart
+                                                        ?.ToolLife
+                                                        || ""}
+                                                    className=""
+                                                    customClassName="withBorder"
+                                                    errors={errors.Description}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>)}
+                                        </Row>
+                                    )}
+                                </>}
                                 <div className="ag-grid-react">
                                     <div className={`ag-grid-wrapper height-width-wrapper ${rowData?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-theme-material">

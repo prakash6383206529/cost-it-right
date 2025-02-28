@@ -219,7 +219,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddSpecification_Code",
-                intro: t("addRawMaterialSpecification.AddSpecification_Specification"),
+                intro: t("addRawMaterialSpecification.AddSpecification_Code"),
             },
 
             {
@@ -434,6 +434,14 @@ export function Steps(t, config) {
             {
                 element: "#CalculatedDensityValue_container",
                 intro: t("addMaterial.AddMaterialType_CalculatedDensityValue"),
+            },
+            {
+                element: "#CommodityStandardName",
+                intro: t("addMaterial.AddMaterialType_CommodityStandardName"),
+            },
+            {
+                element: "#Percentage_container",
+                intro: t("addMaterial.AddMaterialType_Percentage"),
             },
             {
                 element: "#AddMaterialType_Cancel",

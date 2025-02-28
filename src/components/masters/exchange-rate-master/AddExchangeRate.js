@@ -6,7 +6,7 @@ import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, maxP
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
 import { renderDatePicker, renderText, renderTextInputField, searchableSelect, validateForm, } from "../../layout/FormInputs";
@@ -113,7 +113,16 @@ class AddExchangeRate extends Component {
     const temp = [];
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || item.Value === this.state?.toCurrency?.value) return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
+    if (label === 'toCurrency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0' || item.Value === this.state?.currency?.value) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -297,14 +306,17 @@ class AddExchangeRate extends Component {
   */
   onSubmit = debounce((values) => {
     const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged, customer, costingTypeId, vendorName, budgeting, toCurrency, exchangeRateSource } = this.state;
-
+    if (currency?.label === toCurrency?.label) {
+      Toaster.warning('From and To currency can not be same')
+      return false
+    }
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
       if (DataToChange.CurrencyExchangeRate === values.CurrencyExchangeRate &&
         (DataToChange.BankRate === values.BankRate || values.BankRate === undefined || values.BankRate === '') && (DataToChange.CustomRate === values.CustomRate || values.CustomRate === undefined || values.CustomRate === '') &&
         DropdownChanged && (DataToChange.BankCommissionPercentage === values.BankCommissionPercentage || values.BankCommissionPercentage === undefined || values.BankCommissionPercentage === '')
       ) {
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Exchange Rate Details');
         return false;
       }
 
@@ -334,7 +346,7 @@ class AddExchangeRate extends Component {
         VendorId: vendorName.value,
         IsBudgeting: budgeting,
         ToCurrencyId: toCurrency.value,
-        ExchangeRateSourceName: exchangeRateSource.label
+        ExchangeRateSourceName: exchangeRateSource?.label
       }
       if (isEditFlag) {
         this.props.updateExchangeRate(updateData, (res) => {
@@ -362,7 +374,7 @@ class AddExchangeRate extends Component {
         VendorId: vendorName.value,
         IsBudgeting: budgeting,
         ToCurrencyId: toCurrency.value,
-        ExchangeRateSourceName: exchangeRateSource.label
+        ExchangeRateSourceName: exchangeRateSource?.label
       }
       this.props.createExchangeRate(formData, (res) => {
         this.setState({ setDisable: false })
@@ -428,7 +440,7 @@ class AddExchangeRate extends Component {
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+        res = await getVendorNameByVendorSelectList(null, resultInput)
 
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
@@ -603,7 +615,7 @@ class AddExchangeRate extends Component {
                           component={searchableSelect}
                           placeholder={isEditFlag ? '-' : "Select"}
                           onChange={this.onFinancialDataChange}
-                          options={this.renderListing("currency")}
+                          options={this.renderListing("toCurrency")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
                             this.state.toCurrency == null ||
@@ -617,7 +629,7 @@ class AddExchangeRate extends Component {
                           disabled={isEditFlag ? true : false}
                         />
                       </Col>
-                      <Col md="3">
+                      {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col md="3">
                         <Field
                           name="ExchangeSource"
                           type="text"
@@ -632,7 +644,7 @@ class AddExchangeRate extends Component {
                           valueDescription={this.state.exchangeRateSource}
                           disabled={isEditFlag ? true : false}
                         />
-                      </Col>
+                      </Col>}
                       <Col md="3">
                         <Field
                           label={`Currency Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`}

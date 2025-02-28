@@ -47,9 +47,9 @@ function AddLabourCost(props) {
                 if (labourObj) {
                     let Data = labourObj
                     setValue('indirectLabourCostPercent', Data?.IndirectLaborCostPercentage)
-                    setValue('indirectLabourCost', checkForDecimalAndNull(Data?.IndirectLaborCost, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('indirectLabourCost', checkForDecimalAndNull(Data?.IndirectLaborCost, initialConfiguration?.NoOfDecimalForPrice))
                     setValue('staffCostPercent', Data?.StaffCostPercentage)
-                    setValue('staffCost', checkForDecimalAndNull(Data?.StaffCost, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('staffCost', checkForDecimalAndNull(Data?.StaffCost, initialConfiguration?.NoOfDecimalForPrice))
 
                     setValue('NetLabourCRMHead', Data?.NetLabourCRMHead && { label: Data?.NetLabourCRMHead, value: 1 })
                     setValue('IndirectLabourCRMHead', Data?.IndirectLabourCRMHead && { label: Data?.IndirectLabourCRMHead, value: 2 })
@@ -101,7 +101,7 @@ function AddLabourCost(props) {
             let value = Number(e?.target?.value)
             let indirectLabourCost = (value / 100) * (sum)
             setIndirectLabourCostState(indirectLabourCost)
-            setValue('indirectLabourCost', checkForDecimalAndNull(indirectLabourCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('indirectLabourCost', checkForDecimalAndNull(indirectLabourCost, initialConfiguration?.NoOfDecimalForPrice))
 
             let temp = []
             tableData && tableData.map((item, index) => {
@@ -122,7 +122,7 @@ function AddLabourCost(props) {
             let value = Number(e?.target?.value)
             let staffCost = (value / 100) * (sum)
             setStaffCostState(Math.round(staffCost))
-            setValue('staffCost', checkForDecimalAndNull(staffCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('staffCost', checkForDecimalAndNull(staffCost, initialConfiguration?.NoOfDecimalForPrice))
 
             let temp = []
             tableData && tableData.map((item, index) => {
@@ -148,13 +148,13 @@ function AddLabourCost(props) {
         let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
         let absentism = Number(checkForNull(getValues('absentism'))) / 100
         let labourRate = Number(getValues('labourRate'))
-        let workingHours = Number(getValues('workingHours'))
+        let workingHours = Number(getValues('workingHours'))*3600;
         let efficiency = Number(getValues('efficiency'))
         efficiency = efficiency / 100
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
         const labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
         setTotalCost(labourCost)
-        setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
     }
 
     const handleCycleTime = (e) => {
@@ -164,13 +164,13 @@ function AddLabourCost(props) {
             let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
             let absentism = Number(checkForNull(getValues('absentism'))) / 100
             let labourRate = Number(getValues('labourRate'))
-            let workingHours = Number(getValues('workingHours'))
+            let workingHours = Number(getValues('workingHours'))*3600;
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(e?.target?.value)
             labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
             setTotalCost(labourCost)
-            setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
         }
     }
 
@@ -180,13 +180,13 @@ function AddLabourCost(props) {
         let noOfLabour = Number(checkForNull(e?.target?.value))
         let absentism = Number(checkForNull(getValues('absentism'))) / 100
         let labourRate = Number(getValues('labourRate'))
-        let workingHours = Number(getValues('workingHours'))
+        let workingHours = Number(getValues('workingHours'))*3600;
         let efficiency = Number(getValues('efficiency'))
         efficiency = efficiency / 100
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
         labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
         setTotalCost(labourCost)
-        setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
     }
 
     const handleAbsentismChange = (e) => {
@@ -195,13 +195,13 @@ function AddLabourCost(props) {
             let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
             let absentism = Number(checkForNull(e?.target?.value)) / 100
             let labourRate = Number(getValues('labourRate'))
-            let workingHours = Number(getValues('workingHours'))
+            let workingHours = Number(getValues('workingHours'))*3600;
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(checkForNull(getValues('cycleTime')))
             labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
             setTotalCost(labourCost)
-            setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
         } else {
             Toaster.warning('Percentage cannot be greater than 100')
             setTimeout(() => {
@@ -216,7 +216,7 @@ function AddLabourCost(props) {
     const onPercentChange = (e) => {
         if (e?.target?.value) {
             let cost = (checkForNull(e.target.value) / 100) * checkForNull(props.basicRate)
-            setValue('Cost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('Cost', checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice))
             setTotalCost(cost)
         }
     }
@@ -288,7 +288,7 @@ function AddLabourCost(props) {
             if (getValues('indirectLabourCostPercent')) {
                 let indirectValuePercent = Number(getValues('indirectLabourCostPercent'))
                 let total = (indirectValuePercent / 100) * sum
-                setValue('indirectLabourCost', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setValue('indirectLabourCost', checkForDecimalAndNull(total, initialConfiguration?.NoOfDecimalForPrice))
                 setIndirectLabourCostState(total)
                 indirectLabourCost = total
             }
@@ -297,7 +297,7 @@ function AddLabourCost(props) {
                 sum = sum + indirectLabourCost
                 let staffCostPercent = Number(getValues('staffCostPercent'))
                 let totalStaff = (staffCostPercent / 100) * sum
-                setValue('staffCost', checkForDecimalAndNull(totalStaff, initialConfiguration.NoOfDecimalForPrice))
+                setValue('staffCost', checkForDecimalAndNull(totalStaff, initialConfiguration?.NoOfDecimalForPrice))
                 setStaffCostState(totalStaff)
             }
 
@@ -371,7 +371,7 @@ function AddLabourCost(props) {
             setValue('workingHours', Data.WorkingTime)
             setValue('efficiency', Data.Efficiency)
             setValue('cycleTime', Data.CycleTime)
-            setValue('labourCost', checkForDecimalAndNull(Data.LabourCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('labourCost', checkForDecimalAndNull(Data.LabourCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('absentism', Data.AbsentismPercentage)
             setValue('noOfLabour', Data.NumberOfLabour)
 
@@ -626,7 +626,7 @@ function AddLabourCost(props) {
                                 {<LabourCost hideAction={CostingViewMode} tableData={tableData} editData={editData} />}
                                 <Row className='mt-4'>
 
-                                    {initialConfiguration.IsShowCRMHead && <Col md="3" className='pr-1'>
+                                    {initialConfiguration?.IsShowCRMHead && <Col md="3" className='pr-1'>
                                         <SearchableSelectHookForm
                                             name={`NetLabourCRMHead`}
                                             type="text"
@@ -647,7 +647,7 @@ function AddLabourCost(props) {
                                         />
                                     </Col>}
 
-                                    {initialConfiguration.IsShowCRMHead && <Col md="3" className='pr-1'>
+                                    {initialConfiguration?.IsShowCRMHead && <Col md="3" className='pr-1'>
                                         <SearchableSelectHookForm
                                             name={`IndirectLabourCRMHead`}
                                             type="text"
@@ -715,7 +715,7 @@ function AddLabourCost(props) {
                                         />
                                     </Col>
 
-                                    {initialConfiguration.IsShowCRMHead && <Col md="3" className='pr-1'>
+                                    {initialConfiguration?.IsShowCRMHead && <Col md="3" className='pr-1'>
                                         <SearchableSelectHookForm
                                             name={`StaffCRMHead`}
                                             type="text"

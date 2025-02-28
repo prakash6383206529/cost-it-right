@@ -48,10 +48,10 @@ export function getSendForApprovalByCostingId(CostingId, callback) {
  * @method getSendForApproval
  * @description get SEND FOR APPROVAL DATA BY COSTING ID
  */
-export function getAllApprovalDepartment(receiverId,callback) {
+export function getAllApprovalDepartment(receiverId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getAllApprovalDepartment}?receiverId=${receiverId??null}`, config())
+    const request = axios.get(`${API.getAllApprovalDepartment}?receiverId=${receiverId ?? null}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -308,7 +308,9 @@ export function getApprovalList(filterData, skip, take, isPagination, obj, deleg
       CalculatedFactor: obj.CalculatedFactor,
       ScrapUnitOfMeasurement: obj.ScrapUnitOfMeasurement,
       UOMToScrapUOMRatio: obj.UOMToScrapUOMRatio,
-      IsShowDelegationData:  userDetails()?.IsUserDelegatee
+      CostingCurrency: obj.CostingCurrency,
+      ExchangeRateSourceName: obj.ExchangeRateSourceName,
+      IsShowDelegationData: userDetails()?.IsUserDelegatee
     });
     const request = axios.get(`${API.getApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
     request

@@ -20,7 +20,10 @@ import {
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData, setCostingEffectiveDate, setSurfaceCostInOverheadProfit, setToolCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, openCloseStatus,
   setOtherDiscountData,
-  setCostingtype
+  setCostingtype,
+  setCurrencySource,
+  setExchangeRateSourceValue,
+  exchangeRateReducer
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1092,7 +1095,7 @@ function CostingDetails(props) {
             CostingTypeId: type,
             CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
             CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
-            InfoCategory: tempData?.InfoCategory,
+            InfoCategory: vbcVendorGrid[index]?.InfoCategory ?? 'Standard',
           }
           if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
             data.Technology = technology.label
@@ -1692,10 +1695,12 @@ function CostingDetails(props) {
       dispatch(setDiscountErrors({}))
       dispatch(setIncludeOverheadProfitIcc(false, () => { }))
       dispatch(setCostingEffectiveDate(null))
-
+      dispatch(setCurrencySource(''))
+      dispatch(setExchangeRateSourceValue(''))
       dispatch(setSurfaceCostInOverheadProfit(false, () => { }))
       dispatch(setSurfaceCostInOverheadProfitRejection(false, () => { }))
       dispatch(setToolCostInOverheadProfit(false, () => { }))
+      dispatch(exchangeRateReducer({}))
     }
   }
 
@@ -1840,7 +1845,7 @@ function CostingDetails(props) {
             ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
-            VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+            VendorPlantId: initialConfiguration && initialConfiguration?.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
             CostingTypeId: VBCTypeId
           }
           tempArr.push(data)
@@ -1875,7 +1880,7 @@ function CostingDetails(props) {
               ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
-              VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+              VendorPlantId: initialConfiguration && initialConfiguration?.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
               CostingTypeId: VBCTypeId
             }
             tempArr.push(data)

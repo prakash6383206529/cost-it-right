@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { checkForDecimalAndNull, getCurrencySymbol } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '../../../helper';
 import { Bar } from 'react-chartjs-2';
 import { colorArray } from '../../dashboard/ChartsDashboard';
 import { useSelector } from 'react-redux';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
-export function BarChartComparison({ costingData, currency, graphHeight = 500, graphWidth = 1000 }) {
+export function BarChartComparison({ costingData, currency }) {
   const [graphData, setGraphData] = useState(null);
   const { NoOfDecimalForPrice } = useSelector(state => state.auth?.initialConfiguration)
+  const [graphHeight, setGraphHeight] = useState(240)
 
   useEffect(() => {
     const prepareGraphData = () => {
       const filteredCostingData = costingData.filter(item =>
         item?.CostingHeading !== "Variance" && item?.CostingHeading !== "Old Costing"
       );
+      setGraphHeight(filteredCostingData?.length > 2 ? filteredCostingData?.length * 80 : 240)
       const labels = filteredCostingData?.map(item => {
         if (item?.zbc === 2) {
           return `${item?.plantName} - (${item?.vendorName}) (${item?.vendorCode})`;
@@ -106,7 +108,7 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
         stacked: true,
         ticks: {
           callback: function (value) {
-            return value !== 0 ? getCurrencySymbol(currency) + value.toFixed(2) : "";
+            return getCurrencySymbol(currency) + checkForDecimalAndNull(value, getConfigurationKey()?.NoOfDecimalForPrice);
           }
         },
         grid: {
@@ -138,7 +140,7 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
         align: 'center',
         anchor: 'center',
         formatter: (value) => {
-          return value !== 0 ? getCurrencySymbol(currency) + value : "";
+          return getCurrencySymbol(currency) + checkForDecimalAndNull(value, getConfigurationKey()?.NoOfDecimalForPrice);
         },
       }
     }
@@ -157,7 +159,7 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
         }}>
           Plant (Code) - Vendor (Code) / Customer (Code)
         </div>
-        <div className="graph-container d-flex align-items-center" style={{ height: '100%' }}>
+        <div className="graph-container d-flex align-items-center" style={{ height: `${graphHeight}px` }}>
           {graphData && <Bar data={graphData} options={options} />}
         </div>
       </div>

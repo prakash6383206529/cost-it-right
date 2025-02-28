@@ -34,7 +34,7 @@ import {
     SAP_PUSH_HEADER_DATA,
     SAP_PUSH_TEMP_DATA
 } from '../../config/masterData';
-import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
+import { checkVendorPlantConfigurable, getConfigurationKey, RFQ_KEYS, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
 import { IsShowFreightAndShearingCostFields } from "../../helper";
 import { localizeHeadersWithLabels } from "../../helper/core";
@@ -87,6 +87,9 @@ export const checkLabourRateConfigure = (excelData) => {
         if (getConfigurationKey().IsShowDetailedOperationBreakup === false) {
             const operationKeys = ['OperationType', 'WeldingRate', 'Consumption', 'Note'];
             if (operationKeys.includes(el.value)) return false;
+        }
+        if (getConfigurationKey()?.IsShowProductInLabour === false) {
+            if (el?.value === 'ProductNumber') return false;
         }
         return true;
     })
@@ -247,9 +250,18 @@ class Downloadxls extends React.Component {
             case RAWMATERIALSRFQ:
                 const localizedRawMaterialHeaders = this.localizeHeaders(AddRawMaterialHeaderData);
                 return this.returnExcelColumn(localizedRawMaterialHeaders, AddRawMaterialTempData);
+
             case ASSEMBLYORCOMPONENTSRFQ:
-                const localizedAssemblyOrComponentHeaders = this.localizeHeaders(AddAssemblyOrComponentHeaderData);
-                return this.returnExcelColumn(localizedAssemblyOrComponentHeaders, AddAssemblyOrComponentTempData);
+                const headers = !RFQ_KEYS?.SHOW_N100_HAVELLS
+                    ? AddAssemblyOrComponentHeaderData.filter(h =>
+                        !['PartDesignSourceName', 'N100Timeline'].includes(h.value)
+                    )
+                    : AddAssemblyOrComponentHeaderData;
+                const templateData = !RFQ_KEYS?.SHOW_N100_HAVELLS
+                    ? AddAssemblyOrComponentTempData.map(({ PartDesignSourceName, N100Timeline, ...rest }) => rest)
+                    : AddAssemblyOrComponentTempData;
+                return this.returnExcelColumn(this.localizeHeaders(headers), templateData);
+
 
             //return this.returnCombinedExcelColumn(AddAssemblyOrComponentHeaderData, AddAssemblyOrComponentTempData, AddAssemblyOrComponentAdditionalInfoHeaderData, AddAssemblyOrComponentAdditionalInfoTempData);
             default:
@@ -351,7 +363,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(localizedBudgetHeaders, BUDGET_ZBC_TEMPDATA);
             case 'Labour':
                 const localizedLabourHeaders = this.localizeHeaders(Labour);
-                return this.returnExcelColumn(localizedLabourHeaders, LabourTempData);
+                return this.returnExcelColumn(checkLabourRateConfigure(localizedLabourHeaders), LabourTempData);
             case ZBCADDMOREOPERATION:
                 const localizedAddMoreOperationHeaders = this.localizeHeaders(ZBCOperation);
                 return this.returnExcelColumn(localizedAddMoreOperationHeaders, ZBCOperationTempData);
@@ -427,7 +439,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(localizedBudgetHeaders, BUDGET_VBC_TEMPDATA);
             case 'Labour':
                 const localizedLabourHeaders = this.localizeHeaders(Labour);
-                return this.returnExcelColumn(localizedLabourHeaders, LabourTempData);
+                return this.returnExcelColumn(checkLabourRateConfigure(localizedLabourHeaders), LabourTempData);
             case VBCADDMOREOPERATION:
                 const localizedAddMoreOperationHeaders = this.localizeHeaders(VBCOperation);
                 return this.returnExcelColumn(checkLabourRateConfigure(localizedAddMoreOperationHeaders), VBCOperationTempData, true);
@@ -486,7 +498,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(localizedBudgetHeaders, BUDGET_CBC_TEMPDATA);
             case 'Labour':
                 const localizedLabourHeaders = this.localizeHeaders(Labour);
-                return this.returnExcelColumn(localizedLabourHeaders, LabourTempData);
+                return this.returnExcelColumn(checkLabourRateConfigure(localizedLabourHeaders), LabourTempData);
             case CBCADDMOREOPERATION:
                 const localizedAddMoreOperationHeaders = this.localizeHeaders(CBCOperation);
                 return this.returnExcelColumn(checkLabourRateConfigure(localizedAddMoreOperationHeaders), CBCOperationTempData, true);

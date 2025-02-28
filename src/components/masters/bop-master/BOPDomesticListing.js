@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL, DRAFTID, ZBCTypeId } from '../../../config/constants';
@@ -55,10 +55,11 @@ const BOPDomesticListing = (props) => {
   const { globalTakes } = useSelector((state) => state.pagination);
   const tourStartData = useSelector(state => state.comman.tourStartData);
   // const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
-  const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined;
+  const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined
 
   const { t } = useTranslation("common")
   const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const [skipRecord, setSkipRecord] = useState(0)
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -83,7 +84,7 @@ const BOPDomesticListing = (props) => {
     inRangeDate: [],
     analyticsDrawer: false,
     selectedRowData: [],
-    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", SAPPartNumber: "" },
+    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", SAPPartNumber: "", Currency: "", ExchangeRateSourceName: "", OtherNetCost: "" },
     warningMessage: false,
     filterModel: {},
     // pageNo: 1,
@@ -96,11 +97,16 @@ const BOPDomesticListing = (props) => {
     dataCount: 0,
     attachment: false,
     viewAttachment: [],
-    render: false,
+
     compareDrawer: false,
     rowDataForCompare: [],
 
   });
+
+
+
+
+
   useEffect(() => {
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
@@ -109,13 +115,6 @@ const BOPDomesticListing = (props) => {
     }, 300);
     return () => {
       dispatch(setResetCostingHead(true, "costingHead"))
-    }
-  },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []);
-
-  useEffect(() => {
-    return () => {
       setTimeout(() => {
         if (!props.stopApiCallOnCancel) {
           dispatch(setSelectedRowForPagination([]));
@@ -123,26 +122,34 @@ const BOPDomesticListing = (props) => {
 
         }
       }, 300)
-    };
-  },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []);
+    }
+  }, []);
+
   useEffect(() => {
     if (bopDomesticList?.length > 0) {
-      setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, }));
+      setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, isLoader: false, }));
     }
 
     if (props.isSimulation) {
       props.callBackLoader(state.isLoader);
     }
-    else {
-      setState((prevState) => ({ ...prevState, isLoader: false }))
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bopDomesticList]);
+
+  useEffect(() => {
+    reactLocalStorage.setObject('selectedRow', {})
+    if (!props.stopApiCallOnCancel) {
+      return () => {
+        dispatch(setSelectedRowForPagination([]))
+        dispatch(resetStatePagination());
+        reactLocalStorage.setObject('selectedRow', {})
+      }
+    }
+  }, [])
 
   const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
     const { floatingFilterData } = state
+    setSkipRecord(skip)
     if (state.filterModel?.EffectiveDate && !isReset) {
       if (state.filterModel.EffectiveDate.dateTo) {
         let temp = []
@@ -154,7 +161,9 @@ const BOPDomesticListing = (props) => {
     }
     let statusString = [props?.approvalStatus].join(",")
     const filterData = {
-      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props.ListFor, IsBOPAssociated: props?.isBOPAssociated,
+      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props?.isSimulation ? props?.ListFor : '', IsBOPAssociated: props?.isBOPAssociated,
+      Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+      // LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
       StatusId: statusString
     }
     const { isMasterSummaryDrawer } = props
@@ -172,13 +181,15 @@ const BOPDomesticListing = (props) => {
           props?.changeTokenCheckBox(false)
         }
         dataObj.EntryType = Number(ENTRY_TYPE_DOMESTIC)
+        dataObj.Currency = floatingFilterData?.Currency
+        dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+        dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
         if (props.isSimulation) {
           dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
         }
 
 
         dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
-
 
           setState((prevState) => ({ ...prevState, isLoader: false, noData: false }))
           if (props.isSimulation) {
@@ -191,12 +202,13 @@ const BOPDomesticListing = (props) => {
             setState((prevState) => ({ ...prevState, tableData: [] }))
 
           } else {
+
             setState((prevState) => ({ ...prevState, tableData: [] }))
           }
 
           if (res && res.status === 204) {
             setState((prevState) => ({
-              ...prevState, totalRecordCount: 0,
+              ...prevState, totalRecordCount: 0, isLoader: false, tableData: []
               // pageNo: 0
             }))
             dispatch(updatePageNumber(0))
@@ -247,7 +259,7 @@ const BOPDomesticListing = (props) => {
     let originalValue;
     setTimeout(() => {
       if (bopDomesticList?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -404,6 +416,7 @@ const BOPDomesticListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+    reactLocalStorage.setObject('selectedRow', {})
   };
 
   /**
@@ -426,16 +439,24 @@ const BOPDomesticListing = (props) => {
   * @method confirmDelete
   * @description confirm delete Raw Material details
   */
+
   const confirmDelete = (ID) => {
     const loggedInUser = loggedInUserId()
     dispatch(deleteBOP(ID, loggedInUser, (res) => {
-      if (res.data.Result === true) {
+      if (res && res?.data && res?.data?.Result === true) {
+        dispatch(setSelectedRowForPagination([]));
+        if (state?.gridApi) {
+          state?.gridApi?.deselectAll();
+        }
         Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
-        resetState()
+        getDataList("", 0, "", "", skipRecord, globalTakes, true, state?.floatingFilterData);
       }
+      reactLocalStorage.remove('selectedRow');
+      setState((prevState) => ({ ...prevState, dataCount: 0 }))
     }));
     setState((prevState) => ({ ...prevState, showPopup: false }))
   }
+
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
   }
@@ -477,6 +498,9 @@ const BOPDomesticListing = (props) => {
 
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    
+    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart === null || rowData?.IsRFQBoughtOutPart === undefined ? true : rowData?.IsRFQBoughtOutPart;
+
     let isEditbale = false
     let isDeleteButton = false
     if (permissions?.Edit) {
@@ -486,7 +510,7 @@ const BOPDomesticListing = (props) => {
     }
 
 
-    if (isRfq && isMasterSummaryDrawer) {
+    if (isRfq && isMasterSummaryDrawer && !IsRFQBoughtOutPart) {
       return (
         <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
@@ -507,8 +531,8 @@ const BOPDomesticListing = (props) => {
         {(!benchMark) && (
           <>
             {permissions?.View && <Button id={`bopDomesticListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
-            {isEditbale && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
-            {isDeleteButton && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+            {isEditbale && !IsRFQBoughtOutPart && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+            {isDeleteButton && !IsRFQBoughtOutPart && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
           </>
         )}
 
@@ -651,9 +675,9 @@ const BOPDomesticListing = (props) => {
     dispatch(TourStartAction({
       showExtraData: showTour,
     }));
-    setState((prevState) => ({ ...prevState, render: true }));
+    setState((prevState) => ({ ...prevState, }));
     setTimeout(() => {
-      setState((prevState) => ({ ...prevState, render: false }));
+      setState((prevState) => ({ ...prevState, }));
     }, 100);
 
   }
@@ -699,6 +723,9 @@ const BOPDomesticListing = (props) => {
       if (column.value === "SAPPartNumber") {
         return getConfigurationKey().IsSAPCodeRequired
       }
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
       return true;
     })
     return returnExcelColumn(filteredLabels, tempArr)
@@ -737,7 +764,13 @@ const BOPDomesticListing = (props) => {
         item.label = bopMasterName;
       }
 
-      return item
+      // Check for empty fields and replace with hyphen
+      for (const key in item) {
+        if (item[key] === null || item[key] === undefined || item[key] === "") {
+          item[key] = "-"; // Set to hyphen if data is not available
+        }
+      }
+      return item;
     })
 
     return (
@@ -840,6 +873,7 @@ const BOPDomesticListing = (props) => {
     setState((prevState) => ({ ...prevState, analyticsDrawer: false }))
   }
   const onRowSelect = (event) => {
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     var selectedRows = state.gridApi.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
@@ -856,6 +890,7 @@ const BOPDomesticListing = (props) => {
     }
     let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArray))
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) // Save to localStorage
     const newDataCount = uniqeArray.length;
     setState((prevState) => ({ ...prevState, dataCount: newDataCount }))
     let finalArr = selectedRows
@@ -870,6 +905,7 @@ const BOPDomesticListing = (props) => {
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]));
         state.gridApi.deselectAll();
+        reactLocalStorage.setObject('selectedRow', {}) // Clear localStorage
         Toaster.warning("Please select multiple bop's with same category");
       }
     }
@@ -910,7 +946,7 @@ const BOPDomesticListing = (props) => {
                   )}
                   {permissions?.Download && (
                     <>
-                      <Button className="mr5 Tour_List_Download" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button className="mr5 Tour_List_Download" id={"bopDomesticListing_excel_download"} disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                       <ExcelFile filename={`${showBopLabel()} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
                         {onBtExport()}
                       </ExcelFile>
@@ -931,7 +967,7 @@ const BOPDomesticListing = (props) => {
           <div className={`ag-grid-wrapper ${props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(bopDomesticList && bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
             <div className={`ag-theme-material p-relative ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
-              {(state.render || state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+              {(state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
 
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -968,9 +1004,12 @@ const BOPDomesticListing = (props) => {
                 {props?.isMasterSummaryDrawer && <AgGridColumn field="IncoSummary" headerName="Inco Terms"></AgGridColumn>}
                 {props?.isMasterSummaryDrawer && getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>}
                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
+                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
+                <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
 
-                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
+                {/* {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>} */}
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
 
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
@@ -994,7 +1033,7 @@ const BOPDomesticListing = (props) => {
       {state.analyticsDrawer && <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} />}
       {state.attachment && (<Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />)}
       {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />}
-      {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && !props.isMasterSummaryDrawer && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
+      {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration?.IsMasterApprovalAppliedConfigure && !props.isMasterSummaryDrawer && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
       {
         state.compareDrawer &&
         <RfqMasterApprovalDrawer
@@ -1004,6 +1043,8 @@ const BOPDomesticListing = (props) => {
           type={'Bought Out Part'}
           quotationId={props.quotationId}
           closeDrawer={closeCompareDrawer}
+          summaryDrawer={props?.isMasterSummaryDrawer}
+
         // selectedRow = {props.bopDataResponse}
         />
 

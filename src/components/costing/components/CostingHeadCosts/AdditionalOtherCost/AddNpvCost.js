@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { checkForDecimalAndNull } from '../../../../../helper'
 import { Drawer } from '@material-ui/core'
@@ -18,6 +18,7 @@ import LoaderCustom from '../../../../common/LoaderCustom'
 import YOYCost from './YOYCost'
 import TooltipCustom from '../../../../common/Tooltip'
 import Tco from './Tco'
+import { ViewCostingContext } from '../../CostingDetails'
 
 function AddNpvCost(props) {
     const { partId, vendorId } = props
@@ -39,6 +40,7 @@ function AddNpvCost(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const isRfqCostingTypeDefined = IsRfqCostingType && (IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting);
     const label = props?.totalCostFromSummary ? 'TCO Cost' : !(isRfqCostingTypeDefined) ? 'Add NPV:' : 'View TCO:';
+    const CostingViewMode = useContext(ViewCostingContext);
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -104,7 +106,7 @@ function AddNpvCost(props) {
                 let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
 
                 // Set the value of the 'Total' input field to the calculated total cost
-                setValue('Total', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setValue('Total', checkForDecimalAndNull(total, initialConfiguration?.NoOfDecimalForPrice))
                 setTotalCost(total)
 
                 // If NPV percentage is disabled, calculate the NPV percentage based on the total cost and quantity input
@@ -118,7 +120,7 @@ function AddNpvCost(props) {
                 let npvPercent = (total * 100) / (props.netPOPrice * quantity)
 
                 // Set the value of the 'NpvPercentage' input field to the calculated NPV percentage
-                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration.NoOfDecimalForPrice))
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration?.NoOfDecimalForPrice))
 
             }
         }
@@ -135,7 +137,7 @@ function AddNpvCost(props) {
                 let NpvPercentage = e.target.value
                 let quantity = getValues('Quantity')
                 let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
-                setValue('Total', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setValue('Total', checkForDecimalAndNull(total, initialConfiguration?.NoOfDecimalForPrice))
                 setTotalCost(total)
                 errors.Total = []
             }
@@ -163,7 +165,7 @@ function AddNpvCost(props) {
                 let total = e.target.value
                 let quantity = getValues('Quantity')
                 let npvPercent = (total * 100) / (props.netPOPrice * quantity)
-                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration.NoOfDecimalForPrice))
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration?.NoOfDecimalForPrice))
             }
         } else {
 
@@ -264,7 +266,7 @@ function AddNpvCost(props) {
             setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
             setValue('NpvPercentage', Data.NpvPercentage)
             setValue('Quantity', Data.NpvQuantity)
-            setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration?.NoOfDecimalForPrice))
             setTotalCost(Data.NpvCost)
             setDisableTotalCost(false)
             setDisableAllFields(false)
@@ -316,7 +318,7 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.LossOfType}
-                                                disabled={props.CostingViewMode}
+                                                disabled={CostingViewMode}
                                             />
                                         </Col>
                                         <Col md="2" className='px-1'>
@@ -344,7 +346,7 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.NpvPercentage}
-                                                disabled={props.CostingViewMode || disableNpvPercentage || disableAllFields}
+                                                disabled={CostingViewMode || disableNpvPercentage || disableAllFields}
                                             />
                                         </Col>
                                         <Col md="2" className='px-1'>
@@ -364,7 +366,7 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Quantity}
-                                                disabled={props.CostingViewMode || disableAllFields || disableQuantity}
+                                                disabled={CostingViewMode || disableAllFields || disableQuantity}
                                             />
                                         </Col>
                                         <Col md="2" className='px-1'>
@@ -386,7 +388,7 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Total}
-                                                disabled={props.CostingViewMode || disableTotalCost || disableAllFields}
+                                                disabled={CostingViewMode || disableTotalCost || disableAllFields}
                                             />
                                         </Col>
                                         <Col md="3" className="mt-4 pt-1">
@@ -395,7 +397,7 @@ function AddNpvCost(props) {
                                                 type="button"
                                                 className={"user-btn  pull-left mt-1"}
                                                 onClick={addData}
-                                                disabled={props.CostingViewMode}
+                                                disabled={CostingViewMode}
                                             >
                                                 <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
                                             </button>
@@ -403,7 +405,7 @@ function AddNpvCost(props) {
                                                 type="button"
                                                 className={"reset-btn pull-left mt-1 ml5"}
                                                 onClick={resetData}
-                                                disabled={props.CostingViewMode}
+                                                disabled={CostingViewMode}
                                             >
                                                 Reset
                                             </button>
@@ -471,7 +473,8 @@ function AddNpvCost(props) {
                                         <button
                                             type={'button'}
                                             className="submit-button save-btn"
-                                            onClick={() => { props.closeDrawer('save', tableData) }} >
+                                            onClick={() => { props.closeDrawer('save', tableData) }}
+                                            disabled={CostingViewMode}>
                                             <div className={"save-icon"}></div>
                                             {'Save'}
                                         </button>
@@ -534,7 +537,8 @@ function AddNpvCost(props) {
                             <button
                                 type={'button'}
                                 className="submit-button save-btn"
-                                onClick={() => { props.closeDrawer('save', tableData) }} >
+                                onClick={() => { props.closeDrawer('save', tableData) }}
+                                disabled={CostingViewMode}>
                                 <div className={"save-icon"}></div>
                                 {'Save'}
                             </button>

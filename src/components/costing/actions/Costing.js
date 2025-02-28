@@ -72,6 +72,9 @@ import {
   SET_RFQ_COSTING_TYPE,
   PARTSPECIFICATIONRFQDATA,
   GET_SAP_EVALUATIONTYPE,
+  SET_EXCHANGE_RATE_SOURCE,
+  SET_CURRENCY_SOURCE,
+  SET_EXCHANGE_RATE_DATA,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -442,7 +445,7 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
   const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     let queryParams = data.EffectiveDate ? data.EffectiveDate : null
-    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}/${data.subAsmCostingId}/${queryParams}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}/${data.subAsmCostingId}/${queryParams}/${data?.isComponentCosting ? data?.isComponentCosting : false}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
         let TabData = response.data.DataList;
@@ -756,7 +759,7 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
 export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
   const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
-    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.SubAsmCostingId}/${data.AssemCostingId}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.SubAsmCostingId}/${data.AssemCostingId}/${data?.isComponentCosting ? data?.isComponentCosting : false}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         if (IsUseReducer && response.data.Result) {
@@ -848,7 +851,7 @@ export function getSurfaceTreatmentDrawerDataList(data, callback) {
  * @description GET OVERHEAD & PROFIT DATA IN COSTING DETAIL
  */
 export function getOverheadProfitTabData(data, IsUseReducer, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() } 
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({
       type: SET_OVERHEAD_PROFIT_TAB_DATA,
@@ -1150,7 +1153,7 @@ export function getRateByCapacityCriteria(data, callback) {
  * @description GET TOOL DATA IN COSTING DETAIL
  */
 export function getToolTabData(data, IsUseReducer, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() } 
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({
       type: SET_TOOL_TAB_DATA,
@@ -1268,10 +1271,10 @@ export function getDiscountOtherCostTabData(data, callback) {
  * @method getExchangeRateByCurrency
  * @description GET EXCHANGE RATE BY CURRENCY
  */
-export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate, VendorId, customerId, isBudgeting, callback) {
+export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate, VendorId, customerId, isBudgeting, toCurrency, exchangeRateSourceName, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getExchangeRateByCurrency}?loggedInUserId=${loggedInUserId()}&currency=${currency}&costingHeadId=${costingHeadId}&effectiveDate=${effectiveDate}&VendorId=${!VendorId ? EMPTY_GUID : VendorId}&customerId=${!customerId ? EMPTY_GUID : customerId}&isBudgeting=${isBudgeting}`, config());
+    const request = axios.get(`${API.getExchangeRateByCurrency}?loggedInUserId=${loggedInUserId()}&currency=${currency}&costingHeadId=${costingHeadId}&effectiveDate=${effectiveDate}&VendorId=${!VendorId ? EMPTY_GUID : VendorId}&customerId=${!customerId ? EMPTY_GUID : customerId}&isBudgeting=${isBudgeting}&toCurrency=${toCurrency}&exchangeRateSourceName=${exchangeRateSourceName ?? ''}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -3124,5 +3127,50 @@ export function getExternalIntegrationEvaluationType(data, callback) {
       apiErrors(error)
     })
 
+  }
+}
+
+/**
+ * @method saveCostingBasicDetails
+ * @description saveCostingBasicDetails
+ */
+export function saveCostingBasicDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingBasicDetails, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error.response)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function setExchangeRateSourceValue(value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_EXCHANGE_RATE_SOURCE,
+      payload: value
+    });
+  }
+}
+
+export function setCurrencySource(value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_CURRENCY_SOURCE,
+      payload: value
+    });
+  }
+}
+export function exchangeRateReducer(value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_EXCHANGE_RATE_DATA,
+      payload: value
+    });
   }
 }

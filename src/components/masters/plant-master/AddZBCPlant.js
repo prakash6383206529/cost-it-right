@@ -8,7 +8,8 @@ import { focusOnError, renderText, renderTextInputField, searchableSelect, valid
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
-  getCityByCountryAction,
+  getCityByCountry,
+  getCityByCountryAction
 } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -20,7 +21,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
-
+import { getCurrencySelectList } from '../actions/ExchangeRateMaster';
 class AddZBCPlant extends Component {
   constructor(props) {
     super(props);
@@ -40,6 +41,8 @@ class AddZBCPlant extends Component {
       showPopup: false,
       isCompanyChanged: false,
       showPopupOnCompanyChange: false,
+      currency: [],
+      isAssociated: false,
     }
   }
 
@@ -50,8 +53,9 @@ class AddZBCPlant extends Component {
   componentDidMount() {
     if (!(this.props.isEditFlag || this.props.isViewMode)) {
       this.props.fetchCountryDataAPI(() => { })
+      this.props.getCurrencySelectList(true, () => { })
     }
-    if (this.props.initialConfiguration.IsCompanyConfigureOnPlant) {
+    if (this.props.initialConfiguration?.IsCompanyConfigureOnPlant) {
       this.props.getComapanySelectList(() => { })
     }
     this.getDetails()
@@ -92,7 +96,9 @@ class AddZBCPlant extends Component {
               country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
               state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
               city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityIdRef } : [],
-              company: Data.CompanyName !== undefined ? { label: `${Data.CompanyName}${Data.CompanyCode ? ` (${Data.CompanyCode})` : ''}`, value: Data.CompanyId } : []
+              company: Data.CompanyName !== undefined ? { label: `${Data.CompanyName}${Data.CompanyCode ? ` (${Data.CompanyCode})` : ''}`, value: Data.CompanyId } : [],
+              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
+              isAssociated: Data.IsAssociated
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -108,7 +114,7 @@ class AddZBCPlant extends Component {
   * @description Used show listing of unit of measurement
   */
   selectType = (label) => {
-    const { countryList, stateList, cityList, companySelectList } = this.props;
+    const { countryList, stateList, cityList, companySelectList, currencySelectList } = this.props;
     const temp = [];
 
     if (label === 'country') {
@@ -137,6 +143,14 @@ class AddZBCPlant extends Component {
     }
     if (label === 'Company') {
       companySelectList && companySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      });
+      return temp
+    }
+    if (label === 'Currency') {
+      currencySelectList && currencySelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -252,7 +266,7 @@ class AddZBCPlant extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce(this.props.handleSubmit((values) => {
-    const { city, PlantId, company, DataToCheck, DropdownChanged } = this.state;
+    const { city, PlantId, company, DataToCheck, DropdownChanged, currency } = this.state;
     const { isEditFlag, } = this.props;
     const userDetail = userDetails();
     if (isEditFlag) {
@@ -261,7 +275,7 @@ class AddZBCPlant extends Component {
         DataToCheck?.Extension === values?.Extension && DataToCheck?.AddressLine1 === values?.AddressLine1 &&
         DataToCheck?.AddressLine2 === values?.AddressLine2 && DataToCheck?.ZipCode === values?.ZipCode) {
 
-        this.toggleDrawer('', 'cancel')
+          Toaster.warning('Please change data to save Plant Details');
         return false
       }
 
@@ -283,9 +297,10 @@ class AddZBCPlant extends Component {
         CreatedByUserId: loggedInUserId(),
         CityId: city.value || '',
         EVendorType: 0,
-        VendorId: userDetail.ZBCSupplierInfo.VendorId || '',
-        CompanyId: company.value || '',
-        CostingTypeId: ZBCTypeId
+        VendorId: userDetail.ZBCSupplierInfo.VendorId,
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId,
+        CurrencyId: currency.value
       }
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         this.setState({ setDisable: false })
@@ -310,9 +325,10 @@ class AddZBCPlant extends Component {
         CreatedByUserId: loggedInUserId(),
         CityId: city.value || '',
         EVendorType: 0,
-        VendorId: userDetail.ZBCSupplierInfo.VendorId || '',
-        CompanyId: company.value || '',
-        CostingTypeId: ZBCTypeId
+        VendorId: userDetail.ZBCSupplierInfo.VendorId,
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId,
+        CurrencyId: currency.value
       }
       this.props.createPlantAPI(formData, (res) => {
         this.setState({ setDisable: false })
@@ -349,6 +365,15 @@ class AddZBCPlant extends Component {
       this.onSubmit()
     }
   }
+  handleCurrencyChange = (value) => {
+    if (value && value !== '') {
+      this.setState({ currency: value });
+    } else {
+      this.setState({ currency: [] });
+    }
+    this.setState({ DropdownChanged: false });
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -410,7 +435,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={isEditFlag ? '-' : "Enter"}
-                      validate={this.props.initialConfiguration.IsPlantCodeInteger ? [required, hashValidation, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4] : [required, hashValidation, acceptAllExceptSingleSpecialCharacter, alphaneumericSpecialAccept, maxLength25, checkWhiteSpaces, checkSpacesInString]}
+                      validate={this.props.initialConfiguration?.IsPlantCodeInteger ? [required, hashValidation, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4] : [required, hashValidation, acceptAllExceptSingleSpecialCharacter, alphaneumericSpecialAccept, maxLength25, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
                       className=""
@@ -418,10 +443,31 @@ class AddZBCPlant extends Component {
                       disabled={isEditFlag ? true : false}
                     />
                   </Col>
+                  <Col md="6">
+                    <Field
+                      name="Currency"
+                      type="text"
+                      label="Currency"
+                      component={searchableSelect}
+                      placeholder={isViewMode ? '-' : "Select"}
+                      options={this.selectType("Currency")}
+                      disabled={isViewMode || isEditFlag}
+                      validate={
+                        this.state.currency == null ||
+                          this.state.currency.length === 0
+                          ? [required]
+                          : []
+                      }
+                      required={true}
+                      handleChangeDescription={this.handleCurrencyChange}
+                      valueDescription={this.state.currency}
+                    />
+                  </Col>
                 </Row>
+
                 <Row className="pl-3">
                   {
-                    this.props.initialConfiguration.IsCompanyConfigureOnPlant &&
+                    this.props.initialConfiguration?.IsCompanyConfigureOnPlant &&
                     <Col md="6">
                       <Field
                         name="CompanyName"
@@ -620,7 +666,7 @@ class AddZBCPlant extends Component {
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }
-        {this.state.showPopupOnCompanyChange && this.props.initialConfiguration.IsCompanyConfigureOnPlant && <PopupMsgWrapper isOpen={this.state.showPopupOnCompanyChange} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmCompanyChange}
+        {this.state.showPopupOnCompanyChange && this.props.initialConfiguration?.IsCompanyConfigureOnPlant && <PopupMsgWrapper isOpen={this.state.showPopupOnCompanyChange} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmCompanyChange}
           message={
             <>
               The plant's company has been changed, data for this plant will be visible under the new company. <br />
@@ -637,10 +683,11 @@ class AddZBCPlant extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, plant, auth }) {
+function mapStateToProps({ comman, plant, exchangeRate, auth }) {
   const { countryList, stateList, cityList } = comman;
   const { plantUnitDetail, companySelectList } = plant;
   const { initialConfiguration } = auth
+  const { currencySelectList } = exchangeRate;
 
   let initialValues = {};
   if (plantUnitDetail && plantUnitDetail !== undefined) {
@@ -654,7 +701,7 @@ function mapStateToProps({ comman, plant, auth }) {
       ZipCode: plantUnitDetail?.ZipCode || '',
     }
   }
-  return { countryList, stateList, cityList, initialValues, plantUnitDetail, initialConfiguration, companySelectList }
+  return { countryList, stateList, cityList, initialValues, plantUnitDetail, initialConfiguration, companySelectList, currencySelectList }
 }
 
 /**
@@ -671,8 +718,10 @@ export default connect(mapStateToProps, {
   getPlantUnitAPI,
   fetchSupplierCityDataAPI,
   updatePlantAPI,
-  getCityByCountryAction,
-  getComapanySelectList
+  getCityByCountry,
+  getComapanySelectList,
+  getCurrencySelectList,
+  getCityByCountryAction
 })(reduxForm({
   form: 'AddZBCPlant',
   validate: validateForm,

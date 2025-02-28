@@ -16,11 +16,13 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { FORGING, Ferrous_Casting, DIE_CASTING, MACHINING } from '../../../../config/masterData'
 import GroupProcess from './GroupProcess';
 import _ from 'lodash'
-import { getConfigurationKey, searchNocontentFilter } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { hyphenFormatter } from '../../../masters/masterUtil';
 import { ViewCostingContext } from '../CostingDetails';
 import { useLabels } from '../../../../helper/core';
+import WarningMessage from '../../../common/WarningMessage';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
@@ -202,10 +204,15 @@ function AddProcess(props) {
   }
 
   const isFirstColumn = (params) => {
+    const rowData = params?.valueFormatted ? params.valueFormatted : params?.data;
+    const allProcessSelected = processDrawerList?.every(process => props?.Ids?.includes(process.ProcessId));
+    if (allProcessSelected) {
+      return false;
+    }
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-    return thisIsFirstColumn;
+    return rowData?.IsValidExchangeRate === true ? thisIsFirstColumn : false;
   }
 
   const defaultColDef = {
@@ -252,6 +259,18 @@ function AddProcess(props) {
 
   }
 
+  const rateFormat = (props) => {
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return rowData?.IsValidExchangeRate ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+  }
+
+  const currencyFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+    return cellValue !== '-' ? cellValue : reactLocalStorage.getObject("baseCurrency")
+  }
+
+
   const frameworkComponents = {
     // totalValueRenderer: this.buttonFormatter,
     // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -263,7 +282,9 @@ function AddProcess(props) {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
     checkBoxRenderer: checkBoxRenderer,
-    hyphenFormatter: hyphenFormatter
+    hyphenFormatter: hyphenFormatter,
+    rateFormat: rateFormat,
+    currencyFormatter: currencyFormatter,
   };
 
   useEffect(() => {
@@ -358,6 +379,9 @@ function AddProcess(props) {
                                   <div className="refresh mr-0"></div>
                                 </button>
                               </div>
+                              <div className="d-flex justify-content-end">
+                                <WarningMessage message={"Please add the exchange rate for the selected currency in the exchange rate master for the record where the net cost field is marked as '-'."} />
+                              </div>
                               <div className="ag-theme-material p-relative">
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                                 <AgGridReact
@@ -384,6 +408,7 @@ function AddProcess(props) {
                                   isRowSelectable={isRowSelectable}
                                 >
                                   <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
+                                  <AgGridColumn field='EntryType' headerName={'Process Type'}></AgGridColumn>
                                   <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
                                   <AgGridColumn field='Technologies' headerName={technologyLabel}></AgGridColumn>
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
@@ -391,7 +416,8 @@ function AddProcess(props) {
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
                                   <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                  <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
+                                  {/* <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn> */}
+                                  <AgGridColumn field="MachineRate" headerName={'Machine Rate'} cellRenderer={'rateFormat'}></AgGridColumn>
 
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}

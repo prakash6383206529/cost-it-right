@@ -24,7 +24,10 @@ import {
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
   PARTSPECIFICATIONRFQDATA,
   GET_SAP_EVALUATIONTYPE,
-  SET_RFQ_COSTING_TYPE
+  SET_RFQ_COSTING_TYPE,
+  SET_EXCHANGE_RATE_SOURCE,
+  SET_CURRENCY_SOURCE,
+  SET_EXCHANGE_RATE_DATA,
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -76,7 +79,13 @@ const initialState = {
     RejectionRecoveryNetCost: ''
   },
   partSpecificationRFQData: [],
-  evaluationType: []
+  evaluationType: [],
+  plantExchangeRate: null,
+    baseExchangeRate: null,
+    plantFromCurrency: '',
+    plantToCurrency: '',
+    baseFromCurrency: '',
+    baseToCurrency: ''
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -466,7 +475,7 @@ export default function costingReducer(state = initialState, action) {
       // }
       let temp = [...action.payload]
       let arrayRM = temp && temp.map((item) => {
-        item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
+        item.NetLandedCostCombine = /* item.EntryType === IMPORT ? item.NetLandedCostConversion :  */item.NetLandedCost
         item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
         return item
       })
@@ -551,7 +560,7 @@ export default function costingReducer(state = initialState, action) {
     case BOP_DRAWER_LIST:
       let tempBOP = [...action.payload]
       let arrayBOP = tempBOP && tempBOP.map((item) => {
-        item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
+        item.NetLandedCostCombine = /* item.EntryType === IMPORT ? item.NetLandedCostConversion :  */item.NetLandedCost
         item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
         return item
       })
@@ -888,7 +897,29 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         evaluationType: action.payload,
       }
-
+    case SET_EXCHANGE_RATE_SOURCE:
+      return {
+        ...state,
+        loading: false,
+        exchangeRateSource: action.payload,
+      }
+      case SET_CURRENCY_SOURCE:
+        return {
+          ...state,
+          currencySource: action.payload,
+        }
+    case SET_EXCHANGE_RATE_DATA:
+      return {
+        ...state,
+        loading: false,
+        // plantExchangeRate: action.payload.plantExchangeRate,
+        // baseExchangeRate: action.payload.baseExchangeRate,
+        // plantFromCurrency: action.payload.plantFromCurrency,
+        // plantToCurrency: action.payload.plantToCurrency,
+        // baseFromCurrency: action.payload.baseFromCurrency,
+        // baseToCurrency: action.payload.baseToCurrency,
+        exchangeRateData: action.payload,
+      }
     default:
       return state
   }

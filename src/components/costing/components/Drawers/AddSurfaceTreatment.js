@@ -16,6 +16,7 @@ import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } fr
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
 import { useLabels } from '../../../../helper/core';
+import WarningMessage from '../../../common/WarningMessage';
 const gridOptions = {};
 
 
@@ -26,6 +27,7 @@ function AddSurfaceTreatment(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [noData, setNoData] = useState(false);
+  const [render, setRender] = useState(false);
 
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
@@ -67,6 +69,7 @@ function AddSurfaceTreatment(props) {
       } else {
         setTableDataList([])
       }
+      setRender(true);
     }))
 
   }, []);
@@ -114,10 +117,15 @@ function AddSurfaceTreatment(props) {
   }
 
   const isFirstColumn = (params) => {
+    const rowData = params?.valueFormatted ? params.valueFormatted : params?.data;
+    const allSelectedSurfaceTreatment = tableData?.every(surfaceTreatment => props.Ids?.includes(surfaceTreatment.OperationId));
+    if (allSelectedSurfaceTreatment) {
+      return false;
+    }
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-    return thisIsFirstColumn;
+    return rowData?.IsValidExchangeRate === true ? thisIsFirstColumn : false;
   }
 
   const defaultColDef = {
@@ -125,8 +133,8 @@ function AddSurfaceTreatment(props) {
     filter: true,
     sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
-    headerCheckboxSelection: isFirstColumn,
-    checkboxSelection: isFirstColumn
+    headerCheckboxSelection: render ? isFirstColumn : false,
+    checkboxSelection: render ? isFirstColumn : false
   };
 
 
@@ -148,8 +156,9 @@ function AddSurfaceTreatment(props) {
   }
 
   const rateFormat = (props) => {
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return rowData?.IsValidExchangeRate ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
@@ -215,9 +224,12 @@ function AddSurfaceTreatment(props) {
                         <div className="refresh mr-0"></div>
                       </button>
                     </div>
+                    <div className="d-flex justify-content-end">
+                      <WarningMessage message={"Please add the exchange rate for the selected currency in the exchange rate master for the record where the net cost field is marked as '-'."} />
+                    </div>
                     <div className="ag-theme-material p-relative">
                       {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
-                      <AgGridReact
+                      {render && <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
                         floatingFilter={true}
@@ -246,10 +258,10 @@ function AddSurfaceTreatment(props) {
                         <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
                         <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Rate" cellRenderer={'rateFormat'}></AgGridColumn>
-                        {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <AgGridColumn field="LabourRate" headerName='Labour Rate' ></AgGridColumn>}
+                        {initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure && <AgGridColumn field="LabourRate" headerName='Labour Rate' ></AgGridColumn>}
 
 
-                      </AgGridReact>
+                      </AgGridReact>}
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
                   </div>

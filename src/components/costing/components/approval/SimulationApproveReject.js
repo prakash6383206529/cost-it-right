@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getReasonSelectList, setSAPData } from '../../../costing/actions/Approval'
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { BOPIMPORT, EMPTY_GUID, EXCHNAGERATE, RAWMATERIALINDEX, RMIMPORT } from '../../../../config/constants'
+import { BOPIMPORT, EMPTY_GUID, EXCHNAGERATE, MACHINERATE, OPERATIONS, RAWMATERIALINDEX, RMIMPORT, SURFACETREATMENT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import { debounce } from 'lodash'
@@ -25,8 +25,8 @@ function SimulationApproveReject(props) {
   const dropzone = useRef(null);
   const hasCalledAPI = useRef(false);
   const { type, technologyId, approvalTypeIdValue, approvalData, IsFinalLevel, IsPushDrawer, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails, IsExchangeRateSimulation, isRMIndexationSimulation } = props
-  const receiverId = isSimulationApprovalListing?selectedRowData[0]?.ReceiverId:props?.receiverId??null;
-  
+  const receiverId = isSimulationApprovalListing ? selectedRowData[0]?.ReceiverId : props?.receiverId ?? null;
+
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const { TokensList } = useSelector(state => state.simulation)
@@ -72,10 +72,10 @@ function SimulationApproveReject(props) {
     dispatch(getApprovalTypeSelectList('', () => { }))
   }, [])
   useEffect(() => {
-    if(type==='Sender'){
-    dispatch(getReasonSelectList((res) => { }))
+    if (type === 'Sender') {
+      dispatch(getReasonSelectList((res) => { }))
     }
-    dispatch(getSimulationApprovalByDepartment(receiverId,res => {
+    dispatch(getSimulationApprovalByDepartment(receiverId, res => {
       const Data = res?.data?.SelectList
       const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
       const updateList = Data && Data.filter(item => Departments.includes(item.Text))
@@ -87,19 +87,19 @@ function SimulationApproveReject(props) {
       }
       setDataInFields(dataInFieldTemp)
       setIsResponseTrueObj({ ...isResponseTrueObj, Department: true })
-      if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
+      if (initialConfiguration?.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
         setDataFromReleaseStrategy(releaseStrategyDetails, dataInFieldTemp)
       }
     }))
     let technologyId = selectedMasterForSimulation?.value
     if (IsExchangeRateSimulation) {
-      if (String(selectedMasterForSimulation?.value) === String(RMIMPORT) || String(selectedMasterForSimulation?.value) === String(BOPIMPORT)) {
+      if (String(selectedMasterForSimulation?.value) === String(RMIMPORT) || String(selectedMasterForSimulation?.value) === String(BOPIMPORT) || String(selectedMasterForSimulation?.value) === String(RAWMATERIALINDEX) || String(selectedMasterForSimulation?.value) === String(SURFACETREATMENT) || String(selectedMasterForSimulation?.value) === String(MACHINERATE) || String(selectedMasterForSimulation?.value) === String(OPERATIONS)) {
         technologyId = EXCHNAGERATE
       }
     } else {
       technologyId = selectedMasterForSimulation?.value
     }
-    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), technologyId, receiverId,(res) => {
+    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value === EXCHNAGERATE ? EXCHNAGERATE : technologyId, receiverId, (res) => {
       if (res?.data?.Data) {
         setTechnologyLevelsList(res?.data?.Data)
       }
@@ -143,19 +143,19 @@ function SimulationApproveReject(props) {
         if (res?.data?.Result) {
           Toaster.success('Simulation has been saved successfully');
 
-          if (initialConfiguration?.IsSAPConfigured) {
-            dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
-              let status = 200;
-              if ('response' in res) {
-                status = res && res?.response?.status;
-              }
-              if (status !== undefined && status === 200) {
-                setIsDisableSubmit(false)
-              } else {
-                setIsDisableSubmit(true)
-              }
-            }));
-          }
+          // if (initialConfiguration?.IsSAPConfigured) {
+          //   dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
+          //     let status = 200;
+          //     if ('response' in res) {
+          //       status = res && res?.response?.status;
+          //     }
+          //     if (status !== undefined && status === 200) {
+          //       setIsDisableSubmit(false)
+          //     } else {
+          //       setIsDisableSubmit(true)
+          //     }
+          //   }));
+          // }
         }
         setLoader(false);
       }));
@@ -269,17 +269,20 @@ function SimulationApproveReject(props) {
       LoggedInUserId: userData.LoggedInUserId,
       DepartmentId: dept?.value,
       //NEED TO MAKE THIS 2   
-      TechnologyId: technologyIdTemp,
+      TechnologyId: selectedMasterForSimulation.value === EXCHNAGERATE ? EXCHNAGERATE : technologyIdTemp,
       ReasonId: selectedRowData && selectedRowData[0].ReasonId ? selectedRowData[0].ReasonId : 0,
       ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData && selectedRowData[0]?.ApprovalTypeId ? selectedRowData[0]?.ApprovalTypeId : appTypeId),
       plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
       DivisionId: divisionId ?? null,
       ReceiverId: receiverId ?? null
     }
+
     dispatch(getAllSimulationApprovalList(obj, (res) => {
       const Data = res?.data?.DataList;
-      if (Data && Data?.length > 0) {
-        const firstApprover = Data[0]?.Value === "0" ? Data[1] : Data[0];
+      const Departments = userDetails().Department?.map(item => item.DepartmentName);
+      const validApprovers = Data?.filter(item => item.Value !== "0" && item.DepartmentName && Departments.includes(item.DepartmentName));
+      if (validApprovers && validApprovers.length > 0) {
+        const firstApprover = validApprovers[0];
         setShowWarningMessage(false);
         setDataInFields({
           ...dataInFields,
@@ -287,15 +290,14 @@ function SimulationApproveReject(props) {
           Approver: { label: firstApprover.Text, value: firstApprover.Value, levelId: firstApprover.LevelId, levelName: firstApprover.LevelName }
 
         });
-        const tempDropdownList = Data.map(item => ({
+        const tempDropdownList = validApprovers.map(item => ({
           label: item.Text,
           value: item.Value,
           levelId: item.LevelId,
           levelName: item.LevelName
-        })).filter(item => item.value !== "0");
-
-        const approverIdListTemp = Data.map(item => item.Value).filter(value => value !== "0");
-        setApprovalDropDown(tempDropdownList);    
+        }));
+        const approverIdListTemp = validApprovers.map(item => item.Value);
+        setApprovalDropDown(tempDropdownList);
         setApproverIdList(approverIdListTemp);
 
       } else {
@@ -353,7 +355,7 @@ function SimulationApproveReject(props) {
           SenderLevel: levelDetails.Level,
           SenderId: userLoggedIn,
           // ApproverId: approver && approver.value ? approver.value : '',
-          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
           ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
           ApproverLevel: approver && approver.levelName ? approver.levelName : '',
           Remark: remark,
@@ -376,7 +378,7 @@ function SimulationApproveReject(props) {
         SenderLevel: levelDetails.Level,
         SenderId: userLoggedIn,
         // ApproverId: approver && approver.value ? approver.value : '',
-        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+        ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
         ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
         ApproverLevel: approver && approver.levelName ? approver.levelName : '',
         Remark: remark,
@@ -409,7 +411,7 @@ function SimulationApproveReject(props) {
       senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
       senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
       senderObj.ApproverId = approver && approver.value ? approver.value : ''
-      senderObj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+      senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
       senderObj.SenderLevelId = levelDetails?.LevelId
       senderObj.SenderLevel = levelDetails?.Level
       senderObj.SenderId = userLoggedIn
@@ -479,11 +481,20 @@ function SimulationApproveReject(props) {
     }
   }), 600)
   const checkFinalUserAndGetApprovers = (value, levelDetails, obj, division = null) => {
+
+    let technologyIdTemp = technologyId
+    if (IsExchangeRateSimulation) {
+      if (String(technologyId) === String(RMIMPORT) || String(technologyId) === String(BOPIMPORT) || String(technologyId) === String(SURFACETREATMENT) || String(technologyId) === String(MACHINERATE) || String(technologyId) === String(OPERATIONS) || String(technologyId) === String(RAWMATERIALINDEX)) {
+        technologyIdTemp = EXCHNAGERATE
+      }
+    } else {
+      technologyIdTemp = technologyId
+    }
     if (levelDetails?.length !== 0) {
       let requestObj = {
         DepartmentId: value?.value,
         UserId: loggedInUserId(),
-        TechnologyId: technologyId,
+        TechnologyId: technologyIdTemp,
         Mode: 'simulation',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId),
         plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
@@ -495,19 +506,20 @@ function SimulationApproveReject(props) {
         if (res && res.data && res.data.Result) {
           setFinalLevelUser(res.data.Data.IsFinalApprover)
           if (res.data.Data.IsFinalApprover) {
-          if (props?.CheckFinalLevel!==undefined) {
-              props?.CheckFinalLevel(true)            }
-            if(type=== 'Sender'){
+            if (props?.CheckFinalLevel !== undefined) {
+              props?.CheckFinalLevel(true)
+            }
+            if (type === 'Sender') {
               setIsDisableSubmit(true)
               setShowWarningMessage(true)
               setShowMessage('This is a final level user.')
               Toaster.warning('This is a final level user.')
-            }else{
+            } else {
               setIsDisableSubmit(false)
             }
           } else {
             setIsDisableSubmit(false)
-            if (props?.CheckFinalLevel!==undefined) {
+            if (props?.CheckFinalLevel !== undefined) {
               props?.CheckFinalLevel(false)
             }
 
@@ -550,7 +562,6 @@ function SimulationApproveReject(props) {
           setIsShowDivision(false)
 
           checkFinalUserAndGetApprovers(value, levelDetails, obj)
-          
           callApproverAPI(value)
         }
       }))
@@ -559,7 +570,6 @@ function SimulationApproveReject(props) {
     else {
 
       checkFinalUserAndGetApprovers(value, levelDetails, obj)
-      
       callApproverAPI(value)
     }
     setDataInFields(obj)
@@ -569,7 +579,6 @@ function SimulationApproveReject(props) {
     setDivision(e?.value)
 
     checkFinalUserAndGetApprovers(dataInFields?.Department, levelDetails, dataInFields, e?.value)
-    
     callApproverAPI(dataInFields?.Department, e?.value)
   }
   const fileDataCallback = (fileList) => {

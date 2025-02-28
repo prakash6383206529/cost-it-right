@@ -1,11 +1,10 @@
-
 import { useDispatch } from "react-redux";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { HOUR, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
+import { HOUR, MACHINING, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, getConfigurationKey, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
-import { PART_TYPE_ASSEMBLY } from "../../config/masterData";
+import { PART_TYPE_ASSEMBLY, PLASTIC } from "../../config/masterData";
 import { checkDivisionByPlantAndGetDivisionIdByPart } from "../../actions/Common";
 import Toaster from "../common/Toaster";
 import { MESSAGES } from "../../config/message";
@@ -116,7 +115,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "EffectiveDate": DayTime(new Date(effectiveDate)),
       "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
       "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-      "TotalConversionCostWithQuantity": tabData && AddLabour ? (tabData.CostingPartDetails?.TotalConversionCostWithQuantity + checkForNull(tabData.CostingPartDetails.NetLabourCost) + checkForNull(tabData.CostingPartDetails.IndirectLaborCost) + checkForNull(tabData.CostingPartDetails.StaffCost)) : tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+      "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
       "TotalCalculatedRMBOPCCCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
@@ -467,4 +466,60 @@ export const fetchDivisionId = (requestObject, dispatch) => {
       resolve(null)
     }
   })
+}
+export const calculateTotalPercentage = (currentValue, index, rawMaterials, getValues, rmExist) => {
+  let totalPercentage = 0
+  if (rmExist) {
+    totalPercentage = rawMaterials?.reduce((total, item) => {
+      return total + (checkForNull(item.Percentage) || 0);
+    }, 0);
+  }
+  else {
+    totalPercentage = rawMaterials?.reduce((total, _, idx) => {
+      return checkForNull(total) + (idx === index ?
+        checkForNull(currentValue) || 0 :
+        checkForNull(getValues(`rmGridFields.${idx}.Percentage`)) || 0);
+    }, 0);
+  }
+  return {
+    total: checkForNull(totalPercentage),
+    message: totalPercentage > 100 ?
+      `Total percentage is ${totalPercentage}%, must be 100% to save the values` : '',
+    isValid: totalPercentage <= 100
+  };
+};
+export const NetLandedCostToolTip = (item, technologyId, IsApplyMasterBatch = false) => {
+  const { UOM, IsCalculatorAvailable } = item || {};
+  const baseFormula = 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)';
+
+  switch (Number(technologyId)) {
+    case Number(MACHINING):
+      if (UOM === "Meter" && IsCalculatorAvailable) {
+        return 'Net RM Cost = RM/Pc - ScrapCost';
+      }
+      return baseFormula;
+
+    case Number(PLASTIC):
+      return IsApplyMasterBatch
+        ? baseFormula.replace('RM Rate', 'RM Rate (Including Master Batch)')
+        : baseFormula;
+
+    default:
+      return baseFormula;
+  }
+}
+
+export const checkNegativeValue = (arr = [], keyName = 'NetLandedCost', displayName = 'Net Landed Cost') => {
+  let msg = '';
+  let hasNegativeValue = false;
+  arr.forEach((item, index) => {
+    if (item?.[keyName] < 0) {
+      msg = `${displayName} cannot be negative for row ${index + 1}`;
+      hasNegativeValue = true;
+    }
+  });
+  if (hasNegativeValue) {
+    Toaster.warning(msg);
+  }
+  return hasNegativeValue;
 }

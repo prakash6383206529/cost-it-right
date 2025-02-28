@@ -5,7 +5,7 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME, EMPTY_GUID } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -55,6 +55,8 @@ function OperationCost(props) {
   const [tourState, setTourState] = useState({
     steps: []
   })
+  const { currencySource,exchangeRateData } = useSelector((state) => state?.costing);
+
   useEffect(() => {
     const Params = {
       index: 0,
@@ -91,7 +93,7 @@ function OperationCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
 
     setDrawerOpen(true)
   }
@@ -108,7 +110,7 @@ function OperationCost(props) {
         if (el.UOMType === MASS) {
           finalQuantity = rmFinishWeight ? rmFinishWeight : 1
         } else {
-          finalQuantity = el.Quantity
+          finalQuantity = el?.Quantity
         }
         const WithLaboutCost = checkForNull(el.Rate) * checkForNull(finalQuantity);
         const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
@@ -127,13 +129,15 @@ function OperationCost(props) {
           OperationCost: OperationCost,
           IsChecked: el.IsChecked,
           UOMType: el.UOMType,
+          ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+          CurrencyExchangeRate: el.CurrencyExchangeRate
         }
       })
       let tempArr = [...GridArray, ...rowArray]
       let netCostTotal = 0
       tempArr && tempArr.map((el, index) => {
         netCostTotal = checkForNull(netCostTotal) + checkForNull(el.OperationCost)
-        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
+        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el?.Quantity, initialConfiguration?.NoOfDecimalForInputOutput))
         return null
       })
       setOperationCostAssemblyTechnology(netCostTotal)
@@ -166,7 +170,7 @@ function OperationCost(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
-    if (errors.OperationGridFields && errors.OperationGridFields[index]?.remarkPopUp !== undefined) {
+    if (errors?.OperationGridFields && errors?.OperationGridFields?.[index]?.remarkPopUp !== undefined) {
       return false
     }
     let tempArr = []
@@ -200,8 +204,8 @@ function OperationCost(props) {
 
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`operationCost_popUpTriggerss${props.IsAssemblyCalculation}${index}`)
-    if (errors && errors.OperationGridFields && errors.OperationGridFields[index].remarkPopUp) {
-      delete errors.OperationGridFields[index].remarkPopUp;
+    if (errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index].remarkPopUp) {
+      delete errors?.OperationGridFields?.[index].remarkPopUp;
       setOperationRemark(false)
     }
     button.click()
@@ -239,7 +243,7 @@ function OperationCost(props) {
   }
 
   const SaveItem = (index) => {
-    if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields[index]?.Quantity).length !== 0)) {
+    if (errors?.OperationGridFields && (errors?.OperationGridFields?.[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields?.[index]?.Quantity).length !== 0)) {
       return false
     }
     if (getValues(`${OperationGridFields}.${index}.Quantity`) === '') {
@@ -247,7 +251,7 @@ function OperationCost(props) {
     }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
-      if (operationGridData.Quantity === '0') {
+      if (operationGridData?.Quantity === '0') {
         Toaster.warning('Number should not be zero')
         return false
       }
@@ -293,14 +297,14 @@ function OperationCost(props) {
     let tempArr = [];
     let tempData = gridData[index];
     if (!isNaN(event?.target?.value) && event?.target?.value !== '') {
-      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
+      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, LabourQuantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
-      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
+      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
       const WithOutLabourCost = 0;                                                              // WHEN INVALID INPUT WithOutLabourCost IS 0
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
@@ -311,17 +315,17 @@ function OperationCost(props) {
   }
 
   const netCost = (item) => {
-    const cost = checkForNull(item.Rate * item.Quantity) + checkForNull(item.LabourRate * item.LabourQuantity);
-    return checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+    const cost = checkForNull(item.Rate * item?.Quantity) + checkForNull(item.LabourRate * item.LabourQuantity);
+    return checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice);
   }
 
   /**
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
   */
-  let temp = ErrorObjRMCC
+  let temp = ErrorObjRMCC ? ErrorObjRMCC : {}
   if (Object.keys(errors).length > 0 && counter < 2) {
-    temp.OperationGridFields = errors.OperationGridFields;
+    temp.OperationGridFields = errors?.OperationGridFields;
     dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
@@ -385,7 +389,7 @@ function OperationCost(props) {
                     icon={"plus"}
                     buttonName={"OPER"}
                   />}
-                <TooltipCustom tooltipClass="operation-defination" customClass="mt-2 mr-2" id={`operation-defination`} width="400px" tooltipText={"An operation is a detailed step within the manufacturing process involved in creating a part. It often includes tasks where human effort is added, like putting parts together, checking quality, or doing other hands-on work to complete the manufacturing process."} />
+                {!CostingViewMode && <TooltipCustom tooltipClass="operation-defination" customClass="mt-2 mr-2" id={`operation-defination`} width="400px" tooltipText={"An operation is a detailed step within the manufacturing process involved in creating a part. It often includes tasks where human effort is added, like putting parts together, checking quality, or doing other hands-on work to complete the manufacturing process."} />}
               </div>
             </Col>
           </Row>
@@ -394,7 +398,7 @@ function OperationCost(props) {
 
             <Col md="12">
               <Table className="table cr-brdr-main costing-operation-cost-section p-relative" size="sm" onDragOver={onMouseLeave} onDragEnd={onDragComplete}>
-                <thead className={`${initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'} ${headerPinned ? 'sticky-headers' : ''}`}>
+                <thead className={`${initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'} ${headerPinned ? 'sticky-headers' : ''}`}>
                   <tr>
                     <th>{`Operation Name`}</th>
                     <th>{`Operation Code`}</th>
@@ -402,13 +406,13 @@ function OperationCost(props) {
                     <th>{`Rate`}</th>
                     <th >{`Quantity`}</th>
                     {initialConfiguration &&
-                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      initialConfiguration?.IsOperationLabourRateConfigure &&
                       <th>{`Labour Rate`}</th>}
                     {initialConfiguration &&
-                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      initialConfiguration?.IsOperationLabourRateConfigure &&
                       <th>{`Labour Quantity`}</th>}
                     <th>{`Net Cost`}</th>
-                    {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                    {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                     <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -436,23 +440,23 @@ function OperationCost(props) {
                                     required: true,
                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
-                                  defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
+                                  defaultValue={checkForDecimalAndNull(item?.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder error-label mb-0'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleQuantityChange(e, index)
                                   }}
-                                  errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].Quantity : ''}
+                                  errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index]?.Quantity : ''}
                                   disabled={(CostingViewMode || IsLocked) ? true : false}
                                 />
                               }
                             </td>
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
-                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
+                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
                               <td style={{ width: 200 }}>
                                 {
                                   item.IsLabourRateExist ?
@@ -473,7 +477,7 @@ function OperationCost(props) {
                                         e.preventDefault()
                                         handleLabourQuantityChange(e, index)
                                       }}
-                                      errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
+                                      errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index].LabourQuantity : ''}
                                       disabled={(CostingViewMode || IsLocked) ? true : false}
                                     />
                                     :
@@ -481,7 +485,7 @@ function OperationCost(props) {
                                 }
                               </td>}
                             <td>{netCost(item)}</td>
-                            {initialConfiguration.IsShowCRMHead && <td>
+                            {initialConfiguration?.IsShowCRMHead && <td>
                               <SearchableSelectHookForm
                                 name={`crmHeadOperation${index}`}
                                 type="text"
@@ -516,15 +520,15 @@ function OperationCost(props) {
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
-                            <td style={{ width: 130 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            <td style={{ width: 130 }}>{checkForDecimalAndNull(item?.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
-                              <td style={{ width: 130 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
+                              <td style={{ width: 130 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              initialConfiguration?.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
-                            <td><div className='w-fit' id={`operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`operation-cost${index}`} tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />{netCost(item)}</div></td>
-                            {initialConfiguration.IsShowCRMHead && <td>
+                            <td><div className='w-fit' id={`operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`operation-cost${index}`} tooltipText={initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />{netCost(item)}</div></td>
+                            {initialConfiguration?.IsShowCRMHead && <td>
                               <SearchableSelectHookForm
                                 name={`crmHeadOperation${index}`}
                                 type="text"
@@ -566,7 +570,7 @@ function OperationCost(props) {
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}
-                                    errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
+                                    errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                                     disabled={(CostingViewMode || IsLocked) ? true : false}
                                     hidden={false}
@@ -586,7 +590,7 @@ function OperationCost(props) {
                   }
                   {gridData && gridData.length === 0 &&
                     <tr>
-                      <td colSpan={7}>
+                      <td colSpan={12}>
                         <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>

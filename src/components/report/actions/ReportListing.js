@@ -176,7 +176,7 @@ export function getCostRatioReport(data, callback) {
     const requestData = {
         loggedInUserId: loggedInUserId(),
         ...data
-    }   
+    }
 
     return (dispatch) => {
         const request = axiosInstance.post(`${API.getCostRatioReport}`, requestData, config());
@@ -416,7 +416,7 @@ export function getMachineProcessMovement(data, callback) {
 }
 
 export function getGotAndGivenDetails(data, callback) {
-   
+
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&plantId=${data?.plantId}&customerId=${data?.customerId}&vendorId=${data?.vendorId}&partId=${data?.partId}&productCategoryId=${data?.productCategoryId}&isRequestForSummary=${data?.isRequestForSummary}`
 

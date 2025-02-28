@@ -36,7 +36,7 @@ function RMApproval(props) {
     const [loader, setLoader] = useState(true)
     const [isFinalApprover, setIsFinalApprover] = useState(false)
     const dispatch = useDispatch()
-    const { technologyLabel,vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     useEffect(() => {
         getTableData()
         let obj = {
@@ -105,7 +105,7 @@ function RMApproval(props) {
         return (
             <>
 
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration?.NoOfDecimalForPrice) : ''}
             </>
         )
     }
@@ -116,7 +116,7 @@ function RMApproval(props) {
         return (
             <>
 
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration?.NoOfDecimalForPrice) : ''}
             </>
         )
     }
@@ -437,3 +437,4 @@ function RMApproval(props) {
 }
 
 export default RMApproval;
+// HP3-I1368

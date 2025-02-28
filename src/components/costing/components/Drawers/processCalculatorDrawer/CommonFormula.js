@@ -1,3 +1,4 @@
+import { getConfigurationKey } from "../../../../../helper"
 
 export const passesNo = (mr, doc) => {
   if (!mr || !doc) {
@@ -38,3 +39,7 @@ export const totalMachineTime = (cutTime, clampingTimeValue) => {
     return cutTime + clampingTimeValue
   }
 }
+
+export const sourceCurrencyFormatter = (currencySource) => {
+  return currencySource ? currencySource : getConfigurationKey()?.BaseCurrency
+}   

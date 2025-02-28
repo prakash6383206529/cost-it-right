@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { getPowerDetailDataList, getVendorPowerDetailDataList, deletePowerDetail, deleteVendorPowerDetail, } from "../actions/Fuel";
-import { EMPTY_DATA } from "../../../config/constants";
+import { EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
@@ -15,7 +15,7 @@ import { POWERLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from "../../../helper";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -24,6 +24,8 @@ import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctio
 import { useRef } from 'react';
 import Button from "../../layout/Button";
 import { useLabels, useWithLocalization } from "../../../helper/core";
+import Switch from 'react-switch'
+
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -46,6 +48,8 @@ const PowerListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    isImport: false,
+    totalRecordCount: 0
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -58,16 +62,16 @@ const PowerListing = (props) => {
     }
   }, [permissions]);
 
-  const getDataList = () => {
+  const getDataList = (isImport = false) => {
     setState((prevState) => ({ ...prevState, isLoader: true }));
     if (!state.IsVendor) {
-      const filterData = { plantID: state.plant ? state.plant.value : "", stateID: state.StateName ? state.StateName.value : "", };
+      const filterData = { plantID: state.plant ? state.plant.value : "", stateID: state.StateName ? state.StateName.value : "", PowerEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC };
       dispatch(
         getPowerDetailDataList(filterData, (res) => {
           setState((prevState) => ({ ...prevState, isLoader: false }));
           if (res && res.status === 200) {
             let Data = res.data.DataList;
-            setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, }));
+            setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, totalRecordCount: Data?.length }));
           } else if (res && res.response && res.response.status === 412) {
             setState((prevState) => ({ ...prevState, tableData: [], isLoader: false, }));
           }
@@ -174,12 +178,12 @@ const PowerListing = (props) => {
 
   const costFormatter = (props) => {
     const cellValue = props?.value;
-    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : "";
+    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration?.NoOfDecimalForPrice) : "";
   };
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      powerDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+      powerDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
     }, 500);
   };
 
@@ -228,7 +232,13 @@ const PowerListing = (props) => {
     let tempArr = [];
     tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr = tempArr && tempArr.length > 0 ? tempArr : powerDataList ? powerDataList : [];
-    return returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl_LOCALIZATION, tempArr);
+    const filteredLabels = POWERLISTING_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr);
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -273,7 +283,10 @@ const PowerListing = (props) => {
     browserDatePicker: true,
     minValidYear: 2000,
   };
-
+  const importToggle = () => {
+    setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
+    getDataList(!state.isImport)
+  }
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -309,8 +322,8 @@ const PowerListing = (props) => {
                   )}
                   {permissions.Download && (
                     <>
-                      <ExcelFile filename={"Power"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-powerListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}                      >
-                        {onBtExport()}
+                      <ExcelFile filename={"Power"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-powerListing"} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
+                        {state?.totalRecordCount !== 0 ? onBtExport() : null}
                       </ExcelFile>
                     </>
                   )}
@@ -332,6 +345,27 @@ const PowerListing = (props) => {
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
+            <Row>
+              <Col md="4" className="switch mb15">
+                <label className="switch-level">
+                  <div className="left-title">Domestic</div>
+                  <Switch
+                    onChange={importToggle}
+                    checked={state.isImport}
+                    id="normal-switch"
+                    background="#4DC771"
+                    onColor="#4DC771"
+                    onHandleColor="#ffffff"
+                    offColor="#4DC771"
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    height={20}
+                    width={46}
+                  />
+                  <div className="right-title">Import</div>
+                </label>
+              </Col>
+            </Row>
             <div
               className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}
             >
@@ -359,10 +393,14 @@ const PowerListing = (props) => {
                 suppressRowClickSelection={true}
               >
                 <AgGridColumn field="CostingType"></AgGridColumn>
+                <AgGridColumn field="CountryName"></AgGridColumn>
                 <AgGridColumn field="StateName"></AgGridColumn>
+                <AgGridColumn field="CityName"></AgGridColumn>
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" ></AgGridColumn>
                 <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)"></AgGridColumn>}
+                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={"costFormatter"}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" cellRenderer="effectiveDateFormatter" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn field="PowerId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>

@@ -4,16 +4,16 @@ import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
 import { Row, Col, Table, Label } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number, maxPercentValue, percentageLimitValidation } from '../../../helper/validation'
 import { focusOnError, renderTextInputField, searchableSelect, validateForm } from '../../layout/FormInputs'
-import { getPlantListByState } from '../actions/Fuel'
+import { getPlantListByAddress, getPlantListByState } from '../actions/Fuel'
 import { getProductGroupSelectList } from '../actions/Part'
 import { createLabour, getLabourData, updateLabour, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster'
-import { fetchStateDataAPI, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { fetchCityDataAPI, fetchCountryDataAPI, fetchStateDataAPI, getAllCity, getCityByCountryAction, getExchangeRateSource, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
-import { CBCTypeId, EMPTY_DATA, LABOUR_VENDOR_TYPE, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants'
-import { loggedInUserId } from '../../../helper/auth'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, LABOUR_VENDOR_TYPE, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants'
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -23,13 +23,17 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
-import { onFocus } from '../../../helper'
+import { getExchangeRateParams, onFocus } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { subDays } from 'date-fns'
 import { LabelsClass } from '../../../helper/core'
-import { withTranslation } from 'react-i18next'
+import { withTranslation } from 'react-i18next';
+import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
+import { getPlantUnitAPI } from '../actions/Plant'
+import WarningMessage from '../../common/WarningMessage'
+import TooltipCustom from '../../common/Tooltip'
 
 const selector = formValueSelector('AddLabour')
 
@@ -37,7 +41,7 @@ class AddLabour extends Component {
   constructor(props) {
     super(props)
     this.child = React.createRef()
-    this.state = {
+    this.initialState = {
       isEditFlag: false,
       LabourDetailId: '',
       isViewMode: this.props?.data?.isViewMode ? true : false,
@@ -73,8 +77,20 @@ class AddLabour extends Component {
       showErrorOnFocus: false,
       isEditMode: false,
       showPopup: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      hidePlantCurrency: false,
+      currencyValue: 1,
+      ExchangeSource: "",
+      country: [],
+      city: [],
+      plantCurrencyID: '',
+      ExchangeRateId: '',
+      disableEffectiveDate: false,
+      showPlantWarning: false,
+      showWarning: false
     }
+    this.state = { ...this.initialState };
+
   }
 
   /**
@@ -89,22 +105,63 @@ class AddLabour extends Component {
       this.props.getMachineTypeSelectList(() => { })
       this.props.getProductGroupSelectList(() => { })
       this.props.getClientSelectList(() => { })
+      this.props.fetchCountryDataAPI(() => { })
+      this.props.fetchCityDataAPI(0, () => { })
+      this.props.fetchStateDataAPI(0, () => { })
+
     }
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
-      this.props.getAllCity(countryId => {
-        this.props.fetchStateDataAPI(countryId, () => { })
-      })
+      // this.props.getAllCity(countryId => {
+      //   this.props.fetchStateDataAPI(countryId, () => { })
+      // })
+      this.props.fetchCountryDataAPI(() => { })
+      this.props.fetchCityDataAPI(0, () => { })
       this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
-      this.props.getPlantListByState('', () => { })
+      this.props.fetchStateDataAPI(0, () => { })
     }
+
     this.getDetail()
+    this.props.getExchangeRateSource((res) => { })
+
+
   }
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.fieldsObj?.LabourRate !== prevProps.fieldsObj?.LabourRate) {
+      this.handleCalculation()
+    }
 
-  componentDidUpdate(prevProps) { }
 
+  }
+  callExchangeRateAPI = () => {
+    const { fieldsObj } = this.props
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, IsEmployeContractual } = this.state;
+
+    const vendorValue = IsFetchExchangeRateVendorWiseForParts() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual && costingTypeId === ZBCTypeId)) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWiseForParts() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual && costingTypeId === ZBCTypeId)) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    if (hasCurrencyAndDate) {
+      if (IsFetchExchangeRateVendorWiseForParts() && ((IsEmployeContractual && costingTypeId === ZBCTypeId) && vendorName?.length === 0 && client?.length === 0)) {
+        return;
+      }
+      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fieldsObj?.plantCurrency, toCurrency: reactLocalStorage?.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+
+      if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+        this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
+          this.setState({
+            currencyValue: checkForNull(res?.data?.Data?.CurrencyExchangeRate),
+            ExchangeRateId: res?.data?.Data?.ExchangeRateId,
+            showPlantWarning: Object.keys(res.data.Data).length === 0
+
+          }, () => {
+            this.handleCalculation(this.props?.fieldsObj?.LabourRate);
+          });
+        });
+      }
+    }
+  }
   /**
    * @method getDetail
    * @description used to get user detail
@@ -135,9 +192,22 @@ class AddLabour extends Component {
                   LabourRate: item.LabourRate,
                   IsAssociated: item.IsAssociated,
                   WorkingTime: item.WorkingTime,
-                  Efficiency: item.Efficiency
+                  Efficiency: item.Efficiency,
+                  LabourRateConversion: item?.LabourRateConversion,
+                  CurrencyExchangeRate: item?.CurrencyExchangeRate,
+                  ExchangeRateId: item?.ExchangeRateId,
+
                 }
               })
+
+            if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+              this.setState({ hidePlantCurrency: false })
+            } else {
+              this.setState({ hidePlantCurrency: true })
+            }
+            this.props.change('plantCurrency', Data?.LocalCurrency)
+            const currencyValue = GridArray?.[0]?.CurrencyExchangeRate;
+            const effectiveDate = GridArray?.[0]?.EffectiveDate;
 
             this.setState({
               isEditFlag: true,
@@ -151,7 +221,14 @@ class AddLabour extends Component {
               costingTypeId: Data.CostingTypeId ? Data.CostingTypeId : '',
               product: Data.ProductName !== undefined ? { label: Data.ProductName, value: Data.ProductId } : [],
               client: { label: Data.CustomerName, value: Data.CustomerId },
+              city: Data.City !== undefined ? { label: Data?.City, value: Data?.CityId } : [],
+              country: Data.Country !== undefined ? { label: Data?.Country, value: Data?.CountryId } : [],
+              currencyValue: currencyValue,
+              ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
+              plantCurrencyID: Data?.LocalCurrencyId,
+              effectiveDate: effectiveDate
             }, () => this.setState({ isLoader: false }))
+            this.callExchangeRateAPI()
           }, 500)
         }
       })
@@ -170,7 +247,7 @@ class AddLabour extends Component {
     const {
       plantSelectList,
       stateList,
-      machineTypeSelectList, productGroupSelectList, clientSelectList
+      machineTypeSelectList, productGroupSelectList, clientSelectList, exchangeRateSourceList, countryList, cityList
     } = this.props
     const { labourData, costingTypeId } = this.state
     const temp = []
@@ -239,6 +316,30 @@ class AddLabour extends Component {
       });
       return temp;
     }
+    if (label === 'ExchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+        if (item.Value === '--Exchange Rate Source Name--') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+    if (label === 'country') {
+      countryList && countryList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      });
+      return temp;
+    }
+    if (label === 'city') {
+      cityList && cityList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      });
+      return temp;
+    }
 
   }
 
@@ -264,58 +365,58 @@ class AddLabour extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
-    this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag
+    this.props.reset();
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
     });
-  }
-
+  };
   /**
    * @method handleVendorName
    * @description called
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [], isVendorNameNotSelected: false })
-    } else {
+      this.setState(
+        {
+          vendorName: newValue,
+          selectedVendorPlants: [],
+          isVendorNameNotSelected: false
+        },
+        () => {
+          if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.callExchangeRateAPI()
+          }
+        }
+      );
+    }
+    // ... existing code ...
+    else {
       this.setState({ vendorName: [], selectedVendorPlants: [] })
     }
   }
 
-  /**
-   * @method handleState
-   * @description called
-   */
-  // handleState = (newValue, actionMeta) => {
-  //   if (newValue && newValue !== '') {
-  //     this.setState({ StateName: newValue }, () => {
-  //       const { StateName } = this.state
-  //       this.setState({ selectedPlants: [] })
-  //       this.props.getPlantListByState(StateName.value, () => { })
-  //     })
-  //   } else {
-  //     this.setState({ StateName: [] })
-  //     this.props.getPlantListByState('', () => { })
-  //   }
-  // }
-  handleState = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ StateName: newValue }, () => {
-        const { StateName } = this.state
-        this.setState({ selectedPlants: [] })
-        this.props.getPlantListByState(StateName.value, () => { })
-      })
-    } else {
-      this.setState({ StateName: [] })
-      this.props.getPlantListByState('', () => { })
 
+
+  stateHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ StateName: newValue, city: [] }, () => {
+        const { StateName } = this.state;
+        this.props.fetchCityDataAPI(StateName.value, () => { })
+      });
+    } else {
+      this.setState({ StateName: [], city: [] });
     }
+
   };
+
 
 
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue }, () => {
+        if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
+      });
     } else {
       this.setState({ client: [] })
     }
@@ -337,6 +438,17 @@ class AddLabour extends Component {
   handlePlants = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ selectedPlants: newValue })
+      this.props.getPlantUnitAPI(newValue?.value, (res) => {
+        let Data = res?.data?.Data
+        this.setState({ plantCurrencyID: Data?.CurrencyId })
+        this.props.change('plantCurrency', Data?.Currency)
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.setState({ hidePlantCurrency: false })
+        } else {
+          this.setState({ hidePlantCurrency: true })
+        }
+        this.callExchangeRateAPI()
+      })
     } else {
       this.setState({ selectedPlants: [] })
     }
@@ -444,13 +556,15 @@ class AddLabour extends Component {
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
-    })
+    }, () => {
+      this.callExchangeRateAPI();
+    });
   }
 
   gridHandler = () => {
-    const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId, efficiency, workingHours } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId, efficiency, workingHours, city, country } = this.state
     const { fieldsObj } = this.props
-    if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || StateName === 0) {
+    if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || country.length === 0 || city.length === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
@@ -464,7 +578,7 @@ class AddLabour extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, labourType: true } })
         count++;
       }
-      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      if (fieldsObj?.LabourRateConversion === 0 || fieldsObj?.LabourRate === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, labourRate: true } })
         count++;
       }
@@ -488,20 +602,23 @@ class AddLabour extends Component {
         Toaster.warning('Already added, Please check the values.')
         return false
       }
-      const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
-
+      const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRate) : 0
+      const LabourRateConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRateConversion) : checkForNull(fieldsObj?.LabourRate)
       const tempArray = []
 
       tempArray.push(...gridTable, {
         LabourDetailId: '',
         MachineTypeId: machineType.value,
-        MachineType: machineType.label,
-        LabourTypeId: labourType.value,
-        LabourType: labourType.label,
+        MachineType: machineType?.label,
+        LabourTypeId: labourType?.value,
+        LabourType: labourType?.label,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
         LabourRate: LabourRate,
         Efficiency: efficiency,
-        WorkingTime: workingHours
+        WorkingTime: workingHours,
+        LabourRateConversion: LabourRateConversion,
+        CurrencyExchangeRate: this.state.currencyValue,
+        ExchangeRateId: this.state.ExchangeRateId,
       })
 
       this.setState(
@@ -515,7 +632,8 @@ class AddLabour extends Component {
         },
         () => this.props.change('LabourRate', ''),
         this.props.change('workingHours', ''),
-        this.props.change('Efficiency', '')
+        this.props.change('Efficiency', ''),
+        this.props.change("LabourRateConversion", "")
       )
       this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
     }, 200);
@@ -528,8 +646,8 @@ class AddLabour extends Component {
   updateGrid = () => {
     const { machineType, labourType, gridTable, effectiveDate, gridEditIndex, efficiency, workingHours } = this.state
     const { fieldsObj } = this.props
-    const LabourRate =
-      fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
+    const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRate) : 0
+    const LabourRateConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRateConversion) : checkForNull(fieldsObj?.LabourRate)
 
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
     let skipEditedItem = gridTable.filter((el, i) => {
@@ -558,13 +676,17 @@ class AddLabour extends Component {
     let tempData = gridTable[gridEditIndex]
     tempData = {
       MachineTypeId: machineType.value,
-      MachineType: machineType.label,
-      LabourTypeId: labourType.value,
-      LabourType: labourType.label,
+      MachineType: machineType?.label,
+      LabourTypeId: labourType?.value,
+      LabourType: labourType?.label,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
       Efficiency: efficiency,
-      WorkingTime: workingHours
+      WorkingTime: workingHours,
+      LabourRateConversion: LabourRateConversion,
+      CurrencyExchangeRate: this.state.currencyValue,
+      ExchangeRateId: this.state.ExchangeRateId,
+
     }
 
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData })
@@ -578,11 +700,14 @@ class AddLabour extends Component {
         gridEditIndex: '',
         isEditIndex: false,
         efficiency: '',
-        workingHours: ''
+        workingHours: '',
+        disableEffectiveDate: false
       },
       () => this.props.change('LabourRate', 0),
       this.props.change('workingHours', ''),
-      this.props.change('Efficiency', '')
+      this.props.change('Efficiency', ''),
+      this.props.change("LabourRateConversion", 0)
+
     )
     this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
   }
@@ -598,9 +723,11 @@ class AddLabour extends Component {
         labourType: [],
         gridEditIndex: '',
         isEditIndex: false,
-        effectiveDate: ''
+        effectiveDate: '',
+        disableEffectiveDate: false
       },
-      () => this.props.change('LabourRate', ''), this.props.change('workingHours', ''), this.props.change('Efficiency', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
+      () => this.props.change('LabourRate', ''), this.props.change("LabourRateConversion", "")
+      , this.props.change('workingHours', ''), this.props.change('Efficiency', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
     )
   }
 
@@ -610,43 +737,56 @@ class AddLabour extends Component {
    * @description used to Edit grid data
    */
   editGridItemDetails = (index) => {
-    const { gridTable } = this.state
-    const tempData = gridTable[index]
+    this.setState({ disableEffectiveDate: true });
+
+    const { gridTable } = this.state;
+    const tempData = gridTable[index];
 
     this.props.getLabourTypeByMachineTypeSelectList(
       { machineTypeId: tempData.MachineTypeId },
       (res) => {
-        this.setState({ labourData: res?.data?.SelectList })
         this.setState({
           labourData: res?.data?.SelectList,
           labourType: {
             label: tempData.LabourType,
             value: tempData.LabourTypeId,
-          },
-        })
-      },
-    )
+          }
+        });
+      }
+    );
 
-
-    this.setState(
-      {
-        gridEditIndex: index,
-        isEditIndex: true,
-        machineType: {
-          label: tempData.MachineType,
-          value: tempData.MachineTypeId,
-        },
-        effectiveDate: tempData.EffectiveDate,
-        workingHours: tempData.WorkingTime,
-        efficiency: tempData.Efficiency
+    this.setState({
+      gridEditIndex: index,
+      isEditIndex: true,
+      machineType: {
+        label: tempData.MachineType,
+        value: tempData.MachineTypeId,
       },
-      () => this.props.change('LabourRate', tempData.LabourRate),
-      () => this.props.change('workingHours', tempData.WorkingTime),
-      () => this.props.change('Efficiency', tempData.Efficiency)
-    )
-    this.props.change('workingHours', tempData.WorkingTime)
-    this.props.change('Efficiency', tempData.Efficiency)
+      effectiveDate: tempData.EffectiveDate,
+      workingHours: tempData.WorkingTime,
+      efficiency: tempData.Efficiency,
+      currencyValue: tempData?.CurrencyExchangeRate,
+      ExchangeRateId: tempData?.ExchangeRateId
+    }, () => {
+      // Set all form values in a single callback
+      const formUpdates = {
+        'LabourRate': tempData.LabourRate,
+        'LabourRateConversion': tempData.LabourRateConversion,
+        'workingHours': tempData.WorkingTime,
+        'Efficiency': tempData.Efficiency
+      };
+
+      // Update all form fields
+      Object.entries(formUpdates).forEach(([field, value]) => {
+        setTimeout(() => {
+
+          this.props.change(field, value);
+        }, 100)
+      });
+    });
   }
+
+  // ... existing code ...
 
   /**
    * @method deleteGridItem
@@ -664,6 +804,8 @@ class AddLabour extends Component {
     this.setState({ DropdownChanged: false, effectiveDate: '' })
     this.resetGridData()
     this.props.change('LabourRate', '')
+    this.props.change("LabourRateConversion", "")
+
   }
 
   /**
@@ -702,9 +844,10 @@ class AddLabour extends Component {
    * @description Used to Submit the form
    */
   onSubmit = debounce((values) => {
-    const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged, product, costingTypeId, client } = this.state
+    const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged, product, costingTypeId, client, country, city } = this.state
 
-    if (vendorName.length <= 0 && costingTypeId === VBCTypeId) {
+
+    if (vendorName.length <= 0 && costingTypeId === VBCTypeId && IsEmployeContractual) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
@@ -719,7 +862,7 @@ class AddLabour extends Component {
     if (this.state.isEditFlag) {
 
       if (DropdownChanged) {
-        this.cancel('cancel')
+        Toaster.warning('Please change the data to save Labour Details')
         return false
       }
 
@@ -733,12 +876,21 @@ class AddLabour extends Component {
         IsVendor: IsVendor,
         VendorId: (IsEmployeContractual && (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId)) ? vendorName.value : '',
         StateId: StateName.value,
+        CountryId: country?.value,
+        CityId: city?.value,
         LoggedInUserId: loggedInUserId(),
         LabourDetails: gridTable,
         Plants: [
-          { PlantId: selectedPlants.value, PlantName: selectedPlants.label },
+          { PlantId: selectedPlants.value, PlantName: selectedPlants?.label },
         ],
         VendorPlant: [],
+        ExchangeRateSourceName: this.state?.ExchangeSource?.label ?? null,
+        LocalCurrency: this.props.fieldsObj.plantCurrency,
+        LocalCurrencyId: this.state.plantCurrencyID,
+        // ExchangeRateId: this.state?.ExchangeRateId,
+        // CurrencyExchangeRate: this?.state?.currencyValue,
+
+
       }
 
       this.props.updateLabour(updateData, (res) => {
@@ -759,14 +911,21 @@ class AddLabour extends Component {
         ProductId: product.value,
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
-        VendorId: (IsEmployeContractual && (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId)) ? vendorName.value : '',
+        VendorId: (IsEmployeContractual && (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId)) ? vendorName.value : null,
         StateId: StateName.value,
         LabourDetails: gridTable,
         Plants: [
-          { PlantId: selectedPlants.value, PlantName: selectedPlants.label },
+          { PlantId: selectedPlants.value, PlantName: selectedPlants?.label },
         ],
         LoggedInUserId: loggedInUserId(),
         VendorPlant: [],
+        CountryId: country?.value,
+        CityId: city?.value,
+        ExchangeRateSourceName: this.state?.ExchangeSource?.label ?? null,
+        LocalCurrency: this.props.fieldsObj.plantCurrency,
+        LocalCurrencyId: this.state.plantCurrencyID,
+        // ExchangeRateId: this.state?.ExchangeRateId,
+        // CurrencyExchangeRate: this?.state?.currencyValue,
       }
 
       this.props.createLabour(formData, (res) => {
@@ -784,14 +943,77 @@ class AddLabour extends Component {
       e.preventDefault();
     }
   };
+
+  DisplayLabourRatePlantCurrencyLabel = () => {
+    return <>Rate per Person/Annum ({this.props.fieldsObj.plantCurrency ?? "Plant Currency"})</>
+  }
+  handleCalculation = (rate) => {
+
+    const { fieldsObj, initialConfiguration } = this.props
+    const { currencyValue } = this.state
+
+
+    const LabourRateConversion = checkForNull(fieldsObj?.LabourRate) * checkForNull(currencyValue)
+    this.props.change('LabourRateConversion', checkForDecimalAndNull(LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice));
+
+  }
+  handleExchangeRateSource = (newValue) => {
+    this.setState({ ExchangeSource: newValue }
+      , () => {
+        this.callExchangeRateAPI();
+      }
+    );
+  };
+
+  getAllCityData = () => {
+    const { country } = this.state;
+    if (country && country?.label !== 'India') {
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', (res) => { })
+    } else {
+      this.props.fetchStateDataAPI(country.value, () => { })
+    }
+  }
+  countryHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ country: newValue, state: [], city: [] }, () => {
+        this.getAllCityData()
+      });
+    } else {
+      this.setState({ country: [], state: [], city: [] })
+    }
+    this.setState({ DropdownChanged: false })
+  };
+  cityHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ city: newValue }, () => {
+        this.callPlantApi()
+      });
+    } else {
+      this.setState({ city: [] });
+    }
+    this.setState({ DropdownChanged: false })
+  };
+
+  callPlantApi = () => {
+    const { city, StateName, country } = this.state;
+
+    const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India';
+
+    if (city?.value) {
+      this.props.getPlantListByAddress(city.value, isStateOfCountryAvailable ? StateName?.value : null, country?.value, () => { })
+    }
+  }
+  handleLabourRateBasicCurrency = (newValue) => {
+    this.handleCalculation(newValue?.target?.value)
+  }
   /**
    * @method render
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, initialConfiguration, t } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode, costingTypeId } = this.state;
-    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    let VendorLabel = LabelsClass(this.props.t, 'MasterLabels')?.vendorLabel;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -824,6 +1046,7 @@ class AddLabour extends Component {
         }
       }
     };
+    const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India'
 
     return (
       <div className="container-fluid">
@@ -973,7 +1196,7 @@ class AddLabour extends Component {
                         </Col>
                       )}
 
-                      {(costingTypeId === CBCTypeId && initialConfiguration?.IsShowProductInLabour) &&
+                      {costingTypeId === CBCTypeId && getConfigurationKey().IsShowProductInLabour &&
                         < Col md="3">
                           <div className="form-group">
                             <Field
@@ -993,24 +1216,59 @@ class AddLabour extends Component {
                           { }
                         </Col>
                       }
+                      <Col md="3">
+                        <div className="form-group inputbox withBorder ">
+                          <Field
+                            name="CountryId"
+                            type="text"
+                            label="Country"
+                            component={searchableSelect}
+                            placeholder={'Select'}
+                            options={this.renderListing('country')}
+                            validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
+                            required={true}
+                            handleChangeDescription={this.countryHandler}
+                            valueDescription={this.state.country}
+                            disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
+                          />
+                        </div>
+                      </Col>
+
+                      {isStateOfCountryAvailable &&
+                        <Col md="3">
+                          <div className="form-group inputbox withBorder ">
+                            <Field
+                              name="StateId"
+                              type="text"
+                              label="State"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('state')}
+                              validate={(this.state?.StateName == null || this.state?.StateName.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.stateHandler}
+                              valueDescription={this.state?.StateName}
+                              disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
+                            />
+                          </div>
+                        </Col>}
 
                       <Col md="3">
-                        <div className="form-group">
+                        <div className="form-group inputbox withBorder ">
                           <Field
-                            name="state"
+                            name="CityId"
                             type="text"
-                            label="State"
+                            label="City"
                             component={searchableSelect}
-                            placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
-                            options={this.renderListing("state")}
-                            validate={
-                              this.state.StateName == null || this.state.StateName.length === 0 ? [required] : []}
+                            placeholder={'Select'}
+                            options={this.renderListing('city')}
+                            validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
                             required={true}
-                            handleChangeDescription={this.handleState}
-                            valueDescription={this.state.StateName}
-                            disabled={(isEditFlag || gridTable.length !== 0) ? true : false}
-                          /></div>
-                        { }
+                            handleChangeDescription={this.cityHandler}
+                            valueDescription={this.state.city}
+                            disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
+                          />
+                        </div>
                       </Col>
                       <Col md="3">
                         <div className="form-group">
@@ -1029,243 +1287,293 @@ class AddLabour extends Component {
                             disabled={(isEditFlag || gridTable.length !== 0) ? true : false}
                           /></div>
                       </Col>
-                    </Row>
+                      {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                        <Col md="3">
+                          <Field
+                            label="Exchange Rate Source"
+                            name="ExchangeSource"
+                            placeholder="Select"
+                            options={this.renderListing("ExchangeSource")}
+                            handleChangeDescription={this.handleExchangeRateSource}
+                            component={searchableSelect}
+                            className="multiselect-with-border"
+                            disabled={isEditFlag}
+                            valueDescription={this.state?.ExchangeSource}
 
-                    <Row className='sub-form-container'>
-                      <Col md="12" className="filter-block">
-                        <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{"Rate per Person:"}</h5>
-                        </div>
+                          />
+                        </Col>
+                      )}
+                      <Col Col md="3" className='p-relative'>
+                        {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                        <Field
+                          label="Plant Currency"
+                          name="plantCurrency"
+                          type="text"
+                          placeholder="-"
+                          component={renderTextInputField}
+                          disabled={true}
+                          className=" "
+                          customClassName="withBorder mb-1 plant-currency"
+                        />
+                        {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+
                       </Col>
+                      <Row className='sub-form-container'>
+                        <Col md="12" className="filter-block">
+                          <div className=" flex-fills mb-2 w-100 pl-0">
+                            <h5>{"Rate per Person:"}</h5>
+                          </div>
+                        </Col>
 
-                      <Col md="3" className="col">
-                        <div className="d-flex justify-space-between inputwith-icon form-group">
-                          <div className="fullinput-icon">
+                        <Col md="3" className="col">
+                          <div className="d-flex justify-space-between inputwith-icon form-group">
+                            <div className="fullinput-icon">
+                              <Field
+                                name="MachineType"
+                                type="text"
+                                label="Machine Type"
+                                component={searchableSelect}
+                                placeholder={isViewMode ? '-' : "Select"}
+                                options={this.renderListing("MachineTypeList")}
+                                required={true}
+                                handleChangeDescription={this.handleMachineType}
+                                valueDescription={this.state.machineType}
+                                disabled={isViewMode}
+                              />
+                              {this.state.errorObj.machineType && this.state.machineType.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
+                            </div>
+                            {!isViewMode && (
+                              <div className='action-icon-container'>
+                                <div
+                                  onClick={this.machineTypeToggler}
+                                  className={"plus-icon-square mt-0 right"}
+                                ></div>
+                                <button type="button" onClick={this.machineTypeEdit} className={'user-btn'} disabled={this.state.machineType.value ? false : true}> <div className={"edit_pencil_icon right"}></div></button>
+                              </div>
+                            )}
+                          </div>
+                        </Col>
+                        <Col md="3" className="col">
+                          <div className="form-group">
                             <Field
-                              name="MachineType"
+                              name="LabourTypeIds"
                               type="text"
-                              label="Machine Type"
+                              label="Labour Type"
                               component={searchableSelect}
                               placeholder={isViewMode ? '-' : "Select"}
-                              options={this.renderListing("MachineTypeList")}
+                              options={this.renderListing("labourList")}
                               required={true}
-                              handleChangeDescription={this.handleMachineType}
-                              valueDescription={this.state.machineType}
+                              handleChangeDescription={this.labourHandler}
+                              valueDescription={this.state.labourType}
                               disabled={isViewMode}
                             />
-                            {this.state.errorObj.machineType && this.state.machineType.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
+                            {this.state.errorObj.labourType && this.state.labourType.length === 0 && <div className='text-help'>This field is required.</div>}
                           </div>
-                          {!isViewMode && (
-                            <div className='action-icon-container'>
-                              <div
-                                onClick={this.machineTypeToggler}
-                                className={"plus-icon-square mt-0 right"}
-                              ></div>
-                              <button type="button" onClick={this.machineTypeEdit} className={'user-btn'} disabled={this.state.machineType.value ? false : true}> <div className={"edit_pencil_icon right"}></div></button>
-                            </div>
-                          )}
-                        </div>
-                      </Col>
-                      <Col md="3" className="col">
-                        <div className="form-group">
-                          <Field
-                            name="LabourTypeIds"
-                            type="text"
-                            label="Labour Type"
-                            component={searchableSelect}
-                            placeholder={isViewMode ? '-' : "Select"}
-                            options={this.renderListing("labourList")}
-                            required={true}
-                            handleChangeDescription={this.labourHandler}
-                            valueDescription={this.state.labourType}
-                            disabled={isViewMode}
-                          />
-                          {this.state.errorObj.labourType && this.state.labourType.length === 0 && <div className='text-help'>This field is required.</div>}
-                        </div>
-                      </Col>
-                      <Col md="3">
-                        <div className="form-group">
+                        </Col>
+                        <Col md="3">
+                          <div className="form-group">
+                            <Field
+                              label={this.DisplayLabourRatePlantCurrencyLabel()}
+                              name={"LabourRate"}
+                              type="text"
+                              placeholder={isViewMode ? "-" : "Enter"}
+                              disabled={isViewMode}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
+                              required={true}
+                              className=" "
+                              customClassName="withBorder"
+                            />
+                            {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRate &&
+                              <div className='text-help'>This field is required.</div>
+                            }                          </div>
+                        </Col>
+                        {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
+                          {<TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
                           <Field
                             label={`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
-                            name={"LabourRate"}
+                            name={"LabourRateConversion"}
+                            id="rate"
                             type="text"
-                            placeholder={isViewMode ? "-" : "Enter"}
-                            disabled={isViewMode}
+                            placeholder={"-"}
                             validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                             component={renderTextInputField}
+                            onChange={this.handleLabourRateBasicCurrency}
                             required={true}
+                            disabled={true}
                             className=" "
-                            customClassName="withBorder"
+                            customClassName=" withBorder"
                           />
-                          {this.state.errorObj.labourRate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help'>This field is required.</div>}
-                        </div>
-                      </Col>
-
-                      <Col md="3">
-                        <div className="form-group">
-                          <Field
-                            label={`Working hours`}
-                            name={"workingHours"}
-                            type="text"
-                            placeholder={isViewMode ? "-" : "Enter"}
-                            disabled={isViewMode}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                            component={renderTextInputField}
-                            onChange={this.handleWorkingHours}
-                            required={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </div>
-                      </Col>
-                      <Col md="3">
-                        <div className="form-group">
-                          <Field
-                            label={`Efficiency (%)`}
-                            name={"Efficiency"}
-                            type="text"
-                            placeholder={isViewMode ? "-" : "Enter"}
-                            disabled={isViewMode}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, percentageLimitValidation, maxPercentValue]}
-                            component={renderTextInputField}
-                            onChange={this.handleEfficiency}
-                            required={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </div>
-                      </Col>
-
-                      <Col md="3">
-                        <div className="form-group">
-                          <label>Effective Date<span className="asterisk-required">*</span></label>
-                          <div className="inputbox date-section">
-                            <DatePicker
-                              name="EffectiveDate"
-                              selected={this.state.effectiveDate ? new Date(this.state.effectiveDate) : ""}
-                              onChange={this.handleEffectiveDateChange}
-                              showMonthDropdown
-                              showYearDropdown
-                              dropdownMode="select"
-                              dateFormat="dd/MM/yyyy"
-                              placeholderText={isViewMode ? '-' : "Select Date"}
-                              className="withBorder"
-                              autoComplete={"off"}
-                              disabledKeyboardNavigation
-                              onChangeRaw={(e) => e.preventDefault()}
+                        </Col>}
+                        <Col md="3">
+                          <div className="form-group">
+                            <Field
+                              label={`Working hours`}
+                              name={"workingHours"}
+                              type="text"
+                              placeholder={isViewMode ? "-" : "Enter"}
                               disabled={isViewMode}
-                              valueDescription={this.state.effectiveDate}
-                              minDate={getEffectiveDateMinDate()}
-                              maxDate={getEffectiveDateMaxDate()}
-
-
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
+                              onChange={this.handleWorkingHours}
+                              required={true}
+                              className=" "
+                              customClassName="withBorder"
                             />
-                            {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                           </div>
-                        </div>
+                        </Col>
+                        <Col md="3">
+                          <div className="form-group">
+                            <Field
+                              label={`Efficiency (%)`}
+                              name={"Efficiency"}
+                              type="text"
+                              placeholder={isViewMode ? "-" : "Enter"}
+                              disabled={isViewMode}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, percentageLimitValidation, maxPercentValue]}
+                              component={renderTextInputField}
+                              onChange={this.handleEfficiency}
+                              required={true}
+                              className=" "
+                              customClassName="withBorder"
+                            />
+                          </div>
+                        </Col>
 
-                      </Col>
-                      <Col md="3">
-                        <div className="btn-mr-rate mt30 pt-1 pr-0 col-auto">
-                          {this.state.isEditIndex ? (
-                            <>
-                              <button type="button"
-                                className={"btn btn-primary pull-left mr5"}
-                                onClick={this.updateGrid}
-                              > Update
-                              </button>
+                        <Col md="3">
+                          <div className="form-group">
+                            <label>Effective Date<span className="asterisk-required">*</span></label>
+                            <div className="inputbox date-section">
+                              <DatePicker
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate ? new Date(this.state.effectiveDate) : ""}
+                                onChange={this.handleEffectiveDateChange}
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                dateFormat="dd/MM/yyyy"
+                                placeholderText={isViewMode ? '-' : "Select Date"}
+                                className="withBorder"
+                                autoComplete={"off"}
+                                disabledKeyboardNavigation
+                                onChangeRaw={(e) => e.preventDefault()}
+                                disabled={isViewMode || isEditFlag}
+                                valueDescription={this.state.effectiveDate}
+                                minDate={getEffectiveDateMinDate()}
+                                maxDate={getEffectiveDateMaxDate()}
+                              />
+                              {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
+                            </div>
+                          </div>
 
-                              <button
-                                type="button"
-                                className={"reset-btn pull-left"}
-                                onClick={this.resetGridData}
-                              >
-                                Cancel
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                type="button"
-                                className={"user-btn  pull-left"}
-                                onClick={this.gridHandler}
-                                disabled={isViewMode}
-                              >
-                                <div className={"plus"}></div>ADD
-                              </button>
-                              <button
-                                type="button"
-                                className={"reset-btn pull-left ml5"}
-                                onClick={this.resetGridData}
-                                disabled={isViewMode}
-                              >
-                                Reset
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </Col>
-                      <Col md="12">
-                        <Table className="table border" size="sm">
-                          <thead>
-                            <tr>
-                              <th>{`Machine Type`}</th>
-                              <th>{`Labour Type`}</th>
-                              <th>{`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
-                              <th>{`Working hours`}</th>
-                              <th>{`Efficiency`}</th>
-                              <th>{`Effective Date`}</th>
-                              <th>{`Action`}</th>
-                            </tr >
-                          </thead >
-                          <tbody>
-                            {this.state.gridTable &&
-                              this.state.gridTable.map((item, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <td>{item.MachineType}</td>
-                                    <td>{item.LabourType}</td>
-                                    <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                    <td>{checkForDecimalAndNull(item.WorkingTime, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                                    <td>{checkForDecimalAndNull(item.Efficiency, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                                    <td>
-                                      {item.EffectiveDate ? DayTime(item.EffectiveDate).format(
-                                        "DD/MM/YYYY"
-                                      ) : '-'}
-                                    </td>
-                                    <td>
-                                      <button
-                                        className="Edit mr-2"
-                                        type={"button"}
-                                        disabled={isViewMode || item.IsAssociated}
-                                        onClick={() =>
-                                          this.editGridItemDetails(index)
-                                        }
-                                      />
-                                      <button
-                                        className="Delete"
-                                        disabled={isViewMode || item.IsAssociated}
-                                        type={"button"}
-                                        onClick={() =>
-                                          this.deleteGridItem(index)
-                                        }
-                                      />
-                                    </td>
-                                  </tr>
-                                );
-                              })}
+                        </Col>
+                        <Col md="3">
+                          <div className="btn-mr-rate mt30 pt-1 pr-0 col-auto">
+                            {this.state.isEditIndex ? (
+                              <>
+                                <button type="button"
+                                  className={"btn btn-primary pull-left mr5"}
+                                  onClick={this.updateGrid}
+                                > Update
+                                </button>
 
-                          </tbody>
-                          {this.state.gridTable.length === 0 && (<tbody className='border'>
-                            <tr>
-                              <td colSpan={"7"}>
-                                <NoContentFound title={EMPTY_DATA} />
-                              </td>
-                            </tr>
-                          </tbody>)}
-                        </Table >
-                      </Col >
-                    </Row >
+                                <button
+                                  type="button"
+                                  className={"reset-btn pull-left"}
+                                  onClick={this.resetGridData}
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  type="button"
+                                  className={"user-btn  pull-left mr10"}
+                                  onClick={this.gridHandler}
+                                  disabled={isViewMode}
+                                >
+                                  <div className={"plus"}></div>ADD
+                                </button>
+                                <button
+                                  type="button"
+                                  className={"reset-btn pull-left ml5"}
+                                  onClick={this.resetGridData}
+                                  disabled={isViewMode}
+                                >
+                                  Reset
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </Col>
+                        <Col md="12">
+                          <Table className="table border" size="sm">
+                            <thead>
+                              <tr>
+                                <th>{`Machine Type`}</th>
+                                <th>{`Labour Type`}</th>
+                                <th>{this.DisplayLabourRatePlantCurrencyLabel()}</th>
+                                {!this?.state?.hidePlantCurrency && <th>{`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
+
+                                <th>{`Working hours`}</th>
+                                <th>{`Efficiency`}</th>
+                                <th>{`Effective Date`}</th>
+                                <th>{`Action`}</th>
+                              </tr >
+                            </thead >
+                            <tbody>
+                              {this.state.gridTable &&
+                                this.state.gridTable.map((item, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      <td>{item.MachineType}</td>
+                                      <td>{item.LabourType}</td>
+                                      <td>{checkForDecimalAndNull(item?.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                      {!this?.state?.hidePlantCurrency && <td>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                      <td>{checkForDecimalAndNull(item?.WorkingTime, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                                      <td>{checkForDecimalAndNull(item?.Efficiency, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                                      <td>
+                                        {item.EffectiveDate ? DayTime(item.EffectiveDate).format(
+                                          "DD/MM/YYYY"
+                                        ) : '-'}
+                                      </td>
+                                      <td>
+                                        <button
+                                          className="Edit mr-2"
+                                          type={"button"}
+                                          disabled={isViewMode || item.IsAssociated}
+                                          onClick={() =>
+                                            this.editGridItemDetails(index)
+                                          }
+                                        />
+                                        <button
+                                          className="Delete"
+                                          disabled={isViewMode || item.IsAssociated}
+                                          type={"button"}
+                                          onClick={() =>
+                                            this.deleteGridItem(index)
+                                          }
+                                        />
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+
+                            </tbody>
+                            {this.state.gridTable.length === 0 && (<tbody className='border'>
+                              <tr>
+                                <td colSpan={"7"}>
+                                  <NoContentFound title={EMPTY_DATA} />
+                                </td>
+                              </tr>
+                            </tbody>)}
+                          </Table >
+                        </Col >
+                      </Row>
+                    </Row>
+
+
                   </div >
 
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
@@ -1322,13 +1630,13 @@ class AddLabour extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const fieldsObj = selector(state, 'LabourRate')
+  const fieldsObj = selector(state, 'LabourRate', 'plantCurrency', 'LabourRateConversion', 'workingHours', 'Efficiency', 'city', 'state', 'country')
   const { supplier, machine, fuel, labour, auth, comman, part, client } = state
   const {
     VendorLabourTypeSelectList,
   } = labour
   const { productGroupSelectList } = part;
-  const { stateList } = comman;
+  const { stateList, exchangeRateSourceList, countryList, cityList } = comman;
 
   const { vendorWithVendorCodeSelectList } = supplier
   const { machineTypeSelectList } = machine
@@ -1346,7 +1654,7 @@ function mapStateToProps(state) {
     fieldsObj,
     initialValues,
     initialConfiguration,
-    stateList, productGroupSelectList, clientSelectList
+    stateList, productGroupSelectList, clientSelectList, exchangeRateSourceList, countryList, cityList
   }
 }
 
@@ -1364,8 +1672,15 @@ export default connect(mapStateToProps, {
   getLabourTypeByMachineTypeSelectList,
   fetchStateDataAPI,
   getAllCity,
-  getPlantListByState,
-  getProductGroupSelectList, getClientSelectList
+  getPlantListByAddress,
+  getProductGroupSelectList, getClientSelectList,
+  getExchangeRateByCurrency,
+  getExchangeRateSource,
+  fetchCountryDataAPI,
+  fetchCityDataAPI,
+  getCityByCountryAction,
+  getPlantUnitAPI
+
 })(
   reduxForm({
     form: 'AddLabour',
@@ -1375,4 +1690,5 @@ export default connect(mapStateToProps, {
     onSubmitFail: errors => {
       focusOnError(errors);
     },
-  })(withTranslation(['MasterLabels'])(AddLabour)),)
+  })(withTranslation('MasterLabels')(AddLabour))
+)

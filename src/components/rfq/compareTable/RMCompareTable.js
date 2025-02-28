@@ -5,12 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getViewRawMaterialDetails, setRawMaterialCostingData } from '../../masters/actions/Material';
 import DayTime from '../../common/DayTimeWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForNull } from '../../../helper';
+import { calculateBestCost, checkForNull, getConfigurationKey } from '../../../helper';
 import _, { isNumber } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import { useLabels } from '../../../helper/core';
-
+import AddOtherCostDrawer from '../../masters/material-master/AddOtherCostDrawer';
 const RMCompareTable = (props) => {
+    const { RfqMasterApprovalDrawer = false, uniqueShouldCostingId = [], selectedRows = [] } = props;
     const dispatch = useDispatch()
     const { viewRmDetails } = useSelector(state => state.material)
     const [sectionData, setSectionData] = useState([])
@@ -20,13 +21,28 @@ const RMCompareTable = (props) => {
     const [selectedIndices, setSelectedIndices] = useState([])
     const [isLoader, setIsLoader] = useState(false)
     const { technologyLabel } = useLabels();
+    const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
+    const [otherCostDrawer, setOtherCostDrawer] = useState(false)
+    const [selectedItem, setSelectedItem] = useState(null)
+    const bestCostingData = useSelector(state => state.rfq.bestCostingData)
     const showCheckbox = viewRmDetails && viewRmDetails?.some(item => item.IsShowCheckBoxForApproval === true);
+    const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
+
+    // Add handler function
+    const handleConvertedCurrencyChange = (value) => {
+        setShowConvertedCurrency(value);
+    }
+    const tableDataClass = (data) => {
+        // return props?.isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
+    }
+
     useEffect(() => {
+        //if(!RfqMasterApprovalDrawer){
         setIsLoader(true)
         let temp = []
-        const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
-        const idArr = props?.selectedRows?.map(item => item?.RawMaterialId);
-        const combinedArr = Array?.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
+        const uniqueShouldCostingIdArr = uniqueShouldCostingId || [];
+        const idArr = selectedRows?.map(item => item?.RawMaterialId);
+        const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
         dispatch(getViewRawMaterialDetails(combinedArr, res => {
 
             setIsLoader(false)
@@ -38,72 +54,126 @@ const RMCompareTable = (props) => {
                 let dat = [...temp]
 
                 let tempArrToSend = _.uniqBy(dat, 'RawMaterialId')
-                let arr = bestCostObjectFunction(tempArrToSend)
-                dispatch(setRawMaterialCostingData([...arr]))
+                if (!RfqMasterApprovalDrawer) {
+                    let arr = bestCostObjectFunction(tempArrToSend)
+                    dispatch(setRawMaterialCostingData([...arr]))
+                }
+                else {
+                    if (bestCostingData) {
+                        const arr = [...tempArrToSend, bestCostingData]
+                        dispatch(setRawMaterialCostingData([...arr]))
+                        setShowConvertedCurrency(true)
+                    }
+                    else {
+                        dispatch(setRawMaterialCostingData([...tempArrToSend]))
+                        setShowConvertedCurrency(false)
+                    }
+                }
 
             }
         }))
-    }, [])
+        // }
+    }, [showConvertedCurrency, bestCostingData])
     useEffect(() => {
+
+        if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
+            element === getConfigurationKey().BaseCurrency || element === '')) {
+            setShowConvertedCurrencyCheckbox(false)
+        } else {
+            setShowConvertedCurrencyCheckbox(true)
+        }
+
         if (viewRmDetails.length !== 0) {
             let sectionOne = [];
             let sectionTwo = [];
             let sectionThree = []
             let sectionFour = []
-            let sectionOneHeader = [`${technologyLabel}`, 'Plant (Code)', 'RM Code', 'RM Name-Grade', 'RM Specification', 'Category', 'Effective Date', 'Basic Rate']
-            let sectionTwoHeader = ['RM Other Cost',]
-            let sectionThreeHeader = ['CutOff Price', 'Scrap Rate', 'RM Net Cost']
+            let sectionOneHeader = ['Costing Version', `${technologyLabel}`, 'Plant (Code)', 'RM Code', 'RM Name-Grade', 'RM Specification', 'Category', 'Currency', 'Effective Date',
+                showConvertedCurrency ? `Basic Rate (${getConfigurationKey().BaseCurrency})` : 'Basic Rate'
+            ]
+            let sectionTwoHeader = [showConvertedCurrency ? `Other Net Cost (${getConfigurationKey().BaseCurrency})` : 'Other Net Cost'
+            ]
+
+            // Updated section three header based on condition
+            let sectionThreeHeader = ['CutOff Price', 'Scrap Rate',]
+            if (showConvertedCurrency) {
+                sectionThreeHeader.push(
+                    showConvertedCurrency ? `RM Net Cost (${getConfigurationKey().BaseCurrency})` : 'RM Net Cost'
+                )
+            } else {
+                sectionThreeHeader.push('RM Net Cost')
+            }
+
             let sectionFourhHeader = ['Remark']
             let mainHeader = []
+
             viewRmDetails.map((item, index) => {
                 //section one data start
-                const RMNameGrade = `${item.RawMaterialName}-${item.RawMaterialGradeName}`;
-                const effectiveDate = item.EffectiveDate ? (item.EffectiveDate !== "-" ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
+                const RMNameGrade = item?.RawMaterialName && item?.RawMaterialGradeName ? `${item?.RawMaterialName}-${item?.RawMaterialGradeName}` : ' ';
+                const effectiveDate = item?.EffectiveDate ? (item?.EffectiveDate !== "" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : ' ') : ' ';
+                const plantCode = item?.Plant && item?.Plant[0] ? `${item?.Plant[0]?.PlantName}` : ' ';
                 const formattedDataOne = [
-                    item.TechnologyName,
-                    item.DestinationPlantName,
-                    item.RawMaterialCode,
+                    tableDataClass(item),
+                    item?.TechnologyName || ' ',
+                    plantCode, // Updated plant code here
+                    item?.RawMaterialCode || ' ',
                     RMNameGrade,
-                    item.RawMaterialSpecificationName,
-                    item.RawMaterialCategoryName,
+                    item?.RawMaterialSpecificationName || ' ',
+                    item?.RawMaterialCategoryName || ' ',
+                    item?.Currency || ' ',
                     effectiveDate,
-                    item.BasicRatePerUOM
+                    showConvertedCurrency ?
+                        item?.bestCost === "" ? item?.BasicRatePerUOMConversion : `${item?.BasicRatePerUOM} (${item?.BasicRatePerUOMConversion})` :
+                        item?.BasicRatePerUOM
+
                 ];
                 sectionOne.push(formattedDataOne);
 
                 //section two data start
                 const formattedDataTwo = [
-                    item.OtherNetCost,
+                    showConvertedCurrency ?
+                        item?.bestCost === "" ? item?.OtherNetCostConversion : `${item?.OtherNetCost} (${item?.OtherNetCostConversion})` :
+                        item?.OtherNetCost,
                 ]
                 sectionTwo.push(formattedDataTwo)
-                //section two data start
+
+                //section three data start with conditional columns
                 const formattedDataThree = [
                     item.CutOffPrice,
                     item.ScrapRate,
-                    item.NetLandedCost
                 ]
+
+                // Add net cost data based on condition
+                if (showConvertedCurrencyCheckbox) {
+                    formattedDataThree.push(
+                        showConvertedCurrency ?
+                            item.bestCost === "" ? item.NetLandedCostConversion : `${item.NetLandedCost} (${item.NetLandedCostConversion})` :
+                            item.NetLandedCost,
+
+                    )
+                } else {
+                    formattedDataThree.push(item.NetLandedCost)
+                }
                 sectionThree.push(formattedDataThree)
 
-                //section Three
+                //section Four
                 sectionFour.push([item.Remark])
 
                 //mainheader data start
                 const mainHeaderObj = {
-                    vendorName: item.VendorName,
+                    vendorName: item?.VendorName,
                     onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: !props?.compare ? item.bestCost ? false : item.IsShowCheckBoxForApproval : false,
-                    // isCheckBox:true,
-                    bestCost: item.bestCost,
-                    shouldCost: props?.uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
-                    costingType: item.CostingType === "Zero Based" ? "ZBC" : item.costingType === "Vendor Based" ? "VBC" : "",
+                    isCheckBox: !props?.compare ? item?.bestCost ? false : item?.IsShowCheckBoxForApproval : false,
+                    bestCost: item?.bestCost,
+                    shouldCost: uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
+                    costingType: item?.CostingType === "Zero Based" ? "ZBC" : item?.costingType === "Vendor Based" ? "VBC" : "",
                     vendorCode: item.VendorCode,
-
-
-
+                    showConvertedCurrencyCheckbox: item.bestCost === "" && showConvertedCurrencyCheckbox
                 }
                 mainHeader.push(mainHeaderObj)
             })
+
             const sectionOneDataObj = {
                 header: sectionOneHeader,
                 data: sectionOne,
@@ -127,86 +197,70 @@ const RMCompareTable = (props) => {
             setSectionData([sectionOneDataObj, sectionTwoDataObj, sectionThreeDataObj, sectionFourhDataObj])
             setMainHeadingData(mainHeader)
         }
-    }, [viewRmDetails])
+    }, [viewRmDetails, showConvertedCurrency])
     const bestCostObjectFunction = (arrayList) => {
+        if (!arrayList?.length) return [];
 
-        let finalArrayList = [...arrayList];
+        const returnArray = _.cloneDeep(arrayList);
+        const finalArrayList = _.cloneDeep(arrayList);
 
-        // Check if the input array is empty or null
-        if (!finalArrayList || finalArrayList.length === 0) {
-            // If so, return an empty array
-            return [];
-        } else {
-            // Define an array of keys to check when finding the "best cost"
-            const keysToCheck = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
-            const keysToCheckSum = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+        // Check if currency conversion needed
+        const isSameCurrency = _.map(arrayList, 'Currency')
+            .every(element => element === getConfigurationKey().BaseCurrency);
 
-            // Create a new object to represent the "best cost" and set it to the first object in the input array
-            let minObject = { ...finalArrayList[0] };
+        const minObject = {
+            ...finalArrayList[0],
+            attachment: [],
+            bestCost: true
+        };
 
-            // Loop through each object in the input array
-            for (let i = 0; i < finalArrayList?.length; i++) {
-                // Get the current object
-                let currentObject = finalArrayList[i];
+        // Handle different cases
+        if (isSameCurrency) {
+            const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+            Object.keys(minObject).forEach(key => minObject[key] = "");
 
-                // Loop through each key in the current object
-                for (let key in currentObject) {
-                    // Check if the key is in the keysToCheck array
-                    if (keysToCheck?.includes(key)) {
-                        // Check if the current value and the minimum value for this key are both numbers
-                        if (isNumber(currentObject[key]) && isNumber(minObject[key])) {
-                            // If so, check if the current value is smaller than the minimum value
-                            if (checkForNull(currentObject[key]) < checkForNull(minObject[key])) {
-                                // If so, set the current value as the minimum value
-                                minObject[key] = currentObject[key];
-                            }
-                        } else if (Array.isArray(currentObject[key])) {
-                            // Set the minimum value for this key to an empty array
-                            minObject[key] = [];
-                        }
-                    }
-                }
-            }
+            // Find minimum values for each key
+            keys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
 
-            // Ensure keysToCheck have default value of 0 if they are null or undefined
-            for (let key of keysToCheck) {
-                if (minObject[key] == null) {
-                    minObject[key] = 0;
-                }
-            }
+            minObject.nPOPrice = keys.reduce((sum, key) =>
+                sum + checkForNull(minObject[key]), 0);
+        }
+        else if (!showConvertedCurrency) {
+            // First set all keys to empty string
+            Object.keys(minObject).forEach(key => minObject[key] = "");
 
-            // Set all other keys to an empty string
-            for (let key in minObject) {
-                if (!keysToCheck.includes(key)) {
-                    minObject[key] = "";
-                }
-            }
+            // Find minimum values for conversion keys but don't show in UI
+            const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
 
-            // Set the attachment and bestCost properties of the minimum object
-            let sum = 0;
-            for (let key in finalArrayList[0]) {
-                if (keysToCheckSum?.includes(key)) {
-                    if (isNumber(minObject[key])) {
-                        sum = sum + checkForNull(minObject[key]);
-                    } else if (Array.isArray(minObject[key])) {
-                        minObject[key] = [];
-                    }
-                } else {
-                    minObject[key] = minObject[key] || "";
-                }
-            }
+            conversionKeys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
 
-            minObject.attachment = [];
-            minObject.bestCost = true;
-            minObject.nPOPrice = sum;
+            // Set bestCost empty to ensure UI shows empty strings
+            minObject.bestCost = "";
+        }
+        else {
+            // Handle converted currency case
+            const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
 
-            // Add the minimum object to the end of the array
-            finalArrayList.push(minObject);
+            Object.keys(minObject).forEach(key => minObject[key] = "");
+
+            conversionKeys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
+
+            minObject.nPOPrice = conversionKeys.reduce((sum, key) =>
+                sum + checkForNull(minObject[key]), 0);
         }
 
-        // Return the modified array
-        return finalArrayList;
-    }
+        returnArray.push(minObject);
+        return returnArray;
+    };
     const checkBoxHandle = (item, index) => {
         setCheckBoxCheck(prevState => {
             const newState = { ...prevState, [index]: !prevState[index] }
@@ -222,7 +276,6 @@ const RMCompareTable = (props) => {
             }
             return newItems
         })
-
         setSelectedIndices(prevIndices => {
             let newIndices
             if (prevIndices.includes(index)) {
@@ -241,13 +294,46 @@ const RMCompareTable = (props) => {
     //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
     //     props?.checkCostingSelected(item,index)
     // }
+    const onViewOtherCost = (index) => {
+
+        const selectedItem = viewRmDetails[index];
+        setSelectedItem(selectedItem)
+
+        setOtherCostDrawer(true)
+    }
     return (
         <div>
             {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
-            <Table headerData={mainHeadingData} sectionData={sectionData} uniqueShouldCostingId={props?.uniqueShouldCostingId}>
+            <Table headerData={mainHeadingData}
+                sectionData={sectionData}
+                uniqueShouldCostingId={uniqueShouldCostingId}
+                showConvertedCurrency={showConvertedCurrency}
+                onConvertedCurrencyChange={handleConvertedCurrencyChange}
+                showConvertedCurrencyCheckbox={showConvertedCurrencyCheckbox}
+                onViewOtherCost={onViewOtherCost}
+            >
                 {isLoader && <LoaderCustom customClass="" />}
             </Table>
+            {
+                otherCostDrawer &&
+                <AddOtherCostDrawer
+                    isOpen={otherCostDrawer}
+                    anchor={"right"}
+                    closeDrawer={() => setOtherCostDrawer(false)}
+                    rawMaterial={true}
+                    rmBasicRate={selectedItem?.BasicRatePerUOM}
+                    ViewMode={true}
+                    rmTableData={selectedItem?.RawMaterialOtherCostDetails}
+                    RowData={selectedItem}
+                    plantCurrency={selectedItem?.Currency}
+                    settlementCurrency={selectedItem?.Currency}
+                    isImpactedMaster={true}
+                    disabled={true}
+                />
+            }
         </div>
+
+
     );
 };
 export default RMCompareTable;

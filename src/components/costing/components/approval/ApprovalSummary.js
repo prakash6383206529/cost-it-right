@@ -33,7 +33,7 @@ import { fetchDivisionId } from '../../CostingUtil'
 export const QuotationIdFromSummary = React.createContext();
 
 function ApprovalSummary(props) {
-  const { approvalNumber, approvalProcessId,receiverId ,fromDashboard} = props.location.state
+  const { approvalNumber, approvalProcessId, receiverId, fromDashboard } = props.location.state
   const loggedInUser = loggedInUserId()
 
   const dispatch = useDispatch()
@@ -136,12 +136,12 @@ function ApprovalSummary(props) {
 
   const approvalSummaryHandler = () => {
     setIsLoader(true)
-    dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser,receiverId, (res) => {
+    dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, receiverId, (res) => {
 
       if (res?.data?.Data?.Costings?.length > 0) {
         const { IsRFQCostingApproval, PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
           ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-          CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, DivisionId } = res?.data?.Data?.Costings[0];
+          CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, DivisionId, DepartmentName } = res?.data?.Data?.Costings[0];
         setApprovalTypeId(ApprovalTypeId)
         setIsRFQCostingApproval(IsRFQCostingApproval)
         dispatch(setQuotationIdForRFQ(QuotationId))
@@ -179,7 +179,7 @@ function ApprovalSummary(props) {
                 return null
               })
               dispatch(rfqGetBestCostingDetails(BestCostAndShouldCostDetails?.BestCostId, (res) => {
-                tempObj = formViewData(res?.data?.Data, '', true)
+                tempObj = formViewData(res?.data?.Data?.CostingBestCostRequest, '', true)
                 tempObj[0].bestCost = true
                 temp.push(tempObj[0])
                 let dat = [...temp]
@@ -207,7 +207,9 @@ function ApprovalSummary(props) {
         setShowFinalLevelButton(!IsFinalLevelButtonShow)
         setShowPushButton(IsPushedButtonShow)
         setApprovalData({
+          DepartmentName: DepartmentName,
           DepartmentId: DepartmentId,
+          DepartmentName: DepartmentName,
           Technology: Technology,
           TechnologyId: technologyId,
           ApprovalProcessId: ApprovalProcessId,
@@ -571,7 +573,7 @@ function ApprovalSummary(props) {
               </Col>
             </Row>
             {/* Code for approval workflow */}
-            <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} approverData={dataForFetchingAllApprover} />
+            <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} approverData={dataForFetchingAllApprover} viewAll={() => setViewButton(true)} />
 
             <Row>
               <Col md="12">
@@ -584,6 +586,7 @@ function ApprovalSummary(props) {
                   <thead>
                     <tr>
                       <th>{technologyLabel}:</th>
+
                       <th>Part Type:</th>
                       <th>Assembly/Part No:</th>
                       <th>Assembly/Part Name:</th>
@@ -595,31 +598,32 @@ function ApprovalSummary(props) {
                     </tr>
                   </thead>
                   <tbody>
-                    <td>{partDetail.Technology ? partDetail.Technology : '-'}</td>
+                    <td>{partDetail?.Technology ? partDetail?.Technology : '-'}</td>
+
                     <td className='overflow'>
-                      <span className="d-block " title={partDetail.PartType}>
-                        {partDetail.PartType ? partDetail.PartType : '-'}
+                      <span className="d-block " title={partDetail?.PartType}>
+                        {partDetail?.PartType ? partDetail?.PartType : '-'}
                       </span>
                     </td>
                     <td className='overflow'>
-                      <span className="d-block " title={partDetail.PartNumber}>
-                        {partDetail.PartNumber ? partDetail.PartNumber : '-'}
+                      <span className="d-block " title={partDetail?.PartNumber}>
+                        {partDetail?.PartNumber ? partDetail?.PartNumber : '-'}
                       </span>
                     </td>
                     <td className='overflow'>
-                      <span className="d-block" title={partDetail.PartName}>
-                        {partDetail.PartName ? partDetail.PartName : '-'}
+                      <span className="d-block" title={partDetail?.PartName}>
+                        {partDetail?.PartName ? partDetail?.PartName : '-'}
                       </span>
                     </td>
                     <td className='overflow-description'>
-                      <span className="d-block" title={partDetail.Description}>
-                        {partDetail.Description ? partDetail.Description : '-'}
+                      <span className="d-block" title={partDetail?.Description}>
+                        {partDetail?.Description ? partDetail?.Description : '-'}
                       </span>
                     </td>
-                    <td>{partDetail.ECNNumber ? partDetail.ECNNumber : '-'}   </td>
-                    <td>{partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}</td>
-                    <td> {partDetail.RevisionNumber ? partDetail.RevisionNumber : '-'} </td>
-                    <td> {partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'} </td>
+                    <td>{partDetail?.ECNNumber ? partDetail?.ECNNumber : '-'}   </td>
+                    <td>{partDetail?.DrawingNumber ? partDetail?.DrawingNumber : '-'}</td>
+                    <td> {partDetail?.RevisionNumber ? partDetail?.RevisionNumber : '-'} </td>
+                    <td> {partDetail?.EffectiveDate ? DayTime(partDetail?.EffectiveDate).format('DD/MM/YYYY') : '-'} </td>
                   </tbody>
                 </Table>
               </Col>
@@ -652,6 +656,8 @@ function ApprovalSummary(props) {
                       {(approvalDetails.CostingTypeId === ZBCTypeId || approvalDetails.CostingTypeId === CBCTypeId) && <th>  {`Plant (Code):`} </th>}
 
                       <th>{`SOB (%):`}</th>
+                      {getConfigurationKey().IsSourceExchangeRateNameVisible && <th>Exchange Rate Source:</th>}
+                      <th>Currency:</th>
                       {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <th>{`Basic Price:`}</th>}
                       {/* <th>{`ECN Ref No`}</th> */}
                       <th>{`Existing Price:`}</th>
@@ -699,6 +705,16 @@ function ApprovalSummary(props) {
                       {approvalDetails.CostingTypeId === ZBCTypeId && <td> {(approvalDetails.PlantName) ? `${approvalDetails.PlantName}` : '-'}</td>}
                       <td>
                         {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
+                      </td>
+                      {getConfigurationKey().IsSourceExchangeRateNameVisible && <td className='overflow'>
+                        <span className="d-block " title={approvalDetails?.ExchangeRateSourceName}>
+                          {approvalDetails?.ExchangeRateSourceName ? approvalDetails?.ExchangeRateSourceName : '-'}
+                        </span>
+                      </td>}
+                      <td className='overflow'>
+                        <span className="d-block " title={approvalDetails?.CostingCurrency}>
+                          {approvalDetails?.CostingCurrency ? approvalDetails?.CostingCurrency : '-'}
+                        </span>
                       </td>
                       {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td>
                         {approvalDetails.BasicRate ? checkForDecimalAndNull(approvalDetails.BasicRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}
@@ -798,7 +814,7 @@ function ApprovalSummary(props) {
                   costingIdArray={costingIdArray}
                   isVerifyImpactDrawer={false}
                   fgWiseAccDisable={fgWiseAccDisable}
-                  tooltipEffectiveDate={partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
+                  tooltipEffectiveDate={partDetail?.EffectiveDate ? DayTime(partDetail?.EffectiveDate).format('DD/MM/YYYY') : '-'}
                   isCosting={true}
                 />
               </Col>
@@ -849,7 +865,7 @@ function ApprovalSummary(props) {
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
 
-                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} selectedTechnology={partDetail.Technology} receiverId={receiverId} />}
+                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} selectedTechnology={partDetail?.Technology} showAddToComparison={true} receiverId={receiverId} />}
 
               </Col>
             </Row>

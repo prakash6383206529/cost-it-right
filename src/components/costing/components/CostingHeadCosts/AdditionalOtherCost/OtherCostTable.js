@@ -11,16 +11,17 @@ const OtherCostTable = (props) => {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const CostingViewMode = useContext(ViewCostingContext);
     const { gridData, otherCostTotal } = props.tableData
+    const { currencySource } = useSelector((state) => state?.costing);
     return <>
         <Col md="12" className="mb-2">
             <Table className="table mb-0 forging-cal-table" size="sm">
                 <thead>
                     <tr>
-                        {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                        {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                         <th>{`Other Cost Description`}</th>
                         {/* <th>{`Other Cost Type`}</th> */}
                         <th>{`Other Cost Applicability`}</th>
-                        <th>{`Cost Applicability (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                        <th>{`Cost Applicability (${currencySource?.label ?? initialConfiguration?.BaseCurrency})`}</th>
                         <th>{'Percentage (%)'}</th>
                         <th>{`Cost`}</th>
                         {!CostingViewMode && <th className='text-right'>{`Action`}</th>}
@@ -30,13 +31,13 @@ const OtherCostTable = (props) => {
                     {gridData && gridData.map((item, index) => {
                         return (
                             <tr key={index} >
-                                {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead??'-'}</td>}
-                                <td>{item.OtherCostDescription??'-'}</td>
+                                {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead ?? '-'}</td>}
+                                <td>{item.OtherCostDescription ?? '-'}</td>
                                 {/* <td>{item.OtherCostType}</td> */}
-                                <td>{item?.OtherCostApplicability??'-'}</td>
-                                <td>{checkForDecimalAndNull(item?.ApplicabilityCost??'-', initialConfiguration.NoOfDecimalForPrice)}</td>
-                                <td>{item?.PercentageOtherCost===''?'-':item?.PercentageOtherCost}</td>
-                                <td>{checkForDecimalAndNull(item.AnyOtherCost??'-', initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td>{item?.OtherCostApplicability ?? '-'}</td>
+                                <td>{checkForDecimalAndNull(item?.ApplicabilityCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td>{item?.PercentageOtherCost === '' ? '-' : item?.PercentageOtherCost}</td>
+                                <td>{checkForDecimalAndNull(item.AnyOtherCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
                                 {!CostingViewMode && <td className='text-right'>
                                     <button
                                         className="Edit"
@@ -65,11 +66,11 @@ const OtherCostTable = (props) => {
                         </tr>
                     ) : (
                         <tr className='table-footer'>
-                            <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4} className='text-right'>
-                                Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):
+                            <td colSpan={initialConfiguration?.IsShowCRMHead ? 5 : 4} className='text-right'>
+                                Total Other Cost ({currencySource?.label ?? initialConfiguration?.BaseCurrency}):
                             </td>
                             <td colSpan={3}>
-                                {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
+                                {checkForDecimalAndNull(otherCostTotal, initialConfiguration?.NoOfDecimalForPrice)}
                             </td>
                         </tr>
                     )}

@@ -205,6 +205,8 @@ function RowMaterialMaster(props) {
     */
     const onRmToggle = () => {
         setIsImport(!isImport)
+        dispatch(setSelectedRowForPagination([]));
+    dispatch(resetStatePagination());
     }
 
     const isOpenCallback = (params) => {
@@ -313,6 +315,8 @@ function RowMaterialMaster(props) {
                                                     stopApiCallOnCancel={stopApiCallOnCancel}
                                                     selectionForListingMasterAPI='Master'
                                                     approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
+                                                    isImport={isImport} // Add this prop
+
                                                 />
                                             }
                                         </TabPane>
@@ -351,6 +355,7 @@ function RowMaterialMaster(props) {
                                                 DeleteAccessibility={DeleteAccessibility}
                                                 DownloadAccessibility={DownloadAccessibility}
                                                 MasterId={RM_MASTER_ID}
+                                                OnboardingApprovalId={'0'}
                                             />
                                         </TabPane>}
 
