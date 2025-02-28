@@ -1794,7 +1794,7 @@ export function getSimulationFreightCalculation(simulationId, costingId, simulat
 */
 export function saveFreightCalculation(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveFreightCalculation, data, config());
+    const request = axiosInstance.post(API.saveFreightCalculation, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
