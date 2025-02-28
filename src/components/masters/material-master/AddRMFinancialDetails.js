@@ -170,14 +170,13 @@ function AddRMFinancialDetails(props) {
                 const { costingTypeId } = states;
                 let fromCurrency = states.isImport ? state.currency?.label : Data?.Currency
                 let toCurrency = !states.isImport ? reactLocalStorage.getObject("baseCurrency") : Data?.Currency
-
-                if (!isViewFlag && getValues('effectiveDate') &&fromCurrency!==undefined&& Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+               if (!isViewFlag && getValues('effectiveDate') && fromCurrency !== undefined /* && Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency") */) {
                     if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && (!rawMaterailDetails?.Vendor && !getValues('clientName'))) {
                         return false;
                     }
-                    
+
                     const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: rawMaterailDetails?.Vendor?.value, clientValue: rawMaterailDetailsRefFinancial.current?.customer?.value, master: RAWMATERIAL, plantCurrency: getValues("plantCurrency") });
-                   
+                    
                     dispatch(getExchangeRateByCurrency(fromCurrency, costingHeadTypeId, DayTime(getValues('effectiveDate')).format('YYYY-MM-DD'), vendorId, clientId, false, toCurrency, getValues('ExchangeSource')?.label ?? null, res => {
                         if (Object.keys(res.data.Data).length === 0) {
                             setState(prevState => ({ ...prevState, showPlantWarning: true }));
@@ -601,22 +600,24 @@ function AddRMFinancialDetails(props) {
                     if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && !((rawMaterailDetailsRefFinancial.current?.Vendor && rawMaterailDetailsRefFinancial.current?.Vendor?.length !== 0) || (rawMaterailDetailsRefFinancial.current?.customer && rawMaterailDetailsRefFinancial.current?.customer?.length !== 0))) {
                         return;
                     }
-                    
-                    dispatch(getExchangeRateByCurrency(getValues('plantCurrency'), costingHeadTypeId, DayTime(date).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
-                        if (Object.keys(res.data.Data).length === 0) {
-                            setState(prevState => ({ ...prevState, showWarning: true }));
-                        } else {
-                            setState(prevState => ({ ...prevState, showWarning: false }));
-                        }
-                        let Data = res?.data?.Data
-                        setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
+                    if (getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency")) {
 
-                        setCurrencyExchangeRate(prevState => ({
-                            ...prevState, plantCurrencyRate: !states.isImport ? (Data?.CurrencyExchangeRate ?? 1) : checkForNull(Data?.LocalCurrencyExchangeRate ?? 1),
-                            settlementCurrencyRate: states.isImport ? checkForNull(Data?.CurrencyExchangeRate ?? 1) : null
-                        }))
-                        dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, CurrencyExchangeRate: Data?.CurrencyExchangeRate, ExchangeRateId: Data?.ExchangeRateId }, () => { }))
-                    }));
+                        dispatch(getExchangeRateByCurrency(getValues('plantCurrency'), costingHeadTypeId, DayTime(date).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
+                            if (Object.keys(res.data.Data).length === 0) {
+                                setState(prevState => ({ ...prevState, showWarning: true }));
+                            } else {
+                                setState(prevState => ({ ...prevState, showWarning: false }));
+                            }
+                            let Data = res?.data?.Data
+                            setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
+
+                            setCurrencyExchangeRate(prevState => ({
+                                ...prevState, plantCurrencyRate: !states.isImport ? (Data?.CurrencyExchangeRate ?? 1) : checkForNull(Data?.LocalCurrencyExchangeRate ?? 1),
+                                settlementCurrencyRate: states.isImport ? checkForNull(Data?.CurrencyExchangeRate ?? 1) : null
+                            }))
+                            dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, CurrencyExchangeRate: Data?.CurrencyExchangeRate, ExchangeRateId: Data?.ExchangeRateId }, () => { }))
+                        }));
+                    }
                 }
                 setState(prevState => ({ ...prevState, showCurrency: true }))
             }
@@ -724,7 +725,7 @@ function AddRMFinancialDetails(props) {
                 return;
             }
 
-            
+
             dispatch(getExchangeRateByCurrency(getValues('plantCurrency'), costingHeadTypeId, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
                 if (Object.keys(res.data.Data).length === 0) {
                     setState(prevState => ({ ...prevState, showWarning: true }))
@@ -745,7 +746,7 @@ function AddRMFinancialDetails(props) {
         let toCurrency = !states.isImport ? reactLocalStorage.getObject("baseCurrency") : getValues('plantCurrency')
         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: rawMaterailDetails?.Vendor?.value, clientValue: rawMaterailDetailsRefFinancial.current?.customer?.value, master: RAWMATERIAL, plantCurrency: getValues("plantCurrency") });
         if (rawMaterailDetailsRefFinancial.current?.customer?.length !== 0 && state.currency && state.currency.length !== 0 && state.effectiveDate) {
-            
+
             dispatch(getExchangeRateByCurrency(getValues('plantCurrency'), costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
 
                 if (Object.keys(res.data.Data).length === 0) {
@@ -853,7 +854,7 @@ function AddRMFinancialDetails(props) {
                     if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && !((rawMaterailDetailsRefFinancial.current?.Vendor && rawMaterailDetailsRefFinancial.current?.Vendor?.label) || (rawMaterailDetailsRefFinancial.current?.customer && rawMaterailDetailsRefFinancial.current?.customer?.length !== 0))) {
                         return false;
                     }
-                    
+
                     dispatch(getExchangeRateByCurrency(getValues('plantCurrency'), costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
                         if (Object.keys(res.data.Data).length === 0) {
                             setState(prevState => ({ ...prevState, showWarning: true }));
