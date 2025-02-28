@@ -413,15 +413,15 @@ function BDSimulation(props) {
         const existingNetLandedCost = existingBasicPrice + checkForNull(row?.NetConditionCost);
         const newNetLandedCost = newBasicPrice + checkForNull(row?.NewNetConditionCost);
 
-
-
+        
+        
         const displayCost = row.NewBasicRate != null ? newNetLandedCost : existingNetLandedCost;
-
+        
         // const classGreen = (newNetLandedCost > existingNetLandedCost) ? 'red-value form-control' 
         //             : (newNetLandedCost < existingNetLandedCost) ? 'green-value form-control' 
         //             : 'form-class';
         if (isImpactedMaster) {
-            return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
+            return row.NewNetBoughtOutPartCost ? checkForDecimalAndNull(row.NewNetBoughtOutPartCost, getConfigurationKey().NoOfDecimalForPrice) : '-'
         } else {
             // if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
             const BasicRate = checkForNull((row.BasicRate) / NumberOfPieces)
