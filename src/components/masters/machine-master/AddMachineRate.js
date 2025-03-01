@@ -238,13 +238,10 @@ class AddMachineRate extends Component {
     this.props.getCurrencySelectList(() => { })
   }
   callExchangeRateAPI = (costingTypeId, plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants) => {
-    const { fieldsObj } = this.props;
-
 
     const fromCurrency = isImport ? currency?.label : plantCurrency;
     const toCurrency = reactLocalStorage.getObject("baseCurrency");
     const hasCurrencyAndDate = Boolean(plantCurrency && effectiveDate);
-
 
     return new Promise((resolve) => {
       if (!hasCurrencyAndDate) {
@@ -255,8 +252,6 @@ class AddMachineRate extends Component {
         return false;
       }
       const callAPI = (from, to, costingHeadTypeId, vendorId, clientId) => {
-       
-        
        
         return new Promise((resolveAPI) => {
           this.props.getExchangeRateByCurrency(
@@ -285,14 +280,13 @@ class AddMachineRate extends Component {
           // Make only one API call
           const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
           
-          
           callAPI(fromCurrency, plantCurrency, costingHeadTypeId, vendorId, clientId)
             .then(result => {
               resolve({
                 plantCurrency: result.rate,
-                settlementCurrency: result.rate, // Use same rate
+                settlementCurrency: 1, 
                 plantExchangeRateId: result.exchangeRateId,
-                settlementExchangeRateId: result.exchangeRateId, // Use same ID
+                settlementExchangeRateId: null, 
                 showPlantWarning: result.showPlantWarning,
                 showWarning: result.showWarning
               });
@@ -303,7 +297,6 @@ class AddMachineRate extends Component {
           callAPI(fromCurrency, plantCurrency, costingHeadTypeId, vendorId, clientId)
             .then(result1 => {
               const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
-              
               
               callAPI(plantCurrency, toCurrency, costingHeadTypeId, vendorId, clientId)
                 .then(result2 => {
@@ -321,7 +314,6 @@ class AddMachineRate extends Component {
       } else if (!isImport && plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
         
-        
         callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId)
           .then(result => {
             resolve({
@@ -329,7 +321,6 @@ class AddMachineRate extends Component {
               plantExchangeRateId: result.exchangeRateId,
               showPlantWarning: result.showPlantWarning,
               showWarning: result.showWarning
-
             });
           });
       }
@@ -342,7 +333,7 @@ class AddMachineRate extends Component {
     if (isImport) {
       const MachineRateLocalConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
       this.props.change('MachineRateLocalConversion', checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice));
-      const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, settlementCurrency)
+      const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRateLocalConversion, settlementCurrency)
       this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
     } else {
       const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
@@ -1844,7 +1835,7 @@ class AddMachineRate extends Component {
     return <>
       {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
     </>;
   };
   /**
@@ -2342,7 +2333,7 @@ class AddMachineRate extends Component {
                           />
                           {this.state.errorObj.machineRate && (this.props.fieldsObj.MachineRate === undefined || Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
-                        {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <Col md="3" className='UOM-label-container p-relative'>
+                        {(this?.state?.isImport) && <Col md="3" className='UOM-label-container p-relative'>
                           <TooltipCustom disabledIcon={true} width="350px" id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
                           <Field
                             label={this.DisplayMachineRatePlantCurrencyLabel()}
@@ -2360,7 +2351,7 @@ class AddMachineRate extends Component {
                           {this.state?.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
 
-                        {(!(!this?.state?.isImport && this?.state?.hidePlantCurrency)) && <Col md="3" >
+                        {(!(!this?.state?.isImport && !this?.state?.hidePlantCurrency)) && <Col md="3" >
                           <TooltipCustom disabledIcon={true} width="350px" id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
                           <Field
                             label={this.DisplayMachineRateBaseCurrencyLabel()}

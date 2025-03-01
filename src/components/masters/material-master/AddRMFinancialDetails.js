@@ -181,13 +181,11 @@ function AddRMFinancialDetails(props) {
                             } else {
                                 setState(prevState => ({ ...prevState, showPlantWarning: false }));
                             }
-                            
-                            
                             const exchangeRate = res?.data?.Data?.CurrencyExchangeRate ?? 1;
                             
                             setState(prevState => ({ ...prevState, showPlantWarning: !exchangeRate }));
-                            setCurrencyExchangeRate(prevState => ({ ...prevState, settlementCurrencyRate: exchangeRate }));
-                            dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, CurrencyExchangeRate: checkForNull(Data?.CurrencyExchangeRate), ExchangeRateId: Data?.ExchangeRateId, Currency: Currency, CurrencyId: CurrencyId, }, () => { }))
+                            setCurrencyExchangeRate(prevState => ({ ...prevState, plantCurrencyRate: exchangeRate }));
+                            dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, LocalCurrencyExchangeRate: checkForNull(Data?.CurrencyExchangeRate), LocalExchangeRateId: Data?.ExchangeRateId, Currency: Currency, LocalCurrencyId: CurrencyId, }, () => { }))
                         }));
                     }
                 }
@@ -504,10 +502,9 @@ function AddRMFinancialDetails(props) {
 
         if (states.isImport) {
             if (getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency")) {
-                NetLandedCostConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
+                NetLandedCostConversion = checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
             } else {
-                NetLandedCostConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
-
+                NetLandedCostConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
             }
             setValue('NetLandedCost', checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
@@ -627,14 +624,8 @@ function AddRMFinancialDetails(props) {
                         }
                         let Data = res?.data?.Data
                         setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
-
-                        // setCurrencyExchangeRate(prevState => ({
-                        //     ...prevState, plantCurrencyRate: !states.isImport ? (Data?.CurrencyExchangeRate ?? 1) : checkForNull(Data?.LocalCurrencyExchangeRate ?? 1),
-                        //     settlementCurrencyRate: states.isImport ? checkForNull(Data?.CurrencyExchangeRate ?? 1) : null
-                        // }))
-                        // dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, CurrencyExchangeRate: Data?.CurrencyExchangeRate, ExchangeRateId: Data?.ExchangeRateId }, () => { }))
-                        setCurrencyExchangeRate(prevState => ({ ...prevState, plantCurrencyRate: checkForNull(Data?.CurrencyExchangeRate) }));
-                        dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, LocalCurrencyExchangeRate: Data?.CurrencyExchangeRate, LocalExchangeRateId: Data?.ExchangeRateId }, () => { }))
+                        setCurrencyExchangeRate(prevState => ({ ...prevState, settlementCurrencyRate: checkForNull(Data?.CurrencyExchangeRate) }));
+                        dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, CurrencyExchangeRate: checkForNull(Data?.CurrencyExchangeRate), ExchangeRateId: Data?.ExchangeRateId, }, () => { }))
                     }));
                 }
 
@@ -753,8 +744,8 @@ function AddRMFinancialDetails(props) {
                     }
                     let Data = res?.data?.Data
                     setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
-                    setCurrencyExchangeRate(prevState => ({ ...prevState, plantCurrencyRate: checkForNull(Data?.CurrencyExchangeRate) }));
-                    dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, LocalCurrencyExchangeRate: Data?.CurrencyExchangeRate, LocalExchangeRateId: Data?.ExchangeRateId }, () => { }))
+                    setCurrencyExchangeRate(prevState => ({ ...prevState, settlementCurrencyRate: checkForNull(Data?.CurrencyExchangeRate) }));
+                    dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, CurrencyExchangeRate: checkForNull(Data?.CurrencyExchangeRate), ExchangeRateId: Data?.ExchangeRateId, }, () => { }))
                 }))
             };
         }
@@ -776,8 +767,8 @@ function AddRMFinancialDetails(props) {
                     }
                     let Data = res?.data?.Data
                     setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
-                    setCurrencyExchangeRate(prevState => ({ ...prevState, plantCurrencyRate: checkForNull(Data?.CurrencyExchangeRate) }));
-                    dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, LocalCurrencyExchangeRate: Data?.CurrencyExchangeRate, LocalExchangeRateId: Data?.ExchangeRateId }, () => { }))
+                    setCurrencyExchangeRate(prevState => ({ ...prevState, settlementCurrencyRate: checkForNull(Data?.CurrencyExchangeRate) }));
+                        dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, CurrencyExchangeRate: checkForNull(Data?.CurrencyExchangeRate), ExchangeRateId: Data?.ExchangeRateId, }, () => { }))
                 }))
             };
         }
@@ -802,8 +793,8 @@ function AddRMFinancialDetails(props) {
                     }
                     let Data = res?.data?.Data
                     setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
-                    setCurrencyExchangeRate(prevState => ({ ...prevState, plantCurrencyRate: checkForNull(Data?.CurrencyExchangeRate) }));
-                    dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, LocalCurrencyExchangeRate: Data?.CurrencyExchangeRate, LocalExchangeRateId: Data?.ExchangeRateId }, () => { }))
+                    setCurrencyExchangeRate(prevState => ({ ...prevState, settlementCurrencyRate: checkForNull(Data?.CurrencyExchangeRate) }));
+                        dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, CurrencyExchangeRate: checkForNull(Data?.CurrencyExchangeRate), ExchangeRateId: Data?.ExchangeRateId, }, () => { }))
                 }))
             };
         }
