@@ -308,7 +308,7 @@ function AddRMFinancialDetails(props) {
             tooltipTextPlantCurrency: state.hidePlantCurrency
                 ? netCostText
                 : `${netCostlabel} * Plant Currency Rate (${CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
-            toolTipTextNetCostBaseCurrency: `${netCostlabel} * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.plantCurrencyRate ?? '' : CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
+            toolTipTextNetCostBaseCurrency: `${netCostlabel} * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
         };
     };
 
@@ -1050,8 +1050,8 @@ function AddRMFinancialDetails(props) {
         // Generate tooltip text based on the condition
         return <>
             {!this?.state?.hidePlantCurrency
-                ? `Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${plantCurrency},`
-                : ''}<p> {getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? `Exchange Rate: 2 ${plantCurrency} = ${plantCurrencyRate} ${baseCurrency}` : ""}</p>
+                ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency},`
+                : ''}<p> {getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? `Exchange Rate: 2 ${plantCurrency} = ${settlementCurrencyRate} ${baseCurrency}` : ""}</p>
         </>;
     };
     return (

@@ -156,7 +156,7 @@ class AddOperation extends Component {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
 
-    
+
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
@@ -195,26 +195,45 @@ class AddOperation extends Component {
       };
 
       if (isImport) {
-        // First API call
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+        if (this.props?.fieldsObj?.plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
+          // Make only one API call
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
 
-        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-          // Second API call
-          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
-          callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+          callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
+          .then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
             this.setState({
               plantCurrency: rate1,
-              settlementCurrency: rate2,
               plantExchangeRateId: exchangeRateId1,
-              settlementExchangeRateId: exchangeRateId2
+              settlementCurrency: 1,
+              settlementExchangeRateId: null,
+              
             }, () => {
               this.handleCalculation(fieldsObj?.Rate)
             });
           });
-        });
-      } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+        }
+        else {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+
+          callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+            // Second API call
+            const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+            callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+              this.setState({
+                plantCurrency: rate1,
+                settlementCurrency: rate2,
+                plantExchangeRateId: exchangeRateId1,
+                settlementExchangeRateId: exchangeRateId2
+              }, () => {
+                this.handleCalculation(fieldsObj?.Rate)
+              });
+            });
+          });
+        }
+      }
+      else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
         callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
             this.handleCalculation(fieldsObj?.RateLocalConversion)
@@ -545,7 +564,7 @@ class AddOperation extends Component {
     if (isImport) {
       const ratePlantCurrency = convertIntoCurrency(rate, plantCurrency)
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
-      const rateBaseCurrency = convertIntoCurrency(rate, settlementCurrency)
+      const rateBaseCurrency = convertIntoCurrency(ratePlantCurrency, settlementCurrency)
       this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     } else {
       const ratebaseCurrency = convertIntoCurrency(rate, plantCurrency)
@@ -1239,10 +1258,10 @@ class AddOperation extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency
-        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
-    </>;
+    {!this.state?.hidePlantCurrency
+      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+      : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
+  </>;
   };
   /**
   * @method render
