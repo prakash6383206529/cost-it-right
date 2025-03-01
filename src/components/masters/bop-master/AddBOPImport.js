@@ -954,6 +954,7 @@ class AddBOPImport extends Component {
         if (IsFetchExchangeRateVendorWiseForParts() && (vendorName?.length === 0 && client?.length === 0)) {
           return false;
         }
+        
         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: newValue?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client.value, master: BOP, plantCurrency: this.props?.fieldsObj?.plantCurrency });
 
         if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage.getObject("baseCurrency")) {
@@ -1373,7 +1374,8 @@ class AddBOPImport extends Component {
       BoughtOutPartPaymentTermId: paymentTerm.value,
       CategoryId: BOPCategory.value,
       CostingTypeId: costingTypeId,
-      Currency: currency.label,
+      Currency: currency?.label,
+      CurrencyId: currency?.value,
       CurrencyExchangeRate: currencyValue,
       CustomerId: client.value,
       DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
