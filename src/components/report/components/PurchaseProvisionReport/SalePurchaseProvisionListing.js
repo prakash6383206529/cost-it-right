@@ -6,7 +6,7 @@ import { EMPTY_DATA, SALES_PROVISION_FILE_NAME, PURCHASE_PROVISION_FILE_NAME, PU
 import DayTime from '../../../common/DayTimeWrapper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getSalePurchaseProvisionReport } from '../../actions/ReportListing';
-import { getConfigurationKey, getCurrencySymbol } from '../../../../helper';
+import { getConfigurationKey, getCurrencySymbol, loggedInUserId } from '../../../../helper';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';

@@ -165,7 +165,7 @@ class AddFuelNameDrawer extends Component {
                     label="Fuel Name"
                     name={"FuelName"}
                     type="text"
-                    placeholder={""}
+                    placeholder={"Enter"}
                     validate={[required, alphaNumeric, checkWhiteSpaces]}
                     component={renderText}
                     required={true}

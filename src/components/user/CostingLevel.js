@@ -30,6 +30,10 @@ const CostingLevelListing = (props) => {
         deletedId: '',
         isLoader: false,
         noData: false,
+        pageSize1: 5,
+        pageSize2: 15,
+        pageSize3: 25,
+        globalTake: 5
     });
     const permissions = useContext(ApplyPermission);
     const { isCallApi } = useSelector((state) => state.auth)
@@ -103,12 +107,14 @@ const CostingLevelListing = (props) => {
         if (levelMappingFilter.current) {
             levelMappingFilter.current.value = '';
         }
-
+        setState((prevState) => ({ ...prevState, globalTake: defaultPageSize }));
+        getLevelsListData();
     }
 
     const levelMappingPagination = (newPageSize) => {
-        state.gridApi.paginationSetPageSize(Number(newPageSize + 1))
+        // state.gridApi.paginationSetPageSize(Number(newPageSize + 1))
         state.gridApi.paginationSetPageSize(Number(newPageSize))
+        setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
     };
 
     const defaultColDef = {
@@ -169,7 +175,7 @@ const CostingLevelListing = (props) => {
                                     <AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>}
-                                {<PaginationWrapper gridApi={state.gridApi} setPage={levelMappingPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
+                                {<PaginationWrapper gridApi={state.gridApi} setPage={levelMappingPagination} pageSize1={state.pageSize1} pageSize2={state.pageSize2} pageSize3={state.pageSize3} globalTake={state.globalTake} />}
                             </div>
                         </div>
                     </Col>

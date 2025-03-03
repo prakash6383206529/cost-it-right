@@ -52,6 +52,7 @@ const ReasonListing = (props) => {
   const [cellValue, setCellValue] = useState('');
   const [cellData, setCellData] = useState('');
   const [gridLoad, setGridLoad] = useState(false);
+  const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const { reasonDataList } = useSelector(state => state.reason);
   const { topAndLeftMenuData } = useSelector(state => state.auth);
   const [totalRecordCount, setTotalRecordCount] = useState(0)
@@ -257,6 +258,7 @@ const ReasonListing = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
+    setGlobalTake(Number(newPageSize));
   };
   const onRowSelect = () => {
     const selectedRows = gridApi.getSelectedRows();
@@ -305,7 +307,9 @@ const ReasonListing = (props) => {
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
     gridApi.sizeColumnsToFit();
-    gridApi.deselectAll()
+    gridApi.deselectAll();
+    setGlobalTake(10);
+    getTableListData();
   }
 
 
@@ -400,7 +404,7 @@ const ReasonListing = (props) => {
               <AgGridColumn field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
               <AgGridColumn field="ReasonId" cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>
             </AgGridReact>
-            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake}/>}
           </div>
         </div>}
 

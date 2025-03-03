@@ -45,7 +45,8 @@ const FreightListing = (props) => {
     noData: false,
     dataCount: 0,
     isImport: false,
-    totalRecordCount: 0
+    totalRecordCount: 0,
+    globalTake: defaultPageSize,
   })
   const permissions = useContext(ApplyPermission);
   const { freightDetail } = useSelector((state) => state.freight);
@@ -246,6 +247,7 @@ const FreightListing = (props) => {
   };
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = () => {
@@ -279,6 +281,9 @@ const FreightListing = (props) => {
     state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    state.gridApi.sizeColumnsToFit();
+    setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize }))
+    getDataList(null, null, null, null, state.isImport)
   }
 
 
@@ -408,65 +413,62 @@ const FreightListing = (props) => {
             </div>
 
             <div className={`ag-theme-material`}>
-              {noData && (
-                <NoContentFound
-                  title={EMPTY_DATA}
-                  customClassName="no-content-found"
-                />
-              )}
-              <AgGridReact
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout="autoHeight"
-                rowData={freightDetail}
-                pagination={true}
-                paginationPageSize={10}
-                onGridReady={onGridReady}
-                gridOptions={gridOptions}
-                noRowsOverlayComponent={"customNoRowsOverlay"}
-                onFilterModified={onFloatingFilterChanged}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: "imagClass",
-                }}
-                rowSelection={"multiple"}
-                onSelectionChanged={onRowSelect}
-                frameworkComponents={frameworkComponents}
-                suppressRowClickSelection={true}
-              >
-                <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
-                  floatingFilterComponent="statusFilter"></AgGridColumn>
-                <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                {reactLocalStorage.getObject("CostingTypePermission").cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
-                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                {/* New Columns */}
-                <AgGridColumn
-                  field="Load"
-                  headerName="Load"
-                  valueGetter={(params) => params.data?.FreightLoadType || "-"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="DimensionsName"
-                  headerName="Truck Dimensions (mm)"
-                  valueGetter={(params) => params.data?.DimensionsName || "-"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="Capacity"
-                  headerName="Capacity"
-                  valueGetter={(params) => params.data?.Capacity || "-"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="Criteria"
-                  headerName="Criteria"
-                  valueGetter={(params) => params.data?.RateCriteria || "-"}
-                ></AgGridColumn>
-                <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
-                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"}></AgGridColumn>
-                <AgGridColumn width="220px" field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-              </AgGridReact>
-              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+              {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+              {!state.isLoader &&
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout="autoHeight"
+                  rowData={freightDetail}
+                  pagination={true}
+                  paginationPageSize={10}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  noRowsOverlayComponent={"customNoRowsOverlay"}
+                  onFilterModified={onFloatingFilterChanged}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                    imagClass: "imagClass",
+                  }}
+                  rowSelection={"multiple"}
+                  onSelectionChanged={onRowSelect}
+                  frameworkComponents={frameworkComponents}
+                  suppressRowClickSelection={true}
+                >
+                  <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
+                    floatingFilterComponent="statusFilter"></AgGridColumn>
+                  <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  {reactLocalStorage.getObject("CostingTypePermission").cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
+                  <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                  {/* New Columns */}
+                  <AgGridColumn
+                    field="Load"
+                    headerName="Load"
+                    valueGetter={(params) => params.data?.FreightLoadType || "-"}
+                  ></AgGridColumn>
+                  <AgGridColumn
+                    field="DimensionsName"
+                    headerName="Truck Dimensions (mm)"
+                    valueGetter={(params) => params.data?.DimensionsName || "-"}
+                  ></AgGridColumn>
+                  <AgGridColumn
+                    field="Capacity"
+                    headerName="Capacity"
+                    valueGetter={(params) => params.data?.Capacity || "-"}
+                  ></AgGridColumn>
+                  <AgGridColumn
+                    field="Criteria"
+                    headerName="Criteria"
+                    valueGetter={(params) => params.data?.RateCriteria || "-"}
+                  ></AgGridColumn>
+                  <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
+                  <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"}></AgGridColumn>
+                  <AgGridColumn width="220px" field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+                </AgGridReact>
+              }
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
             </div>
           </div>
         </Col>

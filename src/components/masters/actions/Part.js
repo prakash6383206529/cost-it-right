@@ -24,6 +24,7 @@ import {
 } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config;
 
@@ -36,7 +37,7 @@ import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../
  */
 export function createPart(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createPart, data, config());
+        const request = axiosInstance.post(API.createPart, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -56,7 +57,7 @@ export function createPart(data, callback) {
 export function updatePart(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updatePart}`, requestData, config())
+        axiosInstance.put(`${API.updatePart}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -72,10 +73,11 @@ export function updatePart(requestData, callback) {
  * @description get Part Data
  */
 export function getPartData(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (PartId !== '') {
-            axios.get(`${API.getPartData}/${PartId}`, config())
+            axios.get(`${API.getPartData}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
 
                     if (response.data.Result === true) {
@@ -110,7 +112,7 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
         var additionalQueryParams = encodeQueryParams({
             effectiveDate: obj?.newDate !== null && obj?.newDate !== undefined ? obj?.newDate : "", partNumber: obj.PartNumber !== null && obj.PartNumber !== "" ? obj.PartNumber : "", partName: obj.PartName !== null && obj.PartName !== "" ? obj.PartName : "", ecnNumber: obj.ECNNumber !== null && obj.ECNNumber !== "" ? obj.ECNNumber : "", revisionNumber: obj.RevisionNumber !== null && obj.RevisionNumber !== "" ? obj.RevisionNumber : "", drawingNumber: obj.DrawingNumber !== null && obj.DrawingNumber !== "" ? obj.DrawingNumber : "", technology: obj.Technology ? obj.Technology : "", sapCode: obj.SAPCode ? obj.SAPCode : ""
         });
-        const queryParams = `${baseQueryParams}&${additionalQueryParams}`;
+        const queryParams = `loggedInUserId=${loggedInUserId()}&${baseQueryParams}&${additionalQueryParams}`;
 
         const request = axios.get(`${API.getPartDataList}?${queryParams}`, config());
         request.then((response) => {
@@ -172,7 +174,7 @@ export function getPartSelectList(callback) {
  */
 export function fileUploadPart(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadPart, data, config());
+        const request = axiosInstance.post(API.fileUploadPart, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -192,7 +194,7 @@ export function fileUploadPart(data, callback) {
  */
 export function partComponentBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.partComponentBulkUpload, data, config());
+        const request = axiosInstance.post(API.partComponentBulkUpload, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -208,7 +210,7 @@ export function partComponentBulkUpload(data, callback) {
 
 export function productComponentBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.productComponentBulkUpload, data, config());
+        const request = axiosInstance.post(API.productComponentBulkUpload, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -228,7 +230,7 @@ export function productComponentBulkUpload(data, callback) {
  */
 export function activeInactivePartStatus(requestData, callback) {
     return (dispatch) => {
-        axios.put(API.activeInactivePartStatus, requestData, config())
+        axiosInstance.put(API.activeInactivePartStatus, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -265,7 +267,7 @@ export function checkStatusCodeAPI(CODE, callback) {
 */
 export function createAssemblyPart(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createAssemblyPart, data, config());
+        const request = axiosInstance.post(API.createAssemblyPart, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({ type: CREATE_PART_SUCCESS, });
@@ -285,12 +287,13 @@ export function createAssemblyPart(data, callback) {
 */
 
 export function getAssemblyPartDataList(params, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...params }
     return async (dispatch) => {
         try {
             // Make the API request
             const response = await axios.get(API.getAssemblyPartDataList, {
                 ...config(),
-                params,
+                params: requestData,
             });
 
             // Check if the response is valid
@@ -320,10 +323,10 @@ export function getAssemblyPartDataList(params, callback) {
 * @description GET ASSEMBLY PART DETAIL
 */
 export function getAssemblyPartDetail(PartId, callback) {
-
-    return (dispatch) => {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+            return (dispatch) => {
         if (PartId !== '') {
-            const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}`, config());
+            const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
                 if (response.data.Result || response.status === 204) {
                     dispatch({
@@ -354,7 +357,7 @@ export function getAssemblyPartDetail(PartId, callback) {
 export function updateAssemblyPart(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateAssemblyPart}`, requestData, config())
+        axiosInstance.put(`${API.updateAssemblyPart}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -405,7 +408,7 @@ export function getSelectListPartType(callback) {
 * @description GET ASSEMBLY PART SELECTLIST
 */
 export function getAssemblyPartSelectList(data, callback) {
-    return axios.get(`${API.getAssemblyPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
+    return axios.get(`${API.getAssemblyPartSelectList}?loggedInUserId=${loggedInUserId()}&technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)
@@ -417,7 +420,7 @@ export function getAssemblyPartSelectList(data, callback) {
 * @description GET COMPONENT PART SELECTLIST
 */
 export function getComponentPartSelectList(data, callback) {
-    return axios.get(`${API.getComponentPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
+    return axios.get(`${API.getComponentPartSelectList}?loggedInUserId=${loggedInUserId()}&technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)
@@ -450,9 +453,10 @@ export function getBoughtOutPartSelectList(date, callback) {
 * @description GET DRAWER ASSEMBLY PART DETAIL
 */
 export function getDrawerAssemblyPartDetail(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (PartId !== '') {
-            const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}`, config());
+            const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
                 dispatch({
                     type: GET_DRAWER_CHILD_PART_DATA,
@@ -479,10 +483,11 @@ export function getDrawerAssemblyPartDetail(PartId, callback) {
  * @description get Drawer Component Part Data
  */
 export function getDrawerComponentPartData(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (PartId !== '') {
-            axios.get(`${API.getPartData}/${PartId}`, config())
+            axios.get(`${API.getPartData}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -510,10 +515,11 @@ export function getDrawerComponentPartData(PartId, callback) {
  * @description get Drawer BOP Data
  */
 export function getDrawerBOPData(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (PartId !== '') {
-            axios.get(`${API.getChildDrawerBOPData}/${PartId}`, config())
+            axios.get(`${API.getChildDrawerBOPData}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -541,9 +547,10 @@ export function getDrawerBOPData(PartId, callback) {
  * @description GET BOM VIEWER TREE BY ASSEMBLY PART ID
  */
 export function getBOMViewerTree(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getBOMViewerTree}/${PartId}`, config())
+        axios.get(`${API.getBOMViewerTree}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -560,9 +567,10 @@ export function getBOMViewerTree(PartId, callback) {
  * @description GET BOM VIEWER TREE BY ASSEMBLY PART ID AND LEVELID
  */
 export function getBOMViewerTreeDataByPartIdAndLevel(PartId, LevelId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getBOMViewerTree}/${PartId}/${LevelId}`, config())
+        axios.get(`${API.getBOMViewerTree}/${PartId}/${LevelId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -594,7 +602,7 @@ export function setActualBOMData(data) {
  */
 export function BOMUploadPart(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.BOMUploadPart, data, config());
+        const request = axiosInstance.post(API.BOMUploadPart, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -634,7 +642,7 @@ export function getProductDataList(callback) {
  */
 export function createProduct(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createProduct, data, config());
+        const request = axiosInstance.post(API.createProduct, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -654,7 +662,7 @@ export function createProduct(data, callback) {
 export function updateProduct(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateProduct}`, requestData, config())
+        axiosInstance.put(`${API.updateProduct}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -673,7 +681,7 @@ export function getProductData(ProductId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ProductId !== '') {
-            axios.get(`${API.getProductById}?productid=${ProductId}`, config())
+            axios.get(`${API.getProductById}?loggedInUserId=${loggedInUserId()}&productid=${ProductId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -724,7 +732,7 @@ export function deleteProduct(Id, callback) {
  */
 export function fileUploadProduct(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.productAttachment, data, config());
+        const request = axiosInstance.post(API.productAttachment, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -757,7 +765,7 @@ export function getProductGroupSelectList(callback) {
 
 export function getPartDescription(partNumber, partId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getPartDescription}?PartNumber=${partNumber}&PartTypeId=${partId}`, config())
+        const request = axios.get(`${API.getPartDescription}?PartNumber=${partNumber}&PartTypeId=${partId}&loggedInUserId=${loggedInUserId()}`, config())
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response)
@@ -775,7 +783,7 @@ export function getPartDescription(partNumber, partId, callback) {
 export function convertPartToAssembly(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.convertPartToAssembly}`, requestData, config())
+        axiosInstance.put(`${API.convertPartToAssembly}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -791,7 +799,7 @@ export function convertPartToAssembly(requestData, callback) {
  */
 export function CreatComponentBySap(callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.CreatComponentBySap}?fromDate=${null}&toDate=${null}`, '', config());
+        const request = axiosInstance.post(`${API.CreatComponentBySap}?fromDate=${null}&toDate=${null}`, '', config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -809,7 +817,7 @@ export function CreatComponentBySap(callback) {
 export function updateMultipleComponentTechnology(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMultiplecomponentTechnology}`, requestData, config())
+        axiosInstance.put(`${API.updateMultiplecomponentTechnology}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -828,7 +836,7 @@ export function updateMultipleComponentTechnology(requestData, callback) {
 export function activeInactivePartUser(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.ActiveInActivePartUser}`, requestData, config())
+        axiosInstance.put(`${API.ActiveInActivePartUser}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -842,7 +850,7 @@ export function activeInactivePartUser(requestData, callback) {
 export function createProductLevels(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createProductLevels, data, config());
+        const request = axiosInstance.post(API.createProductLevels, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -876,7 +884,7 @@ export function getAllProductLevels(callback) {
 export function getPreFilledProductLevelValues(levelValueId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPreFilledProductLevelValues}?producthierarchyvaluedetailid=${levelValueId}`, config());
+        const request = axios.get(`${API.getPreFilledProductLevelValues}?loggedInUserId=${loggedInUserId()}&producthierarchyvaluedetailid=${levelValueId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -896,7 +904,7 @@ export function getPreFilledProductLevelValues(levelValueId, callback) {
 export function createProductLevelValues(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createProductLevelValues, data, config());
+        const request = axiosInstance.post(API.createProductLevelValues, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -911,7 +919,7 @@ export function createProductLevelValues(data, callback) {
 export function getProductLabel(id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getProductLabel}?producthierarchyid=${id}`, config());
+        const request = axios.get(`${API.getProductLabel}?loggedInUserId=${loggedInUserId()}&producthierarchyid=${id}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -925,7 +933,7 @@ export function getProductLabel(id, callback) {
 export function updateProductLabel(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.put(API.updateProductLabel, data, config());
+        const request = axiosInstance.put(API.updateProductLabel, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

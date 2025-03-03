@@ -169,10 +169,10 @@ class AddFuel extends Component {
 
       if (isImport) {
         // First API call
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency });
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
         callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
           // Second API call
-          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency });
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
           callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
             this.setState({
               plantCurrency: rate1,
@@ -189,7 +189,7 @@ class AddFuel extends Component {
         });
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency });
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
         callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
             this.handleCalculation(fieldsObj?.RateLocalConversion)
@@ -407,16 +407,15 @@ class AddFuel extends Component {
         rateGrid: tempArray,
         StateName: [],
         effectiveDate: '',
-        country: {},
-        city: {},
+        country: [],
+        city: [],
       }, () => {
         this.props.change("RateConversion", '')
         this.props.change("RateLocalConversion", '')
         this.props.change("Rate", '')
-        this.props.change('CountryId', "")
-        this.props.change('StateId', "")
-        this.props.change('CityId', "")
-
+        this.props.change('CountryId', null)
+        this.props.change('StateId', null)
+        this.props.change('CityId', null)
       }
       );
       this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false, country: false, city: false } })
@@ -862,13 +861,7 @@ class AddFuel extends Component {
 
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({
-        country: newValue, state: [], city: [],
-        errorObj: {
-          ...this.state.errorObj,
-          country: false
-        }
-      }, () => {
+      this.setState({ country: newValue, state: [], city: [], StateName: [] }, () => {
         this.getAllCityData()
       });
     } else {
@@ -1270,7 +1263,8 @@ class AddFuel extends Component {
                                   type="text"
                                   label="UOM"
                                   component={searchableSelect}
-                                  placeholder={isEditFlag ? '-' : "Select"}
+                                  // placeholder={isEditFlag ? '-' : "Select"}
+                                  placeholder={'-'} // Here value of "disabled" is set to true so no need to conditionally set the placeholder
                                   options={this.renderListing("uom")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -1438,13 +1432,13 @@ class AddFuel extends Component {
                                 </div>
                               </Col>)}
                           <Col md="3">
-                            <div className={`pt-2 mt-4 pr-0`}>
+                            <div className={`pt-2 mt-4 pr-0 mb-3`}>
                               {this.state.isEditIndex ? (
                                 <>
                                   <button type="button" className={"btn btn-primary pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
                                   <button
                                     type="button"
-                                    className={"mr15 ml-1 add-cancel-btn mt-0 mb-0 cancel-btn"}
+                                    className={"mr15 ml-1 add-cancel-btn cancel-btn my-0"}
                                     disabled={isViewMode}
                                     onClick={this.rateTableReset}
                                   >

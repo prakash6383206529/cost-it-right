@@ -9,7 +9,7 @@ import {
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-
+import axiosInstance from '../../../utils/axiosInstance';
 // const config() = config
 
 /**
@@ -18,7 +18,7 @@ import { apiErrors } from '../../../helper/util';
  */
 export function createPowerAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createPowerAPI, data, config());
+        const request = axiosInstance.post(API.createPowerAPI, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -92,7 +92,7 @@ export function getPowerDataAPI(PowerId, callback) {
 export function updatePowerAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updatePowerAPI}`, requestData, config())
+        axiosInstance.put(`${API.updatePowerAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

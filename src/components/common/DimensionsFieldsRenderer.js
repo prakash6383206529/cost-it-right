@@ -109,7 +109,12 @@ const DimensionsFieldsRenderer = ({
     const buttonProps = {
 
     }
-
+    const handleKeyDown = (e) => {
+        // Prevent form submission on Enter key in input fields
+        if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+            e.preventDefault();
+        }
+    };
     return (
         <Drawer
             anchor={'right'}

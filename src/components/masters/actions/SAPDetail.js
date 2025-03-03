@@ -10,6 +10,8 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 
 // const config() = config
@@ -23,7 +25,7 @@ export function saveSAPDetail(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.saveSAPDetail, data, config());
+        const request = axiosInstance.post(API.saveSAPDetail, data, config());
         request.then((response) => {
             if (response.data.Result) {
 
@@ -48,7 +50,7 @@ export function updateSAPDetail(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.put(API.updateSAPDetail, data, config());
+        const request = axiosInstance.put(API.updateSAPDetail, data, config());
         request.then((response) => {
             if (response.data.Result) {
 
@@ -74,10 +76,11 @@ export function updateSAPDetail(data, callback) {
  * @description get Supplier's DataList 
  */
 export function getMaterialGroupByPart(partId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
 
 
-        const request = axios.get(`${API.getMaterialGroupByPart}?partId=${partId}`, config());
+        const request = axios.get(`${API.getMaterialGroupByPart}?partId=${partId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -112,8 +115,9 @@ export function getPurcahseOrganisationByPlant(plantId, callback) {
     };
 }
 export function getSAPDetailById(id, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getSAPDetailById}?sapPushDetailId=${id}`, config());
+        const request = axios.get(`${API.getSAPDetailById}?sapPushDetailId=${id}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -162,7 +166,7 @@ export function getSapPushDetailsHeader(callback) {
 }
 export function sapPushBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.sapPushBulkUpload, data, config());
+        const request = axiosInstance.post(API.sapPushBulkUpload, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -174,7 +178,7 @@ export function sapPushBulkUpload(data, callback) {
 }
 
 export function getAllPartBopRmList(partNumber, callback) {
-    return axios.get(`${API.getAllPartBopRmList}?${partNumber ? `&number=${partNumber}` : ''}`, config()).catch(error => {
+    return axios.get(`${API.getAllPartBopRmList}?loggedInUserId=${loggedInUserId()}${partNumber ? `&number=${partNumber}` : ''}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)

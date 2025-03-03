@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { API, API_FAILURE, API_REQUEST, AUCTION_LIST_BY_STATUS, config, GET_BID_DETAIL_BY_QUATATION, GET_HEADER_DETAIL_BY_QUATATION, SELECT_AUCTION_RFQ_LIST, SET_AUCTION_DATA, SET_AUCTION_DATA_BY_RFQ, SHOW_HIDE_BID_WINDOW } from '../../../config/constants';
 import { apiErrors, loggedInUserId } from '../../../helper';
+import axiosInstance from '../../../utils/axiosInstance';
 
 
 
@@ -25,7 +26,7 @@ export function getAuctionDataByRfq(data) {
 
 export function saveAuctionDetails(data, callback) {
     return (dispatch) => {
-        const request = axios.post('', data, config())
+        const request = axiosInstance.post('', data, config())
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response)
@@ -58,7 +59,7 @@ export function auctionRfqSelectList(callback) {
 }
 export function checkQuatationForAuction(id, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.checkQuatationForAuction}?quotationPartId=${id}`, config());
+        const request = axios.get(`${API.checkQuatationForAuction}?quotationPartId=${id}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -74,7 +75,7 @@ export function checkQuatationForAuction(id, callback) {
 }
 export function createAuction(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createAuction, data, config());
+        const request = axiosInstance.post(API.createAuction, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -88,7 +89,7 @@ export function createAuction(data, callback) {
 }
 export function sendCounterOffer(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.sendCounterOffer, data, config());
+        const request = axiosInstance.post(API.sendCounterOffer, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -126,7 +127,7 @@ export function auctionListByStatus(statusId, callback) {
 }
 export function auctionBidDetails(quotationAuctionId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.auctionBidDetails}?quotationAuctionId=${quotationAuctionId}&vendorId=${''}`, config());
+        const request = axios.get(`${API.auctionBidDetails}?loggedInUserId=${loggedInUserId()}&quotationAuctionId=${quotationAuctionId}&vendorId=${''}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -150,7 +151,7 @@ export function auctionBidDetails(quotationAuctionId, callback) {
 }
 export function auctionHeaderDetails(quotationAuctionId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.auctionHeaderDetails}?quotationAuctionId=${quotationAuctionId}&vendorId=${''}`, config());
+        const request = axios.get(`${API.auctionHeaderDetails}?loggedInUserId=${loggedInUserId()}&quotationAuctionId=${quotationAuctionId}&vendorId=${''}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -184,7 +185,7 @@ export function ShowBidWindow(data) {
 export function updateShowVendorRank(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateShowVendorRank}`, requestData, config())
+        axiosInstance.put(`${API.updateShowVendorRank}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -197,7 +198,7 @@ export function updateShowVendorRank(requestData, callback) {
 export function updateAuctionDuration(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateAuctionDuration}`, requestData, config())
+        axiosInstance.put(`${API.updateAuctionDuration}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -210,7 +211,7 @@ export function updateAuctionDuration(requestData, callback) {
 export function closeAuction(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.closeAuction}`, requestData, config())
+        axiosInstance.put(`${API.closeAuction}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -240,7 +241,7 @@ export function getLiveAndScheduledCount(callback) {
 export function reScheduleAuction(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.reScheduleAuction}`, requestData, config())
+        axiosInstance.put(`${API.reScheduleAuction}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

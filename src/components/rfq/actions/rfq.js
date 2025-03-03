@@ -33,6 +33,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
+import axiosInstance from '../../../utils/axiosInstance';
 
 
 export function getQuotationList(queryParams, callback) {
@@ -59,7 +60,7 @@ export function createRfqQuotation(data, callback) {
 
 
     return (dispatch) => {
-        const request = axios.post(API.createRfqQuotation, data, config());
+        const request = axiosInstance.post(API.createRfqQuotation, data, config());
         request.then((response) => {
             dispatch({
                 type: GET_QUOTATION_ID_FOR_RFQ,
@@ -79,7 +80,7 @@ export function createRfqQuotation(data, callback) {
 export function cancelRfqQuotation(id, callback) {
     let data = { QuotationId: id }
     return (dispatch) => {
-        const request = axios.post(`${API.cancelRfqQuotation}`, data, config());
+        const request = axiosInstance.post(`${API.cancelRfqQuotation}`, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -95,7 +96,7 @@ export function cancelRfqQuotation(id, callback) {
 export function updateRfqQuotation(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.updateRfqQuotation, data, config());
+        const request = axiosInstance.post(API.updateRfqQuotation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -110,8 +111,9 @@ export function updateRfqQuotation(data, callback) {
 
 
 export function getQuotationById(id, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        axios.get(`${API.getQuotationById}?quotationId=${id}`, config())
+        axios.get(`${API.getQuotationById}?quotationId=${id}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 callback(response)
             }).catch((error) => {
@@ -130,7 +132,7 @@ export function getQuotationById(id, callback) {
 export function fileUploadQuotation(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.fileUploadQuotation, data, config())
+        const request = axiosInstance.post(API.fileUploadQuotation, data, config())
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response)
@@ -169,7 +171,7 @@ export function fileDeleteQuotation(data, callback) {
 export function sendReminderForQuotation(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.sendReminderForQuotation, data, config());
+        const request = axiosInstance.post(API.sendReminderForQuotation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -184,8 +186,9 @@ export function sendReminderForQuotation(data, callback) {
 
 
 export function getContactPerson(vendorId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getContactPerson}?vendorId=${vendorId}`, config());
+        const request = axios.get(`${API.getContactPerson}?vendorId=${vendorId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             callback(response)
         }).catch((error) => {
@@ -263,7 +266,7 @@ export function getMultipleCostingDetails(selectedRows, callback) {
 export function getCommunicationHistory(data, callback) {
     // export function getCommunicationHistory(id, callback) {      //RE
     return (dispatch) => {
-        axios.get(`${API.getCommunicationHistory}?quotationId=${data.quotationId}&partId=${data.partId}&vendorId=${data.vendorId}&timeZone=${data.timeZone}`, config())
+        axios.get(`${API.getCommunicationHistory}?loggedInUserId=${loggedInUserId()}&quotationId=${data.quotationId}&partId=${data.partId}&vendorId=${data.vendorId}&timeZone=${data.timeZone}`, config())
             // axios.get(`${API.getCommunicationHistory}?costingId=${id}`, config())      //RE
             .then((response) => {
                 callback(response)
@@ -278,7 +281,7 @@ export function getCommunicationHistory(data, callback) {
 
 export function checkExistCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkExistCosting, data, config());
+        const request = axiosInstance.post(API.checkExistCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -294,7 +297,7 @@ export function checkExistCosting(data, callback) {
 //CHECK FOR VENDOR AND PLANT FOR LPS AND SCN
 export function checkLPSAndSCN(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getVendorPlantClassificationLpsratingForRFQ}?vendorId=${data.VendorId}&plantId=${data.PlantId}`, config());
+        const request = axios.get(`${API.getVendorPlantClassificationLpsratingForRFQ}?loggedInUserId=${loggedInUserId()}&vendorId=${data.VendorId}&plantId=${data.PlantId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -311,7 +314,7 @@ export function checkLPSAndSCN(data, callback) {
 
 export function checkRFQBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkRFQBulkUpload, data, config());
+        const request = axiosInstance.post(API.checkRFQBulkUpload, data, config());
         request.then((response) => {
             if (response?.data?.Result || response?.status === 204) {
                 dispatch({
@@ -329,7 +332,7 @@ export function checkRFQBulkUpload(data, callback) {
 }
 export function checkComponentOrAssemblyRFQBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkComponentOrAssemblyRFQBulkUpload, data, config());
+        const request = axiosInstance.post(API.checkComponentOrAssemblyRFQBulkUpload, data, config());
         request.then((response) => {
             if (response?.data?.Result || response?.status === 204) {
                 dispatch({
@@ -347,7 +350,7 @@ export function checkComponentOrAssemblyRFQBulkUpload(data, callback) {
 }
 export function checkRawMaterialRFQBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkRawMaterialRFQBulkUpload, data, config());
+        const request = axiosInstance.post(API.checkRawMaterialRFQBulkUpload, data, config());
         request.then((response) => {
 
             if (response?.data?.Result || response?.status === 204) {
@@ -366,7 +369,7 @@ export function checkRawMaterialRFQBulkUpload(data, callback) {
 }
 export function checkBoughtOutPartsRFQBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkBoughtOutPartsRFQBulkUpload, data, config());
+        const request = axiosInstance.post(API.checkBoughtOutPartsRFQBulkUpload, data, config());
         request.then((response) => {
 
             if (response?.data?.Result || response?.status === 204) {
@@ -395,7 +398,7 @@ export function setRFQBulkUpload(data) {
 
 export function getQuotationDetailsByVendor(data, callback) {
     return (dispatch) => {
-        axios.get(`${API.getQuotationDetailsByVendor}?vendorId=${userDetails().VendorId}&quotationId=${data}`, config())
+        axios.get(`${API.getQuotationDetailsByVendor}?loggedInUserId=${loggedInUserId()}&vendorId=${userDetails().VendorId}&quotationId=${data}`, config())
             .then((response) => {
                 callback(response)
             }).catch((error) => {
@@ -429,7 +432,7 @@ export function setQuotationIdForRFQ(data) {
 
 export function rfqSaveBestCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.rfqSaveBestCosting, data, config());
+        const request = axiosInstance.post(API.rfqSaveBestCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -527,7 +530,7 @@ export function rfqGetBestCostingDetails(bestCostId, callback) {
 
 export function getNfrAnnualForecastQuantity(nfrId, partId, sopDate, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getNfrAnnualForecastQuantity}?nfrId=${nfrId}&partId=${partId}&sopDate=${sopDate}`, config());
+        const request = axios.get(`${API.getNfrAnnualForecastQuantity}?loggedInUserId=${loggedInUserId()}&nfrId=${nfrId}&partId=${partId}&sopDate=${sopDate}`, config());
         request.then((response) => {
             if (response?.data?.Result) {
                 callback(response);
@@ -570,8 +573,9 @@ export function getPartNFRRMList(nfrId, partId, callback) {
     };
 }
 export function getTargetPrice(plantId, partId, technologyId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getTargetPrice}?plantId=${plantId}&partId=${partId}&technologyId=${technologyId}`, config());
+        const request = axios.get(`${API.getTargetPrice}?plantId=${plantId}&partId=${partId}&technologyId=${technologyId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -614,8 +618,9 @@ export function setRfqPartDetails(data) {
     }
 };
 export function getAssemblyChildpart(partId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getAssemblyChildpart}?partId=${partId}`, config());
+        const request = axios.get(`${API.getAssemblyChildpart}?partId=${partId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
 
             if (response.data.Result || response.status === 204) {
@@ -634,8 +639,9 @@ export function getAssemblyChildpart(partId, callback) {
     };
 }
 export function getrRqVendorDetails(vendorId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getrRqVendorDetails}?vendorId=${vendorId}`, config());
+        const request = axios.get(`${API.getrRqVendorDetails}?vendorId=${vendorId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -656,7 +662,7 @@ export function getrRqVendorDetails(vendorId, callback) {
 export function saveRfqPartDetails(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.saveRfqPartDetails, data, config());
+        const request = axiosInstance.post(API.saveRfqPartDetails, data, config());
         request.then((response) => {
 
             if (response.data.Result) {
@@ -676,6 +682,7 @@ export function saveRfqPartDetails(data, callback) {
 }
 
 export function getRfqPartDetails(partId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     const quotationPartId = Number(partId)
 
@@ -684,7 +691,7 @@ export function getRfqPartDetails(partId, callback) {
             type: GET_RFQ_PART_DETAILS,
             payload: []
         })
-        const request = axios.get(`${API.getRfqPartDetails}?quotationPartId=${quotationPartId}`, config());
+        const request = axios.get(`${API.getRfqPartDetails}?quotationPartId=${quotationPartId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -711,8 +718,9 @@ export function setQuotationIdForRfq(data) {
     }
 };
 export function checkRegisteredVendor(vendorId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.checkRegisteredVendor}?vendorId=${vendorId}`, config());
+        const request = axios.get(`${API.checkRegisteredVendor}?vendorId=${vendorId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -744,7 +752,7 @@ export function getPurchaseRequisitionSelectList(filterData, callback) {
             payload: []
         })
         //const request = axios.get(`${API.getPurchaseRequisitionSelectList}`, config());
-        const request = axios.get(`${API.getPurchaseRequisitionSelectList}?PartType=${Number(filterData?.partType)}&PlantId=${filterData?.plantId}`, config());
+        const request = axios.get(`${API.getPurchaseRequisitionSelectList}?loggedInUserId=${loggedInUserId()}&PartType=${Number(filterData?.partType)}&PlantId=${filterData?.plantId}`, config());
         request.then((response) => {
 
             if (response.data.Result || response.status === 204) {
@@ -792,12 +800,13 @@ export function getBopNumberSelectList(callback) {
     };
 }
 export function getBopCategorySelectList(boughtOutPartChildId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({
             type: SELECT_BOP_CATEGORY,
             payload: []
         })
-        const request = axios.get(`${API.getRfqBOPCategorySelectList}/${boughtOutPartChildId}`, config());
+        const request = axios.get(`${API.getRfqBOPCategorySelectList}/${boughtOutPartChildId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -827,7 +836,7 @@ export function setBopSpecificRowData(data) {
 export function createQuotationPrParts(data, callback) {
     const prNumbersId = Number(data.prNumbersId)
     return (dispatch) => {
-        const request = axios.post(API.createQuotationPrParts, data, config());
+        const request = axiosInstance.post(API.createQuotationPrParts, data, config());
         request.then((response) => {
 
             if (response.data.Result) {
@@ -844,46 +853,7 @@ export function createQuotationPrParts(data, callback) {
         });
     };
 };
-// return (dispatch) => {
-//     const request = axios.post(`${API.createQuotationPrParts}?prNumbersId=${prNumbersId}&quotationId=${obj.quotationId}&loggedInUserId=${obj.loggedInUserId}`, config());
-//     request.then((response) => {
-//         if (response.data.Result) {
-//             callback(response);
-//         }
-//     }).catch((error) => {
-//         dispatch({ type: API_FAILURE });
-//         apiErrors(error);
-//         callback(error)
-//     });
-// };
-//}
-// export function getRfqToolingDetails(PrNumber, callback) {
 
-//     const prNumberId = Number(PrNumber)
-
-//     return (dispatch) => {
-//         dispatch({
-//             type: SET_TOOLING_SPECIFIC_ROW_DATA,
-//             payload: []
-//         })
-//         const request = axios.get(`${API.getRfqPartDetails}?prNumberId=${prNumberId}`, config());
-//         request.then((response) => {
-//             if (response.data.Result || response.status === 204) {
-
-//                 dispatch({
-//                     type: SET_TOOLING_SPECIFIC_ROW_DATA,
-//                     payload: response.status === 204 ? [] : response?.data?.Data
-//                 })
-
-//                 callback(response);
-//             }
-//         }).catch((error) => {
-
-//             dispatch({ type: API_FAILURE });
-//             apiErrors(error);
-//         });
-//     };
-// }
 export function setToolingSpecificRowData(data) {
 
 
@@ -897,7 +867,7 @@ export function setToolingSpecificRowData(data) {
 export function sendQuotationForReview(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.sendQuotationForReview, data, config());
+        const request = axiosInstance.post(API.sendQuotationForReview, data, config());
         request.then((response) => {
             if (response?.data?.Result) {
                 callback(response);
@@ -910,9 +880,10 @@ export function sendQuotationForReview(data, callback) {
     };
 }
 export function getRfqReviewHistory(data, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
-        axios.get(`${API.getRfqReviewHistory}?quotationId=${data.quotationId}`, config())
+        axios.get(`${API.getRfqReviewHistory}?quotationId=${data.quotationId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 callback(response)
             }).catch((error) => {
@@ -923,7 +894,7 @@ export function getRfqReviewHistory(data, callback) {
 }
 export function checkRmExistInRfq(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkRmExistInRfq, data, config());
+        const request = axiosInstance.post(API.checkRmExistInRfq, data, config());
         request.then((response) => {
             if (response?.data?.Result) {
                 callback(response);
@@ -938,7 +909,7 @@ export function checkRmExistInRfq(data, callback) {
 
 export function checkBopExistInRfq(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkBopExistInRfq, data, config());
+        const request = axiosInstance.post(API.checkBopExistInRfq, data, config());
         request.then((response) => {
             if (response?.data?.Result) {
                 callback(response);

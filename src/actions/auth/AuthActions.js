@@ -8,12 +8,13 @@ import {
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
     SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID, COSTINGS_APPROVAL_DASHBOARD, AMENDMENTS_APPROVAL_DASHBOARD, GET_USERS_MASTER_LEVEL_API, GET_RFQ_USER_DATA_SUCCESS,
-    ONBOARDING_LEVEL_DATALIST_API, GET_ONBOARDING_LEVEL_BY_ID, GET_PLANT_SELECT_LIST_FOR_DEPARTMENT, ONBOARDINGID, MANAGE_LEVEL_TAB_API, GET_DIVISION_SUCCESS, GET_DIVISION_DATA_SUCCESS, GET_DIVISION_LIST_SUCCESS, GET_DIVISION_LIST_FOR_DEPARTMENT, GET_DELEGATEE_USER_LIST_SUCCESS
+    ONBOARDING_LEVEL_DATALIST_API, GET_ONBOARDING_LEVEL_BY_ID, GET_PLANT_SELECT_LIST_FOR_DEPARTMENT, ONBOARDINGID, MANAGE_LEVEL_TAB_API, GET_DIVISION_SUCCESS, GET_DIVISION_DATA_SUCCESS, GET_DIVISION_LIST_SUCCESS, GET_DIVISION_LIST_FOR_DEPARTMENT
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { MESSAGES } from "../../config/message";
 import { loggedInUserId } from '../../helper/auth';
 import Toaster from '../../components/common/Toaster';
+import axiosInstance from '../../utils/axiosInstance';
 
 
 /**
@@ -35,6 +36,7 @@ const CustomHeader = {
 export function loginUserAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
+                //already password encryped that's why didnt use axiosInstance here
         axios.post(API.login, requestData, config())
             // axios.post(API.login, requestData, CustomHeader)          						//RE
             .then((response) => {
@@ -105,6 +107,7 @@ export function TokenAPI(requestData, callback) {
         //         body.IPAddress = response.data.ip; // Include the IP address.
 
         // Proceed with the original request now including the IP and User-Agent.
+        //already password encryped that's why didnt use axiosInstance here
         axios.post(API.login, body, config()) // Make sure you send a JSON body.
             .then((res) => {
                 if (res && res.status === 200) {
@@ -155,7 +158,7 @@ export function AutoSignin(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
         let queryParams = `Token=${requestData.Token}&UserName=${requestData.UserName}`;
-        axios.post(API.AutoSignin, requestData, CustomHeader)
+        axiosInstance.post(API.AutoSignin, requestData, CustomHeader)
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -197,7 +200,7 @@ export function getFailure() {
 export function logoutUserAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.logout, requestData, config())
+        axiosInstance.post(API.logout, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -216,7 +219,7 @@ export function logoutUserAPI(requestData, callback) {
 export function registerUserAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.register, requestData, config())
+        axiosInstance.post(API.register, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -234,7 +237,7 @@ export function registerUserAPI(requestData, callback) {
 export function registerRfqUser(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.registerRfqUser, requestData, config())
+        axiosInstance.post(API.registerRfqUser, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -300,9 +303,10 @@ export function getAllUserAPI(callback) {
  * @description get all user's data list
  */
 export function getAllUserDataAPI(data, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllUserDataAPI}?department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}&IsShowDelegation=${data?.isShowDelegation}&IsSelfDelegatedOnly=${data?.isSelfDelegatedOnly}`, config())
+        axios.get(`${API.getAllUserDataAPI}?loggedInUserId=${loggedInUser?.loggedInUserId}&department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}`, config())
             .then((response) => {
                 if (data?.userType === 'RFQ') {
                     dispatch({
@@ -352,13 +356,14 @@ export function getAllUserDelegationApi(data, callback) {
 * @description get User's data
 */
 export function getUserDataAPI(UserId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({
             type: GET_USER_UNIT_DATA_SUCCESS,
             payload: [],
         });
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserDataAPI}?userId=${UserId}`, config());
+        const request = axios.get(`${API.getUserDataAPI}?userId=${UserId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -381,9 +386,10 @@ export function getUserDataAPI(UserId, callback) {
  * @description delete user
  */
 export function deleteUser(Id, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteUserAPI}/${Id}`, config())
+        axios.delete(`${API.deleteUserAPI}/${Id}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -399,9 +405,13 @@ export function deleteUser(Id, callback) {
  * @description active Inactive User
  */
 export function activeInactiveUser(requestData, callback) {
+    const requestedData = {
+        loggedInUserId: loggedInUserId(),
+        ...requestData
+    }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(`${API.activeInactiveUser}`, requestData, config())
+        axiosInstance.post(`${API.activeInactiveUser}`, requestedData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -419,7 +429,7 @@ export function activeInactiveUser(requestData, callback) {
 export function updateUserAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateUserAPI, requestData, config())
+        axiosInstance.put(API.updateUserAPI, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -435,7 +445,7 @@ export function updateUserAPI(requestData, callback) {
 export function updateRfqUser(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateRfqUser, requestData, config())
+        axiosInstance.put(API.updateRfqUser, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -471,10 +481,11 @@ export function setEmptyUserDataAPI(UserId, callback) {
 * @method getUsersTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersTechnologyLevelAPI(UserId, technologyId,receiverId, callback) {
+export function getUsersTechnologyLevelAPI(UserId, technologyId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}/${receiverId}`, config());
+        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             callback(response);
@@ -493,7 +504,7 @@ export function getUsersTechnologyLevelAPI(UserId, technologyId,receiverId, call
 export function setUserTechnologyLevelForCosting(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.setUserTechnologyLevelForCosting, requestData, config())
+        axiosInstance.post(API.setUserTechnologyLevelForCosting, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -513,7 +524,7 @@ export function setUserTechnologyLevelForCosting(requestData, callback) {
 export function updateUserTechnologyLevelForCosting(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateUserTechnologyLevelForCosting, requestData, config())
+        axiosInstance.put(API.updateUserTechnologyLevelForCosting, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -531,9 +542,10 @@ export function updateUserTechnologyLevelForCosting(requestData, callback) {
  * @description ADD ROLE API
  */
 export function addRoleAPI(requestData, callback) {
+    const requestedData = { loggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.addRoleAPI, requestData, config())
+        axiosInstance.post(API.addRoleAPI, requestedData, config())
             .then((response) => {
                 if (response.data.Result) {
                     dispatch({ type: API_SUCCESS });
@@ -578,9 +590,10 @@ export function getAllRoleAPI(callback) {
  * @description get role detail
  */
 export function getRoleDataAPI(RoleId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRoleAPI}/${RoleId}`, config());
+        const request = axios.get(`${API.getRoleAPI}/${RoleId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -637,9 +650,10 @@ export function deleteRoleAPI(Id, callback) {
  * @description update Role details
  */
 export function updateRoleAPI(requestData, callback) {
+    const requestedData = { ...requestData ,loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateRoleAPI, requestData, config())
+        axiosInstance.put(API.updateRoleAPI, requestedData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -659,7 +673,7 @@ export function updateRoleAPI(requestData, callback) {
 export function addDepartmentAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.addDepartmentAPI, requestData, config())
+        axiosInstance.post(API.addDepartmentAPI, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -702,9 +716,10 @@ export function getAllDepartmentAPI(callback) {
  * @description get department detail
  */
 export function getDepartmentAPI(DepartmentId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getDepartmentAPI}/${DepartmentId}`, config());
+        const request = axios.get(`${API.getDepartmentAPI}/${DepartmentId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -745,7 +760,7 @@ export function setEmptyDepartmentAPI(DepartmentId, callback) {
 export function updateDepartmentAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateDepartmentAPI, requestData, config())
+        axiosInstance.put(API.updateDepartmentAPI, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -810,7 +825,7 @@ export function getAllLevelAPI(callback) {
 export function addUserLevelAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.addUserLevelAPI, requestData, config())
+        axiosInstance.post(API.addUserLevelAPI, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -870,7 +885,7 @@ export function setEmptyLevelAPI(LevelId, callback) {
 export function updateUserLevelAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateUserLevelAPI, requestData, config())
+        axiosInstance.put(API.updateUserLevelAPI, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -907,7 +922,7 @@ export function deleteUserLevelAPI(Id, callback) {
 export function addSimulationLevel(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.addSimulationLevel, requestData, config())
+        axiosInstance.post(API.addSimulationLevel, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -925,7 +940,7 @@ export function addSimulationLevel(requestData, callback) {
  */
 export function updateSimulationLevel(requestData, callback) {
     return (dispatch) => {
-        axios.put(API.updateSimulationLevel, requestData, config())
+        axiosInstance.put(API.updateSimulationLevel, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -942,8 +957,9 @@ export function updateSimulationLevel(requestData, callback) {
  * @description GET SIMULATION LEVEL
  */
 export function getSimulationLevel(LevelId, approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getSimulationLevel}/${LevelId}/${approvalTypeId}`, config());
+        const request = axios.get(`${API.getSimulationLevel}/${LevelId}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -963,7 +979,7 @@ export function getSimulationLevel(LevelId, approvalTypeId, callback) {
 export function assignUserLevelAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.assignUserLevelAPI, requestData, config())
+        axiosInstance.post(API.assignUserLevelAPI, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -980,9 +996,13 @@ export function assignUserLevelAPI(requestData, callback) {
  * @description add Role API 
  */
 export function setApprovalLevelForTechnology(requestData, callback) {
+    const requestedData = {
+        UserId: loggedInUserId(),
+        ...requestData
+    }
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.setApprovalLevelForTechnology, requestData, config())
+        axiosInstance.post(API.setApprovalLevelForTechnology, requestedData, config())
             .then((response) => {
                 if (response.data.Result) {
                     callback(response);
@@ -1001,9 +1021,10 @@ export function setApprovalLevelForTechnology(requestData, callback) {
  * @description get Level mapping 
  */
 export function getLevelMappingAPI(LevelId, approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getLevelMappingAPI}/${LevelId}/${approvalTypeId}`, config());
+        const request = axios.get(`${API.getLevelMappingAPI}/${LevelId}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1023,7 +1044,7 @@ export function getLevelMappingAPI(LevelId, approvalTypeId, callback) {
 export function updateLevelMappingAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateLevelMappingAPI, requestData, config())
+        axiosInstance.put(API.updateLevelMappingAPI, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -1139,7 +1160,7 @@ export function getSimulationTechnologySelectList(callback, data, manageLevel = 
 export function createPrivilegePage(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.createPrivilegePage, requestData, config())
+        axiosInstance.post(API.createPrivilegePage, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -1227,9 +1248,10 @@ export function getRolePermissionByUser(UserId, callback) {
  * @description get permission by user
  */
 export function getPermissionByUser(UserId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPermissionByUser}/${UserId}`, config());
+        const request = axios.get(`${API.getPermissionByUser}/${UserId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response.data.Result) {
@@ -1369,7 +1391,7 @@ export function getPageSelectList(callback) {
 export function setPagePermissionRoleWise(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.setPagePermissionRoleWise, requestData, config())
+        axiosInstance.post(API.setPagePermissionRoleWise, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -1413,7 +1435,7 @@ export function getLoginPageInit(callback) {
 export function setPagePermissionUserWise(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.setPagePermissionUserWise, requestData, config())
+        axiosInstance.post(API.setPagePermissionUserWise, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -1433,7 +1455,7 @@ export function setPagePermissionUserWise(requestData, callback) {
 export function setUserAdditionalPermission(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.setUserAdditionalPermission, requestData, config())
+        axiosInstance.post(API.setUserAdditionalPermission, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -1454,7 +1476,7 @@ export function setUserAdditionalPermission(requestData, callback) {
 export function revertDefaultPermission(UserId, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(`${API.revertDefaultPermission}/${UserId}`, config())
+        axiosInstance.post(`${API.revertDefaultPermission}/${UserId}`, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -1524,7 +1546,7 @@ export function showUserData(data) {
 
 export function checkPageAuthorization(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.checkPageAuthorization, requestData, config())
+        axiosInstance.post(API.checkPageAuthorization, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -1568,12 +1590,13 @@ export function getUsersByTechnologyAndLevel(callback) {
  * @param technologyId
  */
 export function getLevelByTechnology(isAPICall, technologyId, approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (isAPICall) {
             if (technologyId !== '') {
 
                 //dispatch({ type: API_REQUEST });
-                const request = axios.get(`${API.getLevelByTechnology}/${technologyId}/${approvalTypeId}`, config());
+                const request = axios.get(`${API.getLevelByTechnology}/${technologyId}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
                 request.then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -1630,7 +1653,7 @@ export function getMenu(ModuleId, UserId, callback) {
 export function addCompanyAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.addCompanyAPI, requestData, config())
+        axiosInstance.post(API.addCompanyAPI, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -1650,7 +1673,7 @@ export function addCompanyAPI(requestData, callback) {
 export function updateCompanyAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateCompany, requestData, config())
+        axiosInstance.put(API.updateCompany, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -1664,11 +1687,12 @@ export function updateCompanyAPI(requestData, callback) {
 }
 
 export function getSimualationLevelByTechnology(isAPICall, technologyId, approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (isAPICall) {
             if (technologyId !== '') {
                 //dispatch({ type: API_REQUEST });
-                const request = axios.get(`${API.getSimulationLevelByTechnology}/${technologyId}/${approvalTypeId}`, config());
+                const request = axios.get(`${API.getSimulationLevelByTechnology}/${technologyId}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
                 request.then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -1700,10 +1724,11 @@ export function getSimualationLevelByTechnology(isAPICall, technologyId, approva
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, receiverId, callback) {
+export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}/${receiverId}`, config());
+        const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}/${loggedInUser?.loggedInUserId}`, config());
         // const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());          						//RE
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
@@ -1723,8 +1748,9 @@ export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, recei
  * @description GET ALL MENU DATA AND LEFT MENU DATA
  */
 export function getTopAndLeftMenuData(callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getTopAndLeftMenuData}/${loggedInUserId()}`, config());
+        const request = axios.get(`${API.getTopAndLeftMenuData}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1775,7 +1801,7 @@ export function getMastersSelectList(callback, data) {
 export function addMasterLevel(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.addMasterLevel, requestData, config())
+        axiosInstance.post(API.addMasterLevel, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -1793,7 +1819,7 @@ export function addMasterLevel(requestData, callback) {
  */
 export function updateMasterLevel(requestData, callback) {
     return (dispatch) => {
-        axios.put(API.updateMasterLevel, requestData, config())
+        axiosInstance.put(API.updateMasterLevel, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -1810,8 +1836,9 @@ export function updateMasterLevel(requestData, callback) {
  * @description GET MASTER LEVEL
  */
 export function getMasterLevel(LevelId, approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getMasterLevel}/${LevelId}/${approvalTypeId}`, config());
+        const request = axios.get(`${API.getMasterLevel}/${LevelId}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1847,11 +1874,12 @@ export function getMasterLevelDataList(callback) {
 
 
 export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (isAPICall) {
             if (masterId !== '') {
                 //dispatch({ type: API_REQUEST });
-                const request = axios.get(`${API.getMasterLevelByMasterId}/${masterId}/${approvalId}`, config());
+                const request = axios.get(`${API.getMasterLevelByMasterId}/${masterId}/${approvalId}/${loggedInUser?.loggedInUserId}`, config());
                 request.then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -1883,10 +1911,11 @@ export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callba
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersMasterLevelAPI(UserId, technologyId,receiverId, callback) {
+export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${receiverId ?? null}`, config());
+        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 dispatch({
@@ -1913,9 +1942,10 @@ export function getUsersMasterLevelAPI(UserId, technologyId,receiverId, callback
  * @description active Inactive User
  */
 export function activeInactiveRole(requestData, callback) {
+    const requestedData = { loggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(`${API.activeInactiveRole}`, requestData, config())
+        axiosInstance.post(`${API.activeInactiveRole}`, requestedData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -1929,7 +1959,7 @@ export function activeInactiveRole(requestData, callback) {
 export function updatePassword(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updatePassword, requestData, config())
+        axiosInstance.put(API.updatePassword, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -1961,7 +1991,7 @@ export function forgetPassword(UserName, callback) {
 }
 
 export function getUnassociatedPartNumber(partNumber, technologyId, nfrId, partTypeId, isTechnologyUpdateRequired, callback) {
-    return axios.get(`${API.getUnassociatedPartNumber}?${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}${nfrId ? `&nfrId=${nfrId}` : ''}${partTypeId ? `&partTypeId=${partTypeId}` : ''}&isTechnologyUpdateRequired=${isTechnologyUpdateRequired}`, config()).catch(error => {
+    return axios.get(`${API.getUnassociatedPartNumber}?loggedInUserId=${loggedInUserId()}${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}${nfrId ? `&nfrId=${nfrId}` : ''}${partTypeId ? `&partTypeId=${partTypeId}` : ''}&isTechnologyUpdateRequired=${isTechnologyUpdateRequired}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)
@@ -1969,9 +1999,10 @@ export function getUnassociatedPartNumber(partNumber, technologyId, nfrId, partT
 }
 
 export function checkHighestApprovalLevelForHeadsAndApprovalType(requestData, callback) {
+    const requestedData = { loggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(`${API.checkHighestApprovalLevelForHeadsAndApprovalType}`, requestData, config())
+        axiosInstance.post(`${API.checkHighestApprovalLevelForHeadsAndApprovalType}`, requestedData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -1989,7 +2020,7 @@ export function checkHighestApprovalLevelForHeadsAndApprovalType(requestData, ca
 export function addOnboardingLevel(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.addOnboardingLevel, requestData, config())
+        axiosInstance.post(API.addOnboardingLevel, requestData, config())
             .then((response) => {
                 callback(response);
             })
@@ -2006,8 +2037,9 @@ export function addOnboardingLevel(requestData, callback) {
  * @description UPDATE ONBOARDING LEVEL
  */
 export function updateOnboardingLevel(requestData, callback) {
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
-        axios.put(API.updateOnboardingLevel, requestData, config())
+        axiosInstance.put(API.updateOnboardingLevel, requestedData, config())
             .then((response) => {
                 callback(response);
             })
@@ -2043,8 +2075,9 @@ export function getOnboardingLevelDataList(callback) {
  * @description GET ONBOARDING LEVEL 
  */
 export function getOnboardingLevel(approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getOnboardingLevel}/${ONBOARDINGID}/${approvalTypeId}`, config());
+        const request = axios.get(`${API.getOnboardingLevel}/${ONBOARDINGID}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -2062,10 +2095,11 @@ export function getOnboardingLevel(approvalTypeId, callback) {
  * @description GET ONBOARDING LEVEL BY ID
  */
 export function getOnboardingLevelById(isAPICall, approvalId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (isAPICall) {
             //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getOnboardingLevelById}/${ONBOARDINGID}/${approvalId}`, config());
+            const request = axios.get(`${API.getOnboardingLevelById}/${ONBOARDINGID}/${approvalId}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -2098,7 +2132,7 @@ export function getOnboardingLevelById(isAPICall, approvalId, callback) {
 export function getPlantSelectListForDepartment(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(`${API.getPlantSelectListForDepartment}`, data, config());
+        const request = axiosInstance.post(`${API.getPlantSelectListForDepartment}`, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 dispatch({
@@ -2127,10 +2161,11 @@ export function getPlantSelectListForDepartment(data, callback) {
 * @method getUsersOnboardingLevelAPI
 * @description get User's Onboarding level
 */
-export function getUsersOnboardingLevelAPI(UserId,receiverId, callback) {
+export function getUsersOnboardingLevelAPI(UserId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}/${receiverId}`, config());
+        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {
@@ -2149,7 +2184,7 @@ export function getUsersOnboardingLevelAPI(UserId,receiverId, callback) {
 export function getAllApproverList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllApproverList}?processId=${data.processId}&levelId=${data.levelId}&mode=${data.mode}`, config());
+        const request = axios.get(`${API.getAllApproverList}?loggedInUserId=${loggedInUserId()}&processId=${data.processId}&levelId=${data.levelId}&mode=${data.mode}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {
@@ -2182,7 +2217,7 @@ export function manageLevelTabApi(isCallApi = false) {
 export function addDivisionAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.addDivisionAPI, requestData, config())
+        axiosInstance.post(API.addDivisionAPI, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -2201,7 +2236,7 @@ export function addDivisionAPI(requestData, callback) {
 export function updateDivisionAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.put(API.updateDivisionAPI, requestData, config())
+        axiosInstance.put(API.updateDivisionAPI, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -2263,9 +2298,10 @@ export function getAllDivisionAPI(callback) {
  * @description get division detail
  */
 export function getDivisionAPI(DivisionId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getDivisionAPI}/${DivisionId}`, config());
+        const request = axios.get(`${API.getDivisionAPI}/${DivisionId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response) {
                 dispatch({
@@ -2311,9 +2347,10 @@ export function getDivisionListAPI(callback) {
  * @description get all division list associated with department
  */
 export function getAllDivisionListAssociatedWithDepartment(data, callback) {
+    const requestData = { loggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(`${API.getAllDivisionListAssociatedWithDepartment}`, data, config());
+        const request = axiosInstance.post(`${API.getAllDivisionListAssociatedWithDepartment}`, requestData, config());
         request.then((response) => {
             if (response.status === 200) {
                 dispatch({
@@ -2340,11 +2377,13 @@ export function getDelegateeUserList(data, callback) {
         request.then((response) => {
             if (response.status === 200) {
                 dispatch({
-                    type: GET_DELEGATEE_USER_LIST_SUCCESS,
-                    payload: response.status === 204 ? [] : response?.data?.SelectList,
+                    type: GET_DIVISION_LIST_FOR_DEPARTMENT,
+                    payload: [],
                 });
                 callback(response);
-            } 
+            } else {
+                Toaster.error(MESSAGES.SOME_ERROR);
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
@@ -2359,7 +2398,7 @@ export function getDelegateeUserList(data, callback) {
 export function createDelegation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(`${API.createDelegation}`, data, config());
+        const request = axiosInstance.post(`${API.createDelegation}`, data, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             callback(response);
@@ -2412,7 +2451,7 @@ export function getDelegationHistory(delegatorUserId, callback) {
 export function revokeDelegation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.put(API.revokeDelegation, data, config());
+        const request = axiosInstance.put(API.revokeDelegation, data, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             callback(response);

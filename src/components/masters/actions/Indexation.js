@@ -22,7 +22,8 @@ import {
 }
     from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
-import { userDetails } from '../../../helper';
+import { loggedInUserId, userDetails } from '../../../helper';
+import axiosInstance from '../../../utils/axiosInstance';
 
 /**
  * @method getIndexSelectList
@@ -56,7 +57,7 @@ export function getCommodityNameInIndexSelectList(indexExchangeId, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCommodityNameInIndexSelectList}?indexExchangeId=${indexExchangeId}`, config());
+        const request = axios.get(`${API.getCommodityNameInIndexSelectList}?indexExchangeId=${indexExchangeId}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -102,7 +103,7 @@ export function getCommodityCustomNameSelectListByType(callback) {
  */
 export function createCommodityCustomName(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createCommodityCustomName, data, config());
+        const request = axiosInstance.post(API.createCommodityCustomName, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -144,7 +145,7 @@ export function getCommodityStandardizationDataListAPI(callback) {
 */
 export function createCommodityStandardization(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createCommodityStandardization, data, config());
+        const request = axiosInstance.post(API.createCommodityStandardization, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -166,10 +167,12 @@ export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, isAd
         let queryParams
         if (isAddForm) {
             queryParams = encodeQueryParamsAndLog({
+                loggedInUserId: loggedInUserId(),
                 indexExchangeId: obj
             });
         } else {
             queryParams = encodeQueryParamsAndLog({
+                loggedInUserId: loggedInUserId(),
                 IndexExchangeId: "", indexExchangeName: obj.IndexExchangeName, description: "", applyPagination: isPagination, skip: skip, take: take
             });
         }
@@ -205,6 +208,7 @@ export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, isAd
 export function getCommodityInIndexDataListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             indexExchangeCommodityLinkingId: "", commodityId: "", commodityName: obj.CommodityName, commodityShortName: "", indexExchangeName: obj.IndexExchangeName, description: "", applyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
@@ -241,10 +245,12 @@ export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, i
         let queryParams
         if (isEditMode) {
             queryParams = encodeQueryParamsAndLog({
+                loggedInUserId: loggedInUserId(),
                 commodityStandardizationId: obj
             });
         } else {
             queryParams = encodeQueryParamsAndLog({
+                loggedInUserId: loggedInUserId(),
                 commodityStandardizationId: "", commodityStandardName: obj.CommodityStandardName, commodityName: obj.CommodityName, indexExchangeName: obj.IndexExchangeName, remark: '', applyPagination: isPagination, skip: skip, take: take
             });
         }
@@ -280,6 +286,7 @@ export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, i
 export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             commodityIndexRateDetailId: obj.CommodityIndexRateDetailId || "",
             ratePerIndexUOM: obj.RatePerIndexUOM || "",
             ratePerConvertedUOM: obj.RatePerConvertedUOM || "",
@@ -333,7 +340,7 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
  */
 export function createIndexData(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createIndexData, data, config());
+        const request = axiosInstance.post(API.createIndexData, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -370,7 +377,7 @@ export function deleteIndexData(indexExchangeId, callback) {
  */
 export function updateCommodityStandardization(requestData, callback) {
     return (dispatch) => {
-        axios.put(`${API.updateCommodityStandardization}`, requestData, config())
+        axiosInstance.put(`${API.updateCommodityStandardization}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -405,7 +412,7 @@ export function deleteCommodityStandardization(commodityStandardizationId, callb
  */
 export function updateIndexData(requestData, callback) {
     return (dispatch) => {
-        axios.put(`${API.updateIndexData}`, requestData, config())
+        axiosInstance.put(`${API.updateIndexData}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -420,7 +427,7 @@ export function updateIndexData(requestData, callback) {
  */
 export function bulkUploadIndexData(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadIndexData, data, config());
+        const request = axiosInstance.post(API.bulkUploadIndexData, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -438,7 +445,7 @@ export function bulkUploadIndexData(data, callback) {
 */
 export function bulkUploadStandardizedCommodity(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadStandardizedCommodity, data, config());
+        const request = axiosInstance.post(API.bulkUploadStandardizedCommodity, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -447,25 +454,6 @@ export function bulkUploadStandardizedCommodity(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error);
-        });
-    };
-}
-
-/**
- * @method getAssociatedMaterial
- * @description get Associated Material API
- */
-export function getAssociatedMaterial(rawMaterialId, gradeId, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAssociatedMaterial}?materialTypeId=${rawMaterialId}?rawMaterialGradeId=${gradeId}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            apiErrors(error);
         });
     };
 }
@@ -494,7 +482,7 @@ export function getAssociatedMaterialDetails(materialId, callback) {
  */
 export function bulkUploadIndex(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadIndex, data, config());
+        const request = axiosInstance.post(API.bulkUploadIndex, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -512,7 +500,7 @@ export function bulkUploadIndex(data, callback) {
  */
 export function bulkUploadCommodityInIndex(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadCommodityInIndex, data, config());
+        const request = axiosInstance.post(API.bulkUploadCommodityInIndex, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -548,7 +536,7 @@ export function deleteIndexCommodityLinking(indexExchangeId, callback) {
  */
 export function createIndex(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createIndex, data, config());
+        const request = axiosInstance.post(API.createIndex, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -567,7 +555,7 @@ export function createIndex(data, callback) {
  */
 export function updateIndex(requestData, callback) {
     return (dispatch) => {
-        axios.put(`${API.updateIndex}`, requestData, config())
+        axiosInstance.put(`${API.updateIndex}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -584,6 +572,7 @@ export function updateIndex(requestData, callback) {
 export function getCommodityStandardList(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             commodityStandardId: "", commodityStandardName: obj.CommodityStandardName, applyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
@@ -617,7 +606,7 @@ export function getCommodityStandardList(obj, isPagination, skip, take, callback
  */
 export function bulkUploadCommodityStandard(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadCommodityStandard, data, config());
+        const request = axiosInstance.post(API.bulkUploadCommodityStandard, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -655,7 +644,7 @@ export function deleteCommodityStandard(commodityStandardId, callback) {
 export function deleteIndexDetailData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(API.deleteIndexDetailData, data, config())
+        axiosInstance.put(API.deleteIndexDetailData, data, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -734,8 +723,9 @@ export function setOtherCostDetails(data) {
  * @description get Last Revision Raw Material
  */
 export function getLastRevisionRawMaterialDetails(data, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
-        const request = axios.post(API.getLastRevisionRawMaterialDetails, data, config());
+        const request = axiosInstance.post(API.getLastRevisionRawMaterialDetails, requestData, config());
         request.then((response) => {
             if (response) {
                 callback(response);
@@ -753,7 +743,7 @@ export function getLastRevisionRawMaterialDetails(data, callback) {
 export function getRawMaterialDataBySourceVendor(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRawMaterialDataBySourceVendor}?costingHeadId=${ZBCTypeId}&technologyId=${data.technologyId}&rawMaterialSpecificationId=${data.rawMaterialSpecificationId}&isIndexationDetails=${data.isIndexationDetails}&sourceVendorId=${data.sourceVendorId}`, config());
+        const request = axios.get(`${API.getRawMaterialDataBySourceVendor}?loggedInUserId=${loggedInUserId()}&costingHeadId=${ZBCTypeId}&technologyId=${data.technologyId}&rawMaterialSpecificationId=${data.rawMaterialSpecificationId}&isIndexationDetails=${data.isIndexationDetails}&sourceVendorId=${data.sourceVendorId}`, config());
         request.then((response) => {
             if (response) {
                 callback(response);
@@ -767,7 +757,7 @@ export function getRawMaterialDataBySourceVendor(data, callback) {
 
 export function calculateAndSaveRMIndexationSimulation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.calculateAndSaveRMIndexationSimulation, data, config());
+        const request = axiosInstance.post(API.calculateAndSaveRMIndexationSimulation, data, config());
         request.then((response) => {
             if (response) {
                 callback(response);

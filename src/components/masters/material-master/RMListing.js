@@ -56,7 +56,8 @@ const RMListing = (props) => {
     render: true,
     showExtraData: false,
     isViewFlag: false,
-    totalRecordCount: 0
+    totalRecordCount: 0,
+    globalTake: defaultPageSize
   });
   useEffect(() => {
     getListData();
@@ -112,7 +113,7 @@ const RMListing = (props) => {
     setTimeout(() => {
       rawMaterialTypeDataList.length !== 0 &&
         setState((prevState) => ({
-          ...prevState, noData: searchNocontentFilter(value, prevState.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount()
+          ...prevState, noData: searchNocontentFilter(value, prevState.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount()
         }));
     }, 500);
   };
@@ -255,6 +256,7 @@ const RMListing = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = () => {
@@ -311,7 +313,6 @@ const RMListing = (props) => {
    * @description Resets the state
    */
   const resetState = () => {
-    getListData();
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
@@ -319,8 +320,8 @@ const RMListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
-    setState((prevState) => ({ ...prevState, noData: false }));
-
+    setState((prevState) => ({ ...prevState, noData: false, dataCount: 0, globalTake: defaultPageSize }));
+    getListData();
 
   };
   const { isOpen, isEditFlag, ID, noData, showExtraData, render } = state;
@@ -357,17 +358,17 @@ const RMListing = (props) => {
             <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )}
           {permissions.Download && (
-              <>
-                <ExcelFile
-                  filename={"Rm Material"}
-                  fileExtension={".xls"}
-                  element={
-                    <Button id={"Excel-Downloads-Rm Material"}  disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                  }
-                >
-                 {state?.totalRecordCount !== 0 ? onBtExport() : null}
-                </ExcelFile>
-              </>
+            <>
+              <ExcelFile
+                filename={"Rm Material"}
+                fileExtension={".xls"}
+                element={
+                  <Button id={"Excel-Downloads-Rm Material"} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                }
+              >
+                {state?.totalRecordCount !== 0 ? onBtExport() : null}
+              </ExcelFile>
+            </>
           )}
           <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
         </Col>
@@ -402,41 +403,43 @@ const RMListing = (props) => {
                   customClassName="no-content-found"
                 />
               )}
-              {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+              {render ? <LoaderCustom customClass="loader-center" /> : (!state.isLoader &&
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout="autoHeight"
+                  // columnDefs={c}
+                  rowData={showExtraData && rawMaterialTypeDataList ? [...setLoremIpsum(rawMaterialTypeDataList[0]), ...rawMaterialTypeDataList] : rawMaterialTypeDataList}
 
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout="autoHeight"
-                // columnDefs={c}
-                rowData={showExtraData && rawMaterialTypeDataList ? [...setLoremIpsum(rawMaterialTypeDataList[0]), ...rawMaterialTypeDataList] : rawMaterialTypeDataList}
-
-                pagination={true}
-                paginationPageSize={defaultPageSize}
-                onGridReady={onGridReady}
-                gridOptions={gridOptions}
-                // loadingOverlayComponent={'customLoadingOverlay'}
-                noRowsOverlayComponent={"customNoRowsOverlay"}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: "imagClass",
-                }}
-                rowSelection={"multiple"}
-                frameworkComponents={frameworkComponents}
-                onSelectionChanged={onRowSelect}
-                onFilterModified={onFloatingFilterChanged}
-                suppressRowClickSelection={true}
-              >
-                {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
-                <AgGridColumn field="Density"></AgGridColumn>
-                <AgGridColumn field="RMName" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-              </AgGridReact>}
+                  pagination={true}
+                  paginationPageSize={defaultPageSize}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  // loadingOverlayComponent={'customLoadingOverlay'}
+                  noRowsOverlayComponent={"customNoRowsOverlay"}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                    imagClass: "imagClass",
+                  }}
+                  rowSelection={"multiple"}
+                  frameworkComponents={frameworkComponents}
+                  onSelectionChanged={onRowSelect}
+                  onFilterModified={onFloatingFilterChanged}
+                  suppressRowClickSelection={true}
+                >
+                  {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                  <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
+                  <AgGridColumn field="Density"></AgGridColumn>
+                  <AgGridColumn field="RMName" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+                </AgGridReact>
+              )}
               {
                 <PaginationWrapper
                   gridApi={state.gridApi}
                   setPage={onPageSizeChanged}
+                  globalTake={state.globalTake}
                 />
               }
             </div>

@@ -1,5 +1,6 @@
 import { API, API_FAILURE, API_REQUEST, API_SUCCESS, DETAILS_FOR_DEVIATION_APPROVAL, LPS_RATING_DATA, MONTHS, UPDATE_LPS_RATING_STATUS, UPDATE_VENDOR_CLASSIFICATION_STATUS, VENDOR_CLASSIFICATION_DATA, VENDOR_DATA, VENDOR_PLANT_DATA, config } from '../../config/constants';
 import { apiErrors, loggedInUserId, userDetails } from '../../helper';
+import axiosInstance from '../../utils/axiosInstance';
 import data from './data.json';
 import axios from 'axios';
 
@@ -42,7 +43,7 @@ export const fetchApprovalData = () => {
 
 export const getVendorClassificationListing = (callback) => {
     return dispatch => {
-        axios.get(`${API.getVendorClassificationList}`, config())
+        axios.get(`${API.getVendorClassificationList}?loggedInUserId=${loggedInUserId()}`, config())
             .then(response => {
 
                 dispatch({
@@ -63,7 +64,7 @@ export const getVendorClassificationListing = (callback) => {
 export const getLPSRatingListing = (callback) => {
     return async dispatch => {
         try {
-            const response = await axios.get(`${API.getVendorLpsRatingList}`, config());
+            const response = await axios.get(`${API.getVendorLpsRatingList}?loggedInUserId=${loggedInUserId()}`, config());
 
             dispatch({
                 type: LPS_RATING_DATA,
@@ -84,7 +85,7 @@ export function updateClassificationStatus(requestData, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.vendorClassificationStatusUpdate}`, requestData, config())
+        axiosInstance.put(`${API.vendorClassificationStatusUpdate}`, requestData, config())
             .then((response) => {
 
                 dispatch({ type: API_SUCCESS });
@@ -101,7 +102,7 @@ export function updateLPSRatingStatus(requestData, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.lpsRatingStatusUpdate}`, requestData, config())
+        axiosInstance.put(`${API.lpsRatingStatusUpdate}`, requestData, config())
             .then((response) => {
 
                 dispatch({ type: API_SUCCESS });
@@ -115,7 +116,7 @@ export function updateLPSRatingStatus(requestData, callback) {
 
 export const fetchVendorData = () => {
     return dispatch => {
-        axios.get(`${API.getVendorData}`, config())
+        axios.get(`${API.getVendorNameByVendorSelectList}?loggedInUserId=${loggedInUserId()}`, config())
             .then(response => {
 
 
@@ -134,9 +135,9 @@ export const fetchVendorData = () => {
     };
 };
 export const fetchVendorDependentPlantData = (data) => {
-
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return dispatch => {
-        axios.get(`${API.getPlantData}/${data}`, config())
+        axios.get(`${API.getPlantData}/${data}/${loggedInUser?.loggedInUserId}`, config())
             .then(response => {
 
 
@@ -154,7 +155,7 @@ export const fetchVendorDependentPlantData = (data) => {
     };
 };
 export const fetchDeviationApprovalData = (vendorId, plantId, callback) => {
-    const queryString = `vendorId=${vendorId}&plantId=${plantId}`;
+    const queryString = `loggedInUserId=${loggedInUserId()}&vendorId=${vendorId}&plantId=${plantId}`;
     return dispatch => {
         axios.get(`${API.getVendorPlantDetailForDeviation}?${queryString}`, config())
             .then(response => {
@@ -178,7 +179,7 @@ export const fetchDeviationApprovalData = (vendorId, plantId, callback) => {
 export function sendForUnblocking(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.sendForUnblocking, data, config());
+        const request = axiosInstance.post(API.sendForUnblocking, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);

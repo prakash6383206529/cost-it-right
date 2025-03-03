@@ -822,15 +822,26 @@ function VerifySimulation(props) {
         }
     }
     const currencytooltipToggle = () => {
-        setCurrencyViewTooltip(!currencyViewTooltip)
+        // Only toggle tooltip if currency column is visible
+        const shouldShowCurrency = !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && isMasterAssociatedWithCosting && isRMDomesticOrRMImport === true;
+       if (shouldShowCurrency) {
+            setCurrencyViewTooltip(!currencyViewTooltip);
+        }
     }
     const currencyHeader = (props) => {
+        const shouldShowCurrency = !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && isMasterAssociatedWithCosting && isRMDomesticOrRMImport === true;
+        if (!shouldShowCurrency) {
+            return null;
+        }
+    
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text ' style={{ display: 'flex', gridGap: '5px' }}>Currency {<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text ' style={{ display: 'flex', gridGap: '5px' }}>
+                    Currency {<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>}
+                </span>
             </div>
         );
-    };
+    }
     const frameworkComponents = {
         descriptionFormatter: descriptionFormatter,
         ecnFormatter: ecnFormatter,
@@ -887,7 +898,7 @@ function VerifySimulation(props) {
                         </Col>
                     </Row>
 
-                    {showTooltip && <Tooltip className="simulation-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
+                    {showTooltip&&!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&isMasterAssociatedWithCosting&&isRMDomesticOrRMImport === true && <Tooltip className="simulation-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
                         {"This is the currency selected during the costing"}
                     </Tooltip>}
                     <Row>
@@ -950,7 +961,7 @@ function VerifySimulation(props) {
                                             <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                                             {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn width={185} field="DivisionCode" tooltipField="DivisionCode" headerName="Division"></AgGridColumn>}
                                             {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && <AgGridColumn field={isMasterAssociatedWithCosting ? "CostingCurrency" : "Currency"} tooltipField='Currency' editable='false' headerName="Currency" headerComponent={'currencyHeader'} minWidth={140} ></AgGridColumn>}
+                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&(isMasterAssociatedWithCosting||isRMDomesticOrRMImport === true) && <AgGridColumn field={isMasterAssociatedWithCosting ? "CostingCurrency" : "Currency"} tooltipField='Currency' editable='false' headerName="Currency" headerComponent={'currencyHeader'} minWidth={140} ></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={190} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (Currency)`} cellRenderer='priceFormatter'></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="ForType" headerName="Operation Type" minWidth={190}></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={185} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}

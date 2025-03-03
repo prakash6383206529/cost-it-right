@@ -20,6 +20,8 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 
 // const config() = config;
@@ -30,7 +32,7 @@ import DayTime from '../../common/DayTimeWrapper';
  */
 export function createFreight(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createFreight, data, config());
+        const request = axiosInstance.post(API.createFreight, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -53,7 +55,7 @@ export function createFreight(data, callback) {
  */
 export function getFreightDataList(filterData, callback) {
     return (dispatch) => {
-        const queryParams = `freight_for=${filterData.freight_for}&vendor_id=${filterData.vendor_id}&source_city_id=${filterData.source_city_id}&destination_city_id=${filterData.destination_city_id}&IsCustomerDataShow=${filterData?.IsCustomerDataShow}&IsVendorDataShow=${filterData?.IsVendorDataShow}&IsZeroDataShow=${filterData?.IsZeroDataShow}&FreightEntryType=${filterData?.FreightEntryType}`
+        const queryParams = `loggedInUserId=${loggedInUserId()}&freight_for=${filterData.freight_for}&vendor_id=${filterData.vendor_id}&source_city_id=${filterData.source_city_id}&destination_city_id=${filterData.destination_city_id}&IsCustomerDataShow=${filterData?.IsCustomerDataShow}&IsVendorDataShow=${filterData?.IsVendorDataShow}&IsZeroDataShow=${filterData?.IsZeroDataShow}&FreightEntryType=${filterData?.FreightEntryType}`
         const request = axios.get(`${API.getFreightDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204)
@@ -73,30 +75,31 @@ export function getFreightDataList(filterData, callback) {
  * @method getFreightData
  * @description GET FREIGHT DATA
  */
-export function getFreightData(data, callback) {
+export function getFreightData(freightId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-            dispatch({ type: API_REQUEST });
-            axios.get(`${API.getFreightData}?freightId=${data?.freightId??null}&costingTypeId=${data?.CostingTypeId??null}&plantId=${data?.PlantId??null}&customerId=${data?.CustomerId??null}&vendorId=${data?.VendorId??null}&effectiveDate=${data?.EffectiveDate ? DayTime(data?.EffectiveDate).format('YYYY-MM-DD') : null}`, config())
-                .then((response) => {
-                    if (response) {
-                        dispatch({
-                            type: GET_FREIGHT_DATA_SUCCESS,
-                            payload: response.data.Data,
-                        });
-                        callback(response);
-                    }
-                }).catch((error) => {
-                    dispatch({ type: API_FAILURE });
-                    apiErrors(error);
-                });
-    
-            dispatch({
-                type: GET_FREIGHT_DATA_SUCCESS,
-                payload: {},
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getFreightData}/${freightId}/${loggedInUser?.loggedInUserId}`, config())
+            .then((response) => {
+                if (response) {
+                    dispatch({
+                        type: GET_FREIGHT_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
             });
-            callback();
-        }
-    };
+
+        dispatch({
+            type: GET_FREIGHT_DATA_SUCCESS,
+            payload: {},
+        });
+        callback();
+    }
+};
 
 
 /**
@@ -124,7 +127,7 @@ export function deleteFright(freightId, loggedInUserId, callback) {
 export function updateFright(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateFright}`, requestData, config())
+        axiosInstance.put(`${API.updateFright}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -201,7 +204,7 @@ export function getFreigtRateCriteriaSelectList() {
  */
 export function createAdditionalFreightAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createAdditionalFreightAPI, data, config());
+        const request = axiosInstance.post(API.createAdditionalFreightAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -209,6 +212,7 @@ export function createAdditionalFreightAPI(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -218,8 +222,9 @@ export function createAdditionalFreightAPI(data, callback) {
  * @description get Additional freight list
  */
 export function getAllAdditionalFreightAPI(callback) {
+    const queryParams = { LoggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(API.getAllAdditionalFreightAPI, config());
+        const request = axios.get(`${API.getAllAdditionalFreightAPI}?${queryParams}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
@@ -286,7 +291,7 @@ export function deleteAdditionalFreightAPI(Id, callback) {
 export function updateAdditionalFreightByIdAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateAdditionalFreightByIdAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateAdditionalFreightByIdAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -302,7 +307,8 @@ export function updateAdditionalFreightByIdAPI(requestData, callback) {
  */
 export function getAdditionalFreightBySupplier(sourceSupplierId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.getAdditionalFreightBySupplier}?sourceSupplierId=${sourceSupplierId}`, config());
+        const loggedInUser = { loggedInUserId: loggedInUserId() }
+        const request = axiosInstance.post(`${API.getAdditionalFreightBySupplier}?sourceSupplierId=${sourceSupplierId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -352,7 +358,7 @@ export function getTruckDimensionsSelectList(callback) {
 export function saveAndUpdateTruckDimensions(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(API.saveTruckDimensions, requestData, config())
+        axiosInstance.post(API.saveTruckDimensions, requestData, config())
             .then((response) => {
                 if (response) {
                     callback(response);

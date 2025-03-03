@@ -10,6 +10,8 @@ import {
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -20,7 +22,7 @@ import { apiErrors } from '../../../helper/util';
 export function createInterestRate(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createInterestRate, data, config());
+        const request = axiosInstance.post(API.createInterestRate, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -41,7 +43,7 @@ export function getInterestRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
-            let queryParams = `vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}`
+            let queryParams = `loggedInUserId=${loggedInUserId()}&vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}`
             axios.get(`${API.getInterestRateDataList}?${queryParams}`, config())
                 .then((response) => {
                     if (response.data.Result || response.status === 204)
@@ -69,10 +71,11 @@ export function getInterestRateDataList(isAPICall, data, callback) {
  * @description GET INTEREST RATE DATA
  */
 export function getInterestRateData(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getInterestRateData}/${ID}`, config())
+            axios.get(`${API.getInterestRateData}/${ID}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -118,9 +121,10 @@ export function deleteInterestRate(vendorIntrestRateId, loggedInUserId, callback
  * @description UPDATE INTEREST RATE
  */
 export function updateInterestRate(requestData, callback) {
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateInterestRate}`, requestData, config())
+        axiosInstance.put(`${API.updateInterestRate}`, requestedData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -185,7 +189,7 @@ export function getICCAppliSelectList(callback) {
  */
 export function bulkUploadInterestRateZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadInterestRateZBC, data, config());
+        const request = axiosInstance.post(API.bulkUploadInterestRateZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -203,7 +207,7 @@ export function bulkUploadInterestRateZBC(data, callback) {
  */
 export function bulkUploadInterestRateVBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadInterestRateVBC, data, config());
+        const request = axiosInstance.post(API.bulkUploadInterestRateVBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -222,7 +226,7 @@ export function bulkUploadInterestRateVBC(data, callback) {
  */
 export function bulkUploadInterestRateCBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadInterestRateCBC, data, config());
+        const request = axiosInstance.post(API.bulkUploadInterestRateCBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
