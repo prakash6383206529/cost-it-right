@@ -70,7 +70,7 @@ const ProductHierarchyListing = (props) => {
     };
 
     const onFilterTextBoxChanged = (e) => {
-        setState((prevState) => ({ ...prevState, searchText: state.gridApi.setQuickFilter(e.target.value) }));
+        setState((prevState) => ({ ...prevState, searchText: state.gridApi.setQuickFilter(e?.target?.value) }));
     }
     const defaultColDef = {
         resizable: true,
