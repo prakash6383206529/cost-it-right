@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { getPowerDetailDataList, getVendorPowerDetailDataList, deletePowerDetail, deleteVendorPowerDetail, } from "../actions/Fuel";
-import { EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT } from "../../../config/constants";
+import { EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, defaultPageSize } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
@@ -49,6 +49,7 @@ const PowerListing = (props) => {
     noData: false,
     dataCount: 0,
     isImport: false,
+    globalTake: defaultPageSize
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -221,6 +222,7 @@ const PowerListing = (props) => {
   };
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
   const onRowSelect = () => {
     const selectedRows = state.gridApi?.getSelectedRows();
@@ -253,9 +255,9 @@ const PowerListing = (props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-
-
-
+    state.gridApi.sizeColumnsToFit();
+    setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize, }));
+    getDataList(state.isImport);
   };
 
   const ExcelFile = ReactExport.ExcelFile;
@@ -370,7 +372,7 @@ const PowerListing = (props) => {
             >
               {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
               )}
-              {!state.IsVendor && (<AgGridReact
+              {!state.isLoader && !state.IsVendor && (<AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout="autoHeight"
@@ -390,12 +392,13 @@ const PowerListing = (props) => {
                 onSelectionChanged={onRowSelect}
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
+                enableBrowserTooltips={true}
               >
                 <AgGridColumn field="CostingType"></AgGridColumn>
-                <AgGridColumn field="CountryName"></AgGridColumn>
-                <AgGridColumn field="StateName"></AgGridColumn>
-                <AgGridColumn field="CityName"></AgGridColumn>
-                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" ></AgGridColumn>
+                <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
+                <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+                <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
+                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" tooltipField="PlantWithCode"></AgGridColumn>
                 <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)"></AgGridColumn>}
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
@@ -405,7 +408,7 @@ const PowerListing = (props) => {
                 <AgGridColumn field="PowerId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
               )}
-              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
             </div>
           </div>
         </Col>

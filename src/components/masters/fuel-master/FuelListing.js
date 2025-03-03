@@ -49,7 +49,8 @@ const FuelListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    isImport: false
+    isImport: false,
+    globalTake: defaultPageSize,
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -187,12 +188,13 @@ const FuelListing = (props) => {
 
   const onGridReady = (params) => {
     state.gridApi = params.api;
-    window.screen.width >= 1600 && params.api.sizeColumnsToFit();
+    // window.screen.width >= 1600 && params.api.sizeColumnsToFit();
     setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
     params.api.paginationGoToPage(0);
   };
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
   const onRowSelect = () => {
     const selectedRows = state.gridApi?.getSelectedRows();
@@ -222,10 +224,12 @@ const FuelListing = (props) => {
       searchBox.value = ""; // Reset the input field's value
     }
     state.gridApi.setQuickFilter(null)
-    setState((prevState) => ({ ...prevState, isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false, dataCount: 0, }));
     state.gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState(null);
+    // state.gridApi.sizeColumnsToFit();
+    gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, isLoader: true, isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false, dataCount: 0, globalTake: defaultPageSize, }));
+    getDataList(null, null, state.isImport);
   };
 
   const commonCostFormatter = (props) => {
@@ -243,7 +247,7 @@ const FuelListing = (props) => {
     var thisIsFirstColumn = displayedColumns[0] === params.column;
     return thisIsFirstColumn;
   };
-  const defaultColDef = { resizable: true, filter: true, sortable: false, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: isFirstColumn, };
+  const defaultColDef = { resizable: true, filter: true, sortable: false, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: isFirstColumn, tooltipShowDelay: 0 };
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
@@ -311,8 +315,9 @@ const FuelListing = (props) => {
                 </label>
               </Col>
             </Row>
-            <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}            >
+            <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
               {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
+              {!state.isLoader &&
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -329,23 +334,26 @@ const FuelListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
+                enableBrowserTooltips={true}
               >
                 <AgGridColumn field="CostingHead"minWidth={170} headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-
-                <AgGridColumn field="FuelName" headerName="Fuel" width={250} cellRenderer={"costingHeadFormatter"}></AgGridColumn>
+                <AgGridColumn field="FuelName" headerName="Fuel" width={250} cellRenderer={"costingHeadFormatter"} tooltipField="FuelName"></AgGridColumn>
                 <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
+                <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+                <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
-                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
+                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"}tooltipField="PlantWithCode"></AgGridColumn>
                 <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (<AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateRenderer"}></AgGridColumn>
                 <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={"effectiveDateRenderer"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn field="FuelDetailId" width={300} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" /* pinned="right" */ floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+                <AgGridColumn field="FuelDetailId" width={300} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" pinned="right" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
-              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+              }
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
             </div>
           </div>
         </Col>

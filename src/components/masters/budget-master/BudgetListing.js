@@ -451,7 +451,7 @@ function BudgetListing(props) {
             // setPageNo(1)
             // setPageNoNew(1)
             // setCurrentRowIndex(0)
-            getTableListData(0, 10, true)
+            getTableListData(0, 10, true, isImport)
             dispatch(setSelectedRowForPagination([]))
             // setGlobalTake(10)
             dispatch(updateGlobalTake(10))
@@ -655,9 +655,9 @@ function BudgetListing(props) {
                                     {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
-                                    {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="Budget" />
+                                    {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={(newSkip, numericPageSize, isPagination) => getTableListData(newSkip, numericPageSize, isPagination, isImport)} floatingFilterData={floatingFilterData} module="Budget" />
                                     }
-                                    {<PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="Budget" />}
+                                    {<PaginationControls totalRecordCount={totalRecordCount} getDataList={(newSkip, numericPageSize, isPagination) => getTableListData(newSkip, numericPageSize, isPagination, isImport)} floatingFilterData={floatingFilterData} module="Budget" />}
 
                                 </div>
                             </div>

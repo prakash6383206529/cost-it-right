@@ -44,6 +44,7 @@ const UOMMaster = (props) => {
   const [selectedRowData, setSelectedRowData] = useState(false);
   const [noData, setNoData] = useState(false);
   const [dataCount, setDataCount] = useState(0);
+  const [globalTake, setGlobalTake] = useState(defaultPageSize);
   const dispatch = useDispatch();
   const { topAndLeftMenuData } = useSelector(state => state.auth);
   const unitOfMeasurementList = useSelector(state => state.unitOfMeasrement.unitOfMeasurementList);
@@ -167,6 +168,7 @@ const UOMMaster = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
+    setGlobalTake(newPageSize);
   };
   const onRowSelect = () => {
     const selectedRows = gridApi.getSelectedRows();
@@ -201,6 +203,8 @@ const UOMMaster = (props) => {
     gridOptions?.api?.setFilterModel(null);
     gridApi.sizeColumnsToFit();
     gridApi.deselectAll()
+    setGlobalTake(defaultPageSize);
+    getUOMDataList();
   }
 
 
@@ -275,6 +279,7 @@ const UOMMaster = (props) => {
               </div>
               <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                {!isLoader &&
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   floatingFilter={true}
@@ -299,7 +304,8 @@ const UOMMaster = (props) => {
                   <AgGridColumn field="UnitSymbol" headerName="Unit Symbol" cellRenderer={"unitSymbol"}></AgGridColumn>
                   <AgGridColumn field="UnitType" headerName="Unit Type"></AgGridColumn>
                 </AgGridReact>
-                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                }
+                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake}/>}
               </div>
             </div>
 

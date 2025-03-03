@@ -60,8 +60,10 @@ const SpecificationListing = (props) => {
     noData: false,
     dataCount: 0,
     render: false,
-    isAssociate: false
+    isAssociate: false,
+    globalTake: defaultPageSize
   });
+  
 
   // const params = useMemo(() => {
   //   return {
@@ -272,6 +274,7 @@ const SpecificationListing = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onBtExport = () => {
@@ -339,9 +342,9 @@ const SpecificationListing = (props) => {
     getSpecificationListData("", "");
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState(null);
+    gridOptions.columnApi.resetColumnState();
     state.gridApi.setFilterModel(null);
-    setState((prevState) => ({ ...prevState, noData: false }));
+    setState((prevState) => ({ ...prevState, noData: false, dataCount: 0, globalTake: defaultPageSize }));
     if (searchRef.current) {
       searchRef.current.value = '';
     }
@@ -483,7 +486,7 @@ const SpecificationListing = (props) => {
                 ></AgGridColumn>
               </AgGridReact>}
               {
-                <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />
+                <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />
               }
             </div>
           </div>

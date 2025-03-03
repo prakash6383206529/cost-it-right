@@ -52,7 +52,11 @@ const LevelsListing = (props) => {
 		cancelButton: false,
 		noData: false,
 		approvalTypeId: '',
-		levelValue: ""
+		levelValue: "",
+		pageSize1: 5,
+        pageSize2: 15,
+        pageSize3: 25,
+        globalTake: 5
 	});
 	const [permissionData, setPermissionData] = useState({});
 	const dispatch = useDispatch();
@@ -204,6 +208,7 @@ const LevelsListing = (props) => {
 
 	const onPageSizeChanged = (newPageSize) => {
 		state.gridApi.paginationSetPageSize(Number(newPageSize));
+		setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
 	};
 
 	const onFilterTextBoxChanged = (e) => {
@@ -218,6 +223,8 @@ const LevelsListing = (props) => {
 		if (searchRef.current) {
 			searchRef.current.value = '';
 		}
+		setState((prevState) => ({ ...prevState, globalTake: 5 }));
+		getUpdatedData();
 	};
 	const { isEditFlag, isShowForm, isShowMappingForm, isOpen, TechnologyId,
 		showImpact, noData } = state;
@@ -294,7 +301,7 @@ const LevelsListing = (props) => {
 													<AgGridColumn width="35" field="Level" headerName="Level"></AgGridColumn>
 													<AgGridColumn field="Users" tooltipField="Users" headerName="Users"></AgGridColumn>
 												</AgGridReact>}
-												{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} pageSize1={5} pageSize2={15} pageSize3={25} />}
+												{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} pageSize1={state.pageSize1} pageSize2={state.pageSize2} pageSize3={state.pageSize3} globalTake={state.globalTake} />}
 											</div>
 										</div>
 

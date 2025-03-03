@@ -59,6 +59,7 @@ const BOPManage = (props) => {
         dataCount: 0,
         showExtraData: false,
         render: false,
+        globalTake: defaultPageSize
     });
 
     useEffect(() => {
@@ -155,6 +156,7 @@ const BOPManage = (props) => {
 
     const onPageSizeChanged = (newPageSize) => {
         state.gridApi.paginationSetPageSize(Number(newPageSize));
+        setState((prevState) => ({ ...prevState, globalTake: newPageSize }))
     };
 
     const onRowSelect = () => {
@@ -249,7 +251,8 @@ const BOPManage = (props) => {
         if (searchRef.current) {
             searchRef.current.value = '';
         }
-        setState((prevState) => ({ ...prevState, noData: false }))
+        setState((prevState) => ({ ...prevState, noData: false, globalTake: defaultPageSize, dataCount: 0 }));
+        getDataList();
     }
     const handleShown = () => {
         setState((prevState) => ({ ...prevState, shown: !state.shown }))
@@ -346,6 +349,7 @@ const BOPManage = (props) => {
                         </div>
                         <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                            {!state.isLoader &&
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
@@ -374,7 +378,8 @@ const BOPManage = (props) => {
                                 <AgGridColumn field="BoughtOutPartEntryType" headerName="Entry Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
 
                             </AgGridReact>
-                            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+                            }
+                            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
                         </div>
                     </div>
 
