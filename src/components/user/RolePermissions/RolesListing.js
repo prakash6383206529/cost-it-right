@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllRoleAPI, activeInactiveRole } from '../../../actions/auth/AuthActions';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { checkPermission, searchNocontentFilter, setLoremIpsum, showTitleForActiveToggle } from '../../../helper/util';
 import { ROLE } from '../../../config/constants';
@@ -42,7 +42,8 @@ const RolesListing = (props) => {
     showPopup: false,
     deletedId: '',
     cell: '',
-    noData: false
+    noData: false,
+    globalTake: defaultPageSize
   });
 
   const dispatch = useDispatch();
@@ -138,6 +139,7 @@ const RolesListing = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -151,6 +153,8 @@ const RolesListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+    setState((prevState) => ({ ...prevState, isLoader: true, globalTake: defaultPageSize }));
+    getRolesListData();
   }
 
   const handleChange = (cell, row) => {
@@ -262,7 +266,7 @@ const RolesListing = (props) => {
                 </AgGridReact>
                 }
 
-                {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+                {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
               </div>
             </div>
             {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state.cell ? MESSAGES.ROLE_DEACTIVE_ALERT : MESSAGES.ROLE_ACTIVE_ALERT}`} />}

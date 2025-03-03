@@ -686,6 +686,7 @@ class AddPower extends Component {
         this.callExchangeRateAPI();
       });
     } else {
+      this.props.change('plantCurrency', "");
       this.setState({ isDisabled: false });
     }
     // this.props.getPlantUnitAPI(e?.value, (res) => {
@@ -2133,7 +2134,7 @@ class AddPower extends Component {
                           </>
                         }
 
-                        <Col md="6" className={(costingTypeId === ZBCTypeId || isDetailEntry) ? "" : "mt30 pt-1"}>
+                        <Col md="3" className={ "mt30 pt-1"}>
                           <label id="AddPower_AddMoreDetails"
                             className={`custom-checkbox w-auto ${isDetailEntry ? 'mb-3' : ''}`}
                             onChange={this.isDetailEntryChange}
@@ -2645,35 +2646,27 @@ class AddPower extends Component {
                                 </tbody>
 
                                 <tfoot>
-
                                   <tr className="bluefooter-butn">
                                     <td></td>
-                                    <td></td>
-
-                                    {this.state.isImport && (
-                                      <>
-                                        <th>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
-                                        <td>
-                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
-                                        </td>
-                                      </>
-                                    )}
-                                    <th>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
-                                    <td>
-                                      <label>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                    <td colSpan="2" className='text-end'>
+                                        {this.state.isImport &&
+                                          <strong className='d-block mb-1'>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
+                                        }
+                                        <strong className='d-block mb-1'>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
+                                        {!this.state.hidePlantCurrency &&
+                                          <strong className='d-block mb-1'>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</strong>
+                                        }
                                     </td>
-                                    {!this.state.hidePlantCurrency && (
-                                      <>
-                                        <th>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</th>
-                                        <td>
-                                          <label>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
-                                        </td>
-                                      </>
-                                    )}
-
-                                    <td></td>
+                                    <td colSpan="2">
+                                        {this.state.isImport &&
+                                          <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        }
+                                        <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        {!this.state.hidePlantCurrency &&
+                                          <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                        }
+                                    </td>
                                   </tr>
-
                                 </tfoot>
 
                                 {this.state.powerGrid.length === 0 && <tbody>

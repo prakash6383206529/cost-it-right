@@ -49,7 +49,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
             case 'Outsourced':
                 getDataList(newSkip, pageSizeValue, true)
                 break;
-            case 'budget':
+            case 'Budget':
                 getDataList(newSkip, pageSizeValue, true)
                 break;
             case 'Approval':

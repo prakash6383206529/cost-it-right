@@ -351,7 +351,7 @@ const OperationListing = (props) => {
             ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false,
             // pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
         }));
-        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData, state.isImport)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         dispatch(setSelectedRowForPagination([]));
         dispatch(updateGlobalTake(10));
         setState((prevState) => ({

@@ -62,7 +62,8 @@ const InterestRateListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    showExtraData: false
+    showExtraData: false,
+    globalTake: defaultPageSize
   })
   const { vendorLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
@@ -284,6 +285,7 @@ const InterestRateListing = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = () => {
@@ -338,7 +340,8 @@ const InterestRateListing = (props) => {
     gridOptions.api.setFilterModel(null);
     dispatch(agGridStatus("", ""))
     dispatch(isResetClick(true, "ICCApplicability"))
-
+    setState((prevState) => ({ ...prevState, isLoader: true, globalTake: defaultPageSize }));
+    getTableListData();
   }
 
 
@@ -447,7 +450,7 @@ const InterestRateListing = (props) => {
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>}
-              {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+              {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
             </div>
           </div>
 

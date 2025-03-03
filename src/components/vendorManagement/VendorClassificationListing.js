@@ -192,6 +192,7 @@ const VendorClassificationListing = () => {
         if (searchRef.current) {
             searchRef.current.value = '';
         }
+        getTableListData();
     }
     return (
         <> <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>

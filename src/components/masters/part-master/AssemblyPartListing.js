@@ -76,6 +76,7 @@ const AssemblyPartListing = React.memo((props) => {
     cell: [],
     showPopupToggle: false,
     showPopupToggle2: false,
+    globalTake: defaultPageSize,
   });
 
   const permissions = useContext(ApplyPermission);
@@ -376,6 +377,7 @@ const AssemblyPartListing = React.memo((props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = useCallback(() => {
@@ -445,6 +447,8 @@ const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPAR
     // if (window.screen.width >= 1600) {
     //   state.gridApi.sizeColumnsToFit();
     // }
+    setState((prevState) => ({ ...prevState, dataCount: 0, globalTake: defaultPageSize, }));
+    getTableListData();
   };
 
   const isFirstColumn = (params) => {
@@ -562,7 +566,7 @@ const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPAR
             {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found"
             />
             )}
-            {(!state.render) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+            {state.isLoader ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
 
               style={{ height: '100%', width: '100%' }}
               defaultColDef={defaultColDef}
@@ -608,6 +612,7 @@ const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPAR
               <PaginationWrapper
                 gridApi={state.gridApi}
                 setPage={onPageSizeChanged}
+                globalTake={state.globalTake}
               />
             }
           </div>

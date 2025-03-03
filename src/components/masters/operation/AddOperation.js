@@ -1572,8 +1572,9 @@ class AddOperation extends Component {
                           disabled={true}
                           className=" "
                           customClassName=" withBorder mb-1"
-                        />
+                        >
                         {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                        </Field>
                       </Col>}
                       {this.state.isImport && <Col md="3">
                         <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />

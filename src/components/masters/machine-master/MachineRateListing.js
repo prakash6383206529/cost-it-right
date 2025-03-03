@@ -268,9 +268,7 @@ const MachineRateListing = (props) => {
 
 
   const resetState = () => {
-    setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
     dispatch(isResetClick(true, "Operation"));
-    setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
     setSearchText(''); // Clear the search text state
     if (state.gridApi) { state.gridApi.setQuickFilter(''); }
     state.gridApi.deselectAll();
@@ -280,16 +278,11 @@ const MachineRateListing = (props) => {
       state.floatingFilterData[prop] = "";
     }
     dispatch(resetStatePagination());
-    setState((prevState) => ({
-      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false,
-      // pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
-    }));
-    getDataList("", 0, 0, "", '', 10, true, state.floatingFilterData);
+    dispatch(updateCurrentRowIndex(10))
+    setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, dataCount: 0, isFilterButtonClicked: false, floatingFilterData: state.floatingFilterData, warningMessage: false }));
+    // getDataList("", 0, 0, "", '', 10, true, state.floatingFilterData);
+    getDataList("", 0, '', 0, "", "", 0, defaultPageSize, true, state.floatingFilterData, state.isImport)
     dispatch(setSelectedRowForPagination([]));
-    setState((prevState) => ({
-      ...prevState, dataCount: 0,
-      //  globalTake: 10, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
-    }));
     setSearchText(''); // Assuming this state is bound to the input value
   };
 
@@ -867,10 +860,10 @@ const MachineRateListing = (props) => {
                     {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                   </AgGridReact >}
                   <div className='button-wrapper'> {!state.isLoader &&
-                    <PaginationWrappers gridApi={state.gridApi} module="Machine" totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} />
+                    <PaginationWrappers gridApi={state.gridApi} module="Machine" totalRecordCount={state.totalRecordCount} getDataList={(...args) => getDataList(...args, state.isImport)} floatingFilterData={state.floatingFilterData} />
                   }
                     {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                      <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} module="Machine"
+                      <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={(...args) => getDataList(...args, state.isImport)} floatingFilterData={state.floatingFilterData} module="Machine"
                       />}
                   </div>
                 </div >
