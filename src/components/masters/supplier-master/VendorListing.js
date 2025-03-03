@@ -429,7 +429,7 @@ const VendorListing = (props) => {
      */
   const handleChange = (cell, row) => {
     let data = {
-      Id: row.VendorId, ModifiedBy: loggedInUserId(), IsActive: !cell, //Status of the user.
+      Id: row.VendorId, ModifiedBy: loggedInUserId(), IsActive: !cell, LoggedInUserId: loggedInUserId()//Status of the user.
     };
     setState((prevState) => ({ ...prevState, showPopupToggle: true, cellData: data, cellValue: cell, }));
   };
