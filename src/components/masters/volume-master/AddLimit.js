@@ -103,7 +103,7 @@ const AddLimit = (props) => {
         //     setRegularization,
         //     setDeviation,
         // }
-        // axios.post(``, postData).then(res => {
+        // axiosInstance.post(``, postData).then(res => {
         //     
         // });
     };

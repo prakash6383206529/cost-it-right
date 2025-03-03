@@ -12,6 +12,8 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config;
 
@@ -22,7 +24,7 @@ import Toaster from '../../common/Toaster';
 export function createReasonAPI(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createReason, data, config());
+        const request = axiosInstance.post(API.createReason, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -80,9 +82,10 @@ export function getAllReasonAPI(isAPICall, callback) {
  * @description get one Reason based on reason id
  */
 export function getReasonAPI(ReasonId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getReasonAPI}/${ReasonId}`, config())
+        axios.get(`${API.getReasonAPI}/${ReasonId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -120,7 +123,7 @@ export function setEmptyReason() {
 export function updateReasonAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateReasonAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateReasonAPI}`, requestData, config())
             .then((response) => {
                 if (response.data.Result) {
                     callback(response);
@@ -160,7 +163,7 @@ export function deleteReasonAPI(reasonId, loggedInUserId, callback) {
 export function activeInactiveReasonStatus(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveReasonStatus}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveReasonStatus}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);

@@ -7,7 +7,7 @@ import { AssemblyWiseImpactt, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../
 import { getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, searchNocontentFilter, showSaLineNumber, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, showSaLineNumber, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, EXCHNAGERATE } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -114,7 +114,7 @@ function OtherCostingSimulation(props) {
             });
 
             uniqueArr && uniqueArr.map(item => {
-                requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false, SimulationId: simulationId })
+                requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false, SimulationId: simulationId, LoggedInUserId: loggedInUserId() })
                 return null
             })
 

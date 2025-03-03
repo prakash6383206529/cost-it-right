@@ -337,7 +337,7 @@ function CostingSimulation(props) {
             });
 
             uniqueArr && uniqueArr.map(item => {
-                requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false, SimulationId: simulationId })
+                requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false, SimulationId: simulationId, LoggedInUserId: loggedInUserId() })
                 return null
             })
 

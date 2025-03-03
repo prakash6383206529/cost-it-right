@@ -2141,12 +2141,12 @@ class AddBOPDomestic extends Component {
                             }
                           </>}
                         </div>
-                      </Row>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
+                      </Row >
+                    </form >
+                  </div >
+                </div >
+              </div >
+            </div >
           </div >
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />

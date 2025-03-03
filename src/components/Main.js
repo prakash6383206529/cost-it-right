@@ -181,6 +181,7 @@ if (Detail && Object.keys(Detail).length > 0) {
     };
 
     let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
+        //already password encryped that's why didnt use axiosInstance here
 
     axios
       .post(API.login, queryParams, CustomHeader)

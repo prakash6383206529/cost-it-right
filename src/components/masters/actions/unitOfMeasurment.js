@@ -15,6 +15,8 @@ import {
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config;
 
@@ -45,10 +47,11 @@ export function getUnitOfMeasurementAPI(callback) {
  * @description get one UOM based on id
  */
 export function getOneUnitOfMeasurementAPI(uomId, isEditFlag, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (isEditFlag) {
-            axios.get(`${API.getUOMAPI}/${uomId}`, config())
+            axios.get(`${API.getUOMAPI}/${uomId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -83,7 +86,7 @@ export function createUnitOfMeasurementAPI(data, callback) {
         dispatch({
             type: CREATE_PART_REQUEST
         });
-        const request = axios.post(API.createUOMAPI, data, config());
+        const request = axiosInstance.post(API.createUOMAPI, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({
@@ -129,7 +132,7 @@ export function deleteUnitOfMeasurementAPI(Id, callback) {
 export function updateUnitOfMeasurementAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateUOMAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateUOMAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -171,7 +174,7 @@ export function getUnitTypeListAPI(callback) {
 export function activeInactiveUOM(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveUOM}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveUOM}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

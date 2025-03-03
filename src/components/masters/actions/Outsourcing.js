@@ -10,6 +10,8 @@ import {
     API_SUCCESS
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 
 /**
@@ -19,7 +21,7 @@ import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 export function createOutsourcing(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createOutsourcing, data, config());
+        const request = axiosInstance.post(API.createOutsourcing, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -38,7 +40,7 @@ export function createOutsourcing(data, callback) {
 export function updateOutsourcing(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateOutsourcing}`, requestData, config())
+        axiosInstance.put(`${API.updateOutsourcing}`, requestData, config())
             .then((response) => {
                 if (response.data.Result) {
                     callback(response);
@@ -56,9 +58,10 @@ export function updateOutsourcing(requestData, callback) {
  * @description get outsourcing data
  */
 export function getOutsourcing(outSourcingId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getOutsourcing}/${outSourcingId}`, config())
+        axios.get(`${API.getOutsourcing}/${outSourcingId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -79,9 +82,8 @@ export function getOutsourcing(outSourcingId, callback) {
 */
 export function getAllOutsourcing(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
-        // const QueryParams = `outSourcingName=${obj.OutSourcingName !== undefined ? obj.OutSourcingName : ""}&outSourcingShortName=${obj.OutSourcingShortName !== undefined ? obj.OutSourcingShortName : ""}&isApplyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}`
         const queryParams = encodeQueryParamsAndLog({
-            outSourcingName: obj.OutSourcingName, outSourcingShortName: obj.OutSourcingShortName, isApplyPagination: isPagination, skip: skip, take: take
+            loggedInUserId: loggedInUserId(), outSourcingName: obj.OutSourcingName, outSourcingShortName: obj.OutSourcingShortName, isApplyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getAllOutsourcing}?${queryParams}`, config())
@@ -116,7 +118,7 @@ export function activeInactiveOutsourcingStatus(requestData, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveOutsourcingStatus}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveOutsourcingStatus}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);

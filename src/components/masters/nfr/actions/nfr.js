@@ -10,13 +10,14 @@ import {
 
 } from '../../../../config/constants';
 import { apiErrors } from '../../../../helper/util';
-import { userDepartmetList } from '../../../../helper';
+import { loggedInUserId, userDepartmetList } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
+import axiosInstance from '../../../../utils/axiosInstance';
 
 export function getAllNfrList(callback) {
     return (dispatch) => {
-
-        const request = axios.get(API.getAllNfrList, config());
+        const loggedInUser = { loggedInUserId: loggedInUserId() }
+        const request = axios.get(`${API.getAllNfrList}?loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -31,9 +32,10 @@ export function getAllNfrList(callback) {
 }
 
 export function getNfrPartDetails(nfrId, callback) {
+        
     return (dispatch) => {
 
-        const request = axios.get(`${API.getNfrPartDetails}/${nfrId}`, config());
+        const request = axios.get(`${API.getNfrPartDetails}/${nfrId}/${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -53,7 +55,7 @@ export function getNfrPartDetails(nfrId, callback) {
  */
 export function saveNFRGroupDetails(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.saveNFRGroupDetails, requestData, config())
+        axiosInstance.post(API.saveNFRGroupDetails, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -87,7 +89,7 @@ export function getNFRPartWiseGroupDetail(data, callback) {
  */
 export function nfrSendToApproverBySender(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.nfrSendToApproverBySender, requestData, config())
+        axiosInstance.post(API.nfrSendToApproverBySender, requestData, config())
             .then((response) => {
                 if ((response && response.status === 200) || response.data.Result) {
                     callback(response);
@@ -148,7 +150,7 @@ export function getNFRApprovalSummary(approvalProcessId, loggedInUserId, callbac
  */
 export function approvedCostingByApprover(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.approvedCostingByApprover, requestData, config())
+        axiosInstance.post(API.approvedCostingByApprover, requestData, config())
             .then((response) => {
                 if ((response && response?.status === 200) || response?.data?.Result) {
                     callback(response);
@@ -180,7 +182,7 @@ export function nfrDetailsForDiscountAction(data) {
 
 export function pushNfrOnSap(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.pushNfrOnSap, requestData, config())
+        axiosInstance.post(API.pushNfrOnSap, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -229,7 +231,7 @@ export function saveNFRCostingInfo(data, callback) {
 
 export function saveOutsourcingData(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.saveOutsourcingData, requestData, config())
+        axiosInstance.post(API.saveOutsourcingData, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -317,7 +319,7 @@ export function setOpenAllTabs(data) {
  */
 export function pushNfrRmBopOnSap(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.pushNfrRmBopOnSap, requestData, config())
+        axiosInstance.post(API.pushNfrRmBopOnSap, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -334,8 +336,12 @@ export function pushNfrRmBopOnSap(requestData, callback) {
  * @description create NFR BOM Details
  */
 export function createNFRBOMDetails(requestData, callback) {
+    const requestedData = {
+        loggedInUserId: loggedInUserId(),
+        ...requestData
+    }
     return (dispatch) => {
-        axios.post(API.createNFRBOMDetails, requestData, config())
+        axiosInstance.post(API.createNFRBOMDetails, requestedData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);

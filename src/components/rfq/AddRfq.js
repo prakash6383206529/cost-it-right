@@ -4525,7 +4525,7 @@ function AddRfq(props) {
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
                                             fileName={BulkUploadFileName()}
-                                            messageLabel={"RFQ Part's"}
+                                            messageLabel={selectedOption === "Raw Material" ? "RFQ RM's" : selectedOption === "Bought Out Part" ? "RFQ BOP's" : partType === "componentAssembly" ?  "RFQ Part's" : 'RFQ'}
                                             anchor={"right"}
                                             technologyId={technology}
                                             selectedOption={selectedOption}

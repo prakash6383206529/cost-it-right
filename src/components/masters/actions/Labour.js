@@ -14,6 +14,8 @@ import {
 import { apiErrors } from '../../../helper/util';
 import DayTime from '../../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -23,7 +25,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
  */
 export function createLabour(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createLabour, data, config());
+        const request = axiosInstance.post(API.createLabour, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -45,7 +47,7 @@ export function getLabourDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
 
-            const queryParams = `employment_terms=${data.employment_terms}&state_id=${data.state}&plant_id=${data.plant}&labour_type_id=${data.labour_type}&machine_type_id=${data.machine_type}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&effectiveDate=${data.effectiveDate}&vendorId=${data.vendorId}&customerId=${data.customerId}&costingHeadId=${data.costingHeadId}&partId=${data.partId}&isRequestForCosting=${data.isRequestForCosting}&baseCostingId=${data.baseCostingId}`;
+            const queryParams = `loggedInUserId=${loggedInUserId()}&employment_terms=${data.employment_terms}&state_id=${data.state}&plant_id=${data.plant}&labour_type_id=${data.labour_type}&machine_type_id=${data.machine_type}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&effectiveDate=${data.effectiveDate}&vendorId=${data.vendorId}&customerId=${data.customerId}&costingHeadId=${data.costingHeadId}&partId=${data.partId}&isRequestForCosting=${data.isRequestForCosting}&baseCostingId=${data.baseCostingId}`;
             const request = axios.get(`${API.getLabourDataList}?${queryParams}`, config());
             request.then((response) => {
                 if (response.data.Result || response.status === 204) {
@@ -74,10 +76,11 @@ export function getLabourDataList(isAPICall, data, callback) {
  * @description GET LABOUR DATA
  */
 export function getLabourData(labourId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (labourId !== '') {
-            axios.get(`${API.getLabourData}/${labourId}`, config())
+            axios.get(`${API.getLabourData}/${labourId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -125,7 +128,7 @@ export function deleteLabour(labourDetailId, loggedInUserId, callback) {
 export function updateLabour(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateLabour}`, requestData, config())
+        axiosInstance.put(`${API.updateLabour}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -141,9 +144,10 @@ export function updateLabour(requestData, callback) {
  * @description GET LABOUR TYPE BY PLANT
  */
 export function getLabourTypeByPlantSelectList(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (ID !== '') {
-            const request = axios.get(`${API.getLabourTypeByPlantSelectList}/${ID}`, config());
+            const request = axios.get(`${API.getLabourTypeByPlantSelectList}/${ID}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -174,7 +178,7 @@ export function getLabourTypeByPlantSelectList(ID, callback) {
  */
 export function getLabourTypeByMachineTypeSelectList(data, callback) {
     return (dispatch) => {
-        const queryParams = `machineTypeId=${data?.machineTypeId || ''}&plantId=${data?.plantId || ''}&effectiveDate=${data?.effectiveDate ? DayTime(data?.effectiveDate).format('YYYY-MM-DDTHH:mm:ss') : ''}&vendorId=${data?.vendorId || ''}&customerId=${data?.customerId || ''}&costingTypeId=${data?.costingTypeId || ''}`;
+        const queryParams = `loggedInUserId=${loggedInUserId()}&machineTypeId=${data?.machineTypeId || ''}&plantId=${data?.plantId || ''}&effectiveDate=${data?.effectiveDate ? DayTime(data?.effectiveDate).format('YYYY-MM-DDTHH:mm:ss') : ''}&vendorId=${data?.vendorId || ''}&customerId=${data?.customerId || ''}&costingTypeId=${data?.costingTypeId || ''}`;
         if (data.machineTypeId !== '') {
             const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}?${queryParams}`, config());
             request.then((response) => {
@@ -206,7 +210,7 @@ export function getLabourTypeByMachineTypeSelectList(data, callback) {
  */
 export function labourBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.labourBulkUpload, data, config());
+        const request = axiosInstance.post(API.labourBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -224,10 +228,11 @@ export function labourBulkUpload(data, callback) {
  * @description get labour type for machine type
  */
 export function getLabourTypeDetailsForMachineType(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
 
         if (ID !== '') {
-            const request = axios.get(`${API.getLabourTypeDetailsForMachineType}/${ID}`, config());
+            const request = axios.get(`${API.getLabourTypeDetailsForMachineType}/${ID}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -256,10 +261,10 @@ export function getLabourTypeDetailsForMachineType(ID, callback) {
  * @description update labour
  */
 export function updateLabourTypeForMachineType(requestData, callback) {
-
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(API.updateLabourTypeForMachineType, requestData, config())
+        axiosInstance.put(API.updateLabourTypeForMachineType, requestedData, config())
 
             .then((response) => {
                 callback(response);

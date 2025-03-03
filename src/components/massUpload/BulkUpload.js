@@ -891,17 +891,15 @@ class BulkUpload extends Component {
     }
 
     responseHandlerRFQ = (res) => {
+        console.log(res,"res");
 
-        const { messageLabel } = this.props;
         let identityKey = null;
-        if (res.status === 400) {
-            let Data = res.data.Data
-            const withOutTild = Data?.FileURL?.replace("~", "");
-            const fileURL = `${FILE_URL}${withOutTild}`;
-            window.open(fileURL, '_blank');
-        } else {
+        if(res?.status === 200){
             identityKey = res?.data?.Identity;
             Toaster.success(`RFQ uploaded successfully.`)
+        }
+      else {
+            Toaster.error(res?.data?.Message ? res?.data?.Message : 'Error in RFQ upload');
         }
         // if (res?.data?.Data?.FailedRecordCount > 0) {
         //     Toaster.warning(`Part upload failed for ${res?.data?.Data?.FailedRecordCount} records.`)
@@ -1140,10 +1138,7 @@ class BulkUpload extends Component {
                     default:
                         return
                 }
-                // this.props.checkRFQBulkUpload(uploadDataRFQ, (res) => {
-                //     this.setState({ setDisable: false })
-                //     this.responseHandlerRFQ(res)
-                // });
+              
             }
 
             else {

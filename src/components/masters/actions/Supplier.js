@@ -19,6 +19,8 @@ import {
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -31,7 +33,7 @@ export function createSupplierAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createSupplierAPI, data, config());
+        const request = axiosInstance.post(API.createSupplierAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -60,13 +62,12 @@ export function createSupplierAPI(data, callback) {
  * @description get Supplier's DataList 
  */
 export function getSupplierDataList(skip, obj, take, isPagination, callback) {
-
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-
-        var queryParams = `isApplyPagination=${isPagination}`;
-        var queryParams2 = `take=${take}`
-        var queryParams1 = `skip=${skip}`
-        const QueryParams = encodeQueryParams({
+        var queryParams = encodeQueryParams({
+            isApplyPagination: isPagination,
+            take: take,
+            skip: skip,
             vendorType: obj?.VendorType !== null && obj?.VendorType !== undefined ? obj?.VendorType : "",
             vendorName: obj?.VendorName != null && obj?.VendorName !== undefined ? obj?.VendorName : "",
             country: obj?.Country != null || obj?.Country !== "" ? obj?.Country : "",
@@ -80,7 +81,7 @@ export function getSupplierDataList(skip, obj, take, isPagination, callback) {
             vendorLPSRating: obj?.VendorLPSRating ? obj?.VendorLPSRating : "",
 
         });
-        const request = axios.get(`${API.getAllSupplierAPI}?${queryParams}&${queryParams1}&${queryParams2}&${QueryParams}`, config());
+        const request = axios.get(`${API.getAllSupplierAPI}?loggedInUserId=${loggedInUser?.loggedInUserId}&${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -114,10 +115,11 @@ export function getSupplierDataList(skip, obj, take, isPagination, callback) {
  * @description get one labour based on id
  */
 export function getSupplierByIdAPI(supplierId, isEditFlag, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (isEditFlag) {
-            axios.get(`${API.getSupplierAPI}/${supplierId}`, config())
+            axios.get(`${API.getSupplierAPI}/${supplierId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -168,7 +170,7 @@ export function deleteSupplierAPI(vendorId, loggedInUserId, callback) {
 export function updateSupplierAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateSupplierAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateSupplierAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -206,7 +208,7 @@ export function getRadioButtonSupplierType() {
 export function activeInactiveVendorStatus(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveVendorStatus}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveVendorStatus}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -223,7 +225,7 @@ export function activeInactiveVendorStatus(requestData, callback) {
  */
 export function vendorBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.vendorBulkUpload, data, config());
+        const request = axiosInstance.post(API.vendorBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

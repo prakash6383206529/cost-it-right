@@ -128,7 +128,7 @@ const ZBCPlantListing = (props) => {
         }));
     };
     const onPopupConfirmToggle = () => {
-        confirmDeactivateItem(state.cellData, state.cellValue);
+        confirmDeactivateItem(state?.cellData, state?.cellValue);
     };
     /**
   * @method buttonFormatter

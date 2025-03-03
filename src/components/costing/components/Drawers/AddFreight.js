@@ -850,7 +850,8 @@ function AddFreight(props) {
                         max: freightType === Percentage ? {
                           value: 100,
                           message: 'Percentage should be less than 100'
-                        } : {},
+                        } : undefined,
+
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

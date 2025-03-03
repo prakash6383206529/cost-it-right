@@ -25,6 +25,8 @@ import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -57,7 +59,7 @@ export function getOperationsAPI(callback) {
 export function createOtherOperationsAPI(data, callback) {
     return (dispatch) => {
         dispatch({ type: CREATE_OTHER_OPERATION_REQUEST });
-        const request = axios.post(API.createOtherOperationAPI, data, config());
+        const request = axiosInstance.post(API.createOtherOperationAPI, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({
@@ -120,7 +122,7 @@ export function getOtherOperationDataAPI(OtherOperationId, callback) {
 export function updateOtherOperationAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateOtherOperationAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateOtherOperationAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -137,7 +139,7 @@ export function updateOtherOperationAPI(requestData, callback) {
 export function createCEDOtherOperationsAPI(data, callback) {
     return (dispatch) => {
         dispatch({ type: CREATE_OTHER_OPERATION_REQUEST });
-        const request = axios.post(API.createCEDOtherOperationAPI, data, config());
+        const request = axiosInstance.post(API.createCEDOtherOperationAPI, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({
@@ -218,7 +220,7 @@ export function getCEDoperationDataAPI(ID, callback) {
 export function updateCEDoperationAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateCEDoperationAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateCEDoperationAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -254,6 +256,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
     return (dispatch) => {
 
         let payload
+        const loggedInUser = { loggedInUserId: loggedInUserId() }
         //dispatch({ type: API_REQUEST });
         // const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&OperationType=${obj.ForType}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
         // const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
@@ -293,7 +296,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             ExchangeRateSourceName: obj.ExchangeRateSourceName !== undefined ? obj.ExchangeRateSourceName : "",
             isRequestForPendingSimulation: obj.isRequestForPendingSimulation ? true : false
         });
-        axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
+        axios.get(`${API.getOperationsDataList}?loggedInUserId=${loggedInUserId()}&${QueryParams}&${queryParamsSecond}`, config())
 
             .then((response) => {
 
@@ -334,7 +337,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
 export function createOperationsAPI(data, callback) {
     return (dispatch) => {
         dispatch({ type: CREATE_OTHER_OPERATION_REQUEST });
-        const request = axios.post(API.createOperationAPI, data, config());
+        const request = axiosInstance.post(API.createOperationAPI, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -352,10 +355,11 @@ export function createOperationsAPI(data, callback) {
  * @description Get operation unit operation data
  */
 export function getOperationDataAPI(OperationId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (OperationId !== '') {
-            axios.get(`${API.getOperationDataAPI}/${OperationId}`, config())
+            axios.get(`${API.getOperationDataAPI}/${OperationId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -384,7 +388,7 @@ export function getOperationDataAPI(OperationId, callback) {
 export function updateOperationAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateOperationAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateOperationAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -419,7 +423,7 @@ export function deleteOperationAPI(OperationId, loggedInUserId, callback) {
  */
 export function fileUploadOperation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadOperation, data, config());
+        const request = axiosInstance.post(API.fileUploadOperation, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -438,11 +442,12 @@ export function fileUploadOperation(data, callback) {
  */export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
         const requestBody = {
+            LoggedInUserId: loggedInUserId(),
             operationName: name,
             operationCode: code
         };
-        const request = axios.post(`${API.checkAndGetOperationCode}`, requestBody, config());
-        // const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
+        const request = axiosInstance.post(`${API.checkAndGetOperationCode}`, requestBody, config());
+        // const request = axiosinstance.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
         request.then((response) => {
             if (response && (response.status === 200 || response.status === 202)) {
                 callback(response);
@@ -469,9 +474,10 @@ export function fileUploadOperation(data, callback) {
  * @description get all other operation for cost summary 
  */
 export function getCEDOtherOperationBySupplierID(supplierId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCEDOtherOperationBySupplierID}/${supplierId}`, config());
+        const request = axios.get(`${API.getCEDOtherOperationBySupplierID}/${supplierId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -496,7 +502,7 @@ export function getCEDOtherOperationBySupplierID(supplierId, callback) {
  */
 export function operationBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.operationBulkUpload, data, config());
+        const request = axiosInstance.post(API.operationBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

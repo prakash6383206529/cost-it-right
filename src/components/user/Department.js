@@ -189,10 +189,16 @@ class Department extends Component {
 		})
 
 		if (isEditFlag) {
-			if (DataToChange?.DepartmentName === values?.DepartmentName && DataToChange?.DepartmentCode === values?.DepartmentCode && (JSON.stringify(selectedPlants) === JSON.stringify(DataToChange?.PlantList))) {
-				this.toggleDrawer('', 'cancel')
-				return false
-			}
+			const hasChanges = 
+			DataToChange?.DepartmentName !== values?.DepartmentName?.trim() ||
+			DataToChange?.DepartmentCode !== values?.DepartmentCode?.trim() ||
+			JSON.stringify(selectedPlants) !== JSON.stringify(DataToChange?.PlantList) ||
+			isApplyDivision !== DataToChange?.IsDivision ||
+			JSON.stringify(divisions) !== JSON.stringify(DataToChange?.DivisionList);
+		 if (!hasChanges) {
+			this.toggleDrawer('', 'cancel');
+			return false;
+		}
 			// Update existing department
 			let formReq = {}
 			if (this.props.isDivision) {
@@ -204,6 +210,7 @@ class Department extends Component {
 				}
 			} else {
 				formReq = {
+					LoggedInUserId: loggedInUserId(),
 					DepartmentId: DepartmentId,
 					IsActive: true,
 					CreatedDate: DayTime(new Date()).format('YYYY/MM/dd HH:mm:ss'),
