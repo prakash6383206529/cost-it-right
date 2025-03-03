@@ -348,7 +348,7 @@ const StandardizationListing = (props) => {
         dispatch(updateCurrentRowIndex(10));
 
         dispatch(updatePageNumber(1));
-        getTableListData(0, globalTakes, true)
+        getTableListData(0, defaultPageSize, true)
         dispatch(updateGlobalTake(10))
         gridApi.deselectAll()
     }

@@ -64,7 +64,8 @@ function LabourListing(props) {
     selectedVendor: [],
     selectedCustomer: [],
     costingTypeId: ZBCTypeId,
-    totalRecordCount: 0
+    totalRecordCount: 0,
+    globalTake: defaultPageSize
   });
   const dispatch = useDispatch();
   const { labourDataList, topAndLeftMenuData } = useSelector(state => ({ labourDataList: state.labour.labourDataList, topAndLeftMenuData: state.auth.topAndLeftMenuData, }));
@@ -201,7 +202,7 @@ function LabourListing(props) {
   const customerFormatter = (props) => {
     const cellValue = props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? `${cellValue}` : '-';
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== "NA") ? `${cellValue}` : '-';
   }
 
 
@@ -270,6 +271,7 @@ function LabourListing(props) {
 
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = () => {
@@ -329,6 +331,8 @@ function LabourListing(props) {
     state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize }));
+    filterList()
   }
 
   const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, } = state
@@ -434,12 +438,14 @@ function LabourListing(props) {
               suppressRowClickSelection={true}
             >
               <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-              <AgGridColumn field="CostingHead"minWidth={170} headerName="Costing Head"></AgGridColumn>
+              <AgGridColumn field="CostingHead" minWidth={170} headerName="Costing Head"></AgGridColumn>
 
               <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
               <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
+              <AgGridColumn field="Country" headerName="Country" cellRenderer={'customerFormatter'}></AgGridColumn>
               <AgGridColumn field="State" headerName="State"></AgGridColumn>
+              <AgGridColumn field="City" headerName="City" cellRenderer={'customerFormatter'}></AgGridColumn>
               <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
               <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
               {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
@@ -448,7 +454,7 @@ function LabourListing(props) {
               <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
               <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
             </AgGridReact>}
-            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
           </div>
         </div>
 

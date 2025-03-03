@@ -25,7 +25,7 @@ import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
-import { TourStartAction, agGridStatus, setResetCostingHead } from '../../../actions/Common';
+import { TourStartAction, agGridStatus, isResetClick, setResetCostingHead } from '../../../actions/Common';
 import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
@@ -63,10 +63,11 @@ const InterestRateListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    showExtraData: false,
     totalRecordCount: 0,
-    showExtraData: false
+    globalTake: defaultPageSize
   })
-  const { vendorLabel ,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
   const { statusColumnData } = useSelector((state) => state.comman);
   const { costingHeadFilter } = useSelector((state) => state?.comman);
@@ -81,7 +82,7 @@ const InterestRateListing = (props) => {
     setTimeout(() => {
       getTableListData()
     }, 500);
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
 
   }, []);
@@ -226,15 +227,15 @@ const InterestRateListing = (props) => {
     )
   };
 
-  
+
   const combinedCostingHeadRenderer = (props) => {
     // Call the existing checkBoxRenderer
     costingHeadFormatter(props);
-  
+
     // Get and localize the cell value
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-  
+
     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
     return localizedValue;
   };
@@ -306,6 +307,7 @@ const InterestRateListing = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = () => {
@@ -361,6 +363,9 @@ const InterestRateListing = (props) => {
     dispatch(agGridStatus("", ""))
     dispatch(setResetCostingHead(true, 'applicability'))
 
+    dispatch(isResetClick(true, "ICCApplicability"))
+    setState((prevState) => ({ ...prevState, isLoader: true, globalTake: defaultPageSize }));
+    getTableListData();
   }
 
 
@@ -389,10 +394,10 @@ const InterestRateListing = (props) => {
     suppressFilterButton: true,
     component: CostingHeadDropdownFilter,
     onFilterChange: (originalValue, value) => {
-      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
       setState((prevState) => ({ ...prevState, disableFilter: false }));
     }
-};
+  };
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
@@ -423,7 +428,7 @@ const InterestRateListing = (props) => {
                       <>
                         <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
                           <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
-                           {state?.totalRecordCount !== 0 ? onBtExport() : null}
+                          {state?.totalRecordCount !== 0 ? onBtExport() : null}
                         </ExcelFile>
                       </>
 
@@ -465,8 +470,8 @@ const InterestRateListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}   floatingFilterComponentParams={floatingFilterStatus} 
-                                            floatingFilterComponent="statusFilter"></AgGridColumn>
+                <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
+                  floatingFilterComponent="statusFilter"></AgGridColumn>
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                 {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
@@ -480,7 +485,7 @@ const InterestRateListing = (props) => {
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>}
-              {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+              {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
             </div>
           </div>
 

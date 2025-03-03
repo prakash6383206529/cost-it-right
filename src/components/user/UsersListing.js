@@ -5,7 +5,7 @@ import { getAllUserDataAPI, getAllRoleAPI, activeInactiveUser, revokeDelegation,
 import $ from 'jquery';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { DELEGATION, EMPTY_DATA, ON_BEHALF_DELEGATION, RFQUSER, SELF_DELEGATION } from '../../config/constants';
+import { defaultPageSize, DELEGATION, EMPTY_DATA, ON_BEHALF_DELEGATION, RFQUSER, SELF_DELEGATION } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -36,6 +36,7 @@ import { disabledClass } from '../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash';
 import AddDelegation from './RolePermissions/AddDelegation';
+import { PaginationWrapper } from '../common/commonPagination';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -82,7 +83,7 @@ const UsersListing = (props) => {
 		openHistory: false,
 		showRevokePopup: false,
 		isSelfDelegatedOnly: false,
-
+		globalTake: defaultPageSize
 	});
 	const [skip, setSkip] = useState(0);  // Starting record
 	const [take, setTake] = useState(10); // Number of records per page
@@ -619,7 +620,10 @@ const UsersListing = (props) => {
 		props.formToggle(props?.RFQUser)
 	}
 
-
+	const onPageSizeChanged = (newPageSize) => {
+		state.gridApi.paginationSetPageSize(Number(newPageSize));
+		setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
+	};
 
 	const onFilterTextBoxChanged = (e) => {
 		const filterValue = e?.target?.value || "";
@@ -653,6 +657,7 @@ const UsersListing = (props) => {
 		reactLocalStorage.remove('selectedRow');
 		dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
 		dispatch(resetStatePagination());
+		// getUsersListData(); //Shaylendra will check it
 		if (isSimulation) {
 			props.isReset()
 		}
@@ -833,11 +838,7 @@ const UsersListing = (props) => {
 							)}
 
 						</AgGridReact>
-						<div className='button-wrapper'>
-							{<PaginationWrappers gridApi={state?.gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="User" />}
-							<PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="User" />
-						</div>
-
+						{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
 					</div>
 				</div>}
 

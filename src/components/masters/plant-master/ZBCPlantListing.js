@@ -59,8 +59,8 @@ const ZBCPlantListing = (props) => {
         type: '',
         render: false,
         showExtraData: false,
-        totalRecordCount: 0
-
+        totalRecordCount: 0,
+        globalTake: defaultPageSize
     });
 
     useEffect(() => {
@@ -228,7 +228,7 @@ const ZBCPlantListing = (props) => {
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
 
-                setState(prevState => ({ ...prevState, tableData: Data, isLoader: false,totalRecordCount: Data?.length }));
+                setState(prevState => ({ ...prevState, tableData: Data, isLoader: false, totalRecordCount: Data?.length }));
             }
         }));
     };
@@ -257,7 +257,7 @@ const ZBCPlantListing = (props) => {
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (plantDataList.length !== 0) {
-                setState(prevState => ({ ...prevState, noData: searchNocontentFilter(value, prevState.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
+                setState(prevState => ({ ...prevState, noData: searchNocontentFilter(value, prevState.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
             }
         }, 500);
 
@@ -279,6 +279,7 @@ const ZBCPlantListing = (props) => {
     };
     const onPageSizeChanged = (newPageSize) => {
         state.gridApi.paginationSetPageSize(Number(newPageSize));
+        setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
     };
     const onRowSelect = () => {
         const selectedRows = state.gridApi?.getSelectedRows();
@@ -322,7 +323,8 @@ const ZBCPlantListing = (props) => {
         if (window.screen.width >= 1600) {
             state.gridApi.sizeColumnsToFit();
         }
-        setState(prevState => ({ ...prevState, noData: false }));
+        setState(prevState => ({ ...prevState, noData: false, globalTake: defaultPageSize }));
+        filterList();
     };
 
 
@@ -438,7 +440,7 @@ const ZBCPlantListing = (props) => {
                         </AgGridReact>
                     }
 
-                    {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+                    {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
                 </div>
             </div>
 

@@ -1941,7 +1941,7 @@ class AddBOPDomestic extends Component {
                             (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) &&
                             <>
                               <Col md="3">
-                                <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
+                                <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
                                   label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                                   name={`${"NetCostPlantCurrency"}`}

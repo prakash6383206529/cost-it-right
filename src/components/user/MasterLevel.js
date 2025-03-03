@@ -34,6 +34,10 @@ const MasterLevelListing = (props) => {
         deletedId: '',
         isLoader: false,
         noData: false,
+        pageSize1: 5,
+        pageSize2: 15,
+        pageSize3: 25,
+        globalTake: 5
     });
     const permissions = useContext(ApplyPermission);
     const dispatch = useDispatch();
@@ -122,18 +126,20 @@ const MasterLevelListing = (props) => {
     }
 
     const masterResetState = () => {
-
         agGrid3?.current.api.setQuickFilter(null)
         agGrid3?.current?.columnApi?.resetColumnState();
         agGrid3?.current?.api.setFilterModel(null)
         if (masterFilter.current) {
             masterFilter.current.value = '';
         }
+        setState((prevState) => ({ ...prevState, globalTake: defaultPageSize }));
+        getMasterDataList();
     }
 
     const masterPagination = (newPageSize) => {
         agGrid3?.current.api.paginationSetPageSize(Number(newPageSize + 1))
         agGrid3?.current.api.paginationSetPageSize(Number(newPageSize))
+        setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
     };
     const defaultColDef = {
         resizable: true, filter: true, sortable: false,
@@ -168,7 +174,7 @@ const MasterLevelListing = (props) => {
                                     </div>
                                     <div className={`ag-theme-material`}>
                                         {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                        {<AgGridReact
+                                        {!state.isLoader && <AgGridReact
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
                                             domLayout='autoHeight'
@@ -197,7 +203,7 @@ const MasterLevelListing = (props) => {
                                             <AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
                                             <AgGridColumn field="MasterId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'masterButtonFormatter'}></AgGridColumn>
                                         </AgGridReact>}
-                                        {<PaginationWrapper gridApi={state.gridApi} setPage={masterPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
+                                        {<PaginationWrapper gridApi={state.gridApi} setPage={masterPagination} pageSize1={state.pageSize1} pageSize2={state.pageSize2} pageSize3={state.pageSize3} globalTake={state.globalTake} />}
                                     </div>
                                 </div>
 

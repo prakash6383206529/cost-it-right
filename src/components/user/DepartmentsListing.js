@@ -47,6 +47,7 @@ const DepartmentsListing = (props) => {
     AddAccessibilityDivision: false,
     EditAccessibilityDivision: false,
     DeleteAccessibilityDivision: false,
+    globalTake: defaultPageSize
   });
   const dispatch = useDispatch();
   const searchRef = useRef(null);
@@ -208,6 +209,7 @@ const DepartmentsListing = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -221,6 +223,8 @@ const DepartmentsListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+    setState((prevState) => ({ ...prevState, isLoader: true, globalTake: defaultPageSize }));
+    getDepartmentListData();
   }
 
   const { isOpen, isEditFlag, DepartmentId, AddAccessibility, noData } = state;
@@ -288,7 +292,7 @@ const DepartmentsListing = (props) => {
                   {!props.isDivision && <AgGridColumn field="DepartmentId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                   {props.isDivision && <AgGridColumn field="DivisionId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRendererDivision'}></AgGridColumn>}
                 </AgGridReact>}
-                {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+                {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
               </div>
             </div>
 
