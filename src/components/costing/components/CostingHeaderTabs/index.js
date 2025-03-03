@@ -125,6 +125,7 @@ function CostingHeaderTabs(props) {
   useEffect(() => {
     if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && (costData?.TechnologyId === ASSEMBLY ? true : !costData?.CostingCurrencyId)) {
       let arr = []
+      if(currency?.label!==costData?.LocalCurrency||costData?.LocalCurrency!==initialConfiguration?.BaseCurrency){
       callExchangeRateAPI(currency?.label, costData?.LocalCurrency).then(res => { //plant
         const exchangeData = {
           plantExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? Boolean(res?.data?.Data) : false,
@@ -156,7 +157,7 @@ function CostingHeaderTabs(props) {
           dispatch(saveCostingBasicDetails(obj, res => {
           }))
         })
-      })
+      })}
     }
   }, [currency, exchangeRateSource, effectiveDate])
 

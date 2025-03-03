@@ -865,15 +865,15 @@ function AddRMFinancialDetails(props) {
         if (states.isImport) {
             let netLandedCostConversion
             if (getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency")) {
-                netLandedCostConversion = checkForDecimalAndNull(netLandedCostLocalConversion * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate), getConfigurationKey().NoOfDecimalForPrice)
+                netLandedCostConversion = checkForDecimalAndNull(netLandedCostLocalConversion * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
             } else {
-                netLandedCostConversion = checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate), getConfigurationKey().NoOfDecimalForPrice)
+                netLandedCostConversion = checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
             }
             setValue('NetLandedCost', checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(netLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', netLandedCostConversion)
         } else {
-            setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull((netLandedCost), getConfigurationKey().NoOfDecimalForPrice))
         }
         let updatedState = {
