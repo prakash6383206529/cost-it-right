@@ -42,7 +42,8 @@ const FreightListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    isImport: false
+    isImport: false,
+    globalTake: defaultPageSize,
   })
   const permissions = useContext(ApplyPermission);
   const { freightDetail } = useSelector((state) => state.freight);
@@ -204,6 +205,7 @@ const FreightListing = (props) => {
   };
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = () => {
@@ -237,6 +239,9 @@ const FreightListing = (props) => {
     state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    state.gridApi.sizeColumnsToFit();
+    setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize }))
+    getDataList(null, null, null, null, state.isImport)
   }
 
 
@@ -321,6 +326,7 @@ const FreightListing = (props) => {
 
             <div className={`ag-theme-material`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+              {!state.isLoader &&
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -351,7 +357,8 @@ const FreightListing = (props) => {
 
                 <AgGridColumn width='220px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
               </AgGridReact>
-              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+              }
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
             </div>
           </div>
         </Col>

@@ -1680,7 +1680,7 @@ function AddRMFinancialDetails(props) {
                             </>}
 
                             {states.isImport && <Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost" tooltipText={netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost" tooltipText={`Net Cost = ${netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                     name={'NetLandedCost'}
@@ -1696,9 +1696,10 @@ function AddRMFinancialDetails(props) {
                                 />
                             </Col>}
                             {showNetCost() && <Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-currency" tooltipText={states.isImport ? netCostTitle()?.tooltipTextPlantCurrency : netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-currency" tooltipText={`Net Cost = ${states.isImport ? netCostTitle()?.tooltipTextPlantCurrency : netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
                                 <TextFieldHookForm
-                                    label={`Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`}
+                                    // label={`Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`}
+                                    label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, `${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')}`  )}
                                     name={'NetLandedCostLocalConversion'}
                                     id="rm-net-cost-currency"
                                     placeholder={"-"}
@@ -1712,7 +1713,7 @@ function AddRMFinancialDetails(props) {
                                 />
                             </Col>}
                             {<Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost-currency" tooltipText={states.isImport ? netCostTitle()?.toolTipTextNetCostBaseCurrency : netCostTitle()?.tooltipTextPlantCurrency} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost-currency" tooltipText={`Net Cost = ${states.isImport ? netCostTitle()?.toolTipTextNetCostBaseCurrency : netCostTitle()?.tooltipTextPlantCurrency}`} />
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Net Cost", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency")))}
                                     name={'NetLandedCostConversion'}

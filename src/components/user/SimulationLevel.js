@@ -30,6 +30,10 @@ const SimulationLevelListing = (props) => {
         deletedId: '',
         isLoader: false,
         noData: false,
+        pageSize1: 5,
+        pageSize2: 15,
+        pageSize3: 25,
+        globalTake: 5
     });
     const permissions = useContext(ApplyPermission);
     const dispatch = useDispatch();
@@ -98,18 +102,20 @@ const SimulationLevelListing = (props) => {
     }
 
     const simulationResetState = () => {
-
         agGrid2?.current.api.setQuickFilter(null)
         agGrid2?.current?.columnApi?.resetColumnState();
         agGrid2?.current?.api.setFilterModel(null)
         if (simulationFilter.current) {
             simulationFilter.current.value = '';
         }
+        setState((prevState) => ({ ...prevState, globalTake: defaultPageSize }));
+        getSimulationDataList();
     }
 
     const simulationPagination = (newPageSize) => {
         agGrid2?.current.api.paginationSetPageSize(Number(newPageSize + 1))
         agGrid2?.current.api.paginationSetPageSize(Number(newPageSize))
+        setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
     };
 
     const defaultColDef = {
@@ -141,7 +147,7 @@ const SimulationLevelListing = (props) => {
                             </div>
                             <div className={`ag-theme-material`}>
                                 {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                {<AgGridReact
+                                {!state.isLoader && <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
@@ -170,7 +176,7 @@ const SimulationLevelListing = (props) => {
                                     <AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
                                 </AgGridReact>}
-                                {<PaginationWrapper gridApi={state.gridApi} setPage={simulationPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
+                                {<PaginationWrapper gridApi={state.gridApi} setPage={simulationPagination} pageSize1={state.pageSize1} pageSize2={state.pageSize2} pageSize3={state.pageSize3} globalTake={state.globalTake} />}
                             </div>
                         </div>
                     </Col>

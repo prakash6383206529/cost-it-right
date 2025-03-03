@@ -55,7 +55,8 @@ const RMListing = (props) => {
     dataCount: 0,
     render: true,
     showExtraData: false,
-    isViewFlag: false
+    isViewFlag: false,
+    globalTake: defaultPageSize
   });
   useEffect(() => {
     getListData();
@@ -256,6 +257,7 @@ const RMListing = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = () => {
@@ -312,7 +314,6 @@ const RMListing = (props) => {
    * @description Resets the state
    */
   const resetState = () => {
-    getListData();
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
@@ -320,8 +321,8 @@ const RMListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
-    setState((prevState) => ({ ...prevState, noData: false }));
-
+    setState((prevState) => ({ ...prevState, noData: false, dataCount: 0, globalTake: defaultPageSize }));
+    getListData();
 
   };
   const { isOpen, isEditFlag, ID, noData, showExtraData, render } = state;
@@ -405,41 +406,43 @@ const RMListing = (props) => {
                   customClassName="no-content-found"
                 />
               )}
-              {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+              {render ? <LoaderCustom customClass="loader-center" /> : (!state.isLoader &&
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout="autoHeight"
+                  // columnDefs={c}
+                  rowData={showExtraData && rawMaterialTypeDataList ? [...setLoremIpsum(rawMaterialTypeDataList[0]), ...rawMaterialTypeDataList] : rawMaterialTypeDataList}
 
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout="autoHeight"
-                // columnDefs={c}
-                rowData={showExtraData && rawMaterialTypeDataList ? [...setLoremIpsum(rawMaterialTypeDataList[0]), ...rawMaterialTypeDataList] : rawMaterialTypeDataList}
-
-                pagination={true}
-                paginationPageSize={defaultPageSize}
-                onGridReady={onGridReady}
-                gridOptions={gridOptions}
-                // loadingOverlayComponent={'customLoadingOverlay'}
-                noRowsOverlayComponent={"customNoRowsOverlay"}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: "imagClass",
-                }}
-                rowSelection={"multiple"}
-                frameworkComponents={frameworkComponents}
-                onSelectionChanged={onRowSelect}
-                onFilterModified={onFloatingFilterChanged}
-                suppressRowClickSelection={true}
-              >
-                {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
-                <AgGridColumn field="Density"></AgGridColumn>
-                <AgGridColumn field="RMName" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-              </AgGridReact>}
+                  pagination={true}
+                  paginationPageSize={defaultPageSize}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  // loadingOverlayComponent={'customLoadingOverlay'}
+                  noRowsOverlayComponent={"customNoRowsOverlay"}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                    imagClass: "imagClass",
+                  }}
+                  rowSelection={"multiple"}
+                  frameworkComponents={frameworkComponents}
+                  onSelectionChanged={onRowSelect}
+                  onFilterModified={onFloatingFilterChanged}
+                  suppressRowClickSelection={true}
+                  >
+                  {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                  <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
+                  <AgGridColumn field="Density"></AgGridColumn>
+                  <AgGridColumn field="RMName" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+                  </AgGridReact>
+              ) }
               {
                 <PaginationWrapper
                   gridApi={state.gridApi}
                   setPage={onPageSizeChanged}
+                  globalTake={state.globalTake}
                 />
               }
             </div>
