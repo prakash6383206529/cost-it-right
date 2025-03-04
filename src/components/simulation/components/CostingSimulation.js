@@ -1602,7 +1602,7 @@ function CostingSimulation(props) {
     const currencyHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text ' style={{ display: 'flex', gridGap: '5px' }}>Currency {<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text ' style={{ display: 'flex', gridGap: '5px' }}>CostingCurrency {<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>} </span>
             </div>
         );
     };
@@ -1797,7 +1797,7 @@ function CostingSimulation(props) {
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && getConfigurationKey().IsSourceExchangeRateNameVisible && isSimulationWithCosting && <AgGridColumn width={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && <AgGridColumn field={isSimulationWithCosting ? "CostingCurrency" : "Currency"} headerName='Currency' headerComponent={'currencyHeader'} />}
+                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && <AgGridColumn field={ "CostingCurrency" } headerName='Costing Currency' headerComponent={'currencyHeader'} />}
 
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
