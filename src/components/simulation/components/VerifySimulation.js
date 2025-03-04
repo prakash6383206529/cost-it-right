@@ -287,6 +287,7 @@ function VerifySimulation(props) {
         if (isMasterAssociatedWithCosting) {
             dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
                 if (res.data.Result) {
+                    setIsLoader(false)
                     const data = res.data.Data
                     if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
                         Toaster.warning('No approved costing exist for this bought out part.')
