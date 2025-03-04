@@ -168,10 +168,10 @@ class AddFuel extends Component {
 
       if (isImport) {
         // First API call
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency });
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
         callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
           // Second API call
-          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency });
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
           callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
             this.setState({
               plantCurrency: rate1,
@@ -188,7 +188,7 @@ class AddFuel extends Component {
         });
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency });
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
         callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
             this.handleCalculation(fieldsObj?.RateLocalConversion)
@@ -349,7 +349,7 @@ class AddFuel extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, state: true } })
         count++
       }
-      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      if (fieldsObj?.RateLocalConversion === undefined || Number(fieldsObj?.RateLocalConversion) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
         count++
       }
@@ -431,7 +431,6 @@ class AddFuel extends Component {
       return false;
     }
     let tempArray = [];
-
     if (fieldsObj === undefined || Number(fieldsObj) === 0) {
       this.setState({ errorObj: { rate: true } })
       return false;
@@ -1353,7 +1352,7 @@ class AddFuel extends Component {
                                 customClassName="mb-0 withBorder"
                                 disabled={isViewMode}
                               />
-                              {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                              {this.state.errorObj.rate && (this.props.fieldsObj.Rate === undefined || Number(this.props.fieldsObj.Rate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>}
                           <Col md="3">
@@ -1373,7 +1372,7 @@ class AddFuel extends Component {
                                 customClassName="mb-0 withBorder"
                                 disabled={isViewMode || this.state.isImport}
                               />
-                              {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                              {this.state.errorObj.rate && (this.props.fieldsObj.RateLocalConversion === undefined || Number(this.props.fieldsObj.RateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
                           {!this.state?.hidePlantCurrency &&
