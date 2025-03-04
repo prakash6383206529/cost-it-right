@@ -531,9 +531,9 @@ function ERSimulation(props) {
                                             {/* <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={columnWidths.Currency}></AgGridColumn> */}
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" minWidth={columnWidths.PartNumber}></AgGridColumn>}
-                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={columnWidths.BankRate}></AgGridColumn>
+                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate" minWidth={columnWidths.BankRate}></AgGridColumn>
                                             <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={columnWidths.BankCommissionPercentage}></AgGridColumn>
-                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={columnWidths.CustomRate}></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate" minWidth={columnWidths.CustomRate}></AgGridColumn>
                                             {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Exchange Rate" marryChildren={true} >
                                                 <AgGridColumn minWidth={columnWidths.CurrencyExchangeRate} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
@@ -545,8 +545,8 @@ function ERSimulation(props) {
                                             </AgGridColumn>}
 
                                             {isImpactedMaster && <>
-                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(${reactLocalStorage.getObject("baseCurrency")})`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>
-                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(${reactLocalStorage.getObject("baseCurrency")}) `} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>
                                             </>}
                                             {props.children}
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>

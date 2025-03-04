@@ -303,7 +303,7 @@ function AddRMFinancialDetails(props) {
         const isBasicRateVisible = getConfigurationKey().IsBasicRateAndCostingConditionVisible &&
             Number(states.costingTypeId) === Number(ZBCTypeId);
         const netCostText = isBasicRateVisible ? `Basic Price + Condition Cost` : `Basic Rate + Other Cost`;
-        const netCostlabel = states.isImport ? `Net Cost (${state?.currency?.label ?? 'Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
+        const netCostlabel = states.isImport ? `Net Cost (${getValues('plantCurrency') ?? 'Plant Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency ? netCostText : `${netCostlabel} * Plant Currency Rate (${states.isImport ? CurrencyExchangeRate?.plantCurrencyRate : CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
@@ -1052,7 +1052,7 @@ function AddRMFinancialDetails(props) {
         return <>
             {!this?.state?.hidePlantCurrency
                 ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency},`
-                : ''}<p> {getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? `Exchange Rate: 2 ${plantCurrency} = ${settlementCurrencyRate} ${baseCurrency}` : ""}</p>
+                : ''}<p> {getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? `Exchange Rate: 1 ${plantCurrency} = ${settlementCurrencyRate} ${baseCurrency}` : ""}</p>
         </>;
     };
     return (
