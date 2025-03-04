@@ -562,7 +562,6 @@ function CostingSimulation(props) {
                     break;
                 case Number(EXCHNAGERATE):
                     setMasterLoader(true)
-                    console.log(simulationApplicability, "simulationApplicability")
                     switch (simulationApplicability?.value) {
                         case APPLICABILITY_RM_SIMULATION:
                         case Number(RMIMPORT):

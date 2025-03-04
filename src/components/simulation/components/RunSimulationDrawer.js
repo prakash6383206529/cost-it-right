@@ -613,8 +613,6 @@ function RunSimulationDrawer(props) {
     }
     // Add this console log to monitor state changes
 // useEffect(() => {
-//     console.log('Selected Data:', selectedData);
-//     console.log('Backend Selections:', 
 //         applicabilityHeadListSimulation
 //             .filter(item => item.Selected)
 //             .map(item => item.Text)

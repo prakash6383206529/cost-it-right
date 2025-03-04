@@ -166,7 +166,6 @@ function AddRfq(props) {
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
     const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
-    console.log("initialConfiguration", initialConfiguration);
 
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)

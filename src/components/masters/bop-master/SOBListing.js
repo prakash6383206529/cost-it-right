@@ -396,7 +396,7 @@ const SOBListing = (props) => {
         }, 400);
     } else {
       // Download all data
-      getDataList(0, globalTakes, floatingFilterData, true)
+      getDataList(0, globalTakes,floatingFilterData, false )
     }
   }
 
