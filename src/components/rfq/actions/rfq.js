@@ -280,8 +280,17 @@ export function getCommunicationHistory(data, callback) {
 
 
 export function checkExistCosting(data, callback) {
+    const requestData = {
+        
+            "LoggedInUserId": loggedInUserId(),
+            "PartIdList": [
+              data.PartIdList
+            ],
+            "PlantId": data.PlantId,
+            "VendorId": data.VendorId
+          }
     return (dispatch) => {
-        const request = axiosInstance.post(API.checkExistCosting, data, config());
+        const request = axiosInstance.post(API.checkExistCosting, requestData, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -331,6 +340,8 @@ export function checkRFQBulkUpload(data, callback) {
     };
 }
 export function checkComponentOrAssemblyRFQBulkUpload(data, callback) {
+    console.log("data", data);
+    
     return (dispatch) => {
         const request = axiosInstance.post(API.checkComponentOrAssemblyRFQBulkUpload, data, config());
         request.then((response) => {

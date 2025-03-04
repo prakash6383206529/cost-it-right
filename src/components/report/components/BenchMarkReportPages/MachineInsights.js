@@ -11,7 +11,7 @@ import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../das
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostingBenchMarkMachineReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
-import { checkForDecimalAndNull } from '../../../../helper';
+import { checkForDecimalAndNull, loggedInUserId } from '../../../../helper';
 
 function MachineInsights(props) {
 
@@ -43,6 +43,7 @@ function MachineInsights(props) {
             return arr
         })
         let data = {
+            LoggedInUserId: loggedInUserId(),
             FromDate: props.dateArray[0] ? props.dateArray[0] : null,
             ToDate: props.dateArray[1] ? props.dateArray[1] : null,
             ProcessBenchMarkingReports: arr
