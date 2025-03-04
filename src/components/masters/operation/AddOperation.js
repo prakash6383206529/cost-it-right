@@ -564,7 +564,7 @@ class AddOperation extends Component {
     if (isImport) {
       const ratePlantCurrency = convertIntoCurrency(rate, plantCurrency)
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
-      const rateBaseCurrency = convertIntoCurrency(ratePlantCurrency, settlementCurrency)
+      const rateBaseCurrency = convertIntoCurrency(checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice), settlementCurrency)
       this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     } else {
       const ratebaseCurrency = convertIntoCurrency(rate, plantCurrency)
