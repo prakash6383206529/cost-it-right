@@ -8,7 +8,8 @@ import {
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
     SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID, COSTINGS_APPROVAL_DASHBOARD, AMENDMENTS_APPROVAL_DASHBOARD, GET_USERS_MASTER_LEVEL_API, GET_RFQ_USER_DATA_SUCCESS,
-    ONBOARDING_LEVEL_DATALIST_API, GET_ONBOARDING_LEVEL_BY_ID, GET_PLANT_SELECT_LIST_FOR_DEPARTMENT, ONBOARDINGID, MANAGE_LEVEL_TAB_API, GET_DIVISION_SUCCESS, GET_DIVISION_DATA_SUCCESS, GET_DIVISION_LIST_SUCCESS, GET_DIVISION_LIST_FOR_DEPARTMENT
+    ONBOARDING_LEVEL_DATALIST_API, GET_ONBOARDING_LEVEL_BY_ID, GET_PLANT_SELECT_LIST_FOR_DEPARTMENT, ONBOARDINGID, MANAGE_LEVEL_TAB_API, GET_DIVISION_SUCCESS, GET_DIVISION_DATA_SUCCESS, GET_DIVISION_LIST_SUCCESS, GET_DIVISION_LIST_FOR_DEPARTMENT,
+    GET_DELEGATEE_USER_LIST_SUCCESS
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { MESSAGES } from "../../config/message";
@@ -2164,9 +2165,8 @@ export function getPlantSelectListForDepartment(data, callback) {
 * @method getUsersOnboardingLevelAPI
 * @description get User's Onboarding level
 */
-export function getUsersOnboardingLevelAPI(UserId, callback) {
+export function getUsersOnboardingLevelAPI(UserId,receiverId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const receiverId = null;
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());
@@ -2381,8 +2381,8 @@ export function getDelegateeUserList(data, callback) {
         request.then((response) => {
             if (response.status === 200) {
                 dispatch({
-                    type: GET_DIVISION_LIST_FOR_DEPARTMENT,
-                    payload: [],
+                    type: GET_DELEGATEE_USER_LIST_SUCCESS,
+                    payload: response.status === 204 ? [] : response?.data?.SelectList,
                 });
                 callback(response);
             } else {
