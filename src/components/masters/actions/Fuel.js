@@ -684,7 +684,7 @@ export function getUOMByFuelId(data, callback) {
 export function getPlantCurrencyByPlantIds(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(`${API.getPlantCurrencyByPlantIds}`, data, config());
+        const request = axiosInstance.post(`${API.getPlantCurrencyByPlantIds}`, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 dispatch({

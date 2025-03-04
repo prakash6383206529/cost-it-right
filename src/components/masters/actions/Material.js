@@ -1369,7 +1369,7 @@ export function getMaterialTypeSelectList(callback) {
 export function checkAndGetRawMaterialCode(obj, callback) {
     return (dispatch) => {
         let queryParams = `loggedInUserId=${loggedInUserId()}&materialNameId=${obj?.materialNameId ? obj?.materialNameId : EMPTY_GUID}&materialGradeId=${obj?.materialGradeId ? obj?.materialGradeId : EMPTY_GUID}&materialSpec=${obj?.materialSpec}&materialCode=${obj?.materialCode}`
-        const request = axios.post(`${API.checkAndGetRawMaterialCode}?${queryParams}`, '', config());
+        const request = axiosInstance.post(`${API.checkAndGetRawMaterialCode}?${queryParams}`, '', config());
         request.then((response) => {
             if (response && response?.status === 200) {
                 callback(response);
