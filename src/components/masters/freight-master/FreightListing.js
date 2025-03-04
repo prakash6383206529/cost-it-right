@@ -465,7 +465,7 @@ const FreightListing = (props) => {
                   ></AgGridColumn>
                   <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"}></AgGridColumn>
-                  <AgGridColumn width="220px" field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+                  <AgGridColumn width="220px" field="FreightId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                 </AgGridReact>
               }
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}

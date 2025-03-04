@@ -227,7 +227,7 @@ class AddOperation extends Component {
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null, (res) => {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
         }, 100);

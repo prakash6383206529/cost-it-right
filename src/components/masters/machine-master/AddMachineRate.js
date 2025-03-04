@@ -355,7 +355,7 @@ class AddMachineRate extends Component {
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID,null, (res) => {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
         }, 100);
@@ -1102,7 +1102,6 @@ class AddMachineRate extends Component {
         processName: [],
         UOM: isProcessGroup ? UOM : [],
         lockUOMAndRate: isProcessGroup,
-        disableEffectiveDate: true
       }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
       this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false, machineRatePlantCurrency: false } })
     }, 200);
@@ -2270,6 +2269,7 @@ class AddMachineRate extends Component {
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && IsDetailedEntry) || this.state.disableEffectiveDate}
                               />
                             </div>
+
                           </div>
                         </Col>
 

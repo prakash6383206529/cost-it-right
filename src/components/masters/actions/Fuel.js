@@ -483,7 +483,7 @@ export function getPlantListByAddress(cityId, stateId, countryId, callback) {
     return (dispatch) => {
         if (cityId !== '') {
             //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getPlantListByAddress}?cityId=${cityId}&stateId=${stateId}&countryId=${countryId}/${loggedInUser?.loggedInUserId}`, config());
+            const request = axios.get(`${API.getPlantListByAddress}?cityId=${cityId}&stateId=${stateId}&countryId=${countryId}&loggedInUserId=${loggedInUserId()}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({

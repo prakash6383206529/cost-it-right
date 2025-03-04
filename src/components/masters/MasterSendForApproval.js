@@ -130,7 +130,7 @@ function MasterSendForApproval(props) {
             )
         }
         else {
-            dispatch(getAllMasterApprovalDepartment((res) => {
+            dispatch(getAllMasterApprovalDepartment(receiverId, (res) => {
                 const Data = res?.data?.SelectList
                 const Departments = userDetails().Department && userDetails().Department?.map(item => item?.DepartmentName)
                 const updateList = Data && Data.filter(item => Departments.includes(item?.Text))
