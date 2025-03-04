@@ -859,7 +859,8 @@ function AddRMFinancialDetails(props) {
         const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(state.NetCostWithoutConditionCost)  //Condition cost + Basic price
         let netConditionCost = checkForNull(sumBaseCurrency)
-        let netLandedCostLocalConversion = checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
+        let netLandedCostLocalConversion = checkForDecimalAndNull(checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate), getConfigurationKey().NoOfDecimalForPrice)
+        
         setValue('FinalConditionCost', checkForDecimalAndNull(netConditionCost, getConfigurationKey().NoOfDecimalForPrice))
 
         if (states.isImport) {
@@ -867,8 +868,9 @@ function AddRMFinancialDetails(props) {
             if (getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency")) {
                 netLandedCostConversion = checkForDecimalAndNull(netLandedCostLocalConversion * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
             } else {
-                netLandedCostConversion = checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
+                netLandedCostConversion = checkForDecimalAndNull(checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
             }
+            
             setValue('NetLandedCost', checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(netLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', netLandedCostConversion)
