@@ -3136,7 +3136,7 @@ export function getExternalIntegrationEvaluationType(data, callback) {
  */
 export function saveCostingBasicDetails(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingBasicDetails, data, config())
+    const request = axiosInstance.post(API.saveCostingBasicDetails, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
