@@ -306,7 +306,7 @@ export function getAllUserDataAPI(data, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllUserDataAPI}?loggedInUserId=${loggedInUser?.loggedInUserId}&department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}`, config())
+        axios.get(`${API.getAllUserDataAPI}?department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}`, config())
             .then((response) => {
                 if (data?.userType === 'RFQ') {
                     dispatch({
@@ -483,9 +483,10 @@ export function setEmptyUserDataAPI(UserId, callback) {
 */
 export function getUsersTechnologyLevelAPI(UserId, technologyId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const receiverId = null;
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}/${loggedInUser?.loggedInUserId}`, config());
+        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             callback(response);
@@ -1726,9 +1727,10 @@ export function getSimualationLevelByTechnology(isAPICall, technologyId, approva
 */
 export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const receiverId = null
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}/${loggedInUser?.loggedInUserId}`, config());
+        const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());
         // const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());          						//RE
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
@@ -1913,9 +1915,10 @@ export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callba
 */
 export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const receiverId = null;
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${loggedInUser?.loggedInUserId}`, config());
+        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 dispatch({
@@ -2163,9 +2166,10 @@ export function getPlantSelectListForDepartment(data, callback) {
 */
 export function getUsersOnboardingLevelAPI(UserId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const receiverId = null;
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}/${loggedInUser?.loggedInUserId}`, config());
+        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {
