@@ -45,6 +45,7 @@ const UOMMaster = (props) => {
   const [noData, setNoData] = useState(false);
   const [dataCount, setDataCount] = useState(0);
   const [totalRecordCount, setTotalRecordCount] = useState(0)
+  const [globalTake, setGlobalTake] = useState(defaultPageSize);
   const dispatch = useDispatch();
   const { topAndLeftMenuData } = useSelector(state => state.auth);
   const unitOfMeasurementList = useSelector(state => state.unitOfMeasrement.unitOfMeasurementList);
@@ -170,6 +171,7 @@ const UOMMaster = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
+    setGlobalTake(newPageSize);
   };
   const onRowSelect = () => {
     const selectedRows = gridApi.getSelectedRows();
@@ -204,6 +206,8 @@ const UOMMaster = (props) => {
     gridOptions?.api?.setFilterModel(null);
     gridApi.sizeColumnsToFit();
     gridApi.deselectAll()
+    setGlobalTake(defaultPageSize);
+    getUOMDataList();
   }
 
 
@@ -278,31 +282,33 @@ const UOMMaster = (props) => {
               </div>
               <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                <AgGridReact
-                  defaultColDef={defaultColDef}
-                  floatingFilter={true}
-                  domLayout='autoHeight'
-                  // columnDefs={c}
-                  rowData={dataList}
-                  pagination={true}
-                  paginationPageSize={defaultPageSize}
-                  onGridReady={onGridReady}
-                  gridOptions={gridOptions}
-                  noRowsOverlayComponent={'customNoRowsOverlay'}
-                  onFilterModified={onFloatingFilterChanged}
-                  noRowsOverlayComponentParams={{
-                    title: EMPTY_DATA,
-                  }}
-                  rowSelection={'multiple'}
-                  onSelectionChanged={onRowSelect}
-                  frameworkComponents={frameworkComponents}
-                  suppressRowClickSelection={true}
-                >
-                  <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>
-                  <AgGridColumn field="UnitSymbol" headerName="Unit Symbol" cellRenderer={"unitSymbol"}></AgGridColumn>
-                  <AgGridColumn field="UnitType" headerName="Unit Type"></AgGridColumn>
-                </AgGridReact>
-                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                {!isLoader &&
+                  <AgGridReact
+                    defaultColDef={defaultColDef}
+                    floatingFilter={true}
+                    domLayout='autoHeight'
+                    // columnDefs={c}
+                    rowData={dataList}
+                    pagination={true}
+                    paginationPageSize={defaultPageSize}
+                    onGridReady={onGridReady}
+                    gridOptions={gridOptions}
+                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                    onFilterModified={onFloatingFilterChanged}
+                    noRowsOverlayComponentParams={{
+                      title: EMPTY_DATA,
+                    }}
+                    rowSelection={'multiple'}
+                    onSelectionChanged={onRowSelect}
+                    frameworkComponents={frameworkComponents}
+                    suppressRowClickSelection={true}
+                  >
+                    <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>
+                    <AgGridColumn field="UnitSymbol" headerName="Unit Symbol" cellRenderer={"unitSymbol"}></AgGridColumn>
+                    <AgGridColumn field="UnitType" headerName="Unit Type"></AgGridColumn>
+                  </AgGridReact>
+                }
+                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
               </div>
             </div>
 

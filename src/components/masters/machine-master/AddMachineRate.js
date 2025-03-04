@@ -1102,7 +1102,6 @@ class AddMachineRate extends Component {
         processName: [],
         UOM: isProcessGroup ? UOM : [],
         lockUOMAndRate: isProcessGroup,
-        disableEffectiveDate: true
       }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
       this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false, machineRatePlantCurrency: false } })
     }, 200);
@@ -2270,6 +2269,7 @@ class AddMachineRate extends Component {
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && IsDetailedEntry) || this.state.disableEffectiveDate}
                               />
                             </div>
+
                           </div>
                         </Col>
 
@@ -2404,7 +2404,7 @@ class AddMachineRate extends Component {
                           />
                           {this.state?.errorObj?.MachineRateConversion && (this.props?.fieldsObj?.MachineRateConversion === undefined || Number(this.props?.fieldsObj?.MachineRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
-                        <Col md="3" className='mb-2 d-flex align-items-center'>
+                        <Col md="3" className='mb-3 d-flex align-items-center'>
                           <div>
                             {this.state.isEditIndex ?
                               <>
@@ -2443,7 +2443,7 @@ class AddMachineRate extends Component {
                           </div>
                         </Col>
                         <Col md="12">
-                          <Table className="table border" size="sm" >
+                          <Table className="table border mt-3" size="sm" >
                             <thead>
                               <tr>
                                 <th>{`Process (Code)`}</th>

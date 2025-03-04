@@ -50,6 +50,7 @@ const IndivisualProductListing = (props) => {
   const [totalRecordCount, setTotalRecordCount] = useState(0)
   const [dataCount, setDataCount] = useState(0);
   const [searchText, setSearchText] = useState("")
+  const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
   const { newPartsListing, productDataList } = useSelector((state) => state.part);
@@ -219,6 +220,7 @@ const IndivisualProductListing = (props) => {
 
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
+    setGlobalTake(newPageSize);
   };
   const onRowSelect = () => {
     const selectedRows = gridApi?.getSelectedRows();
@@ -275,20 +277,20 @@ const IndivisualProductListing = (props) => {
   };
 
   const resetState = () => {
-
     const searchBox = document.getElementById("filter-text-box");
     if (searchBox) {
       searchBox.value = ""; // Reset the input field's value
     }
     gridApi.setQuickFilter(null)
-
     gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    setGlobalTake(defaultPageSize);
     if (window.screen.width >= 1600) {
       gridApi.sizeColumnsToFit();
     }
     setNoData(false);
+    getTableListData();
   };
 
 
@@ -482,7 +484,7 @@ const IndivisualProductListing = (props) => {
               cellRenderer={"totalValueRenderer"}
             ></AgGridColumn>
           </AgGridReact>}
-          {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+          {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
         </div>
       </div>
 

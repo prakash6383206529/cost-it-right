@@ -186,8 +186,8 @@ class AddBOPImport extends Component {
       toolTipTextNetCost: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
         ? `Basic Price  + Condition Cost `
         : getConfigurationKey().IsMinimumOrderQuantityVisible
-          ? `Basic Rate  / Minimum Order Quantity`
-          : `Basic Rate `
+          ? `Basic Rate + Other Cost / Minimum Order Quantity`
+          : `Basic Rate + Other Cost `
     };
     return obj
   }
@@ -231,7 +231,7 @@ class AddBOPImport extends Component {
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, null, (res) => {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
         }, 100);
@@ -1934,14 +1934,16 @@ class AddBOPImport extends Component {
                                   onChange={this.handleChangeSapCode}
                                   className=" "
                                   customClassName=" withBorder w-100 mb-0"
-                                />
+                                >
+                                  {IsSAPCodeHandle && isEditFlag && (
+                                    <WarningMessage dClass={'d-flex justify-content-end'} message={`${MESSAGES.SAP_CODE_WARNING}`} />
+                                  )}
+                                </Field>
                                 {!IsSAPCodeUpdated && isEditFlag && (
                                   <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} disabled={isViewMode} />
                                 )}
                               </div>
-                              {IsSAPCodeHandle && isEditFlag && (
-                                <WarningMessage dClass={'d-flex justify-content-end'} message={`${MESSAGES.SAP_CODE_WARNING}`} />
-                              )}
+                              
                             </Col>}
                         </Row >
 
@@ -2042,8 +2044,9 @@ class AddBOPImport extends Component {
                               disabled={true}
                               className=" "
                               customClassName=" withBorder mb-1"
-                            />
+                            >
                             {this.state?.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
+                            </Field>
                           </Col>}
                           <Col md="3">
                             <Field
@@ -2246,7 +2249,7 @@ class AddBOPImport extends Component {
                           {
                             this.state.showCurrency && (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" width="350px" tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
+                                <TooltipCustom id="bop-net-cost-currency" width="350px" tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
                                   label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}

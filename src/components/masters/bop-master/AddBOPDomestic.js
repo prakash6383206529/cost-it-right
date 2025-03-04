@@ -217,7 +217,7 @@ class AddBOPDomestic extends Component {
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, null, (res) => {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
         }, 100);
@@ -1941,7 +1941,7 @@ class AddBOPDomestic extends Component {
                             (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) &&
                             <>
                               <Col md="3">
-                                <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
+                                <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
                                   label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                                   name={`${"NetCostPlantCurrency"}`}

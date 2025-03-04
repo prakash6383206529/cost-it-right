@@ -48,7 +48,8 @@ const ProcessListing = (props) => {
     dataCount: 0,
     render: false,
     showExtraData: false,
-    totalRecordCount: 0
+    totalRecordCount: 0,
+    globalTake: defaultPageSize,
   });
   const permissions = useContext(ApplyPermission);
 
@@ -62,7 +63,7 @@ const ProcessListing = (props) => {
 
   useEffect(() => {
     if (processList && processList.length > 0) {
-      setState((prevState) => ({ ...prevState, tableData: processList,totalRecordCount: processList?.length }));
+      setState((prevState) => ({ ...prevState, tableData: processList, totalRecordCount: processList?.length }));
     }
   }, [processList]);
 
@@ -122,7 +123,7 @@ const ProcessListing = (props) => {
         setState((prevState) => ({ ...prevState, isLoader: false }));
         if (res && res.status === 200) {
           let Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, tableData: Data,totalRecordCount: Data?.length }));
+          setState((prevState) => ({ ...prevState, tableData: Data, totalRecordCount: Data?.length }));
         } else if (res && res.response && res.response.status === 412) {
           setState((prevState) => ({ ...prevState, tableData: [] }));
         } else {
@@ -181,7 +182,7 @@ const ProcessListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       processList.length !== 0 &&
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData),totalRecordCount: state.gridApi?.getDisplayedRowCount() }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state.gridApi?.getDisplayedRowCount() }));
     }, 500);
   };
 
@@ -217,6 +218,7 @@ const ProcessListing = (props) => {
   };
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
   const onRowSelect = () => {
     const selectedRows = state.gridApi?.getSelectedRows();
@@ -256,6 +258,8 @@ const ProcessListing = (props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize, }));
+    getDataList();
   };
 
   const { isOpenProcessDrawer, isEditFlag, noData } = state;
@@ -385,49 +389,52 @@ const ProcessListing = (props) => {
                   customClassName="no-content-found"
                 />
               )}
-              <AgGridReact
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout="autoHeight"
-                // columnDefs={c}
-                rowData={state.showExtraData && processList ? [...setLoremIpsum(processList[0]), ...processList] : processList}
+              {!state.isLoader &&
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout="autoHeight"
+                  // columnDefs={c}
+                  rowData={state.showExtraData && processList ? [...setLoremIpsum(processList[0]), ...processList] : processList}
 
-                pagination={true}
-                paginationPageSize={defaultPageSize}
-                onGridReady={onGridReady}
-                gridOptions={gridOptions}
-                rowSelection={"multiple"}
-                onSelectionChanged={onRowSelect}
-                noRowsOverlayComponent={"customNoRowsOverlay"}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                }}
-                frameworkComponents={frameworkComponents}
-                onFilterModified={onFloatingFilterChanged}
-                suppressRowClickSelection={true}
-              >
-                <AgGridColumn
-                  field="ProcessName"
-                  headerName="Process Name"
-                  cellRenderer={"costingHeadFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="ProcessCode"
-                  headerName="Process Code"
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="ProcessId"
-                  cellClass="ag-grid-action-container"
-                  headerName="Action"
-                  type="rightAligned"
-                  floatingFilter={false}
-                  cellRenderer={"totalValueRenderer"}
-                ></AgGridColumn>
-              </AgGridReact>
+                  pagination={true}
+                  paginationPageSize={defaultPageSize}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  rowSelection={"multiple"}
+                  onSelectionChanged={onRowSelect}
+                  noRowsOverlayComponent={"customNoRowsOverlay"}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                  }}
+                  frameworkComponents={frameworkComponents}
+                  onFilterModified={onFloatingFilterChanged}
+                  suppressRowClickSelection={true}
+                >
+                  <AgGridColumn
+                    field="ProcessName"
+                    headerName="Process Name"
+                    cellRenderer={"costingHeadFormatter"}
+                  ></AgGridColumn>
+                  <AgGridColumn
+                    field="ProcessCode"
+                    headerName="Process Code"
+                  ></AgGridColumn>
+                  <AgGridColumn
+                    field="ProcessId"
+                    cellClass="ag-grid-action-container"
+                    headerName="Action"
+                    type="rightAligned"
+                    floatingFilter={false}
+                    cellRenderer={"totalValueRenderer"}
+                  ></AgGridColumn>
+                </AgGridReact>
+              }
               {
                 <PaginationWrapper
                   gridApi={state.gridApi}
                   setPage={onPageSizeChanged}
+                  globalTake={state.globalTake}
                 />
               }
             </div>

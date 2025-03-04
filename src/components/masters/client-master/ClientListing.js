@@ -58,8 +58,7 @@ const ClientListing = React.memo(() => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    totalRecordCount: 0
-
+    globalTake: defaultPageSize
   });
 
   useEffect(() => {
@@ -152,7 +151,7 @@ const ClientListing = React.memo(() => {
           setState((prevState) => ({ ...prevState, tableData: [], isLoader: false, }));
         } else if (res && res.data && res.data.DataList) {
           const Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false,totalRecordCount: Data?.length }));
+          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, totalRecordCount: Data?.length }));
         }
       })
     );
@@ -231,7 +230,7 @@ const ClientListing = React.memo(() => {
    */
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, prevState.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
+      setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, prevState.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
     }, 500);
   };
 
@@ -244,6 +243,7 @@ const ClientListing = React.memo(() => {
 
   const onPageSizeChanged = (newPageSize) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
   };
 
   const onRowSelect = () => {
@@ -306,7 +306,8 @@ const ClientListing = React.memo(() => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
-    setState((prevState) => ({ ...prevState, noData: false }));
+    setState((prevState) => ({ ...prevState, isLoader: true, noData: false, globalTake: defaultPageSize }));
+    getTableListData();
   };
   const { isOpenVendor, noData } = state;
   const isFirstColumn = (params) => {
@@ -408,7 +409,7 @@ const ClientListing = React.memo(() => {
               <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
               <AgGridColumn field="ClientId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
             </AgGridReact>}
-            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
           </div>
         </div>
 

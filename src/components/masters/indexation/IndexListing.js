@@ -326,7 +326,8 @@ const IndexListing = () => {
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(resetStatePagination())
-        getTableListData(0, globalTakes, true)
+        // getTableListData(0, globalTakes, true)
+        getTableListData(0, defaultPageSize, true)
         dispatch(updateGlobalTake(10))
         setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})
@@ -491,6 +492,7 @@ const IndexListing = () => {
                                     customClassName="no-content-found"
                                 />
                             )}
+                            {!isLoader &&
                             <AgGridReact
 
                                 defaultColDef={defaultColDef}
@@ -515,6 +517,7 @@ const IndexListing = () => {
                                 <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
                                 <AgGridColumn field="IndexExchangeId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>
+                            }
 
                             {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexCommodity" />}
                         </div>

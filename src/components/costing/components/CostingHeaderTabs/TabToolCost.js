@@ -312,7 +312,7 @@ function TabToolCost(props) {
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
-    dispatch(saveDiscountOtherCostTab({ ...props.ComponentItemDiscountData, BasicRate: basicRate, CallingFrom: 5 }, (res) => {
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate, CallingFrom: 5 }, (res) => {
       if (Number(previousTab) === 6) {
         dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
       }
