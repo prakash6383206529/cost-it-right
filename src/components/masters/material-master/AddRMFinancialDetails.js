@@ -169,10 +169,12 @@ function AddRMFinancialDetails(props) {
                 }
                 const { costingTypeId } = states;
                 if (!isViewFlag && getValues('effectiveDate') && state.currency?.label !== undefined /* && Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency") */) {
-                    if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && (!rawMaterailDetails?.Vendor && !getValues('clientName'))) {
+                    if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && (!rawMaterailDetails?.Vendor && !rawMaterailDetailsRefFinancial.current?.customer)) {
+                        console.log("11111111" ,rawMaterailDetails?.Vendor ,getValues('clientName'))
                         return false;
                     }
-                    if ((rawMaterailDetails?.Vendor?.value && states.isImport)) {
+                    console.log("rawMaterailDetailsRefFinancial.current?.customer?.value",rawMaterailDetailsRefFinancial.current?.customer?.value)
+                    if ((rawMaterailDetails?.Vendor?.value || rawMaterailDetailsRefFinancial.current?.customer?.value) && states.isImport) {
                         
                         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: state.currency?.label, toCurrency: Data?.Currency, defaultCostingTypeId: costingTypeId, vendorId: rawMaterailDetails?.Vendor?.value, clientValue: rawMaterailDetailsRefFinancial.current?.customer?.value, master: RAWMATERIAL, plantCurrency: getValues("plantCurrency") });
                         dispatch(getExchangeRateByCurrency(state.currency?.label, costingHeadTypeId, DayTime(getValues('effectiveDate')).format('YYYY-MM-DD'), vendorId, clientId, false, Data?.Currency, getValues('ExchangeSource')?.label ?? null, res => {
