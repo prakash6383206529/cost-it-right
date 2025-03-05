@@ -443,7 +443,7 @@ export function fileUploadMachine(data, callback) {
  */
 export function checkAndGetMachineNumber(number, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(`${API.checkAndGetMachineNumber}?loggedInUserId=${loggedInUserId()}&machineNumber=${number}`, '', config());
+        const request = axios.get(`${API.checkAndGetMachineNumber}?loggedInUserId=${loggedInUserId()}&machineNumber=${number}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

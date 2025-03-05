@@ -310,7 +310,7 @@ function AddNfr(props) {
     useEffect(() => {
         reactLocalStorage.setObject('isFromDiscountObj', false)
         let levelDetailsTemp = ''
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), nfrData?.TechnologyId, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), nfrData?.TechnologyId,null, (res) => {
             levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
             if (levelDetailsTemp?.length === 0) {
                 setFilterStatus("You don't have permission to send NFR for approval.")

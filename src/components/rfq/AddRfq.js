@@ -1386,7 +1386,8 @@ function AddRfq(props) {
                 data = {
                     rawMaterialSpecificationIdList: temp,
                     PlantId: getValues('plant')?.value,
-                    VendorId: getValues("vendor")?.value
+                    VendorId: getValues("vendor")?.value,
+                    loggedInUserId: loggedInUserId()
                 };
                 handleSpecificPartTypeAPI(data, checkRmExistInRfq);
                 break;
@@ -1428,6 +1429,8 @@ function AddRfq(props) {
                     PlantId: getValues('plant')?.value,
                     VendorId: getValues("vendor")?.value
                 };
+                console.log("data", data);
+                
                 handleSpecificPartTypeAPI(data, checkExistCosting);
                 break;
         }

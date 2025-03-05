@@ -482,9 +482,8 @@ export function setEmptyUserDataAPI(UserId, callback) {
 * @method getUsersTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersTechnologyLevelAPI(UserId, technologyId, callback) {
+export function getUsersTechnologyLevelAPI(UserId, technologyId,receiverId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const receiverId = null;
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());
@@ -1726,9 +1725,8 @@ export function getSimualationLevelByTechnology(isAPICall, technologyId, approva
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, callback) {
+export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId,receiverId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const receiverId = null
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());
@@ -1914,9 +1912,8 @@ export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callba
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
+export function getUsersMasterLevelAPI(UserId, technologyId,receiverId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const receiverId = null;
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());

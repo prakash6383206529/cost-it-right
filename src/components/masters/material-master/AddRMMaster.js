@@ -210,7 +210,7 @@ function AddRMMaster(props) {
 
     const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
         if (!isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID,null, (res) => {
                 setState(prevState => ({ ...prevState, masterLevels: res?.data?.Data?.MasterLevels }))
                 setTimeout(() => {
                     commonFunction(plantId, isDivision, res?.data?.Data?.MasterLevels)

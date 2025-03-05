@@ -306,7 +306,7 @@ class AddRMImport extends Component {
   finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewFlag && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID,null, (res) => {
 
         this.commonFunction(plantId)
       })

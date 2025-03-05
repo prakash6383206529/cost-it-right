@@ -904,8 +904,9 @@ export function getRfqReviewHistory(data, callback) {
     };
 }
 export function checkRmExistInRfq(data, callback) {
+    const requestData = { loggedInUserId: loggedInUserId(), ...data}
     return (dispatch) => {
-        const request = axiosInstance.post(API.checkRmExistInRfq, data, config());
+        const request = axiosInstance.post(API.checkRmExistInRfq, requestData, config());
         request.then((response) => {
             if (response?.data?.Result) {
                 callback(response);
@@ -919,8 +920,9 @@ export function checkRmExistInRfq(data, callback) {
 }
 
 export function checkBopExistInRfq(data, callback) {
+    const requestData = { loggedInUserId: loggedInUserId(), ...data}
     return (dispatch) => {
-        const request = axiosInstance.post(API.checkBopExistInRfq, data, config());
+        const request = axiosInstance.post(API.checkBopExistInRfq, requestData, config());
         request.then((response) => {
             if (response?.data?.Result) {
                 callback(response);
