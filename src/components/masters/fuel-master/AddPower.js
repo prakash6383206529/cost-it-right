@@ -535,7 +535,7 @@ class AddPower extends Component {
             this.props.change('Country', Data.CountryName !== undefined ? { label: Data?.CountryName, value: Data?.CountryId } : {})
             this.props.change('State', Data.StateName !== undefined ? { label: Data?.StateName, value: Data.StateId } : {})
             this.props.change('City', Data.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : {})
-            
+
             this.setState({
               isEditFlag: true,
               isLoader: false,
@@ -1714,7 +1714,8 @@ class AddPower extends Component {
     const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   /**

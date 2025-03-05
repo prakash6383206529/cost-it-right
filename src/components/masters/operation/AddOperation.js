@@ -200,17 +200,17 @@ class AddOperation extends Component {
           const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
 
           callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
-          .then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-            this.setState({
-              plantCurrency: rate1,
-              plantExchangeRateId: exchangeRateId1,
-              settlementCurrency: 1,
-              settlementExchangeRateId: null,
-              
-            }, () => {
-              this.handleCalculation(fieldsObj?.Rate)
+            .then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+              this.setState({
+                plantCurrency: rate1,
+                plantExchangeRateId: exchangeRateId1,
+                settlementCurrency: 1,
+                settlementExchangeRateId: null,
+
+              }, () => {
+                this.handleCalculation(fieldsObj?.Rate)
+              });
             });
-          });
         }
         else {
           const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
@@ -1242,7 +1242,8 @@ class AddOperation extends Component {
     const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {
@@ -1258,10 +1259,10 @@ class AddOperation extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-    {!this.state?.hidePlantCurrency
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-      : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
-  </>;
+      {!this.state?.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+        : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
+    </>;
   };
   /**
   * @method render
@@ -1592,7 +1593,7 @@ class AddOperation extends Component {
                           className=" "
                           customClassName=" withBorder mb-1"
                         >
-                        {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                          {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                         </Field>
                       </Col>}
                       {this.state.isImport && <Col md="3">
@@ -1730,8 +1731,8 @@ class AddOperation extends Component {
                         />
                       </Col>}
                       <Col md="3">
-                        {/* {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate-local" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
-                        {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />} */}
+                        {/* {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate-local" tooltipText={'Welding Material Rate/Kg * Consumption'} />}*/}
+                        {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />}
                         <Field
                           label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                           name={"RateLocalConversion"}
