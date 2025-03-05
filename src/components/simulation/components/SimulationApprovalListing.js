@@ -52,7 +52,7 @@ function SimulationApprovalListing(props) {
     const userData = userDetails()
     const { initialConfiguration } = useSelector(state => state.auth)
     const dispatch = useDispatch()
-    const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
+    const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state?.simulation)
 
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
@@ -539,7 +539,9 @@ function SimulationApprovalListing(props) {
         setShowPopup(false)
     }
     const requestedByFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        console.log(props);
+        
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
     }
 
@@ -878,11 +880,13 @@ function SimulationApprovalListing(props) {
           * @description This method is used to render the row data.
           */
     const renderRowData = () => {
+        console.log(simualtionApprovalList);
+        console.log(simualtionApprovalListDraft);
         if (isDashboard) {
             return simualtionApprovalList; // Return simulationApprovalList if isDashboard is true
         } else {
 
-            if (showExtraData && simualtionApprovalListDraft && simualtionApprovalListDraft.length > 0) {
+            if (showExtraData && simualtionApprovalListDraft && simualtionApprovalListDraft?.length > 0) {
 
                 return [...setLoremIpsum(simualtionApprovalListDraft[0]), ...simualtionApprovalListDraft]; // Apply the second operation if showExtraData is true
             } else {
