@@ -1781,7 +1781,7 @@ function Simulation(props) {
                             <Col md="12" className="filter-block zindex-9 simulation-labels">
                                 {false && <Errorbox customClass={'error'} errorText={pendingSimulationAlert(simulationCostingStatus?.length > 0 ? simulationCostingStatus : [])} />}
                                 <div className="d-inline-flex justify-content-start align-items-center pr-3 mb-3 zindex-unset ">
-                                    <div className="flex-fills label">Masters:s</div>
+                                    <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">
                                         <SearchableSelectHookForm
                                             label={''}

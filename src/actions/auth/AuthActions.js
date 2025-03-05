@@ -1725,7 +1725,7 @@ export function getSimualationLevelByTechnology(isAPICall, technologyId, approva
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId,receiverId, callback) {
+export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, receiverId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
@@ -1912,8 +1912,9 @@ export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callba
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersMasterLevelAPI(UserId, technologyId,receiverId, callback) {
+export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const receiverId = null;
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());
