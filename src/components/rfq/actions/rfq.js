@@ -78,7 +78,7 @@ export function createRfqQuotation(data, callback) {
 }
 
 export function cancelRfqQuotation(id, callback) {
-    let data = { QuotationId: id }
+    let data = { loggedInUserId: loggedInUserId() ,QuotationId: id }
     return (dispatch) => {
         const request = axiosInstance.post(`${API.cancelRfqQuotation}`, data, config());
         request.then((response) => {
