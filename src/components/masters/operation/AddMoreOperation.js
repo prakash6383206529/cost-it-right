@@ -557,7 +557,7 @@ function AddMoreOperation(props) {
     }, [])
     const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
         if (!isViewMode && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID,null, (res) => {
                 setTimeout(() => {
                     commonFunction(plantId, isDivision, res?.data?.Data?.MasterLevels)
                 }, 500);
