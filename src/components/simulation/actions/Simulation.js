@@ -485,7 +485,7 @@ export function simulationApprovalRequestBySender(data, callback) {
 export function getComparisionSimulationData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `simulationId=${data.simulationId}&costingId=${data.costingId}`
+        const queryParams = `simulationId=${data.simulationId}&costingId=${data.costingId}&loggedInUserId=${loggedInUserId()}`
         const request = axios.get(`${API.simulationComparisionData}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result) {
@@ -1937,7 +1937,6 @@ export function draftSimulationForRMMaster(data, callback) {
     };
 }
 export function updateSimulationRawMaterial(data, callback) {
-    console.log(data, "data")
     return (dispatch) => {
         const request = axiosInstance.put(API.updateSimulationRawMaterial, data, config());
         request.then((response) => {

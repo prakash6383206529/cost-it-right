@@ -891,7 +891,6 @@ class BulkUpload extends Component {
     }
 
     responseHandlerRFQ = (res) => {
-        console.log(res,"res");
 
         let identityKey = null;
         if(res?.status === 200){

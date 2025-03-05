@@ -205,20 +205,13 @@ const SOBListing = (props) => {
 
       // Handle filter model reset
       if (res) {
-        let shouldReset = true;
-
         setTimeout(() => {
-          // Check if any filter is applied
-          Object.keys(filterData).forEach(key => {
-            if (filterData[key] !== "") {
-              shouldReset = false;
-            }
-          });
-          isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
-          //  if (isReset) {
-          //             dispatch(setSelectedRowForPagination([]));
-          //             reactLocalStorage.setObject('selectedRow', {});
-          //         }
+
+          if (isReset) {
+            gridOptions?.api?.setFilterModel({});
+          } else {
+            gridOptions?.api?.setFilterModel(state.filterModel);
+          }
         }, 300);
 
         // Reset warning messages
@@ -389,28 +382,28 @@ const SOBListing = (props) => {
   }
 
   const onExcelDownload = () => {
-    setState((prevState) => ({ ...prevState, disableDownload: true }))
-    dispatch(disabledClass(true))
+    setState((prevState) => ({ ...prevState, disableDownload: true }));
+    dispatch(disabledClass(true));
 
-    let tempArr = selectedRowForPagination
+    let tempArr = selectedRowForPagination;
     if (tempArr?.length > 0) {
-      // Download selected rows
-      setTimeout(() => {
-        setState((prevState) => ({ ...prevState, disableDownload: false }))
-        dispatch(disabledClass(false))
-        let button = document.getElementById('Excel-Downloads-sobListing')
-        button && button.click()
-      }, 400)
+        // Download selected rows
+        setTimeout(() => {
+            setState((prevState) => ({ ...prevState, disableDownload: false }));
+            dispatch(disabledClass(false));
+            let button = document.getElementById('Excel-Downloads-sobListing');
+            button && button.click();
+        }, 400);
     } else {
       // Download all data
-      getDataList(0, globalTakes, floatingFilterData, true)
+      getDataList(0, globalTakes,floatingFilterData, false )
     }
   }
 
   const onBtExport = () => {
-    let tempArr = selectedRowForPagination
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (bopSobList ? bopSobList : [])
-    return returnExcelColumn(BOP_SOB_DOWNLOAD_EXCEL, tempArr)
+    let tempArr = selectedRowForPagination;
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (state.tableData ? state.tableData : []);
+    return returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, tempArr);
   }
 
   const setDate = (date) => {
@@ -506,7 +499,8 @@ const SOBListing = (props) => {
       ...prevState,
       noData: false,
       dataCount: 0,
-      filterModel: {}
+      filterModel: {},
+      isLoader: true
     }))
     setDisableFilter(true)
     setIsFilterButtonClicked(false)
@@ -516,12 +510,20 @@ const SOBListing = (props) => {
     gridOptions?.columnApi?.resetColumnState(null)
     gridOptions?.api?.setFilterModel(null)
     dispatch(resetStatePagination())
-    // Reset filters
+    
+    // Reset floating filter data with all fields empty
     setFloatingFilterData({
       BoughtOutPartNumber: "",
       BoughtOutPartName: "",
-      // ... other filter resets ...
-    })
+      BoughtOutPartCategory: "",
+      Specification: "",
+      NoOfVendors: "",
+      Plant: "",
+      ShareOfBusinessPercentage: "",
+      WeightedNetLandedCost: "",
+      VendorName: "",
+      EffectiveDate: ""
+    });
 
     // Reset pagination
     dispatch(updatePageNumber(1))

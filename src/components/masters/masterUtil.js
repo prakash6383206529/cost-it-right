@@ -277,7 +277,7 @@ export const ProcessGroup = (props) => {
                                     <>
                                         <button id="AddMoreDetails_ProcessGroup_Add"
                                             type="button"
-                                            className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                            className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr15`}
                                             onClick={processTableHandler}
                                         >
                                             <div className={'plus'}></div>ADD</button>
@@ -291,7 +291,7 @@ export const ProcessGroup = (props) => {
                                     <div className='d-flex'>
                                         <button
                                             type="button"
-                                            className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                            className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr15`}
                                             onClick={updateProcessTableHandler}>Update</button>
                                         <button
                                             type="button"

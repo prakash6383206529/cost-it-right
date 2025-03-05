@@ -445,7 +445,6 @@ function RfqListing(props) {
 
             // if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
             //     dispatch(checkFinalUser(obj, (res) => {
-            //         console.log(res);
 
             //         if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
             //             setState(prevState => ({
