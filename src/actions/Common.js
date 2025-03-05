@@ -1804,7 +1804,7 @@ export function getNpvDetails(costingId, callback) {
 export function getConditionDetails(costingId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getConditionDetails}?costingId=${costingId}`, config());
+    const request = axios.get(`${API.getConditionDetails}?loggedInUserId=${loggedInUserId()}&costingId=${costingId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
