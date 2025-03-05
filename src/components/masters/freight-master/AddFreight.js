@@ -732,10 +732,10 @@ class AddFreight extends Component {
       if (i === gridEditIndex) return false;
       return true;
     });
-    const value = String(fieldsObj).trimStart();
-    if (fieldsObj === undefined || Number(fieldsObj) === 0 || positiveAndDecimalNumber(value) !== undefined) {
-      this.setState({ errorObj: { rate: true } })
-      return false
+    const value = this.state.isImport ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion
+    if (decimalNumberLimit6(value) || checkWhiteSpaces(value) || positiveAndDecimalNumber(value)) {
+      this.setState({ errorObj: { ...this.state.errorObj, rate: true } });
+      return false;
     }
 
     if (this.checkValidation()) {
