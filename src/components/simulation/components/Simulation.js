@@ -1702,7 +1702,7 @@ function Simulation(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendorName !== resultInput) {
             let res
-            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+            res = await getVendorNameByVendorSelectList(null, resultInput)
             setVendorName(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {

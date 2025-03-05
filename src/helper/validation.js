@@ -419,16 +419,17 @@ export const CheckIsCostingDateSelected = (costingDate, currency, exchangeRateDa
         Toaster.warning('Please select Costing effective date and Currency.')
         return true;
     }
-    if (!exchangeRateData?.plantExchangeRate && !exchangeRateData?.baseExchangeRate) {
-        let message = "Data does not exist in the Exchange Rate Master";
-        const plantPair = exchangeRateData?.plantFromCurrency !== exchangeRateData?.plantToCurrency
-            ? ` for ${exchangeRateData.plantFromCurrency} to ${exchangeRateData.plantToCurrency}` : '';
-        const basePair = exchangeRateData?.baseFromCurrency !== exchangeRateData?.baseToCurrency
-            ? `${plantPair ? ' and' : ' for'} ${exchangeRateData.baseFromCurrency} to ${exchangeRateData.baseToCurrency}` : '';
-
-        Toaster.warning(`${message}${plantPair}${basePair}. Please add it first and try again.`);
-        return true;
-    }
+    // if(exchangeRateData?.baseFromCurrency!==exchangeRateData?.baseToCurrency || exchangeRateData?.plantFromCurrency!==exchangeRateData?.plantToCurrency){
+    // if (!exchangeRateData?.plantExchangeRate && !exchangeRateData?.baseExchangeRate) {
+    //     let message = "Data does not exist in the Exchange Rate Master";
+    //     const plantPair = exchangeRateData?.plantFromCurrency !== exchangeRateData?.plantToCurrency 
+    //         ? ` for ${exchangeRateData.plantFromCurrency} to ${exchangeRateData.plantToCurrency}` : '';
+    //     const basePair = exchangeRateData?.baseFromCurrency !== exchangeRateData?.baseToCurrency 
+    //         ? `${plantPair ? ' and' : ' for'} ${exchangeRateData.baseFromCurrency} to ${exchangeRateData.baseToCurrency}` : '';
+        
+    //     Toaster.warning(`${message}${plantPair}${basePair}. Please add it first and try again.`);
+    //     return true;
+    // }}
 
     return false;
 }

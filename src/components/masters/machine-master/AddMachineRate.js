@@ -240,13 +240,10 @@ class AddMachineRate extends Component {
     this.props.getCurrencySelectList(() => { })
   }
   callExchangeRateAPI = (costingTypeId, plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants) => {
-    const { fieldsObj } = this.props;
-
 
     const fromCurrency = isImport ? currency?.label : plantCurrency;
     const toCurrency = reactLocalStorage.getObject("baseCurrency");
     const hasCurrencyAndDate = Boolean(plantCurrency && effectiveDate);
-
 
     return new Promise((resolve) => {
       if (!hasCurrencyAndDate) {
@@ -257,8 +254,6 @@ class AddMachineRate extends Component {
         return false;
       }
       const callAPI = (from, to, costingHeadTypeId, vendorId, clientId) => {
-
-
 
         return new Promise((resolveAPI) => {
           this.props.getExchangeRateByCurrency(
@@ -287,14 +282,13 @@ class AddMachineRate extends Component {
           // Make only one API call
           const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
 
-
           callAPI(fromCurrency, plantCurrency, costingHeadTypeId, vendorId, clientId)
             .then(result => {
               resolve({
                 plantCurrency: result.rate,
-                settlementCurrency: result.rate, // Use same rate
+                settlementCurrency: 1,
                 plantExchangeRateId: result.exchangeRateId,
-                settlementExchangeRateId: result.exchangeRateId, // Use same ID
+                settlementExchangeRateId: null,
                 showPlantWarning: result.showPlantWarning,
                 showWarning: result.showWarning
               });
@@ -305,7 +299,6 @@ class AddMachineRate extends Component {
           callAPI(fromCurrency, plantCurrency, costingHeadTypeId, vendorId, clientId)
             .then(result1 => {
               const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
-
 
               callAPI(plantCurrency, toCurrency, costingHeadTypeId, vendorId, clientId)
                 .then(result2 => {
@@ -323,7 +316,6 @@ class AddMachineRate extends Component {
       } else if (!isImport && plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
 
-
         callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId)
           .then(result => {
             resolve({
@@ -331,7 +323,6 @@ class AddMachineRate extends Component {
               plantExchangeRateId: result.exchangeRateId,
               showPlantWarning: result.showPlantWarning,
               showWarning: result.showWarning
-
             });
           });
       }
@@ -344,7 +335,7 @@ class AddMachineRate extends Component {
     if (isImport) {
       const MachineRateLocalConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
       this.props.change('MachineRateLocalConversion', checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice));
-      const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, settlementCurrency)
+      const MachineRateConversion = convertIntoCurrency(checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice), settlementCurrency)
       this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
     } else {
       const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
@@ -1850,7 +1841,9 @@ class AddMachineRate extends Component {
   machineRateTitle = () => {
     return {
       tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency
+        ? `Machine Rate * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {
@@ -1868,7 +1861,7 @@ class AddMachineRate extends Component {
     return <>
       {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
     </>;
   };
   /**

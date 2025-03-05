@@ -295,6 +295,7 @@ function AddFreight(props) {
         EFreightLoadType: freightType ? freightType : null,
         CostingTypeId: costData?.CostingTypeId ? costData?.CostingTypeId : null,
         DimensionId: state?.truckDimensions?.value ?? null,
+        costingId: costData?.CostingId ? costData?.CostingId : null,
       }
       dispatch(getRateByCapacityCriteria(data, res => {
         if (res && res?.data && res?.data?.Result) {

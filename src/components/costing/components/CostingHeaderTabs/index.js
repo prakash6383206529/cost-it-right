@@ -117,7 +117,7 @@ function CostingHeaderTabs(props) {
   const callExchangeRateAPI = (fromCurrency, toCurrency) => {
     return new Promise((resolve) => {
       const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costData?.CostingTypeId, vendorId: costData?.VendorId, clientValue: costData?.CustomerId, plantCurrency: costData?.LocalCurrency });
-     dispatch(getExchangeRateByCurrency(fromCurrency, costingHeadTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, toCurrency, exchangeRateSource?.value, (res) => {
+      dispatch(getExchangeRateByCurrency(fromCurrency, costingHeadTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, toCurrency, exchangeRateSource?.value, (res) => {
         resolve(res);
       }))
     });
@@ -125,41 +125,55 @@ function CostingHeaderTabs(props) {
 
   useEffect(() => {
     if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && (costData?.TechnologyId === ASSEMBLY ? true : !costData?.CostingCurrencyId)) {
-      let arr = []
-      callExchangeRateAPI(currency?.label, costData?.LocalCurrency).then(res => { //plant
-        const exchangeData = {
-          plantExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? Boolean(res?.data?.Data) : false,
-          baseExchangeRate: null,
-          plantToCurrency: costData?.LocalCurrency,
-          plantFromCurrency: currency?.label,
-          baseToCurrency: initialConfiguration?.BaseCurrency,
-          baseFromCurrency: currency?.label
-        };
-        arr.push(res?.data?.Data)
-        callExchangeRateAPI(costData?.LocalCurrency, initialConfiguration?.BaseCurrency).then(resp => {
-          exchangeData.baseExchangeRate = resp?.data?.Data && Object.keys(resp?.data?.Data).length > 0 ? Boolean(resp?.data?.Data) : false;
-          dispatch(exchangeRateReducer(exchangeData));
+      let arr = [];
+      let exchangeData = {
+        plantExchangeRate: null,
+        baseExchangeRate: null,
+        plantToCurrency: initialConfiguration?.BaseCurrency,
+        plantFromCurrency: costData?.LocalCurrency,
+        baseToCurrency: costData?.LocalCurrency,
+        baseFromCurrency: currency?.label
+      };
+      if (currency?.label !== costData?.LocalCurrency || costData?.LocalCurrency !== initialConfiguration?.BaseCurrency) {
+        callExchangeRateAPI(currency?.label, costData?.LocalCurrency).then(res => { //plant
+         exchangeData = {
+            plantExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? Boolean(res?.data?.Data) : false,
+            baseExchangeRate: null,
+            plantToCurrency: initialConfiguration?.BaseCurrencyy,
+            plantFromCurrency: costData?.LocalCurrency,
+            baseToCurrency: costData?.LocalCurrency,
+            baseFromCurrency: currency?.label
+          };
+          
+          
+          arr.push(res?.data?.Data);
 
-
-          arr.push(resp?.data?.Data)
-
-          let obj = {
-            "BaseCostingId": costData?.CostingId,
-            "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD'),
-            "ExchangeRateSourceName": exchangeRateSource?.value,
-            "CostingCurrencyId": currency?.value,// selected currency
-            "LocalCurrencyExchangeRate": arr[0]?.CurrencyExchangeRate,  //plant
-            "BaseCurrencyExchangeRate": arr[1]?.CurrencyExchangeRate,    //base
-            "ExchangeRateId": arr[0]?.ExchangeRateId, //base 
-            "LocalExchangeRateId": arr[1]?.ExchangeRateId,//plant 
-            "LoggedInUserId": loggedInUserId()
-          }
-          dispatch(saveCostingBasicDetails(obj, res => {
-          }))
+          callExchangeRateAPI(costData?.LocalCurrency, initialConfiguration?.BaseCurrency).then(resp => {
+            exchangeData.baseExchangeRate = resp?.data?.Data && Object.keys(resp?.data?.Data).length > 0 ? Boolean(resp?.data?.Data) : false;
+            
+            arr.push(resp?.data?.Data);
+          });
         })
-      })
+      }
+      dispatch(exchangeRateReducer(exchangeData));
+
+      let obj = {
+        "BaseCostingId": costData?.CostingId,
+        "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD'),
+        "ExchangeRateSourceName": exchangeRateSource?.value,
+        "CostingCurrencyId": currency?.value,// selected currency
+        "LocalCurrencyExchangeRate": arr[0]?.CurrencyExchangeRate??1,  //plant
+        "BaseCurrencyExchangeRate": arr[1]?.CurrencyExchangeRate??1,    //base
+        "ExchangeRateId": arr[0]?.ExchangeRateId??null, //base 
+        "LocalExchangeRateId": arr[1]?.ExchangeRateId??null,//plant 
+        "LoggedInUserId": loggedInUserId()
+      };
+
+      dispatch(saveCostingBasicDetails(obj, res => { }));
+      ;
+
     }
-  }, [currency, exchangeRateSource, effectiveDate])
+  }, [currency, exchangeRateSource, effectiveDate]);
 
   useEffect(() => {
 
@@ -429,7 +443,7 @@ function CostingHeaderTabs(props) {
       Toaster.warning("Please add RM detail before adding the data in this tab.")
       return false
     }
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currency,exchangeRateData)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currency, exchangeRateData)) return false;
 
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
 
