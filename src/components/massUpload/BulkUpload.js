@@ -140,7 +140,7 @@ class BulkUpload extends Component {
             }
         })
         if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, null, (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -151,7 +151,7 @@ class BulkUpload extends Component {
             this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, null, (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -162,7 +162,7 @@ class BulkUpload extends Component {
             this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId,null, (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -173,7 +173,7 @@ class BulkUpload extends Component {
             this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === MACHINE_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, null,(res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);

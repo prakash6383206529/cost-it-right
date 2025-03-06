@@ -147,7 +147,7 @@ const RejectedCostingSummaryTable = (props) => {
     if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0 && technologyId) {
       let levelDetailsTemp = ''
       setCount(1)
-      dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
+      dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId,null, (res) => {
         levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
         if (levelDetailsTemp?.length !== 0) {
           let obj = {}

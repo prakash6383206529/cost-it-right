@@ -2179,6 +2179,13 @@ const CostingSummaryTable = (props) => {
       setShowRightButton(scrollLeft + clientWidth < scrollWidth);
     }
   };
+  const showConvertedCurrencyValue = (data, key) => {
+    let temp = ''
+    if (data?.CostingHeading !== VARIANCE) {
+      temp = `${showConvertedCurrency ? '(' : ''}${showConvertedCurrency ? checkForDecimalAndNull(data[key], initialConfiguration?.NoOfDecimalForPrice) : ''}${showConvertedCurrency ? ')' : ''}`
+    }
+    return temp
+  }
   return (
     <Fragment>
       {
@@ -2699,7 +2706,7 @@ const CostingSummaryTable = (props) => {
                                 viewCostingData?.map((data, index) => {
                                   return (
                                     <td className={tableDataClass(data)}>
-                                      {displayValueWithSign(data, "nTotalRMBOPCC")} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'nTotalRMBOPCCLocalConversion')}{showConvertedCurrency ? ')' : ''}
+                                      {displayValueWithSign(data, "nTotalRMBOPCC")} {showConvertedCurrencyValue(data, 'nTotalRMBOPCCLocalConversion')}
                                       {
                                         (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                         <button
@@ -2805,7 +2812,7 @@ const CostingSummaryTable = (props) => {
                                         {data?.bestCost === true ?
                                           <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetRawMaterialsCostConversion')) : displayValueWithSign(data, 'NetRawMaterialsCostConversion')}</>
                                           :
-                                          <>{displayValueWithSign(data, 'netRM')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetRawMaterialsCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                          <>{displayValueWithSign(data, 'netRM')} {showConvertedCurrencyValue(data, 'NetRawMaterialsCostConversion')}</>
                                         }
 
                                         {
@@ -2844,7 +2851,7 @@ const CostingSummaryTable = (props) => {
                                           {data?.bestCost === true ?
                                             <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetBoughtOutPartCostConversion')) : displayValueWithSign(data, 'NetBoughtOutPartCostConversion')}</>
                                             :
-                                            <>{displayValueWithSign(data, 'netBOP')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetBoughtOutPartCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                            <>{displayValueWithSign(data, 'netBOP')} {showConvertedCurrencyValue(data, 'NetBoughtOutPartCostConversion')}</>
                                           }
                                           {
                                             (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
@@ -2939,7 +2946,7 @@ const CostingSummaryTable = (props) => {
                                         {data?.bestCost === true ?
                                           <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetConversionCostConversion')) : displayValueWithSign(data, 'NetConversionCostConversion')}</>
                                           :
-                                          <>{displayValueWithSign(data, 'nConvCost')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetConversionCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                          <>{displayValueWithSign(data, 'nConvCost')} {showConvertedCurrencyValue(data, 'NetConversionCostConversion')}</>
                                         }
                                         {
                                           (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
@@ -3010,7 +3017,7 @@ const CostingSummaryTable = (props) => {
                                     {data?.bestCost === true ?
                                       <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')) : displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')}</>
                                       :
-                                      <>{displayValueWithSign(data, 'nsTreamnt')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                      <>{displayValueWithSign(data, 'nsTreamnt')} {showConvertedCurrencyValue(data, 'NetSurfaceTreatmentCostConversion')}</>
                                     }
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
@@ -3152,7 +3159,7 @@ const CostingSummaryTable = (props) => {
                                     {data?.bestCost === true ?
                                       <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')) : displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')}</>
                                       :
-                                      <>{displayValueWithSign(data, 'nOverheadProfit')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                      <>{displayValueWithSign(data, 'nOverheadProfit')} {showConvertedCurrencyValue(data, 'NetOverheadAndProfitCostConversion')}</>
                                     }
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
@@ -3207,7 +3214,7 @@ const CostingSummaryTable = (props) => {
                                     {data?.bestCost === true ?
                                       <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetFreightPackagingCostConversion')) : displayValueWithSign(data, 'NetFreightPackagingCostConversion')}</>
                                       :
-                                      <>{displayValueWithSign(data, 'nPackagingAndFreight')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetFreightPackagingCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                      <>{displayValueWithSign(data, 'nPackagingAndFreight')} {showConvertedCurrencyValue(data, 'NetFreightPackagingCostConversion')}</>
                                     }
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
@@ -3302,7 +3309,7 @@ const CostingSummaryTable = (props) => {
                                       {data?.bestCost === true ?
                                         <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetToolCostConversion')) : displayValueWithSign(data, 'NetToolCostConversion')}</>
                                         :
-                                        <>{displayValueWithSign(data, 'totalToolCost')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetToolCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                        <>{displayValueWithSign(data, 'totalToolCost')} {showConvertedCurrencyValue(data, 'NetToolCostConversion')}</>
                                       }
                                       {data?.bestCost !== true && data?.CostingHeading !== VARIANCE && !pdfHead && !drawerDetailPDF && (
                                         <button
@@ -3480,7 +3487,7 @@ const CostingSummaryTable = (props) => {
                                           {displayValueWithSign(data, 'BasicRate')}
                                         </>}
                                       </> : <>
-                                        {displayValueWithSign(data, 'BasicRate')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'BasicRateConversion')}{showConvertedCurrency ? ')' : ''}
+                                        {displayValueWithSign(data, 'BasicRate')} {showConvertedCurrencyValue(data, 'BasicRateConversion')}
                                       </>}
                                     </td>
                                   )
@@ -3553,7 +3560,7 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {displayValueWithSign(data, "nPackagingAndFreight")} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetFreightPackagingCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                    {displayValueWithSign(data, "nPackagingAndFreight")} {showConvertedCurrencyValue(data, 'NetFreightPackagingCostConversion')}
                                     {
                                       (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button

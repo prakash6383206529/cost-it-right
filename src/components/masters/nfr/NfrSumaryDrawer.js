@@ -76,7 +76,7 @@ function NfrSummaryDrawer(props) {
             let Data = res?.data?.Data;
             if (res?.data?.Data?.CostingData) {
                 let technologyId = res?.data?.Data?.CostingData[0]?.TechnologyId
-                dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
+                dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId,null, (res) => {
                     levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
                     if (Number(levelDetailsTemp?.length) === 0) {
                         setSendForApprovalButtonShow(false)

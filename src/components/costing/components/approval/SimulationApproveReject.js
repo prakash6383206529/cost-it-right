@@ -29,7 +29,7 @@ function SimulationApproveReject(props) {
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
-  const { TokensList } = useSelector(state => state.simulation)
+  const { TokensList } = useSelector(state => state?.simulation)
 
   const { formState: { }, handleSubmit, setValue, getValues } = useForm({
     mode: 'onChange', reValidateMode: 'onChange',
@@ -60,12 +60,12 @@ function SimulationApproveReject(props) {
   const [divisionList, setDivisionList] = useState([])
   const [emptyDivision, setEmptyDivision] = useState(false)
   const [division, setDivision] = useState('')
-  const deptList = useSelector((state) => state.approval.approvalDepartmentList)
-  const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-  const reasonsList = useSelector((state) => state.approval.reasonsList)
-  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-  const SAPData = useSelector(state => state.approval.SAPObj)
-  const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
+  const deptList = useSelector((state) => state?.approval?.approvalDepartmentList)
+  const { selectedMasterForSimulation } = useSelector(state => state?.simulation)
+  const reasonsList = useSelector((state) => state?.approval?.reasonsList)
+  const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
+  const SAPData = useSelector(state => state?.approval?.SAPObj)
+  const approvalTypeSelectList = useSelector(state => state?.comman?.approvalTypeSelectList)
 
   const [approverIdList, setApproverIdList] = useState([])
   useEffect(() => {
@@ -233,7 +233,7 @@ function SimulationApproveReject(props) {
   //   let obj = {
   //     DepartmentId: dataInFields?.Department?.value,
   //     UserId: loggedInUserId(),
-  //     TechnologyId: props.masterId,
+  //     TechnologyId: props?.masterId,
   //     Mode: 'simulation',
   //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId)
   //   }
@@ -328,7 +328,7 @@ function SimulationApproveReject(props) {
 
   const closePushButton = () => {
     setOpenPushButton(false)
-    props.closeDrawer('', 'Cancel')
+    props?.closeDrawer('', 'Cancel')
   }
 
   const onSubmit = debounce(handleSubmit(() => {
@@ -449,7 +449,7 @@ function SimulationApproveReject(props) {
         if (res?.data?.Result) {
           Toaster.success('Simulation token has been sent for approval.')
           reactLocalStorage.setObject('isSaveSimualtionCalled', false)
-          props.closeDrawer('', 'submit')
+          props?.closeDrawer('', 'submit')
           dispatch(setSAPData({}))
         }
       }))
@@ -465,7 +465,7 @@ function SimulationApproveReject(props) {
 
           } else {
             Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
-            props.closeDrawer('', 'submit')
+            props?.closeDrawer('', 'submit')
           }
         }
       }))
@@ -475,7 +475,7 @@ function SimulationApproveReject(props) {
         setIsDisable(false)
         if (res?.data?.Result) {
           Toaster.success('The simulation token rejected successfully')
-          props.closeDrawer('', 'submit')
+          props?.closeDrawer('', 'submit')
         }
       }))
     }
