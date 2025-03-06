@@ -119,12 +119,11 @@ function CostingSimulation(props) {
     const { showEditMaster, showverifyPage, costingDrawerPage, handleEditMasterPage, showTour } = useContext(simulationContext) || {};
 
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-
-    const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
-    const isOperation = (Number(master) === Number(OPERATIONS));
-    const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION));
-    const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) || (simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION));
-    const isMachineRate = Number(master) === (Number(MACHINERATE));
+    const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT)||(simulationApplicability?.value === Number(SURFACETREATMENT)||(simulationApplicability?.value === APPLICABILITY_SURFACE_TREATMENT_SIMULATION)));
+    const isOperation = (Number(master) === Number(OPERATIONS)||(simulationApplicability?.value === Number(OPERATIONS))||(simulationApplicability?.value === APPLICABILITY_OPERATIONS_SIMULATION));
+    const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) || (simulationApplicability?.value === Number(RMIMPORT)|| (simulationApplicability?.value === Number(RMDOMESTIC))));
+    const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) || (simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)|| (simulationApplicability?.value === Number(BOPIMPORT) || (simulationApplicability?.value === Number(BOPDOMESTIC))));
+    const isMachineRate = Number(master) === (Number(MACHINERATE)||(simulationApplicability?.value === Number(MACHINERATE)||(simulationApplicability?.value === APPLICABILITY_MACHINE_RATES_SIMULATION)));
     const isExchangeRate = (Number(master) === Number(EXCHNAGERATE) && simulationApplicability?.value === APPLICABILITY_PART_SIMULATION);
     const isCombinedProcess = Number(master) === Number(COMBINED_PROCESS);
 
@@ -546,7 +545,7 @@ function CostingSimulation(props) {
                     break;
                 case Number(EXCHNAGERATE):
                     setMasterLoader(true)
-                    console.log(simulationApplicability, "simulationApplicability")
+
                     switch (simulationApplicability?.value) {
                         case APPLICABILITY_RM_SIMULATION:
                         case Number(RMIMPORT):
@@ -1492,7 +1491,7 @@ function CostingSimulation(props) {
 
         return thisIsFirstColumn;
     }
-
+    
 
     const defaultColDef = {
         resizable: true,
@@ -1602,7 +1601,7 @@ function CostingSimulation(props) {
     const currencyHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text ' style={{ display: 'flex', gridGap: '5px' }}>Currency {<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text ' style={{ display: 'flex', gridGap: '5px' }}>Costing Currency {<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>} </span>
             </div>
         );
     };
@@ -1668,7 +1667,7 @@ function CostingSimulation(props) {
         currencyHeader: currencyHeader
 
     };
-
+    
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
 
     const headers = { netCostHeadder: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})` }
@@ -1722,7 +1721,7 @@ function CostingSimulation(props) {
                                         </div>
                                     </Col >
                                 </Row >
-                                {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
+                                {showTooltip && (isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && isSimulationWithCosting && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
                                     {"This is the currency selected during the costing"}
                                 </Tooltip>}
                                 <Row>
@@ -1797,7 +1796,7 @@ function CostingSimulation(props) {
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && getConfigurationKey().IsSourceExchangeRateNameVisible && isSimulationWithCosting && <AgGridColumn width={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && <AgGridColumn field={isSimulationWithCosting ? "CostingCurrency" : "Currency"} headerName='Currency' headerComponent={'currencyHeader'} />}
+                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && isSimulationWithCosting && <AgGridColumn field={"CostingCurrency"} headerName='Costing Currency' headerComponent={'currencyHeader'} />}
 
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}

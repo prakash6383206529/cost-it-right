@@ -145,6 +145,7 @@ class AddBOPImport extends Component {
       isOpenOtherCostDrawer: false,
       otherCostTableData: [],
       LocalCurrencyId: null,
+      LocalCurrency: null,
       LocalExchangeRateId: null,
       ExchangeRateId: null,
       totalBasicRate: 0,
@@ -183,8 +184,8 @@ class AddBOPImport extends Component {
       toolTipTextNetCost: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
         ? `Basic Price  + Condition Cost `
         : getConfigurationKey().IsMinimumOrderQuantityVisible
-          ? `Basic Rate  / Minimum Order Quantity`
-          : `Basic Rate `
+          ? `Basic Rate + Other Cost / Minimum Order Quantity`
+          : `Basic Rate + Other Cost `
     };
     return obj
   }
@@ -201,9 +202,8 @@ class AddBOPImport extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency
-        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
-        : ''}<p>Exchange Rate: 1 {plantCurrency} = {settlementCurrencyRate} {baseCurrency}</p>
+      {`Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+      }<p>{!this?.state?.hidePlantCurrency && `Exchange Rate: 1 ${plantCurrency} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
     </>;
   };
   /**
@@ -240,12 +240,13 @@ class AddBOPImport extends Component {
   callExchangeRateAPI = (fromCurrency) => {
     const { fieldsObj } = this.props;
     const { costingTypeId, vendorName, client, effectiveDate, currency } = this.state;
-    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: this.state.currency?.label, toCurrency: fromCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, master: BOP,plantCurrency:fieldsObj?.plantCurrency });
+    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: this.state.currency?.label, toCurrency: fromCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, master: BOP, plantCurrency: fieldsObj?.plantCurrency });
     const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
       if (IsFetchExchangeRateVendorWiseForParts() && (vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
+
       this.props.getExchangeRateByCurrency(
         currency?.label,
         costingHeadTypeId,
@@ -263,8 +264,8 @@ class AddBOPImport extends Component {
           // Store in different state variables based on fromCurrency
           if (fromCurrency === fieldsObj?.plantCurrency) {
             this.setState({
-              plantCurrencyValue: checkForNull(res?.data?.Data?.CurrencyExchangeRate) || 1 ,            
-               LocalExchangeRateId: res?.data?.Data?.ExchangeRateId
+              plantCurrencyValue: checkForNull(res?.data?.Data?.CurrencyExchangeRate) || 1,
+              LocalExchangeRateId: res?.data?.Data?.ExchangeRateId
             }, () => {
               this.handleCalculation();
             });
@@ -282,12 +283,25 @@ class AddBOPImport extends Component {
   }
 
   handleExchangeRateSource = (newValue) => {
+    const { client, effectiveDate } = this.state;
+
     this.setState({ ExchangeSource: newValue }, () => {
       // First call with plant currency
-      this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency);
+      this.callExchangeRateAPI(this.props?.fieldsObj?.plantCurrency);
 
-      // Second call with base currency
-      this.callExchangeRateAPI(reactLocalStorage.getObject("baseCurrency"));
+      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: this.state?.currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: this.state?.costingTypeId, vendorId: this.state?.vendorName?.value, clientValue: client?.value, master: BOP, plantCurrency: this.props?.fieldsObj?.plantCurrency });
+
+      if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage.getObject("baseCurrency")) {
+
+        this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+          if (Object.keys(res.data.Data).length === 0) {
+            this.setState({ showWarning: true })
+          } else {
+            this.setState({ showWarning: false })
+          }
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
+        });
+      }
     });
   };
   commonFunction(plantId = EMPTY_GUID, isDivision) {
@@ -395,15 +409,24 @@ class AddBOPImport extends Component {
   * @description called
   */
   handleClient = (newValue, actionMeta) => {
+    const { client, effectiveDate } = this.state;
     if (newValue && newValue !== '') {
       this.setState({ client: newValue }
         , () => {
-          if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-            // First call with plant currency
-            this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency);
+          this.callExchangeRateAPI(this.props?.fieldsObj?.plantCurrency);
 
-            // Second call with base currency
-            this.callExchangeRateAPI(reactLocalStorage.getObject("baseCurrency"));
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: this.state.currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: this.state.costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, master: BOP, plantCurrency: this.props?.fieldsObj?.plantCurrency });
+
+          if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage.getObject("baseCurrency")) {
+
+            this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+              if (Object.keys(res.data.Data).length === 0) {
+                this.setState({ showWarning: true })
+              } else {
+                this.setState({ showWarning: false })
+              }
+              this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
+            });
           }
         }
       );
@@ -456,16 +479,20 @@ class AddBOPImport extends Component {
     if (newValue && newValue !== '') {
       this.setState({ client: newValue });
       const { costingTypeId, currency, effectiveDate, vendorName } = this.state;
-      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value:EMPTY_GUID, clientValue: newValue?.value,master: BOP,plantCurrency:this.props?.fieldsObj?.plantCurrency});
+      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID, clientValue: newValue?.value, master: BOP, plantCurrency: this.props?.fieldsObj?.plantCurrency });
       if (newValue && newValue?.length !== 0 && this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
-       this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
-          if (Object.keys(res.data.Data).length === 0) {
-            this.setState({ showWarning: true })
-          } else {
-            this.setState({ showWarning: false })
-          }
-          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
-        });
+
+        if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage.getObject("baseCurrency")) {
+
+          this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+            if (Object.keys(res.data.Data).length === 0) {
+              this.setState({ showWarning: true })
+            } else {
+              this.setState({ showWarning: false })
+            }
+            this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
+          });
+        }
       }
     } else {
       this.setState({ client: [] })
@@ -766,19 +793,38 @@ class AddBOPImport extends Component {
   */
   handlePlant = (e) => {
     const { initialConfiguration } = this.props
+    const { client, effectiveDate } = this.state;
     this.setState({ selectedPlants: e })
     this.props.getPlantUnitAPI(e?.value, (res) => {
       let Data = res?.data?.Data
       this.props.change('plantCurrency', Data?.Currency)
+      this.setState({ LocalCurrency: Data?.Currency, LocalCurrencyId: Data?.CurrencyId })
       if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
-        // First call with plant currency
-        this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency);
-        // Second call with base currency
-        this.callExchangeRateAPI(reactLocalStorage.getObject("baseCurrency"));
-        this.setState({ hidePlantCurrency: false, LocalCurrencyId: Data?.CurrencyId })
+        this.setState({ hidePlantCurrency: false })
       } else {
         this.setState({ hidePlantCurrency: true })
       }
+      const hasCurrencyAndDate = Boolean(Data?.Currency && effectiveDate);
+      // First call with plant currency
+      if (hasCurrencyAndDate) {
+        this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency);
+        // Second call with base currency
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: this.state.currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: this.state.costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, master: BOP, plantCurrency: this.props?.fieldsObj?.plantCurrency });
+        if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage.getObject("baseCurrency")) {
+
+          this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+            if (Object.keys(res.data.Data).length === 0) {
+              this.setState({ showWarning: true })
+            } else {
+              this.setState({ showWarning: false })
+            }
+            this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
+          });
+        }
+      }
+      // } else {
+      //   this.setState({ hidePlantCurrency: true })
+      // }
     })
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
       this.commonFunction(e ? e.value : '')
@@ -809,25 +855,28 @@ class AddBOPImport extends Component {
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, }, () => {
         const { vendorName } = this.state;
-        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-          this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
-        }
+        this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+
         this.props.getPlantBySupplier(vendorName.value, () => { })
-        const { costingTypeId, currency, effectiveDate, client } = this.state;
-       
+        const { effectiveDate, client } = this.state;
+
         if (this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
           if (IsFetchExchangeRateVendorWiseForParts() && (!newValue && newValue?.length === 0)) {
             return false;
           }
-          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: this.state.currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: this.state.costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value,master: BOP,plantCurrency:this.props?.fieldsObj?.plantCurrency });
-          this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
-            if (Object.keys(res.data.Data).length === 0) {
-              this.setState({ showWarning: true })
-            } else {
-              this.setState({ showWarning: false })
-            }
-            this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
-          });
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: this.state.currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: this.state.costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, master: BOP, plantCurrency: this.props?.fieldsObj?.plantCurrency });
+
+          if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage.getObject("baseCurrency")) {
+
+            this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+              if (Object.keys(res.data.Data).length === 0) {
+                this.setState({ showWarning: true })
+              } else {
+                this.setState({ showWarning: false })
+              }
+              this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
+            });
+          }
         }
       });
     } else {
@@ -917,15 +966,20 @@ class AddBOPImport extends Component {
         if (IsFetchExchangeRateVendorWiseForParts() && (vendorName?.length === 0 && client?.length === 0)) {
           return false;
         }
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: newValue?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue:client.value,master: BOP,plantCurrency:this.props?.fieldsObj?.plantCurrency});
-        this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
-          if (Object.keys(res.data.Data).length === 0) {
-            this.setState({ showWarning: true });
-          } else {
-            this.setState({ showWarning: false });
-          }
-          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
-        });
+
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: newValue?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client.value, master: BOP, plantCurrency: this.props?.fieldsObj?.plantCurrency });
+
+        if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage.getObject("baseCurrency")) {
+
+          this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+            if (Object.keys(res.data.Data).length === 0) {
+              this.setState({ showWarning: true });
+            } else {
+              this.setState({ showWarning: false });
+            }
+            this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
+          });
+        }
       }
       this.setState({ showCurrency: true })
     } else {
@@ -986,8 +1040,8 @@ class AddBOPImport extends Component {
     let conditionList = this.recalculateConditions(basicPrice)
     const sumBaseCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPrice)
-    let netLandedCostPlantCurrency = checkForNull(netLandedCost) * checkForNull(this.state.plantCurrencyValue)
-    let netLandedCostBaseCurrency = checkForNull(netLandedCost) * checkForNull(this.state.currencyValue)
+    let netLandedCostPlantCurrency = checkForDecimalAndNull(checkForNull(netLandedCost) * checkForNull(this.state.plantCurrencyValue), getConfigurationKey().NoOfDecimalForPrice)
+    let netLandedCostBaseCurrency = checkForDecimalAndNull(checkForDecimalAndNull(netLandedCostPlantCurrency, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(this.state.currencyValue), getConfigurationKey().NoOfDecimalForPrice)
     this.props.change('NetConditionCost', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCost', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCostPlantCurrency', checkForDecimalAndNull(netLandedCostPlantCurrency, initialConfiguration?.NoOfDecimalForPrice))
@@ -1036,26 +1090,27 @@ class AddBOPImport extends Component {
     const { currency, effectiveDate } = this.state
     if (date !== effectiveDate) {
       const { costingTypeId, vendorName, client } = this.state;
- 
-
       if (currency && currency.length !== 0 && date) {
         if (IsFetchExchangeRateVendorWiseForParts() && (vendorName?.length === 0 && client?.length === 0)) {
           return false;
         }
-        
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName.value, clientValue:client.value,master: BOP,plantCurrency:this.props?.fieldsObj?.plantCurrency});
-        this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(date).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
-          if (Object.keys(res.data.Data).length === 0) {
-            this.setState({ showWarning: true });
-          } else {
-            this.setState({ showWarning: false });
 
-          } if (this.props.fieldsObj?.plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
-            
-            this.setState({ plantCurrencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) ?? 1, LocalExchangeRateId: res.data.Data.ExchangeRateId })
-          }
-          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
-        });
+
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName.value, clientValue: client.value, master: BOP, plantCurrency: this.props?.fieldsObj?.plantCurrency });
+
+        if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage.getObject("baseCurrency")) {
+
+          this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(date).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+            if (Object.keys(res.data.Data).length === 0) {
+              this.setState({ showWarning: true });
+            } else {
+              this.setState({ showWarning: false });
+
+            }
+            //this.setState({ plantCurrencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) ?? 1, LocalExchangeRateId: res.data.Data.ExchangeRateId })
+            this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
+          })
+        };
       }
       this.setState({ showCurrency: true })
       setTimeout(() => {
@@ -1066,9 +1121,8 @@ class AddBOPImport extends Component {
     }
     this.setState({ effectiveDate: date, dateCount: this.state.dateCount + 1 }
       , () => {
-        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-          this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
-        }
+        this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+
       });
   };
   filterSourceLocationList = async (inputValue) => {
@@ -1295,6 +1349,7 @@ class AddBOPImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
+
     const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate,
       UOM, DataToChange, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
       Technology, NetConditionCost, conditionTableData, BasicPrice, NetLandedCost, otherCostTableData, totalOtherCost,
@@ -1318,7 +1373,12 @@ class AddBOPImport extends Component {
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: BOPID }
     })
-
+    const netCostLocalConversion = convertIntoCurrency(NetLandedCost, plantCurrencyValue)
+    
+    
+    const netCostWithoutConditionCostLocalConversion = convertIntoCurrency(BasicPrice, plantCurrencyValue)
+    const netConditionCostLocalConversion=convertIntoCurrency(NetConditionCost, plantCurrencyValue)
+    const otherNetCostLocalConversion=convertIntoCurrency(totalOtherCost, plantCurrencyValue)
     const formData = {
       Attachements: isEditFlag ? updatedFiles : files,
       BasicRate: values?.BasicRate,
@@ -1332,7 +1392,8 @@ class AddBOPImport extends Component {
       BoughtOutPartPaymentTermId: paymentTerm.value,
       CategoryId: BOPCategory.value,
       CostingTypeId: costingTypeId,
-      Currency: currency.label,
+      Currency: currency?.label,
+      CurrencyId: currency?.value,
       CurrencyExchangeRate: currencyValue,
       CustomerId: client.value,
       DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
@@ -1352,17 +1413,17 @@ class AddBOPImport extends Component {
       LocalCurrencyId: LocalCurrencyId,
       LocalCurrencyExchangeRate: plantCurrencyValue,
       NetConditionCost: NetConditionCost,
-      NetConditionCostConversion: convertIntoCurrency(NetConditionCost * currencyValue),
+      NetConditionCostConversion: convertIntoCurrency(netConditionCostLocalConversion * currencyValue),
       NetConditionCostLocalConversion: convertIntoCurrency(NetConditionCost, plantCurrencyValue),
       NetCostWithoutConditionCost: BasicPrice,
       NetCostWithoutConditionCostLocalConversion: convertIntoCurrency(BasicPrice, plantCurrencyValue),
-      NetCostWithoutConditionCostConversion: convertIntoCurrency(BasicPrice, currencyValue),
+      NetCostWithoutConditionCostConversion: convertIntoCurrency(netCostWithoutConditionCostLocalConversion, currencyValue),
       NetLandedCost: NetLandedCost,
       NetLandedCostLocalConversion: convertIntoCurrency(NetLandedCost, plantCurrencyValue),
-      NetLandedCostConversion: convertIntoCurrency(NetLandedCost, currencyValue),
+      NetLandedCostConversion: convertIntoCurrency(checkForDecimalAndNull(netCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice), currencyValue),
       NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values?.NumberOfPieces : 1,
       OtherNetCost: totalOtherCost,
-      OtherNetCostConversion: convertIntoCurrency(totalOtherCost, currencyValue),
+      OtherNetCostConversion: convertIntoCurrency(otherNetCostLocalConversion, currencyValue),
       OtherNetCostLocalConversion: convertIntoCurrency(totalOtherCost, plantCurrencyValue),
       Plant: plantArray,
       Remark: values?.Remark,
@@ -1480,10 +1541,12 @@ class AddBOPImport extends Component {
     }
     const sumSelectedCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     const netLandedCost = checkForNull(sumSelectedCurrency) + checkForNull(NetCostWithoutConditionCost)
+    const netLandedCostPlantCurrency = checkForDecimalAndNull(netLandedCost * checkForNull(plantCurrencyValue), initialConfiguration?.NoOfDecimalForPrice)
+    const netLandedCostBaseCurrency = checkForDecimalAndNull(netLandedCostPlantCurrency * checkForNull(currencyValue), initialConfiguration?.NoOfDecimalForPrice)
     this.props.change('NetConditionCost', checkForDecimalAndNull(sumSelectedCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCost', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostPlantCurrency', checkForDecimalAndNull((netLandedCost * checkForNull(plantCurrencyValue)), initialConfiguration?.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull((netLandedCost * checkForNull(currencyValue)), initialConfiguration?.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostPlantCurrency', netLandedCostPlantCurrency)
+    this.props.change('NetLandedCostBaseCurrency', netLandedCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)
     this.setState({
       isOpenConditionDrawer: false,
       conditionTableData: data,
@@ -1501,13 +1564,25 @@ class AddBOPImport extends Component {
     return value
   }
   handleExchangeRateSource = (newValue) => {
+    const { client, effectiveDate } = this.state;
+
     this.setState({ ExchangeSource: newValue }, () => {
       // First call with plant currency
-      if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-        this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+      this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+
+      const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: this.state.currency?.label, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: this.state.costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, master: BOP, plantCurrency: this.props?.fieldsObj?.plantCurrency });
+
+      if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage.getObject("baseCurrency")) {
+
+        this.props.getExchangeRateByCurrency(this.props?.fieldsObj?.plantCurrency, costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
+          if (Object.keys(res.data.Data).length === 0) {
+            this.setState({ showWarning: true })
+          } else {
+            this.setState({ showWarning: false })
+          }
+          this.setState({ currencyValue: checkForNull(res?.data?.Data?.CurrencyExchangeRate), ExchangeRateId: res?.data?.Data?.ExchangeRateId }, () => { this.handleCalculation() });
+        });
       }
-      // Second call with base currency
-      this.callExchangeRateAPI(reactLocalStorage.getObject("baseCurrency"));
     });
   };
 
@@ -1522,11 +1597,13 @@ class AddBOPImport extends Component {
       }
       const basicPrice = checkForNull(this.props.fieldsObj?.BasicRate) + checkForNull(totalBase)
       const netLandedCost = checkForNull(basicPrice) + checkForNull(NetConditionCost)
+      const netLandedCostPlantCurrency = checkForDecimalAndNull(netLandedCost * checkForNull(plantCurrencyValue), this.props.initialConfiguration?.NoOfDecimalForPrice)
+      const netLandedCostBaseCurrency = checkForDecimalAndNull(netLandedCostPlantCurrency * checkForNull(currencyValue), this.props.initialConfiguration?.NoOfDecimalForPrice)
       this.props.change('OtherCost', total)
       this.props.change('BasicPrice', checkForDecimalAndNull(basicPrice, this.props.initialConfiguration?.NoOfDecimalForPrice))
       this.props.change('NetLandedCost', checkForDecimalAndNull(netLandedCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
-      this.props.change('NetLandedCostPlantCurrency', checkForDecimalAndNull(netLandedCost * checkForNull(plantCurrencyValue), this.props.initialConfiguration?.NoOfDecimalForPrice))
-      this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCost * checkForNull(currencyValue), this.props.initialConfiguration?.NoOfDecimalForPrice))
+      this.props.change('NetLandedCostPlantCurrency', netLandedCostPlantCurrency)
+      this.props.change('NetLandedCostBaseCurrency', netLandedCostBaseCurrency)
       this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: total, NetLandedCost: netLandedCost, BasicPrice: basicPrice }, () => {
         this.handleCalculation()
       })
@@ -1896,14 +1973,16 @@ class AddBOPImport extends Component {
                                   onChange={this.handleChangeSapCode}
                                   className=" "
                                   customClassName=" withBorder w-100 mb-0"
-                                />
+                                >
+                                  {IsSAPCodeHandle && isEditFlag && (
+                                    <WarningMessage dClass={'d-flex justify-content-end'} message={`${MESSAGES.SAP_CODE_WARNING}`} />
+                                  )}
+                                </Field>
                                 {!IsSAPCodeUpdated && isEditFlag && (
                                   <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} disabled={isViewMode} />
                                 )}
                               </div>
-                              {IsSAPCodeHandle && isEditFlag && (
-                                <WarningMessage dClass={'d-flex justify-content-end'} message={`${MESSAGES.SAP_CODE_WARNING}`} />
-                              )}
+
                             </Col>}
                         </Row >
 
@@ -2004,8 +2083,9 @@ class AddBOPImport extends Component {
                               disabled={true}
                               className=" "
                               customClassName=" withBorder mb-1"
-                            />
-                            {this.state?.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
+                            >
+                              {this.state?.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
+                            </Field>
                           </Col>}
                           <Col md="3">
                             <Field
@@ -2057,7 +2137,7 @@ class AddBOPImport extends Component {
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
                               customClassName="mb-1"
-                            >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
+                            >{this?.state?.showWarning && this.state?.currency?.label && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                             </Field>
                           </Col >
                           <Col md="3">
@@ -2124,34 +2204,34 @@ class AddBOPImport extends Component {
                               <div className='d-flex align-items-center'>
                                 <div className="w-100">
                                   <Field
-                                  label={`Other Cost/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
-                                  name={"OtherCost"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderText}
-                                  required={false}
-                                  disabled={true}
-                                  isViewFlag={true}
-                                  className=" "
-                                  customClassName=" withBorder"
+                                    label={`Other Cost/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                    name={"OtherCost"}
+                                    type="text"
+                                    placeholder={"-"}
+                                    validate={[]}
+                                    component={renderText}
+                                    required={false}
+                                    disabled={true}
+                                    isViewFlag={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                </div>
+                                <Button
+                                  id="addBOPDomestic_otherCost"
+                                  onClick={this.otherCostToggle}
+                                  className={"right mt-0 mb-2"}
+                                  variant={
+                                    isViewMode
+                                      ? "view-icon-primary"
+                                      : !this.props.fieldsObj?.BasicRate
+                                        ? "blurPlus-icon-square"
+                                        : "plus-icon-square"
+                                  }
+                                  disabled={!this.props.fieldsObj?.BasicRate}
                                 />
                               </div>
-                              <Button
-                                id="addBOPDomestic_otherCost"
-                                onClick={this.otherCostToggle}
-                                className={"right mt-0 mb-2"}
-                                variant={
-                                  isViewMode
-                                    ? "view-icon-primary"
-                                    : !this.props.fieldsObj?.BasicRate
-                                      ? "blurPlus-icon-square"
-                                      : "plus-icon-square"
-                                }
-                                disabled={!this.props.fieldsObj?.BasicRate}
-                              />
-                            </div>
-                          </Col>)}
+                            </Col>)}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                               <Col md="3">
@@ -2207,7 +2287,7 @@ class AddBOPImport extends Component {
                           {
                             this.state.showCurrency && (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" width="350px" tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
+                                <TooltipCustom id="bop-net-cost-currency" disabledIcon={true} width="350px" tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
                                   label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}
@@ -2222,8 +2302,8 @@ class AddBOPImport extends Component {
                                   customClassName=" withBorder mb-0"
                                 />
                               </Col>
-                              {!this.state.hidePlantCurrency && <Col md="3">
-                                <TooltipCustom id="bop-net-cost-plant" width="350px" tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
+                              {<Col md="3">
+                                <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} width="350px" tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
                                 <Field
                                   label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
                                   name={"NetLandedCostPlantCurrency"}
@@ -2238,13 +2318,13 @@ class AddBOPImport extends Component {
                                   customClassName=" withBorder"
                                 />
                               </Col>}
-                              <Col md="3">
-                                <TooltipCustom id="bop-net-cost-Conversion" width="350px" disabledIcon={true} tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
+                              {!this?.state?.hidePlantCurrency && <Col md="3">
+                                <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} width="350px" tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
                                   label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                   type="text"
-                                  id="bop-net-cost-Conversion"
+                                  id="bop-net-cost-Conversion" s
                                   placeholder={"-"}
                                   validate={[]}
                                   component={renderTextInputField}
@@ -2253,7 +2333,7 @@ class AddBOPImport extends Component {
                                   className=" "
                                   customClassName=" withBorder"
                                 />
-                              </Col >
+                              </Col >}
                             </>}
 
 

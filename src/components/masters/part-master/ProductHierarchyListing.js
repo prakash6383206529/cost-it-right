@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 
-import { EMPTY_DATA } from "../../../config/constants";
+import { EMPTY_DATA, defaultPageSize } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -31,7 +31,8 @@ const ProductHierarchyListing = (props) => {
         isDrawerOpen: false,
         searchText: '',
         labelupdateDrawerOpen: false,
-        levelId: ''
+        levelId: '',
+        globalTake: defaultPageSize
     });
     const { globalTakes } = useSelector((state) => state.pagination);
     const dispatch = useDispatch()
@@ -46,12 +47,17 @@ const ProductHierarchyListing = (props) => {
         setState((prevState) => ({
             ...prevState,
             noData: false,
+            isLoader: true,
+            globalTake: defaultPageSize
         }));
         if (state.gridApi) {
             state.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
         }
         state.gridApi.deselectAll();
         gridOptions?.columnApi?.resetColumnState(null);
+        dispatch(getAllProductLevels((res) => {
+            setState(prevState => ({ ...prevState, isLoader: false, rowData: productHierarchyData }))
+        }))
     };
 
 
@@ -79,6 +85,7 @@ const ProductHierarchyListing = (props) => {
     };
     const onPageSizeChanged = (newPageSize) => {
         state.gridApi.paginationSetPageSize(Number(newPageSize));
+        setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
     };
     const EditLabel = (id) => {
         setState(prevState => ({ ...prevState, labelupdateDrawerOpen: true, levelId: id }))
@@ -169,7 +176,7 @@ const ProductHierarchyListing = (props) => {
                                 <AgGridColumn field="ProductHierarchyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"ButtonFormatter"}
                                 ></AgGridColumn>
                             </AgGridReact>}
-                        {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+                        {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
                     </div>
                 </div>
             </div>

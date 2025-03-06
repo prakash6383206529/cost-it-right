@@ -6384,11 +6384,13 @@ export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Mode", value: "Mode", },
     { label: "Vendor (Code)", value: "VendorName", },
+    { label: "Plant (Code)", value: "Plant" },
     { label: "Customer (Code)", value: "CustomerName", },
     // { label: "Source City", value: "SourceCity", },
     // { label: "Destination City", value: "DestinationCity", },
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
     { label: "Currency", value: "Currency", },
+    { label: "Effective Date", value: "EffectiveDate" },
 ]
 
 export const FUELLISTING_DOWNLOAD_EXCEl = [

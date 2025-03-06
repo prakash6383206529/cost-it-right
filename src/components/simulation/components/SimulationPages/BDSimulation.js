@@ -413,15 +413,15 @@ function BDSimulation(props) {
         const existingNetLandedCost = existingBasicPrice + checkForNull(row?.NetConditionCost);
         const newNetLandedCost = newBasicPrice + checkForNull(row?.NewNetConditionCost);
 
-
-
+        
+        
         const displayCost = row.NewBasicRate != null ? newNetLandedCost : existingNetLandedCost;
-
+        
         // const classGreen = (newNetLandedCost > existingNetLandedCost) ? 'red-value form-control' 
         //             : (newNetLandedCost < existingNetLandedCost) ? 'green-value form-control' 
         //             : 'form-class';
         if (isImpactedMaster) {
-            return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
+            return row.NewNetBoughtOutPartCost ? checkForDecimalAndNull(row.NewNetBoughtOutPartCost, getConfigurationKey().NoOfDecimalForPrice) : '-'
         } else {
             // if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
             const BasicRate = checkForNull((row.BasicRate) / NumberOfPieces)
@@ -969,7 +969,7 @@ function BDSimulation(props) {
                                                 {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' minWidth={columnWidths.plantCode} cellRenderer='plantFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" tooltipField='Quantity' editable='false' headerName="Min Order Quantity" minWidth={columnWidths.Quantity} cellRenderer='quantityFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                {<AgGridColumn field="Currency" minWidth={100} tooltipField='Currency' editable='false' headerName="Currency"  ></AgGridColumn>}
+                                                {<AgGridColumn field="Currency" minWidth={100} tooltipField='Currency' editable='false' headerName="Settlement Currency"  ></AgGridColumn>}
                                                 {(String(props?.masterId) === String(BOPIMPORT) || String(props?.masterId) === String(EXCHNAGERATE))&&(isImpactedMaster || props?.lastRevision)&&<AgGridColumn field="LocalCurrency" minWidth={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
 
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={

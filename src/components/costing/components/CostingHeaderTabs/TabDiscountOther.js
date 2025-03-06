@@ -830,9 +830,9 @@ function TabDiscountOther(props) {
       //   setValue('HundiOrDiscountValue', DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue, initialConfiguration?.NoOfDecimalForPrice))
       // }
       if (IsCurrencyChange && ExchangeRateData && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
-        let poPriceOtherCurrency = (getValues('Currency') === '') ? 0 : (DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
+        let poPriceOtherCurrency = (getValues('Currency') === '') ? 0 : (DiscountCostData && netPOPrice* ExchangeRateData.CurrencyExchangeRate)
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull(poPriceOtherCurrency, initialConfiguration?.NoOfDecimalForPrice))
-        setNetPoPriceCurrencyState(DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
+        setNetPoPriceCurrencyState(DiscountCostData && netPOPrice * ExchangeRateData.CurrencyExchangeRate)
       }
     }
 
@@ -1013,8 +1013,8 @@ function TabDiscountOther(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
-          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
-          setNetPoPriceCurrencyState(NetPOPriceINR / Data.CurrencyExchangeRate)
+          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR* Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
+          setNetPoPriceCurrencyState(NetPOPriceINR * Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
           setIsInputLader(false)
         }
@@ -1031,8 +1031,8 @@ function TabDiscountOther(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
-          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
-          setNetPoPriceCurrencyState(NetPOPriceINR / Data.CurrencyExchangeRate)
+          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR * Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
+          setNetPoPriceCurrencyState(NetPOPriceINR* Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
         }
       }))

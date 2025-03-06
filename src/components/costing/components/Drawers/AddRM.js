@@ -87,7 +87,7 @@ function AddRM(props) {
 
   const currencyFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== '-' ? cellValue : reactLocalStorage.getObject("baseCurrency")
+    return cellValue !== undefined && cellValue !== null && cellValue !== '' && cellValue !== '-' ? cellValue : '-';
   }
 
   const priceFormatter = (props) => {
@@ -354,7 +354,9 @@ function AddRM(props) {
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorName" headerName={vendorLabel} ></AgGridColumn>}
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorLocation" headerName={`${vendorLabel} Location`}></AgGridColumn>}
                         {initialConfiguration?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer={'sourceVendorFormatter'}></AgGridColumn>}
-                        <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="Currency"  headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UOM"></AgGridColumn>
                         <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'priceFormatter'}></AgGridColumn>
                         <AgGridColumn field="ScrapRate" headerName={showRMScrapKeys(costData?.TechnologyId)?.name} cellRenderer={'priceFormatter'}></AgGridColumn>

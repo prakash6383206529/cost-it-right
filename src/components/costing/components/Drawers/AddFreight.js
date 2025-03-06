@@ -253,6 +253,7 @@ function AddFreight(props) {
         EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null,
         EFreightLoadType: freightType ? freightType : null,
         CostingTypeId: costData?.CostingTypeId ? costData?.CostingTypeId : null,
+        costingId: costData?.CostingId ? costData?.CostingId : null,
       }
       dispatch(getRateByCapacityCriteria(data, res => {
         if (res && res?.data && res?.data?.Result) {

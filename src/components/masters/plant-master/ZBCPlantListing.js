@@ -58,7 +58,7 @@ const ZBCPlantListing = (props) => {
         type: '',
         render: false,
         showExtraData: false,
-
+        globalTake: defaultPageSize
     });
 
     useEffect(() => {
@@ -277,6 +277,7 @@ const ZBCPlantListing = (props) => {
     };
     const onPageSizeChanged = (newPageSize) => {
         state.gridApi.paginationSetPageSize(Number(newPageSize));
+        setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
     };
     const onRowSelect = () => {
         const selectedRows = state.gridApi?.getSelectedRows();
@@ -320,7 +321,8 @@ const ZBCPlantListing = (props) => {
         if (window.screen.width >= 1600) {
             state.gridApi.sizeColumnsToFit();
         }
-        setState(prevState => ({ ...prevState, noData: false }));
+        setState(prevState => ({ ...prevState, noData: false, globalTake: defaultPageSize }));
+        filterList();
     };
 
 
@@ -435,7 +437,7 @@ const ZBCPlantListing = (props) => {
                         </AgGridReact>
                     }
 
-                    {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+                    {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
                 </div>
             </div>
 
