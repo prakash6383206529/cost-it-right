@@ -2143,7 +2143,7 @@ const CostingSummaryTable = (props) => {
                       className={`custom-checkbox mb-0`}
                       onChange={checkboxHandler}
                     >
-                      Show Converted Currency
+                      Show Base Currency Conversion
                       <input
                         type="checkbox"
                         checked={showConvertedCurrency}
@@ -2324,7 +2324,7 @@ const CostingSummaryTable = (props) => {
                                             className={`custom-checkbox mb-0`}
                                             onChange={checkboxHandler}
                                           >
-                                            Show Converted Currency
+                                            Show Base Currency Conversion
                                             <input
                                               type="checkbox"
                                               checked={showConvertedCurrency}
@@ -2335,7 +2335,7 @@ const CostingSummaryTable = (props) => {
                                               checked={showConvertedCurrency}
                                             />
                                           </label>
-                                        </span><TooltipCustom customClass="mt-n2 ml-n3 " id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Converted Currency'."} /></> :
+                                        </span><TooltipCustom customClass="mt-n2 ml-n3 " id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Base Currency Conversion'."} /></> :
                                           <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> ({heading(data).subHeading}) </span></span><span className='sub-heading'>{data.costingHeadCheck} {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></div></span>
                                     }
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
@@ -2361,7 +2361,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">Costing Version</span>
                               <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
                               {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
-                              <span className="d-block">Currency</span>
+                              <span className="d-block">Costing Currency</span>
                               <span className="d-block">{vendorLabel} (Code)</span>
                               {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Category</span>
@@ -2500,7 +2500,7 @@ const CostingSummaryTable = (props) => {
                             {/* // NOT */}
                             <td>
                               {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
-                              <span className="d-block">Currency</span>
+                              <span className="d-block">Costing Currency</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               {/* <span className="d-block">Revision Number</span> */}
