@@ -437,7 +437,7 @@ function LabourListing(props) {
               suppressRowClickSelection={true}
             >
               <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-              <AgGridColumn field="CostingHead"minWidth={170} headerName="Costing Head"></AgGridColumn>
+              <AgGridColumn field="CostingHead" minWidth={170} headerName="Costing Head"></AgGridColumn>
 
               <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
@@ -453,7 +453,7 @@ function LabourListing(props) {
               <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
               <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
             </AgGridReact>}
-            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
+            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
           </div>
         </div>
 

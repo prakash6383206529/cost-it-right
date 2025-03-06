@@ -39,6 +39,7 @@ import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
 import WarningMessage from '../../common/WarningMessage';
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddPower');
 
@@ -120,7 +121,8 @@ class AddPower extends Component {
       country: [],
       city: [],
       isDisabled: false,
-      showPlantWarning: false
+      showPlantWarning: false,
+      dataToChange: {}
 
     }
     this.state = { ...this.initialState };
@@ -184,7 +186,7 @@ class AddPower extends Component {
       }
 
       const callAPI = (from, to, costingType, vendorValue, clientValue) => {
-        
+
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,
@@ -209,10 +211,10 @@ class AddPower extends Component {
 
       if (isImport) {
         // First API call
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
-        
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+
         callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
-          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
           callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
             this.setState({
               plantCurrency: rate1,
@@ -229,7 +231,7 @@ class AddPower extends Component {
         });
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
         callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
             this.handleCalculation(fieldsObj?.NetPowerCostPerUnitLocalConversion)
@@ -518,6 +520,7 @@ class AddPower extends Component {
             this.props.change('City', Data.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : {})
 
             this.setState({
+              dataToChange: Data,
               isEditFlag: true,
               isLoader: false,
               IsVendor: Data.IsVendor,
@@ -1426,12 +1429,18 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country, isImport, netContributionConvertedInLocalCurrency, netContributionConvertedInBaseCurrency, netContributionValue } = this.state;
+      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country, isImport, netContributionConvertedInLocalCurrency, netContributionConvertedInBaseCurrency, netContributionValue, dataToChange } = this.state;
     const NetContributionConvertedInBaseCurrency = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? netContributionConvertedInBaseCurrency : netContributionValue
     const NetContributionConvertedInLocalCurrency = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? netContributionConvertedInLocalCurrency : netContributionValue
     const NetPowerCostPerUnitConversion = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? this.props.fieldsObj?.NetPowerCostPerUnitConversion : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion
     const NetPowerCostPerUnitLocalConversion = isDetailEntry ? NetContributionConvertedInLocalCurrency : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion
     const { fieldsObj } = this.props
+    let financialDataChanged = (Number(fieldsObj?.NetPowerCostPerUnitConversion && fieldsObj?.NetPowerCostPerUnitConversion) !== Number(dataToChange?.NetPowerCostPerUnitLocalConversion)) || (fieldsObj?.NetPowerCostPerUnit && Number(fieldsObj?.NetPowerCostPerUnit) !== Number(dataToChange?.NetPowerCostPerUnitLocalConversion))
+
+    if (financialDataChanged && checkEffectiveDate(effectiveDate, dataToChange?.effectiveDate)) {
+      Toaster.warning('Please update the Effective date.')
+      return false
+    }
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -2055,7 +2064,7 @@ class AddPower extends Component {
                                     changeHandler={(e) => { }}
                                     component={renderDatePicker}
                                     className="form-control"
-                                    disabled={(isEditFlag || isViewMode) ? true : false}
+                                    disabled={(isViewMode) ? true : false}
                                     placeholder={isViewMode ? '-' : "Select Date"}
                                     onFocus={() => onFocus(this, true)}
                                     minDate={getEffectiveDateMinDate()}
@@ -2134,7 +2143,7 @@ class AddPower extends Component {
                           </>
                         }
 
-                        <Col md="3" className={ "mt30 pt-1"}>
+                        <Col md="3" className={"mt30 pt-1"}>
                           <label id="AddPower_AddMoreDetails"
                             className={`custom-checkbox w-auto ${isDetailEntry ? 'mb-3' : ''}`}
                             onChange={this.isDetailEntryChange}
@@ -2649,22 +2658,22 @@ class AddPower extends Component {
                                   <tr className="bluefooter-butn">
                                     <td></td>
                                     <td colSpan="2" className='text-end'>
-                                        {this.state.isImport &&
-                                          <strong className='d-block mb-1'>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
-                                        }
-                                        <strong className='d-block mb-1'>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
-                                        {!this.state.hidePlantCurrency &&
-                                          <strong className='d-block mb-1'>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</strong>
-                                        }
+                                      {this.state.isImport &&
+                                        <strong className='d-block mb-1'>{`Net Contribution Value (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
+                                      }
+                                      <strong className='d-block mb-1'>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</strong>
+                                      {!this.state.hidePlantCurrency &&
+                                        <strong className='d-block mb-1'>{`Net Contribution Value (${reactLocalStorage.getObject("baseCurrency")}):`}</strong>
+                                      }
                                     </td>
                                     <td colSpan="2">
-                                        {this.state.isImport &&
-                                          <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
-                                        }
-                                        <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
-                                        {!this.state.hidePlantCurrency &&
-                                          <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
-                                        }
+                                      {this.state.isImport &&
+                                        <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionConvertedInLocalCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                      }
+                                      <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                      {!this.state.hidePlantCurrency &&
+                                        <label className='d-block w-auto mb-1'>{checkForDecimalAndNull(this.state.netContributionConvertedInBaseCurrency, initialConfiguration?.NoOfDecimalForPrice)}</label>
+                                      }
                                     </td>
                                   </tr>
                                 </tfoot>

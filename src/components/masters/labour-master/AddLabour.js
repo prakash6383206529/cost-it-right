@@ -34,9 +34,10 @@ import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getPlantUnitAPI } from '../actions/Plant'
 import WarningMessage from '../../common/WarningMessage'
 import TooltipCustom from '../../common/Tooltip'
+import { checkEffectiveDate } from '../masterUtil'
 
 const selector = formValueSelector('AddLabour')
-
+const isAssociated = true;
 class AddLabour extends Component {
   constructor(props) {
     super(props)
@@ -564,7 +565,7 @@ class AddLabour extends Component {
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId, efficiency, workingHours, city, country } = this.state
     const { fieldsObj } = this.props
-   if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || country.length === 0 || city.length === 0) {
+    if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || country.length === 0 || city.length === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
@@ -648,7 +649,14 @@ class AddLabour extends Component {
     const { fieldsObj } = this.props
     const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRate) : 0
     const LabourRateConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRateConversion) : checkForNull(fieldsObj?.LabourRate)
-
+    let tempData = gridTable[gridEditIndex]
+    let financialDataChanged = (Number(tempData.LabourRateConversion) !== Number(fieldsObj?.LabourRateConversion)) || (fieldsObj?.Efficiency && Number(tempData.Efficiency) !== Number(fieldsObj?.Efficiency)) || Number(tempData.WorkingTime) !== Number(fieldsObj?.workingHours)
+    if (tempData.IsAssociatedlabour) {
+      if (financialDataChanged && checkEffectiveDate(effectiveDate, tempData.EffectiveDate)) {
+        Toaster.warning('Please update the Effective date.')
+        return false
+      }
+    }
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
     let skipEditedItem = gridTable.filter((el, i) => {
       if (i === gridEditIndex) return false
@@ -673,7 +681,6 @@ class AddLabour extends Component {
     }
     let tempArray = []
 
-    let tempData = gridTable[gridEditIndex]
     tempData = {
       MachineTypeId: machineType.value,
       MachineType: machineType?.label,
@@ -1372,6 +1379,33 @@ class AddLabour extends Component {
                         </Col>
                         <Col md="3">
                           <div className="form-group">
+                            <label>Effective Date<span className="asterisk-required">*</span></label>
+                            <div className="inputbox date-section">
+                              <DatePicker
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate ? new Date(this.state.effectiveDate) : ""}
+                                onChange={this.handleEffectiveDateChange}
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                dateFormat="dd/MM/yyyy"
+                                placeholderText={isViewMode ? '-' : "Select Date"}
+                                className="withBorder"
+                                autoComplete={"off"}
+                                disabledKeyboardNavigation
+                                onChangeRaw={(e) => e.preventDefault()}
+                                disabled={isViewMode}
+                                valueDescription={this.state.effectiveDate}
+                                minDate={getEffectiveDateMinDate()}
+
+                              />
+                              {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
+                            </div>
+                          </div>
+
+                        </Col>
+                        <Col md="3">
+                          <div className="form-group">
                             <Field
                               label={this.DisplayLabourRatePlantCurrencyLabel()}
                               name={"LabourRate"}
@@ -1384,10 +1418,11 @@ class AddLabour extends Component {
                               className=" "
                               customClassName="withBorder"
                             />
-                           {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRate &&
+                            {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRate &&
                               <div className='text-help'>This field is required.</div>
                             }                          </div>
                         </Col>
+
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
                           {<TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
                           <Field
@@ -1440,33 +1475,7 @@ class AddLabour extends Component {
                           </div>
                         </Col>
 
-                        <Col md="3">
-                          <div className="form-group">
-                            <label>Effective Date<span className="asterisk-required">*</span></label>
-                            <div className="inputbox date-section">
-                              <DatePicker
-                                name="EffectiveDate"
-                                selected={this.state.effectiveDate ? new Date(this.state.effectiveDate) : ""}
-                                onChange={this.handleEffectiveDateChange}
-                                showMonthDropdown
-                                showYearDropdown
-                                dropdownMode="select"
-                                dateFormat="dd/MM/yyyy"
-                                placeholderText={isViewMode ? '-' : "Select Date"}
-                                className="withBorder"
-                                autoComplete={"off"}
-                                disabledKeyboardNavigation
-                                onChangeRaw={(e) => e.preventDefault()}
-                                disabled={isViewMode || isEditFlag}
-                                valueDescription={this.state.effectiveDate}
-                                minDate={getEffectiveDateMinDate()}
 
-                              />
-                              {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
-                            </div>
-                          </div>
-
-                        </Col>
                         <Col md="3">
                           <div className="btn-mr-rate mt30 pt-1 pr-0 col-auto">
                             {this.state.isEditIndex ? (
@@ -1547,14 +1556,14 @@ class AddLabour extends Component {
                                             this.editGridItemDetails(index)
                                           }
                                         />
-                                        <button
+                                        {!item.IsAssociatedlabour && <button
                                           className="Delete"
                                           disabled={isViewMode || item.IsAssociated}
                                           type={"button"}
                                           onClick={() =>
                                             this.deleteGridItem(index)
                                           }
-                                        />
+                                        />}
                                       </td>
                                     </tr>
                                   );

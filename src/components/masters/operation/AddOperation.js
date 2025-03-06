@@ -40,6 +40,7 @@ import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddOperation');
 
@@ -200,17 +201,17 @@ class AddOperation extends Component {
           const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
 
           callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
-          .then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-            this.setState({
-              plantCurrency: rate1,
-              plantExchangeRateId: exchangeRateId1,
-              settlementCurrency: 1,
-              settlementExchangeRateId: null,
-              
-            }, () => {
-              this.handleCalculation(fieldsObj?.Rate)
+            .then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+              this.setState({
+                plantCurrency: rate1,
+                plantExchangeRateId: exchangeRateId1,
+                settlementCurrency: 1,
+                settlementExchangeRateId: null,
+
+              }, () => {
+                this.handleCalculation(fieldsObj?.Rate)
+              });
             });
-          });
         }
         else {
           const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
@@ -1000,6 +1001,28 @@ class AddOperation extends Component {
   onSubmit = debounce((values) => {
     const { selectedPlants, vendorName, files,
       UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag, isImport } = this.state;
+    const { WeldingRate, Consumption, LabourRatePerUOM, Rate, RateConversion, RateLocalConversion, Remark, Description, EffectiveDate } = this.props?.fieldsObj
+    const { Rate: oldRate, RateLocalConversion: oldRateLocal, RateConversion: oldRateConversion,
+      OperationBasicRate: oldWeldingRate, OperationConsumption: oldConsumption,
+      LabourRatePerUOM: oldLabourRate, Remark: oldRemark, Description: oldDescription, EffectiveDate: oldEffectiveDate } = DataToChange;
+    const financialDataChanged =
+      (Rate && Number(Rate) !== Number(oldRate)) ||
+      (RateLocalConversion && Number(RateLocalConversion) !== Number(oldRateLocal)) ||
+      (RateConversion && Number(RateConversion) !== Number(oldRateConversion)) ||
+      (WeldingRate && Number(WeldingRate) !== Number(oldWeldingRate)) ||
+      (Consumption && Number(Consumption) !== Number(oldConsumption)) ||
+      (LabourRatePerUOM && Number(LabourRatePerUOM) !== Number(oldLabourRate));
+    const nonFinancialDataChanged = (Remark && Remark !== oldRemark) || (Description && Description !== oldDescription)
+    if (!financialDataChanged && !nonFinancialDataChanged) {
+      Toaster.warning('Please update the data.')
+      return false
+    }
+    if (this.props?.isOperationAssociated) {
+      if (financialDataChanged && checkEffectiveDate(EffectiveDate, oldEffectiveDate)) {
+        Toaster.warning('Please update the Effective date.')
+        return false
+      }
+    }
     const { initialConfiguration } = this.props;
     const userDetailsOperation = JSON.parse(localStorage.getItem('userDetail'))
     const userDetail = userDetails()
@@ -1258,10 +1281,10 @@ class AddOperation extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-    {!this.state?.hidePlantCurrency
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-      : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
-  </>;
+      {!this.state?.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+        : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
+    </>;
   };
   /**
   * @method render
@@ -1481,7 +1504,7 @@ class AddOperation extends Component {
                           type="text"
                           placeholder={isViewMode ? '-' : "Select"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
-                          component={renderText}
+                          component={renderTextInputField}
                           disabled={isViewMode ? true : false || isDetailEntry}
                           className=" "
                           customClassName=" withBorder"
@@ -1592,7 +1615,7 @@ class AddOperation extends Component {
                           className=" "
                           customClassName=" withBorder mb-1"
                         >
-                        {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                          {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                         </Field>
                       </Col>}
                       {this.state.isImport && <Col md="3">
@@ -1635,9 +1658,9 @@ class AddOperation extends Component {
                             }}
                             component={renderDatePicker}
                             className=" "
-                            disabled={isViewMode || !this.state.IsFinancialDataChanged}
+                            disabled={isViewMode}
                             customClassName=" withBorder"
-                            placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
+                            placeholder={isViewMode ? '-' : "Select Date"}
                           />
                         </div>
                       </Col>
@@ -1670,13 +1693,13 @@ class AddOperation extends Component {
                           type="text"
                           label="UOM"
                           component={searchableSelect}
-                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("UOM")}
                           validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
+                          disabled={isViewMode || isDetailEntry}
                         />
                       </Col>
                       {this.state.isWelding &&
@@ -1686,11 +1709,11 @@ class AddOperation extends Component {
                               label={`Welding Material Rate/Kg`}
                               name={"WeldingRate"}
                               type="text"
-                              placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
-                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
+                              disabled={isViewMode || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'WeldingRate') }}
                               className=" "
                               customClassName=" withBorder"
@@ -1701,11 +1724,11 @@ class AddOperation extends Component {
                               label={`Consumption`}
                               name={"Consumption"}
                               type="text"
-                              placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
-                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
+                              disabled={isViewMode || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'Consumption') }}
                               className=" "
                               customClassName=" withBorder"
@@ -1719,11 +1742,11 @@ class AddOperation extends Component {
                           name={"Rate"}
                           type="text"
                           id="rate"
-                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding ? '-' : "Enter"}
+                          placeholder={isViewMode || this.state.isWelding ? '-' : "Enter"}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
                           required={true}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
+                          disabled={isViewMode || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
@@ -1741,7 +1764,7 @@ class AddOperation extends Component {
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
                           required={true}
-                          disabled={this.state.isImport ? true : false || isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
+                          disabled={this.state.isImport ? true : false || isViewMode || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
@@ -1770,7 +1793,7 @@ class AddOperation extends Component {
                           placeholder={isViewMode ? '-' : "Select"}
                           validate={[positiveAndDecimalNumber, maxLength10, number]}
                           component={renderTextInputField}
-                          disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
+                          disabled={isDetailEntry || isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -2004,7 +2027,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion", 'Rate', 'RateLocalConversion');
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion", 'Rate', 'RateLocalConversion', 'LabourRatePerUOM', 'Remark');
   const { plantSelectList, filterPlantList, UOMSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
