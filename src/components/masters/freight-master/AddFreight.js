@@ -475,6 +475,7 @@ class AddFreight extends Component {
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
         if (item.Value === '0') return false;
+        if (item.Text === this.props.fieldsObj?.plantCurrency) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });

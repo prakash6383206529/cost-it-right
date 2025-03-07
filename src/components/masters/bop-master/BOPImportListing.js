@@ -173,6 +173,13 @@ const BOPImportListing = (props) => {
     }, 300);
 
   }, [])
+
+  useEffect(() => {
+    if (!props.stopApiCallOnCancel) {
+      getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
+    }
+  }, [props?.isBOPAssociated]);
+  
   useEffect(() => {
     setTimeout(() => {
       if (!props?.stopApiCallOnCancel) {
