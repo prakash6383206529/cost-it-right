@@ -668,7 +668,7 @@ class AddFreight extends Component {
       }
     }
     if (this.checkValidation()) {
-    return false
+      return false
     }
 
     // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
@@ -881,6 +881,14 @@ class AddFreight extends Component {
    * @method onSubmit
    * @description Used to Submit the form
    */
+  /**
+  * @method onSubmit
+  * @description Used to Submit the form
+  */
+  /**
+  * @method onSubmit
+  * @description Used to Submit the form
+  */
   onSubmit = debounce((values) => {
     const { TransportMode, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation, client,
       FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId, isImport, plantCurrency, settlementCurrency, plantExchangeRateId, ExchangeSource } = this.state;
@@ -889,30 +897,63 @@ class AddFreight extends Component {
       this.setState({ showEffectiveDateError: true })
       return false
     }
+
     if (checkForNull(this.state?.gridTable?.length) === 0) {
       Toaster.warning("Please add at least one data in Load Section.")
       return false
     }
+
     if (costingTypeId === VBCTypeId && vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })
       return false
+    }
+
+    // For edit mode, check for changes and handle different scenarios
+    if (isEditFlag) {
+
+      const hasFinancialChanges = gridTable.some(item => {
+        const originalItem = DataToChange.FullTruckLoadDetails.find(x => x.FullTruckLoadId === item.FullTruckLoadId);
+        return (
+          Number(item.Rate) !== Number(originalItem?.Rate) ||
+          Number(item.RateLocalConversion) !== Number(originalItem?.RateLocalConversion) ||
+          Number(item.RateConversion) !== Number(originalItem?.RateConversion)
+        );
+      });
+
+      const hasNonFinancialChanges = gridTable.some(item => {
+        const originalItem = DataToChange.FullTruckLoadDetails.find(x => x.FullTruckLoadId === item.FullTruckLoadId);
+        return (
+          item.Capacity !== originalItem?.Capacity ||
+          item.RateCriteria !== originalItem?.RateCriteria ||
+          item.Load?.label !== originalItem?.FreightLoadType
+        );
+      }) || 
+      DayTime(this.state.effectiveDate).format('YYYY-MM-DD') !== DayTime(DataToChange.EffectiveDate).format('YYYY-MM-DD') ||
+      // DataToChange.LoadingUnloadingCharges !== values.LoadingUnloadingCharges ||
+      // DataToChange.PartTruckLoadRatePerCubicFeet !== values.PartTruckLoadRatePerCubicFeet ||
+      // DataToChange.PartTruckLoadRatePerKilogram !== values.PartTruckLoadRatePerKilogram ||
+      // DataToChange.IsLoadingUnloadingApplicable !== IsLoadingUnloadingApplicable ||
+      DataToChange.ExchangeRateSourceName !== this.state.ExchangeSource?.label ||
+      DataToChange.PlantId !== this.state.Plant?.value ||
+      (costingTypeId === VBCTypeId && DataToChange.VendorId !== vendorName.value) ||
+      (costingTypeId === CBCTypeId && DataToChange.CustomerId !== client.value);
+      if (!hasFinancialChanges && !hasNonFinancialChanges) {
+        Toaster.warning("Please change data to update Freight.");
+        return false;
+      }
+
+      const isEffectiveDateChanged = DayTime(this.state.effectiveDate).format('YYYY-MM-DD') !== DayTime(DataToChange.EffectiveDate).format('YYYY-MM-DD');
+
+      // Require date change only for financial changes in associated freight
+      if (hasFinancialChanges && gridTable.some(item => item.IsFreightAssociated) && !isEffectiveDateChanged) {
+        Toaster.warning("Please change the effective date.");
+        return false;
+      }
     }
     this.setState({ isVendorNameNotSelected: false })
 
     const userDetail = userDetails();
     if (isEditFlag) {
-      if (
-        DataToChange.LoadingUnloadingCharges === values.LoadingUnloadingCharges &&
-        DataToChange.PartTruckLoadRatePerCubicFeet === values.PartTruckLoadRatePerCubicFeet &&
-        DataToChange.PartTruckLoadRatePerKilogram === values.PartTruckLoadRatePerKilogram
-        &&
-        (AddUpdate && HandleChanged) &&
-        DeleteChanged
-      ) {
-
-        this.cancel('cancel')
-        return false
-      }
       this.setState({ setDisable: true })
       let requestData = {
         FreightId: FreightID,
@@ -923,12 +964,11 @@ class AddFreight extends Component {
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
         PlantId: this.state.Plant?.value,
-
         CostingTypeId: costingTypeId,
         Mode: "Road",
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        EffectiveDate: this.state.effectiveDate,
+        EffectiveDate: DayTime(this?.state?.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         FreightEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
         ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
         LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
@@ -940,7 +980,6 @@ class AddFreight extends Component {
         ExchangeRateId: isImport ? this.state.settlementExchangeRateId : this.state?.plantExchangeRateId,
         LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
       };
-
 
       this.props.updateFright(requestData, (res) => {
         this.setState({ setDisable: false })
@@ -978,6 +1017,7 @@ class AddFreight extends Component {
         ExchangeRateId: isImport ? this.state.settlementExchangeRateId : this.state?.plantExchangeRateId,
         LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
       };
+
       this.props.createFreight(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
@@ -986,7 +1026,7 @@ class AddFreight extends Component {
         }
       });
     }
-  }, 500)
+  }, 500);
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1351,7 +1391,7 @@ class AddFreight extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isViewMode || isEditMode || this.state.gridTable.length > 0}
+                                  disabled={isViewMode /* || this.state.gridTable.length > 0 */}
                                   minDate={getEffectiveDateMinDate()}
 
                                 />
@@ -1660,8 +1700,8 @@ class AddFreight extends Component {
                                         <td>{item?.RateLocalConversion ? checkForDecimalAndNull(item?.RateLocalConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                         {!this.state?.hidePlantCurrency && <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                                         <td>
-                                          <button className="Edit mr-2" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.editGridItemDetails(index)} />
-                                          <button className="Delete" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.deleteGridItem(index)} />
+                                          <button className="Edit mr-2" type={"button"} disabled={isViewMode} onClick={() => this.editGridItemDetails(index)} />
+                                          <button className="Delete" type={"button"} disabled={isViewMode} onClick={() => this.deleteGridItem(index)} />
                                         </td>
                                       </tr>
                                     );
