@@ -754,6 +754,12 @@ function AddRfq(props) {
                 selectedOption === "Bought Out Part" ? "Bought Out Part" : 'Part';
             Toaster.success(`${type} has been deleted successfully.`);
         }));
+          // Remove the deleted part from selectedparts array
+    if (rowData?.PartId) {
+        setSelectedParts(prevSelectedParts => 
+            prevSelectedParts.filter(part => part.value !== rowData.PartId)
+        );
+    }
         // For single item deletion, only remove that specific item
         // For single item deletion, only remove that specific item
         if (!isLastItem) {
@@ -1429,7 +1435,7 @@ function AddRfq(props) {
                     PlantId: getValues('plant')?.value,
                     VendorId: getValues("vendor")?.value
                 };
-                console.log("data", data);
+                
                 
                 handleSpecificPartTypeAPI(data, checkExistCosting);
                 break;
@@ -2816,14 +2822,29 @@ function AddRfq(props) {
             // setIsNFRFlow(false)
         }
     }
+    const resetDrawerData = () => {
+        if (drawerOpen) {
+          setDrawerOpen(false);
+        }
+        setResetDrawer(true);
+        setTableData([]);
+        setSpecificationList([]);
+        setChildPartFiles([]);
+        setRemark('');
+        setSopQuantityList([]);
+        setSOPDate('');
+        setStorePartsDetail([]);
+      };
     /**
         * @method handlePartChange
         * @description  USED TO HANDLE PART CHANGE
         */
     const handlePartTypeChange = (newValue) => {
         if (newValue && newValue !== '') {
+            resetDrawerData()
             setPartType(newValue)
-            setValue('PartNumber', '')
+            setValue('partNumber', '')
+            setValue('Description', '')
             setPart('')
             setPartTypeforRM(newValue.value)
             setSelectedPartType(newValue?.label)
@@ -3329,7 +3350,9 @@ function AddRfq(props) {
         setDrawerOpen(false)
     }
     const handlePartNoChange = (value) => {
-
+        if (assemblyPartNumber?.value !== value?.value) {
+            resetDrawerData(); // Reset drawer data if part number changes
+          }
         setAssemblyPartNumber(value)
         dispatch(getPartInfo(value?.value, (res) => {
             let Data = res?.data?.Data
@@ -3645,7 +3668,7 @@ function AddRfq(props) {
                                                     mandatory={true}
                                                     handleChange={handlePartTypeChange}
                                                     errors={errors.Part}
-                                                    disabled={Object.keys(prNumber).length !== 0 || isQuotationReceived() || (isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
+                                                    disabled={ (initialConfiguration?.RFQManditField?.IsShowPRNumber ? Object.keys(prNumber).length !== 0 :false) || isQuotationReceived() || (isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                                 />
                                             </Col>}
 
@@ -3844,7 +3867,7 @@ function AddRfq(props) {
                                                             mandatory={true}
                                                             handleChange={(newValue) => handleChangeUOM(newValue)}
                                                             errors={errors?.UOM}
-                                                            disabled={disableUOMFiled}
+                                                            disabled={disableUOMFiled || isManageSeparatePermissions}
                                                         //Object.keys(prNumber).length !== 0 || (isViewFlag) ? true : false || disabledPartUid
                                                         />
                                                     </Col>
@@ -4506,12 +4529,11 @@ function AddRfq(props) {
                                                     {"Save"}
                                                 </button>
                                             }
-
                                             {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
                                                 onClick={(e) => handleSubmitClick(e, true)}
 
-                                                disabled={vendorList?.length === 0 || isVendorSectionDisabled || isViewFlag || (showSendButton === PREDRAFT && disabledPartUid)}>
+                                                disabled={(!isManageSeparatePermissions && vendorList?.length === 0) ||  (isVendorSectionDisabled || isViewFlag || (showSendButton === PREDRAFT && disabledPartUid))}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
                                             </button>}
