@@ -169,22 +169,25 @@ function AddRMFinancialDetails(props) {
                 }
                 const { costingTypeId } = states;
                 if (!isViewFlag && getValues('effectiveDate') && state.currency?.label !== undefined /* && Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency") */) {
-                    if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && (!rawMaterailDetails?.Vendor && !getValues('clientName'))) {
+                    if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && (!rawMaterailDetails?.Vendor && !rawMaterailDetailsRefFinancial.current?.customer)) {
+                        console.log("11111111" ,rawMaterailDetails?.Vendor ,getValues('clientName'))
                         return false;
                     }
-                    if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && rawMaterailDetails?.Vendor?.value && states.isImport) {
+                    console.log("rawMaterailDetailsRefFinancial.current?.customer?.value",rawMaterailDetailsRefFinancial.current?.customer?.value)
+                    if ((rawMaterailDetails?.Vendor?.value || rawMaterailDetailsRefFinancial.current?.customer?.value) && states.isImport) {
+                        
                         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: state.currency?.label, toCurrency: Data?.Currency, defaultCostingTypeId: costingTypeId, vendorId: rawMaterailDetails?.Vendor?.value, clientValue: rawMaterailDetailsRefFinancial.current?.customer?.value, master: RAWMATERIAL, plantCurrency: getValues("plantCurrency") });
                         dispatch(getExchangeRateByCurrency(state.currency?.label, costingHeadTypeId, DayTime(getValues('effectiveDate')).format('YYYY-MM-DD'), vendorId, clientId, false, Data?.Currency, getValues('ExchangeSource')?.label ?? null, res => {
                             if (Object.keys(res?.data?.Data).length === 0) {
 
-                                setState(prevState => ({ ...prevState, showPlantWarning: true }));
+                                setState(prevState => ({ ...prevState, showWarning: true }));
                             } else {
-                                setState(prevState => ({ ...prevState, showPlantWarning: false }));
+                                setState(prevState => ({ ...prevState, showWarning: false }));
                             }
                             const exchangeRate = res?.data?.Data?.CurrencyExchangeRate ?? 1;
                             const Data = res?.data?.Data
 
-                            setState(prevState => ({ ...prevState, showPlantWarning: !exchangeRate }));
+                            // setState(prevState => ({ ...prevState, showWarning: !exchangeRate }));
                             setCurrencyExchangeRate(prevState => ({ ...prevState, plantCurrencyRate: exchangeRate }));
                             dispatch(setExchangeRateDetails({ ...exchangeRateDetailsRef.current, LocalCurrencyExchangeRate: checkForNull(Data?.CurrencyExchangeRate), LocalExchangeRateId: Data?.ExchangeRateId, Currency: Currency, LocalCurrencyId: CurrencyId, }, () => { }))
                         }));
@@ -303,11 +306,11 @@ function AddRMFinancialDetails(props) {
         const isBasicRateVisible = getConfigurationKey().IsBasicRateAndCostingConditionVisible &&
             Number(states.costingTypeId) === Number(ZBCTypeId);
         const netCostText = isBasicRateVisible ? `Basic Price + Condition Cost` : `Basic Rate + Other Cost`;
-        const netCostlabel = states.isImport ? `Net Cost (${getValues('plantCurrency') ?? 'Plant Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
+        const netCostlabel = states.isImport ? `Net Cost (${state?.currency?.label ?? 'Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency ? netCostText : `${netCostlabel} * Plant Currency Rate (${states.isImport ? CurrencyExchangeRate?.plantCurrencyRate : CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
-            toolTipTextNetCostBaseCurrency: `${netCostlabel} * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
+            toolTipTextNetCostBaseCurrency: `Net Cost (${getValues('plantCurrency') ?? 'Plant Currency'}) * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
         };
     };
 
@@ -619,9 +622,9 @@ function AddRMFinancialDetails(props) {
 
                     dispatch(getExchangeRateByCurrency(getValues('plantCurrency'), costingHeadTypeId, DayTime(date).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
                         if (Object.keys(res.data.Data).length === 0) {
-                            setState(prevState => ({ ...prevState, showWarning: true }));
+                            setState(prevState => ({ ...prevState, showPlantWarning: true }));
                         } else {
-                            setState(prevState => ({ ...prevState, showWarning: false }));
+                            setState(prevState => ({ ...prevState, showPlantWarning: false }));
                         }
                         let Data = res?.data?.Data
                         setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
@@ -739,9 +742,9 @@ function AddRMFinancialDetails(props) {
             if (getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency")) {
                 dispatch(getExchangeRateByCurrency(getValues('plantCurrency'), costingHeadTypeId, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
                     if (Object.keys(res.data.Data).length === 0) {
-                        setState(prevState => ({ ...prevState, showWarning: true }))
+                        setState(prevState => ({ ...prevState, showPlantWarning: true }))
                     } else {
-                        setState(prevState => ({ ...prevState, showWarning: false }))
+                        setState(prevState => ({ ...prevState, showPlantWarning: false }))
                     }
                     let Data = res?.data?.Data
                     setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
@@ -762,9 +765,9 @@ function AddRMFinancialDetails(props) {
                 dispatch(getExchangeRateByCurrency(getValues('plantCurrency'), costingHeadTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
 
                     if (Object.keys(res.data.Data).length === 0) {
-                        setState(prevState => ({ ...prevState, showWarning: true }))
+                        setState(prevState => ({ ...prevState, showPlantWarning: true }))
                     } else {
-                        setState(prevState => ({ ...prevState, showWarning: false }))
+                        setState(prevState => ({ ...prevState, showPlantWarning: false }))
                     }
                     let Data = res?.data?.Data
                     setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
@@ -781,16 +784,13 @@ function AddRMFinancialDetails(props) {
             if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && !(rawMaterailDetailsRefFinancial.current && rawMaterailDetailsRefFinancial.current?.Vendor?.length !== 0)) {
                 return;
             }
-
-
-
             if (getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency")) {
 
                 dispatch(getExchangeRateByCurrency(getValues('plantCurrency'), costingHeadTypeId, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorId, clientId, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
                     if (Object.keys(res.data.Data).length === 0) {
-                        setState(prevState => ({ ...prevState, showWarning: true }))
+                        setState(prevState => ({ ...prevState, showPlantWarning: true }))
                     } else {
-                        setState(prevState => ({ ...prevState, showWarning: false }))
+                        setState(prevState => ({ ...prevState, showPlantWarning: false }))
                     }
                     let Data = res?.data?.Data
                     setState(prevState => ({ ...prevState, currencyValue: checkForNull(Data?.CurrencyExchangeRate) }));
@@ -860,7 +860,7 @@ function AddRMFinancialDetails(props) {
         let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(state.NetCostWithoutConditionCost)  //Condition cost + Basic price
         let netConditionCost = checkForNull(sumBaseCurrency)
         let netLandedCostLocalConversion = checkForDecimalAndNull(checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate), getConfigurationKey().NoOfDecimalForPrice)
-        
+
         setValue('FinalConditionCost', checkForDecimalAndNull(netConditionCost, getConfigurationKey().NoOfDecimalForPrice))
 
         if (states.isImport) {
@@ -870,7 +870,7 @@ function AddRMFinancialDetails(props) {
             } else {
                 netLandedCostConversion = checkForDecimalAndNull(checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
             }
-            
+
             setValue('NetLandedCost', checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(netLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', netLandedCostConversion)

@@ -80,8 +80,8 @@ class AddFuel extends Component {
       showPopup: false,
       isImport: false,
       hidePlantCurrency: false,
-      settlementCurrency: null,
-      plantCurrency: null,
+      settlementCurrency: 1,
+      plantCurrency: 1,
       ExchangeSource: [],
       currency: null,
       plantExchangeRateId: '',
@@ -120,12 +120,12 @@ class AddFuel extends Component {
     const { plantCurrency, settlementCurrency, isImport } = this.state
 
     if (isImport) {
-      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
-      const rateBaseCurrency = checkForNull(rate) * checkForNull(settlementCurrency)
+      const rateBaseCurrency = checkForNull(checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice)) * checkForNull(settlementCurrency) ?? 1
       this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     } else {
-      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
       this.props.change('RateConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     }
   }
@@ -136,7 +136,7 @@ class AddFuel extends Component {
 
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
-    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    const hasCurrencyAndDate = fromCurrency && effectiveDate;
 
     if (hasCurrencyAndDate) {
       if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
@@ -168,24 +168,39 @@ class AddFuel extends Component {
 
       if (isImport) {
         // First API call
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
-        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
-          // Second API call
-          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
-          callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
-            this.setState({
-              plantCurrency: rate1,
-              settlementCurrency: rate2,
-              plantExchangeRateId: exchangeRateId1,
-              settlementExchangeRateId: exchangeRateId2,
-              showPlantWarning: showPlantWarning1,
-              showWarning: showWarning2
-
-            }, () => {
-              this.handleCalculation(fieldsObj?.Rate)
+        if (fieldsObj?.plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+          callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
+            .then(result => {
+              this.setState({
+                plantCurrency: result.rate,
+                settlementCurrency: 1,
+                plantExchangeRateId: result.exchangeRateId,
+                settlementExchangeRateId: null,
+                showPlantWarning: result.showPlantWarning,
+                showWarning: result.showWarning
+              });
             });
-          });
-        });
+        } else {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+          callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
+            .then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1 }) => {
+              const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+              callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId)
+                .then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+                  this.setState({
+                    plantCurrency: rate1,
+                    settlementCurrency: rate2,
+                    plantExchangeRateId: exchangeRateId1,
+                    settlementExchangeRateId: exchangeRateId2,
+                    showPlantWarning: showPlantWarning1,
+                    showWarning: showWarning2
+                  }, () => {
+                    this.handleCalculation(fieldsObj?.Rate)
+                  });
+                });
+            });
+        }
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
@@ -899,8 +914,10 @@ class AddFuel extends Component {
   fuelRateTitle = () => {
     const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
-      tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate1 (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency
+        ? `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {
@@ -918,7 +935,7 @@ class AddFuel extends Component {
     return <>
       {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
     </>;
   };
   /**
