@@ -136,7 +136,7 @@ function AddRMFinancialDetails(props) {
         if (!isViewFlag) {
             calculateNetCostDomestic();
         }
-    }, [values])
+    }, [values,state?.hidePlantCurrency])
     useEffect(() => {
         if (isEditFlag) {
             handleFinancialDataChange()
@@ -166,11 +166,11 @@ function AddRMFinancialDetails(props) {
                     setState(prevState => ({ ...prevState, hidePlantCurrency: false }));
                 } else {
                     setState(prevState => ({ ...prevState, hidePlantCurrency: true, showPlantWarning: false }));
+                    setCurrencyExchangeRate(prevState => ({ ...prevState, plantCurrencyRate:1,settlementCurrencyRate:1 }));
                 }
                 const { costingTypeId } = states;
                 if (!isViewFlag && getValues('effectiveDate') && state.currency?.label !== undefined /* && Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency") */) {
                     if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && (!rawMaterailDetails?.Vendor && !rawMaterailDetailsRefFinancial.current?.customer)) {
-                        console.log("11111111" ,rawMaterailDetails?.Vendor ,getValues('clientName'))
                         return false;
                     }
                     console.log("rawMaterailDetailsRefFinancial.current?.customer?.value",rawMaterailDetailsRefFinancial.current?.customer?.value)
@@ -501,6 +501,7 @@ function AddRMFinancialDetails(props) {
 
         let NetLandedCostConversion
         let NetLandedCostLocalConversion
+        console.log("CurrencyExchangeRate",CurrencyExchangeRate)
         NetLandedCostLocalConversion = checkForDecimalAndNull(NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
 
         if (states.isImport) {
@@ -819,7 +820,7 @@ function AddRMFinancialDetails(props) {
 
     const closeOtherCostToggle = (type, data, total, totalBase) => {
         if (type === 'Save') {
-            if (Number(states.costingTypeId) === Number(ZBCTypeId) && state.NetConditionCost) {
+            if (Number(states.costingTypeId) === Number(ZBCTypeId) && state.NetConditionCost && Array.isArray(state?.conditionTableData) && state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
                 Toaster.warning("Please click on refresh button to update condition cost data.")
             }
             const netCost = checkForNull(totalBase) + checkForNull(getValues('BasicRate'))
