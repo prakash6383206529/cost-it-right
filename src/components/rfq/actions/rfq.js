@@ -201,7 +201,7 @@ export function getContactPerson(vendorId, callback) {
 export function deleteQuotationPartDetail(partId, callback) {
     const quotationPartId = Number(partId)
     return (dispatch) => {
-        axios.delete(`${API.deleteQuotationPartDetail}?quotationPartId=${quotationPartId}`, config())
+        axios.delete(`${API.deleteQuotationPartDetail}?quotationPartId=${quotationPartId}&loggedInUserId=${loggedInUserId()}`, config())
             .then((response) => {
                 callback(response)
             }).catch((error) => {
