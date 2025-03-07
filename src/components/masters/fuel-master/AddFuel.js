@@ -608,7 +608,7 @@ class AddFuel extends Component {
       city: { list: cityList, labelKey: 'Text', valueKey: 'Value' },
       ClientList: { list: clientSelectList, labelKey: 'Text', valueKey: 'Value' },
       ExchangeSource: { list: exchangeRateSourceList, labelKey: 'Text', valueKey: 'Value', filter: item => item.Value !== '--Exchange Rate Source Name--' },
-      currency: { list: currencySelectList, labelKey: 'Text', valueKey: 'Value' }
+      currency: { list: currencySelectList, labelKey: 'Text', valueKey: 'Value', filter: item => item.Text !== this.props?.fieldsObj?.plantCurrency }
     };
 
     const { list, labelKey, valueKey, filter } = listingMap[label] || {};
