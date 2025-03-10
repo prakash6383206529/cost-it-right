@@ -1956,8 +1956,15 @@ const CostingSummaryTable = (props) => {
     return valueWithSign; // Return the value with sign component
   };
 
-
-
+  const overheadAndProfitTooltipText = <>
+    {viewRejectAndModelType?.isRmCutOffApplicable && <p>RM Cut Off Price {viewRejectAndModelType?.rawMaterialCostWithCutOff} is Applied</p>}
+    {viewRejectAndModelType?.isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
+    {viewRejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
+  </>
+    const iccToolTipText = <>
+    {viewRejectAndModelType?.isIncludeToolCostInCCForICC && <p>Tool Cost Included</p>}
+    {viewRejectAndModelType?.isIncludeOverheadAndProfitInICC && <p>Overhead and Profit Included</p>}
+  </>
   const highlighter = (key, columnName = '') => {
     const firstInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 1 : 0
     const secondInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 0 : 1
@@ -2977,7 +2984,9 @@ const CostingSummaryTable = (props) => {
                                       <div style={pdfHead ? { marginTop: '-4px' } : {}} className={`d-flex ${highlighter(["overheadOn", "overheadValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
-                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={"Tool Cost Included"} />}
+                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
+                                         
+                                          {console.log(viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit, "viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit")}
                                         </span>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getOverheadPercentage(data)}
@@ -2989,7 +2998,7 @@ const CostingSummaryTable = (props) => {
                                       <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : '')}
-                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="profit-toolcost-include" tooltipText={"Tool Cost Included"} />}
+                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="profit-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getProfitPercentage(data)}
@@ -3024,7 +3033,7 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           <span>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle : '')}
-                                            {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeToolCostInCCForICC) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="icc-toolcost-include" tooltipText={"Tool Cost Included"} />}
+                                            {(!pdfHead && !drawerDetailPDF && iccToolTipText) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="icc-toolcost-include" tooltipText={iccToolTipText} />}
                                           </span></span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle === 'Fixed' ? '-' : data?.iccOn.iccPercentage : '')}
