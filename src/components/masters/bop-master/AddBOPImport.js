@@ -2184,7 +2184,7 @@ class AddBOPImport extends Component {
                             (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                               <Col md="3">
                                 <Field
-                                  label={`Basic Rate/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                  label={`Basic Rate (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                   name={"BasicRate"}
                                   type="text"
                                   placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
@@ -2205,7 +2205,7 @@ class AddBOPImport extends Component {
                               <div className='d-flex align-items-center'>
                                 <div className="w-100">
                                   <Field
-                                    label={`Other Cost/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                    label={`Other Cost (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                     name={"OtherCost"}
                                     type="text"
                                     placeholder={"-"}
@@ -2238,7 +2238,7 @@ class AddBOPImport extends Component {
                               <Col md="3">
                                 <TooltipCustom id="bop-basic-currency" width="350px" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
                                 <Field
-                                  label={`Basic Price/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                  label={`Basic Price (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={"BasicPrice"}
                                   id="bop-basic-currency"
                                   type="text"
@@ -2256,7 +2256,7 @@ class AddBOPImport extends Component {
                                 <div className='d-flex align-items-center'>
                                   <div className='w-100'>
                                     <Field
-                                      label={`Condition Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                      label={`Condition Cost (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                       name={"NetConditionCost"}
                                       type="text"
                                       placeholder={"-"}
@@ -2290,7 +2290,7 @@ class AddBOPImport extends Component {
                               <Col md="3">
                                 <TooltipCustom id="bop-net-cost-currency" disabledIcon={true} width="350px" tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                  label={`Net Cost (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}
                                   type="text"
                                   id="bop-net-cost-currency"
@@ -2304,9 +2304,9 @@ class AddBOPImport extends Component {
                                 />
                               </Col>
                               {<Col md="3">
-                                <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} width="350px" tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
+                                <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} width="350px" tooltipText={`Net Cost (${fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                  label={`Net Cost (${fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={"NetLandedCostPlantCurrency"}
                                   id="bop-net-cost-plant"
                                   type="text"
@@ -2320,9 +2320,9 @@ class AddBOPImport extends Component {
                                 />
                               </Col>}
                               {!this?.state?.hidePlantCurrency && <Col md="3">
-                                <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} width="350px" tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} width="350px" tooltipText={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                   type="text"
                                   id="bop-net-cost-Conversion" s

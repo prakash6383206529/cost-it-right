@@ -1903,7 +1903,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                                 />
                               </Col>
                               {!hidePlantCurrency && <Col md="3">
-                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost (${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost(${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
                                   label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                   name={`${"NetCostBaseCurrency"}`}
