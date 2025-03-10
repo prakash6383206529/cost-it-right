@@ -1701,14 +1701,14 @@ function CostingSimulation(props) {
                                             {(showRMColumn || showBOPColumn || showOperationColumn ||
                                                 showMachineRateColumn || showExchangeRateColumn || showSurfaceTreatmentColumn)
                                                 ?
-                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                <ExcelFile filename={'Simulation'} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn mr5'} id={'other_simulation_excel_download'} ><div className="download mr-0"></div></button>}>
                                                     {renderColumn()}
                                                     {returnExcelColumnSecond()}
                                                     {returnExcelColumnImpactedMaster()}
 
                                                 </ExcelFile> :
-                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                <ExcelFile filename={'Simulation'} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn mr5'} id={'other_simulation_excel_download'} ><div className="download mr-0"></div></button>}>
                                                     {renderColumn()}
                                                     {returnExcelColumnSecond()}
@@ -1721,7 +1721,7 @@ function CostingSimulation(props) {
                                         </div>
                                     </Col >
                                 </Row >
-                                {showTooltip && (isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && isSimulationWithCosting && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
+                                {showTooltip && (isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn || isSurfaceTreatment) && isSimulationWithCosting && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
                                     {"This is the currency selected during the costing"}
                                 </Tooltip>}
                                 <Row>
@@ -1795,8 +1795,8 @@ function CostingSimulation(props) {
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>}
-                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && getConfigurationKey().IsSourceExchangeRateNameVisible && isSimulationWithCosting && <AgGridColumn width={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && isSimulationWithCosting && <AgGridColumn field={"CostingCurrency"} headerName='Costing Currency' headerComponent={'currencyHeader'} />}
+                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn || isSurfaceTreatment) && getConfigurationKey().IsSourceExchangeRateNameVisible && isSimulationWithCosting && <AgGridColumn width={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn || isSurfaceTreatment) && isSimulationWithCosting && <AgGridColumn field={"CostingCurrency"} headerName='Costing Currency' headerComponent={'currencyHeader'} />}
 
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
@@ -1929,7 +1929,7 @@ function CostingSimulation(props) {
                                         class="user-btn approval-btn mr5"
                                         onClick={() => sendForApproval()}
                                         id={'other_simulation_send_for_approval'}
-                                        disabled={((selectedRowData && selectedRowData.length === 0) || isFinalLevelApprover || disableSendForApproval) ? true : disableApproveButton ? true : false}
+                                        disabled={ false}
                                         title="Send For Approval"
                                     >
                                         <div className="send-for-approval"></div>

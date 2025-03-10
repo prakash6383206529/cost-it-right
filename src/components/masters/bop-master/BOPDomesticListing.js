@@ -124,6 +124,13 @@ const BOPDomesticListing = (props) => {
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []);
+
+  useEffect(() => {
+    if (!props.stopApiCallOnCancel) {
+      getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
+    }
+  }, [props?.isBOPAssociated]);
+
   useEffect(() => {
     if (bopDomesticList?.length > 0) {
       setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, isLoader: false, }));

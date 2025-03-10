@@ -34,7 +34,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -702,6 +702,7 @@ class AddBOPImport extends Component {
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
         if (item.Value === '0') return false;
+        if (item.Text === this.props.fieldsObj?.plantCurrency) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -1012,22 +1013,6 @@ class AddBOPImport extends Component {
     return total
   }
 
-  recalculateConditions = (basicPriceSelectedCurrency) => {
-    const { conditionTableData } = this.state;
-    let copiedConditionData = _.cloneDeep(conditionTableData) ?? []
-    let tempArr = copiedConditionData
-    copiedConditionData && copiedConditionData?.map((item, index) => {
-      if (item?.ConditionType === "Percentage") {
-        let ApplicabilityCost = this.handleApplicability(item.Applicability, basicPriceSelectedCurrency, tempArr)
-        let ConditionCost = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
-        let ConditionCostConversion = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
-        let obj = { ...item, ApplicabilityCost: ApplicabilityCost, ConditionCost: ConditionCost, ConditionCostConversion: ConditionCostConversion, ConditionCostPerQuantity: ConditionCostConversion }
-        tempArr = Object.assign([...tempArr], { [index]: obj })
-      }
-    })
-    return tempArr
-  }
-
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props;
     const { costingTypeId, totalOtherCost } = this.state;
@@ -1037,7 +1022,7 @@ class AddBOPImport extends Component {
     if (costingTypeId === ZBCTypeId) {
       this.props.change('BasicPrice', checkForDecimalAndNull(basicPrice, initialConfiguration?.NoOfDecimalForPrice));
     }
-    let conditionList = this.recalculateConditions(basicPrice)
+    let conditionList = recalculateConditions(basicPrice, this.state)
     const sumBaseCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPrice)
     let netLandedCostPlantCurrency = checkForDecimalAndNull(checkForNull(netLandedCost) * checkForNull(this.state.plantCurrencyValue), getConfigurationKey().NoOfDecimalForPrice)
@@ -1374,11 +1359,11 @@ class AddBOPImport extends Component {
       return { ...file, ContextId: BOPID }
     })
     const netCostLocalConversion = convertIntoCurrency(NetLandedCost, plantCurrencyValue)
-    
-    
+
+
     const netCostWithoutConditionCostLocalConversion = convertIntoCurrency(BasicPrice, plantCurrencyValue)
-    const netConditionCostLocalConversion=convertIntoCurrency(NetConditionCost, plantCurrencyValue)
-    const otherNetCostLocalConversion=convertIntoCurrency(totalOtherCost, plantCurrencyValue)
+    const netConditionCostLocalConversion = convertIntoCurrency(NetConditionCost, plantCurrencyValue)
+    const otherNetCostLocalConversion = convertIntoCurrency(totalOtherCost, plantCurrencyValue)
     const formData = {
       Attachements: isEditFlag ? updatedFiles : files,
       BasicRate: values?.BasicRate,
@@ -1592,7 +1577,10 @@ class AddBOPImport extends Component {
   closeOtherCostToggle = (type, data, total, totalBase) => {
     const { NetConditionCost, plantCurrencyValue, currencyValue } = this.state
     if (type === 'Save') {
-      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) && this.state.NetConditionCost) {
+      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) &&
+        this.state.NetConditionCost &&
+        Array.isArray(this.state?.conditionTableData) &&
+        this.state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
         Toaster.warning("Please click on refresh button to update condition cost data.")
       }
       const basicPrice = checkForNull(this.props.fieldsObj?.BasicRate) + checkForNull(totalBase)
@@ -1612,13 +1600,28 @@ class AddBOPImport extends Component {
     }
 
   }
+  updateTableCost = (isConditionCost = false) => {
+    const result = updateCostValue(isConditionCost, this.state, this.props.fieldsObj?.BasicRate);
+    // Update state
+    this.setState(result.updatedState);
 
-  updateConditionCostValue = () => {
-    let conditnCostTable = this.recalculateConditions(this.state.BasicPrice)
-    let sum = conditnCostTable && conditnCostTable.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    this.props.change('NetConditionCost', checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
-    this.setState({ FinalConditionCostBaseCurrency: sum, ConditionCostConversion: sum, })
-  }
+    // Update form value using this.props.change() instead of setValue()
+    this.props.change(result.formValue.field, result.formValue.value);
+
+    // Handle any additional actions based on isConditionCost
+    if (isConditionCost) {
+      // Update condition cost related data
+      this.setState({
+        ...this.state,
+        states: result.updatedState
+      });
+    } else {
+      // Update other cost details
+      this.setState({
+        otherCostTableData: result.tableData
+      });
+    }
+  };
 
   /**
   * @method render
@@ -2217,6 +2220,10 @@ class AddBOPImport extends Component {
                                     customClassName=" withBorder"
                                   />
                                 </div>
+                                <div className="d-flex align-items-center" style={{ marginTop: '-5px' }}>
+                                <button type="button" id="other-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(false)} disabled={this.props.data.isViewMode}>
+                                  <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
+                                </button>
                                 <Button
                                   id="addBOPDomestic_otherCost"
                                   onClick={this.otherCostToggle}
@@ -2231,7 +2238,8 @@ class AddBOPImport extends Component {
                                   disabled={!this.props.fieldsObj?.BasicRate}
                                 />
                               </div>
-                            </Col>)}
+                            </div>
+                          </Col>)}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                               <Col md="3">
@@ -2269,7 +2277,7 @@ class AddBOPImport extends Component {
                                     />
                                   </div>
                                   <div className="d-flex align-items-center mb-2">
-                                    <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateConditionCostValue()} disabled={this.props.data.isViewMode}>
+                                    <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(true)} disabled={this.props.data.isViewMode}>
                                       <TooltipCustom disabledIcon={true} width="350px" id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                     </button>
                                     <Button
