@@ -29,6 +29,7 @@ function AddTool(props) {
     Life: rowObjData?.Life ? rowObjData.Life : '',
     TotalToolCost: rowObjData?.TotalToolCost ? rowObjData.TotalToolCost : '',
     PartNumber: rowObjData?.PartNumber ? { label: rowObjData?.PartNumber, value: rowObjData?.PartId } : '',
+    BOMLevel: rowObjData?.BOMLevel ? { label: rowObjData?.BOMLevel, value: rowObjData?.BOMLevel } : '',
     partType: rowObjData?.PartType ? rowObjData?.PartType : '',
     partQuantity: rowObjData?.PartQuantity ? rowObjData?.PartQuantity : '',
     type: rowObjData?.ProcessOrOperationType ? rowObjData?.ProcessOrOperationType : '',
@@ -52,6 +53,10 @@ function AddTool(props) {
   const [partNumberDetail, setPartNumberDetail] = useState(isEditFlag && rowObjData?.ChildPartNumber ? { label: rowObjData?.ChildPartNumber, value: rowObjData?.PartId, childPartCostingId: rowObjData?.ChildPartCostingIdRef, partQuantity: rowObjData?.PartQuantity, partType: rowObjData?.PartType, bomLevel: rowObjData?.BOMLevel, parentPartCostingId: rowObjData?.ParentPartCostingIdRef } : [])
   const [tableData, setTableData] = useState(gridData && gridData?.length > 0 ? gridData : [])
   const { ToolCategoryList } = useSelector(state => state?.costing)
+  const [bomLevel, setBOMLevel] = useState('')
+  const [bomLevelList, setBOMLevelList] = useState([])
+  const [multipleBOMLevelCheck, setMultipleBOMLevelCheck] = useState(false)
+
 
   const fieldValues = useWatch({
     control,
@@ -137,6 +142,17 @@ function AddTool(props) {
         return temp
       }
     }
+    if (label === 'BOMLevel') {
+      if (bomLevelList && bomLevelList.length > 0) {
+
+        bomLevelList && bomLevelList.map((item) => {
+          temp.push({ label: item?.Level, value: item?.Level })
+          return null
+        })
+        return temp
+      }
+    }
+
   }
 
   /**
@@ -236,10 +252,32 @@ function AddTool(props) {
     // setValue('processOrOperationQuantity', '')
     setValue('type', '')
     setPartNumberDetail(newValue)
+    let list = []
+    partNumberArray && partNumberArray?.map(item => {
+      if (item?.PartId === newValue?.value && item?.Type === 'Assembly') {
+        list.push(item)
+      } else if (item?.PartId === newValue?.value && item?.Type === 'Component') {
+        list[0] = item
+      }
+    })
+    if (list?.length === 1) {
+      setValue("BOMLevel", { label: list[0]?.Level, value: list[0]?.Level })
+      setMultipleBOMLevelCheck(true)
+    } else {
+      setValue("BOMLevel", '')
+      setMultipleBOMLevelCheck(false)
+    }
+    setBOMLevelList(list)
+
     dispatch(getProcessAndOperationbyAsmAndChildCostingId(newValue?.asmCostingId, newValue?.childPartCostingId, res => {
       setProcessOperationArray(res?.data?.DataList)
     }))
   }
+
+  const handleBOMLevelChange = (newValue) => {
+    setBOMLevel(newValue)
+  }
+
 
   /**
   * @method cancel
@@ -255,10 +293,16 @@ function AddTool(props) {
    * @method generateRowsForPartNumber
    * @description This is for calculation of Tool cost on same part number which is present at different BOM Level
   */
-  const generateRowsForPartNumber = (partNumber, originalList) => {
+  const generateRowsForPartNumber = (partNumber, originalList, partNumberDetailTemp) => {
 
     // Filter original list for entries with the selected part number
-    const entriesForPartNumber = originalList.filter(item => item.PartNumber === partNumber);
+    let entriesForPartNumber = []
+    if (partNumberDetailTemp?.partType === 'Assembly') {
+      entriesForPartNumber = originalList.filter(item => item.PartNumber === partNumber && item.Level === partNumberDetailTemp?.bomLevel);
+    } else {
+      entriesForPartNumber = originalList.filter(item => item.PartNumber === partNumber);
+    }
+
 
     // Map these entries to generate rows with calculated TotalToolCost
     const rows = entriesForPartNumber.map(item => {
@@ -403,6 +447,24 @@ function AddTool(props) {
                       disabled={isEditFlag || CostingViewMode ? true : false}
                     />
                   </Col>
+                  <Col md="6">
+                    <SearchableSelectHookForm
+                      label={'BOM Level'}
+                      name={'BOMLevel'}
+                      placeholder={'Select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={bomLevel}
+                      options={renderListing('BOMLevel')}
+                      mandatory={true}
+                      handleChange={handleBOMLevelChange}
+                      errors={errors.BOMLevel}
+                      disabled={isEditFlag || CostingViewMode || multipleBOMLevelCheck ? true : false}
+                    />
+                  </Col>
+
                   <Col md="6">
                     <TextFieldHookForm
                       label="Part Type"

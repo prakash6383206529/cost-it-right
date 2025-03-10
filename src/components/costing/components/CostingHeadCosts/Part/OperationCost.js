@@ -27,7 +27,17 @@ import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
 let counter = 0;
 function OperationCost(props) {
   const { item, rmFinishWeight, rmGrossWeight } = props;
-  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  // const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+
+
+  let IsLocked = ''
+  if (item?.PartType === 'Sub Assembly') {
+    IsLocked = (item.IsLocked ? item.IsLocked : false)
+  }
+  else {
+    IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  }
+
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -55,7 +65,7 @@ function OperationCost(props) {
   const [tourState, setTourState] = useState({
     steps: []
   })
-  const { currencySource,exchangeRateData } = useSelector((state) => state?.costing);
+  const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
 
   useEffect(() => {
     const Params = {
@@ -71,10 +81,15 @@ function OperationCost(props) {
         // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
 
         // PROP IS USED TO SET OPERATION GRID AND TOTAL OPERATION COST IN ADDASSEMBLYOPERATION
-        props.getOperationGrid(gridData, operationCostAssemblyTechnology)
+        props.getOperationGrid(gridData, operationCostAssemblyTechnology, true)
       } else {
         if (props.IsAssemblyCalculation) {
-          props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+          // props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+          props.getOperationGrid(gridData, '', false)
+          setTimeout(() => {
+            props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+          }, 200);
+
         } else {
           props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
         }
@@ -93,7 +108,7 @@ function OperationCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
 
     setDrawerOpen(true)
   }
@@ -228,7 +243,7 @@ function OperationCost(props) {
       return accummlator + checkForNull(el.OperationCost)
     }, 0)
     if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId)) {
-      props.getOperationGrid(tempArr, totalFinishWeight)
+      props.getOperationGrid(tempArr, totalFinishWeight, true)
     }
   }
 

@@ -28,6 +28,7 @@ import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { PreviousTabData } from '../CostingHeaderTabs';
+import _ from 'lodash'
 function TabToolCost(props) {
 
   const { handleSubmit } = useForm();
@@ -51,6 +52,7 @@ function TabToolCost(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const isPartType = useContext(IsPartType);
   const [loader, setLoader] = useState(false)
+
   const previousTab = useContext(PreviousTabData) || 0;
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -86,7 +88,7 @@ function TabToolCost(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
-    if (CostingViewMode === false) {
+    if (CostingViewMode === false && ToolTabData?.length > 0) {
       let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0]?.CostingPartDetails !== undefined ? ToolTabData[0]?.CostingPartDetails : null;
       //setTimeout(() => {
 
@@ -160,7 +162,9 @@ function TabToolCost(props) {
 * @description SET TOOL COST
 */
   const setToolCost = (ToolGrid, IsChanged) => {
-    let arr = dispatchToolCost(ToolGrid, IsChanged, ToolTabData)
+    const updatedToolTabData = _.cloneDeep(ToolTabData)
+    let arr = dispatchToolCost(ToolGrid, IsChanged, updatedToolTabData)
+
     dispatch(isToolDataChange(IsChanged))
     dispatch(setToolTabData(arr, () => {
       dispatch(setComponentToolItemData(arr[0], () => { }))
@@ -172,13 +176,15 @@ function TabToolCost(props) {
   * @description SET TOOL COST
   */
   const dispatchToolCost = (ToolGrid, IsChanged, arr) => {
+    const updatedToolTabData = _.cloneDeep(arr)
     let tempArr = [];
     try {
 
-      tempArr = arr && arr.map(i => {
+      tempArr = updatedToolTabData && updatedToolTabData.map(i => {
 
         i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
         i.CostingPartDetails.TotalToolCost = getTotalCost(ToolGrid);
+        i.CostingPartDetails.IsToolCostProcessWise = IsApplicableProcessWise
         //i?.CostingPartDetails?.OverAllApplicability = {};
         i.IsChanged = IsChanged;
 
@@ -312,7 +318,7 @@ function TabToolCost(props) {
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
-    dispatch(saveDiscountOtherCostTab({ ...props.ComponentItemDiscountData, BasicRate: basicRate, CallingFrom: 5 }, (res) => {
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate, CallingFrom: 5 }, (res) => {
       if (Number(previousTab) === 6) {
         dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
       }

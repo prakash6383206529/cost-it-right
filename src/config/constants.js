@@ -618,6 +618,7 @@ export const API = {
   saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
   getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
   saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
+  getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1765,6 +1766,7 @@ export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOU
 export const SET_COSTING_MODE = 'SET_COSTING_MODE'
 export const COSTING_ACC_OPEN_CLOSE_STATUS = 'COSTING_ACC_OPEN_CLOSE_STATUS'
 export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
+export const GET_COSTING_COST_DETAILS = 'GET_COSTING_COST_DETAILS'
 
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
 export const GET_TCO_DATA = 'GET_TCO_DATA'

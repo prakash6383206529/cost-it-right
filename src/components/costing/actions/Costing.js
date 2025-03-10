@@ -75,11 +75,13 @@ import {
   SET_EXCHANGE_RATE_SOURCE,
   SET_CURRENCY_SOURCE,
   SET_EXCHANGE_RATE_DATA,
+  GET_COSTING_COST_DETAILS,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import _ from 'lodash'
 // let config() = config
 
 /**
@@ -1191,10 +1193,11 @@ export function getToolsProcessWiseDataListByCostingID(CostingId, callback) {
  * @description SET TOOL TAB DATA  
  */
 export function setToolTabData(TabData, callback) {
+  const updatedToolTabData = _.cloneDeep(TabData)
   return (dispatch) => {
     dispatch({
       type: SET_TOOL_TAB_DATA,
-      payload: TabData,
+      payload: updatedToolTabData,
     });
     callback();
   }
@@ -3134,5 +3137,30 @@ export function exchangeRateReducer(value) {
       type: SET_EXCHANGE_RATE_DATA,
       payload: value
     });
+  }
+}
+
+/**
+ * @method getCostingCostDetails
+ * @description get Costing Cost Details
+ */
+export function getCostingCostDetails(obj, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getCostingCostDetails}?costingId=${obj?.costingId}&subAsmCostingId=${obj?.subAsmCostingId}&asmCostingId=${obj?.asmCostingId}`, config())
+    request
+      .then((response) => {
+        if (response?.data?.Result) {
+          dispatch({
+            type: GET_COSTING_COST_DETAILS,
+            payload: response?.data?.Data,
+          })
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
   }
 }

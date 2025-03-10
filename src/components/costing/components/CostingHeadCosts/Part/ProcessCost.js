@@ -29,7 +29,15 @@ import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
 let counter = 0;
 function ProcessCost(props) {
   const { data, item, isAssemblyTechnology } = props
-  const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
+  // const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
+  let IsLocked = ''
+  if (item?.PartType === 'Sub Assembly') {
+    IsLocked = (item.IsLocked ? item.IsLocked : false)
+  }
+  else {
+    IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  }
+
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   // const processGroup = false
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
@@ -61,7 +69,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource,exchangeRateData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const { rmFinishWeight, rmGrossWeight } = props
   const [openMachineForm, setOpenMachineForm] = useState(false)
 
@@ -90,6 +98,16 @@ function ProcessCost(props) {
     })
     return apiArr
   }
+
+  useEffect(() => {
+    return () => {
+      processGroupGrid && processGroupGrid?.map((index, item) => {
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, 0)
+      })
+      dispatch(setProcessGroupGrid([]))
+    }
+  }, [])
+
 
   /**
    *
@@ -170,6 +188,9 @@ function ProcessCost(props) {
       if ((JSON.stringify(tabData) !== JSON.stringify(props.data)) || isProcessSequenceChanged) {
         if (isAssemblyTechnology) {
           props.getValuesOfProcess(tabData, tabData?.ProcessCostTotal)
+          props?.setAssemblyProcessCost(tabData?.CostingProcessCostResponse ? tabData?.CostingProcessCostResponse : [], Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+
+
         } else {
           props.setConversionCost(tabData, Params, item)
         }
@@ -474,7 +495,7 @@ function ProcessCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
@@ -1402,7 +1423,7 @@ function ProcessCost(props) {
   return (
     <>
       <div className="user-page p-0">
-        {!isAssemblyTechnology && <Row>
+        {!(isAssemblyTechnology || props?.IsAssemblyCalculation) && <Row>
           <Col md="12">
             <div className="left-border">{'Conversion Cost:'}</div>
           </Col>
@@ -1411,7 +1432,7 @@ function ProcessCost(props) {
           <Row className="cr-innertool-cost">
 
             <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
-            {!isAssemblyTechnology && <>
+            {!(isAssemblyTechnology || props?.IsAssemblyCalculation) && <>
               <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
               <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Other Operation Cost: ${tabData && tabData.OtherOperationCostTotal !== null ? checkForDecimalAndNull(tabData.OtherOperationCostTotal, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
               <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
@@ -1638,7 +1659,7 @@ function ProcessCost(props) {
           </Row >
 
           {
-            !isAssemblyTechnology &&
+            !(isAssemblyTechnology || props?.IsAssemblyCalculation) &&
             <>
               <OperationCost
                 data={props.data && props.data.CostingOperationCostResponse}

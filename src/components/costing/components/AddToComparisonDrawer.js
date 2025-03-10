@@ -315,118 +315,7 @@ function AddToComparisonDrawer(props) {
             })
             return arr;
           }
-          const dummyData = [
-            {
-              SubHeader: "OverHead",
-              Type: "Other",
-              ApplicabilityType: "CC",
-              ApplicabilityIdRef: 2,
-              Description: "Test 1",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: null
-            },
-            {
-              SubHeader: "OverHead",
-              Type: "Other",
-              ApplicabilityType: "CC",
-              ApplicabilityIdRef: 2,
-              Description: "Test 2",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: "-"
-            },
-            {
-              SubHeader: "OverHead",
-              Type: "Other",
-              ApplicabilityType: "CC",
-              ApplicabilityIdRef: 3,
-              Description: "Test 3",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: null
-            },
-            {
-              SubHeader: "OverHead",
-              Type: "Other",
-              ApplicabilityType: "CC",
-              ApplicabilityIdRef: 2,
-              Description: "Test 4",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: null
-            },
-            {
-              SubHeader: "OverHead",
-              Type: "Other",
-              ApplicabilityType: "CC",
-              ApplicabilityIdRef: 2,
-              Description: "Test 5",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: null
-            },
-            {
-              SubHeader: "OverHead",
-              Type: "Other",
-              ApplicabilityType: "Fixed",
-              ApplicabilityIdRef: null,
-              Description: "Test 6",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: null
-            },
-            {
-              SubHeader: "OverHead",
-              Type: "Other",
-              ApplicabilityType: "CC",
-              ApplicabilityIdRef: 2,
-              Description: "Test 7",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: "-"
-            },
-            {
-              SubHeader: "Process",
-              Type: "Other",
-              ApplicabilityType: "CC",
-              ApplicabilityIdRef: 2,
-              Description: "Test Process 1",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: "-"
-            },
-            {
-              SubHeader: "Process",
-              Type: "Other",
-              ApplicabilityType: "Fixed",
-              ApplicabilityIdRef: null,
-              Description: "Test Process 2",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: null
-            },
-            {
-              SubHeader: "OverHead",
-              Type: "Other",
-              ApplicabilityType: "CC",
-              ApplicabilityIdRef: 8,
-              Description: "Test 8",
-              Value: 2,
-              ApplicabilityCost: 2,
-              NetCost: 2,
-              CRMHead: "-"
-            }
-          ]
+
           let obj = {}
 
           obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
@@ -439,12 +328,12 @@ function AddToComparisonDrawer(props) {
           obj.rm = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].RMName : '-'
           obj.gWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetGrossWeight ? dataFromAPI?.CostingPartDetails?.NetGrossWeight : 0
           obj.fWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetFinishWeight ? dataFromAPI?.CostingPartDetails?.NetFinishWeight : 0
-          obj.netRM = dataFromAPI.NetRawMaterialsCost && dataFromAPI.NetRawMaterialsCost ? dataFromAPI.NetRawMaterialsCost : 0
+          obj.netRM = dataFromAPI?.CostingPartDetails?.NetRawMaterialsCost ? dataFromAPI?.CostingPartDetails?.NetRawMaterialsCost : 0
           obj.netBOP = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
           obj.pCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
           obj.oCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
           obj.sTreatment = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost : 0
-          obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost : 0
+          obj.nsTreamnt = dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
           obj.tCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetTransportationCost ? dataFromAPI?.CostingPartDetails?.NetTransportationCost : 0
           obj.nConvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConversionCost ? dataFromAPI?.CostingPartDetails?.NetConversionCost : 0
           obj.nTotalRMBOPCC = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
@@ -456,8 +345,8 @@ function AddToComparisonDrawer(props) {
           obj.BudgetedPrice = (dataFromAPI && dataFromAPI.BudgetedPrice) ? dataFromAPI.BudgetedPrice : 0
           obj.BudgetedPriceVariance = (dataFromAPI && dataFromAPI.BudgetedPriceVariance) ? dataFromAPI.BudgetedPriceVariance : 0
           obj.CostingPartDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails
-          obj.npvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingNpvResponse?.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0)
-          obj.conditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingConditionResponse?.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0)
+          obj.npvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingNpvResponse?.reduce((acc, obj) => Number(acc) + Number(obj?.NpvCost), 0)
+          obj.conditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingConditionResponse?.reduce((acc, obj) => Number(acc) + Number(obj?.ConditionCost), 0)
           obj.netConditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConditionCost
           obj.netNpvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost
 
@@ -531,7 +420,7 @@ function AddToComparisonDrawer(props) {
 
           obj.toolApplicability = { applicability: 'Applicability', value: 'Value', }
           obj.toolApplicabilityValue = {
-            toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType :"-",
+            toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : "-",
             toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
           }
 
@@ -540,7 +429,7 @@ function AddToComparisonDrawer(props) {
           obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
           obj.totalToolCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0
 
-          obj.totalCost = dataFromAPI?.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : 0
+          obj.totalCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.TotalCost ? dataFromAPI?.TotalCost : 0
           obj.otherDiscount = { discount: 'Discount %', value: 'Value', }
           obj.otherDiscountValue = {
             discountPercentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage : 0,
@@ -662,12 +551,15 @@ function AddToComparisonDrawer(props) {
           obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
           obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
           obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '' : obj?.currency.currencyValue : ''
+          obj.meltingLoss = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].MeltingLoss + " (" + obj?.netRMCostView[0].LossPercentage + "%)")
+          obj.castingWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].CastingWeight)
+
           obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
           obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
           obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
           obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
           obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
-          obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName}` : `${dataFromAPI.DestinationPlantName}`
+          obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? (dataFromAPI.PlantName ? `${dataFromAPI.PlantName}` : '') : (dataFromAPI.DestinationPlantName ? `${dataFromAPI.DestinationPlantName}` : '')
           obj.vendorExcel = dataFromAPI.VendorName ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : ''
           obj.castingWeightExcel = checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.CastingWeight, getConfigurationKey().NoOfDecimalForPrice)
           obj.meltingLossExcel = `${checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.MeltingLoss, getConfigurationKey().NoOfDecimalForPrice)} (${dataFromAPI?.CostingPartDetails?.LossPercentage ? dataFromAPI?.CostingPartDetails?.LossPercentage : 0}%)`
@@ -679,6 +571,7 @@ function AddToComparisonDrawer(props) {
           obj.netBoughtOutPartCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
           obj.multiTechnologyCostingDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails : ''
           obj.isRmCutOffApplicable = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable
+          obj.isRFQFinalApprovedCosting = dataFromAPI?.IsRFQFinalApprovedCosting
           obj.isIncludeToolCostWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit
           obj.isIncludeSurfaceTreatmentWithRejection = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection
           obj.isIncludeSurfaceTreatmentWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit
@@ -694,7 +587,7 @@ function AddToComparisonDrawer(props) {
           obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
           obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
           obj.IsShowCheckBoxForApproval = dataFromAPI?.IsShowCheckBoxForApproval
-          obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.IsScrapRecoveryPercentageApplied
+          obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
           obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
           obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
           obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
