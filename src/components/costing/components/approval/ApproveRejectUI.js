@@ -645,7 +645,7 @@ function ApproveRejectUI(props) {
                               onChangeStatus={handleChangeStatus}
                               PreviewComponent={Preview}
                               // onSubmit={handleImapctSubmit}
-                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx,.zip"
                               initialFiles={[]}
                               maxFiles={2}
                               maxSizeBytes={5000000}
