@@ -160,7 +160,14 @@ class AddMachineRate extends Component {
         isViewMode: true,
         isViewFlag: true,
         rowData: data?.rowData,
-        hidePlantCurrency: data?.hidePlant
+        hidePlantCurrency: data?.hidePlant,
+        settlementCurrency: data?.ExchangeRate,
+        settlementExchangeRateId: data?.ExchangeRateId,
+        isImport: data?.MachineEntryType === ENTRY_TYPE_IMPORT ? true : false,
+        currency: data?.Currency ? { label: data?.Currency, value: data?.CurrencyId } : [],
+        plantCurrency: data?.MachineEntryType === ENTRY_TYPE_IMPORT ? data?.LocalCurrencyExchangeRate : data?.ExchangeRate,
+        plantCurrencyID: data?.MachineEntryType === ENTRY_TYPE_IMPORT ? data?.LocalCurrencyId : data?.CurrencyId,
+        plantExchangeRateId: data?.MachineEntryType === ENTRY_TYPE_IMPORT ? data?.LocalExchangeRateId : data?.ExchangeRateId,
       })
       setTimeout(() => {
         this.props.change('plantCurrency', data?.MachineEntryType === ENTRY_TYPE_IMPORT ? data?.LocalCurrency : data?.Currency)
@@ -1433,7 +1440,7 @@ class AddMachineRate extends Component {
       remarks, machineType, files, processGrid, isViewFlag, costingTypeId, client, DropdownChange, effectiveDate, oldDate, isDateChange, IsFinancialDataChanged, DataToChange, isImport } = this.state;
     const userDetailsMachine = JSON.parse(localStorage.getItem('userDetail'))
 
-    if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
+    if (costingTypeId !== CBCTypeId && vendorName?.length <= 0) {
       if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
         return false

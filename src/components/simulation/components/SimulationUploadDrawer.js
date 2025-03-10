@@ -467,21 +467,109 @@ class SimulationUploadDrawer extends Component {
         }
     }
 
-    onSubmit = () => {
-        const { fileData } = this.state
-        // let data = new FormData()
-        // data.append('file', fileData)
-        if (fileData.length === 0) {
-            Toaster.warning("Please select a file to upload.")
-            return false
+    validateConsistentRates = (fileData, masterType) => {
+        const rateMap = new Map();
+        const duplicateMap = new Map();
+        let keyField, rateField;
+
+        switch (Number(masterType)) {
+            case Number(MACHINERATE):
+                keyField = row => `${row?.MachineNumber}_${row?.ProcessName}`;
+
+                rateField = 'NewMachineRate';
+                break;
+            case Number(RMDOMESTIC):
+            case Number(RMIMPORT):
+                keyField = row => `${row?.RawMaterialCode}`;
+                rateField = 'NewBasicRate';
+                break;
+            case Number(BOPDOMESTIC):
+            case Number(BOPIMPORT):
+                keyField = row => `${row?.BoughtOutPartNumber}`;
+                rateField = 'NewBasicRate';
+                break;
+            case Number(OPERATIONS):
+            case Number(SURFACETREATMENT):
+                keyField = row => `${row?.OperationCode}`;
+                rateField = 'NewRate';
+                break;
+            default:
+                return true;
         }
 
-        // this.props.bulkUploadCosting(obj, (res) => {
-        //     let Data = res.data[0]
-        //     const { files } = this.state
-        //     files.push(Data)
-        // })
-        this.cancel()
+        for (const row of fileData) {
+            const key = keyField(row);
+            const newRate = row[rateField];
+
+            // Check for duplicates
+            if (duplicateMap.has(key)) {
+                duplicateMap.set(key, duplicateMap.get(key) + 1);
+            } else {
+                duplicateMap.set(key, 1);
+            }
+
+            // Check for inconsistent rates only for MACHINERATE
+            if (Number(masterType) === Number(MACHINERATE)) {
+                if (rateMap.has(key) && rateMap.get(key) !== newRate) {
+                    Toaster.warning(`Inconsistent revised rates found for same Machine Number and Process. All revised rates should be same.`);
+                    return false;
+                }
+                rateMap.set(key, newRate);
+            }
+        }
+        const duplicates = [];
+        for (const [key, count] of duplicateMap.entries()) {
+            if (count > 1) {
+                duplicates.push(key);
+            }
+        }
+
+        // Convert to Set and back to array to ensure uniqueness
+        const uniqueDuplicates = [...new Set(duplicates)];
+
+
+        if (uniqueDuplicates.length > 0) {
+            let itemType;
+            switch (Number(masterType)) {
+                case Number(MACHINERATE):
+                    itemType = "Machine Number and Process";
+                    break;
+                case Number(RMDOMESTIC):
+                case Number(RMIMPORT):
+                    itemType = "Raw Material Code";
+                    break;
+                case Number(BOPDOMESTIC):
+                case Number(BOPIMPORT):
+                    itemType = "Bought Out Part Number";
+                    break;
+                case Number(OPERATIONS):
+                case Number(SURFACETREATMENT):
+                    itemType = "Operation Code";
+                    break;
+                default:
+                    break;
+            }
+            Toaster.warning(`Duplicate entries found for ${itemType}: ${uniqueDuplicates.join(', ')}. Please remove duplicates.`);
+            return false;
+        }
+
+
+
+        return true;
+    }
+
+    onSubmit = () => {
+        const { fileData } = this.state;
+        const { master } = this.props;
+        if (fileData.length === 0) {
+            Toaster.warning("Please select a file to upload.");
+            return false;
+        }
+        if (!this.validateConsistentRates(fileData, master.value)) {
+            return false;
+        }
+
+        this.cancel();
     }
     render() {
         const { handleSubmit } = this.props
