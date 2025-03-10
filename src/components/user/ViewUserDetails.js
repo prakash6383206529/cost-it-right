@@ -71,7 +71,7 @@ class ViewUserDetails extends Component {
     this.getUsersTechnologyLevelData(this.props.UserId)
     this.getUsersSimulationTechnologyLevelData(this.props.UserId)
     getConfigurationKey().IsMasterApprovalAppliedConfigure && this.getUsersMasterLevelData(this.props.UserId)
-    if(getConfigurationKey().IsShowOnboarding){
+    if (getConfigurationKey().IsShowOnboarding) {
       this.getOnboardingUserData(this.props.UserId)
     }
   }
@@ -108,7 +108,7 @@ class ViewUserDetails extends Component {
  * @description used to get users technology level listing
  */
   getUsersTechnologyLevelData = (UserId) => {
-    this.props.getUsersTechnologyLevelAPI(UserId, 0,null, (res) => {
+    this.props.getUsersTechnologyLevelAPI(UserId, 0, null, (res) => {
       if (res && res.data && res.data.Data) {
 
         let Data = res.data.Data;
@@ -121,7 +121,7 @@ class ViewUserDetails extends Component {
     })
   }
   getUsersSimulationTechnologyLevelData = (UserId) => {
-    this.props.getUsersSimulationTechnologyLevelAPI(UserId, 0,null, (res) => {
+    this.props.getUsersSimulationTechnologyLevelAPI(UserId, 0, null, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let simulationLevel = Data.TechnologyLevels;
@@ -132,7 +132,7 @@ class ViewUserDetails extends Component {
     })
   }
   getUsersMasterLevelData = (UserId) => {
-    this.props.getUsersMasterLevelAPI(UserId, 0, null,(res) => {
+    this.props.getUsersMasterLevelAPI(UserId, 0, null, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let masterLevel = Data.MasterLevels;
@@ -143,7 +143,7 @@ class ViewUserDetails extends Component {
     })
   }
   getOnboardingUserData = (UserId) => {
-    this.props.getUsersOnboardingLevelAPI(UserId,null, (res) => {
+    this.props.getUsersOnboardingLevelAPI(UserId, null, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let onboardingLevel = Data.OnboardingApprovalLevels;

@@ -421,10 +421,10 @@ class AddPower extends Component {
       if (isEditIndex) {
         this.setState({ ind: powerGridEditIndex })
         let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
-        powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
+        powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj?.PowerContributionPercentage);
       } else if (isEditSEBIndex) {
         let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
-        powerContributionTotal = electricBoardPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
+        powerContributionTotal = electricBoardPowerContribution + totalContributionFromGrid - checkForNull(rowObj?.PowerContributionPercentage);
       } else {
         powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid;
       }
@@ -781,11 +781,6 @@ class AddPower extends Component {
       this.setState({ UOM: newValue, }, () => {
         const { StateName, UOM, effectiveDate, client, selectedPlants, vendorName } = this.state;
 
-        if (StateName.length === 0) {
-          Toaster.warning("Please select state first.")
-          return false
-        }
-
         let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY'), fuelId: this.props.fuelId, cityId: this.props.cityId }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res?.data?.DynamicData;
@@ -961,6 +956,7 @@ class AddPower extends Component {
     }, 0)
 
     this.setState({
+      isEditFlagForStateElectricity: true,
       powerGrid: tempArray,
       netContributionValue: NetPowerCostPerUnit,
       powerGridEditIndex: '',
@@ -1331,6 +1327,7 @@ class AddPower extends Component {
     if (label === 'country') {
       countryList && countryList.map(item => {
         if (item.Value === '0') return false;
+        if (item.Text === this.props.fieldsObj?.plantCurrency) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null
       });
@@ -1392,6 +1389,7 @@ class AddPower extends Component {
     } if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
         if (item.Value === '0') return false;
+        if (item.Text === this.props.fieldsObj?.plantCurrency) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });

@@ -122,8 +122,16 @@ const BOPDomesticListing = (props) => {
 
         }
       }, 300)
+    };
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []);
+
+  useEffect(() => {
+    if (!props.stopApiCallOnCancel) {
+      getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
     }
-  }, []);
+  }, [props?.isBOPAssociated]);
 
   useEffect(() => {
     if (bopDomesticList?.length > 0) {
@@ -131,7 +139,7 @@ const BOPDomesticListing = (props) => {
     }
 
     if (props.isSimulation) {
-      props.callBackLoader(state.isLoader);
+      props.callBackLoader(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bopDomesticList]);
@@ -498,7 +506,7 @@ const BOPDomesticListing = (props) => {
 
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    
+
     let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart === null || rowData?.IsRFQBoughtOutPart === undefined ? true : rowData?.IsRFQBoughtOutPart;
 
     let isEditbale = false

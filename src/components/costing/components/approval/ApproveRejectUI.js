@@ -274,18 +274,23 @@ function ApproveRejectUI(props) {
           return false
         }
         setDisableFalseFunction()
-        if ('response' in res) {
-          status = res && res?.response?.status
-          dropzone.current.files.pop()
-        }
-        else {
-          let Data = res.data[0]
+        if (res?.status === 200) {
+          let Data = res?.data[0]
           files.push(Data)
-          setAttachmentLoader(false)
           setFiles(files)
           setTimeout(() => {
             setIsOpen(!IsOpen)
           }, 500);
+        } else {
+          setDisableFalseFunction()
+          setIsDisable(false)
+          setAttachmentLoader(false)
+          dropzone.current.files.pop() // Remove the failed file from dropzone
+          setFiles([...files]) // Trigger re-render with current files
+          // Only show toaster once for file upload failure
+          if (!files.includes(file)) {
+            Toaster.warning('File upload failed. Please try again.')
+          }
         }
       }))
     }
@@ -720,7 +725,7 @@ function ApproveRejectUI(props) {
                     id="Approval_cancel"
                     className="mr15 my-0"
                     variant={"cancel-btn"}
-                    disabled={isDisable}
+                    disabled={false}
                     onClick={toggleDrawer}
                     icon={"cancel-icon"}
                     buttonName={"Cancel"}

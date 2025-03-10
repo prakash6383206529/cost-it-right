@@ -2216,7 +2216,7 @@ const CostingSummaryTable = (props) => {
                       className={`custom-checkbox mb-0`}
                       onChange={checkboxHandler}
                     >
-                      Show Converted Currency
+                      Show Base Currency Conversion
                       <input
                         type="checkbox"
                         checked={showConvertedCurrency}
@@ -2422,7 +2422,7 @@ const CostingSummaryTable = (props) => {
                                             className={`custom-checkbox mb-0`}
                                             onChange={checkboxHandler}
                                           >
-                                            Show Converted Currency
+                                            Show Base Currency Conversion
                                             <input
                                               type="checkbox"
                                               checked={showConvertedCurrency}
@@ -2433,7 +2433,7 @@ const CostingSummaryTable = (props) => {
                                               checked={showConvertedCurrency}
                                             />
                                           </label>
-                                        </span><TooltipCustom customClass="mt-n2 ml-n3 " id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Converted Currency'."} /></> :
+                                        </span><TooltipCustom customClass="mt-n2 ml-n3 " id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Base Currency Conversion'."} /></> :
                                           <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> ({heading(data).subHeading}) </span></span><span className='sub-heading'>{data.costingHeadCheck} {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></div></span>
                                     }
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
@@ -2459,7 +2459,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">Costing Version</span>
                               <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
                               {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
-                              <span className="d-block">Currency</span>
+                              <span className="d-block">Costing Currency</span>
                               <span className="d-block">{vendorLabel} (Code)</span>
                               {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Category</span>
@@ -2598,7 +2598,7 @@ const CostingSummaryTable = (props) => {
                             {/* // NOT */}
                             <td>
                               {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
-                              <span className="d-block">Currency</span>
+                              <span className="d-block">Costing Currency</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               {/* <span className="d-block">Revision Number</span> */}
@@ -2751,7 +2751,7 @@ const CostingSummaryTable = (props) => {
                                           <span className={highlighter("scrapRate")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                           </span>
-                                          {isScrapRecoveryPercentageApplied && <span className={highlighter("scrapRate")}>
+                                          {isScrapRecoveryPercentageApplied && <span>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRecoveryPercentage, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRecoveryPercentage, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                           </span>}
                                           <span className={highlighter("", "rm-reducer")}>
@@ -3043,7 +3043,7 @@ const CostingSummaryTable = (props) => {
                                 <span className="d-block small-grey-text">
                                   Model Type For Overhead/Profit
                                 </span>
-                                <br />
+                                <span className="d-block small-grey-text"></span>
                                 <span className={highlighter(["overheadOn", "overheadValue"], "multiple-key")}>Overhead On</span>
                                 <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Profit On</span>
                                 <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Rejection Recovery</span>
@@ -3513,7 +3513,7 @@ const CostingSummaryTable = (props) => {
                             </tr>
                           }
                           {
-                            initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
+                            initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("netConditionCost", "main-row")} netPo-row`}>
                               <td>
                                 <span className={`d-block small-grey-text`}>Net Condition Cost</span>
                               </td>

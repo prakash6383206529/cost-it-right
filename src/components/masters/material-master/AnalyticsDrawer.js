@@ -42,11 +42,14 @@ function AnalyticsDrawer(props) {
     const [dateRangeArray, setDateRangeArray] = useState([])
     const [netLandedCostArray, setNetLandedCostArray] = useState([])
     const [gridApi, setGridApi] = useState(null);
+    const [currency, setCurrency] = useState("Currency")
     const [gridColumnApi, setgridColumnApi] = useState(null);
 
 
     useEffect(() => {
         setUomValue(props.rowData?.UOM ? props.rowData?.UOM : props.rowData?.UnitOfMeasurement ?? props.rowData?.UnitOfMeasurement)
+        setUomValue(props.rowData?.NetLandedCost)
+        setCurrency(props.rowData?.Currency)
         let obj = {}
         obj.ModeId = props.ModeId
         obj.MasterIdList = [{
@@ -211,8 +214,27 @@ function AnalyticsDrawer(props) {
                     color: '#000'
                 }
             },
+            datalabels: {
+                display: true,
+                color: '#000',
+                anchor: 'end',
+                align: 'top',
+                formatter: function (value) {
+                    return new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(value);
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grace: '5%'
+            }
         }
-
     }
     const renderColumn = () => {
         switch (ModeId) {
@@ -328,7 +350,7 @@ function AnalyticsDrawer(props) {
                                                             {ModeId === 1 && <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                            {<AgGridColumn field="NetLandedCost" headerName={props.import ? "Net Landed (Currency)" : "Net Landed (Total)"} cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {<AgGridColumn field="NetLandedCost" headerName={props.import ? `Net Landed (${currency})` : "Net Landed (Total)"} cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName={`Net Landed Total (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
 
@@ -390,27 +412,28 @@ function AnalyticsDrawer(props) {
                                                             }
                                                         },
                                                         datalabels: {
-                                                            display: false,  // Disable by default
-                                                            listeners: {
-                                                                enter: function (context) {  // Show on hover
-                                                                    context.hovered = true;
-                                                                    return true;
-                                                                },
-                                                                leave: function (context) {  // Hide on hover out
-                                                                    context.hovered = false;
-                                                                    return true;
-                                                                }
-                                                            },
-                                                            font: {
-                                                                size: 12,
-                                                            },
+                                                            display: true,
                                                             color: '#000',
+                                                            anchor: 'end',
                                                             align: 'top',
+                                                            offset: 5,
+                                                            formatter: function (value) {
+                                                                return new Intl.NumberFormat('en-US', {
+                                                                    style: 'currency',
+                                                                    currency: (props?.rowData?.Currency && props?.rowData?.Currency !== '-') ? props.rowData.Currency : 'INR',
+                                                                    minimumFractionDigits: 2,
+                                                                    maximumFractionDigits: 2
+                                                                }).format(value);
+                                                            }
                                                         }
                                                     },
                                                     scales: {
                                                         y: {
-                                                            min: 0
+                                                            beginAtZero: true,
+                                                            grace: '5%',
+                                                            ticks: {
+                                                                padding: 5,
+                                                            }
                                                         }
                                                     },
                                                 }}
