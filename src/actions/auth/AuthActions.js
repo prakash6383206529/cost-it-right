@@ -1912,17 +1912,15 @@ export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callba
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const receiverId = null;
+export function getUsersMasterLevelAPI(UserId, technologyId,receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${receiverId}/${loggedInUser?.loggedInUserId}`, config());
+        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${receiverId}/${loggedInUserId()}`, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 dispatch({
                     type: GET_USERS_MASTER_LEVEL_API,
-                    payload: response.data.Data.MasterLevels,
+                    payload: response?.data?.Data?.MasterLevels,
                 });
                 callback(response);
             } else {

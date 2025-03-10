@@ -713,7 +713,7 @@ function AddRMMaster(props) {
                                         disabled={isViewFlag || state.disableSendForApproval}
                                         onClick={onSubmit}
                                         icon={(showSendForApproval() || !state.disableSendForApproval) ? "send-for-approval" : "save-icon"}
-                                        buttonName={(showSendForApproval() || !state.disableSendForApproval) ? "Send For Approval" : data.isEditFlag ? "Update" : "Save1"}
+                                        buttonName={(showSendForApproval() || !state.disableSendForApproval) ? "Send For Approval" : data.isEditFlag ? "Update" : "Save"}
                                     />
                                     :
                                     <Button
