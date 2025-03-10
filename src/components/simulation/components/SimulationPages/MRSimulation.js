@@ -566,7 +566,7 @@ function MRSimulation(props) {
                                                 <AgGridColumn field="Currency" minWidth={120} headerName="Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 {(isImpactedMaster || props?.lastRevision) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
 
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Machine Rate" marryChildren={true} >
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Cost (Currency)" marryChildren={true} >
                                                     <AgGridColumn minWidth={120} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
                                                     <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
