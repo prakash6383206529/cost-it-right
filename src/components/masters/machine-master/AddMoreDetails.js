@@ -180,9 +180,10 @@ class AddMoreDetails extends Component {
       plantExchangeRateId: editDetails?.plantExchangeRateId || '',
       settlementExchangeRateId: editDetails?.settlementExchangeRateId || '',
       plantCurrencyID: editDetails?.plantCurrencyID || '',
-      hidePlantCurrency: false,
+      hidePlantCurrency: editDetails?.hidePlantCurrency ? editDetails?.hidePlantCurrency : false,
       showPlantWarning: false,
-      disableEffectiveDate: false
+      disableEffectiveDate: false,
+      isImport: editDetails?.entryType
     }
     this.dropzone = React.createRef();
   }
@@ -209,6 +210,7 @@ class AddMoreDetails extends Component {
     this.props.change('MachineNumber', editDetails?.fieldsObj?.MachineNumber ?? "")
     this.props.change('Specification', editDetails?.fieldsObj?.Specification ?? "")
     this.props.change('TonnageCapacity', editDetails?.fieldsObj?.TonnageCapacity ?? "")
+    this.setState({ hidePlantCurrency: editDetails?.hidePlantCurrency ?? false })
     //this.props.change('MachineType', editDetails?.fieldsObj?.MachineType ?? "")
     //this.props.change('currency', editDetails?.currency ?? {})
     if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
@@ -1915,8 +1917,8 @@ class AddMoreDetails extends Component {
         this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0);
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0);
         this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration?.NoOfDecimalForPrice) : '');
-        this.props.change("MachineRateLocalConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateLocalConversion : '');
-        this.props.change("MachineRateConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateConversion : '');
+        this.props.change("MachineRateLocalConversion", isProcessGroup && this.state?.processGrid?.length !== 0 ? MachineRateLocalConversion : '');
+        this.props.change("MachineRateConversion", isProcessGroup && this.state?.processGrid?.length !== 0 ? MachineRateConversion : '');
       });
       if (!getConfigurationKey().IsMachineProcessGroup) {
         this.setState({ machineRate: "" })
@@ -1935,8 +1937,8 @@ class AddMoreDetails extends Component {
   updateProcessGrid = () => {
     const { processName, UOM, processGrid, processGridEditIndex } = this.state;
     const { fieldsObj } = this.props
-    const MachineRateConversion = fieldsObj?.MachineRateConversion
-    const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion ?? fieldsObj.MachineRate
+    const MachineRateConversion = checkForNull(fieldsObj?.MachineRateConversion)
+    const MachineRateLocalConversion = checkForNull(fieldsObj?.MachineRateLocalConversion ?? checkForNull(fieldsObj.MachineRate))
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
     let skipEditedItem = processGrid.filter((el, i) => {
       if (i === processGridEditIndex) return false;
@@ -2033,8 +2035,8 @@ class AddMoreDetails extends Component {
   resetProcessGridData = () => {
     const { isProcessGroup, UOM } = this.state
     const { fieldsObj } = this.props;
-    const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion ?? fieldsObj.MachineRate
-    const MachineRateConversion = fieldsObj?.MachineRateConversion
+    const MachineRateLocalConversion = checkForNull(fieldsObj?.MachineRateLocalConversion ?? checkForNull(fieldsObj.MachineRate))
+    const MachineRateConversion = checkForNull(fieldsObj?.MachineRateConversion)
     this.setState({
       processName: [],
       UOM: isProcessGroup && this.state.processGrid.length !== 0 ? UOM : [],
@@ -2125,10 +2127,10 @@ class AddMoreDetails extends Component {
     this.props.change('NetLandedCost', NetLandedCost)
     const { plantCurrency, settlementCurrency, entryType } = this.state
     if (entryType) {
-      const MachineRateLocalConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
-      this.props.change('MachineRateLocalConversion', checkForNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice));
-      const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, settlementCurrency)
-      this.props.change('MachineRateConversion', checkForNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
+      const MachineRateLocalConversion = convertIntoCurrency(checkForNull(fieldsObj?.MachineRate), plantCurrency)
+      this.props.change('MachineRateLocalConversion', checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice));
+      const MachineRateConversion = convertIntoCurrency(checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice), settlementCurrency)
+      this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
     } else {
       const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
       this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
@@ -2312,65 +2314,188 @@ class AddMoreDetails extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
+  validateProcessGrid = (processGrid) => {
+    if (!processGrid?.length) {
+      Toaster.warning('Please add at least one process');
+      return false;
+    }
+    return true;
+  };
+
+  checkDataChanges = (currentData, previousData) => {
+    const { values, files, DataToChange, machineType } = currentData;
+
+    return {
+      filesChanged: ((files ? JSON.stringify(files) : []) !== (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])),
+      machineNameChanged: String(DataToChange.MachineName) !== String(values.MachineName),
+      specificationChanged: String(DataToChange.Specification) !== String(values.Specification),
+      descriptionChanged: String(DataToChange.Description) !== String(values.Description),
+      remarkChanged: (DataToChange.Remark ?? '') !== (values.Remark ?? ''),
+      tonnageChanged: (DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') !== (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''),
+      manufactureChanged: String(DataToChange.Manufacture) !== String(values.Manufacture),
+      machineTypeChanged: String(DataToChange.MachineType) !== String(machineType.label)
+    };
+  };
+
   onSubmit = (values) => {
+    const {
+      isEditFlag, MachineID, processGrid, IsFinancialDataChanged,
+      files, DataToChange, machineType, isDateChange, isFinalApprovar
+    } = this.state;
+    const { editDetails, isMachineAssociated } = this.props;
 
-    const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
-      IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, powerIdFromAPI, crmHeads } = this.state;
-
-    if (this.state.processGrid.length === 0) {
-
-      Toaster.warning('Please add atleast one process')
-      return false
+    // Validate process grid
+    if (!this.validateProcessGrid(processGrid)) {
+      return false;
     }
 
-    const { editDetails, fieldsObj } = this.props;
-    const { DataToChange, IsIncludeMachineRateDepreciation, entryType } = this.state
+    // Build request data with all fields
+    const requestData = this.buildRequestData(values);
+
+    // Handle edit mode
+    if (isEditFlag) {
+      const isApprovalRequired = CheckApprovalApplicableMaster(MACHINE_MASTER_ID);
+
+      // Check for data changes
+      const changes = this.checkDataChanges({ values, files, DataToChange, machineType });
+      const hasChanges = Object.values(changes).some(changed => changed);
+
+      // Validate effective date for associated machines
+      if (isMachineAssociated && !isDateChange && IsFinancialDataChanged) {
+        Toaster.warning('Please update the effective date');
+        this.setState({ setDisable: false });
+        return false;
+      }
+
+      // Prepare machine data for update
+      const machineData = {
+        ...requestData,
+        MachineId: editDetails.Id,
+        IsFinancialDataChanged: isDateChange,
+        IsForcefulUpdated: true
+      };
+
+      // Handle approval flow
+      if (isApprovalRequired && !isFinalApprovar) {
+        this.setState({
+          approveDrawer: true,
+          approvalObj: machineData,
+          formDataState: requestData
+        });
+      } else {
+        this.props.reset();
+        this.handleMachineDetailsAPI(machineData, true);
+      }
+
+    } else {
+      // Handle new submission
+      const isApprovalRequired = CheckApprovalApplicableMaster(MACHINE_MASTER_ID);
+
+      if (isApprovalRequired && !isFinalApprovar) {
+        this.setState({
+          IsSendForApproval: true,
+          approveDrawer: true,
+          approvalObj: requestData,
+          formDataState: requestData
+        });
+      } else {
+        this.setState({ IsSendForApproval: false });
+        this.props.reset();
+        this.handleMachineDetailsAPI(requestData, false);
+      }
+    }
+  };
 
 
-    const userDetail = userDetails()
+  // Helper method to build request data
+  buildRequestData = (values) => {
+    const {
+      selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
+      IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel,
+      fuelType, labourGrid, processGrid, machineFullValue, effectiveDate, powerId,
+      IsUsesSolarPower, powerIdFromAPI, crmHeads, entryType, MachineID, isEditFlag,
+      IsIncludeMachineRateDepreciation, CostingTypeId, IsPurchased, depreciationType,
+      shiftType, selectedCustomer, selectedVedor, ExchangeSource, plantCurrencyID,
+      settlementCurrency, plantCurrency, currency, settlementExchangeRateId, plantExchangeRateId,
+      FuelEntryId, isDateChange
+    } = this.state;
+    
+    
+    const { fieldsObj } = this.props;
+    const userDetail = userDetails();
 
-    let technologyArray = selectedTechnology && [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }]
+    // Prepare arrays and transformed data
+    const technologyArray = selectedTechnology && [{
+      Technology: selectedTechnology.label || selectedTechnology[0].label,
+      TechnologyId: selectedTechnology.value || selectedTechnology[0].value
+    }];
 
-    let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
-    let plantArray = Array?.isArray(selectedPlants) ? selectedPlants?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
-      selectedPlants ? [{ PlantId: selectedPlants?.value, PlantName: selectedPlants?.label, PlantCode: '' }] : [];
-    let requestData = {
-      IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
-      CostingTypeId: this.state.CostingTypeId,
+    const plantArray = Array.isArray(selectedPlants)
+      ? selectedPlants?.map(plant => ({
+        PlantId: plant?.value,
+        PlantName: plant?.label,
+        PlantCode: ''
+      }))
+      : selectedPlants
+        ? [{
+          PlantId: selectedPlants?.value,
+          PlantName: selectedPlants?.label,
+          PlantCode: ''
+        }]
+        : [];
+
+    // Return full request object with all fields
+    return {
+      // Basic machine details
       MachineId: MachineID,
+      MachineName: values.MachineName,
+      MachineNumber: values.MachineNumber,
+      MachineTypeId: machineType ? machineType?.value : '',
       Manufacture: values.Manufacture,
       YearOfManufacturing: values.YearOfManufacturing,
+      TonnageCapacity: values.TonnageCapacity,
+      Description: fieldsObj.Description,
+      Specification: fieldsObj.Specification,
+
+      // Costs and financial details
       MachineCost: values.MachineCost,
       AccessoriesCost: values.AccessoriesCost,
       InstallationCharges: values.InstallationCharges,
       TotalCost: machineFullValue.totalCost,
-      OwnershipIsPurchased: this.state.IsPurchased,
-      DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
-      DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
+
+      // Depreciation details
+      DepreciationTypeId: depreciationType?.value || '',
+      DepreciationType: depreciationType?.value || '',
       DepreciationRatePercentage: values.DepreciationRatePercentage,
       LifeOfAssetPerYear: values.LifeOfAssetPerYear,
       CostOfScrap: values.CastOfScrap,
-      DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
       DepreciationAmount: machineFullValue.depreciationAmount,
-      WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
+
+      // Working details
+      WorkingShift: shiftType?.value || '',
       WorkingHoursPerShift: values.WorkingHoursPerShift,
       NumberOfWorkingDaysPerYear: values.NumberOfWorkingDaysPerYear,
       EfficiencyPercentage: values.EfficiencyPercentage,
       NumberOfWorkingHoursPerYear: values.NumberOfWorkingHoursPerYear,
+
+      // Loan and equity details
       LoanPercentage: values.LoanPercentage,
       LoanValue: machineFullValue.LoanValue,
       EquityPercentage: values.EquityPercentage,
       EquityValue: machineFullValue.EquityValue,
       RateOfInterestPercentage: values.RateOfInterestPercentage,
       RateOfInterestValue: machineFullValue.RateOfInterestValue,
-      IsMaintanceFixed: IsAnnualMaintenanceFixed === true ? false : true,
+
+      // Maintenance and consumables
+      IsMaintanceFixed: !IsAnnualMaintenanceFixed,
       AnnualMaintancePercentage: values.AnnualMaintancePercentage,
       AnnualMaintanceAmount: IsAnnualMaintenanceFixed ? machineFullValue.MaintananceCost : values.AnnualMaintanceAmount,
-      IsConsumableFixed: IsAnnualConsumableFixed === true ? false : true,
+      IsConsumableFixed: !IsAnnualConsumableFixed,
       AnnualConsumablePercentage: values.AnnualConsumablePercentage,
       AnnualConsumableAmount: IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : values.AnnualConsumableAmount,
-      IsInsuranceFixed: IsInsuranceFixed === true ? false : true,
+
+      // Insurance and building costs
+      IsInsuranceFixed: !IsInsuranceFixed,
       AnnualInsurancePercentage: values.AnnualInsurancePercentage,
       AnnualInsuranceAmount: IsInsuranceFixed ? machineFullValue.InsuranceCost : values.AnnualInsuranceAmount,
       BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
@@ -2378,270 +2503,78 @@ class AddMoreDetails extends Component {
       AnnualAreaCost: machineFullValue.annualAreaCost,
       OtherYearlyCost: values.OtherYearlyCost,
       TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
-      IsUsesFuel: IsUsesFuel,
-      PowerId: powerId ? powerId : "",
+
+      // Power and fuel details
+      IsUsesFuel,
+      PowerId: powerId || "",
       UtilizationFactorPercentage: values.UtilizationFactorPercentage,
       PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
       PowerRatingPerKW: values.PowerRatingPerKW,
       TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
       TotalPowerCostPerHour: machineFullValue.TotalPowerCostPerHour,
-      IsUsesSolarPower: IsUsesSolarPower,
-      FuleId: fuelType ? fuelType.value : '',
+      IsUsesSolarPower,
+      FuleId: fuelType?.value || '',
       FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
-      FuelEntryId: this.state.FuelEntryId,
       ConsumptionPerYear: values.ConsumptionPerYear,
       TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear,
+
+      // Labour and process details
       MachineLabourRates: labourGrid,
-      TotalLabourCostPerYear: values.TotalLabourCostPerYear, // Need to look for this
+      TotalLabourCostPerYear: values.TotalLabourCostPerYear,
+      MachineProcessRates: processGrid,
+
+      // Vendor and customer details
       IsVendor: false,
       IsDetailedEntry: true,
-      VendorId: this.state.CostingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
-      VendorName: this.state.CostingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
-      MachineNumber: values.MachineNumber,
-      MachineName: values.MachineName,
-      MachineTypeId: machineType ? machineType.value : '',
-      TonnageCapacity: values.TonnageCapacity,
-      Description: fieldsObj.Description,
-      Specification: fieldsObj.Specification,
-      Remark: remarks,
-      LoggedInUserId: loggedInUserId(),
-      MachineProcessRates: processGrid,
-      Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-      Plant: plantArray ? plantArray : [],
-      selectedPlants: selectedPlants,
-      DestinationPlantId: '',
-      Attachements: updatedFiles,
-      VendorPlant: [],
-      IsForcefulUpdated: true,
+      VendorId: CostingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : selectedVedor?.value,
+      VendorName: CostingTypeId !== VBCTypeId ? '' : selectedVedor?.label,
+      CustomerId: CostingTypeId === CBCTypeId ? selectedCustomer?.value : null,
+      CustomerName: CostingTypeId === CBCTypeId ? selectedCustomer?.label : "",
+
+      // Technology and plant details
+      Technology: technologyArray,
+      Plant: plantArray,
+      selectedPlants,
+
+      // Dates and metadata
+      DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      LoggedInUserId: loggedInUserId(),
+
+      // Additional data
+      Attachements: files,
+      Remark: remarks,
       MachineProcessGroup: this.props?.processGroupApiData,
-      IsFinancialDataChanged: this.state.isDateChange ? true : false,
+      rowData: this.state.rowData,
+      VendorPlant: [],
+      DestinationPlantId: '',
+
+      // Status flags
+      IsFinancialDataChanged: isDateChange,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
-      PowerEntryId: powerIdFromAPI,
-      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
-      CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
-      selectedCustomer: this.state.selectedCustomer,
-      selectedVedor: this.state.selectedVedor,
-      LoanCRMHead: crmHeads.LoanCRMHead ? crmHeads.LoanCRMHead : '',
-      InterestCRMHead: crmHeads.InterestCRMHead ? crmHeads.InterestCRMHead : '',
-      WorkingShiftCRMHead: crmHeads.WorkingShiftCRMHead ? crmHeads.WorkingShiftCRMHead : '',
-      DepreciationCRMHead: crmHeads.DepreciationCRMHead ? crmHeads.DepreciationCRMHead : '',
-      AnnualMaintanceCRMHead: crmHeads.AnnualMaintanceCRMHead ? crmHeads.AnnualMaintanceCRMHead : '',
-      AnnualConsumableCRMHead: crmHeads.AnnualConsumableCRMHead ? crmHeads.AnnualConsumableCRMHead : '',
-      AnnualInsuranceCRMHead: crmHeads.AnnualInsuranceCRMHead ? crmHeads.AnnualInsuranceCRMHead : '',
-      BuildingCRMHead: crmHeads.BuildingCRMHead ? crmHeads.BuildingCRMHead : '',
-      MachineFloorCRMHead: crmHeads.MachineFloorCRMHead ? crmHeads.MachineFloorCRMHead : '',
-      OtherYearlyCRMHead: crmHeads.OtherYearlyCRMHead ? crmHeads.OtherYearlyCRMHead : '',
-      PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
-      FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : '',
-      // LabourDetailId: labourType.value,
+      IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
+
+      // Entry type and currency details
       MachineEntryType: entryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-      ExchangeSource: this.state.ExchangeSource || null,
-      LocalCurrencyId: entryType ? this.state?.plantCurrencyID : null,
-      LocalCurrency: entryType ? this.props?.fieldsObj?.plantCurrency : null,
-      ExchangeRate: entryType ? this.state?.settlementCurrency : this.state?.plantCurrency,
-      LocalCurrencyExchangeRate: entryType ? this.state?.plantCurrency : null,
-      CurrencyId: entryType ? this.state.currency?.value : this.state?.plantCurrencyID,
-      Currency: entryType ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
-      ExchangeRateId: entryType ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
-      LocalExchangeRateId: entryType ? this.state?.plantExchangeRateId : null
-    }
+      ExchangeSource: ExchangeSource || null,
+      LocalCurrencyId: entryType ? plantCurrencyID : null,
+      LocalCurrency: entryType ? fieldsObj?.plantCurrency : null,
+      ExchangeRate: entryType ? settlementCurrency : plantCurrency,
+      LocalCurrencyExchangeRate: entryType ? plantCurrency : null,
+      CurrencyId: entryType ? currency?.value : plantCurrencyID,
+      Currency: entryType ? currency?.label : fieldsObj?.plantCurrency,
+      ExchangeRateId: entryType ? settlementExchangeRateId : plantExchangeRateId,
+      LocalExchangeRateId: entryType ? plantExchangeRateId : null,
 
-    if (isEditFlag && (this.state.isFinalApprovar || CheckApprovalApplicableMaster(MACHINE_MASTER_ID) !== true)) {               //editDetails.isIncompleteMachine &&
+      // IDs and references
+      CostingTypeId,
+      FuelEntryId,
+      PowerEntryId: powerIdFromAPI,
 
-      // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-      
-      if (IsFinancialDataChanged && isEditFlag) {
-
-        if (this.state.isDateChange) {
-          let MachineData = { ...requestData, MachineId: editDetails.Id }
-          this.props.reset()
-          this.handleMachineDetailsAPI(MachineData, true)
-          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
-        }
-        else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
-        }
-      } else if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
-        && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
-        && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
-        && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
-      ) {
-        this.cancel()
-        return false
-
-      } else {
-        let MachineData = { ...requestData, MachineId: editDetails.Id }
-        this.props.reset()
-        this.handleMachineDetailsAPI(MachineData, true)
-      }
-
-    }
-    //     else if (isEditFlag) {
-
-    //       // EXECUTED WHEN:- ADD MACHINE DONE AND EDIT MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-    //       if (isEditFlag) {
-
-    //       }
-    // } 
-
-    else {
-      // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ IsSendForApproval: true })
-      } else {
-        this.setState({ IsSendForApproval: false })
-      }
-      const formData = {
-        IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
-        CostingTypeId: this.state.CostingTypeId,
-        MachineId: MachineID,
-        Manufacture: values.Manufacture,
-        YearOfManufacturing: values.YearOfManufacturing,
-        MachineCost: values.MachineCost,
-        AccessoriesCost: values.AccessoriesCost,
-        InstallationCharges: values.InstallationCharges,
-        TotalCost: machineFullValue.totalCost,
-        OwnershipIsPurchased: this.state.IsPurchased,
-        DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
-        DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
-        DepreciationRatePercentage: values.DepreciationRatePercentage,
-        LifeOfAssetPerYear: values.LifeOfAssetPerYear,
-        CostOfScrap: values.CastOfScrap,
-        DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
-        DepreciationAmount: machineFullValue.depreciationAmount,
-        WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
-        WorkingHoursPerShift: values.WorkingHoursPerShift,
-        NumberOfWorkingDaysPerYear: values.NumberOfWorkingDaysPerYear,
-        EfficiencyPercentage: values.EfficiencyPercentage,
-        NumberOfWorkingHoursPerYear: values.NumberOfWorkingHoursPerYear, // Round off for number
-        LoanPercentage: values.LoanPercentage,
-        LoanValue: machineFullValue.LoanValue,
-        EquityPercentage: values.EquityPercentage,
-        EquityValue: machineFullValue.EquityValue,
-        RateOfInterestPercentage: values.RateOfInterestPercentage,
-        RateOfInterestValue: machineFullValue.RateOfInterestValue,
-        IsMaintanceFixed: IsAnnualMaintenanceFixed === true ? false : true,
-        AnnualMaintancePercentage: values.AnnualMaintancePercentage,
-        AnnualMaintanceAmount: IsAnnualMaintenanceFixed ? machineFullValue.MaintananceCost : values.AnnualMaintanceAmount,
-        IsConsumableFixed: IsAnnualConsumableFixed === true ? false : true,
-        AnnualConsumablePercentage: values.AnnualConsumablePercentage,
-        AnnualConsumableAmount: IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : values.AnnualConsumableAmount,
-        IsInsuranceFixed: IsInsuranceFixed === true ? false : true,
-        AnnualInsurancePercentage: values.AnnualInsurancePercentage,
-        AnnualInsuranceAmount: IsInsuranceFixed ? machineFullValue.InsuranceCost : values.AnnualInsuranceAmount,
-        BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
-        MachineFloorAreaPerSquareFeet: values.MachineFloorAreaPerSquareFeet,
-        AnnualAreaCost: machineFullValue.annualAreaCost,
-        OtherYearlyCost: values.OtherYearlyCost,
-        TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
-        IsUsesFuel: IsUsesFuel,
-        PowerId: powerId ? powerId : "",
-        UtilizationFactorPercentage: values.UtilizationFactorPercentage,
-        PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
-        PowerRatingPerKW: values.PowerRatingPerKW,
-        TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
-        TotalPowerCostPerHour: machineFullValue.TotalPowerCostPerHour,
-        IsUsesSolarPower: IsUsesSolarPower,
-        FuleId: fuelType ? fuelType.value : '',
-        FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
-        ConsumptionPerYear: values.ConsumptionPerYear,
-        TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear,
-        MachineLabourRates: labourGrid,
-        TotalLabourCostPerYear: values.TotalLabourCostPerYear, //need to ask from where it come
-        IsVendor: false,
-        IsDetailedEntry: true,
-        VendorId: this.state.CostingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
-        VendorName: this.state.CostingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
-        MachineNumber: values.MachineNumber,
-        MachineName: values.MachineName,
-        MachineTypeId: machineType ? machineType.value : '',
-        TonnageCapacity: values.TonnageCapacity,
-        Description: fieldsObj.Description,
-        Specification: fieldsObj.Specification,
-        Remark: remarks,
-        LoggedInUserId: loggedInUserId(),
-        MachineProcessRates: processGrid,
-        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: plantArray ?? [],
-        selectedPlants: selectedPlants,
-        DestinationPlantId: '',
-        Attachements: files,
-        VendorPlant: [],
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        MachineProcessGroup: this.props?.processGroupApiData,
-        rowData: this.state.rowData,
-        IsFinancialDataChanged: this.state.isDateChange ? true : false,
-        FuelEntryId: this.state.FuelEntryId,
-        IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
-        PowerEntryId: powerIdFromAPI,
-        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
-        CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
-        selectedCustomer: this.state.selectedCustomer ? this.state.selectedCustomer : '',
-        selectedVedor: this.state.selectedVedor,
-        LoanCRMHead: crmHeads.LoanCRMHead ? crmHeads.LoanCRMHead : '',
-        InterestCRMHead: crmHeads.InterestCRMHead ? crmHeads.InterestCRMHead : '',
-        WorkingShiftCRMHead: crmHeads.WorkingShiftCRMHead ? crmHeads.WorkingShiftCRMHead : '',
-        DepreciationCRMHead: crmHeads.DepreciationCRMHead ? crmHeads.DepreciationCRMHead : '',
-        AnnualMaintanceCRMHead: crmHeads.AnnualMaintanceCRMHead ? crmHeads.AnnualMaintanceCRMHead : '',
-        AnnualConsumableCRMHead: crmHeads.AnnualConsumableCRMHead ? crmHeads.AnnualConsumableCRMHead : '',
-        AnnualInsuranceCRMHead: crmHeads.AnnualInsuranceCRMHead ? crmHeads.AnnualInsuranceCRMHead : '',
-        BuildingCRMHead: crmHeads.BuildingCRMHead ? crmHeads.BuildingCRMHead : '',
-        MachineFloorCRMHead: crmHeads.MachineFloorCRMHead ? crmHeads.MachineFloorCRMHead : '',
-        OtherYearlyCRMHead: crmHeads.OtherYearlyCRMHead ? crmHeads.OtherYearlyCRMHead : '',
-        PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
-        FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : '',
-        MachineEntryType: entryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-        ExchangeSource: this.state.ExchangeSource || null,
-        LocalCurrencyId: entryType ? this.state?.plantCurrencyID : null,
-        LocalCurrency: entryType ? this.props?.fieldsObj?.plantCurrency : null,
-        ExchangeRate: entryType ? this.state?.settlementCurrency : this.state?.plantCurrency,
-        LocalCurrencyExchangeRate: entryType ? this.state?.plantCurrency : null,
-        CurrencyId: entryType ? this.state.currency?.value : this.state?.plantCurrencyID,
-        Currency: entryType ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
-        ExchangeRateId: entryType ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
-        LocalExchangeRateId: entryType ? this.state?.plantExchangeRateId : null
-      }
-
-      let finalObj = {
-        ...formData,
-        MachineProcessRates: processGrid,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        MachineId: MachineID,
-        IsVendor: false,
-      }
-      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && (!this.state.isFinalApprovar || !userDetails().Role === 'SuperAdmin')) {
-        if (IsFinancialDataChanged) {
-
-          if (this.state.isDateChange) {
-            this.setState({ approveDrawer: true, approvalObj: finalObj, formDataState: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
-          }
-          else {
-            this.setState({ setDisable: false })
-            Toaster.warning('Please update the effective date')
-          }
-        }
-        if (isEditFlag) {
-          if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
-            && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
-            && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
-            && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
-          ) {
-            Toaster.warning('Please change data to send Machine for approval')
-            return false
-          }
-        } else {
-          this.setState({ approveDrawer: true, approvalObj: finalObj, formDataState: formData })
-        }
-
-      } else {
-        this.props.reset()
-        this.handleMachineDetailsAPI(formData, false)
-      }
-
-    }
-  }
+      // CRM heads
+      ...crmHeads
+    };
+  };
 
   handleYearChange = (year) => {
     this.setState({
@@ -2877,7 +2810,7 @@ class AddMoreDetails extends Component {
     } else {
       currencyLabel = 'Currency';
     }
-    
+
     return <>Machine Rate/{(UOM && UOM.length !== 0) ? displayUOM(UOM?.label) : "UOM"} ({currencyLabel})</>
   }
   DisplayMachineRatePlantCurrencyLabel = () => {
@@ -3001,8 +2934,10 @@ class AddMoreDetails extends Component {
   }
   machineRateTitle = () => {
     return {
-      tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate1 (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency
+        ? `Machine Rate * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {
@@ -3019,8 +2954,8 @@ class AddMoreDetails extends Component {
     // Generate tooltip text based on the condition
     return <>
       {!this.state?.hidePlantCurrency
-        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
-        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+        : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
     </>;
   };
 
@@ -3030,6 +2965,12 @@ class AddMoreDetails extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated, t, data } = this.props;
+
+
+
+
+
+
 
 
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
@@ -4931,7 +4872,7 @@ class AddMoreDetails extends Component {
 
                                   </div>
                                 </Col>
-                                {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <Col md="4" className='UOM-label-container p-relative'>
+                                {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <Col md="4" className='UOM-label-container p-relative'>
                                   <TooltipCustom disabledIcon={true} width="350px" id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
                                   <Field
                                     label={this.DisplayMachineRatePlantCurrencyLabel()}
@@ -4949,7 +4890,7 @@ class AddMoreDetails extends Component {
                                   />
                                   {this.state.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </Col>}
-                                {(!(!this?.state?.entryType && this?.state?.hidePlantCurrency)) && <Col md="4" className='UOM-label-container p-relative'>
+                                {(!(!this?.state?.isImport && this?.state?.hidePlantCurrency)) && <Col md="4" className='UOM-label-container p-relative'>
                                   <TooltipCustom disabledIcon={true} width="350px" id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
                                   <Field
                                     label={this.DisplayMachineRateBaseCurrencyLabel()}
