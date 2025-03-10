@@ -796,7 +796,7 @@ function UserRegistration(props) {
           getUsersTechnologyLevelData(data.UserId)
           getUsersSimulationTechnologyLevelData(data.UserId)
           getUsersMasterLevelData(data.UserId)
-          if(getConfigurationKey().IsShowOnboarding){
+          if (getConfigurationKey().IsShowOnboarding) {
             getOnboardingUserData(data.UserId)
           }
           if (data.passwordFlag) {
@@ -831,7 +831,7 @@ function UserRegistration(props) {
   * @description used to get users technology level listing
   */
   const getUsersTechnologyLevelData = (UserId) => {
-    dispatch(getUsersTechnologyLevelAPI(UserId, 0, null,(res) => {
+    dispatch(getUsersTechnologyLevelAPI(UserId, 0, null, (res) => {
       if (res && res.data && res.data.Data) {
 
         let Data = res.data.Data;
@@ -846,7 +846,7 @@ function UserRegistration(props) {
   * @description used to get users technology level listing
   */
   const getUsersSimulationTechnologyLevelData = (UserId) => {
-    dispatch(getUsersSimulationTechnologyLevelAPI(UserId, 0,null, (res) => {
+    dispatch(getUsersSimulationTechnologyLevelAPI(UserId, 0, null, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let TechnologySimulationLevels = Data.TechnologyLevels;
@@ -862,7 +862,7 @@ function UserRegistration(props) {
   * @description used to get users MASTER level listing
   */
   const getUsersMasterLevelData = (UserId) => {
-    dispatch(getUsersMasterLevelAPI(UserId, 0,null, (res) => {
+    dispatch(getUsersMasterLevelAPI(UserId, 0, null, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let masterSimulationLevel = Data.MasterLevels;
@@ -876,7 +876,7 @@ function UserRegistration(props) {
   * @description used to get users Onboarding level listing
   */
   const getOnboardingUserData = (UserId) => {
-    dispatch(getUsersOnboardingLevelAPI(UserId, null,(res) => {
+    dispatch(getUsersOnboardingLevelAPI(UserId, null, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let onboardingLevel = Data.OnboardingApprovalLevels;

@@ -318,7 +318,10 @@ function MRSimulation(props) {
         setIsEffectiveDateSelected(true)
         setIsWarningMessageShow(false)
     }
-
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
@@ -334,6 +337,7 @@ function MRSimulation(props) {
         customerFormatter: customerFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
         localConversionFormatter: localConversionFormatter,
+        hyphenFormatter: hyphenFormatter,
         nullHandler: props.nullHandler && props.nullHandler
     };
     const verifySimulation = debounce(() => {
@@ -565,12 +569,13 @@ function MRSimulation(props) {
 
                                                     </>
                                                 }
-                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
-                                                {(isImpactedMaster || props?.lastRevision) && <AgGridColumn field="LocalCurrency" width={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>}
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={EditableCallbackForNewBasicRate} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                <AgGridColumn field="Currency" minWidth={120} headerName="Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                {(isImpactedMaster || props?.lastRevision) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Machine Rate" marryChildren={true} >
+                                                    <AgGridColumn minWidth={120} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {(isImpactedMaster || props?.lastRevision || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
                                                     "Net Machine Rate (Plant Currency)"}>

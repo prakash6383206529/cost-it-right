@@ -15,6 +15,7 @@ import { VBC, VBCTypeId, CBCTypeId, ZBCTypeId } from '../../../config/constants'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 import { simulationContext } from '.';
 import { useLabels } from '../../../helper/core';
+import LoaderCustom from '../../common/LoaderCustom';
 
 
 function VerifyImpactDrawer(props) {
@@ -34,6 +35,9 @@ function VerifyImpactDrawer(props) {
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
   const [accDisable, setAccDisable] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingLastSimulationData, setIsLoadingLastSimulationData] = useState(false)
+
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
   const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
@@ -84,14 +88,18 @@ function VerifyImpactDrawer(props) {
 
   useEffect(() => {
     if (vendorIdState && EffectiveDate && (CostingTypeId === VBCTypeId)) {
+      setIsLoadingLastSimulationData(true)
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
+        setIsLoadingLastSimulationData(false)
       }))
       if (simulationId !== undefined) {
-        dispatch(getImpactedMasterData(simulationId, () => { }))
+        setIsLoading(true)
+        dispatch(getImpactedMasterData(simulationId, () => { 
+          setIsLoading(false)
+        }))
       }
     }
-
   }, [EffectiveDate, vendorIdState, simulationId])
 
   // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
@@ -165,6 +173,7 @@ function VerifyImpactDrawer(props) {
                     </div>
                   </Col>
                   {shown && <div className="accordian-content w-100 px-3 impacted-min-height">
+                    {isLoading && <LoaderCustom customClass="loader-center" />}
                     <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} lastRevision={false} />
                   </div>
                   }
@@ -251,6 +260,7 @@ function VerifyImpactDrawer(props) {
                       </div>
                     </Col>
                     <div className="accordian-content w-100 px-3 impacted-min-height">
+                      {isLoadingLastSimulationData && <LoaderCustom customClass="loader-center" />}
                       {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
                       <div align="center">
                         {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}

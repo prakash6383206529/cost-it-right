@@ -121,12 +121,12 @@ class AddFuel extends Component {
     const { plantCurrency, settlementCurrency, isImport } = this.state
 
     if (isImport) {
-      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)??1
+      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
-      const rateBaseCurrency = checkForNull(checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice)) * checkForNull(settlementCurrency)??1
+      const rateBaseCurrency = checkForNull(checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice)) * checkForNull(settlementCurrency) ?? 1
       this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     } else {
-      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)??1
+      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
       this.props.change('RateConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     }
   }
@@ -386,7 +386,7 @@ class AddFuel extends Component {
       }
 
 
-      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      if (fieldsObj?.RateLocalConversion === undefined || Number(fieldsObj?.RateLocalConversion) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
         count++
       }
@@ -470,7 +470,6 @@ class AddFuel extends Component {
       return false;
     }
     let tempArray = [];
-
     if (fieldsObj === undefined || Number(fieldsObj) === 0) {
       this.setState({ errorObj: { rate: true } })
       return false;
@@ -633,7 +632,7 @@ class AddFuel extends Component {
       city: { list: cityList, labelKey: 'Text', valueKey: 'Value' },
       ClientList: { list: clientSelectList, labelKey: 'Text', valueKey: 'Value' },
       ExchangeSource: { list: exchangeRateSourceList, labelKey: 'Text', valueKey: 'Value', filter: item => item.Value !== '--Exchange Rate Source Name--' },
-      currency: { list: currencySelectList, labelKey: 'Text', valueKey: 'Value' }
+      currency: { list: currencySelectList, labelKey: 'Text', valueKey: 'Value', filter: item => item.Text !== this.props?.fieldsObj?.plantCurrency }
     };
 
     const { list, labelKey, valueKey, filter } = listingMap[label] || {};
@@ -1405,7 +1404,7 @@ class AddFuel extends Component {
                                 customClassName="mb-0 withBorder"
                                 disabled={isViewMode}
                               />
-                              {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                              {this.state.errorObj.rate && (this.props.fieldsObj.Rate === undefined || Number(this.props.fieldsObj.Rate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>}
                           <Col md="3">
@@ -1425,7 +1424,7 @@ class AddFuel extends Component {
                                 customClassName="mb-0 withBorder"
                                 disabled={isViewMode || this.state.isImport}
                               />
-                              {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                              {this.state.errorObj.rate && (this.props.fieldsObj.RateLocalConversion === undefined || Number(this.props.fieldsObj.RateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
                           {!this.state?.hidePlantCurrency &&

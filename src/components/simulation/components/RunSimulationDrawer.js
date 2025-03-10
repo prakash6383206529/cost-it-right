@@ -147,19 +147,11 @@ function RunSimulationDrawer(props) {
     useEffect(() => {
         if (applicabilityHeadListSimulation && applicabilityHeadListSimulation.length > 0) {
             // Filter out items that are Selected:true from the API response
-                const selectedItems = applicabilityHeadListSimulation
+            const selectedItems = applicabilityHeadListSimulation
                 .filter(item => item.Selected === true)
                 .map(item => item.Text);
-
             setSelectedData(selectedItems);
-            
-            // const result = applicabilityHeadListSimulation.slice(1, 11).map(item => item.Text);
-            // setSelectedData(result);
-            // setDisableAdditionalDiscount(false);
-            // setDisableAdditionalOtherCost(false);
-            // setDisableAdditionalPackaging(false);
-            // setDisableAdditionalFreight(false);
-            // setDisableAdditionalTool(false)
+
         }
     }, [applicabilityHeadListSimulation]);
     // const costingHead = useSelector(state => state.comman.costingHead)
@@ -179,15 +171,15 @@ function RunSimulationDrawer(props) {
     }
 
     const handleApplicabilityChange = (elementObj) => {
-        
+
         let tempData = [];
+
 
         if (selectedData.includes(elementObj.Text)) {
             tempData = selectedData.filter((el) => el !== elementObj.Text);
         } else {
             tempData = [...selectedData, elementObj.Text];
         }
-        
         setSelectedData(tempData);
         setIsOpposite(!opposite);
         if (elementObj.Text === "Discount And Other Cost") {
@@ -385,7 +377,7 @@ function RunSimulationDrawer(props) {
             let masterTemp = selectedMasterForSimulation.value
             if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
                 masterTemp = RMIMPORT
-            } else if ((selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION)||(selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)) {
+            } else if ((selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) || (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)) {
                 masterTemp = BOPIMPORT
             }
             switch (Number(masterTemp)) {
@@ -403,7 +395,7 @@ function RunSimulationDrawer(props) {
 
                             break;
                         case APPLICABILITY_OPERATIONS_SIMULATION:
-                            case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
+                        case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
 
                             dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                                 checkForResponse(res)
@@ -567,7 +559,7 @@ function RunSimulationDrawer(props) {
             let resOfCostingHead = type === 'Additional Other Cost' ? otherCostApplicabilityListing : remainingApplicabilityListing
 
             resOfCostingHead && resOfCostingHead.map(item => {
-                if(item?.Text === "Crate/Trolley")return false
+                if (item?.Text === "Crate/Trolley") return false
                 if (item.Value === '0' || item.Value === '8') return false;
                 if (Number(simulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) {
                     if (!item.Text.includes('RM')) {
@@ -611,18 +603,6 @@ function RunSimulationDrawer(props) {
     const closePopUp = () => {
         setShowPopup(false)
     }
-    // Add this console log to monitor state changes
-// useEffect(() => {
-//         applicabilityHeadListSimulation
-//             .filter(item => item.Selected)
-//             .map(item => item.Text)
-//     );
-// }, [selectedData, applicabilityHeadListSimulation]);
-//     // Add a helper function to determine if an item is backend-selected
-// const isBackendSelected = (text) => {
-//     const item = applicabilityHeadListSimulation.find(head => head.Text === text);
-//     return item?.Selected || false;
-// }
     const disabledFields = (el) => (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Additional Packaging" && disableAdditionalPackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) ? true : false
     return (
         <>
