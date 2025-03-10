@@ -795,7 +795,9 @@ function UserRegistration(props) {
           getUsersTechnologyLevelData(data.UserId)
           getUsersSimulationTechnologyLevelData(data.UserId)
           getUsersMasterLevelData(data.UserId)
-          getOnboardingUserData(data.UserId)
+          if(getConfigurationKey().IsShowOnboarding ){
+            getOnboardingUserData(data.UserId)
+          }
           if (data.passwordFlag) {
           }
         }

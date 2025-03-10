@@ -1929,7 +1929,7 @@ function CostingSimulation(props) {
                                         class="user-btn approval-btn mr5"
                                         onClick={() => sendForApproval()}
                                         id={'other_simulation_send_for_approval'}
-                                        disabled={((selectedRowData && selectedRowData.length === 0) || isFinalLevelApprover || disableSendForApproval) ? true : disableApproveButton ? true : false}
+                                        disabled={ false}
                                         title="Send For Approval"
                                     >
                                         <div className="send-for-approval"></div>
