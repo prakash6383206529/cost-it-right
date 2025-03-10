@@ -8,6 +8,7 @@ import DayTime from "../common/DayTimeWrapper";
 import _ from "lodash";
 import { useDispatch, useSelector } from 'react-redux';
 import { getConfigurationKey } from "../../helper";
+import { CBCTypeId } from "../../config/constants";
 export const SimulationUtils = (TempData) => {
 
     TempData && TempData.map(item => {
@@ -487,4 +488,33 @@ export const findApplicabilityMasterId = (masterList = [], value) => {
             break;
     }
     return applicabilityMasterId;
+}
+
+
+/**
+ * Returns CSS class name for variance color based on value comparison
+ * @param {Object} rowData - Row data containing CostingHeadId
+ * @param {number} value1 - First value to compare (usually new value)
+ * @param {number} value2 - Second value to compare (usually old value)
+ * @returns {string} CSS class name for styling variance color
+ * 
+ * For CBC type costing:
+ * - Returns red if new value < old value
+ * - Returns green if new value > old value
+ * 
+ * For non-CBC type costing:
+ * - Returns red if new value > old value  
+ * - Returns green if new value < old value
+ * 
+ * Returns default class if values are equal
+ */
+export const returnVarianceClass = (rowData, value1, value2) => {
+
+    if (rowData?.CostingHeadId === CBCTypeId ? value1 < value2 : value1 > value2) {
+        return 'red-value form-control'
+    } else if (rowData?.CostingHeadId === CBCTypeId ? value1 > value2 : value1 < value2) {
+        return 'green-value form-control'
+    } else {
+        return 'form-class'
+    }
 }
