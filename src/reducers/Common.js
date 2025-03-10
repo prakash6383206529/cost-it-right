@@ -69,7 +69,8 @@ import {
   GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING,
   GET_RM_EXCHANGE_RATE_SOURCE,
   GET_COST_FREQUENCY_SETTLEMENT,
-  GET_TAX_CODE_SELECTLIST
+  GET_TAX_CODE_SELECTLIST,
+  SET_LIST_TOGGLE
 } from '../config/constants';
 
 const initialState = {
@@ -83,6 +84,10 @@ const initialState = {
   approvalTypeSimulation: [],
   approvalTypeMaster: [],
   approvalTypeOnboarding: [],
+  listToggle: {
+    RawMaterial: false,
+    BOP: false
+  }
 };
 
 
@@ -563,6 +568,11 @@ export default function commanReducer(state = initialState, action) {
         error: true,
         taxCodeList: action?.payload
       };
+    case SET_LIST_TOGGLE:
+      return {
+        ...state,
+        listToggle: { ...state.listToggle, ...action.payload }
+      }
     default:
       return state;
   }
