@@ -201,7 +201,7 @@ const BOPImportListing = (props) => {
       }
     }, 300);
     if (props.isSimulation && !props?.isFromVerifyPage) {
-      props?.callBackLoader(state.isLoader);
+      props?.callBackLoader(true);
     }
     if (props.isMasterSummaryDrawer) {
       setState((prevState) => ({

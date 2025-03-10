@@ -269,8 +269,8 @@ const {vendorLabel} = useLabels()
     }
 
     const customerFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
+        const row = props?.valueFormatted || props?.data;
+        return row ? (isbulkUpload ? row['Customer (Code)'] : row.CustomerName) || '-' : '-';
     }
 
     // TRIGGER ON EVERY CHNAGE IN CELL
