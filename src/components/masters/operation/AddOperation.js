@@ -926,15 +926,11 @@ class AddOperation extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue }
-        , () => {
-          if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+      this.setState({ client: newValue } , () => {
             this.callExchangeRateAPI()
-          }
         }
       );
     }
-
     else {
       this.setState({ client: [] })
     }
