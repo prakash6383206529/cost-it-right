@@ -1213,7 +1213,10 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
   }
   closeOtherCostToggle = (type, data, total, totalBase) => {
     if (type === 'Save') {
-      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) && this.state.NetConditionCost) {
+      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) && 
+          this.state.NetConditionCost && 
+          Array.isArray(this.state?.conditionTableData) &&
+          this.state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
         Toaster.warning("Please click on refresh button to update condition cost data.")
       }
     }
