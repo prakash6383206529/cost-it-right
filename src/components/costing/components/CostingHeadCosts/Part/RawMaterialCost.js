@@ -521,7 +521,7 @@ function RawMaterialCost(props) {
   }
 
   const removeErrorGrossFinishWeight = (grossValue, finishWeight, index) => {
-    if (checkForNull(grossValue) > checkForNull(finishWeight) && errors?.rmGridFields) {
+    if (checkForNull(grossValue) >= checkForNull(finishWeight) && errors?.rmGridFields) {
       delete errors?.rmGridFields[index]?.FinishWeight
       delete errors?.rmGridFields[index]?.GrossWeight
     }
