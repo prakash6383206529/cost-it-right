@@ -213,21 +213,21 @@ function ViewDrawer(props) {
                     // }
                     // if (nfrId && nfrId.value !== null) {
                     //     if (index === 0) {
-                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
-                    //         newObjTemp.YearName = Data.FirstYear
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data?.FirstYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
+                    //         newObjTemp.YearName = Data?.FirstYear
                     //     } else if (index === 1) {
-                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
-                    //         newObjTemp.YearName = Data.SecondYear
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data?.SecondYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
+                    //         newObjTemp.YearName = Data?.SecondYear
                     //     } else if (index === 2) {
-                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
-                    //         newObjTemp.YearName = Data.ThirdYear
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data?.ThirdYearQuantity, initialConfiguration?.NoOfDecimalForInputOutput);
+                    //         newObjTemp.YearName = Data?.ThirdYear
                     //     } else if (index === 3) {
                     //         newObjTemp.Quantity = 0;
-                    //         newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
+                    //         newObjTemp.YearName = parseInt(Data?.ThirdYear) + 1
                     //         newObjTemp.isEdit = true
                     //     } else if (index === 4) {
                     //         newObjTemp.Quantity = 0;
-                    //         newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
+                    //         newObjTemp.YearName = parseInt(Data?.ThirdYear) + 2
                     //         newObjTemp.isEdit = true
                     //     }
                     // } else {
@@ -391,7 +391,7 @@ function ViewDrawer(props) {
                 // if (item.Value === '0') return false;
                 opts1.push({ label: item.Text, value: item.Value })
             });
-            const selectedValues = tableData.map(data => data.PartId);
+            const selectedValues = tableData.map(data => data?.PartId);
 
 
             return getFilteredDropdownOptions(opts1, selectedValues);
@@ -622,12 +622,7 @@ function ViewDrawer(props) {
         resetFormAndDropdowns();
     }
     const handleCloseDrawer = () => {
-        //tableData
-        // if (isViewFlag || isEditFlag) {
-        //     saveRfqPartsData()
-
-        // }
-
+     
 
         if (partType === "Component" || partType === "Tooling" || partType === "Bought Out Part") {
             const hasNonZeroQuantity = sopQuantityList && sopQuantityList.length > 0 && sopQuantityList[0].Quantity !== 0 && sopQuantityList[0].Quantity !== '0';
@@ -838,7 +833,6 @@ function ViewDrawer(props) {
         return <div className={`${value ? 'font-ellipsis' : 'row-merge'}`}>{value}</div>
     }
     const handleChangeStatus = ({ meta, file }, status) => {
-
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = files.filter(item => item.OriginalFileName !== removedFileName);
@@ -846,37 +840,35 @@ function ViewDrawer(props) {
             setChildPartFiles(tempArr)
             setIsOpen(prevState => !prevState);
         }
-
+    
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
             if (!validateFileName(file.name)) {
                 dropzone.current.files.pop()
-                //setDisableFalseFunction()
                 return false;
             }
             setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
             setAttachmentLoader(true);
             setIsDisable(true)
             dispatch(fileUploadQuotation(data, (res) => {
-
+                // Always set attachment loader to false regardless of response
+                setAttachmentLoader(false);
+                
                 if ('response' in res) {
                     status = res?.response?.status;
                     dropzone.current.files.pop();
-                    setAttachmentLoader(false);
                 } else {
                     let Data = res?.data[0];
-
+    
                     setFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
                     setChildPartFiles(prevFiles => [...prevFiles, Data]);
-                    setAttachmentLoader(false)
-
                 }
+                
                 setApiCallCounter(prevCounter => prevCounter - 1);
-
+    
                 // Check if this is the last API call after decrement
                 if (apiCallCounter - 1 === 0) {
-                    setAttachmentLoader(false);
                     setIsDisable(false);
                     setTimeout(() => {
                         setIsOpen(prevState => !prevState);
@@ -884,15 +876,15 @@ function ViewDrawer(props) {
                 }
             }));
         }
-
+    
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, docx, pptx jpeg, pdf, zip files.');
         } else if (status === 'error_file_size') {
-            setAttachmentLoader(false);
+            setAttachmentLoader(false);  // Added this line to ensure loader is off
             dropzone.current.files.pop();
             Toaster.warning("File size greater than 20 mb not allowed");
         } else if (['error_validation', 'error_upload_params', 'exception_upload', 'aborted', 'error_upload'].includes(status)) {
-            setAttachmentLoader(false);
+            setAttachmentLoader(false);  // Added this line to ensure loader is off
             dropzone.current.files.pop();
             Toaster.warning("Something went wrong");
         }
@@ -947,12 +939,12 @@ function ViewDrawer(props) {
                 }
                 let Data = res?.data?.Data
 
-                setRMGrade({ label: Data.GradeName, value: Data.GradeId })
-                setRMSpecification({ label: Data.Specification, value: Data.SpecificationId })
-                setRMName({ label: Data.RawMaterialName, value: Data.RawMaterialId, })
-                setValue('RMName', { label: Data.RawMaterialName, value: Data.RawMaterialId, })
-                setValue('RMGrade', { label: Data.GradeName, value: Data.GradeId })
-                setValue('RMSpecification', { label: Data.Specification, value: Data.SpecificationId })
+                setRMGrade({ label: Data?.GradeName, value: Data?.GradeId })
+                setRMSpecification({ label: Data?.Specification, value: Data?.SpecificationId })
+                setRMName({ label: Data?.RawMaterialName, value: Data?.RawMaterialId, })
+                setValue('RMName', { label: Data?.RawMaterialName, value: Data?.RawMaterialId, })
+                setValue('RMGrade', { label: Data?.GradeName, value: Data?.GradeId })
+                setValue('RMSpecification', { label: Data?.Specification, value: Data?.SpecificationId })
             }))
         } else {
             setValue('RMName', '')
