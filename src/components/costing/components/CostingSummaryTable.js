@@ -2653,7 +2653,7 @@ const CostingSummaryTable = (props) => {
                                           <span className={highlighter("scrapRate")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                           </span>
-                                          {isScrapRecoveryPercentageApplied && <span className={highlighter("scrapRate")}>
+                                          {isScrapRecoveryPercentageApplied && <span>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRecoveryPercentage, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRecoveryPercentage, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                           </span>}
                                           <span className={highlighter("", "rm-reducer")}>
@@ -2945,7 +2945,7 @@ const CostingSummaryTable = (props) => {
                                 <span className="d-block small-grey-text">
                                   Model Type For Overhead/Profit
                                 </span>
-                                <br />
+                                <span className="d-block small-grey-text"></span>
                                 <span className={highlighter(["overheadOn", "overheadValue"], "multiple-key")}>Overhead On</span>
                                 <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Profit On</span>
                                 <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Rejection Recovery</span>
@@ -3415,7 +3415,7 @@ const CostingSummaryTable = (props) => {
                             </tr>
                           }
                           {
-                            initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
+                            initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("netConditionCost", "main-row")} netPo-row`}>
                               <td>
                                 <span className={`d-block small-grey-text`}>Net Condition Cost</span>
                               </td>

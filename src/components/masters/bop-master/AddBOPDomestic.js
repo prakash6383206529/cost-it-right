@@ -1132,7 +1132,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
   labelWithUOM = (value) => {
     const { initialConfiguration } = this.props
     return <div>
-      <span className='d-flex'>Basic Rate/{displayUOM(value)} ({this.props.fieldsObj?.plantCurrency ?? 'Currency'})</span>
+      <span className='d-flex'>Basic Rate ({this.props.fieldsObj?.plantCurrency ?? 'Currency'}/{displayUOM(value)})</span>
     </div>
   }
   onIsClientVendorBOP = () => {
@@ -1801,7 +1801,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                               
                                 <div className="w-100">
                                   <Field
-                                    label={`Other Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props?.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                    label={`Other Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                     name={"OtherCost"}
                                     type="text"
                                     placeholder={"-"}
@@ -1837,7 +1837,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                             <Col md="3">
                               <TooltipCustom width="350px" id="bop-basic-price" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
                               <Field
-                                label={`Basic Price/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                label={`Basic Price (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                 name={"BasicPrice"}
                                 type="text"
                                 id="bop-basic-price"
@@ -1854,7 +1854,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                               <div className='d-flex align-items-center'>
                                 <div className="w-100">
                                   <Field
-                                    label={`Condition Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                    label={`Condition Cost (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                     name={"ConditionCost"}
                                     type="text"
                                     placeholder={"-"}
@@ -1892,7 +1892,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                               <Col md="3">
                                 <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                                  label={`Net Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}  
                                   name={`${"NetCostPlantCurrency"}`}
                                   id="bop-net-cost-plant"
                                   type="text"
@@ -1906,9 +1906,9 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                                 />
                               </Col>
                               {!hidePlantCurrency && <Col md="3">
-                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost (${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                   name={`${"NetCostBaseCurrency"}`}
                                   type="text"
                                   id="bop-net-cost"

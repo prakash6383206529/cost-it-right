@@ -335,6 +335,7 @@ function AddRMFinancialDetails(props) {
         if (label === 'currency') {
             currencySelectList && currencySelectList.map(item => {
                 if (item.Value === '0') return false;
+                if (item.Text === getValues('plantCurrency')) return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
