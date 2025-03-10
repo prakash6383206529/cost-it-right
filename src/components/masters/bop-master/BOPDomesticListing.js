@@ -137,7 +137,7 @@ const BOPDomesticListing = (props) => {
     }
 
     if (props.isSimulation) {
-      props.callBackLoader(state.isLoader);
+      props.callBackLoader(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bopDomesticList]);
