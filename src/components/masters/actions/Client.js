@@ -10,6 +10,8 @@ import {
     GET_POAM_STATUS_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 // const config() = config
 
 /**
@@ -19,7 +21,7 @@ import { apiErrors } from '../../../helper/util';
 export function createClient(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createClient, data, config());
+        const request = axiosInstance.post(API.createClient, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -38,7 +40,7 @@ export function createClient(data, callback) {
 export function updateClient(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateClient}`, requestData, config())
+        axiosInstance.put(`${API.updateClient}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -54,10 +56,11 @@ export function updateClient(requestData, callback) {
  * @description Get Client Data
  */
 export function getClientData(ClientId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (ClientId !== '') {
-            axios.get(`${API.getClientData}/${ClientId}`, config())
+            axios.get(`${API.getClientData}/${ClientId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -86,7 +89,7 @@ export function getClientData(ClientId, callback) {
 export function getClientDataList(filterData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const QueryParams = `clientName=${filterData.clientName}&companyName=${filterData.companyName}`
+        const QueryParams = `loggedInUserId=${loggedInUserId()}&clientName=${filterData.clientName}&companyName=${filterData.companyName}`
         axios.get(`${API.getClientDataList}?${QueryParams}`, config())
             .then((response) => {
                 if (response.status === 204 && response.data === '') {
@@ -164,11 +167,12 @@ export function checkAndGetCustomerCode(code, name, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const requestBody = {
+            LoggedInUserId: loggedInUserId(),
             customerName: name,
             customerCode: code
         };
 
-        const request = axios.post(`${API.checkAndGetCustomerCode}`, requestBody, config());
+        const request = axiosInstance.post(`${API.checkAndGetCustomerCode}`, requestBody, config());
 
         request.then((response) => {
 

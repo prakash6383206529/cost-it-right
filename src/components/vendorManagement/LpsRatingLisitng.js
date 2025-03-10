@@ -37,6 +37,10 @@ const LpsRatingListing = () => {
 
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
+        getTableListData();
+    }, [dispatch]);
+
+    const getTableListData = () => {
         setIsLoader(true);
         dispatch(getLPSRatingListing((res) => {
             if (res.errorMessage) {
@@ -56,7 +60,8 @@ const LpsRatingListing = () => {
             setIsLoader(false)
 
         }));
-    }, [dispatch]);
+    }
+
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
@@ -174,6 +179,7 @@ const LpsRatingListing = () => {
         if (searchRef.current) {
             searchRef.current.value = '';
         }
+        getTableListData();
     }
 
     return (

@@ -319,7 +319,8 @@ const CommodityStandardListing = (props) => {
 
         setWarningMessage(false)
         dispatch(resetStatePagination())
-        getTableListData(0, globalTakes, true)
+        // getTableListData(0, globalTakes, true)
+        getTableListData(0, defaultPageSize, true)
         dispatch(updateGlobalTake(10))
         setDataCount(0)
         dispatch(setSelectedRowForPagination([]))

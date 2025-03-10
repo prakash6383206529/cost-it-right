@@ -59,7 +59,7 @@ const BOPManage = (props) => {
         dataCount: 0,
         showExtraData: false,
         render: false,
-        totalRecordCount: 0
+        globalTake: defaultPageSize
     });
 
     useEffect(() => {
@@ -111,7 +111,7 @@ const BOPManage = (props) => {
        */
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
-            getViewBoughtOutParts.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
+            getViewBoughtOutParts.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
         }, 500);
     };
 
@@ -156,6 +156,7 @@ const BOPManage = (props) => {
 
     const onPageSizeChanged = (newPageSize) => {
         state.gridApi.paginationSetPageSize(Number(newPageSize));
+        setState((prevState) => ({ ...prevState, globalTake: newPageSize }))
     };
 
     const onRowSelect = () => {
@@ -250,7 +251,8 @@ const BOPManage = (props) => {
         if (searchRef.current) {
             searchRef.current.value = '';
         }
-        setState((prevState) => ({ ...prevState, noData: false }))
+        setState((prevState) => ({ ...prevState, noData: false, globalTake: defaultPageSize, dataCount: 0 }));
+        getDataList();
     }
     const handleShown = () => {
         setState((prevState) => ({ ...prevState, shown: !state.shown }))
@@ -321,9 +323,9 @@ const BOPManage = (props) => {
                                 <>
                                     <ExcelFile filename={Sob} fileExtension={'.xls'}
                                         element={
-                                            <Button id={"Excel-Downloads-bopManage"}  disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                            <Button id={"Excel-Downloads-bopManage"} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                                         }>
-                                         {state?.totalRecordCount !== 0 ? onBtExport() : null}
+                                        {state?.totalRecordCount !== 0 ? onBtExport() : null}
                                     </ExcelFile>
                                 </>
                             }
@@ -347,35 +349,37 @@ const BOPManage = (props) => {
                         </div>
                         <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                // columnDefs={c}
-                                rowData={state.showExtraData && getViewBoughtOutParts ? [...setLoremIpsum(getViewBoughtOutParts[0]), ...getViewBoughtOutParts] : getViewBoughtOutParts}
-                                pagination={true}
-                                paginationPageSize={defaultPageSize}
-                                onGridReady={onGridReady}
-                                gridOptions={gridOptions}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass'
-                                }}
-                                frameworkComponents={frameworkComponents}
-                                rowSelection={'multiple'}
-                                onSelectionChanged={onRowSelect}
-                                onFilterModified={onFloatingFilterChanged}
-                                suppressRowClickSelection={true}
-                            >
-                                {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                                <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
-                                <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
-                                <AgGridColumn field="BoughtOutPartCategoryName" headerName={`${showBopLabel()} Category`}></AgGridColumn>
-                                <AgGridColumn field="BoughtOutPartEntryType" headerName="Entry Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
-                            </AgGridReact>
-                            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+                            {!state.isLoader &&
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
+                                    // columnDefs={c}
+                                    rowData={state.showExtraData && getViewBoughtOutParts ? [...setLoremIpsum(getViewBoughtOutParts[0]), ...getViewBoughtOutParts] : getViewBoughtOutParts}
+                                    pagination={true}
+                                    paginationPageSize={defaultPageSize}
+                                    onGridReady={onGridReady}
+                                    gridOptions={gridOptions}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    onFilterModified={onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
+                                >
+                                    {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartCategoryName" headerName={`${showBopLabel()} Category`}></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartEntryType" headerName="Entry Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                                </AgGridReact>
+                            }
+                            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
                         </div>
                     </div>
 

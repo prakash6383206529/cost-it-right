@@ -295,6 +295,7 @@ function AddFreight(props) {
         EFreightLoadType: freightType ? freightType : null,
         CostingTypeId: costData?.CostingTypeId ? costData?.CostingTypeId : null,
         DimensionId: state?.truckDimensions?.value ?? null,
+        costingId: costData?.CostingId ? costData?.CostingId : null,
       }
       dispatch(getRateByCapacityCriteria(data, res => {
         if (res && res?.data && res?.data?.Result) {
@@ -850,7 +851,8 @@ function AddFreight(props) {
                         max: freightType === Percentage ? {
                           value: 100,
                           message: 'Percentage should be less than 100'
-                        } : {},
+                        } : undefined,
+
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

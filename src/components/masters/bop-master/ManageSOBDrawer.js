@@ -54,15 +54,14 @@ function ManageSOBDrawer(props) {
 
     dispatch(getManageBOPSOBById(ID, (res) => {
       // setIsLoader(true)
-      if (res && res.data && res.data.Result) {
-        let Data = res.data.Data;
+      if (res && res?.data && res?.data?.Result) {
+        let Data = res?.data?.Data;
+        setEffectiveDate(Data?.Effectivedate ? Data?.Effectivedate : '')
 
-        setEffectiveDate(Data.Effectivedate)
-
-        if (Data.BoughtOutPartVendorList.length === 1) {
+        if (Data?.BoughtOutPartVendorList?.length === 1) {
           setIsDisable(true)
-          setGridData(Data.BoughtOutPartVendorList)
-          setGridDataOldArray(Data.BoughtOutPartVendorList)
+          setGridData(Data?.BoughtOutPartVendorList)
+          setGridDataOldArray(Data?.BoughtOutPartVendorList)
         }
         if (Data.BoughtOutPartVendorList.length > 1) {
           let tempArray = [];

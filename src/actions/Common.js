@@ -79,6 +79,8 @@ import {
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
 import Toaster from '../components/common/Toaster';
+import axiosInstance from '../utils/axiosInstance';
+import { loggedInUserId } from '../helper';
 import { useDispatch } from 'react-redux';
 import { useQuery, useQueryClient } from 'react-query';
 import { getAllRMDataList, getMaterialTypeDataListAPI, getRMSpecificationDataList } from '../components/masters/actions/Material';
@@ -295,6 +297,7 @@ export function fetchRMCategoryAPI(callback) {
  * @description Used to fetch row material category list
  */
 export function fetchCategoryAPI(Id, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     if (Id === 0) {
@@ -304,7 +307,7 @@ export function fetchCategoryAPI(Id, callback) {
       });
     }
     else {
-      const request = axios.get(`${API.getCategory}/${Id}`, config());
+      const request = axios.get(`${API.getCategory}/${Id}/${loggedInUser?.loggedInUserId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -833,10 +836,11 @@ export function fetchModelTypeAPI(modelTypeHeading, callback) {
  * @description Used to fetch costing heads
  */
 export function getPlantBySupplier(supplierId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     if (supplierId !== '') {
       dispatch({ type: API_REQUEST });
-      const request = axios.get(`${API.getPlantBySupplier}/${supplierId}`, config());
+      const request = axios.get(`${API.getPlantBySupplier}/${supplierId}/${loggedInUser?.loggedInUserId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -865,10 +869,11 @@ export function getPlantBySupplier(supplierId, callback) {
  * @description Used to fetch city by Supplier
  */
 export function getCityBySupplier(SupplierId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     if (SupplierId !== 0) {
       dispatch({ type: API_REQUEST });
-      const request = axios.get(`${API.getCityBySupplier}/${SupplierId}`, config());
+      const request = axios.get(`${API.getCityBySupplier}/${SupplierId}/${loggedInUser?.loggedInUserId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -897,10 +902,11 @@ export function getCityBySupplier(SupplierId, callback) {
  * @description Used to getPlantByCity
  */
 export function getPlantByCity(CityId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     if (CityId !== 0) {
       dispatch({ type: API_REQUEST });
-      const request = axios.get(`${API.getPlantByCity}/${CityId}`, config());
+      const request = axios.get(`${API.getPlantByCity}/${CityId}/${loggedInUser?.loggedInUserId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -929,9 +935,10 @@ export function getPlantByCity(CityId, callback) {
  * @description Used to getPlantByCityAndSupplier
  */
 export function getPlantByCityAndSupplier(SupplierID, CityId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPlantByCityAndSupplier}/${SupplierID}/${CityId}`, config());
+    const request = axios.get(`${API.getPlantByCityAndSupplier}/${SupplierID}/${CityId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1173,10 +1180,11 @@ export function getShiftTypeSelectList(callback) {
  * @description Used to fetch Machine selectlist by Machine type(Class)
  */
 export function getMachineSelectListByMachineType(MachineClassId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     if (MachineClassId !== '') {
       //dispatch({ type: API_REQUEST });
-      const request = axios.get(`${API.getMachineSelectListByMachineType}/${MachineClassId}`, config());
+      const request = axios.get(`${API.getMachineSelectListByMachineType}/${MachineClassId}/${loggedInUser?.loggedInUserId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -1296,33 +1304,9 @@ export function getAllCities(callback) {
   };
 }
 
-/**
- * @method getCityByCountry
- * @description Used to GET ALL CITIES BY COUNTRY
- */
-// export function getCityByCountry(CountryId, StateId,CityName, callback) {
-//   return (dispatch) => {
-//     dispatch({ type: API_REQUEST });
-//     // const request = axios.get(`${API.getCityByCountry}/${CountryId}/${StateId}`, config());
-//     const request = axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config());
-//     request.then((response) => {
-//       if (response.data.Result) {
-//         dispatch({
-//           type: GET_CITY_SUCCESS,
-//           payload: response.data.SelectList,
-//         });
-//         callback(response);
-//       }
-//     }).catch((error) => {
-//       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
-//       callback(error);
-//       apiErrors(error);
-//     });
-//   };
-// }
 
 export function getCityByCountry(CountryId, StateId, CityName, callback) {
-  return axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config())
+  return axios.get(`${API.getCityByCountry}?loggedInUserId=${loggedInUserId()}&countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config())
     .then((response) => {
       if (response.data.Result) {
         if (callback) callback(null, response);
@@ -1433,8 +1417,9 @@ export function getReporterList(callback) {
  * @description UOM SELECT LIST BY UNIT TYPE
  */
 export function getUOMListByUnitType(UnitTypeId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
-    const request = axios.get(`${API.getUOMListByUnitType}/${UnitTypeId}`, config());
+    const request = axios.get(`${API.getUOMListByUnitType}/${UnitTypeId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1638,8 +1623,12 @@ export function getPlantSelectListReducer(data) {
 
 
 export function getCostMovementReport(data, callback) {
+  const requestedData = {
+    loggedInUserId: loggedInUserId(),
+    ...data
+  }
   return (dispatch) => {
-    const request = axios.post(API.getCostMovementReport, data, config())
+    const request = axiosInstance.post(API.getCostMovementReport, requestedData, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1754,7 +1743,7 @@ export function getApprovalTypeSelectListUserModule(id = '', callback) {
 
 export function saveCostingDetailNpv(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingDetailNpv, data, config())
+    const request = axiosInstance.post(API.saveCostingDetailNpv, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1775,7 +1764,7 @@ export function saveCostingDetailNpv(data, callback) {
 
 export function saveCostingDetailCondition(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingDetailCondition, data, config())
+    const request = axiosInstance.post(API.saveCostingDetailCondition, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1795,9 +1784,10 @@ export function saveCostingDetailCondition(data, callback) {
 }
 
 export function getNpvDetails(costingId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getNpvDetails}/${costingId}`, config());
+    const request = axios.get(`${API.getNpvDetails}/${costingId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1814,7 +1804,7 @@ export function getNpvDetails(costingId, callback) {
 export function getConditionDetails(costingId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getConditionDetails}?costingId=${costingId}`, config());
+    const request = axios.get(`${API.getConditionDetails}?loggedInUserId=${loggedInUserId()}&costingId=${costingId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1832,7 +1822,7 @@ export function getConditionDetails(costingId, callback) {
 export function getCostingCondition(CostingConditionEntryTypeId, costingConditionTypeId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingCondition}?CostingConditionEntryTypeId=${CostingConditionEntryTypeId}&costingConditionTypeId=${costingConditionTypeId}`, config());
+    const request = axios.get(`${API.getCostingCondition}?loggedInUserId=${loggedInUserId()}&CostingConditionEntryTypeId=${CostingConditionEntryTypeId}&costingConditionTypeId=${costingConditionTypeId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1862,7 +1852,7 @@ export function sidebarAndNavbarHide(data) {
   }
 }
 export function getVendorNameByVendorSelectList(vendorTypeId, vendorName, technologyId, plantId = '', checkForVendorClassificationAndLPSRating = false, callback) {
-  return axios.get(`${API.getVendorNameByVendorSelectList}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}&technologyId=${technologyId}&plantId=${plantId}&checkForVendorClassificationAndLPSRating=${checkForVendorClassificationAndLPSRating}`, config()).catch(error => {
+  return axios.get(`${API.getVendorNameByVendorSelectList}?loggedInUserId=${loggedInUserId()}&vendorTypeId=${vendorTypeId}&vendorName=${vendorName}&technologyId=${technologyId}&plantId=${plantId}&checkForVendorClassificationAndLPSRating=${checkForVendorClassificationAndLPSRating}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
@@ -1928,7 +1918,7 @@ export function getFrequencySettlement(callback) {
 export function getCommodityIndexRateAverage(materialTypeId, indexExchangeId, unitOfMeasurementId, currencyId, exchangeRateSourceName, fromDate, toDate, callback) {
   return (dispatch) => {
     if (materialTypeId || indexExchangeId || exchangeRateSourceName) {
-      axios.get(`${API.getCommodityIndexRateAverage}?materialTypeId=${materialTypeId}&indexExchangeId=${indexExchangeId}&unitOfMeasurementId=${''}&toCurrencyId=${currencyId ?? ''}&exchangeRateSourceName=${exchangeRateSourceName}&fromDate=${fromDate}&toDate=${toDate}`, config())
+      axios.get(`${API.getCommodityIndexRateAverage}?loggedInUserId=${loggedInUserId()}&materialTypeId=${materialTypeId}&indexExchangeId=${indexExchangeId}&unitOfMeasurementId=${''}&toCurrencyId=${currencyId ?? ''}&exchangeRateSourceName=${exchangeRateSourceName}&fromDate=${fromDate}&toDate=${toDate}`, config())
         .then((response) => {
           dispatch({
             type: GET_COMMODITY_INDEX_RATE_AVERAGE,
@@ -1973,7 +1963,6 @@ export function getTaxCodeSelectList(callback) {
 
 const rmAPICalling = (params, dispatch) => {
   const { tabs } = params;
-  console.log("tabs333", tabs?.trim())
   switch (tabs?.trim()) {
     case "Domestic":
     case "Import":
@@ -2020,8 +2009,9 @@ const rmAPICalling = (params, dispatch) => {
 //   });
 // }
 export function checkDivisionByPlantAndGetDivisionIdByPart(data, callback) {
+  const requestData = { loggedInUserId: loggedInUserId(), ...data }
   return (dispatch) => {
-    const request = axios.post(API.checkDivisionByPlantAndGetDivisionIdByPart, data, config())
+    const request = axiosInstance.post(API.checkDivisionByPlantAndGetDivisionIdByPart, requestData, config())
     request
       .then((response) => {
         if (response.data.Result) {

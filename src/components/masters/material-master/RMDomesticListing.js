@@ -433,9 +433,11 @@ function RMDomesticListing(props) {
         setinRangeDate([])
         dispatch(setResetCostingHead(true, "costingHead"))
 
-        setIsFilterButtonClicked(false)
-        gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
+        setIsFilterButtonClicked(false)
+        gridApi.setQuickFilter(null)
+        gridApi.deselectAll();
+        gridOptions?.columnApi?.resetColumnState(null);
 
         for (var prop in floatingFilterData) {
 
@@ -447,7 +449,7 @@ function RMDomesticListing(props) {
                 floatingFilterData[prop] = ""
             }
         }
-
+        console.log(floatingFilterData, "floatingFilterData")
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(updatePageNumber(1))

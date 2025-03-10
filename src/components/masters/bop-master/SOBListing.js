@@ -44,8 +44,8 @@ const SOBListing = (props) => {
   const searchRef = useRef(null);
   const { t } = useTranslation("common")
   const bopSobList = useSelector((state) => state.boughtOutparts?.bopSobList);
-  
-  
+
+
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
     isOpen: false,
@@ -91,7 +91,7 @@ const SOBListing = (props) => {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
   const [warningMessage, setWarningMessage] = useState(false);
   const selectedRowForPagination = useSelector((state => state?.simulation?.selectedRowForPagination))
-  
+
   useEffect(() => {
     getDataList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -110,15 +110,15 @@ const SOBListing = (props) => {
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []);
-  
+
   /**
   * @method getDataList
   * @description GET DATALIST OF IMPORT BOP
   */
 
-  const getDataList = (skip = 0, take = defaultPageSize,  dataObj = {},isPagination = true, isReset = false) => {
+  const getDataList = (skip = 0, take = defaultPageSize, dataObj = {}, isPagination = true, isReset = false) => {
     // Construct filter data with all required parameters
-    
+
 
     const filterData = {
       // Required API parameters
@@ -144,7 +144,7 @@ const SOBListing = (props) => {
       plant_id: null
     };
 
-    
+
 
     // Set loader
     setState(prevState => ({
@@ -167,7 +167,7 @@ const SOBListing = (props) => {
         setState(prevState => ({
           ...prevState,
           tableData: res.data.DataList[0].Records || [],
-                      dataCount: isReset ? 0 : currentSelections.length
+          dataCount: isReset ? 0 : currentSelections.length
 
         }));
 
@@ -205,20 +205,13 @@ const SOBListing = (props) => {
 
       // Handle filter model reset
       if (res) {
-        let shouldReset = true;
-
         setTimeout(() => {
-          // Check if any filter is applied
-          Object.keys(filterData).forEach(key => {
-            if (filterData[key] !== "") {
-              shouldReset = false;
-            }
-          });
-          isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
-//  if (isReset) {
-//             dispatch(setSelectedRowForPagination([]));
-//             reactLocalStorage.setObject('selectedRow', {});
-//         }
+
+          if (isReset) {
+            gridOptions?.api?.setFilterModel({});
+          } else {
+            gridOptions?.api?.setFilterModel(state.filterModel);
+          }
         }, 300);
 
         // Reset warning messages
@@ -266,7 +259,7 @@ const SOBListing = (props) => {
     if (!isFilterButtonClicked) {
       setWarningMessage(true);
     }
-    
+
 
     // Update floating filter data
     if (value?.filterInstance?.appliedModel === null ||
@@ -280,19 +273,19 @@ const SOBListing = (props) => {
     } else {
       // Handle effective date separately
       if (value.column.colId === "EffectiveDate") {
-          const dateValue = value.filterInstance.appliedModel.dateFrom;
-          setFloatingFilterData(prev => ({
-              ...prev,
-              EffectiveDate: dateValue ? DayTime(dateValue).format('DD/MM/YYYY') : ""
-          }));
+        const dateValue = value.filterInstance.appliedModel.dateFrom;
+        setFloatingFilterData(prev => ({
+          ...prev,
+          EffectiveDate: dateValue ? DayTime(dateValue).format('DD/MM/YYYY') : ""
+        }));
       } else {
-          setFloatingFilterData(prev => ({
-              ...prev,
-              [value.column.colId]: value.filterInstance.appliedModel.filter
-          }));
+        setFloatingFilterData(prev => ({
+          ...prev,
+          [value.column.colId]: value.filterInstance.appliedModel.filter
+        }));
       }
+    }
   }
-}
 
   /**
     * @method buttonFormatter
@@ -346,23 +339,23 @@ const SOBListing = (props) => {
   };
   const onRowSelect = (event) => {
     let selectedRows = state.gridApi.getSelectedRows() || [];
-    
-    
+
+
     // Get stored selections from localStorage
     let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow || [];
-    
 
-    if (selectedRows === undefined || selectedRows === null) {   
+
+    if (selectedRows === undefined || selectedRows === null) {
       // First render - use stored selections
       selectedRows = selectedRowForPagination;
-    } 
-    else if (selectedRowForPagination?.length > 0) {   
+    }
+    else if (selectedRowForPagination?.length > 0) {
       let finalData = [];
 
-      if (event.node.isSelected() === false) {    
+      if (event.node.isSelected() === false) {
         // Handle deselection
-        
-        finalData = selectedRowForPagination.filter(item => 
+
+        finalData = selectedRowForPagination.filter(item =>
           item.BoughtOutPartNumber !== event.data.BoughtOutPartNumber
         );
       } else {
@@ -376,41 +369,41 @@ const SOBListing = (props) => {
 
     // Remove duplicates
     let uniqueArray = _.uniqBy(selectedRows, "BoughtOutPartNumber")
-    
+
     // Update state and storage
     dispatch(setSelectedRowForPagination(uniqueArray))
     reactLocalStorage.setObject('selectedRow', { selectedRow: uniqueArray })
-    
+
     const newDataCount = uniqueArray.length;
-    setState((prevState) => ({ 
-      ...prevState, 
-      dataCount: newDataCount 
+    setState((prevState) => ({
+      ...prevState,
+      dataCount: newDataCount
     }))
   }
 
   const onExcelDownload = () => {
-    setState((prevState) => ({ ...prevState, disableDownload: true }))
-    dispatch(disabledClass(true))
+    setState((prevState) => ({ ...prevState, disableDownload: true }));
+    dispatch(disabledClass(true));
 
-    let tempArr = selectedRowForPagination
+    let tempArr = selectedRowForPagination;
     if (tempArr?.length > 0) {
-      // Download selected rows
-      setTimeout(() => {
-        setState((prevState) => ({ ...prevState, disableDownload: false }))
-        dispatch(disabledClass(false))
-        let button = document.getElementById('Excel-Downloads-sobListing')
-        button && button.click()
-      }, 400)
+        // Download selected rows
+        setTimeout(() => {
+            setState((prevState) => ({ ...prevState, disableDownload: false }));
+            dispatch(disabledClass(false));
+            let button = document.getElementById('Excel-Downloads-sobListing');
+            button && button.click();
+        }, 400);
     } else {
       // Download all data
-      getDataList(0, globalTakes,floatingFilterData, true )
+      getDataList(0, globalTakes,floatingFilterData, false )
     }
   }
 
   const onBtExport = () => {
-    let tempArr = selectedRowForPagination
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (bopSobList ? bopSobList : [])
-    return returnExcelColumn(BOP_SOB_DOWNLOAD_EXCEL, tempArr)
+    let tempArr = selectedRowForPagination;
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (state.tableData ? state.tableData : []);
+    return returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, tempArr);
   }
 
   const setDate = (date) => {
@@ -423,32 +416,32 @@ const SOBListing = (props) => {
   var filterParams = {
     date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
     comparator: function (filterLocalDateAtMidnight, cellValue) {
-        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-        var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
-        let date = document.getElementsByClassName('ag-input-field-input')
-        for (let i = 0; i < date.length; i++) {
-            if (date[i].type == 'radio') {
-                date[i].click()
-            }
+      var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+      var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+      let date = document.getElementsByClassName('ag-input-field-input')
+      for (let i = 0; i < date.length; i++) {
+        if (date[i].type == 'radio') {
+          date[i].click()
         }
+      }
 
-        setDate(newDate)
-        if (dateAsString == null) return -1;
-        var dateParts = dateAsString.split('/');
-        var cellDate = new Date(
-            Number(dateParts[2]),
-            Number(dateParts[1]) - 1,
-            Number(dateParts[0])
-        );
-        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-            return 0;
-        }
-        if (cellDate < filterLocalDateAtMidnight) {
-            return -1;
-        }
-        if (cellDate > filterLocalDateAtMidnight) {
-            return 1;
-        }
+      setDate(newDate)
+      if (dateAsString == null) return -1;
+      var dateParts = dateAsString.split('/');
+      var cellDate = new Date(
+        Number(dateParts[2]),
+        Number(dateParts[1]) - 1,
+        Number(dateParts[0])
+      );
+      if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+        return 0;
+      }
+      if (cellDate < filterLocalDateAtMidnight) {
+        return -1;
+      }
+      if (cellDate > filterLocalDateAtMidnight) {
+        return 1;
+      }
     },
 
     browserDatePicker: true,
@@ -506,7 +499,8 @@ const SOBListing = (props) => {
       ...prevState,
       noData: false,
       dataCount: 0,
-      filterModel: {}
+      filterModel: {},
+      isLoader: true
     }))
     setDisableFilter(true)
     setIsFilterButtonClicked(false)
@@ -516,12 +510,20 @@ const SOBListing = (props) => {
     gridOptions?.columnApi?.resetColumnState(null)
     gridOptions?.api?.setFilterModel(null)
     dispatch(resetStatePagination())
-    // Reset filters
+    
+    // Reset floating filter data with all fields empty
     setFloatingFilterData({
       BoughtOutPartNumber: "",
       BoughtOutPartName: "",
-      // ... other filter resets ...
-    })
+      BoughtOutPartCategory: "",
+      Specification: "",
+      NoOfVendors: "",
+      Plant: "",
+      ShareOfBusinessPercentage: "",
+      WeightedNetLandedCost: "",
+      VendorName: "",
+      EffectiveDate: ""
+    });
 
     // Reset pagination
     dispatch(updatePageNumber(1))
@@ -534,7 +536,8 @@ const SOBListing = (props) => {
     reactLocalStorage.setObject('selectedRow', {})
 
     // Fetch fresh data
-    getDataList(0, globalTakes, floatingFilterData, true,true)
+    // getDataList(0, globalTakes, true, floatingFilterData, true)
+    getDataList();
   }
   const handleShown = () => {
     setState((prevState) => ({ ...prevState, shown: !state.shown }))
@@ -561,9 +564,9 @@ const SOBListing = (props) => {
   const checkBoxRenderer = (props) => {
     // Get stored selections
     let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow || [];
-    
+
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    
+
     // Check if row should be selected based on stored selections
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.forEach(item => {
@@ -601,11 +604,11 @@ const SOBListing = (props) => {
     // setPageNo(1)
     dispatch(updatePageNumber(1))
     dispatch(updateCurrentRowIndex(0))
-    
-    
+
+
     // setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
-    getDataList(0, globalTakes, floatingFilterData,true)
+    getDataList(0, globalTakes, floatingFilterData, true)
   }
   return (
     <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""} min-height100vh`}>
@@ -679,46 +682,48 @@ const SOBListing = (props) => {
             </div>
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-              <AgGridReact
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout='autoHeight'
-                // columnDefs={c}
-                rowData={state.showExtraData && bopSobList ? [...setLoremIpsum(bopSobList[0]), ...bopSobList] : bopSobList}
-                // pagination={true}
-                paginationPageSize={globalTakes}
-                onGridReady={onGridReady}
-                gridOptions={gridOptions}
-                noRowsOverlayComponent={'customNoRowsOverlay'}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: 'imagClass'
-                }}
-                frameworkComponents={frameworkComponents}
-                rowSelection={'multiple'}
-                onRowSelected={onRowSelect}
-                onFilterModified={onFloatingFilterChanged}
-                suppressRowClickSelection={true}
-              >
-                {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                <AgGridColumn 
-                  field="BoughtOutPartNumber" 
-                  headerName={`${showBopLabel()} Part No.`}
-                  cellRenderer={'checkBoxRenderer'}
-                  cellClass="has-checkbox"
-                />
-                <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
-                <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="NoOfVendors" headerName={`No. of ${vendorLabel}s`} ></AgGridColumn>
+              {!state.isLoader &&
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout='autoHeight'
+                  // columnDefs={c}
+                  rowData={state.showExtraData && bopSobList ? [...setLoremIpsum(bopSobList[0]), ...bopSobList] : bopSobList}
+                  // pagination={true}
+                  paginationPageSize={globalTakes}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                    imagClass: 'imagClass'
+                  }}
+                  frameworkComponents={frameworkComponents}
+                  rowSelection={'multiple'}
+                  onRowSelected={onRowSelect}
+                  onFilterModified={onFloatingFilterChanged}
+                  suppressRowClickSelection={true}
+                >
+                  {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                  <AgGridColumn
+                    field="BoughtOutPartNumber"
+                    headerName={`${showBopLabel()} Part No.`}
+                    cellRenderer={'checkBoxRenderer'}
+                    cellClass="has-checkbox"
+                  />
+                  <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
+                  <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn field="NoOfVendors" headerName={`No. of ${vendorLabel}s`} ></AgGridColumn>
 
-                <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
-                <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB (%)"></AgGridColumn>
-                <AgGridColumn width={205} field="WeightedNetLandedCost" headerName={`Weighted Net Cost (${reactLocalStorage.getObject("baseCurrency")}) `} cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={effectiveDateFormatter} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                  <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
+                  <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB (%)"></AgGridColumn>
+                  <AgGridColumn width={205} field="WeightedNetLandedCost" headerName={`Weighted Net Cost (${reactLocalStorage.getObject("baseCurrency")}) `} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                  <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={effectiveDateFormatter} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
-                <AgGridColumn field="BoughtOutPartNumber" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-              </AgGridReact>
+                  <AgGridColumn field="BoughtOutPartNumber" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                </AgGridReact>
+              }
               {/* {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />} */}
               <div className='button-wrapper'>
                 {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="SOB" />}

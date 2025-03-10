@@ -13,6 +13,8 @@ import {
 import { apiErrors } from '../../../helper/util';
 
 import Toaster from '../../common/Toaster';
+import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config;
 
@@ -25,7 +27,7 @@ export function createBOMAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createBOMAPI, data, config());
+        const request = axiosInstance.post(API.createBOMAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -55,7 +57,7 @@ export function createBOMAPI(data, callback) {
 export function createNewBOMAPI(data, callback) {
     return (dispatch) => {
         // dispatch({ type:  API_REQUEST });
-        const request = axios.post(API.createNewBOMAPI, data, config());
+        const request = axiosInstance.post(API.createNewBOMAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -140,7 +142,7 @@ export function getAllBOMAPI(callback) {
 */
 export function uploadBOMxlsAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.uploadBOMAPI, data, config());
+        const request = axiosInstance.post(API.uploadBOMAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -189,7 +191,7 @@ export function deleteBOMAPI(BomId, callback) {
 */
 export function checkCostingExistForPart(PartId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkCostingExistForPart}/${PartId}`, config());
+        const request = axiosInstance.post(`${API.checkCostingExistForPart}/${PartId}`, config());
         request.then((response) => {
             //callback(response);
         }).catch((error) => {
@@ -206,7 +208,7 @@ export function checkCostingExistForPart(PartId, callback) {
 */
 export function deleteExisCostingByPartID(PartId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.deleteExisCostingByPartID}/${PartId}`, config());
+        const request = axiosInstance.post(`${API.deleteExisCostingByPartID}/${PartId}`, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -225,9 +227,10 @@ export function deleteExisCostingByPartID(PartId, callback) {
 
 
 export function createMBOMAssembly(obj, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...obj }
     return (dispatch) => {
 
-        const request = axios.post(API.createMBOMAssemblyApi, obj, config());
+        const request = axiosInstance.post(API.createMBOMAssemblyApi, requestData, config());
 
         request.then((response) => {
             callback(response);

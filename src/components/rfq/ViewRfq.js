@@ -141,7 +141,7 @@ function RfqListing(props) {
 
             // Wait for userMasterLevelAPI to be available
             if (!userMasterLevelAPI) {
-                dispatch(getUsersMasterLevelAPI(loggedInUserId(), masterId, (res) => {
+                dispatch(getUsersMasterLevelAPI(loggedInUserId(), masterId, null,(res) => {
                     if (res) {
                         commonFunction(partType, rowData[0]?.PlantId);
                     }
@@ -247,7 +247,7 @@ function RfqListing(props) {
 
     useEffect(() => {
         if (compareButtonPressed && (partType === 'Raw Material' || partType === 'Bought Out Part')) {
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID, (res) => {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID,null, (res) => {
                 setTimeout(() => {
                     commonFunction(partType, rowData[0]?.PlantId)
                 }, 100);
@@ -445,7 +445,6 @@ function RfqListing(props) {
 
             // if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
             //     dispatch(checkFinalUser(obj, (res) => {
-            //         console.log(res);
 
             //         if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
             //             setState(prevState => ({

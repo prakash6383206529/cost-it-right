@@ -23,6 +23,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
+import axiosInstance from '../../../utils/axiosInstance';
 
 
 export function getQuotationList(DepartmentCode, Timezone, callback) {
@@ -53,7 +54,7 @@ export function createRfqQuotation(data, callback) {
 
 
     return (dispatch) => {
-        const request = axios.post(API.createRfqQuotation, data, config());
+        const request = axiosInstance.post(API.createRfqQuotation, data, config());
         request.then((response) => {
             dispatch({
                 type: GET_QUOTATION_ID_FOR_RFQ,
@@ -73,7 +74,7 @@ export function createRfqQuotation(data, callback) {
 export function cancelRfqQuotation(id, callback) {
     let data = { QuotationId: id }
     return (dispatch) => {
-        const request = axios.post(`${API.cancelRfqQuotation}`, data, config());
+        const request = axiosInstance.post(`${API.cancelRfqQuotation}`, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -89,7 +90,7 @@ export function cancelRfqQuotation(id, callback) {
 export function updateRfqQuotation(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.updateRfqQuotation, data, config());
+        const request = axiosInstance.post(API.updateRfqQuotation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -122,7 +123,7 @@ export function getQuotationById(id, callback) {
  */
 export function fileUploadQuotation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadQuotation, data, config())
+        const request = axiosInstance.post(API.fileUploadQuotation, data, config())
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response)
@@ -160,7 +161,7 @@ export function fileDeleteQuotation(data, callback) {
 export function sendReminderForQuotation(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.sendReminderForQuotation, data, config());
+        const request = axiosInstance.post(API.sendReminderForQuotation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -269,7 +270,7 @@ export function getCommunicationHistory(data, callback) {
 
 export function checkExistCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkExistCosting, data, config());
+        const request = axiosInstance.post(API.checkExistCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -302,7 +303,7 @@ export function checkLPSAndSCN(data, callback) {
 
 export function checkRFQBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkRFQBulkUpload, data, config());
+        const request = axiosInstance.post(API.checkRFQBulkUpload, data, config());
         request.then((response) => {
             if (response?.data?.Result || response?.status === 204) {
                 dispatch({
@@ -364,7 +365,7 @@ export function setQuotationIdForRFQ(data) {
 
 export function rfqSaveBestCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.rfqSaveBestCosting, data, config());
+        const request = axiosInstance.post(API.rfqSaveBestCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -535,7 +536,7 @@ export function getrRqVendorDetails(vendorId, callback) {
 export function saveRfqPartDetails(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(API.saveRfqPartDetails, data, config());
+        const request = axiosInstance.post(API.saveRfqPartDetails, data, config());
         request.then((response) => {
 
             if (response.data.Result) {

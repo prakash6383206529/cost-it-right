@@ -179,6 +179,13 @@ const BOPImportListing = (props) => {
     }
 
   }, [])
+
+  useEffect(() => {
+    if (!props.stopApiCallOnCancel) {
+      getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
+    }
+  }, [props?.isBOPAssociated]);
+  
   useEffect(() => {
     setTimeout(() => {
       if (!props?.stopApiCallOnCancel) {
@@ -200,7 +207,7 @@ const BOPImportListing = (props) => {
       }
     }, 300);
     if (props.isSimulation && !props?.isFromVerifyPage) {
-      props?.callBackLoader(state.isLoader);
+      props?.callBackLoader(true);
     }
     if (props.isMasterSummaryDrawer) {
       setState((prevState) => ({

@@ -11,7 +11,6 @@ import FreightCalculator from '../WeightCalculatorDrawer/FreightCalculator';
 function ViewPackagingAndFreight(props) {
 
   const { packagingData, freightData } = props.packagingAndFreightCost;
-  console.log(packagingData, "packagingData")
   const { isPDFShow, isLogisticsTechnology } = props
   const [packagingCalculatorDrawer, setPackagingCalculatorDrawer] = useState(false)
   const [freightCalculatorDrawer, setFreightCalculatorDrawer] = useState(false)

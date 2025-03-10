@@ -140,7 +140,7 @@ class BulkUpload extends Component {
             }
         })
         if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, null, (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -151,7 +151,7 @@ class BulkUpload extends Component {
             this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, null, (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -162,7 +162,7 @@ class BulkUpload extends Component {
             this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, '', (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId,null, (res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -173,7 +173,7 @@ class BulkUpload extends Component {
             this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === MACHINE_MASTER_ID && this.props.initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
-            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, null,(res) => {
                 setTimeout(() => {
                     this.commonFunction()
                 }, 100);
@@ -892,16 +892,13 @@ class BulkUpload extends Component {
 
     responseHandlerRFQ = (res) => {
 
-        const { messageLabel } = this.props;
         let identityKey = null;
-        if (res.status === 400) {
-            let Data = res.data.Data
-            const withOutTild = Data?.FileURL?.replace("~", "");
-            const fileURL = `${FILE_URL}${withOutTild}`;
-            window.open(fileURL, '_blank');
-        } else {
+        if(res?.status === 200){
             identityKey = res?.data?.Identity;
             Toaster.success(`RFQ uploaded successfully.`)
+        }
+      else {
+            Toaster.error(res?.data?.Message ? res?.data?.Message : 'Error in RFQ upload');
         }
         // if (res?.data?.Data?.FailedRecordCount > 0) {
         //     Toaster.warning(`Part upload failed for ${res?.data?.Data?.FailedRecordCount} records.`)
@@ -1140,10 +1137,7 @@ class BulkUpload extends Component {
                     default:
                         return
                 }
-                // this.props.checkRFQBulkUpload(uploadDataRFQ, (res) => {
-                //     this.setState({ setDisable: false })
-                //     this.responseHandlerRFQ(res)
-                // });
+              
             }
 
             else {

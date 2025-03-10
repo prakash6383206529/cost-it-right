@@ -23,7 +23,6 @@ import Button from "../layout/Button";
 import CountdownTimer from "./components/CountdownTimer";
 import InputTimer from "./components/InputTimer";
 import { auctionBidDetails, auctionHeaderDetails, closeAuction, sendCounterOffer, ShowBidWindow, updateAuctionDuration, updateShowVendorRank } from './actions/RfqAuction';
-import { ASSEMBLY, BOP, COMPONENT, RM } from "./AddAuction";
 import DayTime from "../common/DayTimeWrapper";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { TextFieldHookForm } from "../layout/HookFormInputs";
@@ -32,6 +31,7 @@ import Toaster from "../common/Toaster";
 import { AuctionLiveId } from "../../config/constants";
 import TooltipCustom from "../common/Tooltip";
 import { useLabels } from "../../helper/core";
+import { ASSEMBLY, BOP, COMPONENT, RM } from "./AddAuction";
 
 
 function ComparsionAuction(props) {

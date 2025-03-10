@@ -78,7 +78,6 @@ function Simulation(props) {
     const operationList = useSelector(state => state.material.operationList)
     const customerList = useSelector(state => state.client.clientSelectList)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    console.log(simulationApplicability, "simulationApplicability")
 
 
     const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
@@ -127,7 +126,6 @@ function Simulation(props) {
     const { technologyLabel } = useLabels();
     const dispatch = useDispatch()
     const [applicabilityMasterId, setApplicabilityMasterId] = useState(findApplicabilityMasterId(masterList, simulationApplicability?.value) ?? null)
-    console.log(applicabilityMasterId, "applicabilityMasterId")
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     useEffect(() => {
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
@@ -1704,7 +1702,7 @@ function Simulation(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendorName !== resultInput) {
             let res
-            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+            res = await getVendorNameByVendorSelectList(null, resultInput)
             setVendorName(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -1755,7 +1753,6 @@ function Simulation(props) {
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (props?.isFromApprovalListing === true && String(props?.master) !== RAWMATERIALINDEX && String(simulationApplicability?.value) !== String(RAWMATERIALINDEX)) {
-        console.log("COMING HERE")
         const simulationId = props?.approvalProcessId;
         const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
@@ -1763,7 +1760,6 @@ function Simulation(props) {
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} />
     }
     if ((props?.isFromApprovalListing === true && String(props?.master) === RAWMATERIALINDEX) || (props?.isFromApprovalListing === true && String(simulationApplicability?.value) === String(RAWMATERIALINDEX))) {
-        console.log("COMING HERE 2")
         const simulationId = props?.approvalProcessId;
         const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
@@ -1785,7 +1781,7 @@ function Simulation(props) {
                             <Col md="12" className="filter-block zindex-9 simulation-labels">
                                 {false && <Errorbox customClass={'error'} errorText={pendingSimulationAlert(simulationCostingStatus?.length > 0 ? simulationCostingStatus : [])} />}
                                 <div className="d-inline-flex justify-content-start align-items-center pr-3 mb-3 zindex-unset ">
-                                    <div className="flex-fills label">Masters:s</div>
+                                    <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">
                                         <SearchableSelectHookForm
                                             label={''}
@@ -1843,7 +1839,7 @@ function Simulation(props) {
                                                 handleChange={handleAssociationChange}
                                                 errors={errors.Association}
                                             />
-                                            {!bopLoader && <TooltipCustom id="association-tooltip" width="310px" tooltipText='To run a simulation on BOPs associated with costing, please select "Associate with Costing". Otherwise, select "Not Associate with Costing"' />}
+                                            {bopLoader && <TooltipCustom id="association-tooltip" width="310px" tooltipText='To run a simulation on BOPs associated with costing, please select "Associate with Costing". Otherwise, select "Not Associate with Costing"' />}
                                         </div>
                                     </div>
                                 }

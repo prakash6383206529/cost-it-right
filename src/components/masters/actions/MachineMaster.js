@@ -24,6 +24,7 @@ import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config
 
@@ -33,7 +34,7 @@ import DayTime from '../../common/DayTimeWrapper';
  */
 export function createMachineType(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMachineType, data, config());
+        const request = axiosInstance.post(API.createMachineType, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -126,7 +127,7 @@ export function deleteMachineTypeAPI(Id, callback) {
 export function updateMachineTypeAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMachineTypeAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateMachineTypeAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -142,7 +143,7 @@ export function updateMachineTypeAPI(requestData, callback) {
  */
 export function createMachine(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMachine, data, config());
+        const request = axiosInstance.post(API.createMachine, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -162,20 +163,25 @@ export function createMachine(data, callback) {
  */
 export function copyMachine(MachineId, callback) {
     return (dispatch) => {
-        const queryParams = `machineId=${MachineId}&loggedInUserId=${loggedInUserId()}`
-        const request = axios.post(`${API.copyMachine}?${queryParams}`, '', config());
+
+        // This will go through axiosInstance's encryption interceptor
+        const request = axiosInstance.post(
+            `${API.copyMachine}?machineId=${MachineId}&loggedInUserId=${loggedInUserId()}`,
+            config()
+        );
+
         request.then((response) => {
             if (response.data.Result === true) {
-                dispatch({ type: CREATE_SUCCESS, });
+                dispatch({ type: CREATE_SUCCESS });
                 callback(response);
             }
         }).catch((error) => {
             dispatch({ type: CREATE_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
-
 /**
  * @method getMachineDataList
  * @description GET DATALIST
@@ -184,6 +190,7 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
 
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             VendorId: data?.vendor_id ? data?.vendor_id : EMPTY_GUID,
             PlantId: obj?.PlantId !== undefined ? obj?.PlantId : EMPTY_GUID,
             CustomerId: obj?.CustomerId !== undefined ? obj?.CustomerId : EMPTY_GUID,
@@ -194,7 +201,7 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
             Currency: data.Currency !== undefined ? data.Currency : "",
             LocalCurrency: data.LocalCurrency !== undefined ? data.LocalCurrency : "",
             EffectiveDate: data?.EffectiveDate !== undefined ? data?.EffectiveDate : "",
-            listFor:data?.ListFor?data?.ListFor:''
+            listFor: data?.ListFor ? data?.ListFor : ''
         });
         const queryParamsSecond = encodeQueryParamsAndLog({
             CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : '', Technology: obj.Technology !== undefined ? obj.Technology : '', Vendor: obj.VendorName !== undefined ? obj.VendorName : '', Plant: obj.Plant !== undefined ? obj.Plant : '', MachineNumber: obj.MachineNumber !== undefined ? obj.MachineNumber : '', MachineName: obj.MachineName !== undefined ? obj.MachineName : '',
@@ -208,7 +215,7 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
         });
         // const queryParams = `VendorId=${obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID}&PlantId=${obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID}&CustomerId=${obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID}&technology_id=${data.technology_id}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
         // const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineName=${obj.MachineName !== undefined ? obj.MachineName : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&Tonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&ProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&MachineRate=${obj.MachineRate !== undefined ? obj.MachineRate : ""}&EffectiveDate=${obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.newDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&IsVendorDataShow=${obj?.IsVendorDataShow}&IsZeroDataShow=${obj?.IsZeroDataShow}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&TechnologyId=${obj.TechnologyId !== undefined ? obj.TechnologyId : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}`
-        axios.get(`${API.getMachineDataList}?${queryParams}&${queryParamsSecond}`, config())
+        axios.get(`${API.getMachineDataList}/?${queryParams}&${queryParamsSecond}`, config())
             .then((response) => {
                 let value = []
                 if (response?.status !== 204) {
@@ -241,10 +248,11 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
  * @description Get Machine data
  */
 export function getMachineData(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getMachineData}/${ID}`, config())
+            axios.get(`${API.getMachineData}/${ID}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -272,9 +280,10 @@ export function getMachineData(ID, callback) {
  * @description Get Machine Details Data
  */
 export function getMachineDetailsData(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (ID !== '') {
-            axios.get(`${API.getMachineDetailsData}/${ID}`, config())
+            axios.get(`${API.getMachineDetailsData}/${ID}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true || response.status === 204) {
                         dispatch({
@@ -322,7 +331,7 @@ export function deleteMachine(machineId, loggedInUserId, callback) {
 export function updateMachine(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMachine}`, requestData, config())
+        axiosInstance.put(`${API.updateMachine}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -386,11 +395,12 @@ export function getProcessesSelectList(callback) {
  * @description GET MACHINE SELECTLIST
  */
 export function getMachineSelectList(callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         // const id = '802da383-4745-420d-9186-2dbe42f00f5b';
         const id = "00000000-0000-0000-0000-000000000000" //uncomment it when code is deployed.
-        const request = axios.get(`${API.getMachineSelectList}/${id}`, config());
+        const request = axios.get(`${API.getMachineSelectList}/${id}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -413,7 +423,7 @@ export function getMachineSelectList(callback) {
  */
 export function fileUploadMachine(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadMachine, data, config());
+        const request = axiosInstance.post(API.fileUploadMachine, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -433,7 +443,7 @@ export function fileUploadMachine(data, callback) {
  */
 export function checkAndGetMachineNumber(number, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetMachineNumber}?machineNumber=${number}`, '', config());
+        const request = axios.get(`${API.checkAndGetMachineNumber}?loggedInUserId=${loggedInUserId()}&machineNumber=${number}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -452,7 +462,7 @@ export function checkAndGetMachineNumber(number, callback) {
 export function getFuelUnitCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.ExchangeSource}&costingTypeId=${data?.costingTypeId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&entryType=${data?.entryType}`
+        const queryParams = `loggedInUserId=${loggedInUserId()}&fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.ExchangeSource}&costingTypeId=${data?.costingTypeId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&entryType=${data?.entryType}`
         axios.get(`${API.getFuelUnitCost}?${queryParams}`, config())
             .then((response) => {
                 if (response && response.data && response.data.Result === true) {
@@ -473,7 +483,7 @@ export function getFuelUnitCost(data, callback) {
 export function getLabourCost(data, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.ExchangeSource}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&costingTypeId=${data?.costingTypeId}`
+        const queryParams = `loggedInUserId=${loggedInUserId()}&labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.ExchangeSource}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&costingTypeId=${data?.costingTypeId}`
         axios.get(`${API.getLabourCost}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
@@ -494,7 +504,7 @@ export function getLabourCost(data, date, callback) {
 export function getPowerCostUnit(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?plantId=${obj?.plantId}&effectiveDate=${DayTime(obj.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}&costingTypeId=${obj?.costingTypeId}&vendorId=${obj?.vendorId}&customerId=${obj?.customerId}&toCurrency=${obj?.toCurrency}&exchangeRateSourceName=${obj?.exchangeRateSourceName}&entryType=${obj?.entryType}`, config())
+        axios.get(`${API.getPowerCostUnit}?loggedInUserId=${loggedInUserId()}&plantId=${obj?.plantId}&effectiveDate=${DayTime(obj.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}&costingTypeId=${obj?.costingTypeId}&vendorId=${obj?.vendorId}&customerId=${obj?.customerId}&toCurrency=${obj?.toCurrency}&exchangeRateSourceName=${obj?.exchangeRateSourceName}&entryType=${obj?.entryType}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -513,7 +523,7 @@ export function getPowerCostUnit(obj, callback) {
  */
 export function createMachineDetails(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMachineDetails, data, config());
+        const request = axiosInstance.post(API.createMachineDetails, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -533,7 +543,7 @@ export function createMachineDetails(data, callback) {
 export function updateMachineDetails(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMachineDetails}`, requestData, config())
+        axiosInstance.put(`${API.updateMachineDetails}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -550,7 +560,7 @@ export function updateMachineDetails(requestData, callback) {
  */
 export function bulkUploadMachine(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadMachine, data, config());
+        const request = axiosInstance.post(API.bulkUploadMachine, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -569,7 +579,7 @@ export function bulkUploadMachine(data, callback) {
  */
 export function bulkUploadMachineMoreZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadMachineMoreZBC, data, config());
+        const request = axiosInstance.post(API.bulkUploadMachineMoreZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -617,8 +627,9 @@ export function setGroupProcessList(data) {
 }
 
 export function getProcessGroupByMachineId(machineId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessGroupList}/${machineId}`, config())
+        const request = axios.get(`${API.getProcessGroupList}/${machineId}/${loggedInUser?.loggedInUserId}`, config())
         request.then((response) => {
             if ((response.data.Result) || response?.status === 204) {
                 dispatch({

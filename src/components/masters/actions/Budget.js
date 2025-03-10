@@ -9,7 +9,8 @@ import {
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import Toaster from '../../common/Toaster'
-import { userDetails } from '../../../helper'
+import { loggedInUserId, userDetails } from '../../../helper'
+import axiosInstance from '../../../utils/axiosInstance'
 
 
 /**
@@ -20,6 +21,7 @@ export function getBudgetDataList(skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });  
         const QueryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             costingHead: obj.CostingHead,
             financialYear: obj.FinancialYear,
             netPoPrice: obj.NetPoPrice,
@@ -73,7 +75,7 @@ export function getBudgetDataList(skip, take, isPagination, obj, callback) {
 export function getApprovedPartCostingPrice(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });    
-        const QueryParams = `costingHeadId=${obj.costingHeadId !== undefined ? obj.costingHeadId : ""}&partId=${obj.partId !== undefined ? obj.partId : ""}&plantId=${obj.plantId !== undefined ? obj.plantId : ""}&vendorId=${obj.vendorId !== undefined ? obj.vendorId : ""}&customerId=${obj.customerId !== undefined ? obj.customerId : ""}`
+        const QueryParams = `loggedInUserId=${loggedInUserId()}&costingHeadId=${obj.costingHeadId !== undefined ? obj.costingHeadId : ""}&partId=${obj.partId !== undefined ? obj.partId : ""}&plantId=${obj.plantId !== undefined ? obj.plantId : ""}&vendorId=${obj.vendorId !== undefined ? obj.vendorId : ""}&customerId=${obj.customerId !== undefined ? obj.customerId : ""}`
         axios.get(`${API.getApprovedPartCostingPrice}?${QueryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
@@ -92,7 +94,7 @@ export function getApprovedPartCostingPrice(obj, callback) {
 export function createBudget(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createBudget, data, config())
+        const request = axiosInstance.post(API.createBudget, data, config())
         request
             .then((response) => {
                 if (response.data.Result === true) {
@@ -111,7 +113,7 @@ export function createBudget(data, callback) {
 export function updateBudget(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBudget}`, requestData, config())
+        axiosInstance.put(`${API.updateBudget}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -145,7 +147,7 @@ export function getPartCostingHead(callback) {
 export function getMasterBudget(Id, callback) {
     return (dispatch) => {
 
-        axios.get(`${API.getMasterBudget}?budgetingId=${Id}`, config())
+        axios.get(`${API.getMasterBudget}?loggedInUserId=${loggedInUserId()}&budgetingId=${Id}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
                     callback(response.status === 204 ? [] : response)
@@ -166,7 +168,7 @@ export function getMasterBudget(Id, callback) {
  */
 export function bulkUploadBudgetMaster(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadBudgetMaster, data, config());
+        const request = axiosInstance.post(API.bulkUploadBudgetMaster, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -181,7 +183,7 @@ export function bulkUploadBudgetMaster(data, callback) {
 
 export function masterApprovalRequestBySenderBudget(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.masterApprovalRequestBySenderBudget, data, config())
+        const request = axiosInstance.post(API.masterApprovalRequestBySenderBudget, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
@@ -201,7 +203,7 @@ export function masterApprovalRequestBySenderBudget(data, callback) {
 
 export function masterApprovalAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.masterApprovalAPI, data, config())
+        const request = axiosInstance.post(API.masterApprovalAPI, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)

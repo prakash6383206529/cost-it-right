@@ -15,6 +15,7 @@ import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import _ from 'lodash';
 import DayTime from '../../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config;
 
@@ -26,7 +27,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 export function createExchangeRate(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createExchangeRate, data, config());
+        const request = axiosInstance.post(API.createExchangeRate, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -47,7 +48,7 @@ export function getExchangeRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
-            axios.get(`${API.getExchangeRateDataList}?currencyId=${data?.currencyId}&costingHeadId=${data?.costingHeadId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&isBudgeting=${data?.isBudgeting}&currency=${data?.currency}&isRequestForSimulation=${data?.isRequestForSimulation ? true : false}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}`, config())
+            axios.get(`${API.getExchangeRateDataList}?loggedInUserId=${loggedInUserId()}&currencyId=${data?.currencyId}&costingHeadId=${data?.costingHeadId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&isBudgeting=${data?.isBudgeting}&currency=${data?.currency}&isRequestForSimulation=${data?.isRequestForSimulation ? true : false}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}`, config())
                 .then((response) => {
                     if (response.data.Result === true || response.status === 204) {
                         dispatch({
@@ -75,11 +76,12 @@ export function getExchangeRateDataList(isAPICall, data, callback) {
  * @description GET EXCHANGE RATE DATA
  */
 export function getExchangeRateData(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getExchangeRateData}/${ID}`, config())
+            axios.get(`${API.getExchangeRateData}/${ID}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -128,7 +130,7 @@ export function deleteExchangeRate(exchangeRateId, loggedInUserId, callback) {
 export function updateExchangeRate(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateExchangeRate}`, requestData, config())
+        axiosInstance.put(`${API.updateExchangeRate}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -196,7 +198,7 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
             if (!getConfigurationKey().IsExchangeRateEditableForSimulation || item?.NewExchangeRateId !== null) {
                 data.NewExchangeRateId = item?.NewExchangeRateId;
             }
-            const request = axios.post(API.createExchangeRate, data, config());
+            const request = axiosInstance.post(API.createExchangeRate, data, config());
             temp.push(request)
         })
         axios.all(temp).then((response) => {

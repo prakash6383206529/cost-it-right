@@ -58,6 +58,7 @@ function TabDiscountOther(props) {
   const { register, handleSubmit, setValue, getValues, formState: { errors, isSubmitted, isSubmitSuccessful, isSubmitting }, control } = formController;
 
   const { discountLabel } = useLabels();
+  const [isLoader, setIsLoader] = useState(false);
 
   const [IsCurrencyChange, setIsCurrencyChange] = useState(false);
   const [currency, setCurrency] = useState([]);
@@ -94,7 +95,7 @@ function TabDiscountOther(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const [showWarning, setShowWarning] = useState(false)
-  const [isInputLoader, setIsInputLader] = useState(false)
+  const [isInputLoader, setIsInputLoader] = useState(false)
   const [npvTableData, setNpvTableData] = useState([])
   const [conditionTableData, seConditionTableData] = useState([])
   const [totalNpvCost, setTotalNpvCost] = useState(0)
@@ -850,9 +851,9 @@ function TabDiscountOther(props) {
       //   setValue('HundiOrDiscountValue', DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue, initialConfiguration?.NoOfDecimalForPrice))
       // }
       if (IsCurrencyChange && ExchangeRateData && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
-        let poPriceOtherCurrency = (getValues('Currency') === '') ? 0 : (DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
+        let poPriceOtherCurrency = (getValues('Currency') === '') ? 0 : (DiscountCostData && netPOPrice* ExchangeRateData.CurrencyExchangeRate)
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull(poPriceOtherCurrency, initialConfiguration?.NoOfDecimalForPrice))
-        setNetPoPriceCurrencyState(DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
+        setNetPoPriceCurrencyState(DiscountCostData && netPOPrice * ExchangeRateData.CurrencyExchangeRate)
       }
     }
 
@@ -1017,13 +1018,13 @@ function TabDiscountOther(props) {
     if (newValue && newValue !== '') {
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
-      setIsInputLader(true)
+      // setIsInputLader(true)
       const vendorValue = IsFetchExchangeRateVendorWiseForParts() ? costData?.VendorId : EMPTY_GUID
 
       let costingTypeId = (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? VBCTypeId : costData.CostingTypeId
       const costingType = IsFetchExchangeRateVendorWiseForParts() ? costingTypeId : ZBCTypeId
       dispatch(getExchangeRateByCurrency(currencySource?.label, costingType, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorValue, costData.CustomerId, false, newValue.label, initialConfiguration?.IsSourceExchangeRateNameVisible ? exchangeRateSource?.label : null, res => {
-        setIsInputLader(false)
+        // setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
           setShowWarning(true)
         }
@@ -1033,10 +1034,10 @@ function TabDiscountOther(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
-          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
-          setNetPoPriceCurrencyState(NetPOPriceINR / Data.CurrencyExchangeRate)
+          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR* Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
+          setNetPoPriceCurrencyState(NetPOPriceINR * Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
-          setIsInputLader(false)
+          setIsInputLoader(false)
         }
       }))
     } else {
@@ -1051,8 +1052,8 @@ function TabDiscountOther(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
-          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
-          setNetPoPriceCurrencyState(NetPOPriceINR / Data.CurrencyExchangeRate)
+          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR * Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
+          setNetPoPriceCurrencyState(NetPOPriceINR* Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
         }
       }))
@@ -1204,6 +1205,7 @@ function TabDiscountOther(props) {
   */
   // const onSubmit = debounce((values, val, gotoNextValue) => {
   const onSubmit = debounce((values, gotoNextValue) => {
+    setIsLoader(true)
     setPaymentTermsWarning(false)
     if (errorCheckObject(ErrorObjDiscount)) return false;
 
@@ -1217,6 +1219,7 @@ function TabDiscountOther(props) {
         }
       }
       setRerender(!reRender)
+      setIsLoader(false)
       return false
     }
     const tabData = RMCCTabData[0]
@@ -1343,6 +1346,7 @@ function TabDiscountOther(props) {
 
     if (!CostingViewMode) {
       dispatch(saveDiscountOtherCostTab(data, res => {
+        setIsLoader(false)
         if (res.data.Result) {
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           // dispatch(setComponentDiscountOtherItemData({}, () => { }))
@@ -1357,10 +1361,13 @@ function TabDiscountOther(props) {
             setNfrListing(true)
           }
         }
+        setIsLoader(false)
       }))
 
       if (checkIsPaymentTermsDataChange === true) {
-        dispatch(saveCostingPaymentTermDetail(obj, res => { }))
+        dispatch(saveCostingPaymentTermDetail(obj, res => {
+          setIsLoader(false)
+        }))
       }
     }
 
@@ -1947,6 +1954,7 @@ function TabDiscountOther(props) {
   return (
     <>
       {!nfrListing && <div className="login-container signup-form">
+        {isLoader && <LoaderCustom customClass="attachment-sec-loader" />}
         <div className="p-3 costing-border w-100 border-top-0">
           <Row>
             <Col md="12">
@@ -2793,7 +2801,6 @@ function TabDiscountOther(props) {
                   </Row >
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer sticky-btn-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
-
                       {
                         !CostingViewMode &&
                         <button

@@ -81,6 +81,7 @@ const AssemblyPartListing = React.memo((props) => {
     cell: [],
     showPopupToggle: false,
     showPopupToggle2: false,
+    globalTake: defaultPageSize,
   });
   const { isSimulation } = props;
   const [pageRecord, setPageRecord] = useState(0)
@@ -368,7 +369,7 @@ const AssemblyPartListing = React.memo((props) => {
           ...prevState,
           noData: searchNocontentFilter(value, state?.noData),
         }));
-        setTotalRecordCount(state?.gridApi?.getDisplayedRowCount())      
+        setTotalRecordCount(state?.gridApi?.getDisplayedRowCount())
       }
     }, 500);
     setDisableFilter(false);
@@ -586,6 +587,10 @@ const AssemblyPartListing = React.memo((props) => {
     window.screen.width >= 1920 && params.api.sizeColumnsToFit()
   };
 
+  const onPageSizeChanged = (newPageSize) => {
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
+    setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
+  };
 
   const onRowSelect = () => {
     const selectedRows = state.gridApi.getSelectedRows();
@@ -746,6 +751,15 @@ const AssemblyPartListing = React.memo((props) => {
     if (isSimulation) {
       props?.isReset();
     }
+    state.gridApi.setQuickFilter(null)
+    state.gridApi.deselectAll();
+    gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
+    // if (window.screen.width >= 1600) {
+    //   state.gridApi.sizeColumnsToFit();
+    // }
+    setState((prevState) => ({ ...prevState, dataCount: 0, globalTake: defaultPageSize, }));
+    getTableListData();
   };
 
   const isFirstColumn = (params) => {
@@ -867,48 +881,49 @@ const AssemblyPartListing = React.memo((props) => {
             {state?.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found"
             />
             )}
-            {(!state?.render) ? <LoaderCustom customClass="loader-center" /> :
-              <AgGridReact
+            {
+              state.isLoader ? <LoaderCustom customClass="loader-center" /> :
+                <AgGridReact
 
-                style={{ height: '100%', width: '100%' }}
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout="autoHeight"
-                rowData={tourStartData?.showExtraData ? [...setLoremIpsum(partsListing[0]), ...partsListing] : partsListing}
-                pagination={true}
-                paginationPageSize={globalTakes}
-                onGridReady={onGridReady}
-                gridOptions={gridOptions}
-                noRowsOverlayComponent={"customNoRowsOverlay"}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: "imagClass",
-                }}
-                rowSelection={"multiple"}
-                onSelectionChanged={onRowSelect}
-                frameworkComponents={frameworkComponents}
-                onFilterModified={onFloatingFilterChanged}
-                suppressRowClickSelection={true}
-                enableBrowserTooltips={true}
-              >
-                <AgGridColumn cellClass="has-checkbox" field="Technology" headerName={technologyLabel} cellRenderer={checkBoxRenderer}              ></AgGridColumn>
-                <AgGridColumn field="BOMNumber" headerName="BOM No."              ></AgGridColumn>
-                <AgGridColumn field="PartNumber" headerName="Part No."              ></AgGridColumn>
-                <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
-                {initialConfiguration?.IsSAPCodeRequired && (
-                  <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={"hyphenFormatter"}                ></AgGridColumn>
-                )}
-                <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"              ></AgGridColumn>
-                <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count" ></AgGridColumn>
-                <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
-                <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
-                <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
-                {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={'hyphenFormatter'}  ></AgGridColumn>}
-                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}              ></AgGridColumn>
-                <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
-                <AgGridColumn field="PartId" width={250} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned={window.screen.width < 1920 ? "right" : ""} type="rightAligned" floatingFilter={false} cellRenderer={"buttonFormatter"}              ></AgGridColumn>
-              </AgGridReact>}
+                  style={{ height: '100%', width: '100%' }}
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout="autoHeight"
+                  rowData={tourStartData?.showExtraData ? [...setLoremIpsum(partsListing[0]), ...partsListing] : partsListing}
+                  pagination={true}
+                  paginationPageSize={globalTakes}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  noRowsOverlayComponent={"customNoRowsOverlay"}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                    imagClass: "imagClass",
+                  }}
+                  rowSelection={"multiple"}
+                  onSelectionChanged={onRowSelect}
+                  frameworkComponents={frameworkComponents}
+                  onFilterModified={onFloatingFilterChanged}
+                  suppressRowClickSelection={true}
+                  enableBrowserTooltips={true}
+                >
+                  <AgGridColumn cellClass="has-checkbox" field="Technology" headerName={technologyLabel} cellRenderer={checkBoxRenderer}              ></AgGridColumn>
+                  <AgGridColumn field="BOMNumber" headerName="BOM No."              ></AgGridColumn>
+                  <AgGridColumn field="PartNumber" headerName="Part No."              ></AgGridColumn>
+                  <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+                  {initialConfiguration?.IsSAPCodeRequired && (
+                    <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={"hyphenFormatter"}                ></AgGridColumn>
+                  )}
+                  <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"              ></AgGridColumn>
+                  <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count" ></AgGridColumn>
+                  <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                  <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                  <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
+                  {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={'hyphenFormatter'}  ></AgGridColumn>}
+                  <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}              ></AgGridColumn>
+                  <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
+                  <AgGridColumn field="PartId" width={250} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned={window.screen.width < 1920 ? "right" : ""} type="rightAligned" floatingFilter={false} cellRenderer={"buttonFormatter"}              ></AgGridColumn>
+                </AgGridReact>}
             <div className='button-wrapper'>
               {<PaginationWrappers gridApi={state?.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="AssemblyPart" />}
               <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="AssemblyPart" />

@@ -58,7 +58,7 @@ const AddDelegation = (props) => {
     });
     const dispatch = useDispatch()
     const moduleType = reactLocalStorage.getObject('moduleType')
-    const delegateeUserList = useSelector(state => state.auth.delegateeUserList)
+    const delegateeUserList = useSelector(state => state?.auth?.delegateeUserList)
     useEffect(() => {
         if (!isView) {
             const allApprovalType = Object.entries(moduleType).map(([key, value]) => ({
