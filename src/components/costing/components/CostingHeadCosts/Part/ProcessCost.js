@@ -7,7 +7,7 @@ import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '.
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, HOUR, MASS, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS, TIME, defaultPageSize } from '../../../../../config/constants';
+import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, ApplicabilityTypes, CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, HOUR, MASS, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS, TIME, defaultPageSize } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
@@ -46,6 +46,7 @@ function ProcessCost(props) {
   const [Ids, setIds] = useState([])
   const [MachineIds, setMachineIds] = useState([])
   const [tabData, setTabData] = useState(props.data)
+  console.log("tabData",tabData)
   const [isCalculator, setIsCalculator] = useState(false)
   const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
@@ -61,7 +62,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource,exchangeRateData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const { rmFinishWeight, rmGrossWeight } = props
   const [openMachineForm, setOpenMachineForm] = useState(false)
 
@@ -474,7 +475,7 @@ function ProcessCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
@@ -849,28 +850,27 @@ function ProcessCost(props) {
         productionPerHour = findProductionPerHour(event.target.value)
         processCost = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour)
       }
+      const netCosts = calculateNetCosts(processCost, tempData?.Applicability);
       tempData = {
         ...tempData,
         Quantity: event.target.value,
         IsCalculatedEntry: false,
-        ProductionPerHour: tempData.UOMType !== TIME ? '' : productionPerHour,
-        ProcessCost: processCost
+        ProductionPerHour: tempData.UOMType !== TIME ? '-' : productionPerHour,
+        ProcessCost: processCost,
+        ...netCosts
       }
+
       let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
 
-      let ProcessCostTotal = 0
-      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ProcessCost)
-      }, 0)
-
+      // Calculate totals
+      const totals = calculateProcessTotals(gridTempArr);
       let apiArr = formatMainArr(gridTempArr)
 
       tempArr = {
         ...tabData,
-        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
-        ProcessCostTotal: ProcessCostTotal,
+        NetConversionCost: totals?.ProcessCostTotal + checkForNull(tabData?.OperationCostTotal !== null ? tabData?.OperationCostTotal : 0,) + checkForNull(tabData?.OtherOperationCostTotal !== null ? tabData?.OtherOperationCostTotal : 0),
+        ...totals,
         CostingProcessCostResponse: apiArr,
-
       }
       setIsFromApi(false)
       setTabData(tempArr)
@@ -931,6 +931,58 @@ function ProcessCost(props) {
       ...tabData,
       CostingProcessCostResponse: apiArr,
     }
+    setIsFromApi(false)
+    setTabData(tempArr)
+    setGridData(gridTempArr)
+    dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
+  }
+  const calculateNetCosts = (processCost, applicabilityType) => {
+    return {
+      NetProcessCostForOverhead: [APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_PROFIT].includes(applicabilityType) ? processCost : 0,
+      NetProcessCostForOverheadExcl: applicabilityType === APPLICABILITY_OVERHEAD_EXCL ? processCost : 0,
+      NetProcessCostForProfit: [APPLICABILITY_PROFIT, APPLICABILITY_OVERHEAD_PROFIT].includes(applicabilityType) ? processCost : 0,
+      NetProcessCostForProfitExcl: applicabilityType === APPLICABILITY_PROFIT_EXCL ? processCost : 0,
+      NetProcessCostForOverheadAndProfit: applicabilityType === APPLICABILITY_OVERHEAD_PROFIT ? processCost : 0
+    };
+  };
+  
+  const calculateProcessTotals = (gridData) => {
+    return {
+      ProcessCostTotal: gridData.reduce((acc, el) => acc + checkForNull(el?.ProcessCost), 0),
+      NetProcessCostForOverhead: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForOverhead), 0),
+      NetProcessCostForOverheadExcl: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForOverheadExcl), 0),
+      NetProcessCostForProfit: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForProfit), 0),
+      NetProcessCostForProfitExcl: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForProfitExcl), 0),
+      NetProcessCostForOverheadAndProfit: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForOverheadAndProfit), 0)
+    };
+  };
+
+  const onHandleChangeApplicability = (e, index) => {
+    let tempArr = []
+    let tempData = processGroupGrid[index]
+
+    // Calculate net costs based on new applicability
+    const netCosts = calculateNetCosts(tempData.ProcessCost, e.value);
+
+    tempData = {
+      ...tempData,
+      Applicability: e.value,
+      ...netCosts
+    }
+
+    let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
+
+    // Calculate totals
+    const totals = calculateProcessTotals(gridTempArr);
+    let apiArr = formatMainArr(gridTempArr)
+
+    tempArr = {
+      ...tabData,
+      NetConversionCost: totals.ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+      ...totals,
+      CostingProcessCostResponse: apiArr,
+    }
+
     setIsFromApi(false)
     setTabData(tempArr)
     setGridData(gridTempArr)
@@ -1455,6 +1507,7 @@ function ProcessCost(props) {
                     <th style={{ width: "180px" }}><span>Quantity <TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`quantity-info`} tooltipText={tooltipText} /></span></th>
                     <th style={{ width: "110px" }} >{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
+                    <th style={{ width: "110px" }} >{`Applicability`}</th>
                     <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -1574,6 +1627,30 @@ function ProcessCost(props) {
                                 />
                               </td>
                             }
+
+                            <td>
+                              <SearchableSelectHookForm
+                                name={`Applicability${index}`}
+                                type="text"
+                                label="Applicability"
+                                errors={`${errors.Applicability}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                defaultValue={item.Applicability ? {
+                                  label: ApplicabilityTypes.find(type => type.value === item.Applicability)?.label,
+                                  value: item.Applicability
+                                } : ''}
+                                options={ApplicabilityTypes}
+                                required={false}
+                                handleChange={(e) => { onHandleChangeApplicability(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>
+
                             <td>
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
