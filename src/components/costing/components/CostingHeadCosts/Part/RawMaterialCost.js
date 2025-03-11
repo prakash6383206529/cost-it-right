@@ -521,7 +521,7 @@ function RawMaterialCost(props) {
   }
 
   const removeErrorGrossFinishWeight = (grossValue, finishWeight, index) => {
-    if (checkForNull(grossValue) > checkForNull(finishWeight) && errors?.rmGridFields) {
+    if (checkForNull(grossValue) >= checkForNull(finishWeight) && errors?.rmGridFields) {
       delete errors?.rmGridFields[index]?.FinishWeight
       delete errors?.rmGridFields[index]?.GrossWeight
     }
@@ -831,6 +831,7 @@ function RawMaterialCost(props) {
    * @description CHECK IS FINISH WEIGHT LESS THEN GROSS WEIGHT
    */
   const IsFinishWeightValid = (GrossWeight, FinishWeight) => {
+    console.log(GrossWeight, FinishWeight, "GrossWeight, FinishWeight")
     return GrossWeight >= FinishWeight ? true : false;
   }
 
