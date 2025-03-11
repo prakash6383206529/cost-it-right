@@ -306,21 +306,21 @@ export const ErrorMessage = (props) => {
                 rawMaterialId: props?.module === 'RM' ? props?.id : null,
                 boughtOutPartId: props?.module === 'BOP' ? props?.id : null
             }
-            dispatch(getAmmendentStatus(obj, res => {
-                if (res?.status !== 204) {
-                    const { IsSuccessfullyUpdated, ErrorStatus, Status } = res?.data?.DataList[0]
-                    if (IsSuccessfullyUpdated === true) {
-                        setIsGreen(true)
-                        setAmendentstatus(Status)
-                        setShowButton(Status?.length > 245 ? true : false)
-                    } else {
-                        setIsGreen(false)
-                        setAmendentstatus(ErrorStatus)
-                        setShowButton(ErrorStatus?.length > 245 ? true : false)
-                    }
-                    setRecordInsertStatusBox(true)
-                }
-            }))
+            // dispatch(getAmmendentStatus(obj, res => {
+            //     if (res?.status !== 204) {
+            //         const { IsSuccessfullyUpdated, ErrorStatus, Status } = res?.data?.DataList[0]
+            //         if (IsSuccessfullyUpdated === true) {
+            //             setIsGreen(true)
+            //             setAmendentstatus(Status)
+            //             setShowButton(Status?.length > 245 ? true : false)
+            //         } else {
+            //             setIsGreen(false)
+            //             setAmendentstatus(ErrorStatus)
+            //             setShowButton(ErrorStatus?.length > 245 ? true : false)
+            //         }
+            //         setRecordInsertStatusBox(true)
+            //     }
+            // }))
         }
     }, [])
 
