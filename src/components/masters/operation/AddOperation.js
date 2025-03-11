@@ -367,6 +367,7 @@ class AddOperation extends Component {
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
         if (item.Value === '0') return false;
+        if (item.Text === this.props.fieldsObj?.plantCurrency) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -925,15 +926,11 @@ class AddOperation extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue }
-        , () => {
-          if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+      this.setState({ client: newValue } , () => {
             this.callExchangeRateAPI()
-          }
         }
       );
     }
-
     else {
       this.setState({ client: [] })
     }

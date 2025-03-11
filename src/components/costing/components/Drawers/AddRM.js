@@ -87,7 +87,7 @@ function AddRM(props) {
 
   const currencyFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== '-' ? cellValue : reactLocalStorage.getObject("baseCurrency")
+    return cellValue !== undefined && cellValue !== null && cellValue !== '' && cellValue !== '-' ? cellValue : '-';
   }
 
   const priceFormatter = (props) => {

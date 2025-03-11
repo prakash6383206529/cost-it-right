@@ -263,12 +263,24 @@ function ApproveRejectUI(props) {
       setIsDisable(true)
       dispatch(uploadSimulationAttachment(data, (res) => {
         setDisableFalseFunction()
-        let Data = res?.data[0]
-        files.push(Data)
-        setFiles(files)
-        setTimeout(() => {
+        if(res?.status === 200){
+          let Data = res?.data[0]
+          files.push(Data)
+          setFiles(files)
+          setTimeout(() => {
           setIsOpen(!IsOpen)
         }, 500);
+        }else{
+          setDisableFalseFunction()
+          setIsDisable(false)
+          setAttachmentLoader(false)
+          dropzone.current.files.pop() // Remove the failed file from dropzone
+          setFiles([...files]) // Trigger re-render with current files
+          // Only show toaster once for file upload failure
+          if (!files.includes(file)) {
+            Toaster.warning('File upload failed. Please try again.')
+          }
+        }
       }))
     }
 
@@ -633,7 +645,7 @@ function ApproveRejectUI(props) {
                               onChangeStatus={handleChangeStatus}
                               PreviewComponent={Preview}
                               // onSubmit={handleImapctSubmit}
-                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx,.zip"
                               initialFiles={[]}
                               maxFiles={2}
                               maxSizeBytes={5000000}
@@ -702,7 +714,7 @@ function ApproveRejectUI(props) {
                     id="Approval_cancel"
                     className="mr15 my-0"
                     variant={"cancel-btn"}
-                    disabled={isDisable}
+                    disabled={false}
                     onClick={toggleDrawer}
                     icon={"cancel-icon"}
                     buttonName={"Cancel"}

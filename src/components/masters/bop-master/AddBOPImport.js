@@ -34,7 +34,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate,recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -702,6 +702,7 @@ class AddBOPImport extends Component {
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
         if (item.Value === '0') return false;
+        if (item.Text === this.props.fieldsObj?.plantCurrency) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -1012,22 +1013,6 @@ class AddBOPImport extends Component {
     return total
   }
 
-  recalculateConditions = (basicPriceSelectedCurrency) => {
-    const { conditionTableData } = this.state;
-    let copiedConditionData = _.cloneDeep(conditionTableData) ?? []
-    let tempArr = copiedConditionData
-    copiedConditionData && copiedConditionData?.map((item, index) => {
-      if (item?.ConditionType === "Percentage") {
-        let ApplicabilityCost = this.handleApplicability(item.Applicability, basicPriceSelectedCurrency, tempArr)
-        let ConditionCost = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
-        let ConditionCostConversion = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
-        let obj = { ...item, ApplicabilityCost: ApplicabilityCost, ConditionCost: ConditionCost, ConditionCostConversion: ConditionCostConversion, ConditionCostPerQuantity: ConditionCostConversion }
-        tempArr = Object.assign([...tempArr], { [index]: obj })
-      }
-    })
-    return tempArr
-  }
-
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props;
     const { costingTypeId, totalOtherCost } = this.state;
@@ -1037,7 +1022,7 @@ class AddBOPImport extends Component {
     if (costingTypeId === ZBCTypeId) {
       this.props.change('BasicPrice', checkForDecimalAndNull(basicPrice, initialConfiguration?.NoOfDecimalForPrice));
     }
-    let conditionList = this.recalculateConditions(basicPrice)
+    let conditionList = recalculateConditions(basicPrice, this.state)
     const sumBaseCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPrice)
     let netLandedCostPlantCurrency = checkForDecimalAndNull(checkForNull(netLandedCost) * checkForNull(this.state.plantCurrencyValue), getConfigurationKey().NoOfDecimalForPrice)
@@ -1577,7 +1562,10 @@ class AddBOPImport extends Component {
   closeOtherCostToggle = (type, data, total, totalBase) => {
     const { NetConditionCost, plantCurrencyValue, currencyValue } = this.state
     if (type === 'Save') {
-      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) && this.state.NetConditionCost) {
+      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) &&
+        this.state.NetConditionCost &&
+        Array.isArray(this.state?.conditionTableData) &&
+        this.state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
         Toaster.warning("Please click on refresh button to update condition cost data.")
       }
       const basicPrice = checkForNull(this.props.fieldsObj?.BasicRate) + checkForNull(totalBase)
@@ -1597,13 +1585,28 @@ class AddBOPImport extends Component {
     }
 
   }
+  updateTableCost = (isConditionCost = false) => {
+    const result = updateCostValue(isConditionCost, this.state, this.props.fieldsObj?.BasicRate);
+    // Update state
+    this.setState(result.updatedState);
 
-  updateConditionCostValue = () => {
-    let conditnCostTable = this.recalculateConditions(this.state.BasicPrice)
-    let sum = conditnCostTable && conditnCostTable.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    this.props.change('NetConditionCost', checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
-    this.setState({ FinalConditionCostBaseCurrency: sum, ConditionCostConversion: sum, })
-  }
+    // Update form value using this.props.change() instead of setValue()
+    this.props.change(result.formValue.field, result.formValue.value);
+
+    // Handle any additional actions based on isConditionCost
+    if (isConditionCost) {
+      // Update condition cost related data
+      this.setState({
+        ...this.state,
+        states: result.updatedState
+      });
+    } else {
+      // Update other cost details
+      this.setState({
+        otherCostTableData: result.tableData
+      });
+    }
+  };
 
   /**
   * @method render
@@ -2168,7 +2171,7 @@ class AddBOPImport extends Component {
                             (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                               <Col md="3">
                                 <Field
-                                  label={`Basic Rate/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                  label={`Basic Rate (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                   name={"BasicRate"}
                                   type="text"
                                   placeholder={isEditFlag ? '-' : "Enter"}
@@ -2189,7 +2192,7 @@ class AddBOPImport extends Component {
                               <div className='d-flex align-items-center'>
                                 <div className="w-100">
                                   <Field
-                                    label={`Other Cost/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                    label={`Other Cost (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                     name={"OtherCost"}
                                     type="text"
                                     placeholder={"-"}
@@ -2202,6 +2205,10 @@ class AddBOPImport extends Component {
                                     customClassName=" withBorder"
                                   />
                                 </div>
+                                <div className="d-flex align-items-center" style={{ marginTop: '-5px' }}>
+                                <button type="button" id="other-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(false)} disabled={this.props.data.isViewMode}>
+                                  <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
+                                </button>
                                 <Button
                                   id="addBOPDomestic_otherCost"
                                   onClick={this.otherCostToggle}
@@ -2216,13 +2223,14 @@ class AddBOPImport extends Component {
                                   disabled={!this.props.fieldsObj?.BasicRate}
                                 />
                               </div>
-                            </Col>)}
+                            </div>
+                          </Col>)}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                               <Col md="3">
                                 <TooltipCustom id="bop-basic-currency" width="350px" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
                                 <Field
-                                  label={`Basic Price/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                  label={`Basic Price (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={"BasicPrice"}
                                   id="bop-basic-currency"
                                   type="text"
@@ -2240,7 +2248,7 @@ class AddBOPImport extends Component {
                                 <div className='d-flex align-items-center'>
                                   <div className='w-100'>
                                     <Field
-                                      label={`Condition Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                      label={`Condition Cost (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                       name={"NetConditionCost"}
                                       type="text"
                                       placeholder={"-"}
@@ -2254,7 +2262,7 @@ class AddBOPImport extends Component {
                                     />
                                   </div>
                                   <div className="d-flex align-items-center mb-2">
-                                    <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateConditionCostValue()} disabled={this.props.data.isViewMode}>
+                                    <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(true)} disabled={this.props.data.isViewMode}>
                                       <TooltipCustom disabledIcon={true} width="350px" id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                     </button>
                                     <Button
@@ -2274,7 +2282,7 @@ class AddBOPImport extends Component {
                               <Col md="3">
                                 <TooltipCustom id="bop-net-cost-currency" disabledIcon={true} width="350px" tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                  label={`Net Cost (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}
                                   type="text"
                                   id="bop-net-cost-currency"
@@ -2288,9 +2296,9 @@ class AddBOPImport extends Component {
                                 />
                               </Col>
                               {<Col md="3">
-                                <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} width="350px" tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
+                                <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} width="350px" tooltipText={`Net Cost (${fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                  label={`Net Cost (${fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={"NetLandedCostPlantCurrency"}
                                   id="bop-net-cost-plant"
                                   type="text"
@@ -2304,9 +2312,9 @@ class AddBOPImport extends Component {
                                 />
                               </Col>}
                               {!this?.state?.hidePlantCurrency && <Col md="3">
-                                <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} width="350px" tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} width="350px" tooltipText={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                   type="text"
                                   id="bop-net-cost-Conversion" s

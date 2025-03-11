@@ -71,7 +71,9 @@ class ViewUserDetails extends Component {
     this.getUsersTechnologyLevelData(this.props.UserId)
     this.getUsersSimulationTechnologyLevelData(this.props.UserId)
     getConfigurationKey().IsMasterApprovalAppliedConfigure && this.getUsersMasterLevelData(this.props.UserId)
-    this.getOnboardingUserData(this.props.UserId)
+    if(getConfigurationKey().IsShowOnboarding ){
+      this.getOnboardingUserData(this.props.UserId)
+    }
   }
 
   changeDepartment() {
