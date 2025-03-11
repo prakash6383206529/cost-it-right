@@ -3185,7 +3185,7 @@ export function exchangeRateReducer(value) {
 export function getCostingCostDetails(obj, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getCostingCostDetails}?costingId=${obj?.costingId}&subAsmCostingId=${obj?.subAsmCostingId}&asmCostingId=${obj?.asmCostingId}`, config())
+    const request = axios.get(`${API.getCostingCostDetails}?costingId=${obj?.costingId}&subAsmCostingId=${obj?.subAsmCostingId}&asmCostingId=${obj?.asmCostingId}&loggedInUserId=${loggedInUserId()}`, config())
     request
       .then((response) => {
         if (response?.data?.Result) {
