@@ -153,17 +153,17 @@ function AddConditionCosting(props) {
     const toggleCondition = () => {
         // isFromImport ? type === 'Fixed' ? 'mb-3' : 'mt-4 pt-1' : type === 'Percentage' ? 'mb-3' : 'mt-4 pt-1'
         let cssClass = '';
+        console.log(isFromImport, type, "test")
         if (isFromImport) {
-            if (!type) {
-                cssClass = 'mb-3';
-            } else if (type?.label === "Fixed") {
-                cssClass = 'mb-3';
+            if (!type || type?.label === "Fixed") {
+                cssClass = 'mb-3 mt-4 pt-1';
             } else {
                 cssClass = 'mt-4 pt-1';
             }
         } else {
             if (!type) {
                 cssClass = 'mb-3';
+
             } else if (type?.label === "Fixed") {
                 cssClass = 'mb-3';
             } else {
