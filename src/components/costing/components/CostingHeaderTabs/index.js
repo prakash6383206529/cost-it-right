@@ -134,26 +134,27 @@ function CostingHeaderTabs(props) {
         baseToCurrency: costData?.LocalCurrency,
         baseFromCurrency: currency?.label
       };
-    if (currency?.label !== costData?.LocalCurrency || costData?.LocalCurrency !== initialConfiguration?.BaseCurrency) {
-       callExchangeRateAPI(currency?.label, costData?.LocalCurrency).then(res => {
+      if (currency?.label !== costData?.LocalCurrency || costData?.LocalCurrency !== initialConfiguration?.BaseCurrency) {
+        callExchangeRateAPI(currency?.label, costData?.LocalCurrency).then(res => {
           exchangeData = {
-            plantExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? Boolean(res?.data?.Data) : false,
-            baseExchangeRate: null,
-            plantToCurrency: initialConfiguration?.BaseCurrencyy,
+            baseExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? true : false,
+            plantExchangeRate: null,
+            plantToCurrency: initialConfiguration?.BaseCurrency,
             plantFromCurrency: costData?.LocalCurrency,
             baseToCurrency: costData?.LocalCurrency,
             baseFromCurrency: currency?.label
           };
-    
+
           arr.push(res?.data?.Data);
-    
+
           return callExchangeRateAPI(costData?.LocalCurrency, initialConfiguration?.BaseCurrency);
         }).then(resp => {
-          exchangeData.baseExchangeRate = resp?.data?.Data && Object.keys(resp?.data?.Data).length > 0 ? Boolean(resp?.data?.Data) : false;
+
+          exchangeData.plantExchangeRate = resp?.data?.Data && Object.keys(resp?.data?.Data).length > 0 ? Boolean(resp?.data?.Data) : false;
           arr.push(resp?.data?.Data);
-    
+
           dispatch(exchangeRateReducer(exchangeData));
-    
+
           // Create and dispatch saveCostingBasicDetails only after both API calls complete
           let obj = {
             "BaseCostingId": costData?.CostingId,
@@ -166,13 +167,15 @@ function CostingHeaderTabs(props) {
             "LocalExchangeRateId": arr[1]?.ExchangeRateId ?? null,
             "LoggedInUserId": loggedInUserId()
           };
-    
+
           dispatch(saveCostingBasicDetails(obj, res => { }));
         });
       } else {
+
+
         // If no API calls needed, just dispatch the actions with default values
         dispatch(exchangeRateReducer(exchangeData));
-        
+
         let obj = {
           "BaseCostingId": costData?.CostingId,
           "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD'),
@@ -184,7 +187,7 @@ function CostingHeaderTabs(props) {
           "LocalExchangeRateId": null,
           "LoggedInUserId": loggedInUserId()
         };
-    
+
         dispatch(saveCostingBasicDetails(obj, res => { }));
       }
     }
