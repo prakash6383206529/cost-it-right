@@ -244,7 +244,7 @@ function AddOtherCostDrawer(props) {
             }
             const item = tableData.find(item => item?.CostHeaderName === Applicability);
             if (item) {
-                totalCostCurrency += props.rawMaterial ? Number(item?.NetCostConversion) : Number(item?.NetCost);
+                totalCostCurrency += props.isBOP ? Number(item?.NetCost) : Number(item?.NetCostConversion);
                 if (selectedApplicabilities.includes('Basic Rate')) {
                     // totalCostCurrency += BasicRateIndexCurrency;
                     totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency
@@ -339,11 +339,11 @@ function AddOtherCostDrawer(props) {
         const remark = getValues('Remark');
         const costDescription = getValues('CostDescription');
 
-         // Check for form errors first
-    if (Object.keys(errors).length > 0) {
-        Toaster.warning('Please fix all validation errors before adding.');
-        return false;
-    }
+        // Check for form errors first
+        if (Object.keys(errors).length > 0) {
+            Toaster.warning('Please fix all validation errors before adding.');
+            return false;
+        }
 
 
         // If 'Type' is not provided, return false
@@ -522,8 +522,8 @@ function AddOtherCostDrawer(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    validate: { checkWhiteSpaces, hashValidation,maxLength80 },
-                                                    
+                                                    validate: { checkWhiteSpaces, hashValidation, maxLength80 },
+
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={""}
@@ -699,8 +699,8 @@ function AddOtherCostDrawer(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    validate: { checkWhiteSpaces, hashValidation ,maxLength80}
-                                                    
+                                                    validate: { checkWhiteSpaces, hashValidation, maxLength80 }
+
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={""}

@@ -1333,19 +1333,32 @@ class AddMachineRate extends Component {
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
       this.setState({ files: tempArr })
     }
-
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadMachine(data, (res) => {
         this.setDisableFalseFunction()
-        let Data = res.data[0]
-        const { files } = this.state;
-        let attachmentFileArray = [...files]
-        attachmentFileArray.push(Data)
-        this.setState({ files: attachmentFileArray })
+        if ('response' in res) {
+          status = res && res?.response?.status
+          this.dropzone.current.files.pop()
+          this.setState({ attachmentLoader: false })
+          this.dropzone.current.files.pop() // Remove the failed file from dropzone
+          this.setState({ files: [...this.state.files] }) // Trigger re-render with current files
+          Toaster.warning('File upload failed. Please try again.')
+        }
+        else {
+          let Data = res.data[0]
+          const { files } = this.state;
+          let attachmentFileArray = [...files]
+          attachmentFileArray.push(Data)
+          this.setState({ attachmentLoader: false, files: attachmentFileArray })
+          setTimeout(() => {
+            this.setState(prevState => ({ isOpen: !prevState.isOpen }))
+          }, 500);
+        }
       })
     }
+
 
     if (status === 'rejected_file_type') {
       this.setDisableFalseFunction()
