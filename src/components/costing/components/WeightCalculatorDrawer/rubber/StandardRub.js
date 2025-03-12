@@ -1,8 +1,9 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, loggedInUserId } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
@@ -18,12 +19,14 @@ import { sourceCurrencyFormatter } from '../../Drawers/processCalculatorDrawer/C
 
 
 
+
 const gridOptions = {};
 function StandardRub(props) {
 
+    const dispatch = useDispatch();
     const { rmRowData, rmData } = props
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+    const isVolumeEditable = getConfigurationKey()?.IsVolumeEditableInRubberRMWeightCalculator ?? false
 
     const costData = useContext(costingInfoContext)
     const [tableData, setTableData] = useState([])
@@ -54,7 +57,7 @@ function StandardRub(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'FinishWeight'],
+        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'FinishWeight', ...(isVolumeEditable ? ['Volume']: [])],
     })
 
     useEffect(() => {
@@ -120,24 +123,20 @@ function StandardRub(props) {
 
 
     const calculateVolume = debounce(() => {
-
         const InnerDiameter = Number(getValues('InnerDiameter'))
         const OuterDiameter = Number(getValues('OuterDiameter'))
-
-        if (InnerDiameter && OuterDiameter) {
+        if ((InnerDiameter && OuterDiameter) || isVolumeEditable) {
             const Length = Number(getValues('Length'))
             const CuttingAllowance = Number(getValues('CuttingAllowance'))
-            let Volume = 0.7857 * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
-            let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
-
-
-            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight }))
-            if(!localStorage?.IsVolumeEditableInRubberRMWeightCalculator){
+            let Volume = Number(getValues('Volume'));
+            if(!isVolumeEditable){
+                Volume = 0.7857 * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
+            let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
+            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight }))
             setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }
-
     }, 500)
 
 
@@ -299,6 +298,7 @@ function StandardRub(props) {
             Toaster.warning('Finish weight cannot be greater than gross weight')
             return false
         }
+
         let obj = {
             RmName: rmRowDataState.RMName,
             InnerDiameter: Number(getValues('InnerDiameter')),
@@ -306,20 +306,18 @@ function StandardRub(props) {
             Length: Number(getValues('Length')),
             CuttingAllowance: Number(getValues('CuttingAllowance')),
             TotalLength: dataToSend.TotalLength,
-            Volume: !localStorage?.IsVolumeEditableInRubberRMWeightCalculator ? dataToSend.Volume : Number(getValues('Volume')),
+            Volume: !isVolumeEditable ? dataToSend.Volume : Number(getValues('Volume')),
             GrossWeight: dataToSend.GrossWeight,
             FinishWeight: Number(getValues('FinishWeight')),
             ScrapWeight: dataToSend.ScrapWeight,
             NetRmCost: dataToSend.NetRmCost,
-
+            RawMaterialId: rmRowDataState.RawMaterialId
         }
 
-        if (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0) {
-
+        if((isVolumeEditable && obj.Volume === 0) || (!isVolumeEditable && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))){
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
-
 
         if (disableCondition) {
             setTableData([...tableData, obj])
@@ -412,6 +410,7 @@ function StandardRub(props) {
         obj.UOMForDimension = KG
         obj.RmDropDownData = rmDropDownData
         obj.CalculatedRmTableData = tableData
+
 
         //APPLY NEW ACTION HERE 
 
@@ -597,8 +596,8 @@ function StandardRub(props) {
                                             />
                                         </Col>
 
-                                        <Col md="3">
-                                        {!localStorage?.IsVolumeEditableInRubberRMWeightCalculator &&
+                                        <Col md="3">                                       
+                                        {!isVolumeEditable &&
                                             <TooltipCustom disabledIcon={true} tooltipClass={'weight-of-sheet'} id={'rubber-volume'} tooltipText={volumeFormula} />
                                         }
                                             <TextFieldHookForm
@@ -608,13 +607,17 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, decimalAndNumberValidation },
+                                                }}
                                                 mandatory={false}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Volume}
-                                                disabled={!localStorage?.IsVolumeEditableInRubberRMWeightCalculator}
+                                                disabled={!isVolumeEditable || !(Object.keys(rmRowDataState).length > 0)}
                                             />
                                         </Col>
 
