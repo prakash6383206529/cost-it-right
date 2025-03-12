@@ -667,7 +667,9 @@ export function getOperationDrawerDataList(data, callback) {
     const queryParams = `loggedInUserId=${loggedInUserId()}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
     const request = axios.get(`${API.getOperationDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
-      if (response.data.Result) {
+
+      if (response.data.Result || response.status === 204) {
+
         callback(response);
       }
     }).catch((error) => {

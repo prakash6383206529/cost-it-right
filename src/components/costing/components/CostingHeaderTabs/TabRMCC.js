@@ -1643,7 +1643,7 @@ function TabRMCC(props) {
 
         if (ComponentItemData?.PartType === "Component") {// COMPONENT
           basicRate = basicRateComponent
-          basicRate = netPOPrice
+          netPOPriceTemp = netPOPrice
         } else if (ComponentItemData?.PartType === "Part") {// CHILD PART OF ASM : COMPONENT
           basicRate = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost))
           netPOPriceTemp = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost))
