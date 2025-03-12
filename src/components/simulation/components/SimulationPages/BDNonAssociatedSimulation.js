@@ -22,7 +22,7 @@ import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
-import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { BOP_IMPACT_DOWNLOAD_EXCEL_NON_ASSOCIATED } from '../../../../config/masterData';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '..';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -853,7 +853,7 @@ const {vendorLabel}= useLabels()
     }
 
     const onBtExport = () => {
-        return returnExcelColumn(BOP_IMPACT_DOWNLOAD_EXCEl, list)
+        return returnExcelColumn(BOP_IMPACT_DOWNLOAD_EXCEL_NON_ASSOCIATED, list)
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -861,6 +861,13 @@ const {vendorLabel}= useLabels()
         let temp = []
         TempData && TempData.map((item) => {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+            if (item.NewNetLandedCostConversion === null || item.NewNetLandedCostConversion === undefined) {
+                item.NewNetLandedCostConversion = item.IsBOPAssociated ?? item.OriginalNetLandedCost 
+            }
+            if(!item.IsBOPAssociated){
+                item.OriginalNetLandedCost = item.NetLandedCost
+                item.NewNetLandedCostConversion = item.NewNetLandedCost
+            }
             temp.push(item)
         })
 
@@ -985,7 +992,7 @@ const {vendorLabel}= useLabels()
                                                 {<AgGridColumn field="Currency" minWidth={120} tooltipField='Currency' editable='false' headerName="Settlement Currency"></AgGridColumn>}
 
                                                 <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true} minWidth={240}>
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`Basic Rate (Currency)`} marryChildren={true} minWidth={240}>
                                                     <AgGridColumn minWidth={140} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
                                                     <AgGridColumn minWidth={140} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
@@ -1011,12 +1018,12 @@ const {vendorLabel}= useLabels()
                                                     <AgGridColumn minWidth={150} cellRenderer='existingConditionCostFormatter' field={"NetConditionCost"} editable='false' headerName="Existing" colId={"NetConditionCost"} ></AgGridColumn>
                                                     <AgGridColumn minWidth={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={"NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>
                                                 </AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true}>
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Cost (Currency)`} marryChildren={true}>
                                                     {/* <AgGridColumn minWidth={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
                                                     <AgGridColumn minWidth={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                     <AgGridColumn minWidth={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {(String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
+                                                {(String(props?.master) === String(RMIMPORT) || String(props?.master) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
                                                     "Net Cost (Plant Currency)"
 
                                                 }>
