@@ -72,7 +72,8 @@ import {
   SIMULATION_LEVEL,
   MASTER_LEVEL,
   ONBOARDING_MANAGEMENT_LEVEL,
-  GET_TAX_CODE_SELECTLIST
+  GET_TAX_CODE_SELECTLIST,
+  SET_LIST_TOGGLE
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1961,6 +1962,15 @@ const rmAPICalling = (params, dispatch) => {
       break;
     default:
       break;
+  }
+}
+
+export function setListToggle(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_LIST_TOGGLE,
+      payload: data
+    })
   }
 }
 

@@ -33,7 +33,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
-import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
+import { impactmasterDownload, returnVarianceClass, SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
@@ -119,11 +119,11 @@ function CostingSimulation(props) {
     const { showEditMaster, showverifyPage, costingDrawerPage, handleEditMasterPage, showTour } = useContext(simulationContext) || {};
 
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT)||(simulationApplicability?.value === Number(SURFACETREATMENT)||(simulationApplicability?.value === APPLICABILITY_SURFACE_TREATMENT_SIMULATION)));
-    const isOperation = (Number(master) === Number(OPERATIONS)||(simulationApplicability?.value === Number(OPERATIONS))||(simulationApplicability?.value === APPLICABILITY_OPERATIONS_SIMULATION));
-    const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) || (simulationApplicability?.value === Number(RMIMPORT)|| (simulationApplicability?.value === Number(RMDOMESTIC))));
-    const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) || (simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)|| (simulationApplicability?.value === Number(BOPIMPORT) || (simulationApplicability?.value === Number(BOPDOMESTIC))));
-    const isMachineRate = Number(master) === (Number(MACHINERATE)||(simulationApplicability?.value === Number(MACHINERATE)||(simulationApplicability?.value === APPLICABILITY_MACHINE_RATES_SIMULATION)));
+    const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT) || (simulationApplicability?.value === Number(SURFACETREATMENT) || (simulationApplicability?.value === APPLICABILITY_SURFACE_TREATMENT_SIMULATION)));
+    const isOperation = (Number(master) === Number(OPERATIONS) || (simulationApplicability?.value === Number(OPERATIONS)) || (simulationApplicability?.value === APPLICABILITY_OPERATIONS_SIMULATION));
+    const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) || (simulationApplicability?.value === Number(RMIMPORT) || (simulationApplicability?.value === Number(RMDOMESTIC))));
+    const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) || (simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION) || (simulationApplicability?.value === Number(BOPIMPORT) || (simulationApplicability?.value === Number(BOPDOMESTIC))));
+    const isMachineRate = Number(master) === (Number(MACHINERATE) || (simulationApplicability?.value === Number(MACHINERATE) || (simulationApplicability?.value === APPLICABILITY_MACHINE_RATES_SIMULATION)));
     const isExchangeRate = (Number(master) === Number(EXCHNAGERATE) && simulationApplicability?.value === APPLICABILITY_PART_SIMULATION);
     const isCombinedProcess = Number(master) === Number(COMBINED_PROCESS);
 
@@ -832,16 +832,7 @@ function CostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell ? cell : '-'
     }
-    const returnVarianceClass = (rowData, value1, value2) => {
 
-        if (rowData?.CostingHeadId === CBCTypeId ? value1 < value2 : value1 > value2) {
-            return 'red-value form-control'
-        } else if (rowData?.CostingHeadId === CBCTypeId ? value1 > value2 : value1 < value2) {
-            return 'green-value form-control'
-        } else {
-            return 'form-class'
-        }
-    }
     const oldPOFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -1491,7 +1482,7 @@ function CostingSimulation(props) {
 
         return thisIsFirstColumn;
     }
-    
+
 
     const defaultColDef = {
         resizable: true,
@@ -1671,7 +1662,7 @@ function CostingSimulation(props) {
         currencyHeader: currencyHeader
 
     };
-    
+
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
 
     const headers = { netCostHeadder: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})` }
@@ -1933,7 +1924,7 @@ function CostingSimulation(props) {
                                         class="user-btn approval-btn mr5"
                                         onClick={() => sendForApproval()}
                                         id={'other_simulation_send_for_approval'}
-                                        disabled={ false}
+                                        disabled={false}
                                         title="Send For Approval"
                                     >
                                         <div className="send-for-approval"></div>
