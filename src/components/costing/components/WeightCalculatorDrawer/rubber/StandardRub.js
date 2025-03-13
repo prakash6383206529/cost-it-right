@@ -23,6 +23,7 @@ function StandardRub(props) {
 
     const { rmRowData, rmData } = props
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
+    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
     const costData = useContext(costingInfoContext)
     const [tableData, setTableData] = useState([])
@@ -131,7 +132,9 @@ function StandardRub(props) {
 
 
             setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight }))
-            setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
+            if(!localStorage?.IsVolumeEditableInRubberRMWeightCalculator){
+                setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
+            }
             setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }
 
@@ -303,7 +306,7 @@ function StandardRub(props) {
             Length: Number(getValues('Length')),
             CuttingAllowance: Number(getValues('CuttingAllowance')),
             TotalLength: dataToSend.TotalLength,
-            Volume: dataToSend.Volume,
+            Volume: !localStorage?.IsVolumeEditableInRubberRMWeightCalculator ? dataToSend.Volume : Number(getValues('Volume')),
             GrossWeight: dataToSend.GrossWeight,
             FinishWeight: Number(getValues('FinishWeight')),
             ScrapWeight: dataToSend.ScrapWeight,
@@ -595,7 +598,9 @@ function StandardRub(props) {
                                         </Col>
 
                                         <Col md="3">
+                                        {!localStorage?.IsVolumeEditableInRubberRMWeightCalculator &&
                                             <TooltipCustom disabledIcon={true} tooltipClass={'weight-of-sheet'} id={'rubber-volume'} tooltipText={volumeFormula} />
+                                        }
                                             <TextFieldHookForm
                                                 label={UnitFormat()}
                                                 name={'Volume'}
@@ -609,7 +614,7 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Volume}
-                                                disabled={true}
+                                                disabled={!localStorage?.IsVolumeEditableInRubberRMWeightCalculator}
                                             />
                                         </Col>
 
