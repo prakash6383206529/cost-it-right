@@ -423,7 +423,7 @@ export function deleteOperationAPI(OperationId, loggedInUserId, callback) {
  */
 export function fileUploadOperation(data, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(API.fileUploadOperation, data, config());
+        const request = axios.post(API.fileUploadOperation, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

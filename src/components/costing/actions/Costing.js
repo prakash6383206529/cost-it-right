@@ -1315,7 +1315,7 @@ export function saveDiscountOtherCostTab(data, callback) {
  */
 export function fileUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.fileUploadCosting, data, config())
+    const request = axios.post(API.fileUploadCosting, data, config())
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response)

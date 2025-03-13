@@ -89,7 +89,7 @@ function RMDomesticListing(props) {
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
     const [pageRecord, setPageRecord] = useState(0);
-    const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
+    const isRfq = props?.quotationId !== null && props?.quotationId !== '' &&props?.quotationId !== undefined ? true : false
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {

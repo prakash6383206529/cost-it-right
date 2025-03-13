@@ -353,7 +353,7 @@ export function activeInactiveProfit(requestData, callback) {
  */
 export function fileUploadOverHead(data, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(API.fileUploadOverHead, data, config());
+        const request = axios.post(API.fileUploadOverHead, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
