@@ -22,7 +22,7 @@ axiosInstance.interceptors.request.use(
         const encryptedData = encryptData(reqConfig.data);
         if (encryptedData) {
           reqConfig.data = {
-            EncryptedData: encryptedData
+            request: encryptedData
           };
         }
       }
@@ -44,7 +44,7 @@ axiosInstance.interceptors.response.use(
       // Check if response has data and it's encrypted
       
       if (response?.data?.encryptedData) {
-        const decryptedData = decryptData(response.data.encryptedData);
+        const decryptedData = decryptData(response?.data?.encryptedData);
         if (decryptedData) {
           response.data = decryptedData;
         }

@@ -174,7 +174,7 @@ export function getPartSelectList(callback) {
  */
 export function fileUploadPart(data, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(API.fileUploadPart, data, config());
+        const request = axios.post(API.fileUploadPart, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
