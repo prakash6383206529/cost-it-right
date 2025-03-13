@@ -3,19 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
 import { checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
-import { getVendorNameByVendorSelectList, getPlantSelectListByType } from "../../../actions/Common";
+import { getVendorNameByVendorSelectList, getPlantSelectListByType, getCurrencySelectList } from "../../../actions/Common";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
   getTruckDimensionsSelectList,
 } from "../actions/Freight";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
-import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
-import { CBCTypeId, EMPTY_DATA, FullTruckLoad, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants";
+import { CBCTypeId, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FullTruckLoad, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
 import AsyncSelect from 'react-select/async';
@@ -30,7 +30,12 @@ import { Controller, useForm } from "react-hook-form";
 import Button from "../../layout/Button";
 import { DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm } from "../../layout/HookFormInputs";
 import DimensionsFieldsRenderer from "../../common/DimensionsFieldsRenderer";
-import { label } from "react-dom-factories";
+import Switch from 'react-switch'
+import { getExchangeRateParams } from "../../../helper";
+import { getExchangeRateByCurrency } from "../../costing/actions/Costing";
+import TooltipCustom from "../../common/Tooltip";
+import { getPlantUnitAPI } from "../actions/Plant";
+import WarningMessage from "../../common/WarningMessage";
 
 const AddFreight = (props) => {
   const {
@@ -106,6 +111,19 @@ const AddFreight = (props) => {
     hideEditDimension: true,
     disableAll: props.data.isEditFlag ? false : true,
     callUpdate: false,
+    isImport: false,
+    hidePlantCurrency: false,
+    settlementCurrency: 1,
+    plantCurrency: 1,
+    ExchangeSource: [],
+    currency: null,
+    plantExchangeRateId: '',
+    settlementExchangeRateId: '',
+    plantCurrencyID: '',
+    showPlantWarning: false,
+    disableTableFields: true,
+    disableMainFields: false,
+
   });
   const dispatch = useDispatch();
   const cityList = useSelector(state => state.comman.cityList);
@@ -115,6 +133,8 @@ const AddFreight = (props) => {
   const freightRateCriteriaSelectList = useSelector(state => state.freight.freightRateCriteriaSelectList);
   const truckDimensionsSelectList = useSelector(state => state.freight.truckDimensionsSelectList);
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
+  const currencySelectList = useSelector(state => state.comman.currencySelectList)
+
 
   /**
    * @description Called after rendering the component
@@ -127,6 +147,7 @@ const AddFreight = (props) => {
       dispatch(getFreigtFullTruckCapacitySelectList((res) => { }));
       dispatch(getFreigtRateCriteriaSelectList((res) => { }));
       dispatch(getTruckDimensionsSelectList((res) => { }));
+      dispatch(getCurrencySelectList(() => { }))
     }
 
     if (!(props.data.isEditFlag || state.isViewMode)) {
@@ -152,39 +173,148 @@ const AddFreight = (props) => {
       if (hasRequiredFields && state?.effectiveDate && state?.Plant) {
         setState(prev => ({ ...prev, disableAll: false }));
         let data = {
-          ...state,
+          entryType: state?.isImport ? checkForNull(ENTRY_TYPE_IMPORT) : checkForNull(ENTRY_TYPE_DOMESTIC),
           freightId: null,
           EffectiveDate: state?.effectiveDate,
           PlantId: state?.Plant?.value,
           CustomerId: state?.client?.value,
           VendorId: state?.vendorName?.value,
-          CostingTypeId: state?.costingTypeId
+          CostingTypeId: state?.costingTypeId,
+          currencyId: state?.currency?.value
         }
-        dispatch(getFreightData(data, (res) => {
-          if (res?.status === 200) {
-            let data = res?.data?.Data;
-            setState(prev => ({
-              ...prev, dataToChange: data,
-              gridTable: data?.FullTruckLoadDetails ?? [],
-              IsFreightAssociated: data?.IsFreightAssociated,
-              callUpdate: data?.FullTruckLoadDetails && data?.FullTruckLoadDetails?.length > 0 ? true : false,
-              freightID: data?.FreightId
-            }));
-          } else {
-            setState(prev => ({
-              ...prev,
-              gridTable: [],
-              IsFreightAssociated: false,
-              callUpdate: false,
-              freightID: null
-            }));
-          }
-        }));
+        // dispatch(getFreightData(data, (res) => {
+        //   if (res?.status === 200) {
+        //     let data = res?.data?.Data;
+        //     setState(prev => ({
+        //       ...prev, dataToChange: data,
+        //       gridTable: data?.FullTruckLoadDetails ?? [],
+        //       IsFreightAssociated: data?.IsFreightAssociated,
+        //       callUpdate: data?.FullTruckLoadDetails && data?.FullTruckLoadDetails?.length > 0 ? true : false,
+        //       freightID: data?.FreightId
+        //     }));
+        //   } else {
+        //     setState(prev => ({
+        //       ...prev,
+        //       gridTable: [],
+        //       IsFreightAssociated: false,
+        //       callUpdate: false,
+        //       freightID: null
+        //     }));
+        //   }
+        // }));
       } else {
         setState(prev => ({ ...prev, disableAll: true }));
       }
     }
   }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate]);
+  useEffect(() => {
+    if (state.isImport) {
+      setState(prev => ({ ...prev, disableMainFields: true }));
+    } else {
+      setState(prev => ({ ...prev, disableMainFields: false }));
+    }
+  }, [state.isImport]);
+
+  const callExchangeRateAPI = () => {
+    const { costingTypeId, vendorName, client, ExchangeSource, currency, isImport } = state;
+
+    const fromCurrency = isImport ? currency?.label : getValuesMainForm("plantCurrency")
+    const toCurrency = reactLocalStorage.getObject("baseCurrency")
+    const hasCurrencyAndDate = fromCurrency && getValuesMainForm("EffectiveDate");
+
+    if (hasCurrencyAndDate) {
+      if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
+        return;
+      }
+
+      const callAPI = (from, to, costingType, vendorValue, clientValue) => {
+        return new Promise((resolve) => {
+          dispatch(getExchangeRateByCurrency(
+            from,
+            costingType,
+            DayTime(getValuesMainForm("EffectiveDate")).format('YYYY-MM-DD'),
+            vendorValue,
+            clientValue,
+            false,
+            to,
+            ExchangeSource?.label ?? null,
+            res => {
+              resolve({
+                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                exchangeRateId: res?.data?.Data?.ExchangeRateId,
+                showWarning: Object.keys(res.data.Data).length === 0,
+                showPlantWarning: Object.keys(res.data.Data).length === 0
+              });
+            }
+          ));
+        });
+      };
+
+      if (isImport) {
+        if (getValuesMainForm("plantCurrency") === reactLocalStorage?.getObject("baseCurrency")) {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: getValuesMainForm("plantCurrency"), defaultCostingTypeId: costingTypeId, vendorId: state.vendorName?.value, clientValue: client?.value, plantCurrency: getValuesMainForm("plantCurrency") });
+          callAPI(fromCurrency, getValuesMainForm("plantCurrency"), costingHeadTypeId, vendorId, clientId)
+            .then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1 }) => {
+              setState(prev => ({
+                ...prev,
+                plantCurrency: rate1,
+                plantExchangeRateId: exchangeRateId1,
+                settlementCurrency: 1,
+                settlementExchangeRateId: null,
+                showPlantWarning: showPlantWarning1,
+                showWarning: showWarning1
+              }));
+              handleCalculation(getValuesTableForm("Rate"))
+            });
+        } else {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: getValuesMainForm("plantCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: getValuesMainForm("plantCurrency") });
+          callAPI(fromCurrency, getValuesMainForm("plantCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+            // Second API call
+            const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: getValuesMainForm("plantCurrency") });
+            callAPI(getValuesMainForm("plantCurrency"), reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+              setState(prev => ({
+                ...prev,
+                plantCurrency: rate1,
+                settlementCurrency: rate2,
+                plantExchangeRateId: exchangeRateId1,
+                settlementExchangeRateId: exchangeRateId2,
+                showPlantWarning: showPlantWarning1,
+                showWarning: showWarning2
+              }));
+              handleCalculation(getValuesTableForm("Rate"))
+            });
+          });
+        }
+      } else if (getValuesMainForm("plantCurrency") !== reactLocalStorage?.getObject("baseCurrency")) {
+        // Original single API call for non-import case
+        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: getValuesMainForm("plantCurrency") });
+        callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
+          setState(prev => ({
+            ...prev,
+            plantCurrency: rate,
+            plantExchangeRateId: exchangeRateId,
+            showPlantWarning: showPlantWarning,
+            showWarning: showWarning
+          }));
+          handleCalculation(getValuesTableForm("RateLocalConversion"))
+        });
+      }
+    }
+
+  }
+  const handleCalculation = (rate) => {
+    const { plantCurrency, settlementCurrency, isImport } = state
+    if (isImport) {
+      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
+      setValueTableForm('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
+      const rateBaseCurrency = checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(settlementCurrency) ?? 1
+      setValueTableForm('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    } else {
+      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
+      setValueTableForm('RateConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    }
+  }
+
 
   /**
   * @method onPressVendor
@@ -233,6 +363,17 @@ const AddFreight = (props) => {
   const handlePlant = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       setState(prev => ({ ...prev, Plant: newValue }));
+      dispatch(getPlantUnitAPI(newValue?.value, (res) => {
+        let Data = res?.data?.Data
+        setValueMainForm('plantCurrency', Data?.Currency)
+        setState(prev => ({ ...prev, plantCurrencyID: Data?.CurrencyId }))
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          setState(prev => ({ ...prev, hidePlantCurrency: false }))
+        } else {
+          setState(prev => ({ ...prev, hidePlantCurrency: true }))
+        }
+        callExchangeRateAPI()
+      }))
     } else {
       setState(prev => ({ ...prev, Plant: [] }));
     }
@@ -278,9 +419,12 @@ const AddFreight = (props) => {
         PlantId: null,
         CustomerId: null,
         VendorId: null,
-        CostingTypeId: null
+        CostingTypeId: null,
+        currencyId: null,
+        entryType: null
       }
       dispatch(getFreightData(obj, (res) => {
+        console.log("res", res);
         if (res && res.data && res.data.Result) {
           setState(prev => ({ ...prev, isLoader: false }));
           const Data = res.data.Data;
@@ -309,6 +453,14 @@ const AddFreight = (props) => {
                 IsFreightAssociated: item?.IsFreightAssociated,
               };
             });
+            setValueMainForm('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
+            setValueMainForm('plantCurrency', Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+            setValueMainForm('currency', Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [])
+            if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+              setState(prev => ({ ...prev, hidePlantCurrency: false }))
+            } else {
+              setState(prev => ({ ...prev, hidePlantCurrency: true }))
+            }
             setState(prev => ({
               ...prev,
               isEditFlag: true,
@@ -323,7 +475,15 @@ const AddFreight = (props) => {
               sourceLocation: Data.SourceCityName !== undefined ? { label: Data.SourceCityName, value: Data.SourceCityId } : [],
               destinationLocation: Data.DestinationCityName !== undefined ? { label: Data.DestinationCityName, value: Data.DestinationCityId } : [],
               Plant: { label: Data.PlantName, value: Data.PlantId },
-              effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : ''
+              effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+              ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
+              plantCurrency: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantExchangeRateId: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
+              settlementCurrency: Data?.ExchangeRate,
+              settlementExchangeRateId: Data?.ExchangeRateId,
+              plantCurrencyID: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              isImport: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : []
             }));
             setState(prev => ({ ...prev, isLoader: false }));
           }, 200);
@@ -420,6 +580,16 @@ const AddFreight = (props) => {
       });
       return temp;
     }
+    if (label === 'currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0') return false;
+        if (item.Text === getValuesMainForm("plantCurrency")) return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
   };
   /**
    * @method handleVendorName
@@ -518,15 +688,7 @@ const AddFreight = (props) => {
   };
 
   const rateChange = (newValue) => {
-    setState(prev => {
-      const obj = { ...prev.errorObj };
-      if (decimalNumberLimit6(newValue?.target?.value) !== undefined || checkWhiteSpaces(newValue?.target?.value) !== undefined || number(newValue?.target?.value) !== undefined) {
-        obj.rate = true;
-      } else {
-        obj.rate = false;
-      }
-      return { ...prev, errorObj: obj };
-    });
+    handleCalculation(newValue?.target?.value)
   };
 
   /**
@@ -539,6 +701,7 @@ const AddFreight = (props) => {
       effectiveDate: date,
       showEffectiveDateError: false
     }));
+    callExchangeRateAPI()
   };
 
 
@@ -560,7 +723,9 @@ const AddFreight = (props) => {
       FullTruckLoadId: "",
       Capacity: FullTruckCapacity?.label,
       RateCriteria: RateCriteria?.label,
-      Rate: checkForNull(Rate) || 0,
+      Rate: state.isImport ? getValuesTableForm("Rate") : getValuesTableForm("RateLocalConversion"),
+      RateLocalConversion: getValuesTableForm("RateLocalConversion"),
+      RateConversion: (state.isImport || reactLocalStorage?.getObject("baseCurrency") !== getValuesMainForm("plantCurrency")) ? getValuesTableForm("RateConversion") : getValuesTableForm("RateLocalConversion"),
       FreightLoadType: Load?.label,
       EFreightLoadType: Load?.value,
       IsFreightAssociated: false,
@@ -603,7 +768,9 @@ const AddFreight = (props) => {
       ...gridTable[gridEditIndex],
       Capacity: FullTruckCapacity?.label,
       RateCriteria: RateCriteria?.label,
-      Rate: checkForNull(Rate) || 0,
+      Rate: state.isImport ? getValuesTableForm("Rate") : getValuesTableForm("RateLocalConversion"),
+      RateLocalConversion: getValuesTableForm("RateLocalConversion"),
+      RateConversion: (state.isImport || reactLocalStorage?.getObject("baseCurrency") !== getValuesMainForm("plantCurrency")) ? getValuesTableForm("RateConversion") : getValuesTableForm("RateLocalConversion"),
       FreightLoadType: Load?.label,
       EFreightLoadType: Load?.value,
       DimensionsName: isShowTruckDimensions ? truckDimensions?.label : null,
@@ -651,6 +818,8 @@ const AddFreight = (props) => {
 
     // Reset form values
     setValueTableForm("Rate", "");
+    setValueTableForm("RateLocalConversion", "");
+    setValueTableForm("RateConversion", "");
 
     // Reset specific form fields and errors, preserving effective date
     // const currentValues = getValuesTableForm();
@@ -659,6 +828,8 @@ const AddFreight = (props) => {
       FullTruckCapacity: "",
       RateCriteria: "",
       Load: "",
+      RateLocalConversion: "",
+      RateConversion: "",
       // EffectiveDate: currentValues.EffectiveDate // Preserve effective date
     });
   };
@@ -715,6 +886,8 @@ const AddFreight = (props) => {
     // Set new values in a batch to avoid synthetic event reuse
     setTimeout(() => {
       setValueTableForm("Rate", item.Rate);
+      setValueTableForm("RateLocalConversion", item.RateLocalConversion);
+      setValueTableForm("RateConversion", item.RateConversion);
       setValueTableForm("Capacity", {
         label: item?.Capacity,
         value: item?.Capacity
@@ -834,6 +1007,16 @@ const AddFreight = (props) => {
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         EffectiveDate: state.effectiveDate,
+        FreightEntryType: state.isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+        ExchangeRateSourceName: state.ExchangeSource?.label || null,
+        LocalCurrencyId: state.isImport ? state?.plantCurrencyID : null,
+        LocalCurrency: state.isImport ? getValuesMainForm("plantCurrency") : null,
+        ExchangeRate: state.isImport ? state?.settlementCurrency : state?.plantCurrency,
+        LocalCurrencyExchangeRate: state.isImport ? state?.plantCurrency : null,
+        CurrencyId: state.isImport ? state.currency?.value : state?.plantCurrencyID,
+        Currency: state.isImport ? state?.currency?.label : getValuesMainForm("plantCurrency"),
+        ExchangeRateId: state.isImport ? state.settlementExchangeRateId : state?.plantExchangeRateId,
+        LocalExchangeRateId: state.isImport ? state?.plantExchangeRateId : null,
       };
 
       dispatch(updateFright(requestData, (res) => {
@@ -866,8 +1049,18 @@ const AddFreight = (props) => {
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         EffectiveDate: DayTime(state.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         PlantId: state.Plant?.value,
+        FreightEntryType: state.isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+        ExchangeRateSourceName: state.ExchangeSource?.label || null,
+        LocalCurrencyId: state.isImport ? state?.plantCurrencyID : null,
+        LocalCurrency: state.isImport ? getValuesMainForm("plantCurrency") : null,
+        ExchangeRate: state.isImport ? state?.settlementCurrency : state?.plantCurrency,
+        LocalCurrencyExchangeRate: state.isImport ? state?.plantCurrency : null,
+        CurrencyId: state.isImport ? state.currency?.value : state?.plantCurrencyID,
+        Currency: state.isImport ? state?.currency?.label : getValuesMainForm("plantCurrency"),
+        ExchangeRateId: state.isImport ? state.settlementExchangeRateId : state?.plantExchangeRateId,
+        LocalExchangeRateId: state.isImport ? state?.plantExchangeRateId : null,
       };
-
+      console.log("formData", formData);
       dispatch(createFreight(formData, (res) => {
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
@@ -939,6 +1132,43 @@ const AddFreight = (props) => {
   const onShowTruckDimensions = () => {
     setState(prev => ({ ...prev, isShowTruckDimensions: !prev.isShowTruckDimensions }));
   };
+  const importToggle = () => {
+    setState(prev => ({ ...prev, isImport: !prev.isImport }));
+  };
+  const handleExchangeRate = (newValue) => {
+    setState(prev => ({ ...prev, ExchangeSource: newValue }));
+    callExchangeRateAPI();
+  };
+  const handleCurrency = (newValue) => {
+    setState(prev => ({ ...prev, currency: newValue }));
+    callExchangeRateAPI();
+  };
+
+  const freightRateTitle = () => {
+    const rateLabel = state.isImport ? `Rate (${state.currency?.label ?? 'Currency'})` : `Rate (${getValuesMainForm("plantCurrency") ?? 'Plant Currency'})`
+    return {
+      tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: state?.hidePlantCurrency ? `Rate (${getValuesMainForm("plantCurrency") ?? 'Plant Currency'})  * Currency Rate (${state?.plantCurrency ?? ''})`
+        : `Rate (${getValuesMainForm("plantCurrency") ?? 'Plant Currency'})  * Currency Rate (${state?.settlementCurrency ?? ''})`,
+    };
+  };
+  const getTooltipTextForCurrency = () => {
+    const { plantCurrency, currency } = state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = getValuesMainForm("plantCurrency") ?? 'Plant Currency';
+
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '0';
+
+    // Generate tooltip text based on the condition
+    return <>
+      {!state?.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
+        : ''}
+    </>;
+  };
+
+
 
   return (
     <>
@@ -964,6 +1194,27 @@ const AddFreight = (props) => {
                     onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}
                   >
                     <div className="add-min-height">
+                      <Row>
+                        <Col md="4" className="switch mb15">
+                          <label className="switch-level">
+                            <div className="left-title">Domestic</div>
+                            <Switch
+                              onChange={importToggle}
+                              checked={state.isImport}
+                              id="normal-switch"
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#4DC771"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                            <div className="right-title">Import</div>
+                          </label>
+                        </Col>
+                      </Row>
                       <Row>
                         <Col md="12">
                           {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
@@ -1069,6 +1320,67 @@ const AddFreight = (props) => {
                             errors={errorsMainForm?.Plants}
                           />
                         </Col>
+                        <Col className="col-md-15">
+                          {!state.hidePlantCurrency && getValuesMainForm("plantCurrency") && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${getValuesMainForm("plantCurrency")} = ${state.isImport ? state.settlementCurrency : state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          <TextFieldHookForm
+                            name="plantCurrency"
+                            label="Plant Currency"
+                            id="plantCurrency"
+                            placeholder={'-'}
+                            defaultValue={''}
+                            Controller={Controller}
+                            control={controlMainForm}
+                            register={registerMainForm}
+                            rules={{
+                              required: false,
+                            }}
+                            mandatory={false}
+                            disabled={true}
+                            className=" "
+                            customClassName=" withBorder mb-1"
+                            handleChange={() => { }}
+                            errors={errorsMainForm?.Plants}
+                          />
+                          {state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${getValuesMainForm('plantCurrency')} rate is not present in the Exchange Master`} />}
+                        </Col>
+                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col className="col-md-15">
+                          <SearchableSelectHookForm
+                            name="ExchangeSource"
+                            label="Exchange Rate Source"
+                            Controller={Controller}
+                            control={controlMainForm}
+                            register={registerMainForm}
+                            mandatory={false}
+                            rules={{ required: false }}
+                            placeholder={'Select'}
+                            options={renderListing("ExchangeSource")}
+                            handleChange={handleExchangeRate}
+                            disabled={isEditFlag || isViewMode}
+                            errors={errorsMainForm?.ExchangeSource}
+                          />
+                        </Col>}
+                        {state.isImport && <Col className="col-md-15">
+                          <TooltipCustom id="currency" width="350px" tooltipText={getTooltipTextForCurrency()} />
+                          <SearchableSelectHookForm
+                            name="currency"
+                            label="Currency"
+                            id="currency"
+                            errors={errorsMainForm?.currency}
+                            Controller={Controller}
+                            control={controlMainForm}
+                            register={registerMainForm}
+                            mandatory={true}
+                            rules={{
+                              required: true,
+                            }}
+                            placeholder={'Select'}
+                            options={renderListing("currency")}
+                            handleChange={handleCurrency}
+                            disabled={isEditFlag || isViewMode}
+                            customClassName="mb-1"
+                          />
+                          {state.showWarning && <WarningMessage dClass="mt-1" message={`${state.currency?.label} to ${getValuesMainForm("plantCurrency")} rate is not present in the Exchange Master`} />}
+                        </Col>}
                         <Col className="col-md-15">
                           <div className="inputbox date-section">
                             <DatePickerHookForm
@@ -1215,9 +1527,9 @@ const AddFreight = (props) => {
                                 errors={errorsTableForm?.RateCriteria}
                               />
                             </Col>
-                            <Col md="2">
+                            {state.isImport && <Col md="2">
                               <TextFieldHookForm
-                                label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Rate (${getValuesMainForm("currency")?.label ?? 'Currency'})`}
                                 name={"Rate"}
                                 placeholder={isViewMode ? '-' : 'Enter'}
                                 rules={{
@@ -1235,8 +1547,49 @@ const AddFreight = (props) => {
                                 handleChange={rateChange}
                                 errors={errorsTableForm?.Rate}
                               />
-                              {state.errorObj.rate && (!getValuesTableForm("Rate") || Number(getValuesTableForm("Rate")) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                            </Col>}
+                            <Col md="2">
+                              {state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={state.hidePlantCurrency ? freightRateTitle()?.toolTipTextNetCostBaseCurrency : freightRateTitle()?.tooltipTextPlantCurrency} />}
+                              <TextFieldHookForm
+                                label={`Rate (${!getValuesMainForm("plantCurrency") ? 'Currency' : getValuesMainForm("plantCurrency")})`}
+                                name={"RateLocalConversion"}
+                                placeholder={isViewMode ? '-' : 'Enter'}
+                                id="rate-local"
+                                rules={{
+                                  required: state.isImport ? false : true,
+                                  validate: { number, decimalNumberLimit6, maxLength10 },
+                                }}
+                                defaultValue={''}
+                                Controller={Controller}
+                                control={controlTableForm}
+                                register={registerTableForm}
+                                mandatory={state.isImport ? false : true}
+                                disabled={isViewMode || state.isImport}
+                                className=" "
+                                customClassName=" withBorder"
+                                handleChange={rateChange}
+                                errors={errorsTableForm?.RateLocalConversion}
+                              />
                             </Col>
+                            {!state.hidePlantCurrency && <Col md="2">
+                              <TooltipCustom disabledIcon={true} id="freight-rate" tooltipText={state.isImport ? freightRateTitle()?.toolTipTextNetCostBaseCurrency : freightRateTitle()?.tooltipTextPlantCurrency} />
+                              <TextFieldHookForm
+                                label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                                name={"RateConversion"}
+                                id="freight-rate"
+                                placeholder={'-'}
+                                defaultValue={''}
+                                Controller={Controller}
+                                control={controlTableForm}
+                                register={registerTableForm}
+                                mandatory={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder"
+                                handleChange={() => { }}
+                                errors={errorsTableForm?.RateConversion}
+                              />
+                            </Col>}
                             <Col md="2">
                               <div className={`${state.isShowTruckDimensions ? "" : "pt-2"}`}>
                                 {state.isEditIndex ? (
@@ -1289,7 +1642,10 @@ const AddFreight = (props) => {
                                     <th>{`Truck Dimensions`}</th>
                                     <th>{`Capacity`}</th>
                                     <th>{`Criteria`}</th>
-                                    <th>{`Rate`}</th>
+                                    {state.isImport && <th>{`Rate (${getValuesMainForm("currency")?.label ?? 'Currency'})`}</th>}
+                                    <th>{`Rate (${!getValuesMainForm("plantCurrency") ? 'Currency' : getValuesMainForm("plantCurrency")})`}</th>
+                                    {!state?.hidePlantCurrency && <th>{`Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
+
                                     <th>{`Action`}</th>
                                   </tr>
                                 </thead>
@@ -1302,7 +1658,11 @@ const AddFreight = (props) => {
                                           <td>{item?.IsShowDimesions === true ? item?.DimensionsName : '-'}</td>
                                           <td>{item?.Capacity ?? '-'}</td>
                                           <td>{item?.RateCriteria ?? '-'}</td>
-                                          <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}</td>
+                                          {state.isImport && <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}</td>}
+                                          <td>{item?.RateLocalConversion ? checkForDecimalAndNull(item?.RateLocalConversion, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}</td>
+                                          {!state?.hidePlantCurrency && <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}</td>}
+
+
                                           <td>
                                             <button className="Edit mr-2" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => editGridItemDetails(index)} />
                                             <button className="Delete" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => deleteGridItem(index)} />
