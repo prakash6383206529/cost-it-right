@@ -7,7 +7,7 @@ import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '.
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, ApplicabilityTypes, CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, HOUR, MASS, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS, TIME, defaultPageSize } from '../../../../../config/constants';
+import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, HOUR, MASS, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS, TIME, defaultPageSize } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
@@ -46,7 +46,7 @@ function ProcessCost(props) {
   const [Ids, setIds] = useState([])
   const [MachineIds, setMachineIds] = useState([])
   const [tabData, setTabData] = useState(props.data)
-  console.log("tabData",tabData)
+
   const [isCalculator, setIsCalculator] = useState(false)
   const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
@@ -65,6 +65,7 @@ function ProcessCost(props) {
   const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const { rmFinishWeight, rmGrossWeight } = props
   const [openMachineForm, setOpenMachineForm] = useState(false)
+  const { processApplicabilitySelect } = useSelector(state => state.costing);
 
   let dragEnd;
   const [tourState, setTourState] = useState(
@@ -264,11 +265,20 @@ function ProcessCost(props) {
 
     setIsCalculator(false)
     if (Object.keys(weightData).length === 0) return false;
+    const calculateNetCosts = (processCost, applicabilityType) => {
+      return {
+        NetProcessCostForOverhead: applicabilityType === APPLICABILITY_OVERHEAD ? processCost : 0,
+        NetProcessCostForProfit: applicabilityType === APPLICABILITY_PROFIT ? processCost : 0,
+        NetProcessCostForOverheadAndProfit: applicabilityType === APPLICABILITY_OVERHEAD_PROFIT ? processCost : 0
+      };
+    };
+
     if (parentCalciIndex === '') {
       let tempData = gridData[calciIndex]
       let tempArray
       let tempArr2 = [];
-      tempData = {
+const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionMasterAndTypeLinkingId);
+tempData = {
         ...tempData,
         Quantity: tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity,
         ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '',
@@ -276,18 +286,29 @@ function ProcessCost(props) {
         IsCalculatedEntry: true,
         ProcessCalculationId: EMPTY_GUID,
         ProcessCalculatorId: weightData.ProcessCalculationId,
-        WeightCalculatorRequest: weightData
+        WeightCalculatorRequest: weightData,
+        ...netCosts 
       }
+
       tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
-      let ProcessCostTotal = 0
-      ProcessCostTotal = tempArray && tempArray.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ProcessCost)
-      }, 0)
+
+      const totals = tempArray.reduce((acc, el) => ({
+        ProcessCostTotal: acc.ProcessCostTotal + checkForNull(el.ProcessCost),
+        NetProcessCostForOverhead: acc.NetProcessCostForOverhead + checkForNull(el.NetProcessCostForOverhead),
+        NetProcessCostForProfit: acc.NetProcessCostForProfit + checkForNull(el.NetProcessCostForProfit),
+        NetProcessCostForOverheadAndProfit: acc.NetProcessCostForOverheadAndProfit + checkForNull(el.NetProcessCostForOverheadAndProfit)
+      }), {
+        ProcessCostTotal: 0,
+        NetProcessCostForOverhead: 0,
+        NetProcessCostForProfit: 0,
+        NetProcessCostForOverheadAndProfit: 0
+      });
+
       let apiArr = formatMainArr(tempArray)
       tempArr2 = {
         ...tabData,
-        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
-        ProcessCostTotal: ProcessCostTotal,
+        NetConversionCost: totals.ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        ...totals,
         CostingProcessCostResponse: apiArr,
       }
       setTimeout(() => {
@@ -297,13 +318,14 @@ function ProcessCost(props) {
         dispatch(setProcessGroupGrid(formatReducerArray(tempArray)))
         setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity)
         setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
-        // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.PartsPerHour, getConfigurationKey().NoOfDecimalForInputOutput) : '-')
       }, 100)
     } else {
       // PROCESS UNDER THE GROUP IS UPDATING
       let tempArr = []
       let processTempData = gridData[parentCalciIndex]
       let tempData = listData[calciIndex]
+const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionMasterAndTypeLinkingId);
+
       tempData = {
         ...tempData,
         Quantity: tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity,
@@ -312,66 +334,81 @@ function ProcessCost(props) {
         IsCalculatedEntry: true,
         ProcessCalculationId: EMPTY_GUID,
         ProcessCalculatorId: weightData.ProcessCalculationId,
-        WeightCalculatorRequest: weightData
+        WeightCalculatorRequest: weightData,
+        CostingConditionMasterAndTypeLinkingId: processTempData.Applicability?.value || null,
+        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === processTempData.Applicability?.value)?.label || null,
+
+        ...netCosts
       }
+
       let gridTempArr = Object.assign([...listData], { [calciIndex]: tempData })
 
+      setValue(`${SingleProcessGridField}.${calciIndex}${parentCalciIndex}${tempData.ProcessName}.Quantity`,
+        tempData.UOMType === TIME ?
+          checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) :
+          checkForDecimalAndNull(weightData.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`,
+        checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
 
-      setValue(`${SingleProcessGridField}.${calciIndex}${parentCalciIndex}${tempData.ProcessName}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : checkForDecimalAndNull(weightData.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
-      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
-      //MAIN PROCESS ROW WITH GROUP
-      let ProcessCostTotal = 0
-      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ProcessCost)
-      }, 0)
-      let totalQuantity = 0
-      totalQuantity = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+      // Calculate group totals including net costs
+      const groupTotals = gridTempArr.reduce((acc, el) => ({
+        ProcessCostTotal: acc.ProcessCostTotal + checkForNull(el.ProcessCost),
+        NetProcessCostForOverhead: acc.NetProcessCostForOverhead + checkForNull(el.NetProcessCostForOverhead),
+        NetProcessCostForProfit: acc.NetProcessCostForProfit + checkForNull(el.NetProcessCostForProfit),
+        NetProcessCostForOverheadAndProfit: acc.NetProcessCostForOverheadAndProfit + checkForNull(el.NetProcessCostForOverheadAndProfit),
+        Quantity: acc.Quantity + checkForNull(el.Quantity)
+      }), {
+        ProcessCostTotal: 0,
+        NetProcessCostForOverhead: 0,
+        NetProcessCostForProfit: 0,
+        NetProcessCostForOverheadAndProfit: 0,
+        Quantity: 0
+      });
 
-        return accummlator + checkForNull(el.Quantity)
-      }, 0)
-      let ProductionPerHour = findProductionPerHour(totalQuantity)
+      let ProductionPerHour = findProductionPerHour(groupTotals.Quantity)
+
       processTempData = {
         ...processTempData,
-        Quantity: totalQuantity,
+        Quantity: groupTotals.Quantity,
         ProductionPerHour: tempData.UOMType !== TIME ? '' : ProductionPerHour,
-        ProcessCost: ProcessCostTotal,
-        ProcessList: gridTempArr
+        ProcessCost: groupTotals.ProcessCostTotal,
+        ProcessList: gridTempArr,
+        CostingConditionMasterAndTypeLinkingId: processTempData.Applicability?.value || null,
+        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === processTempData.Applicability?.value)?.label || null,
+        ...groupTotals // Add net cost totals to the group
+
       }
       let processTemparr = Object.assign([...gridData], { [parentCalciIndex]: processTempData })
 
-      setValue(`${ProcessGridFields}.${parentCalciIndex}.Quantity`, checkForDecimalAndNull(totalQuantity, getConfigurationKey().NoOfDecimalForInputOutput))
-      setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice))
+      setValue(`${ProcessGridFields}.${parentCalciIndex}.Quantity`,
+        checkForDecimalAndNull(groupTotals.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`,
+        checkForDecimalAndNull(groupTotals.ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice))
 
-      let apiArr = []
-      processTemparr && processTemparr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          apiArr.push(item)
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-            return null
-          })
-        }
-        return null
-      })
-
-      let finalProcessCostTotal = processTemparr && processTemparr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ProcessCost)
-      }, 0)
-
+      let apiArr = formatMainArr(processTemparr)
+const finalTotals = processTemparr.reduce((acc, el) => ({
+        ProcessCostTotal: acc.ProcessCostTotal + checkForNull(el.ProcessCost),
+        NetProcessCostForOverhead: acc.NetProcessCostForOverhead + checkForNull(el.NetProcessCostForOverhead),
+        NetProcessCostForProfit: acc.NetProcessCostForProfit + checkForNull(el.NetProcessCostForProfit),
+        NetProcessCostForOverheadAndProfit: acc.NetProcessCostForOverheadAndProfit + checkForNull(el.NetProcessCostForOverheadAndProfit)
+      }), {
+        ProcessCostTotal: 0,
+        NetProcessCostForOverhead: 0,
+        NetProcessCostForProfit: 0,
+        NetProcessCostForOverheadAndProfit: 0
+      });
 
       tempArr = {
         ...tabData,
-        NetConversionCost: finalProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
-        ProcessCostTotal: finalProcessCostTotal,
+        NetConversionCost: finalTotals.ProcessCostTotal +
+          checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0) +
+          checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        ...finalTotals,
         CostingProcessCostResponse: apiArr,
       }
       setIsFromApi(false)
       setTabData(tempArr)
       setGridData(processTemparr)
-
       dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
     }
   }
@@ -508,6 +545,8 @@ function ProcessCost(props) {
 
     const setDataInGridAndApi = (tempArr) => {
       tempArr && tempArr.map((el, index) => {
+        el.CostingConditionMasterAndTypeLinkingId = el.Applicability?.value || null
+        el.CostingConditionNumber = processApplicabilitySelect.find(type => type.value === el.Applicability?.value)?.label || null
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         return null
@@ -829,6 +868,22 @@ function ProcessCost(props) {
     setGroupNameMachine(item.MachineId)
     setGroupNameIndex(index)
   }
+  const calculateOperationsNetCosts = (operationCost, applicability) => {
+    switch (applicability?.value) {
+      case APPLICABILITY_OVERHEAD:
+        return { NetOperationCostForOverhead: operationCost };
+      case APPLICABILITY_PROFIT:
+        return { NetOperationCostForProfit: operationCost };
+      case APPLICABILITY_OVERHEAD_PROFIT:
+        return { NetOperationCostForOverheadAndProfit: operationCost };
+      default:
+        return {
+          NetOperationCostForOverhead: 0,
+          NetOperationCostForProfit: 0,
+          NetOperationCostForOverheadAndProfit: 0
+        };
+    }
+  };
 
   const handleQuantityChange = (event, index) => {
     if (checkForNull(rmGrossWeight) !== 0 && processGroupGrid && processGroupGrid[index]?.UOMType === MASS && event?.target?.value > rmGrossWeight) {
@@ -850,13 +905,15 @@ function ProcessCost(props) {
         productionPerHour = findProductionPerHour(event.target.value)
         processCost = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour)
       }
-      const netCosts = calculateNetCosts(processCost, tempData?.Applicability);
+      const netCosts = calculateNetCosts(processCost, tempData?.Applicability?.value);
       tempData = {
         ...tempData,
         Quantity: event.target.value,
         IsCalculatedEntry: false,
         ProductionPerHour: tempData.UOMType !== TIME ? '-' : productionPerHour,
         ProcessCost: processCost,
+        CostingConditionMasterAndTypeLinkingId: tempData.Applicability?.value || null,
+        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === tempData.Applicability?.value)?.label || null,
         ...netCosts
       }
 
@@ -938,55 +995,84 @@ function ProcessCost(props) {
   }
   const calculateNetCosts = (processCost, applicabilityType) => {
     return {
-      NetProcessCostForOverhead: [APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_PROFIT].includes(applicabilityType) ? processCost : 0,
-      NetProcessCostForOverheadExcl: applicabilityType === APPLICABILITY_OVERHEAD_EXCL ? processCost : 0,
-      NetProcessCostForProfit: [APPLICABILITY_PROFIT, APPLICABILITY_OVERHEAD_PROFIT].includes(applicabilityType) ? processCost : 0,
-      NetProcessCostForProfitExcl: applicabilityType === APPLICABILITY_PROFIT_EXCL ? processCost : 0,
-      NetProcessCostForOverheadAndProfit: applicabilityType === APPLICABILITY_OVERHEAD_PROFIT ? processCost : 0
+      NetProcessCostForOverhead: applicabilityType === APPLICABILITY_OVERHEAD ? processCost : 0,
+      NetProcessCostForProfit: applicabilityType === APPLICABILITY_PROFIT ? processCost : 0,
+      NetProcessCostForOverheadAndProfit: applicabilityType === APPLICABILITY_OVERHEAD_PROFIT ? processCost : 0,
+      // NetProcessCostForProfitExcl: applicabilityType === APPLICABILITY_PROFIT_EXCL ? processCost : 0,
+      // NetProcessCostForOverheadExcl: applicabilityType === APPLICABILITY_OVERHEAD_EXCL ? processCost : 0,
     };
   };
-  
+
   const calculateProcessTotals = (gridData) => {
     return {
       ProcessCostTotal: gridData.reduce((acc, el) => acc + checkForNull(el?.ProcessCost), 0),
       NetProcessCostForOverhead: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForOverhead), 0),
-      NetProcessCostForOverheadExcl: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForOverheadExcl), 0),
+      NetProcessCostForOverheadAndProfit: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForOverheadAndProfit), 0),
       NetProcessCostForProfit: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForProfit), 0),
-      NetProcessCostForProfitExcl: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForProfitExcl), 0),
-      NetProcessCostForOverheadAndProfit: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForOverheadAndProfit), 0)
+      // NetProcessCostForOverheadExcl: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForOverheadExcl), 0),
+      // NetProcessCostForProfitExcl: gridData.reduce((acc, el) => acc + checkForNull(el?.NetProcessCostForProfitExcl), 0),
     };
   };
 
   const onHandleChangeApplicability = (e, index) => {
-    let tempArr = []
-    let tempData = processGroupGrid[index]
+    let gridTempArr = JSON.parse(JSON.stringify(processGroupGrid));
 
-    // Calculate net costs based on new applicability
+    let tempData = gridTempArr[index];
+
     const netCosts = calculateNetCosts(tempData.ProcessCost, e.value);
 
     tempData = {
       ...tempData,
-      Applicability: e.value,
+      CostingConditionMasterAndTypeLinkingId: e.value,
+      CostingConditionNumber: e.label,
+      Applicability: {  // Store complete applicability object
+        value: e.value,
+        label: e.label
+      },
       ...netCosts
     }
 
-    let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
+    // If process has child processes, update them with same applicability
+    if (tempData.ProcessList?.length > 0) {
+      tempData.ProcessList = tempData.ProcessList.map(childProcess => {
+        const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e.value);
+        return {
+          ...childProcess,
+          CostingConditionMasterAndTypeLinkingId: e.value,
+          CostingConditionNumber: e.label,
+          Applicability: {  // Store complete applicability object for child processes
+            value: e.value,
+            label: e.label
+          },
+          ...childNetCosts
+        };
+      });
+    }
 
-    // Calculate totals
+    // Update the process at the specified index
+    gridTempArr[index] = tempData;
+
+    // Calculate totals for all processes
     const totals = calculateProcessTotals(gridTempArr);
-    let apiArr = formatMainArr(gridTempArr)
 
-    tempArr = {
+    // Format array for API and update state
+    let apiArr = formatMainArr(gridTempArr);
+
+    const tempArr = {
       ...tabData,
-      NetConversionCost: totals.ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+      NetConversionCost: totals.ProcessCostTotal +
+        checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0) +
+        checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
       ...totals,
       CostingProcessCostResponse: apiArr,
     }
 
-    setIsFromApi(false)
-    setTabData(tempArr)
-    setGridData(gridTempArr)
-    dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
+    // Update all state
+    setIsFromApi(false);
+    setTabData(tempArr);
+    setGridData(gridTempArr);
+    dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)));
+
   }
 
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
@@ -1004,36 +1090,47 @@ function ProcessCost(props) {
         productionPerHour = findProductionPerHour(event.target.value)
         processCost = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour)
       }
-
+      const parentApplicability = processTempData.Applicability?.value;
+      const netCosts = calculateNetCosts(processCost, parentApplicability);
       tempData = {
         ...tempData,
         Quantity: event.target.value,
         IsCalculatedEntry: false,
         ProductionPerHour: productionPerHour,
-        ProcessCost: processCost
+        ProcessCost: processCost,
+        ...netCosts,
+        CostingConditionMasterAndTypeLinkingId: parentApplicability,
+        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === parentApplicability)?.label,
       }
       let gridTempArr = Object.assign([...list], { [index]: tempData })
       setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
 
       //MAIN PROCESS ROW WITH GROUP
-      let ProcessCostTotal = 0
-      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ProcessCost)
-      }, 0)
+      const groupTotals = gridTempArr.reduce((acc, el) => ({
+        ProcessCost: acc.ProcessCost + checkForNull(el.ProcessCost),
+        Quantity: acc.Quantity + checkForNull(el.Quantity),
+        NetProcessCostForOverhead: acc.NetProcessCostForOverhead + checkForNull(el.NetProcessCostForOverhead),
+        NetProcessCostForProfit: acc.NetProcessCostForProfit + checkForNull(el.NetProcessCostForProfit),
+        NetProcessCostForOverheadAndProfit: acc.NetProcessCostForOverheadAndProfit + checkForNull(el.NetProcessCostForOverheadAndProfit)
+      }), {
+        ProcessCost: 0,
+        Quantity: 0,
+        NetProcessCostForOverhead: 0,
+        NetProcessCostForProfit: 0,
+        NetProcessCostForOverheadAndProfit: 0
+      });
 
-      let quantityTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.Quantity)
-      }, 0)
+      let groupProductionPerHour = findProductionPerHour(groupTotals.Quantity)
 
-      let groupProductionPerHour = findProductionPerHour(quantityTotal)
 
       processTempData = {
         ...processTempData,
-        Quantity: quantityTotal,
+        Quantity: groupTotals.Quantity,
         ProductionPerHour: tempData.UOMType !== TIME ? '' : groupProductionPerHour,
         IsCalculatedEntry: false,
-        ProcessCost: ProcessCostTotal,
-        ProcessList: gridTempArr
+        ProcessCost: groupTotals.ProcessCost,
+        ProcessList: gridTempArr,
+        ...groupTotals // Add net cost totals to parent process
       }
       let processTemparr = Object.assign([...processGroupGrid], { [parentIndex]: processTempData })
       let apiArr = formatMainArr(processTemparr)
@@ -1042,14 +1139,15 @@ function ProcessCost(props) {
       let finalProcessCostTotal = processTemparr && processTemparr.reduce((accummlator, el) => {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
-
-      setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice))
-      setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(quantityTotal, getConfigurationKey().NoOfDecimalForInputOutput))
+      const finalTotals = calculateProcessTotals(processTemparr);
+      setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(groupTotals.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
+      setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(groupTotals.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
 
       tempArr = {
         ...tabData,
         NetConversionCost: finalProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: finalProcessCostTotal,
+        ...finalTotals,
         CostingProcessCostResponse: apiArr,
 
       }
@@ -1082,13 +1180,37 @@ function ProcessCost(props) {
     //     })
     //   }
     // })
+    let totalNetCosts = {
+      NetOperationCostForOverhead: 0,
+      NetOperationCostForProfit: 0,
+      NetOperationCostForOverheadAndProfit: 0
+    };
+
+    const operationsWithNetCosts = operationGrid?.map(operation => {
+      const netCosts = calculateOperationsNetCosts(
+        operation.OperationCost,
+        { value: operation.CostingConditionMasterAndTypeLinkingId }
+      );
+
+      // Add to totals
+      totalNetCosts.NetOperationCostForOverhead += checkForNull(netCosts.NetOperationCostForOverhead);
+      totalNetCosts.NetOperationCostForProfit += checkForNull(netCosts.NetOperationCostForProfit);
+      totalNetCosts.NetOperationCostForOverheadAndProfit += checkForNull(netCosts.NetOperationCostForOverheadAndProfit);
+
+      return {
+        ...operation,
+        ...netCosts
+      };
+    });
+
     let tempArr = {
       ...tabData,
-      NetConversionCost: OperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0) + checkForNull(tabData && tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0,),
-      OperationCostTotal: OperationCostTotal,
-      CostingOperationCostResponse: operationGrid,
-      CostingProcessCostResponse: apiArr
-    }
+      NetConversionCost: OperationCostTotal + checkForNull(tabData?.ProcessCostTotal) + checkForNull(tabData?.OtherOperationCostTotal),
+      OperationCostTotal,
+      ...totalNetCosts, 
+      CostingOperationCostResponse: operationsWithNetCosts,
+      CostingProcessCostResponse: formatMainArr(gridData)
+    };
 
     setIsFromApi(false)
     setTabData(tempArr)
@@ -1640,11 +1762,11 @@ function ProcessCost(props) {
                                 mandatory={false}
                                 placeholder={'Select'}
                                 customClassName="costing-selectable-dropdown"
-                                defaultValue={item.Applicability ? {
-                                  label: ApplicabilityTypes.find(type => type.value === item.Applicability)?.label,
-                                  value: item.Applicability
+                                defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
+                                  label: item?.CostingConditionNumber,
+                                  value: item?.CostingConditionMasterAndTypeLinkingId
                                 } : ''}
-                                options={ApplicabilityTypes}
+                                options={processApplicabilitySelect}
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
                                 disabled={CostingViewMode}
