@@ -6,10 +6,11 @@ import StandardRub from './StandardRub'
 import RubberWeightCalculator from './RubberWeightCalculator'
 
 
-function RubberCalciTab(props) {
+function RubberCalciTab(props) {    
 
     //   const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? '1' : rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
-    const [activeTab, setActiveTab] = useState('1')
+    // const [activeTab, setActiveTab] = useState('1')
+    const [activeTab, setActiveTab] = useState(props?.calculatorType === 'Standard' ? '2' : '1')
     /**
      * @method toggle
      * @description toggling the tabs
@@ -24,7 +25,7 @@ function RubberCalciTab(props) {
      * @method toggleDrawer
      * @description TOGGLE DRAWER
      */
-    const toggleDrawer = (event, weightData = {}, originalWeight = {}) => {
+    const toggleDrawer = (event, weightData = {}, originalWeight = {}) => {     
         if (
             event.type === 'keydown' &&
             (event.key === 'Tab' || event.key === 'Shift')

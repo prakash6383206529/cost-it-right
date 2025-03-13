@@ -388,6 +388,28 @@ export function getRawMaterialCalculationForRubber(costingId, rawMaterialId, wei
     });
   };
 }
+
+/**
+ * @method getRawMaterialCalculationForRubberStandard
+ * @description Get raw materical calculator data for Rubber
+*/
+export function getRawMaterialCalculationForRubberStandard(costingId, callback) {
+  return (dispatch) => {
+    const queryParams = `loggedInUserId=${loggedInUserId()}&baseCostingId=${costingId}`
+    const request = axios.get(`${API.getRawMaterialCalculationForRubberStandard}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 /**
  * @method saveRawMaterialCalculationForRubber
  * @description save raw materical calculator data for Rubber
@@ -1410,6 +1432,21 @@ export function getSimulationRmRubberCalculation(simulationId, costingId, callba
 export function saveRawMaterialCalculationForRubberCompound(data, callback) {
   return (dispatch) => {
     const request = axiosInstance.post(API.saveRawMaterialCalculationForRubberCompound, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
+
+export function saveRawMaterialCalculationForRubberStandard(data, callback) {
+  return (dispatch) => {
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForRubberStandard, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);

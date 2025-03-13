@@ -16,6 +16,7 @@ import TooltipCustom from '../../../../common/Tooltip'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { useSelector } from 'react-redux'
 import { sourceCurrencyFormatter } from '../../Drawers/processCalculatorDrawer/CommonFormula'
+import { saveRawMaterialCalculationForRubberStandard } from '../../../actions/CostWorking'
 
 
 
@@ -29,7 +30,7 @@ function StandardRub(props) {
     const isVolumeEditable = getConfigurationKey()?.IsVolumeEditableInRubberRMWeightCalculator ?? false
 
     const costData = useContext(costingInfoContext)
-    const [tableData, setTableData] = useState([])
+    const [tableData, setTableData] = useState(WeightCalculatorRequest &&WeightCalculatorRequest?.RawMaterialRubberStandardWeightCalculator?.length>0 ?WeightCalculatorRequest?.RawMaterialRubberStandardWeightCalculator:[])
     const [disableCondition, setDisableCondition] = useState(true)
     const [agGridTable, setAgGridTable] = useState(true)
     const [totalRMCost, setTotalRMCost] = useState("")
@@ -150,8 +151,8 @@ function StandardRub(props) {
             setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
 
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
-            setDataToSend(prevState => ({ ...prevState, NetRmCost: NetRmCost }))
-            setValue('NetRmCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
+            setDataToSend(prevState => ({ ...prevState, NetRMCost: NetRmCost }))
+            setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
         }
 
     }
@@ -180,6 +181,14 @@ function StandardRub(props) {
         return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForInputOutput)
     }
 
+    const calculateTotalRmCost = (gridData) => {
+        let totalRMCost = gridData && gridData.reduce((accummlator, el) => {
+            return accummlator + el.NetRMCost
+        }, 0)
+        // setTotalRMCost(totalRMCost)
+        return checkForDecimalAndNull(totalRMCost, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
 
     const deleteItem = (gridData) => {
 
@@ -198,10 +207,11 @@ function StandardRub(props) {
         setTableData([...gridData])
         // setAgGridTable(true)
         let tableDataArray = [...gridData]
-        let totalRMCost = tableDataArray && tableDataArray.reduce((accummlator, el) => {
-            return accummlator + el.NetRmCost
-        }, 0)
-        setTotalRMCost(totalRMCost)
+        // let totalRMCost = tableDataArray && tableDataArray.reduce((accummlator, el) => {
+        //     return accummlator + el.NetRMCost
+        // }, 0)
+        // setTotalRMCost(totalRMCost)
+        // calculateTotalRmCost(tableDataArray);
 
 
         /////
@@ -210,7 +220,7 @@ function StandardRub(props) {
         arr && arr.map((item) => {
             let count = 0
             gridData && gridData.map((ele) => {
-                if (item.label === ele.RmName) {
+                if (item.label === ele.RawMaterialName) {
                     count++
                 }
                 return null
@@ -300,7 +310,7 @@ function StandardRub(props) {
         }
 
         let obj = {
-            RmName: rmRowDataState.RMName,
+            RawMaterialName: rmRowDataState.RMName,
             InnerDiameter: Number(getValues('InnerDiameter')),
             OuterDiameter: Number(getValues('OuterDiameter')),
             Length: Number(getValues('Length')),
@@ -310,7 +320,7 @@ function StandardRub(props) {
             GrossWeight: dataToSend.GrossWeight,
             FinishWeight: Number(getValues('FinishWeight')),
             ScrapWeight: dataToSend.ScrapWeight,
-            NetRmCost: dataToSend.NetRmCost,
+            NetRMCost: dataToSend.NetRMCost,
             RawMaterialId: rmRowDataState.RawMaterialId
         }
 
@@ -338,7 +348,7 @@ function StandardRub(props) {
             GrossWeight: "",
             FinishWeight: "",
             ScrapWeight: "",
-            NetRmCost: "",
+            NetRMCost: "",
             RawMaterial: []
 
         })
@@ -350,17 +360,18 @@ function StandardRub(props) {
 
 
         let arr2 = rmDropDownData && rmDropDownData.filter((item) => {
-            return item.label !== obj.RmName
+            return item.label !== obj.RawMaterialName
         })
         setRmDropDownData(arr2)
 
         let tableDataArray = [...tableData, obj]
 
-        let totalRMCost = tableDataArray && tableDataArray.reduce((accummlator, el) => {
-            return accummlator + el.NetRmCost
-        }, 0)
+        // let totalRMCost = tableDataArray && tableDataArray.reduce((accummlator, el) => {
+        //     return accummlator + el.NetRMCost
+        // }, 0)
 
-        setTotalRMCost(totalRMCost)
+        // setTotalRMCost(totalRMCost)
+        // calculateTotalRmCost(tableDataArray);
         setDisableCondition(true)
 
 
@@ -379,7 +390,7 @@ function StandardRub(props) {
             GrossWeight: "",
             FinishWeight: "",
             ScrapWeight: "",
-            NetRmCost: "",
+            NetRMCost: "",
             RawMaterial: []
 
         })
@@ -396,9 +407,9 @@ function StandardRub(props) {
     const onSubmit = debounce(handleSubmit(() => {
         setIsDisable(true)
         let obj = {}
-        obj.LayoutType = 'Default'
-        obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
-        obj.IsChangeApplied = true //NEED TO MAKE IT DYNAMIC how to do
+        // obj.LayoutType = 'Default'
+        // obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
+        // obj.IsChangeApplied = true //NEED TO MAKE IT DYNAMIC how to do
         obj.PartId = costData.PartId
         obj.RawMaterialId = rmRowData.RawMaterialId
         obj.CostingId = costData.CostingId
@@ -409,15 +420,27 @@ function StandardRub(props) {
         // obj.TechnologyName = costData.TechnologyName
         obj.UOMForDimension = KG
         obj.RmDropDownData = rmDropDownData
-        obj.CalculatedRmTableData = tableData
+        // obj.CalculatedRmTableData = tableData
+
+        obj.BaseCostingId = costData.CostingId
+        obj.LoggedInUserId = loggedInUserId()
+        obj.RawMaterialRubberStandardWeightCalculator = tableData
 
 
         //APPLY NEW ACTION HERE 
 
+        dispatch(saveRawMaterialCalculationForRubberStandard(obj, (res) => {
+            if (res?.data?.Result) {
+                Toaster.success("Calculation saved successfully")
+                obj.CalculatorType = "Standard"
+                props.toggleDrawer('', obj)
+            }
+        }))
+
     }), 500)
 
     const cancel = () => {
-        props.toggleDrawer('')
+        props.toggleDrawer('Standard')
     }
 
     const frameworkComponents = {
@@ -688,7 +711,7 @@ function StandardRub(props) {
                                             <TooltipCustom disabledIcon={true} id={'rubber-cost-component'} tooltipClass={'weight-of-sheet'} tooltipText={"Net RM Cost/Component = Gross Weight * RMRate - Scrap Rate * Scrap Weight"} />
                                             <TextFieldHookForm
                                                 label={`Net RM Cost/Component`}
-                                                name={'NetRmCost'}
+                                                name={'NetRMCost'}
                                                 id={'rubber-cost-component'}
                                                 Controller={Controller}
                                                 control={control}
@@ -698,7 +721,7 @@ function StandardRub(props) {
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.NetRmCost}
+                                                errors={errors.NetRMCost}
                                                 disabled={true}
                                             />
                                         </Col>
@@ -749,7 +772,7 @@ function StandardRub(props) {
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                             >
-                                                <AgGridColumn minWidth="150" field="RmName" headerName="RM Name" ></AgGridColumn>
+                                                <AgGridColumn minWidth="150" field="RawMaterialName" headerName="RM Name" ></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="InnerDiameter" headerName="Inner Dia" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="OuterDiameter" headerName="Outer Dia " cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="Length" headerName="Length(mm)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -759,7 +782,7 @@ function StandardRub(props) {
                                                 <AgGridColumn minWidth="150" field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="ScrapWeight" headerName="Scrap Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="150" field="NetRmCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth="150" field="NetRMCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="120" field="ProcessId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                             </AgGridReact>
 
@@ -770,7 +793,8 @@ function StandardRub(props) {
                             }
 
                             <div className="bluefooter-butn text-right">
-                                <span className='pr-2'>Total RM Cost : <span >{checkForDecimalAndNull(totalRMCost, getConfigurationKey().NoOfDecimalForPrice)}</span></span>
+                                {/* <span className='pr-2'>Total RM Cost : <span >{checkForDecimalAndNull(totalRMCost, getConfigurationKey().NoOfDecimalForPrice)}</span></span> */}
+                                <span className='pr-2'>Total RM Cost : <span >{(tableData && tableData.length > 0) ? calculateTotalRmCost(tableData) : 0}</span></span>
                             </div>
 
                         </Col>

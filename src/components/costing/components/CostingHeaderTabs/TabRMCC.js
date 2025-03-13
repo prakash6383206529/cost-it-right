@@ -507,7 +507,7 @@ function TabRMCC(props) {
 
     //FUNCTION TO CALCULATE THE COSITNG VALUE OF PARTS AND SUBASSEMBLIES
     const calculateValue = (useLevel, item, tempArrForCosting) => {
-
+      
       let initialPartNo = ''
       let quant = ''
       for (let i = useLevel; i >= 0; i--) {
@@ -1418,7 +1418,7 @@ function TabRMCC(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = debounce(handleSubmit(() => {
+  const saveCosting = debounce(handleSubmit(() => {  
     let count = 0
     for (var prop in ErrorObjRMCC) {
       if (ErrorObjRMCC && ErrorObjRMCC[prop] && Object.keys(ErrorObjRMCC[prop])?.length > 0) {
