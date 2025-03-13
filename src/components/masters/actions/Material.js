@@ -1062,7 +1062,7 @@ export function getAllRMDataList(data, skip, take, isPagination, obj, isImport, 
  */
 export function fileUploadRMDomestic(data, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(API.fileUploadRMDomestic, data, config());
+        const request = axios.post(API.fileUploadRMDomestic, data, config());
         request.then((response) => {
             if (response && response?.status === 200) {
                 callback(response);

@@ -36,7 +36,7 @@ const CostingLevelListing = (props) => {
         globalTake: 5
     });
     const permissions = useContext(ApplyPermission);
-    const { isCallApi } = useSelector((state) => state.auth)
+    const { isCallApi } = useSelector((state) => state?.auth)
     const dispatch = useDispatch();
     const { technologyLabel } = useLabels();
     useEffect(() => {
@@ -51,17 +51,25 @@ const CostingLevelListing = (props) => {
             }, 100);
     }, [isCallApi]);
     const getLevelsListData = () => {
-        setState((prevState) => ({ ...prevState, isLoader: true }))
+        setState((prevState) => ({ ...prevState, isLoader: true }));
         dispatch(getAllLevelMappingAPI(res => {
-            setState((prevState) => ({ ...prevState, isLoader: false }))
+            setState((prevState) => ({ 
+                ...prevState, 
+                isLoader: false,
+                globalTake: defaultPageSize 
+            }));
             if (res.status === 204 && res.data === '') {
-                setState((prevState) => ({ ...prevState, tableData: [], }))
+                setState((prevState) => ({ ...prevState, tableData: [] }));
             } else {
-                dispatch(manageLevelTabApi(false))
+                dispatch(manageLevelTabApi(false));
                 let Data = res.data.DataList;
                 setState((prevState) => ({
-                    ...prevState, tableData: Data,
-                }))
+                    ...prevState, 
+                    tableData: Data,
+                }));
+                if (state.gridApi) {
+                    state.gridApi.paginationSetPageSize(defaultPageSize);
+                }
             }
         }));
     }
@@ -96,12 +104,12 @@ const CostingLevelListing = (props) => {
     };
 
     const levelMappingFilterHandler = (e) => {
-        state.gridApi.setQuickFilter(e.target.value);
+        state?.gridApi.setQuickFilter(e.target.value);
 
     }
 
     const levelMappingResetState = () => {
-        state.gridApi.setQuickFilter(null)
+        state?.gridApi.setQuickFilter(null)
         gridOptions.columnApi?.resetColumnState();
         gridOptions.api.setFilterModel(null)
         if (levelMappingFilter.current) {
@@ -112,8 +120,7 @@ const CostingLevelListing = (props) => {
     }
 
     const levelMappingPagination = (newPageSize) => {
-        // state.gridApi.paginationSetPageSize(Number(newPageSize + 1))
-        state.gridApi.paginationSetPageSize(Number(newPageSize))
+        state?.gridApi.paginationSetPageSize(Number(newPageSize))
         setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
     };
 
@@ -129,7 +136,7 @@ const CostingLevelListing = (props) => {
 
 
     return (
-        <>{state.isLoader ? <LoaderCustom /> :
+        <>{state?.isLoader ? <LoaderCustom /> :
             <div className='p-relative'>
                 <Row className="levellisting-page">
                     <Col md="6" className="text-right search-user-block">
@@ -138,18 +145,18 @@ const CostingLevelListing = (props) => {
                 </Row>
                 <Row className="levellisting-page">
                     <Col className="level-table" md="12">
-                        <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0) || state.noData || !state.tableData ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(state?.tableData && state?.tableData?.length <= 0) || state?.noData || !state?.tableData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header mt-3 mb-2 d-flex">
                                 <input ref={levelMappingFilter} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => levelMappingFilterHandler(e)} />
                             </div>
                             <div className={`ag-theme-material `}>
-                                {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                {state?.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 {<AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={state.tableData ?? []}
+                                    rowData={state?.tableData ?? []}
                                     pagination={true}
                                     paginationPageSize={defaultPageSize}
                                     onGridReady={onGridReady}
@@ -162,7 +169,7 @@ const CostingLevelListing = (props) => {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     onFilterModified={(e) => {
-                                        if (state.tableData.length !== 0) {
+                                        if (state?.tableData.length !== 0) {
                                             setTimeout(() => {
                                                 setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
                                             }, 50);
@@ -175,7 +182,7 @@ const CostingLevelListing = (props) => {
                                     <AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>}
-                                {<PaginationWrapper gridApi={state.gridApi} setPage={levelMappingPagination} pageSize1={state.pageSize1} pageSize2={state.pageSize2} pageSize3={state.pageSize3} globalTake={state.globalTake} />}
+                                {<PaginationWrapper gridApi={state?.gridApi} setPage={levelMappingPagination} pageSize1={state?.pageSize1} pageSize2={state?.pageSize2} pageSize3={state?.pageSize3} globalTake={state?.globalTake} />}
                             </div>
                         </div>
                     </Col>
