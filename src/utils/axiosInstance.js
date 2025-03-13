@@ -22,7 +22,7 @@ axiosInstance.interceptors.request.use(
         const encryptedData = encryptData(reqConfig.data);
         if (encryptedData) {
           reqConfig.data = {
-            request: encryptedData
+            Request: encryptedData
           };
         }
       }
