@@ -277,8 +277,8 @@ function ProcessCost(props) {
       let tempData = gridData[calciIndex]
       let tempArray
       let tempArr2 = [];
-const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionMasterAndTypeLinkingId);
-tempData = {
+      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionMasterAndTypeLinkingId);
+      tempData = {
         ...tempData,
         Quantity: tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity,
         ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '',
@@ -287,7 +287,7 @@ tempData = {
         ProcessCalculationId: EMPTY_GUID,
         ProcessCalculatorId: weightData.ProcessCalculationId,
         WeightCalculatorRequest: weightData,
-        ...netCosts 
+        ...netCosts
       }
 
       tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
@@ -324,7 +324,7 @@ tempData = {
       let tempArr = []
       let processTempData = gridData[parentCalciIndex]
       let tempData = listData[calciIndex]
-const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionMasterAndTypeLinkingId);
+      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionMasterAndTypeLinkingId);
 
       tempData = {
         ...tempData,
@@ -386,7 +386,7 @@ const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingCon
         checkForDecimalAndNull(groupTotals.ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice))
 
       let apiArr = formatMainArr(processTemparr)
-const finalTotals = processTemparr.reduce((acc, el) => ({
+      const finalTotals = processTemparr.reduce((acc, el) => ({
         ProcessCostTotal: acc.ProcessCostTotal + checkForNull(el.ProcessCost),
         NetProcessCostForOverhead: acc.NetProcessCostForOverhead + checkForNull(el.NetProcessCostForOverhead),
         NetProcessCostForProfit: acc.NetProcessCostForProfit + checkForNull(el.NetProcessCostForProfit),
@@ -1164,23 +1164,13 @@ const finalTotals = processTemparr.reduce((acc, el) => ({
    * @description SET BOP COST
    */
   const setOperationCost = (operationGrid, params, index) => {
-    let OperationCostTotal = 0
-    OperationCostTotal = operationGrid && operationGrid.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.OperationCost)
-    }, 0)
-    let apiArr = formatMainArr(gridData)
-    // gridData && gridData.map((item) => {
-    //   if (item.GroupName === '' || item.GroupName === null) {
-    //     apiArr.push(item)
-    //   } else {
-    //     apiArr.push(item)
-    //     item.ProcessList && item.ProcessList.map(processItem => {
-    //       processItem.GroupName = item.GroupName
-    //       apiArr.push(processItem)
-    //     })
-    //   }
-    // })
-    let totalNetCosts = {
+    // Calculate operation costs
+    let OperationCostTotal = operationGrid?.reduce((accumulator, el) => {
+      return accumulator + checkForNull(el.OperationCost)
+    }, 0) || 0;
+
+    let apiArr = formatMainArr(gridData);
+    let operationNetCosts = {
       NetOperationCostForOverhead: 0,
       NetOperationCostForProfit: 0,
       NetOperationCostForOverheadAndProfit: 0
@@ -1192,10 +1182,10 @@ const finalTotals = processTemparr.reduce((acc, el) => ({
         { value: operation.CostingConditionMasterAndTypeLinkingId }
       );
 
-      // Add to totals
-      totalNetCosts.NetOperationCostForOverhead += checkForNull(netCosts.NetOperationCostForOverhead);
-      totalNetCosts.NetOperationCostForProfit += checkForNull(netCosts.NetOperationCostForProfit);
-      totalNetCosts.NetOperationCostForOverheadAndProfit += checkForNull(netCosts.NetOperationCostForOverheadAndProfit);
+      // Add to operation totals
+      operationNetCosts.NetOperationCostForOverhead += checkForNull(netCosts.NetOperationCostForOverhead);
+      operationNetCosts.NetOperationCostForProfit += checkForNull(netCosts.NetOperationCostForProfit);
+      operationNetCosts.NetOperationCostForOverheadAndProfit += checkForNull(netCosts.NetOperationCostForOverheadAndProfit);
 
       return {
         ...operation,
@@ -1203,17 +1193,34 @@ const finalTotals = processTemparr.reduce((acc, el) => ({
       };
     });
 
+    // Calculate process net costs
+    const processNetCosts = gridData.reduce((acc, process) => ({
+      NetProcessCostForOverhead: acc.NetProcessCostForOverhead + checkForNull(process.NetProcessCostForOverhead),
+      NetProcessCostForProfit: acc.NetProcessCostForProfit + checkForNull(process.NetProcessCostForProfit),
+      NetProcessCostForOverheadAndProfit: acc.NetProcessCostForOverheadAndProfit + checkForNull(process.NetProcessCostForOverheadAndProfit)
+    }), {
+      NetProcessCostForOverhead: 0,
+      NetProcessCostForProfit: 0,
+      NetProcessCostForOverheadAndProfit: 0
+    });
+
     let tempArr = {
       ...tabData,
+      // Preserve process net costs
+      ...processNetCosts,
+      // Add operation net costs
+      NetOperationCostForOverhead: operationNetCosts.NetOperationCostForOverhead,
+      NetOperationCostForProfit: operationNetCosts.NetOperationCostForProfit,
+      NetOperationCostForOverheadAndProfit: operationNetCosts.NetOperationCostForOverheadAndProfit,
+      // Update totals
       NetConversionCost: OperationCostTotal + checkForNull(tabData?.ProcessCostTotal) + checkForNull(tabData?.OtherOperationCostTotal),
       OperationCostTotal,
-      ...totalNetCosts, 
       CostingOperationCostResponse: operationsWithNetCosts,
-      CostingProcessCostResponse: formatMainArr(gridData)
+      CostingProcessCostResponse: apiArr
     };
 
-    setIsFromApi(false)
-    setTabData(tempArr)
+    setIsFromApi(false);
+    setTabData(tempArr);
   }
 
   const setOtherOperationCost = (otherOperationGrid, params, index) => {
