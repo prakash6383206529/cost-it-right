@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm, } from 'react-hook-form';
+import { Controller, useForm, } from 'react-hook-form';
 import { gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
@@ -10,7 +10,7 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
-import { createToprowObjAndSave, findrmCctData, formatMultiTechnologyUpdate } from '../../../CostingUtil';
+import { createToprowObjAndSave, findrmCctData, formatMultiTechnologyUpdate, viewAddButtonIcon } from '../../../CostingUtil';
 import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
 import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
@@ -19,11 +19,16 @@ import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actio
 import { ASSEMBLY, ASSEMBLYNAME, LEVEL0, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { PreviousTabData } from '../../CostingHeaderTabs';
+import Hanger from './Hanger';
+import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import Button from '../../../../layout/Button';
+import PaintAndMasking from './PaintAndMasking';
+import ExtraCost from './ExtraCost';
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
   const previousTab = useContext(PreviousTabData) || 0;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-  const { handleSubmit } = useForm({
+  const { handleSubmit, control, setValue, formState: { errors }, register } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -39,6 +44,8 @@ function SurfaceTreatment(props) {
   const [transportationObject, setTransportationObject] = useState({})
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [callDiscountApi, setCallDiscountApi] = useState(false)
+  const [viewPaintAndMasking, setViewPaintAndMasking] = useState(false)
+  const [viewExtraCost, setViewExtraCost] = useState(false)
   const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
@@ -341,7 +348,10 @@ function SurfaceTreatment(props) {
     }))
     // }
   }
-
+  const closePaintAndMasking = (data) => {
+    setViewPaintAndMasking(false)
+    setValue(`PaintAndMasking`, checkForDecimalAndNull(data, initialConfiguration?.NoOfDecimalForPrice))
+  }
   /**
   * @method render
   * @description Renders the component
@@ -408,8 +418,8 @@ function SurfaceTreatment(props) {
                             setSurfaceData={setSurfaceData}
                           />
                           {/* <hr /> */}
-
-                          <TransportationCost
+                          <Hanger />
+                          {/* <TransportationCost
                             index={props.index}
                             data={transportationData}
                             item={props.item}
@@ -418,7 +428,55 @@ function SurfaceTreatment(props) {
                             IsAssemblyCalculation={props.IsAssemblyCalculation}
                             setAssemblyTransportationCost={props.setAssemblyTransportationCost}
                             surfaceCost={surfaceCost(surfaceTableData)}
-                          />
+                          /> */}
+                          <Row>
+                            <Col md="4" className="d-flex align-items-center">
+                              <TextFieldHookForm
+                                label="Paint and Masking"
+                                name={`PaintAndMasking`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder w-100'}
+                                handleChange={(e) => { }}
+                                errors={errors && errors.PaintAndMasking}
+                                disabled={true}
+                              />
+                              <Button
+                                id="surfaceTreatment_paintAndMasking"
+                                onClick={() => setViewPaintAndMasking(true)}
+                                className={"right mt-0 mb-2"}
+                                variant={viewAddButtonIcon([], "className", CostingViewMode)}
+                                title={viewAddButtonIcon([], "title", CostingViewMode)}
+                              />
+                            </Col>
+                            <Col md="4" className="d-flex align-items-center">
+                              <TextFieldHookForm
+                                label="Extra Cost"
+                                name={`ExtraCost`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder w-100'}
+                                handleChange={(e) => { }}
+                                errors={errors && errors.PaintAndMasking}
+                                disabled={true}
+                              />
+                              <Button
+                                id="surfaceTreatment_extraCost"
+                                onClick={() => setViewExtraCost(true)}
+                                className={"right mt-0 mb-2"}
+                                variant={viewAddButtonIcon([], "className", CostingViewMode)}
+                                title={viewAddButtonIcon([], "title", CostingViewMode)}
+                              />
+                            </Col>
+                          </Row>
                         </div>
                       </div >
 
@@ -447,9 +505,11 @@ function SurfaceTreatment(props) {
               </Row>
             </form >
           </div >
+
         </div >
       </Drawer >
-
+      {viewPaintAndMasking && <PaintAndMasking isOpen={viewPaintAndMasking} anchor={'right'} closeDrawer={closePaintAndMasking} />}
+      {viewExtraCost && <ExtraCost isOpen={viewExtraCost} anchor={'right'} closeDrawer={() => setViewExtraCost(false)} />}
     </ >
   );
 }

@@ -2045,7 +2045,7 @@ export function setRMCutOff(cutOffObj) {
 export function getCostingSpecificTechnology(loggedInUserId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getCostingSpecificTechnology}/${loggedInUserId}`, config())
+    const request = axios.get(`${API.getCostingSpecificTechnology}?loggedInUserId=${loggedInUserId}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
