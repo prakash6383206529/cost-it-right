@@ -749,6 +749,7 @@ const UsersListing = (props) => {
 										onClick={onExcelDownload}
 										title={`Download ${state?.dataCount === 0 ? "All" : `(${state?.dataCount})`}`}
 										icon={"download mr-1"}
+										disabled = {totalRecordCount ===0}
 										buttonName={`${state?.dataCount === 0 ? "All" : `(${state?.dataCount})`}`}
 									/>
 
