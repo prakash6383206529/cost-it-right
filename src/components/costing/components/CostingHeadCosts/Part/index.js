@@ -204,6 +204,12 @@ function PartCompoment(props) {
         "Version": item.Version,
         "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
         CostingPartDetails: item?.CostingPartDetails,
+        "NetProcessCostForOverhead":item?.CostingPartDetails?.NetProcessCostForOverhead||null,
+        "NetProcessCostForProfit":item?.CostingPartDetails?.NetProcessCostForProfit||null,
+        "NetProcessCostForOverheadAndProfit": item?.CostingPartDetails?.NetProcessCostForOverheadAndProfit||null,
+        "NetOperationCostForOverhead":item?.CostingPartDetails?.NetOperationCostForOverhead||null,
+        "NetOperationCostForProfit":item?.CostingPartDetails?.NetOperationCostForProfit||null,
+        "NetOperationCostForOverheadAndProfit":item?.CostingPartDetails?.NetOperationCostForOverheadAndProfit||null,
 
       }
 
