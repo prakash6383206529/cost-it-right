@@ -838,9 +838,12 @@ const UsersListing = (props) => {
 							)}
 
 						</AgGridReact>
-						{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
 					</div>
 				</div>}
+				<div className='button-wrapper'>
+				{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
+
+                                    </div>
 
 				{state?.isOpen && (<ViewUserDetails UserId={state?.UserId} isOpen={state?.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props?.RFQUser} />)}
 
