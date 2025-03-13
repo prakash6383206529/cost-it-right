@@ -163,6 +163,7 @@ const AddFreight = (props) => {
       reactLocalStorage?.setObject('vendorData', []);
     };
   }, []);
+  
   useEffect(() => {
     if (!(props.data.isEditFlag || state.isViewMode)) {
       const hasRequiredFields = (
@@ -182,38 +183,38 @@ const AddFreight = (props) => {
           CostingTypeId: state?.costingTypeId,
           currencyId: state?.currency?.value
         }
-        // dispatch(getFreightData(data, (res) => {
-        //   if (res?.status === 200) {
-        //     let data = res?.data?.Data;
-        //     setState(prev => ({
-        //       ...prev, dataToChange: data,
-        //       gridTable: data?.FullTruckLoadDetails ?? [],
-        //       IsFreightAssociated: data?.IsFreightAssociated,
-        //       callUpdate: data?.FullTruckLoadDetails && data?.FullTruckLoadDetails?.length > 0 ? true : false,
-        //       freightID: data?.FreightId
-        //     }));
-        //   } else {
-        //     setState(prev => ({
-        //       ...prev,
-        //       gridTable: [],
-        //       IsFreightAssociated: false,
-        //       callUpdate: false,
-        //       freightID: null
-        //     }));
-        //   }
-        // }));
+        dispatch(getFreightData(data, (res) => {
+          if (res?.status === 200) {
+            let data = res?.data?.Data;
+            setState(prev => ({
+              ...prev, dataToChange: data,
+              gridTable: data?.FullTruckLoadDetails ?? [],
+              IsFreightAssociated: data?.IsFreightAssociated,
+              callUpdate: data?.FullTruckLoadDetails && data?.FullTruckLoadDetails?.length > 0 ? true : false,
+              freightID: data?.FreightId
+            }));
+          } else {
+            setState(prev => ({
+              ...prev,
+              gridTable: [],
+              IsFreightAssociated: false,
+              callUpdate: false,
+              freightID: null
+            }));
+          }
+        }));
       } else {
         setState(prev => ({ ...prev, disableAll: true }));
       }
     }
-  }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate]);
+  }, [state.costingTypeId, state.Plant, state.client, state.vendorName, state.effectiveDate,state.isImport,state.currency]);
   useEffect(() => {
-    if (state.isImport) {
+    if (state.gridTable && state.gridTable.length > 0) {
       setState(prev => ({ ...prev, disableMainFields: true }));
     } else {
       setState(prev => ({ ...prev, disableMainFields: false }));
     }
-  }, [state.isImport]);
+  }, [state.gridTable]);
 
   const callExchangeRateAPI = () => {
     const { costingTypeId, vendorName, client, ExchangeSource, currency, isImport } = state;
@@ -424,7 +425,6 @@ const AddFreight = (props) => {
         entryType: null
       }
       dispatch(getFreightData(obj, (res) => {
-        console.log("res", res);
         if (res && res.data && res.data.Result) {
           setState(prev => ({ ...prev, isLoader: false }));
           const Data = res.data.Data;
@@ -1060,7 +1060,6 @@ const AddFreight = (props) => {
         ExchangeRateId: state.isImport ? state.settlementExchangeRateId : state?.plantExchangeRateId,
         LocalExchangeRateId: state.isImport ? state?.plantExchangeRateId : null,
       };
-      console.log("formData", formData);
       dispatch(createFreight(formData, (res) => {
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
@@ -1148,7 +1147,7 @@ const AddFreight = (props) => {
     const rateLabel = state.isImport ? `Rate (${state.currency?.label ?? 'Currency'})` : `Rate (${getValuesMainForm("plantCurrency") ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: state?.hidePlantCurrency ? `Rate (${getValuesMainForm("plantCurrency") ?? 'Plant Currency'})  * Currency Rate (${state?.plantCurrency ?? ''})`
+      toolTipTextNetCostBaseCurrency: state?.hidePlantCurrency ? `Rate (${getValuesMainForm("currency")?.label ?? 'Currency'})  * Currency Rate (${state?.plantCurrency ?? ''})`
         : `Rate (${getValuesMainForm("plantCurrency") ?? 'Plant Currency'})  * Currency Rate (${state?.settlementCurrency ?? ''})`,
     };
   };
@@ -1265,7 +1264,7 @@ const AddFreight = (props) => {
                                   onChange={(e) => handleVendorName(e)}
                                   value={state.vendorName}
                                   noOptionsMessage={({ inputValue }) => inputValue?.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                  isDisabled={isEditFlag || isViewMode}
+                                  isDisabled={isEditFlag || isViewMode||state.disableMainFields}
                                   onKeyDown={(onKeyDown) => {
                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                   }}
@@ -1298,7 +1297,7 @@ const AddFreight = (props) => {
                               options={renderListing("ClientList")}
                               defaultValue={state.client}
                               handleChange={handleClient}
-                              disabled={isEditFlag}
+                              disabled={isEditFlag||state.disableMainFields}
                               errors={errorsMainForm?.clientName}
                             />
                           </Col>
@@ -1316,7 +1315,7 @@ const AddFreight = (props) => {
                             options={renderListing("Plant")}
                             defaultValue={state.Plant}
                             handleChange={handlePlant}
-                            disabled={isEditFlag || isViewMode}
+                            disabled={isEditFlag || isViewMode||state.disableMainFields}
                             errors={errorsMainForm?.Plants}
                           />
                         </Col>
@@ -1355,7 +1354,7 @@ const AddFreight = (props) => {
                             placeholder={'Select'}
                             options={renderListing("ExchangeSource")}
                             handleChange={handleExchangeRate}
-                            disabled={isEditFlag || isViewMode}
+                            disabled={isEditFlag || isViewMode||state.disableMainFields}
                             errors={errorsMainForm?.ExchangeSource}
                           />
                         </Col>}
@@ -1376,7 +1375,7 @@ const AddFreight = (props) => {
                             placeholder={'Select'}
                             options={renderListing("currency")}
                             handleChange={handleCurrency}
-                            disabled={isEditFlag || isViewMode}
+                            disabled={isEditFlag || isViewMode||state.disableMainFields}
                             customClassName="mb-1"
                           />
                           {state.showWarning && <WarningMessage dClass="mt-1" message={`${state.currency?.label} to ${getValuesMainForm("plantCurrency")} rate is not present in the Exchange Master`} />}
@@ -1400,7 +1399,7 @@ const AddFreight = (props) => {
                               className="withBorder"
                               autoComplete="off"
                               disabledKeyboardNavigation
-                              disabled={isViewMode || isEditMode}
+                              disabled={isViewMode || isEditMode||state.disableMainFields}
                               mandatory={true}
                               errors={errorsMainForm?.EffectiveDate}
                               minDate={getEffectiveDateMinDate()}
