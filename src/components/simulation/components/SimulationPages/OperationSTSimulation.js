@@ -370,7 +370,9 @@ function OperationSTSimulation(props) {
     }
     const consumptionFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return isImpactedMaster ? row?.OldOperationConsumption : row?.OperationConsumption
+        const value = isImpactedMaster ? row?.OldOperationConsumption : row?.OperationConsumption
+
+        return <span>{value}</span>;
     }
     const localConversionFormatter = (props) => {
         const cellValue = checkForNull(props?.value);

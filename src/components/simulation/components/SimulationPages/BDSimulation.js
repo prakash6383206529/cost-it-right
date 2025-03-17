@@ -328,7 +328,7 @@ function BDSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewBOPRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row?.BasicRate, getConfigurationKey().NoOfDecimalForPrice)}>{cell && value ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row?.BasicRate, getConfigurationKey().NoOfDecimalForPrice)} </span>
+                        <span id={`newBasicRate-${props.rowIndex}`} className={`form-control`} title={cell && value ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row?.BasicRate, getConfigurationKey().NoOfDecimalForPrice)}>{cell && value ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row?.BasicRate, getConfigurationKey().NoOfDecimalForPrice)} </span>
                 }
 
             </>
@@ -840,11 +840,17 @@ function BDSimulation(props) {
         let tempData = []
         let temp = []
         TempData && TempData.map((item) => {
-            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-            if (item.NewNetLandedCostConversion === null || item.NewNetLandedCostConversion === undefined) {
-                item.NewNetLandedCostConversion = item.OriginalNetLandedCost ?? item.NetLandedCost
+            const processedItem = { ...item }
+            processedItem.EffectiveDate = (processedItem?.EffectiveDate)?.slice(0, 10) || "-";
+            if (processedItem?.NewNetLandedCostConversion === null || processedItem?.NewNetLandedCostConversion === undefined) {
+                processedItem.NewNetLandedCostConversion = processedItem?.OriginalNetLandedCost ?? processedItem?.NetLandedCost;
             }
-            temp.push(item)
+            Object.keys(processedItem).forEach(key => {
+                if (processedItem[key] === null || processedItem[key] === undefined || processedItem[key] === '') {
+                    processedItem[key] = "-";
+                }
+            })
+            temp.push(processedItem);
         })
         if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
             tempData = hideColumnFromExcel(data, 'Quantity')
@@ -966,13 +972,13 @@ function BDSimulation(props) {
                                                 {<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName="BOP Part No" minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName="BOP Part Name" minWidth={columnWidths.BoughtOutPartName}></AgGridColumn>
-                                                {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName="BOP Category" minWidth={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName="BOP Part Category" minWidth={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
                                                 {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName={vendorLabel + " (Code)"} minWidth={columnWidths.VendorCode} cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={columnWidths.CustomerName} cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' minWidth={columnWidths.plantCode} cellRenderer='plantFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" tooltipField='Quantity' editable='false' headerName="Min Order Quantity" minWidth={columnWidths.Quantity} cellRenderer='quantityFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                {<AgGridColumn field="Currency" minWidth={100} tooltipField='Currency' editable='false' headerName="Settlement Currency"  ></AgGridColumn>}
+                                                {<AgGridColumn field="Currency" minWidth={120} tooltipField='Currency' editable='false' headerName="Settlement Currency"  ></AgGridColumn>}
                                                 {(String(props?.master) === String(BOPIMPORT) || String(props?.master) === String(EXCHNAGERATE))&&(isImpactedMaster || props?.lastRevision)&&<AgGridColumn field="LocalCurrency" minWidth={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
 
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={

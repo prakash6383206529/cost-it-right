@@ -312,7 +312,7 @@ const {vendorLabel}= useLabels()
         return (
             <>
                 {
-                    <span className={`${!isbulkUpload ? 'form-control' : ''} ${Number(row.OldNetLandedCost) !== Number(row.NewBasicRate) ? 'disabled' : ''}`} >{cell && value ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
+                    <span className={`form-control ${Number(row.OldNetLandedCost) !== Number(row.NewBasicRate) ? 'disabled' : ''}`} >{cell && value ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
                 }
 
             </>
@@ -337,8 +337,8 @@ const {vendorLabel}= useLabels()
 
 
         return (
-            <>            <div id={`newBasicRate-${props.rowIndex}`} className='ag-header-cell-label'>
-                {<span title={cell && value ? Number(row.NewBasicRate) : Number(row.BasicRate)}>{cell && value ? Number(row.NewBasicRate) : Number(row.BasicRate)} </span>}
+            <>          <div id={`newBasicRate-${props.rowIndex}`} className='ag-header-cell-label'>
+                {<span className={`form-control mt-1`} title={cell && value ? Number(row.NewBasicRate) : Number(row.BasicRate)}>{cell && value ? Number(row.NewBasicRate) : Number(row.BasicRate)} </span>}
             </div>
             </>
         )
@@ -411,6 +411,7 @@ const {vendorLabel}= useLabels()
         const value = beforeSaveCell(cell, props.rowIndex, 'BasicRate', row.OldNetLandedCost)
         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         const NewNetLandedCost = ((checkForNull(row.NewBasicRate) + checkForNull(row?.NewOtherNetCost)) / NumberOfPieces) + checkForNull(row?.NewNetConditionCost)
+        const OldNetLandedCost = ((checkForNull(row.BasicRate) + checkForNull(row?.OtherNetCost)) / NumberOfPieces) + checkForNull(row?.NetConditionCost)
 
         let returnValue = ''
         if (!value) {
@@ -425,9 +426,16 @@ const {vendorLabel}= useLabels()
             }
         }
 
+        let cssClass = '';
+        if (NewNetLandedCost > OldNetLandedCost) {
+            cssClass = 'red-value';
+        } else if (NewNetLandedCost < OldNetLandedCost) {
+            cssClass = 'green-value';
+        }
+
         return (
             <div id="netCost_revised" className='ag-header-cell-label'>
-                <span title={returnValue}>{returnValue}</span>
+                <span className={cssClass} title={returnValue}>{returnValue}</span>
             </div>
         );
     };
@@ -471,7 +479,8 @@ const {vendorLabel}= useLabels()
         resizable: true,
         filter: true,
         sortable: false,
-        editable: true
+        editable: true,
+        floatingFilter: true
     };
 
     const onGridReady = (params) => {
@@ -788,24 +797,16 @@ const {vendorLabel}= useLabels()
     const basicPriceRevisedFormatter = (props) => {
         const row = props?.data;
 
-        let returnValue = '';
 
         // Calculate the new basic price (basic rate + other costs)
-    const newBasicRate = props?.isImpactedMaster?row.NewBOPRate:(row.NewBasicRate || row.BasicRate);
+    const newBasicRate = props?.isImpactedMaster ? row.NewBOPRate : (row.NewBasicRate || row.BasicRate);
 
-    const newOtherCost = props?.isImpactedMaster?row.NewOtherCost: row.NewOtherNetCost || row.OtherNetCost
-        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
-    const newBasicPrice = props?.isImpactedMaster?row?.NewNetCostWithoutConditionCost:(checkForNull(newBasicRate)+checkForNull(newOtherCost)) / NumberOfPieces
+    const newOtherCost = props?.isImpactedMaster ? row.NewOtherCost : row.NewOtherNetCost || row.OtherNetCost;
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1;
+    const newBasicPrice = props?.isImpactedMaster ? row?.NewNetCostWithoutConditionCost : (checkForNull(newBasicRate) + checkForNull(newOtherCost)) / NumberOfPieces;
 
+        const returnValue = checkForDecimalAndNull(newBasicPrice, getConfigurationKey().NoOfDecimalForPrice);
 
-        // if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-        //     // If percentage is applied
-        //     const basicRateWithPercentage = row.BasicRate + (row.BasicRate * row.Percentage / 100);
-        //     returnValue = checkForDecimalAndNull(basicRateWithPercentage + checkForNull(newOtherCost), getConfigurationKey().NoOfDecimalForPrice);
-        // } else {
-        // If direct basic rate is used
-        returnValue = checkForDecimalAndNull(newBasicPrice, getConfigurationKey().NoOfDecimalForPrice);
-        // }
 
         return (
             <div className='ag-header-cell-label'>
@@ -860,14 +861,21 @@ const {vendorLabel}= useLabels()
 
         let temp = []
         TempData && TempData.map((item) => {
-            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-            if (item.NewNetLandedCostConversion === null || item.NewNetLandedCostConversion === undefined) {
-                item.NewNetLandedCostConversion = item.IsBOPAssociated ?? item.OriginalNetLandedCost 
+            item.EffectiveDate = (item?.EffectiveDate)?.slice(0, 10)
+            if (item?.NewNetLandedCostConversion === null || item?.NewNetLandedCostConversion === undefined) {
+                item.NewNetLandedCostConversion =  item?.OriginalNetLandedCost 
             }
-            if(!item.IsBOPAssociated){
-                item.OriginalNetLandedCost = item.NetLandedCost
-                item.NewNetLandedCostConversion = item.NewNetLandedCost
+            if(!item?.IsBOPAssociated){
+                item.OriginalNetLandedCost = item?.NetLandedCost
+                item.NewNetLandedCostConversion = item?.NewNetLandedCost
             }
+            
+            Object.keys(item)?.forEach(key => {
+                if (item[key] === null || item[key] === undefined || item[key] === '') {
+                    item[key] = "-";
+                }
+            });
+            
             temp.push(item)
         })
 
@@ -961,7 +969,7 @@ const {vendorLabel}= useLabels()
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 domLayout='autoHeight'
-                                                // columnDefs={c}
+                                                floatingFilter={true}
                                                 rowData={list}
                                                 pagination={true}
                                                 paginationPageSize={defaultPageSize}

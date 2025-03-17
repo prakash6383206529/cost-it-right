@@ -5184,12 +5184,12 @@ export const RMDomesticSimulation = [
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
-    { label: "Plant (Code)", value: "DestinationPlantName" },
-    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "DestinationPlantName", value: "DestinationPlantName" },
+    { label: "VendorName", value: "VendorName" },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "VendorLocation", value: "VendorLocation" },
-    { label: "Customer (Code)", value: "CustomerName" },
+    { label: "CustomerName", value: "CustomerName" },
     { label: "UOM", value: "UnitOfMeasurementName" },
     { label: "BasicRate", value: "BasicRatePerUOM" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
@@ -7025,7 +7025,7 @@ export const BOP_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Revised Basic Rate", value: "NewBasicRate", },
     { label: "Existing Other Cost", value: "OtherNetCost", },
     { label: "Revised Other Cost", value: "NewOtherNetCost", },
-    { label: "Existing Net Cost", value: "OriginalNetLandedCost", },
+    { label: "Existing Net Cost", value: "NetLandedCost", },
     { label: "Revised Net Cost", value: "NewNetLandedCostConversion", },
     { label: "Effective date", value: "EffectiveDate", },
 ]
@@ -7064,13 +7064,14 @@ export const BOP_IMPACT_DOWNLOAD_EXCEl_IMPORT = [
     { label: "Revised Basic Rate", value: "NewBasicRate", },
     { label: "Existing Other Cost", value: "OtherNetCost", },
     { label: "Revised Other Cost", value: "NewOtherNetCost", },
-    { label: "Existing Net Cost", value: "OriginalNetLandedCost", },
+    { label: "Existing Net Cost", value: "NetLandedCost", },
     { label: "Revised Net Cost", value: "NewNetLandedCostConversion", },
     { label: "Effective date", value: "EffectiveDate", },
 ]
 
 export const MACHINE_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Entry Type", value: "EntryType", },
     { label: "Machine Name", value: "MachineName", },
     { label: "Machine Number", value: "MachineNumber", },
@@ -7079,7 +7080,7 @@ export const MACHINE_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Plant Code", value: "Plant", },
     { label: "Settlement Currency", value: "Currency", },
     { label: "Existing Machine Rate", value: "MachineRate", },
-    { label: "Revised Machine Rate", value: "MachineRate", },
+    { label: "Revised Machine Rate", value: "NewMachineRate", },
     { label: "Effective date", value: "EffectiveDate", },
 ]
 

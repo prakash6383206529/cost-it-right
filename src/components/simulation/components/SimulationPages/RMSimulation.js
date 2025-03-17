@@ -470,7 +470,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row?.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''} basicRate_revised`} title={cell && value ? Number(cell) : Number(row?.BasicRatePerUOM)}>{cell && value ? Number(cell) : row?.Percentage ? PercentageCalc : isbulkUpload ? checkForNull(cell) : checkForNull(row?.BasicRatePerUOM)} </span>
+                        <span id={`newBasicRate-${props.rowIndex}`} className={`form-control ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''} basicRate_revised`} title={cell && value ? Number(cell) : Number(row?.BasicRatePerUOM)}>{cell && value ? Number(cell) : row?.Percentage ? PercentageCalc : isbulkUpload ? checkForNull(cell) : checkForNull(row?.BasicRatePerUOM)} </span>
                 }
 
             </>
@@ -502,7 +502,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row?.NewScrapRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsScrapUOMApply === 'Yes' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}</span>
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`form-control ${row?.IsScrapUOMApply === 'Yes' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}</span>
                 }
             </>
         )
@@ -521,7 +521,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row?.NewScrapRatePerScrapUOM, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsScrapUOMApply === 'No' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}</span>
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`form-control ${row?.IsScrapUOMApply === 'No' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}</span>
                 }
             </>
         )
@@ -612,19 +612,33 @@ function RMSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        // if (!row?.NewBasicRate || Number(row?.BasicRate) === Number(row?.NewBasicRate) || row?.NewBasicRate === '') return ''
+        if (isbulkUpload) {
+            const revisedCost = checkForNull(row?.NewBasicRate);
+            const existingCost = checkForNull(row?.NetLandedCost);
+            const classGreen = revisedCost > existingCost ? 'red-value form-control' : 
+                               revisedCost < existingCost ? 'green-value form-control' : 'form-class';
+            
+            return (
+                <span className={classGreen} title={checkForDecimalAndNull(revisedCost, getConfigurationKey().NoOfDecimalForPrice)}>
+                    {checkForDecimalAndNull(revisedCost, getConfigurationKey().NoOfDecimalForPrice)}
+                </span>
+            );
+        }
+        
         let NewBasicRate = '';
         if (row?.NewBasicRate) {
-            NewBasicRate = Number(row?.NewBasicRate) + checkForNull(row?.RMFreightCost) + checkForNull(row?.RMShearingCost)
+            NewBasicRate = Number(row?.NewBasicRate) + checkForNull(row?.RMFreightCost) + checkForNull(row?.RMShearingCost);
         }
-        else if ((row?.Percentage)) {
-            let percentageCalc = (row?.BasicRatePerUOM + (row?.BasicRatePerUOM * row?.Percentage / 100))
-            row.NewBasicrateFromPercentage = percentageCalc
-            NewBasicRate = percentageCalc + row?.RMFreightCost + row?.RMShearingCost
+        else if (row?.Percentage) {
+            let percentageCalc = (row?.BasicRatePerUOM + (row?.BasicRatePerUOM * row?.Percentage / 100));
+            row.NewBasicrateFromPercentage = percentageCalc;
+            NewBasicRate = percentageCalc + checkForNull(row?.RMFreightCost) + checkForNull(row?.RMShearingCost);
         }
-        const classGreen = ((checkForDecimalAndNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost) + checkForNull(row?.NewNetConditionCost))) > checkForDecimalAndNull(row?.NetLandedCost)) ? 'red-value form-control' : (checkForDecimalAndNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost) + checkForNull(row?.NewNetConditionCost)) < checkForDecimalAndNull(row?.NetLandedCost)) ? 'green-value form-control' : 'form-class'
+        const totalCost = checkForDecimalAndNull(NewBasicRate) + checkForNull(row?.NewOtherNetCost) + checkForNull(row?.NewNetConditionCost)
+        const classGreen = totalCost > checkForDecimalAndNull(row?.NetLandedCost) ? 'red-value form-control' : 
+                          totalCost < checkForDecimalAndNull(row?.NetLandedCost) ? 'green-value form-control' : 'form-class';
+        
         return showValue(row, classGreen, NewBasicRate)
-        // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
     const NewBasicPriceFormmater = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -771,7 +785,7 @@ function RMSimulation(props) {
         return (
             <>
                 {
-                    <span id={`percentage${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.NewBasicRate ? 'disabled' : ''}`} >{cell && value ? row?.NewBasicRate ? 0 : Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
+                    <span id={`percentage${props.rowIndex}`} className={`form-control ${row?.NewBasicRate ? 'disabled' : ''}`} >{cell && value ? row?.NewBasicRate ? 0 : Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
                 }
             </>
         )
@@ -1119,10 +1133,18 @@ function RMSimulation(props) {
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
         TempData && TempData.map((item) => {
-            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-            item.NewNetLandedCost = item.NewNetLandedCost ?? item.NetLandedCost
-            item.NewScrapRate = item.NewScrapRate ?? item.ScrapRate
-            temp.push(item)
+            let excelItem = { ...item }
+            excelItem.EffectiveDate = (excelItem?.EffectiveDate)?.slice(0, 10)
+            excelItem.NewNetLandedCost = excelItem?.NewNetLandedCost ?? excelItem?.NetLandedCost
+            excelItem.NewScrapRate = excelItem?.NewScrapRate ?? excelItem?.ScrapRate
+            
+            Object.keys(excelItem).forEach(key => {
+                if (excelItem[key] === null || excelItem[key] === undefined || excelItem[key] === '') {
+                    excelItem[key] = "-";
+                }
+            });
+            
+            temp.push(excelItem)
         })
         return (
             <ExcelSheet data={temp} name={'RM Data'}>
