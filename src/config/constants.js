@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-//const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.1.102:2002/api/v1`;
 
 
 
@@ -2077,6 +2077,7 @@ export const GET_SIMULATION_COSTING_STATUS = 'GET_SIMULATION_COSTING_STATUS'
 export const SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV = 'SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV'
 export const GET_IMPACTED_DATA_LIST = 'GET_IMPACTED_DATA_LIST'
 export const SET_RAW_MATERIALS_EFFECTIVE_DATE = 'SET_RAW_MATERIALS_EFFECTIVE_DATE';
+export const SET_LIST_TOGGLE = 'SET_LIST_TOGGLE'
 
 
 // ASSEMBLY TECHNOLOGY
@@ -3366,7 +3367,7 @@ export const COMMODITYCOST = 'Commodity Cost'
 export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const COSTINGOVERHEADANDPROFTFORPROCESS = "Costing Overhead Profit For Process"
-export const COSTINGOVERHEADANDPROFTOPERATION="Costing Overhead Profit For Operation"
+export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Operation"
 export const IsSelectSinglePlant = true
 
 //VERSION 

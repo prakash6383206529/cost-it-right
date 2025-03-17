@@ -1016,6 +1016,10 @@ function AddMoreOperation(props) {
                 if ('response' in res) {
                     status = res && res?.response?.status
                     dropzone.current.files.pop()
+                    setAttachmentLoader(false)
+                    dropzone.current.files.pop() // Remove the failed file from dropzone
+                    setFiles([...files]) // Trigger re-render with current files
+                    Toaster.warning('File upload failed. Please try again.')
                 }
                 else {
                     let Data = res.data[0]

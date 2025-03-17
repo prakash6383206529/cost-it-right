@@ -1351,6 +1351,9 @@ function TabDiscountOther(props) {
       dispatch(saveDiscountOtherCostTab(data, res => {
         setIsLoader(false)
         if (res.data.Result) {
+          if (checkIsPaymentTermsDataChange === true) {
+            dispatch(saveCostingPaymentTermDetail(obj, res => { }))
+          }
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           // dispatch(setComponentDiscountOtherItemData({}, () => { }))
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
@@ -1366,12 +1369,6 @@ function TabDiscountOther(props) {
         }
         setIsLoader(false)
       }))
-
-      if (checkIsPaymentTermsDataChange === true) {
-        dispatch(saveCostingPaymentTermDetail(obj, res => {
-          setIsLoader(false)
-        }))
-      }
     }
 
     setTimeout(() => {

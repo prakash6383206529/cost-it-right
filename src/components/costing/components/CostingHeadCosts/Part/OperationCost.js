@@ -123,7 +123,7 @@ function OperationCost(props) {
           OperationCode: el.OperationCode,
           UOM: el.UnitOfMeasurement,
           Rate: el.Rate,
-          Quantity: finalQuantity,
+          Quantity: Number(finalQuantity),
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
@@ -210,7 +210,7 @@ function OperationCost(props) {
     let tempData = gridData[index];
 
     // Recalculate net costs with new applicability
-    const netCosts = calculateNetCosts(tempData?.OperationCost, e?.value,'Operation');
+    const netCosts = calculateNetCosts(tempData?.OperationCost, e?.value, 'Operation');
     tempData = { ...tempData, CostingConditionMasterAndTypeLinkingId: e.value, CostingConditionNumber: e.label, ...netCosts };
 
     tempArr = Object.assign([...gridData], { [index]: tempData });
@@ -257,7 +257,7 @@ function OperationCost(props) {
   }
 
   const SaveItem = (index) => {
-    if (errors?.OperationGridFields && (errors?.OperationGridFields?.[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields?.[index]?.Quantity).length !== 0)) {
+    if (errors?.OperationGridFields && errors?.OperationGridFields?.length > 0) {
       return false
     }
     if (getValues(`${OperationGridFields}.${index}.Quantity`) === '') {
@@ -304,10 +304,10 @@ function OperationCost(props) {
         checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
 
-      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value,"Operation");
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value, "Operation");
       tempData = {
         ...tempData,
-        Quantity: event.target.value,
+        Quantity: Number(event.target.value),
         OperationCost,
         CostingConditionNumber: tempData?.CostingConditionNumber,
         CostingConditionMasterAndTypeLinkingId: tempData?.CostingConditionMasterAndTypeLinkingId,
@@ -323,7 +323,7 @@ function OperationCost(props) {
       setGridData(tempArr);
     }
   };
-  
+
   const handleLabourQuantityChange = (event, index) => {
     let tempArr = [];
     let tempData = gridData[index];
@@ -332,7 +332,7 @@ function OperationCost(props) {
       const WithOutLabourCost = tempData.IsLabourRateExist ?
         checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value,"Operation");
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value, "Operation");
       tempData = {
         ...tempData,
         LabourQuantity: event.target.value,
@@ -347,7 +347,7 @@ function OperationCost(props) {
     } else {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
       const OperationCost = WithLaboutCost;
-      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value,"Operation");
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value, "Operation");
       tempData = {
         ...tempData,
         LabourQuantity: 0,
@@ -515,7 +515,7 @@ function OperationCost(props) {
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                        validate: { number, checkWhiteSpaces, noDecimal },
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
