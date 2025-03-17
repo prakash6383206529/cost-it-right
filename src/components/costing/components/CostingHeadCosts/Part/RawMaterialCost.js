@@ -969,8 +969,9 @@ function RawMaterialCost(props) {
       }
 
       if (Number(costData?.TechnologyId) === Number(RUBBER)) {
+        let updatedData
         if(weightData?.CalculatorType === "Standard"){
-          let updatedData = gridData.map((item, index) => {
+          updatedData = gridData.map((item, index) => {
             const weightItem = weightData?.RawMaterialRubberStandardWeightCalculator.find(wItem => wItem.RawMaterialId === item.RawMaterialId);
             if (weightItem) {
               item.FinishWeight = weightItem.FinishWeight || 0;
@@ -987,26 +988,20 @@ function RawMaterialCost(props) {
               item.IsCalculaterAvailable = true;
               item.CutOffRMC = CutOffRMC;
               item.ScrapRecoveryPercentage = RecoveryPercentage;
-
-              setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData?.RawMaterialRubberStandardWeightCalculator[index].GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
-              setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData?.RawMaterialRubberStandardWeightCalculator[index].FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-              setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
-              // setValue(`${rmGridFields}.${index}.NetLandedCost`, checkForDecimalAndNull(weightData?.RawMaterialRubberStandardWeightCalculator[index].NetRmCost, getConfigurationKey().NoOfDecimalForInputOutput))
-              setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightData?.RawMaterialRubberStandardWeightCalculator[index]?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+              item.CalculatorType= weightData.CalculatorType ?? calculatorTypeStore
             }
+
+            setTimeout(() => {
+                setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData?.RawMaterialRubberStandardWeightCalculator[index].GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+                setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData?.RawMaterialRubberStandardWeightCalculator[index].FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+                setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+                // setValue(`${rmGridFields}.${index}.NetLandedCost`, checkForDecimalAndNull(weightData?.RawMaterialRubberStandardWeightCalculator[index].NetRmCost, getConfigurationKey().NoOfDecimalForInputOutput))
+                setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightData?.RawMaterialRubberStandardWeightCalculator[index]?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+            }, 500)
             return item;
           });
-
           setTimeout(() => {
             setGridData(updatedData)
-            // gridData && gridData.map((item, index) => {
-            //   // setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData?.RawMaterialRubberStandardWeightCalculator[index].GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
-            //   // setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData?.RawMaterialRubberStandardWeightCalculator[index].FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-            //   // setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
-            //   // // setValue(`${rmGridFields}.${index}.NetLandedCost`, checkForDecimalAndNull(weightData?.RawMaterialRubberStandardWeightCalculator[index].NetRmCost, getConfigurationKey().NoOfDecimalForInputOutput))
-            //   // setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightData?.RawMaterialRubberStandardWeightCalculator[index]?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
-            //   return null
-            // })
           }, 500)
         }else{
           gridData && gridData.map((item, index) => {

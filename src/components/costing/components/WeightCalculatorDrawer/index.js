@@ -76,7 +76,7 @@ function OpenWeightCalculator(props) {
       }
     }
     // props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX) && !isSummary) ? calculatorType : event, weightData, originalWeight)
-    props.closeDrawer(((Number(technology) === Number(CORRUGATEDBOX) || Number(technology) === Number(RUBBER)) && !isSummary) ? (calculatorType ? calculatorType : event) : event, weightData, originalWeight)
+    props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX || Number(technology) === Number(RUBBER)) && !isSummary) ? calculatorType : event, weightData, originalWeight)
   }
 
   /**

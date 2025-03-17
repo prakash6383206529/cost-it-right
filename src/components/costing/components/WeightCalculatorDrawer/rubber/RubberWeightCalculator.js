@@ -256,7 +256,7 @@ function RubberWeightCalculator(props) {
                 Toaster.success("Calculation saved successfully")
                 obj.RawMaterialCost = obj.NetRawMaterialCost
                 obj.CalculatorType = "Compound"
-                props.toggleDrawer('', obj)
+                props.toggleDrawer('Compound', obj)
             }
         }))
     }), 500);

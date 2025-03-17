@@ -25,7 +25,7 @@ const gridOptions = {};
 function StandardRub(props) {
 
     const dispatch = useDispatch();
-    const { rmRowData, rmData } = props
+    const { rmRowData, rmData, CostingViewMode } = props
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const isVolumeEditable = getConfigurationKey()?.IsVolumeEditableInRubberRMWeightCalculator ?? false
 
@@ -84,11 +84,25 @@ function StandardRub(props) {
         setRmDropDownData(arr)
     }, [])
 
-
     useEffect(() => {
-
-
-    }, [tableData])
+        let arr = [];
+        let count = 1;
+    
+        if (tableData && tableData.length > 0) {
+            arr = rmData
+                .filter(item => {
+                    return !tableData.some(tableItem => tableItem.RawMaterialId === item.RawMaterialId);
+                })
+                .map(item => {
+                    return {
+                        label: item.RMName,
+                        value: count++
+                    };
+                });
+    
+            setRmDropDownData(arr);
+        }
+    }, [tableData]);
 
     useEffect(() => {
         if (Number(getValues('FinishWeight') < dataToSend.GrossWeight)) {
@@ -142,19 +156,15 @@ function StandardRub(props) {
 
 
     const calculateScrapWeight = () => {
-
         const FinishWeight = Number(getValues('FinishWeight'))
-
         if (Number(getValues('GrossWeight'))) {
             let ScrapWeight = checkForNull(dataToSend.GrossWeight) - checkForNull(FinishWeight)
             setDataToSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
             setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
             setDataToSend(prevState => ({ ...prevState, NetRMCost: NetRmCost }))
             setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
         }
-
     }
 
 
@@ -179,6 +189,11 @@ function StandardRub(props) {
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForInputOutput)
+    }
+
+    const hyphenFormatterForPrice = (props) => {
+        const cellValue = props?.value;
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     const calculateTotalRmCost = (gridData) => {
@@ -240,11 +255,10 @@ function StandardRub(props) {
         }, 300);
     }
     const editItem = (gridData) => {
-
         setDisableCondition(false)
         let e = gridData[gridData.length - 1]
         rmData && rmData.map((item, index) => {
-            if (item.RMName === e.RmName) {
+            if (item.RawMaterialId === e.RawMaterialId) {
                 setRmRowDataState(rmData[index])
             }
             return false
@@ -278,8 +292,8 @@ function StandardRub(props) {
         return (
             <>
 
-                {isEditable && <button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.agGridReact?.gridOptions.rowData)} />}
-                {isEditable && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.agGridReact?.gridOptions.rowData)} />}
+                {(isEditable && !CostingViewMode) && <button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.agGridReact?.gridOptions.rowData)} />}
+                {(isEditable && !CostingViewMode) && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.agGridReact?.gridOptions.rowData)} />}
             </>
         )
     };
@@ -433,7 +447,7 @@ function StandardRub(props) {
             if (res?.data?.Result) {
                 Toaster.success("Calculation saved successfully")
                 obj.CalculatorType = "Standard"
-                props.toggleDrawer('', obj)
+                props.toggleDrawer('Standard', obj)
             }
         }))
 
@@ -446,7 +460,7 @@ function StandardRub(props) {
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         totalValueRenderer: buttonFormatter,
-
+        hyphenFormatterForPrice: hyphenFormatterForPrice
     };
 
     const UnitFormat = () => {
@@ -507,7 +521,6 @@ function StandardRub(props) {
                                             disabled={props.CostingViewMode || !disableCondition ? true : false}
                                         />
                                     </Col>
-
                                     <Row className={'mt15'}>
                                         <Col md="3">
                                             <TextFieldHookForm
@@ -782,7 +795,8 @@ function StandardRub(props) {
                                                 <AgGridColumn minWidth="150" field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="ScrapWeight" headerName="Scrap Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="150" field="NetRMCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                {/* <AgGridColumn minWidth="150" field="NetRMCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+                                                <AgGridColumn minWidth="150" field="NetRMCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatterForPrice'}></AgGridColumn>
                                                 <AgGridColumn minWidth="120" field="ProcessId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                             </AgGridReact>
 
