@@ -143,42 +143,25 @@ function UserRegistration(props) {
   const [selectedDivision, setSelectedDivision] = useState([])
   const dispatch = useDispatch()
   const { technologyLabel, vendorLabel } = useLabels();
-  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-  // const cityList = useSelector(state => state.comman.cityList)
-  const departmentList = useSelector(state => state.auth.departmentList)
-  const roleList = useSelector(state => state.auth.roleList)
-  const technologyList = useSelector(state => state.auth.technologyList)
-  const simulationTechnologyList = useSelector(state => state.auth.simulationTechnologyList)
-  const masterList = useSelector(state => state.auth.masterList)
-  const levelSelectList = useSelector(state => state.auth.levelSelectList)
-  const simulationLevelSelectList = useSelector(state => state.auth.simulationLevelSelectList)
-  const masterLevelSelectList = useSelector(state => state.auth.masterLevelSelectList)
-  const registerUserData = useSelector(state => state.auth.registerUserData)
-  const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
-  const levelList = useSelector(state => state.auth.levelList)
-  const OnboardingLevelSelectList = useSelector(state => state.auth.OnboardingLevelSelectList)
-  const plantSelectListForDepartment = useSelector(state => state.auth.plantSelectListForDepartment);
-  const divisionListForDepartment = useSelector(state => state.auth.divisionListForDepartment);
-  const approvalTypeCosting = useSelector(state => state.comman.approvalTypeCosting)
+  const { initialConfiguration, departmentList, roleList, technologyList, simulationTechnologyList,
+    masterList, levelSelectList, simulationLevelSelectList, masterLevelSelectList, registerUserData, levelList, OnboardingLevelSelectList, plantSelectListForDepartment, divisionListForDepartment } = useSelector(state => state?.auth)
+  const { getReporterListDropDown, approvalTypeCosting, approvalTypeSimulation, approvalTypeMaster, approvalTypeOnboarding } = useSelector(state => state?.comman)
 
-  const approvalTypeSimulation = useSelector(state => state.comman?.approvalTypeSimulation)
-  const approvalTypeMaster = useSelector(state => state.comman?.approvalTypeMaster)
-  const approvalTypeOnboarding = useSelector(state => state.comman?.approvalTypeOnboarding)
 
   const defaultValues = {
-    FirstName: props?.data?.isEditFlag && registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
-    MiddleName: props?.data?.isEditFlag && registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '',
-    LastName: props?.data?.isEditFlag && registerUserData && registerUserData.LastName !== undefined ? registerUserData.LastName : '',
-    EmailAddress: props?.data?.isEditFlag && registerUserData && registerUserData.EmailAddress !== undefined ? registerUserData.EmailAddress : '',
-    UserName: props?.data?.isEditFlag && registerUserData && registerUserData.UserName !== undefined ? registerUserData.UserName : '',
-    Mobile: props?.data?.isEditFlag && registerUserData && registerUserData.Mobile !== undefined ? registerUserData.Mobile : '',
-    Password: props?.data?.isEditFlag && registerUserData && registerUserData.Password !== undefined ? '' : '',
-    passwordConfirm: props?.data?.isEditFlag && registerUserData && registerUserData.Password !== undefined ? '' : '',
-    AddressLine1: props?.data?.isEditFlag && registerUserData && registerUserData.AddressLine1 !== undefined ? registerUserData.AddressLine1 : '',
-    AddressLine2: props?.data?.isEditFlag && registerUserData && registerUserData.AddressLine2 !== undefined ? registerUserData.AddressLine2 : '',
-    ZipCode: props?.data?.isEditFlag && registerUserData && registerUserData.ZipCode !== undefined ? registerUserData.ZipCode : '',
-    PhoneNumber: props?.data?.isEditFlag && registerUserData && registerUserData.PhoneNumber !== undefined ? registerUserData.PhoneNumber : '',
-    Extension: props?.data?.isEditFlag && registerUserData && registerUserData.Extension !== undefined ? registerUserData.Extension : '',
+    FirstName: props?.data?.isEditFlag && registerUserData && registerUserData?.FirstName !== undefined ? registerUserData?.FirstName : '',
+    MiddleName: props?.data?.isEditFlag && registerUserData && registerUserData?.MiddleName !== undefined ? registerUserData?.MiddleName : '',
+    LastName: props?.data?.isEditFlag && registerUserData && registerUserData?.LastName !== undefined ? registerUserData?.LastName : '',
+    EmailAddress: props?.data?.isEditFlag && registerUserData && registerUserData?.EmailAddress !== undefined ? registerUserData?.EmailAddress : '',
+    UserName: props?.data?.isEditFlag && registerUserData && registerUserData?.UserName !== undefined ? registerUserData?.UserName : '',
+    Mobile: props?.data?.isEditFlag && registerUserData && registerUserData?.Mobile !== undefined ? registerUserData?.Mobile : '',
+    Password: props?.data?.isEditFlag && registerUserData && registerUserData?.Password !== undefined ? '' : '',
+    passwordConfirm: props?.data?.isEditFlag && registerUserData && registerUserData?.Password !== undefined ? '' : '',
+    AddressLine1: props?.data?.isEditFlag && registerUserData && registerUserData?.AddressLine1 !== undefined ? registerUserData?.AddressLine1 : '',
+    AddressLine2: props?.data?.isEditFlag && registerUserData && registerUserData?.AddressLine2 !== undefined ? registerUserData?.AddressLine2 : '',
+    ZipCode: props?.data?.isEditFlag && registerUserData && registerUserData?.ZipCode !== undefined ? registerUserData?.ZipCode : '',
+    PhoneNumber: props?.data?.isEditFlag && registerUserData && registerUserData?.PhoneNumber !== undefined ? registerUserData?.PhoneNumber : '',
+    Extension: props?.data?.isEditFlag && registerUserData && registerUserData?.Extension !== undefined ? registerUserData?.Extension : '',
     plant: ''
   }
 
@@ -209,25 +192,25 @@ function UserRegistration(props) {
       CommonField.forEach(element => {
         setValue(element, registerUserData && registerUserData[element] !== undefined ? registerUserData[element] : '',)
       })
-      setValue('Password', registerUserData && registerUserData.Password !== undefined ? '' : '',)
-      setValue('passwordConfirm', registerUserData && registerUserData.Password !== undefined ? '' : '',)
-      setValue('CityId', registerUserData && registerUserData.CityName !== undefined ? {
-        label: registerUserData.CityName, value: registerUserData.CityId
+      setValue('Password', registerUserData && registerUserData?.Password !== undefined ? '' : '',)
+      setValue('passwordConfirm', registerUserData && registerUserData?.Password !== undefined ? '' : '',)
+      setValue('CityId', registerUserData && registerUserData?.CityName !== undefined ? {
+        label: registerUserData?.CityName, value: registerUserData?.CityId
       } : '')
-      setValue('RoleId', registerUserData && registerUserData.RoleName !== undefined ? {
-        label: registerUserData.RoleName, value: registerUserData.RoleId
+      setValue('RoleId', registerUserData && registerUserData?.RoleName !== undefined ? {
+        label: registerUserData?.RoleName, value: registerUserData?.RoleId
       } : '')
       let tempArray = []
       registerUserData && registerUserData?.Departments?.map((item) => {
         tempArray.push({ label: item?.DepartmentName, value: (item?.DepartmentId)?.toString() })
         return null;
       })
-      setValue('DepartmentId', registerUserData && registerUserData.Departments !== undefined ? tempArray : '')
-      setValue('Reporter', registerUserData && registerUserData.ReporterName !== undefined ? {
+      setValue('DepartmentId', registerUserData && registerUserData?.Departments !== undefined ? tempArray : '')
+      setValue('Reporter', registerUserData && registerUserData?.ReporterName !== undefined ? {
         label: registerUserData?.ReporterName
         , value: registerUserData?.ReporterId
       } : '')
-      setValue('Vendor', registerUserData && registerUserData.Departments !== undefined ? {
+      setValue('Vendor', registerUserData && registerUserData?.Departments !== undefined ? {
         label: registerUserData?.VendorName
         , value: registerUserData?.VendorId
       } : '')
@@ -611,7 +594,7 @@ function UserRegistration(props) {
     }
     if (getConfigurationKey().IsMultipleDepartmentAllowed) {
       let idArr = [];
-      newValue && newValue.map(item => {
+      newValue && newValue?.map(item => {
         idArr.push(item.value)
       })
       setInputLoader(prevState => ({ ...prevState, plant: true }))
@@ -621,7 +604,7 @@ function UserRegistration(props) {
       setDepartment(newValue)
     } else {
       setDepartment([newValue])
-      dispatch(getPlantSelectListForDepartment([newValue.value], res => { }))
+      dispatch(getPlantSelectListForDepartment([newValue?.value], res => { }))
     }
 
     if (JSON.stringify(newValue) !== JSON.stringify(oldDepartment)) {
@@ -661,14 +644,14 @@ function UserRegistration(props) {
       setRole(newValue)
       setModules([])
       setIsShowAdditionalPermission(false)
-      // getRoleDetail(newValue.value)
+      // getRoleDetail(newValue?.value)
 
     } else {
       setRole([])
       setModules([])
       setIsShowAdditionalPermission(false)
     }
-    if (newValue.value !== RoleId.value) {
+    if (newValue?.value !== RoleId.value) {
       setIsForcefulUpdate(true)
     }
     else { setIsForcefulUpdate(false) }
@@ -714,27 +697,27 @@ function UserRegistration(props) {
   * @description used to get user detail
   */
   const getUserDetail = (data) => {
-    if (data && data.isEditFlag) {
+    if (data && data?.isEditFlag) {
 
       setIsLoader(true)
       setIsPermissionLoading(true)
       setIsEditFlag(false)
       setIsShowForm(true)
       setIsShowAdditionalPermission(true)
-      setIsShowPwdField(data.passwordFlag ? true : false)
-      setUserId(data.UserId)
+      setIsShowPwdField(data?.passwordFlag ? true : false)
+      setUserId(data?.UserId)
       setIsRfqUser(data?.RFQUser)
 
-      if (data.passwordFlag === false) {
+      if (data?.passwordFlag === false) {
       }
 
-      dispatch(getUserDataAPI(data.UserId, (res) => {
-        if (res && res.data && res.data.Data) {
+      dispatch(getUserDataAPI(data?.UserId, (res) => {
+        if (res && res?.data && res?.data?.Data) {
 
-          let Data = res.data.Data;
+          let Data = res?.data?.Data;
 
           let idArr = [];
-          Data.Departments && Data.Departments.map(item => {
+          Data?.Departments && Data?.Departments.map(item => {
             idArr.push(item.DepartmentId)
           })
           dispatch(getPlantSelectListForDepartment(idArr, res => { }))
@@ -766,13 +749,13 @@ function UserRegistration(props) {
             setValue('plant', plantArray)
             setValue('Division', divisionArray)
             const depatArr = []
-            const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
-            Data.Departments && Data.Departments.map(item => (depatArr.push({ label: item.DepartmentName, value: item.DepartmentId })))
-            setPrimaryContact(Data.IsPrimaryContact)
+            const RoleObj = roleList && roleList.find(item => item.RoleId === Data?.RoleId)
+            Data?.Departments && Data?.Departments.map(item => (depatArr.push({ label: item.DepartmentName, value: item.DepartmentId })))
+            setPrimaryContact(Data?.IsPrimaryContact)
             setIsEditFlag(true)
             setIsLoader(false)
-            setIsShowAdditionalPermission(Data.IsAdditionalAccess)
-            setGrantUserWisePermission(Data.IsAdditionalAccess)
+            setIsShowAdditionalPermission(Data?.IsAdditionalAccess)
+            setGrantUserWisePermission(Data?.IsAdditionalAccess)
             setDepartment(depatArr)
             setOldDepartment(depatArr)
             setRole(RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [])
@@ -785,21 +768,21 @@ function UserRegistration(props) {
             // })
             setState(prevState => ({ ...prevState, city: { label: Data?.CityName, value: Data?.CityId } }));
 
-            if (Data.IsAdditionalAccess) {
-              getUserPermission(data.UserId)
+            if (Data?.IsAdditionalAccess) {
+              getUserPermission(data?.UserId)
             } else {
               setIsPermissionLoading(false)
             }
 
           }, 700)
 
-          getUsersTechnologyLevelData(data.UserId)
-          getUsersSimulationTechnologyLevelData(data.UserId)
-          getUsersMasterLevelData(data.UserId)
+          getUsersTechnologyLevelData(data?.UserId)
+          getUsersSimulationTechnologyLevelData(data?.UserId)
+          getUsersMasterLevelData(data?.UserId)
           if (getConfigurationKey().IsShowOnboarding) {
-            getOnboardingUserData(data.UserId)
+            getOnboardingUserData(data?.UserId)
           }
-          if (data.passwordFlag) {
+          if (data?.passwordFlag) {
           }
         }
       }))
@@ -814,14 +797,14 @@ function UserRegistration(props) {
     // setIsPermissionLoading(true)
 
     dispatch(getPermissionByUser(UserId, (res) => {
-      if (res && res.data && res.data.Data) {
-        let Data = res.data.Data;
-        setModules(Data.Modules)
-        setOldModules(Data.Modules)
+      if (res && res?.data && res?.data?.Data) {
+        let Data = res?.data?.Data;
+        setModules(Data?.Modules)
+        setOldModules(Data?.Modules)
 
         // setIsPermissionLoading(false);
 
-        //child.getUpdatedData(Data.Modules)  //need to convertt  to functional
+        //child.getUpdatedData(Data?.Modules)  //need to convertt  to functional
       }
     }))
   }
@@ -832,10 +815,10 @@ function UserRegistration(props) {
   */
   const getUsersTechnologyLevelData = (UserId) => {
     dispatch(getUsersTechnologyLevelAPI(UserId, 0, null, (res) => {
-      if (res && res.data && res.data.Data) {
+      if (res && res?.data && res?.data?.Data) {
 
-        let Data = res.data.Data;
-        let TechnologyLevels = Data.TechnologyLevels;
+        let Data = res?.data?.Data;
+        let TechnologyLevels = Data?.TechnologyLevels;
         setTechnologyLevelGrid(TechnologyLevels)
         setOldTechnologyLevelGrid(TechnologyLevels)
       }
@@ -847,9 +830,9 @@ function UserRegistration(props) {
   */
   const getUsersSimulationTechnologyLevelData = (UserId) => {
     dispatch(getUsersSimulationTechnologyLevelAPI(UserId, 0, null, (res) => {
-      if (res && res.data && res.data.Data) {
-        let Data = res.data.Data;
-        let TechnologySimulationLevels = Data.TechnologyLevels;
+      if (res && res?.data && res?.data?.Data) {
+        let Data = res?.data?.Data;
+        let TechnologySimulationLevels = Data?.TechnologyLevels;
 
         setHeadLevelGrid(TechnologySimulationLevels)
         setOldHeadLevelGrid(TechnologySimulationLevels)
@@ -863,9 +846,9 @@ function UserRegistration(props) {
   */
   const getUsersMasterLevelData = (UserId) => {
     dispatch(getUsersMasterLevelAPI(UserId, 0, null, (res) => {
-      if (res && res.data && res.data.Data) {
-        let Data = res.data.Data;
-        let masterSimulationLevel = Data.MasterLevels;
+      if (res && res?.data && res?.data?.Data) {
+        let Data = res?.data?.Data;
+        let masterSimulationLevel = Data?.MasterLevels;
         setMasterLevelGrid(masterSimulationLevel)
         setOldMasterLevelGrid(masterSimulationLevel)
       }
@@ -877,9 +860,9 @@ function UserRegistration(props) {
   */
   const getOnboardingUserData = (UserId) => {
     dispatch(getUsersOnboardingLevelAPI(UserId, null, (res) => {
-      if (res && res.data && res.data.Data) {
-        let Data = res.data.Data;
-        let onboardingLevel = Data.OnboardingApprovalLevels;
+      if (res && res?.data && res?.data?.Data) {
+        let Data = res?.data?.Data;
+        let onboardingLevel = Data?.OnboardingApprovalLevels;
         setOnboardingLevelGrid(onboardingLevel)
         setOldOnboardingLevelGrid(onboardingLevel)
       }
@@ -976,17 +959,17 @@ function UserRegistration(props) {
 
     if (RoleId !== '') {
       dispatch(getRoleDataAPI(RoleId, (res) => {
-        if (res && res.data && res.data.Data) {
-          let Data = res.data.Data;
+        if (res && res?.data && res?.data?.Data) {
+          let Data = res?.data?.Data;
 
           // setRoleId(RoleId)
-          setModules(Data.Modules)
-          setOldModules(Data.Modules)
+          setModules(Data?.Modules)
+          setOldModules(Data?.Modules)
           setIsLoader(false)
           // setIsPermissionLoading(false);
 
           if (IsShowAdditionalPermission === true) {
-            // child.getUpdatedData(Data.Modules)      // need to be converted into functional
+            // child.getUpdatedData(Data?.Modules)      // need to be converted into functional
           }
         }
       }))
@@ -1013,7 +996,7 @@ function UserRegistration(props) {
       setValue('CostingApprovalType', "")
       emptyLevelDropdown();
     }
-    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+    else if (newValue && (newValue?.length > 0 || Object.keys(newValue).length)) {
       setTechnology(newValue)
     } else {
       setTechnology([])
@@ -1035,13 +1018,13 @@ function UserRegistration(props) {
       }, 100);
       setLevel([]);
       setValue('LevelId', '');
-      dispatch(getLevelByTechnology(true, technology.value, newValue.value, res => { }));
-    } else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+      dispatch(getLevelByTechnology(true, technology.value, newValue?.value, res => { }));
+    } else if (newValue && (newValue?.length > 0 || Object.keys(newValue).length)) {
       setCostingApprovalType(newValue)
       setLevel([])
       setValue('LevelId', '')
       if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isEditIndex) {
-        dispatch(getLevelByTechnology(true, technology.value, newValue.value, res => { }))
+        dispatch(getLevelByTechnology(true, technology.value, newValue?.value, res => { }))
       }
     } else {
       setCostingApprovalType([])
@@ -1063,14 +1046,14 @@ function UserRegistration(props) {
       }, 100);
       setSimualtionLevel([]);
       setValue('SimualtionLevel', '');
-      dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue.value, res => { }));
+      dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue?.value, res => { }));
     }
-    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+    else if (newValue && (newValue?.length > 0 || Object.keys(newValue).length)) {
       setSimulationApprovalType(newValue)
       setSimualtionLevel([])
       setValue('simualtionLevel', '')
       if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isSimulationEditIndex) {
-        dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue.value, res => { }))
+        dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue?.value, res => { }))
       }
     } else {
       setSimulationApprovalType([])
@@ -1093,14 +1076,14 @@ function UserRegistration(props) {
       }, 100);
       setMasterLevels([]);
       setValue('MasterLevel', '');
-      dispatch(getMasterLevelByMasterId(true, master.value, newValue.value, res => { }));
+      dispatch(getMasterLevelByMasterId(true, master.value, newValue?.value, res => { }));
     }
-    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+    else if (newValue && (newValue?.length > 0 || Object.keys(newValue).length)) {
       setMasterApprovalType(newValue)
       setMasterLevels([])
       setValue('masterLevel', '')
       if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isMasterEditIndex) {
-        dispatch(getMasterLevelByMasterId(true, master.value, newValue.value, res => { }))
+        dispatch(getMasterLevelByMasterId(true, master.value, newValue?.value, res => { }))
       }
     } else {
       setMasterApprovalType([])
@@ -1124,14 +1107,14 @@ function UserRegistration(props) {
       }, 100);
       setOnboardingLevels([]);
       setValue('onboardingLevel', '');
-      dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
+      dispatch(getOnboardingLevelById(true, newValue?.value, res => { }))
     }
-    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+    else if (newValue && (newValue?.length > 0 || Object.keys(newValue).length)) {
       setOnboardingApprovalType(newValue)
       setOnboardingLevels([]);
       setValue('onboardingLevel', '')
       if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isOnboardingEditIndex) {
-        dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
+        dispatch(getOnboardingLevelById(true, newValue?.value, res => { }))
       }
     } else {
       setOnboardingApprovalType([])
@@ -1159,7 +1142,7 @@ function UserRegistration(props) {
       setLevel([]);
       emptyLevelDropdown();
     }
-    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+    else if (newValue && (newValue?.length > 0 || Object.keys(newValue).length)) {
       // Set selected options directly
       setSimulationHeads(newValue);
     } else {
@@ -1192,7 +1175,7 @@ function UserRegistration(props) {
       setValue('MasterApprovalType', '');
       emptyLevelDropdown();
     }
-    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+    else if (newValue && (newValue?.length > 0 || Object.keys(newValue).length)) {
       // Set selected options directly
       setMaster(newValue);
     } else {
@@ -1336,10 +1319,10 @@ function UserRegistration(props) {
       multiSelectObject.ApprovalModuleName = "Costing"
       try {
         let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
-        if (data.length === 0) {
+        if (data?.length === 0) {
           return false
         }
-        data && data.map(approvalData => {
+        data && data?.map(approvalData => {
           let approvalObj = {
             Technology: approvalData?.ApprovalHeadName,
             TechnologyId: approvalData?.ApprovalHeadId,
@@ -1480,10 +1463,10 @@ function UserRegistration(props) {
       multiSelectObject.ApprovalModuleName = "Simulation"
       try {
         let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
-        if (data.length === 0) {
+        if (data?.length === 0) {
           return false
         }
-        data && data.map(approvalData => {
+        data && data?.map(approvalData => {
           let approvalObj = {
             Technology: approvalData?.ApprovalHeadName,
             TechnologyId: approvalData?.ApprovalHeadId,
@@ -1704,10 +1687,10 @@ function UserRegistration(props) {
       multiSelectObject.ApprovalModuleName = "Master"
       try {
         let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
-        if (data.length === 0) {
+        if (data?.length === 0) {
           return false
         }
-        data && data.map(approvalData => {
+        data && data?.map(approvalData => {
           let approvalObj = {
             Master: approvalData?.ApprovalHeadName,
             MasterId: approvalData?.ApprovalHeadId,
@@ -1885,10 +1868,10 @@ function UserRegistration(props) {
       multiSelectObject.ApprovalModuleName = "Onboarding"
       try {
         let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
-        if (data.length === 0) {
+        if (data?.length === 0) {
           return false
         }
-        data && data.map(approvalData => {
+        data && data?.map(approvalData => {
           let approvalObj = {
             Level: approvalData?.LevelName,
             LevelId: approvalData?.LevelId,
@@ -2056,7 +2039,7 @@ function UserRegistration(props) {
     if (props?.RFQUser || isRfqUser) {
 
       dispatch(updateRfqUser(updatedData, (res) => {
-        if (res && res.data && res?.data?.Result) {
+        if (res && res?.data && res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
         }
         cancel();
@@ -2189,16 +2172,16 @@ function UserRegistration(props) {
       (item) => !department?.some((deptValue) => item?.DepartmentId === deptValue?.value)
     ) || department?.some((deptValue) => !registerUserData?.Departments?.some((item) => item?.DepartmentId === deptValue?.value));
 
-    let isPlantUpdate = registerUserData.DepartmentsPlantsIdLists?.some(
+    let isPlantUpdate = registerUserData?.DepartmentsPlantsIdLists?.some(
       (userDataItem) => !selectedPlants?.some((selectedPlant) => userDataItem.PlantId === selectedPlant.value)
     ) || selectedPlants?.some(
-      (selectedPlant) => !registerUserData.DepartmentsPlantsIdLists?.some((userDataItem) => userDataItem.PlantId === selectedPlant.value)
+      (selectedPlant) => !registerUserData?.DepartmentsPlantsIdLists?.some((userDataItem) => userDataItem.PlantId === selectedPlant.value)
     );
 
-    let isDivisionUpdate = registerUserData.DepartmentsDivisionIdLists?.some(
+    let isDivisionUpdate = registerUserData?.DepartmentsDivisionIdLists?.some(
       (userDataItem) => !selectedDivision?.some((selectedDivision) => userDataItem.DivisionId === selectedDivision.value)
     ) || selectedDivision?.some(
-      (selectedDivision) => !registerUserData.DepartmentsDivisionIdLists?.some((userDataItem) => userDataItem.DivisionId === selectedDivision.value)
+      (selectedDivision) => !registerUserData?.DepartmentsDivisionIdLists?.some((userDataItem) => userDataItem.DivisionId === selectedDivision.value)
     );
 
     let isForcefulUpdatedForMaster = false;
@@ -2260,7 +2243,7 @@ function UserRegistration(props) {
         TechnologyName: '',
         PlantName: '',
         IsActive: true,
-        //AdditionalPermission: registerUserData.AdditionalPermission,
+        //AdditionalPermission: registerUserData?.AdditionalPermission,
         CityName: state?.city?.label,
         UserProfileId: registerUserData?.UserProfileId,
         UserName: values.UserName ? values.UserName.trim() : '',
@@ -2277,8 +2260,8 @@ function UserRegistration(props) {
         MiddleName: values.MiddleName ? values.MiddleName.trim() : '',
         LastName: values.LastName ? values.LastName.trim() : '',
         RoleName: role.label,
-        UserCode: registerUserData.UserCode,
-        CreatedDate: registerUserData.CreatedDate,
+        UserCode: registerUserData?.UserCode,
+        CreatedDate: registerUserData?.CreatedDate,
         AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
         AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
         ZipCode: values.ZipCode,
@@ -2286,7 +2269,7 @@ function UserRegistration(props) {
         Extension: values.Extension,
         CityId: state.city.value,
         IsRemoveCosting: false,
-        CostingCount: registerUserData.CostingCount,
+        CostingCount: registerUserData?.CostingCount,
         IsAdditionalAccess: IsShowAdditionalPermission,
         DepartmentsPlantsIdLists: plantArray,
         OnboardingApprovalLevels: [],
@@ -2321,7 +2304,7 @@ function UserRegistration(props) {
           setIsLoader(true)
           dispatch(updateRfqUser(updatedData, (res) => {
             setIsLoader(false)
-            if (res.data.Result) {
+            if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
             }
             cancel();
@@ -2401,7 +2384,7 @@ function UserRegistration(props) {
       if (props?.RFQUser) {
         dispatch(registerRfqUser(userData, res => {
           setIsSubmitted(false)
-          if (res && res.data && res.data.Result) {
+          if (res && res?.data && res?.data?.Result) {
             setIsLoader(false)
             Toaster.success(MESSAGES.ADD_USER_SUCCESSFULLY)
             cancel();
@@ -2412,7 +2395,7 @@ function UserRegistration(props) {
       } else {
         dispatch(registerUserAPI(userData, res => {
           setIsSubmitted(false)
-          if (res && res.data && res.data.Result) {
+          if (res && res?.data && res?.data?.Result) {
             setIsLoader(false)
             Toaster.success(MESSAGES.ADD_USER_SUCCESSFULLY)
             cancel();
@@ -2630,7 +2613,7 @@ function UserRegistration(props) {
       }, 50);
     } else if (newValue && newValue?.length > 0) {
       // Map newValue to include all properties from plantSelectListForDepartment
-      const updatedValue = newValue.map(selected => {
+      const updatedValue = newValue?.map(selected => {
         const originalItem = plantSelectListForDepartment.find(item => item?.PlantId === selected?.value);
         return {
           ...originalItem,

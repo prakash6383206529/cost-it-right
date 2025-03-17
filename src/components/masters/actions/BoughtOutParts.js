@@ -291,7 +291,7 @@ export function getPlantSelectListByVendor(VendorId, callback) {
  */
 export function fileUploadBOPDomestic(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.fileUploadBOPDomestic, data, config());
+    const request = axios.post(API.fileUploadBOPDomestic, data, config());
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response);

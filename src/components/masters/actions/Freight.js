@@ -75,11 +75,11 @@ export function getFreightDataList(filterData, callback) {
  * @method getFreightData
  * @description GET FREIGHT DATA
  */
-export function getFreightData(freightId, callback) {
+export function getFreightData(data, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getFreightData}/${freightId}/${loggedInUser?.loggedInUserId}`, config())
+        axios.get(`${API.getFreightData}?freightId=${data?.freightId??null}&freightEntryType=${data?.entryType??null}&costingTypeId=${data?.CostingTypeId??null}&plantId=${data?.PlantId??null}&customerId=${data?.CustomerId??null}&vendorId=${data?.VendorId??null}&effectiveDate=${data?.EffectiveDate ? DayTime(data?.EffectiveDate).format('YYYY-MM-DD') : null}&currencyId=${data?.currencyId??null}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response) {
                     dispatch({

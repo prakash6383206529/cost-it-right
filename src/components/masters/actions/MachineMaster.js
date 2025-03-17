@@ -423,7 +423,7 @@ export function getMachineSelectList(callback) {
  */
 export function fileUploadMachine(data, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(API.fileUploadMachine, data, config());
+        const request = axios.post(API.fileUploadMachine, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -627,9 +627,8 @@ export function setGroupProcessList(data) {
 }
 
 export function getProcessGroupByMachineId(machineId, callback) {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessGroupList}/${machineId}/${loggedInUser?.loggedInUserId}`, config())
+        const request = axios.get(`${API.getProcessGroupList}/${machineId}/${loggedInUserId()}`, config())
         request.then((response) => {
             if ((response.data.Result) || response?.status === 204) {
                 dispatch({

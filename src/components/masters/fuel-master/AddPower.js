@@ -1465,11 +1465,12 @@ class AddPower extends Component {
     })
 
     let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
-    if (DataToChangeZ.NetPowerCostPerUnit === values.NetPowerCostPerUnit) {
-      Toaster.warning('Please change the data to save Power Details');
-      return false
-    }
+    
     if (isEditFlag) {
+      if (DataToChangeZ.NetPowerCostPerUnit === values.NetPowerCostPerUnit) {
+        Toaster.warning('Please change the data to save Power Details');
+        return false
+      }
       if (IsVendor) {
         this.setState({ setDisable: true })
         let vendorDetailData = {

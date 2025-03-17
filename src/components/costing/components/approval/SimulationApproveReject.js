@@ -77,8 +77,8 @@ function SimulationApproveReject(props) {
     }
     dispatch(getSimulationApprovalByDepartment(receiverId, res => {
       const Data = res?.data?.SelectList
-      const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
-      const updateList = Data && Data.filter(item => Departments.includes(item.Text))
+      const Departments = userDetails().Department && userDetails().Department.map(item => item?.DepartmentName)
+      const updateList = Data && Data.filter(item => Departments.includes(item?.Text))
 
       const departObj = updateList && updateList.filter(item => item?.Value === (type === 'Sender' ? userData?.DepartmentId : simulationDetail?.DepartmentId))
       let dataInFieldTemp = {
@@ -270,7 +270,7 @@ function SimulationApproveReject(props) {
       DepartmentId: dept?.value,
       //NEED TO MAKE THIS 2   
       TechnologyId: selectedMasterForSimulation.value === EXCHNAGERATE ? EXCHNAGERATE : technologyIdTemp,
-      ReasonId: selectedRowData && selectedRowData[0].ReasonId ? selectedRowData[0].ReasonId : 0,
+      ReasonId: selectedRowData && selectedRowData[0]?.ReasonId ? selectedRowData[0]?.ReasonId : 0,
       ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData && selectedRowData[0]?.ApprovalTypeId ? selectedRowData[0]?.ApprovalTypeId : appTypeId),
       plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
       DivisionId: divisionId ?? null,
@@ -279,8 +279,8 @@ function SimulationApproveReject(props) {
 
     dispatch(getAllSimulationApprovalList(obj, (res) => {
       const Data = res?.data?.DataList;
-      const Departments = userDetails().Department?.map(item => item.DepartmentName);
-      const validApprovers = Data?.filter(item => item.Value !== "0" && item.DepartmentName && Departments.includes(item.DepartmentName));
+      const Departments = userDetails().Department?.map(item => item?.DepartmentName);
+      const validApprovers = Data?.filter(item => item?.Value !== "0" && item?.DepartmentName && Departments.includes(item?.DepartmentName));
       if (validApprovers && validApprovers.length > 0) {
         const firstApprover = validApprovers[0];
         setShowWarningMessage(false);
@@ -291,12 +291,12 @@ function SimulationApproveReject(props) {
 
         });
         const tempDropdownList = validApprovers.map(item => ({
-          label: item.Text,
-          value: item.Value,
-          levelId: item.LevelId,
-          levelName: item.LevelName
+          label: item?.Text,
+          value: item?.Value,
+          levelId: item?.LevelId,
+          levelName: item?.LevelName
         }));
-        const approverIdListTemp = validApprovers.map(item => item.Value);
+        const approverIdListTemp = validApprovers.map(item => item?.Value);
         setApprovalDropDown(tempDropdownList);
         setApproverIdList(approverIdListTemp);
 
@@ -345,8 +345,8 @@ function SimulationApproveReject(props) {
     if (isSimulationApprovalListing === true) {
       selectedRowData && selectedRowData.map(item => {
         approverObject.push({
-          // SimulationId: item.SimulationId, SimulationTokenNumber: item.ApprovalNumber,
-          // SimulationAppliedOn: item.SimulationTechnologyId
+          // SimulationId: item?.SimulationId, SimulationTokenNumber: item?.ApprovalNumber,
+          // SimulationAppliedOn: item?.SimulationTechnologyId
 
           ApprovalId: item?.ApprovalProcessId,
           ApprovalToken: item?.ApprovalNumber,
@@ -401,17 +401,17 @@ function SimulationApproveReject(props) {
       })
       let senderObj = {}
       senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
-      senderObj.ReasonId = reason ? reason.value : ''
-      senderObj.Reason = reason ? reason.label : ''
+      senderObj.ReasonId = reason ? reason?.value : ''
+      senderObj.Reason = reason ? reason?.label : ''
       // senderObj.ApprovalToken = 0
-      senderObj.DepartmentId = dept && dept.value ? dept.value : ''
+      senderObj.DepartmentId = dept && dept?.value ? dept?.value : ''
       senderObj.DepartmentName = dept && dept.label ? dept.label : ''
-      senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
-      senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
-      senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
-      senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
-      senderObj.ApproverId = approver && approver.value ? approver.value : ''
-      senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+      senderObj.ApproverLevelId = approver && approver?.levelId ? approver?.levelId : ''
+      senderObj.ApproverDepartmentId = dept && dept?.value ? dept?.value : ''
+      senderObj.ApproverLevel = approver && approver?.levelName ? approver?.levelName : ''
+      senderObj.ApproverDepartmentName = dept && dept?.label ? dept?.label : ''
+      senderObj.ApproverId = approver && approver?.value ? approver?.value : ''
+      senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver?.value ? approver?.value : '']
       senderObj.SenderLevelId = levelDetails?.LevelId
       senderObj.SenderLevel = levelDetails?.Level
       senderObj.SenderId = userLoggedIn
@@ -423,8 +423,8 @@ function SimulationApproveReject(props) {
       if (isSimulationApprovalListing === true) {
         selectedRowData && selectedRowData.map(item => {
           temp.push({
-            SimulationId: item.SimulationId, SimulationTokenNumber: item.ApprovalNumber,
-            SimulationAppliedOn: item.SimulationTechnologyId
+            SimulationId: item?.SimulationId, SimulationTokenNumber: item?.ApprovalNumber,
+            SimulationAppliedOn: item?.SimulationTechnologyId
           })
           return null;
         })
@@ -552,7 +552,7 @@ function SimulationApproveReject(props) {
           let divisionArray = []
           res?.data?.DataList?.map(item => {
             if (String(item?.DivisionId) !== '0') {
-              divisionArray.push({ label: `${item.DivisionNameCode}`, value: (item?.DivisionId)?.toString(), DivisionCode: item?.DivisionCode })
+              divisionArray.push({ label: `${item?.DivisionNameCode}`, value: (item?.DivisionId)?.toString(), DivisionCode: item?.DivisionCode })
             }
             return null;
           })

@@ -123,7 +123,7 @@ export function getQuotationById(id, callback) {
  */
 export function fileUploadQuotation(data, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(API.fileUploadQuotation, data, config())
+        const request = axios.post(API.fileUploadQuotation, data, config())
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response)

@@ -132,11 +132,10 @@ export function updateProfit(requestData, callback) {
  * @description Get Overhead data
  */
 export function getOverheadData(ID, callback) {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getOverheadData}/${ID}/${loggedInUser?.loggedInUserId}`, config())
+            axios.get(`${API.getOverheadData}/${ID}/${loggedInUserId()}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -354,7 +353,7 @@ export function activeInactiveProfit(requestData, callback) {
  */
 export function fileUploadOverHead(data, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(API.fileUploadOverHead, data, config());
+        const request = axios.post(API.fileUploadOverHead, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
