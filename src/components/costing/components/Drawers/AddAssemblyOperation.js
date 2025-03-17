@@ -153,7 +153,7 @@ function AddAssemblyOperation(props) {
     let basicRate = 0
     let obj = {
       costingId: item?.CostingId,
-      subAsmCostingId: item?.SubAssemblyCostingId,
+      subAsmCostingId: item?.SubAssemblyCostingId ?? item?.AssemblyCostingId,
       asmCostingId: item?.AssemblyCostingId
     }
     dispatch(getCostingCostDetails(obj, response => {

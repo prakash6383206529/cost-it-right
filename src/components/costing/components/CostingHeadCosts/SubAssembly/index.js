@@ -117,7 +117,7 @@ function AssemblyPart(props) {
   */
   const DrawerToggle = (tempItem) => {
     setItemInState({ PartNumber: tempItem?.PartNumber, AssemblyPartNumber: tempItem?.AssemblyPartNumber, BOMLevel: tempItem?.BOMLevel })
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setDrawerOpen(true)
     if (!item?.CostingPartDetails?.IsOpen) {
       toggle(item.BOMLevel, item.PartNumber, item?.AssemblyPartNumber)
@@ -135,12 +135,12 @@ function AssemblyPart(props) {
   //THSI IS FOR BOP HANDLING DRAWER
 
   const bopHandlingDrawer = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setIsOpenBOPDrawer(true)
   }
 
   const labourHandlingDrawer = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setIsOpenLabourDrawer(true)
   }
 

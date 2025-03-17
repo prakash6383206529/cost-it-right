@@ -188,15 +188,18 @@ function ProcessCost(props) {
       if ((JSON.stringify(tabData) !== JSON.stringify(props.data)) || isProcessSequenceChanged) {
         if (isAssemblyTechnology) {
           props.getValuesOfProcess(tabData, tabData?.ProcessCostTotal)
+        }
+        else if (props.IsAssemblyCalculation) {
+          props.getValuesOfProcess(tabData, tabData?.ProcessCostTotal)
           props?.setAssemblyProcessCost(tabData?.CostingProcessCostResponse ? tabData?.CostingProcessCostResponse : [], Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
-
-
-        } else {
+        }
+        else {
           props.setConversionCost(tabData, Params, item)
         }
       }
     }
   }, [tabData]);
+
 
 
 

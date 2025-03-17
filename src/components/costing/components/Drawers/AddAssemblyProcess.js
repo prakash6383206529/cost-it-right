@@ -164,7 +164,7 @@ function AddAssemblyProcess(props) {
     let basicRate = 0
     let obj = {
       costingId: item?.CostingId,
-      subAsmCostingId: item?.SubAssemblyCostingId,
+      subAsmCostingId: item?.SubAssemblyCostingId ?? item?.AssemblyCostingId,
       asmCostingId: item?.AssemblyCostingId
     }
     dispatch(getCostingCostDetails(obj, response => {
@@ -321,6 +321,7 @@ function AddAssemblyProcess(props) {
                       item={item}
                       isAssemblyTechnology={props?.isAssemblyTechnology}
                       setProcessCostFunction={props?.setProcessCostFunction}
+                      getValuesOfProcess={getValuesOfProcess}
                       setAssemblyProcessCost={props?.setAssemblyProcessCost}
                       IsAssemblyCalculation={true}
                     />
