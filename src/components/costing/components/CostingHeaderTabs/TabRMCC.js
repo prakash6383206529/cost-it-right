@@ -83,7 +83,13 @@ function TabRMCC(props) {
           TotalOperationCostSubAssembly: TopHeaderValues?.TotalOperationCostSubAssembly ? TopHeaderValues.TotalOperationCostSubAssembly : 0,
           TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0,
           RawMaterialCostWithCutOff: TopHeaderValues?.RawMaterialCostWithCutOff ? checkForNull(TopHeaderValues?.RawMaterialCostWithCutOff) : 0,
-          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false
+          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false,
+          NetProcessCostForOverhead: TopHeaderValues?.NetProcessCostForOverhead ? TopHeaderValues?.NetProcessCostForOverhead : 0,
+          NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
+          NetProcessCostForOverheadAndProfit: TopHeaderValues?.NetProcessCostForOverheadAndProfit ? TopHeaderValues?.NetProcessCostForOverheadAndProfit : 0,
+          NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
+          NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
+          NetOperationCostForOverheadAndProfit: TopHeaderValues?.NetOperationCostForOverheadAndProfit ? TopHeaderValues?.NetOperationCostForOverheadAndProfit : 0,
 
         }
       } else {
@@ -97,7 +103,13 @@ function TabRMCC(props) {
           NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
           NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCost ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
           RawMaterialCostWithCutOff: TopHeaderValues?.RawMaterialCostWithCutOff ? checkForNull(TopHeaderValues?.RawMaterialCostWithCutOff) : 0,
-          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false
+          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false,
+          NetProcessCostForOverhead: TopHeaderValues?.NetProcessCostForOverhead ? TopHeaderValues?.NetProcessCostForOverhead : 0,
+          NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
+          NetProcessCostForOverheadAndProfit: TopHeaderValues?.NetProcessCostForOverheadAndProfit ? TopHeaderValues?.NetProcessCostForOverheadAndProfit : 0,
+          NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
+          NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
+          NetOperationCostForOverheadAndProfit: TopHeaderValues?.NetOperationCostForOverheadAndProfit ? TopHeaderValues?.NetOperationCostForOverheadAndProfit : 0,
         }
       }
       props.setHeaderCost(topHeaderData)
@@ -1429,11 +1441,11 @@ function TabRMCC(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit(() => {
-    if (ComponentItemData?.CostingPartDetails.CostingConversionCost.CostingOperationCostResponse.length>0) {
-      const operations = ComponentItemData?.CostingPartDetails.CostingConversionCost.CostingOperationCostResponse;
-      const hasMissingApplicability = operations.some(item => !item.CostingConditionMasterAndTypeLinkingId);
+    if (ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length>0) {
+      const operations = ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
+      const hasMissingApplicability = operations?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
 
-      if (operations.length > 0 && hasMissingApplicability) {
+      if (operations?.length > 0 && hasMissingApplicability) {
         Toaster.warning('Please select Applicability for all operations');
         return false;
       }

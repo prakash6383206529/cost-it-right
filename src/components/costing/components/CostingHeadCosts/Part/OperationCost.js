@@ -7,7 +7,7 @@ import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.
 import NoContentFound from '../../../../common/NoContentFound';
 import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME, EMPTY_GUID, APPLICABILITY_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_PROFIT, APPLICABILITY_OVERHEAD } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
+import { calculateNetCosts, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
@@ -57,7 +57,7 @@ function OperationCost(props) {
   })
   const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
   const { operationApplicabilitySelect } = useSelector(state => state.costing);
- 
+
   useEffect(() => {
     const Params = {
       index: 0,
@@ -210,13 +210,8 @@ function OperationCost(props) {
     let tempData = gridData[index];
 
     // Recalculate net costs with new applicability
-    const netCosts = calculateNetCosts(tempData.OperationCost, e);
-    tempData = {
-      ...tempData,
-      CostingConditionMasterAndTypeLinkingId: e.value,
-      CostingConditionNumber: e.label,
-      ...netCosts
-    };
+    const netCosts = calculateNetCosts(tempData?.OperationCost, e?.value,'Operation');
+    tempData = { ...tempData, CostingConditionMasterAndTypeLinkingId: e.value, CostingConditionNumber: e.label, ...netCosts };
 
     tempArr = Object.assign([...gridData], { [index]: tempData });
     setGridData(tempArr);
@@ -309,7 +304,7 @@ function OperationCost(props) {
         checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
 
-      const netCosts = calculateNetCosts(OperationCost, tempData.Applicability);
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value,"Operation");
       tempData = {
         ...tempData,
         Quantity: event.target.value,
@@ -328,30 +323,7 @@ function OperationCost(props) {
       setGridData(tempArr);
     }
   };
-  const calculateNetCosts = (operationCost, applicability) => {
-    const netCosts = {
-      NetOperationCostForOverhead: 0,
-      NetOperationCostForProfit: 0,
-      NetOperationCostForOverheadAndProfit: 0,
-
-    };
-
-    switch (applicability?.value) {
-      case APPLICABILITY_OVERHEAD:
-        netCosts.NetOperationCostForOverhead = operationCost;
-        break;
-      case APPLICABILITY_PROFIT:
-        netCosts.NetOperationCostForProfit = operationCost;
-        break;
-      case APPLICABILITY_OVERHEAD_PROFIT:
-        netCosts.NetOperationCostForOverheadAndProfit = operationCost;
-        break;
-      default:
-        break;
-    }
-
-    return netCosts;
-  };
+  
   const handleLabourQuantityChange = (event, index) => {
     let tempArr = [];
     let tempData = gridData[index];
@@ -360,9 +332,9 @@ function OperationCost(props) {
       const WithOutLabourCost = tempData.IsLabourRateExist ?
         checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-const netCosts = calculateNetCosts(OperationCost, tempData.Applicability);
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value,"Operation");
       tempData = {
-     ...tempData,
+        ...tempData,
         LabourQuantity: event.target.value,
         OperationCost,
         CostingConditionNumber: tempData.CostingConditionNumber,
@@ -375,8 +347,8 @@ const netCosts = calculateNetCosts(OperationCost, tempData.Applicability);
     } else {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
       const OperationCost = WithLaboutCost;
-const netCosts = calculateNetCosts(OperationCost, tempData.Applicability);
-tempData = {
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value,"Operation");
+      tempData = {
         ...tempData,
         LabourQuantity: 0,
         OperationCost,

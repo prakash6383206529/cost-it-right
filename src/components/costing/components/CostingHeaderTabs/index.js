@@ -194,10 +194,10 @@ function CostingHeaderTabs(props) {
   }, [currency, exchangeRateSource, effectiveDate]);
   const checkOperationApplicability = () => {
     const currentTabData = RMCCTabData?.[0];
-    if (currentTabData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.length>0) {
-      const operations = currentTabData.CostingPartDetails.CostingConversionCost.CostingOperationCostResponse;
-      const hasMissingApplicability = operations.some(item => !item.CostingConditionMasterAndTypeLinkingId);
-      if (operations.length > 0 && hasMissingApplicability) {
+    if (currentTabData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length>0) {
+      const operations = currentTabData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
+      const hasMissingApplicability = operations?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
+      if (operations?.length > 0 && hasMissingApplicability) {
         Toaster.warning('Please select Applicability for all operations');
         return false;
       }
@@ -447,8 +447,8 @@ useEffect(() => {
   dispatch(getCostingCondition(null, operationConditionTypeId, (res) => {
     if (res?.data?.DataList) {
       const operationData = res?.data?.DataList.map(item => ({
-        label: item.CostingConditionNumber,
-        value: item.CostingConditionMasterId
+        label: item?.CostingConditionNumber,
+        value: item?.CostingConditionMasterId
       }));
       dispatch(setOperationApplicabilitySelect(operationData));
     }
@@ -458,8 +458,8 @@ useEffect(() => {
   dispatch(getCostingCondition(null, processConditionTypeId, (res) => {
     if (res?.data?.DataList) {
       const processData = res?.data?.DataList.map(item => ({
-        label: item.CostingConditionNumber,
-        value: item.CostingConditionMasterId
+        label: item?.CostingConditionNumber,
+        value: item?.CostingConditionMasterId
       }));
       dispatch(setProcessApplicabilitySelect(processData));
     }
