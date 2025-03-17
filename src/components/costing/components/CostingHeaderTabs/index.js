@@ -19,9 +19,11 @@ import {
   setCurrencySource,
   setExchangeRateSourceValue,
   exchangeRateReducer,
+  setOperationApplicabilitySelect,
+  setProcessApplicabilitySelect,
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, getConfigurationKey, getExchangeRateParams, loggedInUserId } from '../../../../helper';
-import { customHavellsChanges, LEVEL1, WACTypeId, ZBCTypeId } from '../../../../config/constants';
+import { COSTINGOVERHEADANDPROFTFORPROCESS, COSTINGOVERHEADANDPROFTOPERATION, customHavellsChanges, LEVEL1, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsPartType, IsNFR } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -39,11 +41,11 @@ import { useTranslation } from 'react-i18next';
 import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
 import TabToolCost from './TabToolCost';
-import { getExchangeRateSource, getTaxCodeSelectList } from '../../../../actions/Common';
+import { getCostingCondition, getExchangeRateSource, getTaxCodeSelectList } from '../../../../actions/Common';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import { getCurrencySelectList } from '../../../masters/actions/ExchangeRateMaster';
-import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../../common/CommonFunctions';
+import { getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../../common/CommonFunctions';
 export const PreviousTabData = React.createContext();
 
 function CostingHeaderTabs(props) {
@@ -190,7 +192,18 @@ function CostingHeaderTabs(props) {
       }
     }
   }, [currency, exchangeRateSource, effectiveDate]);
-
+  const checkOperationApplicability = () => {
+    const currentTabData = RMCCTabData?.[0];
+    if (currentTabData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length>0) {
+      const operations = currentTabData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
+      const hasMissingApplicability = operations?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
+      if (operations?.length > 0 && hasMissingApplicability) {
+        Toaster.warning('Please select Applicability for all operations');
+        return false;
+      }
+    }
+    return true;
+  };
   useEffect(() => {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
@@ -243,6 +256,12 @@ function CostingHeaderTabs(props) {
         // "NetOverheadAndProfitCost": CostingDataList[0].NetOverheadAndProfitCost,
         // "NetPackagingAndFreight": CostingDataList[0].NetPackagingAndFreight,
         CostingPartDetails: ComponentItemData?.CostingPartDetails,
+        "NetProcessCostForOverhead":ComponentItemData?.CostingPartDetails?.NetProcessCostForOverhead||null,
+        "NetProcessCostForProfit":ComponentItemData?.CostingPartDetails?.NetProcessCostForProfit||null,
+        "NetProcessCostForOverheadAndProfit": ComponentItemData?.CostingPartDetails?.NetProcessCostForOverheadAndProfit||null,
+        "NetOperationCostForOverhead":ComponentItemData?.CostingPartDetails?.NetOperationCostForOverhead||null,
+        "NetOperationCostForProfit":ComponentItemData?.CostingPartDetails?.NetOperationCostForProfit||null,
+        "NetOperationCostForOverheadAndProfit":ComponentItemData?.CostingPartDetails?.NetOperationCostForOverheadAndProfit||null,
       }
       const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
       if (hasNegativeValue) {
@@ -423,6 +442,32 @@ function CostingHeaderTabs(props) {
     }
   }, [activeTab]);
 
+useEffect(() => {
+  const operationConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTOPERATION)
+  dispatch(getCostingCondition(null, operationConditionTypeId, (res) => {
+    if (res?.data?.DataList) {
+      const operationData = res?.data?.DataList.map(item => ({
+        label: item?.CostingConditionNumber,
+        value: item?.CostingConditionMasterId
+      }));
+      dispatch(setOperationApplicabilitySelect(operationData));
+    }
+  }))
+
+  const processConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTFORPROCESS)
+  dispatch(getCostingCondition(null, processConditionTypeId, (res) => {
+    if (res?.data?.DataList) {
+      const processData = res?.data?.DataList.map(item => ({
+        label: item?.CostingConditionNumber,
+        value: item?.CostingConditionMasterId
+      }));
+      dispatch(setProcessApplicabilitySelect(processData));
+    }
+  }))
+}, []);
+
+
+
   const callAssemblyAPi = (tabId) => {
     if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
       const tabData = RMCCTabData && RMCCTabData[0]
@@ -468,6 +513,9 @@ function CostingHeaderTabs(props) {
     // tourStartRef()
     if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;
     if (activeTab !== tab) {
+      if (activeTab === '1' && !checkOperationApplicability()) {
+        return;
+      }
       setPreviousTab(activeTab)
       setActiveTab(tab);
 

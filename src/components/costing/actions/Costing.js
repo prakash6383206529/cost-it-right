@@ -75,6 +75,8 @@ import {
   SET_EXCHANGE_RATE_SOURCE,
   SET_CURRENCY_SOURCE,
   SET_EXCHANGE_RATE_DATA,
+  SET_OPERATION_APPLICABILITY_SELECT,
+  SET_PROCESS_APPLICABILITY_SELECT,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2045,7 +2047,7 @@ export function setRMCutOff(cutOffObj) {
 export function getCostingSpecificTechnology(loggedInUserId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getCostingSpecificTechnology}/${loggedInUserId}`, config())
+    const request = axios.get(`${API.getCostingSpecificTechnology}?loggedInUserId=${loggedInUserId}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -3174,3 +3176,19 @@ export function exchangeRateReducer(value) {
     });
   }
 }
+export function setOperationApplicabilitySelect(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OPERATION_APPLICABILITY_SELECT,
+      payload: data,
+    });
+  }
+};
+export function setProcessApplicabilitySelect(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PROCESS_APPLICABILITY_SELECT,
+      payload: data,
+    });
+  }
+};
