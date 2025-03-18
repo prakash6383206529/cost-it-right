@@ -81,7 +81,8 @@ function Tool(props) {
   }, [data && data?.CostingPartDetails?.CostingToolCostResponse])
 
   useEffect(() => {
-    let request = partType ? 'multiple technology assembly' : ''
+    let request = partType ? 'multiple technology assembly' : 'toolcost'
+    console.log('request',request)
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
   }, [])
 

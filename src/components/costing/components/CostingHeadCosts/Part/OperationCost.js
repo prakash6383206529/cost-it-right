@@ -5,9 +5,9 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME, EMPTY_GUID } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME, EMPTY_GUID, APPLICABILITY_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_PROFIT, APPLICABILITY_OVERHEAD } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
+import { calculateNetCosts, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
@@ -66,6 +66,7 @@ function OperationCost(props) {
     steps: []
   })
   const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
+  const { operationApplicabilitySelect } = useSelector(state => state.costing);
 
   useEffect(() => {
     const Params = {
@@ -137,7 +138,7 @@ function OperationCost(props) {
           OperationCode: el.OperationCode,
           UOM: el.UnitOfMeasurement,
           Rate: el.Rate,
-          Quantity: finalQuantity,
+          Quantity: Number(finalQuantity),
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
@@ -145,7 +146,9 @@ function OperationCost(props) {
           IsChecked: el.IsChecked,
           UOMType: el.UOMType,
           ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
-          CurrencyExchangeRate: el.CurrencyExchangeRate
+          CurrencyExchangeRate: el.CurrencyExchangeRate,
+          CostingConditionNumber: el.CostingConditionNumber,
+          CostingConditionMasterAndTypeLinkingId: el.CostingConditionMasterAndTypeLinkingId
         }
       })
       let tempArr = [...GridArray, ...rowArray]
@@ -217,6 +220,17 @@ function OperationCost(props) {
     setGridData(tempArr)
   }
 
+  const onHandleChangeApplicability = (e, index) => {
+    let tempArr = [];
+    let tempData = gridData[index];
+
+    // Recalculate net costs with new applicability
+    const netCosts = calculateNetCosts(tempData?.OperationCost, e?.value, 'Operation');
+    tempData = { ...tempData, CostingConditionMasterAndTypeLinkingId: e.value, CostingConditionNumber: e.label, ...netCosts };
+
+    tempArr = Object.assign([...gridData], { [index]: tempData });
+    setGridData(tempArr);
+  };
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`operationCost_popUpTriggerss${props.IsAssemblyCalculation}${index}`)
     if (errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index].remarkPopUp) {
@@ -258,11 +272,17 @@ function OperationCost(props) {
   }
 
   const SaveItem = (index) => {
-    if (errors?.OperationGridFields && (errors?.OperationGridFields?.[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields?.[index]?.Quantity).length !== 0)) {
+    if (errors?.OperationGridFields && errors?.OperationGridFields?.length > 0) {
       return false
     }
     if (getValues(`${OperationGridFields}.${index}.Quantity`) === '') {
       return false
+    }
+    // Add applicability validation
+    const rowData = gridData[index];
+    if (!rowData?.CostingConditionMasterAndTypeLinkingId) {
+      Toaster.warning('Please select Applicability');
+      return false;
     }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
@@ -291,43 +311,69 @@ function OperationCost(props) {
       setTimeout(() => {
         setValue(`${OperationGridFields}.${index}.Quantity`, '')
       }, 50);
-      return false
+      return false;
     }
     if (!isNaN(event.target.value) && event.target.value !== '') {
       const WithLaboutCost = checkForNull(tempData.Rate) * event.target.value;
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
+      const WithOutLabourCost = tempData.IsLabourRateExist ?
+        checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      let value = tempArr && tempArr.length > 0 && tempArr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el?.OperationCost)
-      }, 0)
-      setOperationCostAssemblyTechnology(value)
-      setGridData(tempArr)
 
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value, "Operation");
+      tempData = {
+        ...tempData,
+        Quantity: Number(event.target.value),
+        OperationCost,
+        CostingConditionNumber: tempData?.CostingConditionNumber,
+        CostingConditionMasterAndTypeLinkingId: tempData?.CostingConditionMasterAndTypeLinkingId,
+        ...netCosts
+      };
+
+      tempArr = Object.assign([...gridData], { [index]: tempData });
+      let value = tempArr && tempArr.length > 0 && tempArr.reduce((accumulator, el) => {
+        return accumulator + checkForNull(el?.OperationCost);
+      }, 0);
+
+      setOperationCostAssemblyTechnology(value);
+      setGridData(tempArr);
     }
-  }
+  };
 
   const handleLabourQuantityChange = (event, index) => {
     let tempArr = [];
     let tempData = gridData[index];
     if (!isNaN(event?.target?.value) && event?.target?.value !== '') {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * event.target.value : 0;
+      const WithOutLabourCost = tempData.IsLabourRateExist ?
+        checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, LabourQuantity: event.target.value, OperationCost: OperationCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value, "Operation");
+      tempData = {
+        ...tempData,
+        LabourQuantity: event.target.value,
+        OperationCost,
+        CostingConditionNumber: tempData.CostingConditionNumber,
+        CostingConditionMasterAndTypeLinkingId: tempData.CostingConditionMasterAndTypeLinkingId,
+        ...netCosts
+      };
+
+      tempArr = Object.assign([...gridData], { [index]: tempData });
+      setGridData(tempArr);
     } else {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
-      const WithOutLabourCost = 0;                                                              // WHEN INVALID INPUT WithOutLabourCost IS 0
-      const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      //Toaster.warning('Please enter valid number.')
+      const OperationCost = WithLaboutCost;
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value, "Operation");
+      tempData = {
+        ...tempData,
+        LabourQuantity: 0,
+        OperationCost,
+        ...netCosts
+      };
+
+      tempArr = Object.assign([...gridData], { [index]: tempData });
+      setGridData(tempArr);
     }
-  }
+  };
 
   const netCost = (item) => {
     const cost = checkForNull(item.Rate * item?.Quantity) + checkForNull(item.LabourRate * item.LabourQuantity);
@@ -428,6 +474,7 @@ function OperationCost(props) {
                       <th>{`Labour Quantity`}</th>}
                     <th>{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                    <th style={{ width: "110px" }} >{`Applicability`}<span className="asterisk-required">*</span></th>
                     <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -483,7 +530,7 @@ function OperationCost(props) {
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                        validate: { number, checkWhiteSpaces, noDecimal },
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
@@ -522,6 +569,28 @@ function OperationCost(props) {
                                 disabled={CostingViewMode}
                               />
                             </td>}
+                            <td>
+                              <SearchableSelectHookForm
+                                name={`Applicability${index}`}
+                                type="text"
+                                label="Applicability"
+                                errors={`${errors.Applicability}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
+                                  label: item?.CostingConditionNumber,
+                                  value: item?.CostingConditionMasterAndTypeLinkingId
+                                } : ''}
+                                options={operationApplicabilitySelect}
+                                required={true}
+                                handleChange={(e) => { onHandleChangeApplicability(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>
                             <td>
                               <div className='action-btn-wrapper'>
                                 <button title='Save' className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
@@ -565,6 +634,28 @@ function OperationCost(props) {
                                 disabled={CostingViewMode}
                               />
                             </td>}
+                            <td>
+                              <SearchableSelectHookForm
+                                name={`Applicability${index}`}
+                                type="text"
+                                label="Applicability"
+                                errors={`${errors.Applicability}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
+                                  label: item?.CostingConditionNumber,
+                                  value: item?.CostingConditionMasterAndTypeLinkingId
+                                } : ''}
+                                options={operationApplicabilitySelect}
+                                required={true}
+                                handleChange={(e) => { onHandleChangeApplicability(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>
                             <td>
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Edit' id={`operationCost_edit${index}`} className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}

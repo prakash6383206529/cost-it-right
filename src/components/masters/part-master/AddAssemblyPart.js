@@ -568,10 +568,24 @@ class AddAssemblyPart extends Component {
           return false
         }
         this.setDisableFalseFunction()
-        let Data = res.data[0]
-        const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        if ('response' in res) {
+          status = res && res?.response?.status
+          this.dropzone.current.files.pop()
+          this.setState({ attachmentLoader: false })
+          this.dropzone.current.files.pop() // Remove the failed file from dropzone
+          this.setState({ files: [...this.state.files] }) // Trigger re-render with current files
+          Toaster.warning('File upload failed. Please try again.')
+        }
+        else {
+          let Data = res.data[0]
+          const { files } = this.state;
+          let attachmentFileArray = [...files]
+          attachmentFileArray.push(Data)
+          this.setState({ attachmentLoader: false, files: attachmentFileArray })
+          setTimeout(() => {
+            this.setState(prevState => ({ isOpen: !prevState.isOpen }))
+          }, 500);
+        }
       })
     }
 

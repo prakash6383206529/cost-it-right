@@ -55,6 +55,16 @@ function PartCompoment(props) {
   const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
+
+    if (ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length > 0) {
+      const operations = ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
+      const hasMissingApplicability = operations?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
+
+      if (operations?.length > 0 && hasMissingApplicability) {
+        Toaster.warning('Please select Applicability for all operations');
+        return false;
+      }
+    }
     const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
     if (hasNegativeValue) {
       return false;

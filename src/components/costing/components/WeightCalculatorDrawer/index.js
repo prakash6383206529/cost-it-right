@@ -4,7 +4,6 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import InsulationCalculator from './Insulation/Insulation'
 import ForgingCalculator from './forging'
-import Plastic from './Plastic'
 import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, ELECTRICAL_STAMPING, INSULATION } from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import NonFerrousCalculator from './dieCasting'
@@ -21,6 +20,7 @@ import { showPaperCorrugatedBox } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
 import { sourceCurrencyFormatter } from '../Drawers/processCalculatorDrawer/CommonFormula'
 import MonoCartoon from './corrugatedBox/monoCartoon'
+import PlasticCalculator from './plastic/index'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox, calculatorType } = props
@@ -121,7 +121,7 @@ function OpenWeightCalculator(props) {
         )
       case PLASTIC:
         return (
-          <Plastic
+          <PlasticCalculator
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             item={item}

@@ -76,6 +76,8 @@ import {
   SET_CURRENCY_SOURCE,
   SET_EXCHANGE_RATE_DATA,
   GET_COSTING_COST_DETAILS,
+  SET_OPERATION_APPLICABILITY_SELECT,
+  SET_PROCESS_APPLICABILITY_SELECT,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1318,7 +1320,7 @@ export function saveDiscountOtherCostTab(data, callback) {
  */
 export function fileUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.fileUploadCosting, data, config())
+    const request = axios.post(API.fileUploadCosting, data, config())
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response)
@@ -2050,7 +2052,7 @@ export function setRMCutOff(cutOffObj) {
 export function getCostingSpecificTechnology(loggedInUserId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getCostingSpecificTechnology}/${loggedInUserId}`, config())
+    const request = axios.get(`${API.getCostingSpecificTechnology}?loggedInUserId=${loggedInUserId}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -3204,3 +3206,19 @@ export function getCostingCostDetails(obj, callback) {
       })
   }
 }
+export function setOperationApplicabilitySelect(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OPERATION_APPLICABILITY_SELECT,
+      payload: data,
+    });
+  }
+};
+export function setProcessApplicabilitySelect(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PROCESS_APPLICABILITY_SELECT,
+      payload: data,
+    });
+  }
+};

@@ -423,15 +423,14 @@ export function getMachineSelectList(callback) {
  */
 export function fileUploadMachine(data, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(API.fileUploadMachine, data, config());
+        const request = axios.post(API.fileUploadMachine, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error.toString())
+            callback(error);
         });
     };
 }

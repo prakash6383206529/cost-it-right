@@ -833,6 +833,7 @@ function RawMaterialCost(props) {
    * @description CHECK IS FINISH WEIGHT LESS THEN GROSS WEIGHT
    */
   const IsFinishWeightValid = (GrossWeight, FinishWeight) => {
+    console.log(GrossWeight, FinishWeight, "GrossWeight, FinishWeight")
     return GrossWeight >= FinishWeight ? true : false;
   }
 

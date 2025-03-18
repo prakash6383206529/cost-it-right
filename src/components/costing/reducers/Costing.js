@@ -28,6 +28,8 @@ import {
   SET_EXCHANGE_RATE_SOURCE,
   SET_CURRENCY_SOURCE,
   SET_EXCHANGE_RATE_DATA,
+  SET_OPERATION_APPLICABILITY_SELECT,
+  SET_PROCESS_APPLICABILITY_SELECT,
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -919,6 +921,18 @@ export default function costingReducer(state = initialState, action) {
         // baseFromCurrency: action.payload.baseFromCurrency,
         // baseToCurrency: action.payload.baseToCurrency,
         exchangeRateData: action.payload,
+      }
+    case SET_OPERATION_APPLICABILITY_SELECT:
+      return {
+        ...state,
+        loading: false,
+        operationApplicabilitySelect: action.payload,
+      }
+    case SET_PROCESS_APPLICABILITY_SELECT:
+      return {
+        ...state,
+        loading: false,
+        processApplicabilitySelect: action.payload,
       }
     default:
       return state
