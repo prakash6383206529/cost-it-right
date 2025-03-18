@@ -27,7 +27,7 @@ function StandardRub(props) {
     const dispatch = useDispatch();
     const { rmRowData, rmData, CostingViewMode } = props
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const isVolumeEditable = getConfigurationKey()?.IsVolumeEditableInRubberRMWeightCalculator ?? false
+    // const isVolumeEditable = getConfigurationKey()?.IsVolumeEditableInRubberRMWeightCalculator ?? false
 
     const costData = useContext(costingInfoContext)
     const [tableData, setTableData] = useState(WeightCalculatorRequest &&WeightCalculatorRequest?.RawMaterialRubberStandardWeightCalculator?.length>0 ?WeightCalculatorRequest?.RawMaterialRubberStandardWeightCalculator:[])
@@ -41,6 +41,7 @@ function StandardRub(props) {
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const [isDisable, setIsDisable] = useState(false)
     const [reRender, setRerender] = useState(false)
+    const [isVolumeAutoCalculate, setIsVolumeAutoCalculate] = useState(false)
     const { currencySource } = useSelector((state) => state?.costing);
 
     const defaultValues = {
@@ -58,7 +59,7 @@ function StandardRub(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'FinishWeight', ...(isVolumeEditable ? ['Volume']: [])],
+        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'FinishWeight', ...(!isVolumeAutoCalculate ? ['Volume']: [])],
     })
 
     useEffect(() => {
@@ -67,7 +68,7 @@ function StandardRub(props) {
         calculateVolume()
         calculateScrapWeight()
 
-    }, [fieldValues])
+    }, [fieldValues, isVolumeAutoCalculate])
 
 
     useEffect(() => {
@@ -140,11 +141,11 @@ function StandardRub(props) {
     const calculateVolume = debounce(() => {
         const InnerDiameter = Number(getValues('InnerDiameter'))
         const OuterDiameter = Number(getValues('OuterDiameter'))
-        if ((InnerDiameter && OuterDiameter) || isVolumeEditable) {
+        if ((InnerDiameter && OuterDiameter) || !isVolumeAutoCalculate) {
             const Length = Number(getValues('Length'))
             const CuttingAllowance = Number(getValues('CuttingAllowance'))
             let Volume = Number(getValues('Volume'));
-            if(!isVolumeEditable){
+            if(isVolumeAutoCalculate){
                 Volume = 0.7857 * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
@@ -177,12 +178,10 @@ function StandardRub(props) {
         })
 
         if (tableData.length > 0) {
-
             let obj = tableData[tableData.length - 1]
-
-            setValue('InnerDiameter', obj.OuterDiameter)
+            setValue('InnerDiameter', obj.InnerDiameter)
             setValue('Length', obj.Length)
-            setValue('CuttingAllowance', obj.CuttingAllowance)
+            setValue('CuttingAllowance', obj.CuttingAllowance)           
         }
     }
 
@@ -275,7 +274,8 @@ function StandardRub(props) {
         setTimeout(() => {
             setValue('ScrapWeight', checkForDecimalAndNull(obj.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }, 200);
-
+        setIsVolumeAutoCalculate(obj?.IsVolumeAutoCalculate ?? false)
+        setDataToSend(prevState => ({ ...prevState, GrossWeight: obj.GrossWeight }))
     }
 
 
@@ -330,15 +330,16 @@ function StandardRub(props) {
             Length: Number(getValues('Length')),
             CuttingAllowance: Number(getValues('CuttingAllowance')),
             TotalLength: dataToSend.TotalLength,
-            Volume: !isVolumeEditable ? dataToSend.Volume : Number(getValues('Volume')),
+            Volume: isVolumeAutoCalculate ? dataToSend.Volume : Number(getValues('Volume')),
             GrossWeight: dataToSend.GrossWeight,
             FinishWeight: Number(getValues('FinishWeight')),
             ScrapWeight: dataToSend.ScrapWeight,
             NetRMCost: dataToSend.NetRMCost,
-            RawMaterialId: rmRowDataState.RawMaterialId
+            RawMaterialId: rmRowDataState.RawMaterialId,
+            IsVolumeAutoCalculate: isVolumeAutoCalculate
         }
 
-        if((isVolumeEditable && obj.Volume === 0) || (!isVolumeEditable && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))){
+        if((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))){
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
@@ -366,6 +367,7 @@ function StandardRub(props) {
             RawMaterial: []
 
         })
+        setIsVolumeAutoCalculate(false);
         setRmRowDataState({})
 
         setTimeout(() => {
@@ -472,6 +474,16 @@ function StandardRub(props) {
             e.preventDefault();
         }
     };
+
+    const onPressAutoCalculateVolume = () => {
+        setValue('FinishWeight', "")
+        setValue('GrossWeight', "")
+        setValue('ScrapWeight', "")
+        setValue('Volume', "")
+        setValue('NetRMCost', "")
+        setIsVolumeAutoCalculate((prev) => !prev)
+    }
+
     let volumeFormula = <div>Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length</div>
     return (
         <Fragment>
@@ -524,30 +536,6 @@ function StandardRub(props) {
                                     <Row className={'mt15'}>
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Inner Diameter(mm)`}
-                                                name={'InnerDiameter'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                rules={{
-                                                    required: false,
-                                                    validate: { number, decimalAndNumberValidation },
-                                                    max: {
-                                                        value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
-                                                        message: 'Inner Diameter should not be greater than outer diameter.'
-                                                    },
-                                                }}
-                                                handleChange={(e) => handleInnerDiameter(e.target.value)}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.InnerDiameter}
-                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <TextFieldHookForm
                                                 label={`Outer Diameter(mm)`}
                                                 name={'OuterDiameter'}
                                                 Controller={Controller}
@@ -568,6 +556,30 @@ function StandardRub(props) {
                                                 customClassName={'withBorder'}
                                                 errors={errors.OuterDiameter}
                                                 disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                label={`Inner Diameter(mm)`}
+                                                name={'InnerDiameter'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={false}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, decimalAndNumberValidation },
+                                                    max: {
+                                                        value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
+                                                        message: 'Inner Diameter should not be greater than outer diameter.'
+                                                    },
+                                                }}
+                                                handleChange={(e) => handleInnerDiameter(e.target.value)}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.InnerDiameter}
+                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
                                             />
                                         </Col>
                                         <Col md="3">
@@ -632,8 +644,31 @@ function StandardRub(props) {
                                             />
                                         </Col>
 
+                                        <Col md="3">
+                                            <div className="mt-3">
+                                            <span className="d-inline-block mt15">
+                                                <label
+                                                className={`custom-checkbox mb-0`}
+                                                onChange={onPressAutoCalculateVolume}
+                                                >
+                                                Auto Calculate Volume ?
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isVolumeAutoCalculate}
+                                                    disabled={CostingViewMode || (Object.keys(rmRowDataState).length > 0 ? false : true)}
+                                                />
+                                                <span
+                                                    className=" before-box"
+                                                    checked={isVolumeAutoCalculate}
+                                                    onChange={onPressAutoCalculateVolume}
+                                                />
+                                                </label>
+                                            </span>
+                                            </div>
+                                        </Col>
+
                                         <Col md="3">                                       
-                                        {!isVolumeEditable &&
+                                        {isVolumeAutoCalculate &&
                                             <TooltipCustom disabledIcon={true} tooltipClass={'weight-of-sheet'} id={'rubber-volume'} tooltipText={volumeFormula} />
                                         }
                                             <TextFieldHookForm
@@ -653,7 +688,7 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Volume}
-                                                disabled={!isVolumeEditable || !(Object.keys(rmRowDataState).length > 0)}
+                                                disabled={isVolumeAutoCalculate || !(Object.keys(rmRowDataState).length > 0)}
                                             />
                                         </Col>
 

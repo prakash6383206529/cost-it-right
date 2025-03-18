@@ -16,7 +16,7 @@ import { DISPLAY_G, DISPLAY_KG, DISPLAY_MG } from '../../../../../config/constan
 import TooltipCustom from '../../../../common/Tooltip'
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
-import { setFerrousCalculatorReset } from '../../../actions/CostWorking'
+import { setFerrousCalculatorReset, setRubberCalculatorReset } from '../../../actions/CostWorking'
 import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
 import { getTechnology, technologyForDensity, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, ELECTRICAL_STAMPING, TOOLING_ID, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
@@ -252,7 +252,10 @@ function RawMaterialCost(props) {
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
 
-    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore !== 'CorrugatedBox'))))) {
+    if((Number(costData?.TechnologyId) === Number(RUBBER)) && calculatorTypeStore === "Standard"){
+      setShowPopup(true)
+      setDrawerOpen(false)
+    } else if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore !== 'CorrugatedBox'))))) {
       setShowPopup(true)
       setDrawerOpen(false)
     }
@@ -484,6 +487,7 @@ function RawMaterialCost(props) {
   const closeWeightDrawer = (e = '', weightData = {}, originalWeight = {}) => {
     setCalculatorTypeStore(e)
     dispatch(setFerrousCalculatorReset(false))
+    dispatch(setRubberCalculatorReset(false))
 
     if (String(e) === String('rubber') || String(e) === String('ferrous') || String(e) === String('CorrugatedBox') || String(e) === String('CorrugatedAndMonoCartonBox') || String(e) === String('Laminate')) {
       setIsMultiCalculatorData(true)
@@ -989,6 +993,7 @@ function RawMaterialCost(props) {
               item.CutOffRMC = CutOffRMC;
               item.ScrapRecoveryPercentage = RecoveryPercentage;
               item.CalculatorType= weightData.CalculatorType ?? calculatorTypeStore
+              item.IsVolumeAutoCalculate = weightItem?.IsVolumeAutoCalculate ?? false
             }
 
             setTimeout(() => {
@@ -1103,6 +1108,7 @@ function RawMaterialCost(props) {
   const onPopupConfirmDelete = () => {
 
     dispatch(setFerrousCalculatorReset(true))
+    dispatch(setRubberCalculatorReset(true))
     setIsMultiCalculatorData(false)
     let tempList = [...gridData]
     tempList && tempList.map((item, index) => {
@@ -1132,7 +1138,10 @@ function RawMaterialCost(props) {
 
   const deleteMultiple = (index) => {
 
-    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || Number(costData?.TechnologyId) === Number(CORRUGATEDBOX)))) {
+    if((Number(costData?.TechnologyId) === Number(RUBBER)) && calculatorTypeStore === "Standard"){
+      setShowPopupDelete(true)
+      setDeleteIndex(index)
+    } else if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || Number(costData?.TechnologyId) === Number(CORRUGATEDBOX)))) {
       setShowPopupDelete(true)
       setDeleteIndex(index)
     } else {
@@ -1382,6 +1391,7 @@ function RawMaterialCost(props) {
 
   const onPopupConfirm = () => {
     dispatch(setFerrousCalculatorReset(true))
+    dispatch(setRubberCalculatorReset(true))
     setIsMultiCalculatorData(false)
     let tempList = [...gridData]
     tempList && tempList.map((item, index) => {
