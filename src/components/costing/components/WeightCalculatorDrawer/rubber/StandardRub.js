@@ -89,7 +89,7 @@ function StandardRub(props) {
         let arr = [];
         let count = 1;
     
-        if (tableData && tableData.length > 0) {
+        if ((tableData && tableData.length > 0) && (rmData && rmData.length > 0)) {
             arr = rmData
                 .filter(item => {
                     return !tableData.some(tableItem => tableItem.RawMaterialId === item.RawMaterialId);
