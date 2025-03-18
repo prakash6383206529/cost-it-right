@@ -3371,7 +3371,7 @@ export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Ope
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V4.1.7";
+export const VERSION = "V4.1.8";
 
 
 
