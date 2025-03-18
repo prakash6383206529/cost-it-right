@@ -75,7 +75,8 @@ function OpenWeightCalculator(props) {
         calculatorType = (props.rmData[0] && props.rmData[0].CalculatorType && props.rmData[0].WeightCalculationId) ? props.rmData[0].CalculatorType : ''
       }
     }
-    props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX) && !isSummary) ? calculatorType : event, weightData, originalWeight)
+    // props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX) && !isSummary) ? calculatorType : event, weightData, originalWeight)
+    props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX || Number(technology) === Number(RUBBER)) && !isSummary) ? calculatorType : event, weightData, originalWeight)
   }
 
   /**
@@ -153,6 +154,7 @@ function OpenWeightCalculator(props) {
           item={item}
           appyMasterBatch={appyMasterBatch}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
+          calculatorType={calculatorType}
         />)
       case DIE_CASTING:
         return (<NonFerrousCalculator
@@ -266,7 +268,7 @@ function OpenWeightCalculator(props) {
                   <h3>{Number(technology) !== Number(Ferrous_Casting) ? 'Weight Calculator' : 'Alloy Composition '}</h3>
                 </div>
                 <div
-                  onClick={(e) => toggleDrawer(e)}
+                  onClick={(e) => toggleDrawer(Number(technology) === Number(RUBBER) ? calculatorType : e)}
                   className={'close-button right'}
                 ></div>
               </Col>
