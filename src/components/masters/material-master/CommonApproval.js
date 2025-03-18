@@ -983,7 +983,7 @@ function CommonApproval(props) {
 
                                     <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {(props?.MasterId === RM_MASTER_ID || props?.MasterId === BOP_MASTER_ID) && <AgGridColumn width="145" field="EntryType" headerName='Entry Type'></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="200" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
                                         floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName={technologyLabel}></AgGridColumn>}
@@ -1018,7 +1018,7 @@ function CommonApproval(props) {
 
 
 
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="200" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
                                         floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No`}></AgGridColumn>}
@@ -1042,7 +1042,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost" cellRenderer='netCostFormatter'></AgGridColumn>}
 
                                     {/* {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
-                                    {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                    {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="200" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
                                         floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Technology" headerName={technologyLabel}></AgGridColumn>}
@@ -1057,7 +1057,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="BasicRate" headerName="Machine Rate"></AgGridColumn>}
                                     {/* {props?.MasterId === MACHINE_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
 
-                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="200" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
                                         floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="TechnologyName" tooltipField='Technology' headerName={technologyLabel}></AgGridColumn>}
@@ -1071,7 +1071,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="BasicRate" headerName='Rate'></AgGridColumn>}
 
                                     {/* {props?.MasterId === OPERATIONS_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
-                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="200" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
                                         floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="FinancialYear" headerName='Financial Year'></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="PartNumber" headerName='Part No.'></AgGridColumn>}

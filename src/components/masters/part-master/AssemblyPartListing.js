@@ -759,7 +759,6 @@ const AssemblyPartListing = React.memo((props) => {
     //   state.gridApi.sizeColumnsToFit();
     // }
     setState((prevState) => ({ ...prevState, dataCount: 0, globalTake: defaultPageSize, }));
-    getTableListData();
   };
 
   const isFirstColumn = (params) => {
