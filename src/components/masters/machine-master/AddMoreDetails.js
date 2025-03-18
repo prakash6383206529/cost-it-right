@@ -184,7 +184,10 @@ class AddMoreDetails extends Component {
       hidePlantCurrency: editDetails?.hidePlantCurrency ? editDetails?.hidePlantCurrency : false,
       showPlantWarning: false,
       disableEffectiveDate: false,
-      isImport: editDetails?.entryType
+      isImport: editDetails?.entryType,
+      MachineRateWithOutInterestAndDepreciation: null,
+      MachineRateWithOutInterestAndDepreciationLocalConversion: null,
+      MachineRateWithOutInterestAndDepreciationConversion: null
     }
     this.dropzone = React.createRef();
   }
@@ -1595,37 +1598,56 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handleProcessCalculation = () => {
-    const { fieldsObj, initialConfiguration, } = this.props
+    const { fieldsObj, initialConfiguration } = this.props
     const { UOM, IsIncludeMachineRateDepreciation } = this.state
 
     let MachineRate
+    let MachineRateWithOutInterestAndDepreciation
     const OutputPerHours = checkForNull(fieldsObj?.OutputPerHours)
     const NumberOfWorkingHoursPerYear = checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear)
-    // const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
+
+    // Calculate total machine cost with and without interest/depreciation
     let TotalMachineCostPerAnnum = 0
+    let TotalMachineCostWithoutIntDepPerAnnum = 0
+
     if (IsIncludeMachineRateDepreciation) {
       TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+      // Calculate without interest and depreciation
+      TotalMachineCostWithoutIntDepPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+
     } else {
-      TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+
+      TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+
+      // Calculate without interest and depreciation  
+      TotalMachineCostWithoutIntDepPerAnnum = checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+
     }
+
     if (UOM.type === TIME) {
 
       if (UOM.uom === "Hours") {
-        MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+        MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear)
+        MachineRateWithOutInterestAndDepreciation = checkForNull(TotalMachineCostWithoutIntDepPerAnnum / NumberOfWorkingHoursPerYear)
       }
-
-      if (UOM.uom === "Minutes") {
-
-        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
-      } else if (UOM.uom === "Seconds") {
-
-        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
+      else if (UOM.uom === "Minutes") {
+        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)
+        MachineRateWithOutInterestAndDepreciation = checkForNull((TotalMachineCostWithoutIntDepPerAnnum / NumberOfWorkingHoursPerYear) / 60)
       }
-
+      else if (UOM.uom === "Seconds") {
+        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)
+        MachineRateWithOutInterestAndDepreciation = checkForNull((TotalMachineCostWithoutIntDepPerAnnum / NumberOfWorkingHoursPerYear) / 3600)
+      }
     } else {
-      MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
+      MachineRate = fieldsObj.MachineRate
+      MachineRateWithOutInterestAndDepreciation = fieldsObj.MachineRate
     }
-    this.setState({ machineRate: MachineRate })
+
+    this.setState({
+      machineRate: MachineRate,
+      MachineRateWithOutInterestAndDepreciation: MachineRateWithOutInterestAndDepreciation
+    })
+
     this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
     this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration?.NoOfDecimalForPrice) ? checkForDecimalAndNull(MachineRate, initialConfiguration?.NoOfDecimalForPrice) : '')
   }
@@ -1901,6 +1923,9 @@ class AddMoreDetails extends Component {
         MachineRate: MachineRate,
         MachineRateConversion: MachineRateConversion,
         MachineRateLocalConversion: MachineRateLocalConversion,
+        MachineRateWithOutInterestAndDepreciation: this?.state?.MachineRateWithOutInterestAndDepreciation,
+        MachineRateWithOutInterestAndDepreciationLocalConversion: this?.state?.MachineRateWithOutInterestAndDepreciationLocalConversion ?? this?.state?.MachineRateWithOutInterestAndDepreciation,
+        MachineRateWithOutInterestAndDepreciationConversion: this?.state?.MachineRateWithOutInterestAndDepreciationConversion
       })
 
       this.setState({ IsFinancialDataChanged: true })
@@ -2014,6 +2039,9 @@ class AddMoreDetails extends Component {
       MachineRate: MachineRate,
       MachineRateConversion: MachineRateConversion,
       MachineRateLocalConversion: MachineRateLocalConversion,
+      MachineRateWithOutInterestAndDepreciation: this?.state?.MachineRateWithOutInterestAndDepreciation,
+      MachineRateWithOutInterestAndDepreciationLocalConversion: this?.state?.MachineRateWithOutInterestAndDepreciationLocalConversion ?? this?.state?.MachineRateWithOutInterestAndDepreciation,
+      MachineRateWithOutInterestAndDepreciationConversion: this?.state?.MachineRateWithOutInterestAndDepreciationConversion
     }
 
     tempArray = Object.assign([...processGrid], { [processGridEditIndex]: tempData })
@@ -2132,15 +2160,20 @@ class AddMoreDetails extends Component {
     const BasicRate = checkForNull(fieldsObj.BasicRate)
     const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
     this.props.change('NetLandedCost', NetLandedCost)
-    const { plantCurrency, settlementCurrency, entryType } = this.state
+    const { plantCurrency, settlementCurrency, entryType, MachineRateWithOutInterestAndDepreciation } = this.state
     if (entryType) {
       const MachineRateLocalConversion = convertIntoCurrency(checkForNull(fieldsObj?.MachineRate), plantCurrency)
       this.props.change('MachineRateLocalConversion', checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice));
+      const MachineRateWithOutInterestAndDepreciationLocalConversion = convertIntoCurrency(checkForNull(MachineRateWithOutInterestAndDepreciation), plantCurrency)
+      const MachineRateWithOutInterestAndDepreciationConversion = convertIntoCurrency(checkForDecimalAndNull(MachineRateWithOutInterestAndDepreciationLocalConversion, initialConfiguration?.NoOfDecimalForPrice), settlementCurrency)
+      this.setState({ MachineRateWithOutInterestAndDepreciationLocalConversion: MachineRateWithOutInterestAndDepreciationLocalConversion, MachineRateWithOutInterestAndDepreciationConversion: MachineRateWithOutInterestAndDepreciationConversion })
       const MachineRateConversion = convertIntoCurrency(checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice), settlementCurrency)
       this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
     } else {
       const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
       this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice));
+      const MachineRateWithOutInterestAndDepreciationConversion = convertIntoCurrency(checkForNull(MachineRateWithOutInterestAndDepreciation, initialConfiguration?.NoOfDecimalForPrice), plantCurrency)
+      this.setState({ MachineRateWithOutInterestAndDepreciationConversion: MachineRateWithOutInterestAndDepreciationConversion })
     }
   }
   HandleMachineRateSelectedCurrency = (e) => {
@@ -2177,16 +2210,25 @@ class AddMoreDetails extends Component {
         return false;
       }
       this.props.fileUploadMachine(data, (res) => {
-        if (res && res?.status !== 200) {
+        this.setDisableFalseFunction()
+        if ('response' in res) {
+          status = res && res?.response?.status
           this.dropzone.current.files.pop()
-          this.setDisableFalseFunction()
-          return false
+          this.setState({ attachmentLoader: false })
+          this.dropzone.current.files.pop() // Remove the failed file from dropzone
+          this.setState({ files: [...this.state.files] }) // Trigger re-render with current files
+          Toaster.warning('File upload failed. Please try again.')
         }
-        let Data = res.data[0]
-        const { files } = this.state;
-        let attachmentFileArray = [...files]
-        attachmentFileArray.push(Data)
-        this.setState({ files: attachmentFileArray, attachmentLoader: false })
+        else {
+          let Data = res.data[0]
+          const { files } = this.state;
+          let attachmentFileArray = [...files]
+          attachmentFileArray.push(Data)
+          this.setState({ attachmentLoader: false, files: attachmentFileArray })
+          setTimeout(() => {
+            this.setState(prevState => ({ isOpen: !prevState.isOpen }))
+          }, 500);
+        }
       })
     }
 
@@ -2840,8 +2882,12 @@ class AddMoreDetails extends Component {
     return <>Machine Cost ({currencyLabel})</>
   }
   handleChangeIncludeMachineRateDepreciation = (value) => {
-    this.setState({ IsIncludeMachineRateDepreciation: !this.state.IsIncludeMachineRateDepreciation })
-    this.handleProcessCalculation()
+
+    this.setState({
+      IsIncludeMachineRateDepreciation: !this.state.IsIncludeMachineRateDepreciation
+    }, () => {
+      this.handleProcessCalculation()
+    })
   }
 
   handleCRMHeads = (value, name) => {
@@ -2982,7 +3028,6 @@ class AddMoreDetails extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated, t, data } = this.props;
-
 
 
 

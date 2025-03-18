@@ -291,11 +291,11 @@ class AddOverhead extends Component {
     if (label === 'OverheadApplicability') {
       costingHead && costingHead.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
-         if (!this.state.isAssemblyCheckbox && item.Text.includes('Part Cost')) {
+        if (!this.state.isAssemblyCheckbox && item.Text.includes('Part Cost')) {
           return false;
-        }if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) {
+        } if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) {
           return false;
-        }temp.push({ label: item.Text, value: item.Value });
+        } temp.push({ label: item.Text, value: item.Value });
         return null;
       });
       return temp;
@@ -659,12 +659,25 @@ class AddOverhead extends Component {
           return false
         }
         this.setDisableFalseFunction()
-        let Data = res.data[0]
-        const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        if ('response' in res) {
+          status = res && res?.response?.status
+          this.dropzone.current.files.pop()
+          this.setState({ attachmentLoader: false })
+          this.dropzone.current.files.pop() // Remove the failed file from dropzone
+          this.setState({ files: [...this.state.files] }) // Trigger re-render with current files
+          Toaster.warning('File upload failed. Please try again.')
+        }
+        else {
+          let Data = res.data[0]
+          const { files } = this.state;
+          let attachmentFileArray = [...files]
+          attachmentFileArray.push(Data)
+          this.setState({ attachmentLoader: false, files: attachmentFileArray })
+          setTimeout(() => {
+            this.setState(prevState => ({ isOpen: !prevState.isOpen }))
+          }, 500);
+        }
       })
-      // remove()
     }
 
     if (status === 'rejected_file_type') {
@@ -821,8 +834,8 @@ class AddOverhead extends Component {
         (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
         && Number(DataToChange.OverheadCCPercentage) === Number(values.OverheadCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
-          Toaster.warning('Please change the data to save Overhead Details')
-          return false
+        Toaster.warning('Please change the data to save Overhead Details')
+        return false
       }
       this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
@@ -924,9 +937,9 @@ class AddOverhead extends Component {
   * @description Used for Surface Treatment
   */
   onPressAssemblyCheckbox = () => {
-    this.setState({ 
+    this.setState({
       isAssemblyCheckbox: !this.state.isAssemblyCheckbox,
-      overheadAppli: [], 
+      overheadAppli: [],
       isRM: false,
       isCC: false,
       isBOP: false,
@@ -936,10 +949,10 @@ class AddOverhead extends Component {
       isHideCC: false,
       isHideRM: false
     });
-    
+
     this.props.change('OverheadApplicability', '');
   };
-  
+
   /**
   * @method render
   * @description Renders the component

@@ -298,8 +298,7 @@ export function fileUploadBOPDomestic(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      apiErrors(error);
-      callback(error.toString())
+      callback(error);
     });
   };
 }
@@ -515,7 +514,7 @@ export function getPaymentTermSelectList(callback) {
 export function checkAndGetBopPartNo(obj, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axiosInstance.post(`${API.checkAndGetBopPartNo}?loggedInUserId=${loggedInUserId()}&bopName=${obj.bopName}&bopCategory=${obj.bopCategory}&bopNumber=${obj.bopNumber}`, "", config());
+    const request = axiosInstance.get(`${API.checkAndGetBopPartNo}?loggedInUserId=${loggedInUserId()}&bopName=${obj.bopName}&bopCategory=${obj.bopCategory}&bopNumber=${obj.bopNumber}`, "", config());
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response);
