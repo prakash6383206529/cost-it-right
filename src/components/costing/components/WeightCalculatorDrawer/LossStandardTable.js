@@ -149,7 +149,12 @@ function LossStandardTable(props) {
         setLossWeightTooltip(`Loss ${isFerrous ? "Wt" : "Weight"} = (Loss (%) * Casting ${isFerrous ? "Wt" : "Weight"} / 100)`)
       }
       else {
-        setLossWeightTooltip(`Loss Weight = (Loss (%) * Gross Weight / 100)`)
+        if (props?.isPlastic && value.label === "Burning Loss (Gross Weight + Runner Weight)") {
+          setLossWeightTooltip(`Loss Weight = (Loss (%) * (Gross Weight + Runner Weight) / 100)`)
+        }
+        else {
+          setLossWeightTooltip(`Loss Weight = (Loss (%) * Gross Weight / 100)`)
+        }
       }
     }
     const resetFields = ['LossPercentage', 'FlashLength', 'FlashThickness', 'FlashWidth', 'BarDiameter', 'BladeThickness', 'LossOfType', 'LossWeight', 'FlashLoss']
@@ -180,9 +185,12 @@ function LossStandardTable(props) {
    * @description for calculating loss weight  and net loss weight
    */
   const calculateLossWeight = () => {
+    
     const LossPercentage = checkForNull(getValues('LossPercentage'))
     const inputWeight = props.weightValue
-    const LossWeight = (inputWeight * LossPercentage) / 100
+    const LossOfType = getValues('LossOfType')
+    const runnerWeight = props?.isPlastic && LossOfType?.label === "Burning Loss (Gross Weight + Runner Weight)" ? props?.runnerWeight : 0
+    const LossWeight = ((inputWeight + runnerWeight) * LossPercentage) / 100
 
     setValue('LossWeight', checkForDecimalAndNull(LossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     setLossWeight(LossWeight)
@@ -310,6 +318,18 @@ function LossStandardTable(props) {
       Toaster.warning("Please add data first.")
       return false;
     }
+    
+    if (props?.isPlastic) {
+      // Check if trying to add Burning Loss when Burning Loss (Gross Weight + Runner Weight) exists or vice versa
+      const hasBurningLoss = tableData.some(el => String(el.LossOfType) === '2');
+      const hasGrossBurningLoss = tableData.some(el => String(el.LossOfType) === '3');
+
+      if ((LossOfType === 2 && hasGrossBurningLoss) || (LossOfType === 3 && hasBurningLoss)) {
+          Toaster.warning('Cannot add both types of Burning Loss.')
+          return false;
+        }
+      }
+
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     if (!isEdit) {
       const isExist = tableData.findIndex(el => (String(el.LossOfType) === String(LossOfType)))
@@ -318,6 +338,7 @@ function LossStandardTable(props) {
         return false;
       }
     }
+
 
 
     let tempArray = []
@@ -366,7 +387,7 @@ function LossStandardTable(props) {
       setTableData(tempArray)
     }
 
-    if (LossOfType === 2 && props?.isPlastic) {
+    if ((LossOfType === 2 || LossOfType === 3) && props?.isPlastic) {
       setBurningWeight(LossWeight)
       props.burningLoss(LossWeight)
     }
@@ -499,7 +520,7 @@ function LossStandardTable(props) {
 
 
 
-    if (Number(tempObj.LossOfType) === 2 && props?.isPlastic) {
+    if ((Number(tempObj.LossOfType) === 2 || Number(tempObj.LossOfType) === 3) && props?.isPlastic) {
       setBurningWeight(0)
       props.burningLoss(0)
     }
@@ -515,8 +536,9 @@ function LossStandardTable(props) {
     setTableData(tempData)
     cancelUpdate()
 
-
-    onLossDelete(tempData);
+    if (props?.isFerrous) {
+      props?.onLossDelete(tempData);
+    }
 
   }
 
@@ -856,7 +878,7 @@ function LossStandardTable(props) {
               </span>}
             {!props.isStamping && <span className="w-50 d-inline-block">
               {`${props.isPlastic ? 'Other' : 'Net'} Loss ${isFerrous ? "Wt" : "Weight"}: `}
-              {checkForDecimalAndNull(findLostWeight(tableData, false), trim)}
+              {checkForDecimalAndNull(findLostWeight(tableData, props?.isPlastic), trim)}
             </span>}
           </div>
         </Col>

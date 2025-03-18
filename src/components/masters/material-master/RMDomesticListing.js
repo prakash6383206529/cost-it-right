@@ -432,7 +432,7 @@ function RMDomesticListing(props) {
         setNoData(false)
         setinRangeDate([])
         dispatch(setResetCostingHead(true, "costingHead"))
-
+        setDisableFilter(true)
         gridOptions?.api?.setFilterModel(null);
         setIsFilterButtonClicked(false)
         gridApi.setQuickFilter(null)

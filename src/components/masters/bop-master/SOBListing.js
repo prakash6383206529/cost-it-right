@@ -582,7 +582,7 @@ const SOBListing = (props) => {
     resizable: true,
     filter: true,
     sortable: false,
-    headerCheckboxSelection: isFirstColumn,
+    // headerCheckboxSelection: isFirstColumn,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: isFirstColumn
   };

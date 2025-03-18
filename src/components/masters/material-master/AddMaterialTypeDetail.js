@@ -169,7 +169,7 @@ const AddMaterialTypeDetail = (props) => {
                         options={renderListing('CommodityStandardName')}
                         mandatory={true}
                         handleChange={(option) => handleInputChange(option, 'CommodityStandardName')}
-                        errors={errors.CommodityStandardName}
+                        errors={errors?.CommodityStandardName}
                         disabled={isViewFlag}
                     />
                 </Col>
