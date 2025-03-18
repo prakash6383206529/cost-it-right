@@ -13,7 +13,7 @@ import CorrugatedBox from './CorrugatedBox'
 import MeshCalculation from './MeshCalculation'
 import BodySeperate from './BodySeperate'
 import Flap from './Flap'
-import Plastic from '../Plastic'
+import Plastic from '../plastic/Plastic'
 
 function CorrugatedBoxCalculator(props) {
     const { rmRowData, item } = props
@@ -163,6 +163,7 @@ function CorrugatedBoxCalculator(props) {
                                     fromPackaging={true}
                                     CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                                     DisableMasterBatchCheckbox={true}
+                                    activeTab={2}
                                 />
                             </TabPane>
                         )}
