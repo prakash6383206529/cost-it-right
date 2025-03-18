@@ -191,7 +191,13 @@ function CostingDetailStepTwo(props) {
         TotalCost: checkForNull(totalCost),
         BasicRate: checkForNull(basicRate),
         RawMaterialCostWithCutOff: data?.RawMaterialCostWithCutOff,
-        IsRMCutOffApplicable: data?.IsRMCutOffApplicable
+        IsRMCutOffApplicable: data?.IsRMCutOffApplicable,
+        NetProcessCostForOverhead: data?.NetProcessCostForOverhead,
+        NetProcessCostForProfit: data?.NetProcessCostForProfit,
+        NetProcessCostForOverheadAndProfit: data?.NetProcessCostForOverheadAndProfit,
+        NetOperationCostForOverheadAndProfit: data?.NetOperationCostForOverheadAndProfit,
+        NetOperationCostForOverhead: data?.NetOperationCostForOverhead,
+        NetOperationCostForProfit: data?.NetOperationCostForProfit,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 

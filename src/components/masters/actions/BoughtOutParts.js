@@ -298,8 +298,7 @@ export function fileUploadBOPDomestic(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      apiErrors(error);
-      callback(error.toString())
+      callback(error);
     });
   };
 }

@@ -406,7 +406,7 @@ function CostingDetails(props) {
           setZBCPlantGrid([])
           setVBCVendorGrid([])
           setIsOpenVendorSOBDetails(false)
-          if (response.data.Result) {
+          if (response?.data?.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
               sessionStorage.setItem('costingArray', JSON.stringify([]))

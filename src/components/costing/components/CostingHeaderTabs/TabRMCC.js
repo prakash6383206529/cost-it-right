@@ -83,7 +83,13 @@ function TabRMCC(props) {
           TotalOperationCostSubAssembly: TopHeaderValues?.TotalOperationCostSubAssembly ? TopHeaderValues.TotalOperationCostSubAssembly : 0,
           TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0,
           RawMaterialCostWithCutOff: TopHeaderValues?.RawMaterialCostWithCutOff ? checkForNull(TopHeaderValues?.RawMaterialCostWithCutOff) : 0,
-          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false
+          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false,
+          NetProcessCostForOverhead: TopHeaderValues?.NetProcessCostForOverhead ? TopHeaderValues?.NetProcessCostForOverhead : 0,
+          NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
+          NetProcessCostForOverheadAndProfit: TopHeaderValues?.NetProcessCostForOverheadAndProfit ? TopHeaderValues?.NetProcessCostForOverheadAndProfit : 0,
+          NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
+          NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
+          NetOperationCostForOverheadAndProfit: TopHeaderValues?.NetOperationCostForOverheadAndProfit ? TopHeaderValues?.NetOperationCostForOverheadAndProfit : 0,
 
         }
       } else {
@@ -97,7 +103,13 @@ function TabRMCC(props) {
           NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
           NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCost ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
           RawMaterialCostWithCutOff: TopHeaderValues?.RawMaterialCostWithCutOff ? checkForNull(TopHeaderValues?.RawMaterialCostWithCutOff) : 0,
-          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false
+          IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false,
+          NetProcessCostForOverhead: TopHeaderValues?.NetProcessCostForOverhead ? TopHeaderValues?.NetProcessCostForOverhead : 0,
+          NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
+          NetProcessCostForOverheadAndProfit: TopHeaderValues?.NetProcessCostForOverheadAndProfit ? TopHeaderValues?.NetProcessCostForOverheadAndProfit : 0,
+          NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
+          NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
+          NetOperationCostForOverheadAndProfit: TopHeaderValues?.NetOperationCostForOverheadAndProfit ? TopHeaderValues?.NetOperationCostForOverheadAndProfit : 0,
         }
       }
       props.setHeaderCost(topHeaderData)
@@ -355,7 +367,17 @@ function TabRMCC(props) {
       case 'CC':
         partObj.CostingPartDetails.TotalConversionCost = gridData.NetConversionCost
         partObj.CostingPartDetails.TotalProcessCost = gridData.ProcessCostTotal
-        partObj.CostingPartDetails.TotalOperationCost = gridData.OperationCostTotal
+        partObj.CostingPartDetails.NetProcessCostForOverhead = gridData?.NetProcessCostForOverhead
+        // partObj.CostingPartDetails.NetProcessCostForOverheadExcl = gridData?.NetProcessCostForOverheadExcl
+        partObj.CostingPartDetails.NetProcessCostForProfit = gridData?.NetProcessCostForProfit
+        // partObj.CostingPartDetails.NetProcessCostForProfitExcl = gridData?.NetProcessCostForProfitExcl
+        partObj.CostingPartDetails.NetProcessCostForOverheadAndProfit = gridData?.NetProcessCostForOverheadAndProfit
+        partObj.CostingPartDetails.NetOperationCostForOverhead = gridData?.NetOperationCostForOverhead
+        partObj.CostingPartDetails.NetOperationCostForProfit = gridData?.NetOperationCostForProfit
+        partObj.CostingPartDetails.NetOperationCostForOverheadAndProfit = gridData?.NetOperationCostForOverheadAndProfit
+        // partObj.CostingPartDetails.NetOperationCostForOverheadExcl = gridData?.NetOperationCostForOverheadExcl
+        // partObj.CostingPartDetails.NetOperationCostForProfitExcl = gridData?.NetOperationCostForProfitExcl
+        partObj.CostingPartDetails.TotalOperationCost = gridData?.OperationCostTotal
         partObj.CostingPartDetails.TotalOtherOperationCost = gridData.OtherOperationCostTotal
 
         let data = gridData && gridData.CostingProcessCostResponse && gridData.CostingProcessCostResponse.map(el => {
@@ -1419,7 +1441,16 @@ function TabRMCC(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit(() => {
-    let count = 0
+    if (ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length>0) {
+      const operations = ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
+      const hasMissingApplicability = operations?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
+
+      if (operations?.length > 0 && hasMissingApplicability) {
+        Toaster.warning('Please select Applicability for all operations');
+        return false;
+      }
+    }
+   let count = 0
     for (var prop in ErrorObjRMCC) {
       if (ErrorObjRMCC && ErrorObjRMCC[prop] && Object.keys(ErrorObjRMCC[prop])?.length > 0) {
         count++
@@ -1467,6 +1498,13 @@ function TabRMCC(props) {
         "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
         "CalculatorType": ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType,
         CostingPartDetails: ComponentItemData?.CostingPartDetails,
+        "NetProcessCostForOverhead": ComponentItemData?.CostingPartDetails?.NetProcessCostForOverhead || null,
+        "NetProcessCostForProfit": ComponentItemData?.CostingPartDetails?.NetProcessCostForProfit || null,
+        "NetProcessCostForOverheadAndProfit": ComponentItemData?.CostingPartDetails?.NetProcessCostForOverheadAndProfit || null,
+        "NetOperationCostForOverhead": ComponentItemData?.CostingPartDetails?.NetOperationCostForOverhead || null,
+        "NetOperationCostForProfit": ComponentItemData?.CostingPartDetails?.NetOperationCostForProfit || null,
+        "NetOperationCostForOverheadAndProfit": ComponentItemData?.CostingPartDetails?.NetOperationCostForOverheadAndProfit || null,
+
       }
       if (costData.IsAssemblyPart && !CostingViewMode) {
         const tabData = RMCCTabData[0]
