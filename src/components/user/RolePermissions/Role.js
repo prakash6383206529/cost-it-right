@@ -12,7 +12,7 @@ import {
 	setEmptyRoleDataAPI,
 } from "../../../actions/auth/AuthActions";
 import { MESSAGES } from "../../../config/message";
-import { userDetails, loggedInUserId } from "../../../helper/auth";
+import { userDetails, loggedInUserId, getConfigurationKey } from "../../../helper/auth";
 import PermissionsTabIndex from "./PermissionsTabIndex";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import TooltipCustom from "../../common/Tooltip";
@@ -262,27 +262,28 @@ const Role = (props) => {
 													}}
 													handleChange={(e) => { }}
 												/>
-												<label
-													className={`custom-checkbox ml-2 mt-1`}
-													onChange={AccessibilityHandler}
-												>
-													Accessibility to All Data
-													<input
-														type="checkbox"
-														checked={accessibility}
+												{getConfigurationKey()?.IsAllApprovalDataShowRoleWise &&
+													<><label
+														className={`custom-checkbox ml-2 mt-1`}
 														onChange={AccessibilityHandler}
-													/>
-													<span
-														className=" before-box"
-														checked={accessibility}
-														onChange={AccessibilityHandler}
-													/>
-												</label>
-												<TooltipCustom
-													customClass="mt-2"
-													id="all-data-tooltip"
-													tooltipText={"All data will be visible to this role"}
-												/>
+													>
+														Accessibility to All Data
+														<input
+															type="checkbox"
+															checked={accessibility}
+															onChange={AccessibilityHandler}
+														/>
+														<span
+															className=" before-box"
+															checked={accessibility}
+															onChange={AccessibilityHandler}
+														/>
+													</label>
+														<TooltipCustom
+															customClass="mt-2"
+															id="all-data-tooltip"
+															tooltipText={"All data will be visible to this role"}
+														/></>}
 											</div>
 										</div>
 									</div>
