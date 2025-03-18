@@ -823,13 +823,13 @@ function VerifySimulation(props) {
     }
     const currencytooltipToggle = () => {
         // Only toggle tooltip if currency column is visible
-        const shouldShowCurrency = !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && isMasterAssociatedWithCosting && isRMDomesticOrRMImport === true;
-        if (shouldShowCurrency) {
+        const shouldShowCurrency = showTooltip && !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&(isMasterAssociatedWithCosting||isRMDomesticOrRMImport === true) 
+       if (shouldShowCurrency) {
             setCurrencyViewTooltip(!currencyViewTooltip);
         }
     }
     const currencyHeader = (props) => {
-        const shouldShowCurrency = !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && isMasterAssociatedWithCosting && isRMDomesticOrRMImport === true;
+        const shouldShowCurrency = !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&(isMasterAssociatedWithCosting||isRMDomesticOrRMImport === true)
         if (!shouldShowCurrency) {
             return null;
         }
@@ -898,9 +898,7 @@ function VerifySimulation(props) {
                         </Col>
                     </Row>
 
-                    {showTooltip && !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && isMasterAssociatedWithCosting && isRMDomesticOrRMImport === true && <Tooltip className="simulation-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
-                        {"This is the currency selected during the costing"}
-                    </Tooltip>}
+                   
                     <Row>
                         <Col>
                             <div className={`ag-grid-react`}>
@@ -1045,6 +1043,9 @@ function VerifySimulation(props) {
                     </Row >
                 </>
             }
+             {showTooltip && !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&(isMasterAssociatedWithCosting||isRMDomesticOrRMImport === true) && <Tooltip className="simulation-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
+                        {"This is the currency selected during the costing"}
+                    </Tooltip>}
             {
                 costingPage &&
                 <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
