@@ -2208,14 +2208,14 @@ export const FOUR_DECIMAL_PRICE = 4
 //DECIMAL VALUES FOR WEIGHT
 export const FIVE_DECIMAL_WEIGHT = 5
 //OVERHEAD AND PROCESS APPLICABILITY IDS
-export const APPLICABILITY_OVERHEAD = 15;
-export const APPLICABILITY_PROFIT = 16;
-export const APPLICABILITY_OVERHEAD_PROFIT = 17;
-export const APPLICABILITY_OVERHEAD_EXCL = 18;
-export const APPLICABILITY_PROFIT_EXCL = 19;
-export const APPLICABILITY_OVERHEAD_PROFIT_EXCL = 20;
-export const APPLICABILITY_OVERHEAD_EXCL_PROFIT = 21;
-export const APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL = 22;
+export const APPLICABILITY_OVERHEAD = 'Overhead';
+export const APPLICABILITY_PROFIT = 'Profit';
+export const APPLICABILITY_OVERHEAD_PROFIT = 'Overhead + Profit';
+export const APPLICABILITY_OVERHEAD_EXCL = 'Overhead(Excluding Int. + Dep.)';
+export const APPLICABILITY_PROFIT_EXCL = 'Profit(Excluding Int. + Dep.)';
+export const APPLICABILITY_OVERHEAD_PROFIT_EXCL = 'Overhead + Profit(Excluding Int. + Dep.)';
+export const APPLICABILITY_OVERHEAD_EXCL_PROFIT = 'Overhead(Excluding Int. + Dep.) + Profit';
+export const APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL = 'Overhead(Excluding Int. + Dep.) + Profit(Excluding Int. + Dep.)';
 //LABOUR ENUMS
 export const SKILLED = 'Skilled'
 export const CONTRACT = 'Contract'

@@ -348,7 +348,7 @@ function ProcessCost(props) {
       let tempArr = []
       let processTempData = gridData[parentCalciIndex]
       let tempData = listData[calciIndex]
-      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionMasterAndTypeLinkingId, "Process");
+      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionNumber, "Process");
 
       tempData = {
         ...tempData,
@@ -912,7 +912,7 @@ function ProcessCost(props) {
         productionPerHour = findProductionPerHour(event.target.value)
         processCost = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour)
       }
-      const netCosts = calculateNetCosts(processCost, tempData?.Applicability?.value, "Process");
+      const netCosts = calculateNetCosts(processCost, tempData?.Applicability?.label, "Process");
       tempData = {
         ...tempData,
         Quantity: event.target.value,
@@ -1017,11 +1017,13 @@ function ProcessCost(props) {
   };
 
   const onHandleChangeApplicability = (e, index) => {
+    console.log(e, "e");
     let gridTempArr = JSON.parse(JSON.stringify(processGroupGrid));
 
     let tempData = gridTempArr[index];
 
-    const netCosts = calculateNetCosts(tempData.ProcessCost, e?.value, "Process");
+    const netCosts = calculateNetCosts(tempData.ProcessCost, e?.label, "Process");
+    console.log(netCosts, "netCosts");
 
     tempData = {
       ...tempData,
@@ -1037,7 +1039,7 @@ function ProcessCost(props) {
     // If process has child processes, update them with same applicability
     if (tempData.ProcessList?.length > 0) {
       tempData.ProcessList = tempData.ProcessList.map(childProcess => {
-        const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.value, "Process");
+        const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.label, "Process");
         return {
           ...childProcess,
           CostingConditionMasterAndTypeLinkingId: e.value,
@@ -1092,7 +1094,7 @@ function ProcessCost(props) {
         productionPerHour = findProductionPerHour(event.target.value)
         processCost = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour)
       }
-      const parentApplicability = processTempData.Applicability?.value;
+      const parentApplicability = processTempData.Applicability?.label;
       const netCosts = calculateNetCosts(processCost, parentApplicability, "Process");
       tempData = {
         ...tempData,
@@ -1167,6 +1169,8 @@ function ProcessCost(props) {
   };
 
   const calculateNetCostTotals = (items = [], costFields = []) => {
+    console.log(items, "items");
+    console.log(costFields, "costFields");
     return items?.reduce((acc, item) => {
       costFields?.forEach(field => {
         acc[field] = (acc[field] || 0) + checkForNull(item[field]);
@@ -1182,7 +1186,7 @@ function ProcessCost(props) {
     // Calculate operation net costs
     const operationsWithNetCosts = operationGrid?.map(operation => ({
       ...operation,
-      ...calculateNetCosts(operation?.OperationCost, operation?.CostingConditionMasterAndTypeLinkingId, "Operation")
+      ...calculateNetCosts(operation?.OperationCost, operation?.CostingConditionNumber, "Operation")
     }));
 
     // Calculate totals for all operations
