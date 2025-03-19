@@ -1098,7 +1098,7 @@ export function isRMDivisorApplicable(technology) {
 export function findLostWeight(tableVal, isPlastic = false) {
   let sum = 0
   tableVal && tableVal.map(item => {
-    if (Number(item.LossOfType) === 2 && isPlastic) {
+    if ((Number(item.LossOfType) === 2 || Number(item.LossOfType) === 3) && isPlastic) {
       return false
     } else {
       sum = sum + item.LossWeight

@@ -941,7 +941,8 @@ function AddRMDetails(props) {
                                             }}
                                             onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
                                         />
-                                    </div>
+                                            {errors?.sourceVendorName && <div className="text-help">{errors.sourceLocationName.message}</div>}
+                                            </div>
                                 </div>
                                 {/* {((state.showErrorOnFocus && state.vendor?.length === 0)) && <div className='text-help mt-1'>This field is required.</div>} */}
                             </Col>}
@@ -1009,7 +1010,7 @@ function AddRMDetails(props) {
                                                 placeholder={"Select"}
                                                 className="mb-0 withBorder"
                                             />
-                                            {errors.SourceSupplierCityId && <div className="text-help">{errors.SourceSupplierCityId.message}</div>}
+                                            {errors?.SourceSupplierCityId && <div className="text-help">{errors.SourceSupplierCityId.message}</div>}
                                         </div>
                                     </div>
                                 </Col>

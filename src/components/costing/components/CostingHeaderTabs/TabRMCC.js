@@ -703,7 +703,7 @@ function TabRMCC(props) {
 
     //FUNCTION TO CALCULATE THE COSITNG VALUE OF PARTS AND SUBASSEMBLIES
     const calculateValue = (useLevel, item, tempArrForCosting) => {
-
+      
       let initialPartNo = ''
       let quant = ''
       for (let i = useLevel; i >= 0; i--) {

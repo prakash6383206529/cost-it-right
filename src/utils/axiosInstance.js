@@ -18,7 +18,9 @@ axiosInstance.interceptors.request.use(
       }
 
       // Encrypt request data for POST, PUT, DELETE if it exists
-      if (reqConfig.data && process.env.NODE_ENV !== 'development') {
+
+      if (reqConfig.data && process.env.REACT_APP_MY_ENV !== 'development') {
+
         const encryptedData = encryptData(reqConfig.data);
         if (encryptedData) {
           reqConfig.data = {
