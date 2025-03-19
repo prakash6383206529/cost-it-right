@@ -185,6 +185,7 @@ function ProcessCost(props) {
     if (parentId === '') {
       let tempArr = []
       let tempData = gridData[id]
+      
       setCalculatorTechnology(tempData.ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
       setCalculatorDatas(tempData)
@@ -262,7 +263,7 @@ function ProcessCost(props) {
   }, 500);
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
-
+    
     setIsCalculator(false)
     if (Object.keys(weightData).length === 0) return false;
     const calculateNetCosts = (processCost, applicabilityType) => {
@@ -292,11 +293,11 @@ function ProcessCost(props) {
 
       tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
 
-      const totals = tempArray.reduce((acc, el) => ({
-        ProcessCostTotal: acc.ProcessCostTotal + checkForNull(el.ProcessCost),
-        NetProcessCostForOverhead: acc.NetProcessCostForOverhead + checkForNull(el.NetProcessCostForOverhead),
-        NetProcessCostForProfit: acc.NetProcessCostForProfit + checkForNull(el.NetProcessCostForProfit),
-        NetProcessCostForOverheadAndProfit: acc.NetProcessCostForOverheadAndProfit + checkForNull(el.NetProcessCostForOverheadAndProfit)
+      const totals = tempArray?.reduce((acc, el) => ({
+        ProcessCostTotal: acc?.ProcessCostTotal + checkForNull(el.ProcessCost),
+        NetProcessCostForOverhead: acc?.NetProcessCostForOverhead + checkForNull(el?.NetProcessCostForOverhead),
+        NetProcessCostForProfit: acc?.NetProcessCostForProfit + checkForNull(el?.NetProcessCostForProfit),
+        NetProcessCostForOverheadAndProfit: acc?.NetProcessCostForOverheadAndProfit + checkForNull(el?.NetProcessCostForOverheadAndProfit)
       }), {
         ProcessCostTotal: 0,
         NetProcessCostForOverhead: 0,
@@ -307,7 +308,7 @@ function ProcessCost(props) {
       let apiArr = formatMainArr(tempArray)
       tempArr2 = {
         ...tabData,
-        NetConversionCost: totals.ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        NetConversionCost: totals?.ProcessCostTotal + checkForNull(tabData?.OperationCostTotal !== null ? tabData?.OperationCostTotal : 0) + checkForNull(tabData?.OtherOperationCostTotal !== null ? tabData?.OtherOperationCostTotal : 0),
         ...totals,
         CostingProcessCostResponse: apiArr,
       }
