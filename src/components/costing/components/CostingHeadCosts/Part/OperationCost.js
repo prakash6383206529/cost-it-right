@@ -27,7 +27,17 @@ import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
 let counter = 0;
 function OperationCost(props) {
   const { item, rmFinishWeight, rmGrossWeight } = props;
-  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  // const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+
+
+  let IsLocked = ''
+  if (item?.PartType === 'Sub Assembly') {
+    IsLocked = (item.IsLocked ? item.IsLocked : false)
+  }
+  else {
+    IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  }
+
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -72,10 +82,15 @@ function OperationCost(props) {
         // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
 
         // PROP IS USED TO SET OPERATION GRID AND TOTAL OPERATION COST IN ADDASSEMBLYOPERATION
-        props.getOperationGrid(gridData, operationCostAssemblyTechnology)
+        props.getOperationGrid(gridData, operationCostAssemblyTechnology, true)
       } else {
         if (props.IsAssemblyCalculation) {
-          props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+          // props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+          props.getOperationGrid(gridData, '', false)
+          setTimeout(() => {
+            props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+          }, 200);
+
         } else {
           props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
         }
@@ -210,7 +225,7 @@ function OperationCost(props) {
     let tempData = gridData[index];
 
     // Recalculate net costs with new applicability
-    const netCosts = calculateNetCosts(tempData?.OperationCost, e?.value, 'Operation');
+    const netCosts = calculateNetCosts(tempData?.OperationCost, e?.label, 'Operation');
     tempData = { ...tempData, CostingConditionMasterAndTypeLinkingId: e.value, CostingConditionNumber: e.label, ...netCosts };
 
     tempArr = Object.assign([...gridData], { [index]: tempData });
@@ -242,7 +257,7 @@ function OperationCost(props) {
       return accummlator + checkForNull(el.OperationCost)
     }, 0)
     if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId)) {
-      props.getOperationGrid(tempArr, totalFinishWeight)
+      props.getOperationGrid(tempArr, totalFinishWeight, true)
     }
   }
 
@@ -304,7 +319,7 @@ function OperationCost(props) {
         checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
 
-      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value, "Operation");
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
       tempData = {
         ...tempData,
         Quantity: Number(event.target.value),
@@ -332,7 +347,7 @@ function OperationCost(props) {
       const WithOutLabourCost = tempData.IsLabourRateExist ?
         checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value, "Operation");
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
       tempData = {
         ...tempData,
         LabourQuantity: event.target.value,
@@ -347,7 +362,7 @@ function OperationCost(props) {
     } else {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
       const OperationCost = WithLaboutCost;
-      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.value, "Operation");
+      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
       tempData = {
         ...tempData,
         LabourQuantity: 0,

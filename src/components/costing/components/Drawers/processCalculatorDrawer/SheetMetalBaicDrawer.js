@@ -43,6 +43,7 @@ function SheetMetalBaicDrawer(props) {
   const dispatch = useDispatch()
 
   const { MachineTonnage, calculateMachineTime } = props
+  
   const [processCost, setProcessCost] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '' : '')
   const [disable, setDisabled] = useState(false)
   const [hide, setHide] = useState(false)
@@ -50,7 +51,9 @@ function SheetMetalBaicDrawer(props) {
   const [quantityState, setQuantityState] = useState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForNull(WeightCalculatorRequest.Quantity) : 1)
   const [isDisable, setIsDisable] = useState(false)
   const [processCostTooltip, setProcessCostTooltip] = useState();
-
+  const [processCostWithoutInterestAndDepreciation, setProcessCostWithoutInterestAndDepreciation] = useState(0)
+  const [machineRateWithoutInterestAndDepreciation, setMachineRateWithoutInterestAndDepreciation] = useState(0)
+  
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
   const fieldValues = useWatch({
     control,
@@ -176,6 +179,8 @@ function SheetMetalBaicDrawer(props) {
     obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : ''
     obj.ExtrusionSpeed = getValues('ExtrusionSpeed')
     obj.PartLength = getValues('PartLength')
+    obj.ProcessCostWithoutInterestAndDepreciation = processCostWithoutInterestAndDepreciation
+    obj.MachineRateWithoutInterestAndDepreciation = machineRateWithoutInterestAndDepreciation
     dispatch(saveDefaultProcessCostCalculationData(obj, res => {
       setIsDisable(false)
       if (res.data.Result) {
@@ -195,21 +200,29 @@ function SheetMetalBaicDrawer(props) {
 
     const quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(quantityState)) : Number(checkForNull(quantityValues))
     const cavity = checkForNull(getValues('Cavity'))
-    let cost
+    let cost,processCostWithoutInterestAndDepreciation
 
     const rate = props.calculatorData.MHR
+    const machineRateWithoutInterestAndDepreciation = props.calculatorData.MachineRateWithOutInterestAndDepreciation || 0
+    setMachineRateWithoutInterestAndDepreciation(machineRateWithoutInterestAndDepreciation)
+
+    
     if (!props.CostingViewMode) {
 
       switch (props.calculatorData.UOMType) {
         case MASS:
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
+          processCostWithoutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * machineRateWithoutInterestAndDepreciation) / cavity
+          setProcessCostWithoutInterestAndDepreciation(processCostWithoutInterestAndDepreciation)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case AREA:
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
+          processCostWithoutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * machineRateWithoutInterestAndDepreciation) / cavity
+          setProcessCostWithoutInterestAndDepreciation(processCostWithoutInterestAndDepreciation)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
@@ -219,6 +232,8 @@ function SheetMetalBaicDrawer(props) {
           // cost = rate / (quantity === 0 ? 1 : quantity);
 
           cost = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity)
+          processCostWithoutInterestAndDepreciation = findProcessCost(props.calculatorData.UOM, machineRateWithoutInterestAndDepreciation, quantity === 0 ? 1 : quantity)
+          setProcessCostWithoutInterestAndDepreciation(processCostWithoutInterestAndDepreciation)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return;
@@ -226,12 +241,16 @@ function SheetMetalBaicDrawer(props) {
           let updatedQuantity = quantity === 0 ? 1 : quantity
           setDisabled(true)
           cost = ((100 / efficiency) * (updatedQuantity) * (rate)) / cavity
+          processCostWithoutInterestAndDepreciation = ((100 / efficiency) * updatedQuantity * machineRateWithoutInterestAndDepreciation) / cavity
+          setProcessCostWithoutInterestAndDepreciation(processCostWithoutInterestAndDepreciation)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case VOLUMETYPE:
           setDisabled(true)
           cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
+          processCostWithoutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * machineRateWithoutInterestAndDepreciation) / cavity
+          setProcessCostWithoutInterestAndDepreciation(processCostWithoutInterestAndDepreciation)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true

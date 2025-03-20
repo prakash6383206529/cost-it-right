@@ -549,36 +549,38 @@ function Tool(props) {
     const maintanencePercentage = getValues('maintanencePercentage')
     //  const applicabilityCost =  getValues('MaintananceCostApplicability')
     const applicabilityCost = toolObj?.ToolApplicabilityCost
+    const netToolValue = checkForNull(ToolMaintenanceCost) + checkForNull(ToolAmortizationCost)
 
-    setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
-    setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolAmortizationCost)), initialConfiguration?.NoOfDecimalForPrice))
-
-    const zeroIndex = 0;
-    let rowArray = {
-      "ToolOperationId": null,
-      "ProcessOrOperation": null,
-      "ToolCategory": null,
-      "ToolName": null,
-      "Quantity": null,
-      "ToolCost": ToolCost,
-      "Life": Life,
-      "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life))),
-      "TotalToolCost": null,
-      "ToolMaintenanceCost": ToolMaintenanceCost,
-      "ToolCostType": applicability.label,
-      "ToolApplicabilityTypeId": applicability.value,
-      "ToolMaintenancePercentage": maintanencePercentage,
-      "ToolApplicabilityCost": applicabilityCost,
-      "ToolAmortizationCost": ToolAmortizationCost,
-      "IsCostForPerAssembly": null,
-      "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
+    if (netToolValue) {
+      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue('NetToolCost', checkForDecimalAndNull(netToolValue, initialConfiguration.NoOfDecimalForPrice))
+      const zeroIndex = 0;
+      let rowArray = {
+        "ToolOperationId": null,
+        "ProcessOrOperation": null,
+        "ToolCategory": null,
+        "ToolName": null,
+        "Quantity": null,
+        "ToolCost": ToolCost,
+        "Life": Life,
+        "NetToolCost": netToolValue,
+        "TotalToolCost": null,
+        "ToolMaintenanceCost": ToolMaintenanceCost,
+        "ToolCostType": applicability.label,
+        "ToolApplicabilityTypeId": applicability.value,
+        "ToolMaintenancePercentage": maintanencePercentage,
+        "ToolApplicabilityCost": applicabilityCost,
+        "ToolAmortizationCost": ToolAmortizationCost,
+        "IsCostForPerAssembly": null,
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
+      }
+      let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
+      // dispatch(isToolDataChange(true))
+      setTimeout(() => {
+        setGridData(tempArr)
+      }, 200)
     }
 
-    let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-    // dispatch(isToolDataChange(true))
-    setTimeout(() => {
-      setGridData(tempArr)
-    }, 200)
 
 
   }

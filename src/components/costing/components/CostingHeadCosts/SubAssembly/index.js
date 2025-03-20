@@ -31,9 +31,9 @@ function AssemblyPart(props) {
   const [isBOPExists, setIsBOPExists] = useState(false)
   const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
   const [isProcessDrawerOpen, setIsProcessDrawerOpen] = useState(false)
+  const [itemInState, setItemInState] = useState({})
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
-  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const isPartType = useContext(IsPartType);
@@ -43,7 +43,7 @@ function AssemblyPart(props) {
   const { DiscountCostData, CostingEffectiveDate, bomLevel, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, getAssemBOPCharge, openAllTabs, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const isNFR = useContext(IsNFR);
   const dispatch = useDispatch()
-  const toggle = (BOMLevel, PartNumber) => {
+  const toggle = (BOMLevel, PartNumber, AssemblyPartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     dispatch(openCloseStatus({ bopHandling: isBOPExists && !IsOpen, }))
     if (isNFR && !openAllTabs) {
@@ -52,7 +52,7 @@ function AssemblyPart(props) {
     }
     if ((partNumberAssembly !== '' && partNumberAssembly !== PartNumber) ||
       (partNumberAssembly !== '' && partNumberAssembly === PartNumber && bomLevel !== BOMLevel)) {
-      Toaster.warning('Close accordion first.')
+      Toaster.warning('Close Accordian first.')
       return false
     }
 
@@ -60,9 +60,9 @@ function AssemblyPart(props) {
     setCount(Count + 1)
     if (Object.keys(costData).length > 0) {
       const data = {
-        CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
-        PartId: item.PartId,
-        AssemCostingId: item.AssemblyCostingId,
+        CostingId: item?.CostingId !== null ? item?.CostingId : "00000000-0000-0000-0000-000000000000",
+        PartId: item?.PartId,
+        AssemCostingId: item?.AssemblyCostingId,
         subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate
       }
@@ -101,7 +101,7 @@ function AssemblyPart(props) {
             let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
             sessionStorage.setItem('costingArray', JSON.stringify(uniqueArary))
           }
-          props.toggleAssembly(BOMLevel, PartNumber, Data)
+          props.toggleAssembly(BOMLevel, PartNumber, Data, AssemblyPartNumber)
 
         }
       }))
@@ -115,9 +115,13 @@ function AssemblyPart(props) {
   * @method DrawerToggle
   * @description TOGGLE DRAWER
   */
-  const DrawerToggle = () => {
+  const DrawerToggle = (tempItem) => {
+    setItemInState({ PartNumber: tempItem?.PartNumber, AssemblyPartNumber: tempItem?.AssemblyPartNumber, BOMLevel: tempItem?.BOMLevel })
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setDrawerOpen(true)
+    if (!item?.CostingPartDetails?.IsOpen) {
+      toggle(item.BOMLevel, item.PartNumber, item?.AssemblyPartNumber)
+    }
   }
 
   /**
@@ -225,7 +229,6 @@ function AssemblyPart(props) {
   useEffect(() => {
     let final = _.map(item && item?.CostingChildPartDetails, 'PartType')
     setIsBOPExists(final.includes('BOP'))
-    setTotalLabourCost(checkForDecimalAndNull(item?.CostingPartDetails?.NetLabourCost) + checkForDecimalAndNull(item?.CostingPartDetails?.IndirectLaborCost) + checkForDecimalAndNull(item?.CostingPartDetails?.StaffCost))
   }, [item])
 
   useEffect(() => {
@@ -241,9 +244,13 @@ function AssemblyPart(props) {
   * @method ProcessDrawerToggle
   * @description TOGGLE DRAWER
   */
-  const ProcessDrawerToggle = () => {
+  const ProcessDrawerToggle = (tempItem) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
+    setItemInState({ PartNumber: tempItem?.PartNumber, AssemblyPartNumber: tempItem?.AssemblyPartNumber, BOMLevel: tempItem?.BOMLevel })
     setIsProcessDrawerOpen(true)
+    if (!item?.CostingPartDetails?.IsOpen) {
+      toggle(item.BOMLevel, item.PartNumber, item?.AssemblyPartNumber)
+    }
   }
 
   /**
@@ -271,7 +278,7 @@ function AssemblyPart(props) {
       setAssemblyToolCost={props.setAssemblyToolCost}
       subAssembId={item.CostingId}
       setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
-
+      setAssemblyProcessCost={props.setAssemblyProcessCost}
     />
   })
 
@@ -284,6 +291,14 @@ function AssemblyPart(props) {
     />
   })
 
+  let IsLocked = ''
+  if (item?.PartType === 'Sub Assembly') {
+    IsLocked = (item.IsLocked ? item.IsLocked : false)
+  }
+  else {
+    IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -292,44 +307,44 @@ function AssemblyPart(props) {
 
     <>
 
-      <tr className="costing-highlight-row accordian-row" key={item.PartId}>
+      <tr className="costing-highlight-row accordian-row" key={item?.PartId}>
         <div style={{ display: 'contents' }} >
-          <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
+          <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber, item?.AssemblyPartNumber)}>
             <span title={item && `Part Number: ${item.PartNumber}\nPart Name: ${item.PartName} \nRevision Number: ${item.RevisionNumber ?? '-'}`}
               className={`part-name ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
               <div className={`${item?.CostingPartDetails?.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>
           </td>
-          <td>{item && item.BOMLevel}</td>
-          <td>{item && item.PartType}</td>
-          <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
-          <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+          <td>{item && item?.BOMLevel}</td>
+          <td>{item && item?.PartType}</td>
+          <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>
-            {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity), initialConfiguration?.NoOfDecimalForPrice) : 0}
-            {
-              (item?.CostingPartDetails?.TotalOperationCostPerAssembly || item?.CostingPartDetails?.TotalOperationCostSubAssembly || item?.CostingPartDetails?.TotalOperationCostComponent) ?
-                <div class="tooltip-n ml-2 assembly-tooltip"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                  <span class="tooltiptext">
-                    {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration?.NoOfDecimalForPrice)}`}
-                    <br></br>
-                    {`Assembly's Labour Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.NetLabourCost, initialConfiguration.NoOfDecimalForPrice)}`}
-                    <br></br>
-                    {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
-                    <br></br>
-                    {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost - item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration?.NoOfDecimalForPrice)}`} */}
-                    {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostComponent, initialConfiguration?.NoOfDecimalForPrice)}`}
-                  </span >
-                </div > : ''
+            {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
+            {(item?.CostingPartDetails?.TotalOperationCostPerAssembly || item?.CostingPartDetails?.TotalProcessCostPerAssembly ||
+              item?.CostingPartDetails?.TotalOperationCostSubAssembly || item?.CostingPartDetails?.TotalProcessCostSubAssembly ||
+              item?.CostingPartDetails?.TotalOperationCostComponent || item?.CostingPartDetails?.TotalProcessCostComponent ||
+              item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly || item?.CostingPartDetails?.TotalOtherOperationCostComponent) ?
+              <div class="tooltip-n ml-2 assembly-tooltip"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
+                <span class="tooltiptext">
+                  {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly), initialConfiguration.NoOfDecimalForPrice)}`}
+                  <br></br>
+                  {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly), initialConfiguration.NoOfDecimalForPrice)}`}
+                  <br></br>
+                  {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost - item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
+                  {`Child Parts Conversion Cost:- ${checkForDecimalAndNull((checkForNull(item?.CostingPartDetails?.TotalOperationCostComponent) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponent) + checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostComponent)), initialConfiguration.NoOfDecimalForPrice)}`}
+                </span >
+              </div > : ''
             }
           </td >
           <td>{(item?.PartType === 'Assembly') ? 1 : (item?.CostingPartDetails?.Quantity ? checkForNull(item?.CostingPartDetails?.Quantity) : 1)}</td>
-          {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td> */}
+          {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
           <td>{'-'}</td>
-          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>} */}
-          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>} */}
+          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
+          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
           <td>{(item?.PartType === 'Assembly' && (costingApprovalStatus === 'ApprovedByAssembly' || costingApprovalStatus === 'ApprovedByASMSimulation'))
-            ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost), initialConfiguration?.NoOfDecimalForPrice) :
-            checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration?.NoOfDecimalForPrice)}</td>
+            ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost), initialConfiguration.NoOfDecimalForPrice) :
+            checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration.NoOfDecimalForPrice)}</td>
 
         </div >
         {/* 
@@ -362,28 +377,29 @@ function AssemblyPart(props) {
                   <button
                     id="assembly_addOperation"
                     type="button"
-                    className={'user-btn add-oprn-btn'}
-                    onClick={DrawerToggle}>
+                    className={'user-btn add-oprn-btn mr-1'}
+                    onClick={() => DrawerToggle(item)}>
                     <div className={'fa fa-eye pr-1'}></div>OPER</button>
                   :
                   <button
                     type="button"
                     id="assembly_addOperation"
-                    className={'user-btn add-oprn-btn'}
-                    onClick={DrawerToggle}>
+                    className={'user-btn add-oprn-btn mr-1'}
+                    onClick={() => DrawerToggle(item)}>
                     <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>
               }
-              {/* <button
+              <button
                 type="button"
-                className={'user-btn '}
-                onClick={ProcessDrawerToggle}
+                className={'user-btn mr-1'}
+                onClick={() => ProcessDrawerToggle(item)}
                 title={'Add Process'}
               >
-                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
-              </button> */}
+                <div className={`${(CostingViewMode || checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) !== 0) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
+              </button>
             </div >
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-            < div /*  id="lock_icon" */ className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}> {(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child assemblies costing are coming from individual costing, please edit there if want to change costing" : "This sub-assembly is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div >
+            {/* 26/03/2024 REMOVED IsPartLocked KEY AS DISCUSS WITH TR SAME SUBASSEMBLY CAN HAVE DIFFERENT OPERATION/PROCESS AT MULTIPLE LEVEL OF BOM */}
+            < div /*  id="lock_icon" */ className={`${(item.IsLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}> {(item.IsLocked) && <span class="tooltiptext">{`Child assemblies costing are coming from individual costing, please edit there if want to change costing`}</span>}</div >
           </div >
         </td >
 
@@ -405,6 +421,7 @@ function AssemblyPart(props) {
           CostingViewMode={CostingViewMode}
           setAssemblyOperationCost={props.setAssemblyOperationCost}
           setAssemblyToolCost={props.setAssemblyToolCost}
+          itemInState={itemInState}
         />
       }
       {
@@ -441,7 +458,9 @@ function AssemblyPart(props) {
             anchor={'right'}
             // ccData={subAssemblyTechnologyArray[0]?.CostingPartDetails !== null && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingProcessCostResponse}
             item={item}
-            isAssemblyTechnology={true}
+            isAssemblyTechnology={false}
+            setAssemblyProcessCost={props?.setAssemblyProcessCost}
+            itemInState={itemInState}
           />
         )
       }

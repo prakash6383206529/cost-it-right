@@ -40,19 +40,21 @@ function AssemblySurfaceTreatment(props) {
         SubAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
         isComponentCosting: costData?.PartType === "Component" ? true : false
       }
-      dispatch(getSurfaceTreatmentTabData(data, true, (res) => {
+      dispatch(getSurfaceTreatmentTabData(data, false, (res) => { // TODO TO CHECK TRUE CONVERTED TO FALSE
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
+          const ChangedLevel = parseInt(BOMLevel.substr(1, BOMLevel.length - 1)) + 1;
           // props.toggleAssembly(Params, Data)
           let array = [];
-          array = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
+          array = _.cloneDeep(JSON.parse(sessionStorage.getItem('surfaceCostingArray')))
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
+            item.BOMLevel = "L" + ChangedLevel;
             array.push(item)
             return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
-          sessionStorage.setItem('surfaceCostingArray', JSON.stringify(uniqueArary));
-          props.toggleAssembly(Params, Data)
+          sessionStorage.setItem('surfaceCostingArray', JSON.stringify(_.cloneDeep(uniqueArary)));
+          props.toggleAssembly(Params, _.cloneDeep(Data))
 
           if (IsCollapse === false) {
             DrawerToggle()
@@ -69,6 +71,10 @@ function AssemblySurfaceTreatment(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    if (item.IsOpen === false) {
+      toggle(item.BOMLevel, item.PartNumber, true)
+    }
+
     setDrawerOpen(true)
   }
 
