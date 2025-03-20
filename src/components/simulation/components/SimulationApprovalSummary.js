@@ -124,25 +124,22 @@ function SimulationApprovalSummary(props) {
     const isExchangeRate = String(SimulationTechnologyId) === EXCHNAGERATE;
     const isMachineRate = String(SimulationTechnologyId) === MACHINERATE;
     const isMultiTechnology = (checkForNull(simulationDetail?.SimulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
-    const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
-    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
-    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    const simulationAssemblyListSummary = useSelector((state) => state?.simulation.simulationAssemblyListSummary)
+    const { isMasterAssociatedWithCosting } = useSelector(state => state?.simulation)
+    const simulationApplicability = useSelector(state => state?.simulation.simulationApplicability)
     const isCombinedProcess = String(SimulationTechnologyId) === COMBINED_PROCESS;
-    const { initialConfiguration } = useSelector(state => state.auth)
+    const { initialConfiguration } = useSelector(state => state?.auth)
 
     const dispatch = useDispatch()
 
-    const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
-    const { keysForDownloadSummary } = useSelector(state => state.simulation)
+    const impactedMasterData = useSelector(state => state?.comman?.impactedMasterData)
+    const { keysForDownloadSummary } = useSelector(state => state?.simulation)
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData?.length >= 0 ? false : true)
     const [editWarning, setEditWarning] = useState(false)
     const [finalLeveluser, setFinalLevelUser] = useState(false)
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
-    const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
-    const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
-    const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
-    const [accDisable, setAccDisable] = useState(false)
+        const [accDisable, setAccDisable] = useState(false)
     const [technologyName, setTechnologyName] = useState('')
     const [simulationData, setSimulationData] = useState(null)
     const [count, setCount] = useState(0)
@@ -662,9 +659,12 @@ function SimulationApprovalSummary(props) {
     }
 
     const ecnFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell !== null ? cell : '-'
-    }
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        
+        // Return a value to prevent the "Nothing was returned from render" error
+        return cellValue ? cellValue : '-';
+      }
+      
 
     const revisionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
