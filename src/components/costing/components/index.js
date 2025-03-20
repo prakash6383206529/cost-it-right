@@ -4,7 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import { exchangeRateReducer, isDataChange, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setCurrencySource, setDiscountErrors, setExchangeRateSourceValue, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOtherDiscountData, setOverheadProfitData, setOverheadProfitErrors, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCErrors, setToolsErrors, storePartNumber } from '../actions/Costing';
+import { exchangeRateReducer, isOverheadProfitDataChange, isDataChange, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setCurrencySource, setDiscountErrors, setExchangeRateSourceValue, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOtherDiscountData, setOverheadProfitData, setOverheadProfitErrors, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCErrors, setToolsErrors, storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
 import ApprovalListing from './approval/ApprovalListing';
@@ -27,6 +27,8 @@ function Costing(props) {
     if (activeTab !== tab) {
       setActiveTab(tab);
     }
+
+
     if (tab !== "1") {
       dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
       dispatch(isDataChange(false))
@@ -45,6 +47,8 @@ function Costing(props) {
       dispatch(setCurrencySource(''))
       dispatch(setExchangeRateSourceValue(''))
       dispatch(exchangeRateReducer({}))
+      dispatch(setOverheadProfitData([], () => { }))
+      dispatch(isOverheadProfitDataChange(false))
     }
   }
 

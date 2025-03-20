@@ -40,7 +40,7 @@ function OperationCostExcludedOverhead(props) {
   const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, ErrorObjRMCC, currencySource,exchangeRateData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const [openOperationForm, setOpenOperationForm] = useState(false)
 
   useEffect(() => {
@@ -69,7 +69,7 @@ function OperationCostExcludedOverhead(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
@@ -277,7 +277,7 @@ function OperationCostExcludedOverhead(props) {
       setGridData(tempArr)
       //Toaster.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}${index}LabourQuantity`, 0)
+        setValue(`${OperationGridFields}[${index}]LabourQuantity`, 0)
       }, 200)
     }
   }
@@ -394,7 +394,7 @@ function OperationCostExcludedOverhead(props) {
                               {
                                 <TextFieldHookForm
                                   label={false}
-                                  name={`${OperationGridFields}.${index}.Quantity`}
+                                  name={`${OperationGridFields}[${index}].Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
