@@ -894,7 +894,7 @@ function AddRMDetails(props) {
                                     />
                                 )}
                             </div>
-                            {((state.showErrorOnFocus && state.vendor?.length === 0)) && <div className='text-help mt-1'>This field is required.</div>}
+                            {errors?.vendorName && state.vendor?.length === 0 && <div className="text-help">{errors.vendorName.message}</div>}
                         </Col>
                         <Col className="col-md-15 mt-4 pt-2 d-none">
                             <div className=" flex-fills d-flex justify-content-between align-items-center">
