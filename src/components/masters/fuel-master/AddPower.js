@@ -1467,7 +1467,8 @@ class AddPower extends Component {
     let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
     
     if (isEditFlag) {
-      if (DataToChangeZ.NetPowerCostPerUnit === values.NetPowerCostPerUnit) {
+     
+      if (DataToChangeZ.NetPowerCostPerUnit === values.NetPowerCostPerUnitLocalConversion) {
         Toaster.warning('Please change the data to save Power Details');
         return false
       }
