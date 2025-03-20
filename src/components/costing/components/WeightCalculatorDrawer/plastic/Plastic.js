@@ -114,7 +114,7 @@ function Plastic(props) {
     }, [getPlasticData])
 
     useEffect(() => {
-        setValue('grossWeight', WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? WeightCalculatorRequest?.GrossWeight : '')
+        setValue('grossWeight', WeightCalculatorRequest && WeightCalculatorRequest?.NetWeight !== undefined ? WeightCalculatorRequest?.NetWeight : '')
         setValue('scrapRecoveryPercent', WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? WeightCalculatorRequest?.RecoveryPercentage : '')
     }, [])
 
