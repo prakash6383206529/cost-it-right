@@ -282,7 +282,6 @@ function OperationCost(props) {
       const WithLaboutCost = checkForNull(tempData.Rate) * event.target.value;
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      console.log(Number(event.target.value), "event.target.value")
       tempData = { ...tempData, Quantity: Number(event.target.value), OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       let value = tempArr && tempArr.length > 0 && tempArr.reduce((accummlator, el) => {
