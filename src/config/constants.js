@@ -618,6 +618,7 @@ export const API = {
   saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
   getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
   saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
+  getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1767,6 +1768,7 @@ export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOU
 export const SET_COSTING_MODE = 'SET_COSTING_MODE'
 export const COSTING_ACC_OPEN_CLOSE_STATUS = 'COSTING_ACC_OPEN_CLOSE_STATUS'
 export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
+export const GET_COSTING_COST_DETAILS = 'GET_COSTING_COST_DETAILS'
 
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
 export const GET_TCO_DATA = 'GET_TCO_DATA'
@@ -2206,14 +2208,14 @@ export const FOUR_DECIMAL_PRICE = 4
 //DECIMAL VALUES FOR WEIGHT
 export const FIVE_DECIMAL_WEIGHT = 5
 //OVERHEAD AND PROCESS APPLICABILITY IDS
-export const APPLICABILITY_OVERHEAD = 15;
-export const APPLICABILITY_PROFIT = 16;
-export const APPLICABILITY_OVERHEAD_PROFIT = 17;
-export const APPLICABILITY_OVERHEAD_EXCL = 18;
-export const APPLICABILITY_PROFIT_EXCL = 19;
-export const APPLICABILITY_OVERHEAD_PROFIT_EXCL = 20;
-export const APPLICABILITY_OVERHEAD_EXCL_PROFIT = 21;
-export const APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL = 22;
+export const APPLICABILITY_OVERHEAD = 'Overhead';
+export const APPLICABILITY_PROFIT = 'Profit';
+export const APPLICABILITY_OVERHEAD_PROFIT = 'Overhead + Profit';
+export const APPLICABILITY_OVERHEAD_EXCL = 'Overhead(Excluding Int. + Dep.)';
+export const APPLICABILITY_PROFIT_EXCL = 'Profit(Excluding Int. + Dep.)';
+export const APPLICABILITY_OVERHEAD_PROFIT_EXCL = 'Overhead + Profit(Excluding Int. + Dep.)';
+export const APPLICABILITY_OVERHEAD_EXCL_PROFIT = 'Overhead(Excluding Int. + Dep.) + Profit';
+export const APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL = 'Overhead(Excluding Int. + Dep.) + Profit(Excluding Int. + Dep.)';
 //LABOUR ENUMS
 export const SKILLED = 'Skilled'
 export const CONTRACT = 'Contract'

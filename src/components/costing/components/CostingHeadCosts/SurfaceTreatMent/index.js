@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, } from 'react-hook-form';
-import { gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
+import { getCostingCostDetails, gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -71,71 +71,66 @@ function SurfaceTreatment(props) {
 
       let basicRateTemp = ''
       let totalCostTemp = ''
+      let obj = {
+        costingId: item?.CostingId,
+        subAsmCostingId: item?.SubAssemblyCostingId,
+        asmCostingId: item?.AssemblyCostingId
+      }
+      dispatch(getCostingCostDetails(obj, response => {
+        if (response?.data?.Result) {
+          const costingCostDetails = response?.data?.Data
+          if (!partType && props.IsAssemblyCalculation) {
 
-      if (tabData?.PartType === 'Assembly') {
-        rmCcData = findrmCctData(item)
-        switch (item?.PartType) {
-          case 'Part':
-            basicRateTemp = checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost)
-            totalCostTemp = checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost)
+            rmCcData = findrmCctData(item)
 
-            break;
-          case 'Sub Assembly':
-            basicRateTemp = checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
-            totalCostTemp = checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
 
-            break;
-          case 'Assembly':
-            basicRateTemp = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+            switch (item?.PartType) {
+              case 'Part':
+                basicRateTemp = checkForNull(costingCostDetails?.NetTotalRMBOPCC) + checkForNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost)
+                totalCostTemp = checkForNull(costingCostDetails?.NetTotalRMBOPCC) + checkForNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost)
+
+                break;
+              case 'Sub Assembly':
+                basicRateTemp = checkForNull(costingCostDetails?.TotalCalculatedRMBOPCCCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
+                totalCostTemp = checkForNull(costingCostDetails?.TotalCalculatedRMBOPCCCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
+
+                break;
+              case 'Assembly':
+                basicRateTemp = ((checkForNull(costingCostDetails?.TotalCalculatedRMBOPCCCostPerAssembly) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+                  checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
+                  + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost)) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
+
+                totalCostTemp = checkForNull(basicRateTemp) + checkForNull(DiscountCostData?.totalConditionCost)
+
+                break;
+
+              default:
+                break;
+            }
+            mergedAPI(totalCostTemp, props.IsAssemblyCalculation, true, basicRateTemp)
+          } else if (tabData?.PartType === 'Component') {
+
+            basicRateTemp = ((checkForNull(costingCostDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
               checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
               + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
 
-            totalCostTemp = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+            totalCostTemp = ((checkForNull(costingCostDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
               checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
               + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost) +
               checkForNull(DiscountCostData?.totalConditionCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
+            mergedAPI(totalCostTemp, false, false, basicRateTemp)
+          } else if (partType) {
 
-            break;
+            basicRateTemp = (checkForNull(costingCostDetails?.NetTotalRMBOPCC) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+              checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
+              checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost)) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
+              checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-          default:
-            break;
+            totalCostTemp = checkForNull(basicRateTemp) + checkForNull(DiscountCostData?.totalConditionCost)
+            mergedAPI(totalCostTemp, false, false, basicRateTemp)
+          }
         }
-      } else if (tabData?.PartType === 'Component') {
-
-        basicRateTemp = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-          checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
-          + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
-
-        totalCostTemp = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-          checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
-          + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost) +
-          checkForNull(DiscountCostData?.totalConditionCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
-
-      } else if (partType) {
-
-        basicRateTemp = (checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-          checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
-          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost)) -
-          checkForNull(DiscountCostData?.HundiOrDiscountValue)
-
-        totalCostTemp = (checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-          checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
-          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
-          checkForNull(DiscountCostData?.HundiOrDiscountValue)
-
-      }
-
-      if (!partType) {
-        if (props.IsAssemblyCalculation) {
-          mergedAPI(totalCostTemp, props.IsAssemblyCalculation, true, basicRateTemp)
-        } else {
-          mergedAPI(totalCostTemp, false, false, basicRateTemp)
-        }
-      } else if (partType) {
-
-        mergedAPI(totalCostTemp, false, false, basicRateTemp)
-
-      }
+      }))
     }
 
     const mergedAPI = (totalCostAPI, IsAssemblyCalculation, IsAssemblyPart, basicRateTemp) => {
@@ -155,16 +150,12 @@ function SurfaceTreatment(props) {
 
       let requestData = {
         "CostingId": item.CostingId,
-        "PartId": item.PartId,
-        "PartNumber": item.PartNumber,
-        "BOMLevel": item.BOMLevel,
-        "CostingNumber": item.CostingNumber,
-        "NetSurfaceTreatmentCost": item?.CostingPartDetails?.NetSurfaceTreatmentCost,
         "EffectiveDate": CostingEffectiveDate,
         "LoggedInUserId": loggedInUserId(),
         // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
-        "TotalCost": totalCostAPI,
+        "NetPOPrice": totalCostAPI,
         "BasicRate": basicRateTemp,
+        "Quantity": item?.Quantity,
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "NetSurfaceTreatmentCost": item?.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -172,6 +163,7 @@ function SurfaceTreatment(props) {
           "TransportationCost": item?.CostingPartDetails?.TransportationCost,
           "SurfaceTreatmentDetails": item?.CostingPartDetails?.SurfaceTreatmentDetails,
           "TransportationDetails": item?.CostingPartDetails?.TransportationDetails,
+          // "TotalCalculatedSurfaceTreatmentCostPerAssembly":
         },
       }
       // IN COSTING VIEW MODE
@@ -179,7 +171,8 @@ function SurfaceTreatment(props) {
         // WHEN PARTTYPE IS ASSEMBLY AND NOT ASSEMBLY TECHNOLOGY
         if (IsAssemblyCalculation && !partType) {
 
-          requestData.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = item?.CostingPartDetails?.NetSurfaceTreatmentCost
+          requestData.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = item?.CostingPartDetails?.SurfaceTreatmentCost
+          requestData.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = item?.CostingPartDetails?.NetSurfaceTreatmentCost
           requestData.CostingPartDetails.TotalTransportationCostPerAssembly = item?.CostingPartDetails?.TransportationCost
           requestData.CostingPartDetails.IsAssemblyPart = IsAssemblyPart
 
@@ -209,6 +202,7 @@ function SurfaceTreatment(props) {
     }
 
   }, [DiscountCostData, callAPI])
+
 
   /**
   * @method toggleDrawer

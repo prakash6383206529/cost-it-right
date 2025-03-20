@@ -347,7 +347,7 @@ function Rejection(props) {
         CostingPartDetails && CostingPartDetails?.CostingRawMaterialsCost?.map(item => {
             CostApplicability += checkForNull(item.ScrapRate) * checkForNull(item.FinishWeight)
         })
-        const rejectionRecoveryCost = CostApplicability * EffectiveRecovery / 100
+        const rejectionRecoveryCost = checkForNull(CostApplicability) * EffectiveRecovery / 100
         setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecoveryCost, initialConfiguration?.NoOfDecimalForPrice))
         dispatch(setRejectionRecoveryData({
             ...rejectionRecovery,

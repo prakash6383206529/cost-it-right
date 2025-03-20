@@ -29,7 +29,15 @@ import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
 let counter = 0;
 function ProcessCost(props) {
   const { data, item, isAssemblyTechnology } = props
-  const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
+  // const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
+  let IsLocked = ''
+  if (item?.PartType === 'Sub Assembly') {
+    IsLocked = (item.IsLocked ? item.IsLocked : false)
+  }
+  else {
+    IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  }
+
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   // const processGroup = false
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
@@ -92,6 +100,16 @@ function ProcessCost(props) {
     })
     return apiArr
   }
+
+  useEffect(() => {
+    return () => {
+      processGroupGrid && processGroupGrid?.map((index, item) => {
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, 0)
+      })
+      dispatch(setProcessGroupGrid([]))
+    }
+  }, [])
+
 
   /**
    *
@@ -172,12 +190,18 @@ function ProcessCost(props) {
       if ((JSON.stringify(tabData) !== JSON.stringify(props.data)) || isProcessSequenceChanged) {
         if (isAssemblyTechnology) {
           props.getValuesOfProcess(tabData, tabData?.ProcessCostTotal)
-        } else {
+        }
+        else if (props.IsAssemblyCalculation) {
+          props.getValuesOfProcess(tabData, tabData?.ProcessCostTotal)
+          props?.setAssemblyProcessCost(tabData?.CostingProcessCostResponse ? tabData?.CostingProcessCostResponse : [], Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+        }
+        else {
           props.setConversionCost(tabData, Params, item)
         }
       }
     }
   }, [tabData]);
+
 
 
 
@@ -325,7 +349,7 @@ function ProcessCost(props) {
       let tempArr = []
       let processTempData = gridData[parentCalciIndex]
       let tempData = listData[calciIndex]
-      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionMasterAndTypeLinkingId, "Process");
+      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionNumber, "Process");
 
       tempData = {
         ...tempData,
@@ -889,7 +913,7 @@ function ProcessCost(props) {
         productionPerHour = findProductionPerHour(event.target.value)
         processCost = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour)
       }
-      const netCosts = calculateNetCosts(processCost, tempData?.Applicability?.value, "Process");
+      const netCosts = calculateNetCosts(processCost, tempData?.Applicability?.label, "Process");
       tempData = {
         ...tempData,
         Quantity: event.target.value,
@@ -994,11 +1018,13 @@ function ProcessCost(props) {
   };
 
   const onHandleChangeApplicability = (e, index) => {
+    console.log(e, "e");
     let gridTempArr = JSON.parse(JSON.stringify(processGroupGrid));
 
     let tempData = gridTempArr[index];
 
-    const netCosts = calculateNetCosts(tempData.ProcessCost, e?.value, "Process");
+    const netCosts = calculateNetCosts(tempData.ProcessCost, e?.label, "Process");
+    console.log(netCosts, "netCosts");
 
     tempData = {
       ...tempData,
@@ -1014,7 +1040,7 @@ function ProcessCost(props) {
     // If process has child processes, update them with same applicability
     if (tempData.ProcessList?.length > 0) {
       tempData.ProcessList = tempData.ProcessList.map(childProcess => {
-        const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.value, "Process");
+        const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.label, "Process");
         return {
           ...childProcess,
           CostingConditionMasterAndTypeLinkingId: e.value,
@@ -1069,7 +1095,7 @@ function ProcessCost(props) {
         productionPerHour = findProductionPerHour(event.target.value)
         processCost = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour)
       }
-      const parentApplicability = processTempData.Applicability?.value;
+      const parentApplicability = processTempData.Applicability?.label;
       const netCosts = calculateNetCosts(processCost, parentApplicability, "Process");
       tempData = {
         ...tempData,
@@ -1144,6 +1170,8 @@ function ProcessCost(props) {
   };
 
   const calculateNetCostTotals = (items = [], costFields = []) => {
+    console.log(items, "items");
+    console.log(costFields, "costFields");
     return items?.reduce((acc, item) => {
       costFields?.forEach(field => {
         acc[field] = (acc[field] || 0) + checkForNull(item[field]);
@@ -1159,7 +1187,7 @@ function ProcessCost(props) {
     // Calculate operation net costs
     const operationsWithNetCosts = operationGrid?.map(operation => ({
       ...operation,
-      ...calculateNetCosts(operation?.OperationCost, operation?.CostingConditionMasterAndTypeLinkingId, "Operation")
+      ...calculateNetCosts(operation?.OperationCost, operation?.CostingConditionNumber, "Operation")
     }));
 
     // Calculate totals for all operations
@@ -1544,7 +1572,7 @@ function ProcessCost(props) {
   return (
     <>
       <div className="user-page p-0">
-        {!isAssemblyTechnology && <Row>
+        {!(isAssemblyTechnology || props?.IsAssemblyCalculation) && <Row>
           <Col md="12">
             <div className="left-border">{'Conversion Cost:'}</div>
           </Col>
@@ -1553,7 +1581,7 @@ function ProcessCost(props) {
           <Row className="cr-innertool-cost">
 
             <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
-            {!isAssemblyTechnology && <>
+            {!(isAssemblyTechnology || props?.IsAssemblyCalculation) && <>
               <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
               <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Other Operation Cost: ${tabData && tabData.OtherOperationCostTotal !== null ? checkForDecimalAndNull(tabData.OtherOperationCostTotal, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
               <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
@@ -1805,7 +1833,7 @@ function ProcessCost(props) {
           </Row >
 
           {
-            !isAssemblyTechnology &&
+            !(isAssemblyTechnology || props?.IsAssemblyCalculation) &&
             <>
               <OperationCost
                 data={props.data && props.data.CostingOperationCostResponse}

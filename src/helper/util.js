@@ -1981,8 +1981,8 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation')
     case APPLICABILITY_OVERHEAD_PROFIT_EXCL:
       result[`Net${prefix}CostForOverheadAndProfit`] = cost ?? 0;
       break;
-      default:
-        break
+    default:
+      break
   }
 
   return result;
