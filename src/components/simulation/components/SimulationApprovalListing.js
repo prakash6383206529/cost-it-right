@@ -927,7 +927,9 @@ function SimulationApprovalListing(props) {
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter,
         hyphenFormatter: hyphenFormatter,
-        statusFilter: SingleDropdownFloationFilter
+        statusFilter: SingleDropdownFloationFilter,
+        statusFilterCostingHead: CostingHeadDropdownFilter,
+
     };
 
     return (
@@ -1009,7 +1011,7 @@ function SimulationApprovalListing(props) {
                                     >
 
                                         <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
-                                        <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                        <AgGridColumn width={200} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
                                             floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>
                                         {/* // <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>                //RE */}
                                         {/* THIS FEILD WILL ALWAYS COME BEFORE */}

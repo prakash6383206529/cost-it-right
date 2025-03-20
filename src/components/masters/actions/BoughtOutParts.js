@@ -57,33 +57,33 @@ export function getBOPDataList(data, skip, take, isPagination, obj, isImport, ca
     const queryParams = encodeQueryParamsAndLog({
       loggedInUserId: loggedInUserId(),
       bop_for: data.bop_for,
-      NetCost: obj.NetLandedCost !== undefined ? obj.NetLandedCost : "",
+      NetCost: obj?.NetLandedCost !== undefined ? obj?.NetLandedCost : "",
       ListFor: data.ListFor ? data.ListFor : '',
       StatusId: data.StatusId ? data.StatusId : '',
-      DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : "",
-      CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '',
-      TechnologyName: obj.TechnologyName !== undefined ? obj.TechnologyName : "",
-      FromDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : "",
-      ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : "",
+      DepartmentCode: obj?.DepartmentName !== undefined ? obj?.DepartmentName : "",
+      CustomerName: obj?.CustomerName !== undefined ? obj?.CustomerName : '',
+      TechnologyName: obj?.TechnologyName !== undefined ? obj?.TechnologyName : "",
+      FromDate: (obj?.dateArray && obj?.dateArray.length > 1) ? obj?.dateArray[0] : "",
+      ToDate: (obj?.dateArray && obj?.dateArray.length > 1) ? obj?.dateArray[1] : "",
       IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
       IsBOPAssociated: data?.IsBOPAssociated,
       IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc,
       IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
       IsBreakupBoughtOutPart: data?.IsBreakupBoughtOutPart?.toLowerCase() === "yes" ? true : !data.IsBreakupBoughtOutPart ? '' : false,
-      IncoTerms: obj.IncoTerms !== undefined ? obj.IncoTerms : "",
-      NetConditionCost: obj.NetConditionCost !== undefined ? obj.NetConditionCost : "",
-      NetCostWithoutConditionCostConversion: obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : "",
-      NetCostWithoutConditionCost: obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : "",
-      BasicRateConversion: obj.BasicRateConversion !== undefined ? obj.BasicRateConversion : "",
-      NetConditionCostConversion: obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : "",
-      NetLandedCostConversionAPI: obj.NetLandedCostConversionAPI !== undefined ? obj.NetLandedCostConversionAPI : "",
+      IncoTerms: obj?.IncoTerms !== undefined ? obj?.IncoTerms : "",
+      NetConditionCost: obj?.NetConditionCost !== undefined ? obj?.NetConditionCost : "",
+      NetCostWithoutConditionCostConversion: obj?.NetCostWithoutConditionCostConversion !== undefined ? obj?.NetCostWithoutConditionCostConversion : "",
+      NetCostWithoutConditionCost: obj?.NetCostWithoutConditionCost !== undefined ? obj?.NetCostWithoutConditionCost : "",
+      BasicRateConversion: obj?.BasicRateConversion !== undefined ? obj?.BasicRateConversion : "",
+      NetConditionCostConversion: obj?.NetConditionCostConversion !== undefined ? obj?.NetConditionCostConversion : "",
+      NetLandedCostConversionAPI: obj?.NetLandedCostConversionAPI !== undefined ? obj?.NetLandedCostConversionAPI : "",
       isRequestForPendingSimulation: obj?.isRequestForPendingSimulation ? true : false,
       Currency: data.Currency !== undefined ? data.Currency : "",
       LocalCurrency: data.LocalCurrency !== undefined ? data.LocalCurrency : "",
       EffectiveDate: data.EffectiveDate !== undefined ? data.EffectiveDate : "",
     });
 
-    // const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&TechnologyName=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false}&IsBOPAssociated=${data?.IsBOPAssociated}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}&IsBreakupBoughtOutPart=${data?.IsBreakupBoughtOutPart?.toLowerCase() === "yes" ? true : !data.IsBreakupBoughtOutPart ? '' : false}&IncoTerms=${obj.IncoTerms !== undefined ? obj.IncoTerms : ""}&CustomerName =${obj.CustomerName !== undefined ? obj.CustomerName : ""}&NetConditionCost =${obj.NetConditionCost !== undefined ? obj.NetConditionCost : ""}&NetCostWithoutConditionCostConversion =${obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : ""}&NetCostWithoutConditionCost =${obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : ""}&BasicRateConversion =${obj.BasicRateConversion !== undefined ? obj.BasicRateConversion : ""}&NetConditionCostConversion =${obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : ""}&NetLandedCostConversionAPI =${obj.NetLandedCostConversionAPI !== undefined ? obj.NetLandedCostConversionAPI : ""}`
+    // const queryParams = `bop_for=${data.bop_for}&NetCost=${obj?.NetLandedCost !== undefined ? obj?.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj?.DepartmentName !== undefined ? obj?.DepartmentName : ""}&CustomerName=${obj?.CustomerName !== undefined ? obj?.CustomerName : ''}&TechnologyName=${obj?.TechnologyName !== undefined ? obj?.TechnologyName : ""}&FromDate=${(obj?.dateArray && obj?.dateArray.length > 1) ? obj?.dateArray[0] : ""}&ToDate=${(obj?.dateArray && obj?.dateArray.length > 1) ? obj?.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false}&IsBOPAssociated=${data?.IsBOPAssociated}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}&IsBreakupBoughtOutPart=${data?.IsBreakupBoughtOutPart?.toLowerCase() === "yes" ? true : !data.IsBreakupBoughtOutPart ? '' : false}&IncoTerms=${obj?.IncoTerms !== undefined ? obj?.IncoTerms : ""}&CustomerName =${obj?.CustomerName !== undefined ? obj?.CustomerName : ""}&NetConditionCost =${obj?.NetConditionCost !== undefined ? obj?.NetConditionCost : ""}&NetCostWithoutConditionCostConversion =${obj?.NetCostWithoutConditionCostConversion !== undefined ? obj?.NetCostWithoutConditionCostConversion : ""}&NetCostWithoutConditionCost =${obj?.NetCostWithoutConditionCost !== undefined ? obj?.NetCostWithoutConditionCost : ""}&BasicRateConversion =${obj?.BasicRateConversion !== undefined ? obj?.BasicRateConversion : ""}&NetConditionCostConversion =${obj?.NetConditionCostConversion !== undefined ? obj?.NetConditionCostConversion : ""}&NetLandedCostConversionAPI =${obj?.NetLandedCostConversionAPI !== undefined ? obj?.NetLandedCostConversionAPI : ""}`
     const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj);
     const request = axios.get(`${API.getBOPDataList}?${queryParams}&${queryParamsSecond}`, config());
     request.then((response) => {
@@ -298,8 +298,7 @@ export function fileUploadBOPDomestic(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      apiErrors(error);
-      callback(error.toString())
+      callback(error);
     });
   };
 }
@@ -515,7 +514,7 @@ export function getPaymentTermSelectList(callback) {
 export function checkAndGetBopPartNo(obj, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axiosInstance.post(`${API.checkAndGetBopPartNo}?loggedInUserId=${loggedInUserId()}&bopName=${obj.bopName}&bopCategory=${obj.bopCategory}&bopNumber=${obj.bopNumber}`, "", config());
+    const request = axiosInstance.get(`${API.checkAndGetBopPartNo}?loggedInUserId=${loggedInUserId()}&bopName=${obj?.bopName}&bopCategory=${obj?.bopCategory}&bopNumber=${obj?.bopNumber}`, "", config());
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response);

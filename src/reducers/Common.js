@@ -72,7 +72,8 @@ import {
   GET_TAX_CODE_SELECTLIST,
   SET_COSTING_HEAD_FILTER,
   SET_LOCALIZED_COSTING_HEAD_OPTIONS,
-  IS_RESET_COSTING_HEAD
+  IS_RESET_COSTING_HEAD,
+  SET_LIST_TOGGLE
 } from '../config/constants';
 
 const initialState = {
@@ -86,6 +87,10 @@ const initialState = {
   approvalTypeSimulation: [],
   approvalTypeMaster: [],
   approvalTypeOnboarding: [],
+  listToggle: {
+    RawMaterial: false,
+    BOP: false
+  }
 };
 
 
@@ -576,6 +581,11 @@ export default function commanReducer(state = initialState, action) {
         error: true,
         taxCodeList: action?.payload
       };
+    case SET_LIST_TOGGLE:
+      return {
+        ...state,
+        listToggle: { ...state.listToggle, ...action.payload }
+      }
     default:
       return state;
   }

@@ -181,8 +181,7 @@ export function fileUploadPart(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error.toString())
+            callback(error);
         });
     };
 }
@@ -324,7 +323,7 @@ export function getAssemblyPartDataList(params, callback) {
 */
 export function getAssemblyPartDetail(PartId, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-            return (dispatch) => {
+    return (dispatch) => {
         if (PartId !== '') {
             const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
@@ -739,7 +738,7 @@ export function fileUploadProduct(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
+            callback(error);
         });
     };
 }

@@ -266,8 +266,8 @@ function AddProcess(props) {
   }
 
   const currencyFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
-    return cellValue !== '-' ? cellValue : reactLocalStorage.getObject("baseCurrency")
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue !== undefined && cellValue !== null && cellValue !== '' && cellValue !== '-' ? cellValue : '-';
   }
 
 
@@ -416,7 +416,9 @@ function AddProcess(props) {
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
                                   <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                  {/* <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn> */}
+                                  <AgGridColumn field="Currency" headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                                  <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                                  <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
                                   <AgGridColumn field="MachineRate" headerName={'Machine Rate'} cellRenderer={'rateFormat'}></AgGridColumn>
 
                                 </AgGridReact>

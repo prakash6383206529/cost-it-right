@@ -5,7 +5,7 @@ import {
   UPDATE_COSTING_RM_SUCCESS, GET_BOP_LIST_SUCCESS, ADD_BOP_COSTING_SUCCESS, GET_OTHER_OPERATION_LIST_SUCCESS, ADD_OTHER_OPERATION_COSTING_SUCCESS, ADD_UNIT_OTHER_OPERATION_COSTING_DATA,
   GET_MHR_LIST_SUCCESS, ADD_MHR_FOR_PROCESS_GRID_DATA, GET_PROCESSES_LIST_SUCCESS, SAVE_PROCESS_COSTING_SUCCESS, GET_OTHER_OPERATION_SELECT_LIST_SUCCESS, SAVE_OTHER_OPERATION_COSTING_SUCCESS,
   ADD_PROCESS_COSTING_SUCCESS, SET_COSTING_DETAIL_ROW_DATA, UPDATE_COSTING_OTHER_OPERATION_SUCCESS, SAVE_COSTING_AS_DRAFT_SUCCESS, ADD_BOP_GRID_COSTING_SUCCESS,
-  SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET, GET_CARRIER_TYPE_LIST_SUCCESS,
+  SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET, RUBBER_CALCULATOR_RESET, GET_CARRIER_TYPE_LIST_SUCCESS,
   SET_PACKAGING_CALCULATOR_AVAILABLE,
   SET_FREIGHT_CALCULATOR_AVAILABLE
 } from '../../../config/constants';
@@ -375,6 +375,28 @@ export function getRawMaterialCalculationForRubber(costingId, rawMaterialId, wei
   return (dispatch) => {
     const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForRubber}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getRawMaterialCalculationForRubberStandard
+ * @description Get raw materical calculator data for Rubber
+*/
+export function getRawMaterialCalculationForRubberStandard(costingId, callback) {
+  return (dispatch) => {
+    const queryParams = `loggedInUserId=${loggedInUserId()}&baseCostingId=${costingId}`
+    const request = axios.get(`${API.getRawMaterialCalculationForRubberStandard}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1365,6 +1387,15 @@ export function setFerrousCalculatorReset(data) {
   }
 }
 
+export function setRubberCalculatorReset(data) {
+  return (dispatch) => {
+    dispatch({
+      type: RUBBER_CALCULATOR_RESET,
+      payload: data,
+    })
+  }
+}
+
 
 export function getSimulationRmFerrousCastingCalculation(simulationId, costingId, callback) {
   const loggedInUser = { loggedInUserId: loggedInUserId() }
@@ -1410,6 +1441,21 @@ export function getSimulationRmRubberCalculation(simulationId, costingId, callba
 export function saveRawMaterialCalculationForRubberCompound(data, callback) {
   return (dispatch) => {
     const request = axiosInstance.post(API.saveRawMaterialCalculationForRubberCompound, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
+
+export function saveRawMaterialCalculationForRubberStandard(data, callback) {
+  return (dispatch) => {
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForRubberStandard, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);

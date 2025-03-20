@@ -1612,16 +1612,16 @@ class AddMoreDetails extends Component {
 
     if (IsIncludeMachineRateDepreciation) {
       TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
-// Calculate without interest and depreciation
+      // Calculate without interest and depreciation
       TotalMachineCostWithoutIntDepPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
-      
+
     } else {
 
       TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
 
       // Calculate without interest and depreciation  
       TotalMachineCostWithoutIntDepPerAnnum = checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
-      
+
     }
 
     if (UOM.type === TIME) {
@@ -2210,16 +2210,25 @@ class AddMoreDetails extends Component {
         return false;
       }
       this.props.fileUploadMachine(data, (res) => {
-        if (res && res?.status !== 200) {
+        this.setDisableFalseFunction()
+        if ('response' in res) {
+          status = res && res?.response?.status
           this.dropzone.current.files.pop()
-          this.setDisableFalseFunction()
-          return false
+          this.setState({ attachmentLoader: false })
+          this.dropzone.current.files.pop() // Remove the failed file from dropzone
+          this.setState({ files: [...this.state.files] }) // Trigger re-render with current files
+          Toaster.warning('File upload failed. Please try again.')
         }
-        let Data = res.data[0]
-        const { files } = this.state;
-        let attachmentFileArray = [...files]
-        attachmentFileArray.push(Data)
-        this.setState({ files: attachmentFileArray, attachmentLoader: false })
+        else {
+          let Data = res.data[0]
+          const { files } = this.state;
+          let attachmentFileArray = [...files]
+          attachmentFileArray.push(Data)
+          this.setState({ attachmentLoader: false, files: attachmentFileArray })
+          setTimeout(() => {
+            this.setState(prevState => ({ isOpen: !prevState.isOpen }))
+          }, 500);
+        }
       })
     }
 
