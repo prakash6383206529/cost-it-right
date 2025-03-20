@@ -431,6 +431,8 @@ function MRSimulation(props) {
             let newItem = { ...item }
             newItem.EffectiveDate = (newItem.EffectiveDate)?.slice(0, 10)
             newItem.NewMachineRate = newItem?.NewMachineRate ? newItem?.NewMachineRate : newItem?.MachineRate
+            newItem.MachineRate = isImpactedMaster ? newItem?.OldMachineRate : newItem?.MachineRate
+
             Object.keys(newItem).forEach(key => {
                 if (newItem[key] === null || newItem[key] === undefined || newItem[key] === '') {
                     newItem[key] = "-"
@@ -439,8 +441,13 @@ function MRSimulation(props) {
             
             temp.push(newItem)
         })
-
-
+        
+        if(isImpactedMaster){
+            data = data.filter(column => !['CostingHead', 'Technology', 'Plant','VendorName'].includes(column.value));
+        } else {
+            data = data.filter(column => !['LocalCurrency', 'PreviousMinimum', 'PreviousMaximum', 'PreviousAverage',
+                'Minimum', 'Maximum', 'Average','NewMachineRateLocalConversion','OldMachineRateLocalConversion'].includes(column.value));
+        }
         return (
             <ExcelSheet data={temp} name={'Machine Data'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}

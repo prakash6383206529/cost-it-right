@@ -828,7 +828,7 @@ function BDSimulation(props) {
         setScrapRateViewTooltip(!scrapRateviewTooltip)
     }
     const onBtExport = () => {
-        if (String(props?.master) === String(BOPIMPORT)) {
+        if (String(props?.masterId) === String(BOPIMPORT)) {
             return returnExcelColumn(BOP_IMPACT_DOWNLOAD_EXCEl_IMPORT, list)
         } else {
 
@@ -843,8 +843,14 @@ function BDSimulation(props) {
             const processedItem = { ...item }
             processedItem.EffectiveDate = (processedItem?.EffectiveDate)?.slice(0, 10) || "-";
             if (processedItem?.NewNetLandedCostConversion === null || processedItem?.NewNetLandedCostConversion === undefined) {
-                processedItem.NewNetLandedCostConversion = processedItem?.OriginalNetLandedCost ?? processedItem?.NetLandedCost;
+                processedItem.NewNetLandedCostConversion = isImpactedMaster ? processedItem?.NewNetBoughtOutPartCost : processedItem?.OriginalNetLandedCost ?? processedItem?.NetLandedCost;
             }
+            processedItem.BasicRate = isImpactedMaster ? processedItem?.OldBOPRate : processedItem?.BasicRate
+            processedItem.NewBasicRate = isImpactedMaster ? processedItem?.NewBOPRate : processedItem?.NewBasicRate
+            processedItem.OtherNetCost = isImpactedMaster ? processedItem?.OldOtherCost : processedItem?.OtherNetCost
+            processedItem.NewOtherNetCost = isImpactedMaster ? processedItem?.NewOtherCost : processedItem?.OtherNetCost
+            processedItem.NetLandedCost = isImpactedMaster ? processedItem?.OldNetBoughtOutPartCost : processedItem?.NetLandedCost
+                    
             Object.keys(processedItem).forEach(key => {
                 if (processedItem[key] === null || processedItem[key] === undefined || processedItem[key] === '') {
                     processedItem[key] = "-";
@@ -854,8 +860,18 @@ function BDSimulation(props) {
         })
         if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
             tempData = hideColumnFromExcel(data, 'Quantity')
-        } else {
+        }else {
             tempData = data
+        }
+
+        if(isImpactedMaster && temp[0]?.EntryType === "Domestic"){
+            tempData = hideColumnFromExcel(data, "LocalCurrency")
+        }
+        if (isImpactedMaster) {
+            tempData = tempData.filter(column => !['BoughtOutPartCategory', 'Vendor', 'Plants',column?.EntryType === "Import" ? "LocalCurrency" : undefined].includes(column.value));
+        } else {
+            tempData = tempData.filter(column => !['PreviousMinimum', 'PreviousMaximum', 'PreviousAverage',
+                'Minimum', 'Maximum', 'Average','LocalCurrency'].includes(column.value));
         }
         return (
             <ExcelSheet data={temp} name={`${showBopLabel()} Data`}>
@@ -979,7 +995,7 @@ function BDSimulation(props) {
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" tooltipField='Quantity' editable='false' headerName="Min Order Quantity" minWidth={columnWidths.Quantity} cellRenderer='quantityFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                 {<AgGridColumn field="Currency" minWidth={120} tooltipField='Currency' editable='false' headerName="Settlement Currency"  ></AgGridColumn>}
-                                                {(String(props?.master) === String(BOPIMPORT) || String(props?.master) === String(EXCHNAGERATE))&&(isImpactedMaster || props?.lastRevision)&&<AgGridColumn field="LocalCurrency" minWidth={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
+                                                {(String(props?.masterId) === String(BOPIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)) && (isImpactedMaster || props?.lastRevision) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>}
 
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={
                                                     "Basic Rate (Currency)"
@@ -1015,7 +1031,7 @@ function BDSimulation(props) {
                                                     <AgGridColumn minWidth={200} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost' suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {
-                                                    (String(props?.master) === String(BOPIMPORT) || String(props?.master) === String(EXCHNAGERATE))&&(isImpactedMaster || props?.lastRevision)  && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`Net Cost (Plant Currency)`} marryChildren={true} >
+                                                    (String(props?.masterId) === String(BOPIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)) && (isImpactedMaster || props?.lastRevision) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`Net Cost (Plant Currency)`} marryChildren={true} >
                                                         <AgGridColumn minWidth={120} field="OldBoughtOutPartNetLandedCostLocalConversion" tooltipField='OldBoughtOutPartNetLandedCostConversion' editable='false' headerName="Existing" colId='OldBoughtOutPartNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                         <AgGridColumn minWidth={120} field="NewBoughtOutPartNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewBoughtOutPartNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                     </AgGridColumn>

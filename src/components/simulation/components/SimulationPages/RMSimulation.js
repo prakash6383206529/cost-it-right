@@ -32,7 +32,7 @@ import { useLabels } from '../../../../helper/core';
 import AddOtherCostDrawer from '../../../masters/material-master/AddOtherCostDrawer';
 import { setCommodityDetails } from '../../../masters/actions/Indexation';
 import AddConditionCosting from '../../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
-import { updateCostValue } from '../../../common/CommonFunctions';
+import { hideColumnFromExcel, updateCostValue } from '../../../common/CommonFunctions';
 
 const gridOptions = {
 
@@ -1122,7 +1122,7 @@ function RMSimulation(props) {
     }
 
     const onBtExport = () => {
-        if (String(props?.master) === String(RMIMPORT)) {
+        if (String(props?.masterId) === String(RMIMPORT)) {
             return returnExcelColumn(RM_IMPACT_DOWNLOAD_EXCEl_IMPORT, list)
         } else {
 
@@ -1137,7 +1137,12 @@ function RMSimulation(props) {
             excelItem.EffectiveDate = (excelItem?.EffectiveDate)?.slice(0, 10)
             excelItem.NewNetLandedCost = excelItem?.NewNetLandedCost ?? excelItem?.NetLandedCost
             excelItem.NewScrapRate = excelItem?.NewScrapRate ?? excelItem?.ScrapRate
-            
+            excelItem.BasicRatePerUOM = isImpactedMaster ? excelItem?.OldBasicRate : excelItem?.BasicRatePerUOM
+            excelItem.ScrapRate = isImpactedMaster ? excelItem?.OldScrapRate : excelItem?.ScrapRate
+            excelItem.OtherNetCost = isImpactedMaster ? (excelItem?.OldOtherCost ?? 0)  : excelItem?.OtherNetCost
+            excelItem.NewOtherNetCost = isImpactedMaster ? excelItem?.NewOtherCost : excelItem?.OtherNetCost
+            excelItem.NetLandedCost = isImpactedMaster ? excelItem?.OldNetLandedCost : excelItem?.NetLandedCost
+            excelItem.ExchangeRate = item.EntryType === "Import" ?  item?.ExchangeRate : undefined;            
             Object.keys(excelItem).forEach(key => {
                 if (excelItem[key] === null || excelItem[key] === undefined || excelItem[key] === '') {
                     excelItem[key] = "-";
@@ -1146,6 +1151,11 @@ function RMSimulation(props) {
             
             temp.push(excelItem)
         })
+        if(isImpactedMaster){
+            data = data.filter(column => !['CostingHead', 'VendorName', 'DestinationPlantName','Category','TechnologyName'].includes(column.value));
+        } else {
+            data = data.filter(column => !['LocalCurrency', 'PreviousMinimum', 'PreviousMaximum', 'PreviousAverage','Minimum', 'Maximum', 'Average', 'NewRMNetLandedCostConversion','ExchangeRate','OldRMNetLandedCostConversion'].includes(column.value));
+        }
         return (
             <ExcelSheet data={temp} name={'RM Data'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -1286,7 +1296,7 @@ function RMSimulation(props) {
                                                 {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" minWidth={columnWidths.PartNumber}></AgGridColumn>}
 
                                                 {/* {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>} */}
-                                                {(isImpactedMaster && String(props?.master) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
+                                                {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                 <AgGridColumn field="Currency" headerName="Settlement Currency" minWidth={120} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 {(isImpactedMaster || props?.lastRevision ) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>}
@@ -1354,7 +1364,7 @@ function RMSimulation(props) {
                                                 </AgGridColumn>
                                                 }
           {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
-                                                {(isImpactedMaster || props?.lastRevision || (String(props?.master) === String(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT))) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Cost (Plant Currency)`}>
+                                                {(isImpactedMaster || props?.lastRevision || (String(props?.masterId) === String(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT))) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={`Net Cost (Plant Currency)`}>
                                                     <AgGridColumn minWidth={120} field="OldNetLandedCostLocalConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                     <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>

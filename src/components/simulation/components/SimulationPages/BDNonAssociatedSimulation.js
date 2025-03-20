@@ -865,9 +865,16 @@ const {vendorLabel}= useLabels()
             if (item?.NewNetLandedCostConversion === null || item?.NewNetLandedCostConversion === undefined) {
                 item.NewNetLandedCostConversion =  item?.OriginalNetLandedCost 
             }
+            if(item?.NewNetCostWithoutConditionCost === null || item?.NewNetCostWithoutConditionCost === undefined){
+                item.NewNetLandedCost = item?.NewBasicRate
+            }   
+
             if(!item?.IsBOPAssociated){
                 item.OriginalNetLandedCost = item?.NetLandedCost
                 item.NewNetLandedCostConversion = item?.NewNetLandedCost
+            }else{
+                item.OriginalNetLandedCost = item?.OldNetLandedCost
+                item.NewNetLandedCostConversion =  item?.NewNetLandedCostConversion==="-" ? item?.OriginalNetLandedCost : item?.NewNetLandedCostConversion 
             }
             
             Object.keys(item)?.forEach(key => {
@@ -1031,7 +1038,7 @@ const {vendorLabel}= useLabels()
                                                     <AgGridColumn minWidth={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                     <AgGridColumn minWidth={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {(String(props?.master) === String(RMIMPORT) || String(props?.master) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
+                                                {(String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
                                                     "Net Cost (Plant Currency)"
 
                                                 }>
