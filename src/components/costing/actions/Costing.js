@@ -75,11 +75,15 @@ import {
   SET_EXCHANGE_RATE_SOURCE,
   SET_CURRENCY_SOURCE,
   SET_EXCHANGE_RATE_DATA,
+  GET_COSTING_COST_DETAILS,
+  SET_OPERATION_APPLICABILITY_SELECT,
+  SET_PROCESS_APPLICABILITY_SELECT,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import _ from 'lodash'
 import axiosInstance from '../../../utils/axiosInstance'
 import { loggedInUserId } from '../../../helper'
 // let config() = config
@@ -665,7 +669,9 @@ export function getOperationDrawerDataList(data, callback) {
     const queryParams = `loggedInUserId=${loggedInUserId()}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
     const request = axios.get(`${API.getOperationDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
-      if (response.data.Result) {
+
+      if (response.data.Result || response.status === 204) {
+
         callback(response);
       }
     }).catch((error) => {
@@ -1215,10 +1221,11 @@ export function getToolsProcessWiseDataListByCostingID(CostingId, callback) {
  * @description SET TOOL TAB DATA  
  */
 export function setToolTabData(TabData, callback) {
+  const updatedToolTabData = _.cloneDeep(TabData)
   return (dispatch) => {
     dispatch({
       type: SET_TOOL_TAB_DATA,
-      payload: TabData,
+      payload: updatedToolTabData,
     });
     callback();
   }
@@ -1313,7 +1320,7 @@ export function saveDiscountOtherCostTab(data, callback) {
  */
 export function fileUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.fileUploadCosting, data, config())
+    const request = axios.post(API.fileUploadCosting, data, config())
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response)
@@ -3174,3 +3181,44 @@ export function exchangeRateReducer(value) {
     });
   }
 }
+
+/**
+ * @method getCostingCostDetails
+ * @description get Costing Cost Details
+ */
+export function getCostingCostDetails(obj, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getCostingCostDetails}?costingId=${obj?.costingId}&subAsmCostingId=${obj?.subAsmCostingId}&asmCostingId=${obj?.asmCostingId}&loggedInUserId=${loggedInUserId()}`, config())
+    request
+      .then((response) => {
+        if (response?.data?.Result) {
+          dispatch({
+            type: GET_COSTING_COST_DETAILS,
+            payload: response?.data?.Data,
+          })
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+export function setOperationApplicabilitySelect(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OPERATION_APPLICABILITY_SELECT,
+      payload: data,
+    });
+  }
+};
+export function setProcessApplicabilitySelect(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PROCESS_APPLICABILITY_SELECT,
+      payload: data,
+    });
+  }
+};

@@ -244,7 +244,7 @@ function AddOtherCostDrawer(props) {
             }
             const item = tableData.find(item => item?.CostHeaderName === Applicability);
             if (item) {
-                totalCostCurrency += props.rawMaterial ? Number(item?.NetCostConversion) : Number(item?.NetCost);
+                totalCostCurrency += props.isBOP ? Number(item?.NetCost) : Number(item?.NetCostConversion);
                 if (selectedApplicabilities.includes('Basic Rate')) {
                     // totalCostCurrency += BasicRateIndexCurrency;
                     totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency

@@ -18,11 +18,13 @@ axiosInstance.interceptors.request.use(
       }
 
       // Encrypt request data for POST, PUT, DELETE if it exists
-      if (reqConfig.data) {
+
+      if (reqConfig.data && process.env.REACT_APP_MY_ENV !== 'development') {
+
         const encryptedData = encryptData(reqConfig.data);
         if (encryptedData) {
           reqConfig.data = {
-            EncryptedData: encryptedData
+            Request: encryptedData
           };
         }
       }
@@ -42,22 +44,22 @@ axiosInstance.interceptors.response.use(
   (response) => {
     try {
       // Check if response has data and it's encrypted
-      
+
       if (response?.data?.encryptedData) {
-        const decryptedData = decryptData(response.data.encryptedData);
+        const decryptedData = decryptData(response?.data?.encryptedData);
         if (decryptedData) {
           response.data = decryptedData;
         }
       }
-      
+
       return response;
     } catch (error) {
-      
+
       return response; // Return original response if decryption fails
     }
   },
   (error) => {
-    
+
     return Promise.reject(error);
   }
 );
@@ -65,12 +67,12 @@ axiosInstance.interceptors.response.use(
 // Add debugging
 if (process.env.NODE_ENV === 'development') {
   axiosInstance.interceptors.request.use(request => {
-    
+
     return request;
   });
 
   axiosInstance.interceptors.response.use(response => {
-    
+
     return response;
   });
 }

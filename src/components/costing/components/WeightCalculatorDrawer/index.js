@@ -4,7 +4,6 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import InsulationCalculator from './Insulation/Insulation'
 import ForgingCalculator from './forging'
-import Plastic from './Plastic'
 import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, ELECTRICAL_STAMPING, INSULATION } from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import NonFerrousCalculator from './dieCasting'
@@ -21,6 +20,7 @@ import { showPaperCorrugatedBox } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
 import { sourceCurrencyFormatter } from '../Drawers/processCalculatorDrawer/CommonFormula'
 import MonoCartoon from './corrugatedBox/monoCartoon'
+import PlasticCalculator from './plastic/index'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox, calculatorType } = props
@@ -75,7 +75,8 @@ function OpenWeightCalculator(props) {
         calculatorType = (props.rmData[0] && props.rmData[0].CalculatorType && props.rmData[0].WeightCalculationId) ? props.rmData[0].CalculatorType : ''
       }
     }
-    props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX) && !isSummary) ? calculatorType : event, weightData, originalWeight)
+    // props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX) && !isSummary) ? calculatorType : event, weightData, originalWeight)
+    props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX || Number(technology) === Number(RUBBER)) && !isSummary) ? calculatorType : event, weightData, originalWeight)
   }
 
   /**
@@ -121,7 +122,7 @@ function OpenWeightCalculator(props) {
         )
       case PLASTIC:
         return (
-          <Plastic
+          <PlasticCalculator
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             item={item}
@@ -153,6 +154,7 @@ function OpenWeightCalculator(props) {
           item={item}
           appyMasterBatch={appyMasterBatch}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
+          calculatorType={calculatorType}
         />)
       case DIE_CASTING:
         return (<NonFerrousCalculator
@@ -266,7 +268,7 @@ function OpenWeightCalculator(props) {
                   <h3>{Number(technology) !== Number(Ferrous_Casting) ? 'Weight Calculator' : 'Alloy Composition '}</h3>
                 </div>
                 <div
-                  onClick={(e) => toggleDrawer(e)}
+                  onClick={(e) => toggleDrawer(Number(technology) === Number(RUBBER) ? calculatorType : e)}
                   className={'close-button right'}
                 ></div>
               </Col>

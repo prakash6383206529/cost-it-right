@@ -3867,7 +3867,7 @@ function AddRfq(props) {
                                                             mandatory={true}
                                                             handleChange={(newValue) => handleChangeUOM(newValue)}
                                                             errors={errors?.UOM}
-                                                            disabled={disableUOMFiled || isManageSeparatePermissions}
+                                                            disabled={disableUOMFiled || selectedOption === 'componentAssembly' ?isManageSeparatePermissions : false}
                                                         //Object.keys(prNumber).length !== 0 || (isViewFlag) ? true : false || disabledPartUid
                                                         />
                                                     </Col>

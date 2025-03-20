@@ -40,7 +40,7 @@ function OperationCostExcludedOverhead(props) {
   const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, ErrorObjRMCC, currencySource,exchangeRateData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const [openOperationForm, setOpenOperationForm] = useState(false)
 
   useEffect(() => {
@@ -69,7 +69,7 @@ function OperationCostExcludedOverhead(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
@@ -98,7 +98,7 @@ function OperationCostExcludedOverhead(props) {
           OtherOperationCode: el.OperationCode,
           UOM: el.UnitOfMeasurement,
           Rate: el.Rate,
-          Quantity: QuantityMain,
+          Quantity: Number(QuantityMain),
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
@@ -210,7 +210,7 @@ function OperationCostExcludedOverhead(props) {
   }
 
   const SaveItem = (index) => {
-    if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields[index]?.Quantity).length !== 0)) {
+    if (errors?.OperationGridFields && errors?.OperationGridFields?.length > 0) {
       return false
     }
     if (getValues(`${OperationGridFields}.${index}.Quantity`) === '') {
@@ -249,7 +249,7 @@ function OperationCostExcludedOverhead(props) {
       const WithLaboutCost = checkForNull(tempData.Rate) * event.target.value;
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
+      tempData = { ...tempData, Quantity: Number(event.target.value), OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     }
@@ -277,7 +277,7 @@ function OperationCostExcludedOverhead(props) {
       setGridData(tempArr)
       //Toaster.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}${index}LabourQuantity`, 0)
+        setValue(`${OperationGridFields}[${index}]LabourQuantity`, 0)
       }, 200)
     }
   }
@@ -394,7 +394,7 @@ function OperationCostExcludedOverhead(props) {
                               {
                                 <TextFieldHookForm
                                   label={false}
-                                  name={`${OperationGridFields}.${index}.Quantity`}
+                                  name={`${OperationGridFields}[${index}].Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
@@ -425,13 +425,13 @@ function OperationCostExcludedOverhead(props) {
                                   item.IsLabourRateExist ?
                                     <TextFieldHookForm
                                       label={false}
-                                      name={`${OperationGridFields}[${index}]LabourQuantity`}
+                                      name={`${OperationGridFields}[${index}].LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                        validate: { number, checkWhiteSpaces, noDecimal },
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""

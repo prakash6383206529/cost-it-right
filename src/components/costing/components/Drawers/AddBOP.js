@@ -74,7 +74,7 @@ function AddBOP(props) {
 
   const currencyFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== '-' ? cellValue : reactLocalStorage.getObject("baseCurrency")
+    return cellValue !== undefined && cellValue !== null && cellValue !== '' && cellValue !== '-' ? cellValue : '-';
   }
 
   const specificationFormat = (props) => {
@@ -271,7 +271,9 @@ function AddBOP(props) {
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                         <AgGridColumn field="Specification" cellRenderer={'specificationFormat'}></AgGridColumn>
                         {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
-                        <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="Currency"  headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field='UOM' ></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCombine" headerName={`Net Cost ${sourceCurrencyFormatter(currencySource?.label)}/UOM`} cellRenderer={'netLandedFormat'}></AgGridColumn>
 

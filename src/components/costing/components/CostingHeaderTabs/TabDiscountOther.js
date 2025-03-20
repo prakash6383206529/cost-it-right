@@ -851,7 +851,7 @@ function TabDiscountOther(props) {
       //   setValue('HundiOrDiscountValue', DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue, initialConfiguration?.NoOfDecimalForPrice))
       // }
       if (IsCurrencyChange && ExchangeRateData && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
-        let poPriceOtherCurrency = (getValues('Currency') === '') ? 0 : (DiscountCostData && netPOPrice* ExchangeRateData.CurrencyExchangeRate)
+        let poPriceOtherCurrency = (getValues('Currency') === '') ? 0 : (DiscountCostData && netPOPrice * ExchangeRateData.CurrencyExchangeRate)
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull(poPriceOtherCurrency, initialConfiguration?.NoOfDecimalForPrice))
         setNetPoPriceCurrencyState(DiscountCostData && netPOPrice * ExchangeRateData.CurrencyExchangeRate)
       }
@@ -1034,7 +1034,7 @@ function TabDiscountOther(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
-          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR* Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
+          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR * Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
           setNetPoPriceCurrencyState(NetPOPriceINR * Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
           setIsInputLoader(false)
@@ -1047,13 +1047,16 @@ function TabDiscountOther(props) {
   }
 
   useEffect(() => {
+    const vendorValue = IsFetchExchangeRateVendorWiseForParts() ? costData?.VendorId : EMPTY_GUID
+    let costingTypeId = (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? VBCTypeId : costData.CostingTypeId
+    const costingType = IsFetchExchangeRateVendorWiseForParts() ? costingTypeId : ZBCTypeId
     if (Object.keys(currency).length > 0) {
-      dispatch(getExchangeRateByCurrency(currency.label, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), res => {
+      dispatch(getExchangeRateByCurrency(currency.label, costingType, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorValue, costData.CustomerId, false, currency?.label, initialConfiguration?.IsSourceExchangeRateNameVisible ? exchangeRateSource?.label : null, res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
           setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR * Data.CurrencyExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
-          setNetPoPriceCurrencyState(NetPOPriceINR* Data.CurrencyExchangeRate)
+          setNetPoPriceCurrencyState(NetPOPriceINR * Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
         }
       }))
@@ -1348,6 +1351,9 @@ function TabDiscountOther(props) {
       dispatch(saveDiscountOtherCostTab(data, res => {
         setIsLoader(false)
         if (res.data.Result) {
+          if (checkIsPaymentTermsDataChange === true) {
+            dispatch(saveCostingPaymentTermDetail(obj, res => { }))
+          }
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           // dispatch(setComponentDiscountOtherItemData({}, () => { }))
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
@@ -1363,12 +1369,6 @@ function TabDiscountOther(props) {
         }
         setIsLoader(false)
       }))
-
-      if (checkIsPaymentTermsDataChange === true) {
-        dispatch(saveCostingPaymentTermDetail(obj, res => {
-          setIsLoader(false)
-        }))
-      }
     }
 
     setTimeout(() => {

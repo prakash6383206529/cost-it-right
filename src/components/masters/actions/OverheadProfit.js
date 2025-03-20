@@ -353,15 +353,14 @@ export function activeInactiveProfit(requestData, callback) {
  */
 export function fileUploadOverHead(data, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(API.fileUploadOverHead, data, config());
+        const request = axios.post(API.fileUploadOverHead, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error.toString())
+            callback(error);
         });
     };
 }
@@ -379,8 +378,7 @@ export function fileUploadProfit(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error.toString())
+            callback(error);
         });
     };
 }

@@ -21,6 +21,7 @@ import DatePicker from "react-datepicker";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '.';
 import { useLabels } from '../../../helper/core';
+import { returnVarianceClass } from '../SimulationUtils';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -505,7 +506,18 @@ function VerifySimulation(props) {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '0';
     }
-
+    const newOtherCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const varianceClass = returnVarianceClass(row, row.NewOtherNetCost, row.OldOtherNetCost)
+        return cell != null ? <span className={varianceClass}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const newConditionCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const varianceClass = returnVarianceClass(row, row.NewNetConditionCost, row.OldNetConditionCost)
+        return cell != null ? <span className={varianceClass}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         setSelectedRowData(selectedRows)
@@ -871,7 +883,9 @@ function VerifySimulation(props) {
         newNetLandedCostFormatter: newNetLandedCostFormatter,
         zeroFormatter: zeroFormatter,
         operationRateFormatter: operationRateFormatter,
-        machineRateFormatter: machineRateFormatter
+        machineRateFormatter: machineRateFormatter,
+        newOtherCostFormatter: newOtherCostFormatter,
+        newConditionCostFormatter: newConditionCostFormatter
     };
     function getOperationTypes(list) {
         return list && list?.map(item => item.ForType);
@@ -963,7 +977,7 @@ function VerifySimulation(props) {
                                             <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                                             {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn width={185} field="DivisionCode" tooltipField="DivisionCode" headerName="Division"></AgGridColumn>}
                                             {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&(isMasterAssociatedWithCosting||isRMDomesticOrRMImport === true) && <AgGridColumn field="CostingCurrency" tooltipField='Costing Currency' editable='false' headerName="Costing Currency" headerComponent={'currencyHeader'} minWidth={140} ></AgGridColumn>}
+                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && (isMasterAssociatedWithCosting || isRMDomesticOrRMImport === true) && <AgGridColumn field="CostingCurrency" tooltipField='Costing Currency' editable='false' headerName="Costing Currency" headerComponent={'currencyHeader'} minWidth={140} ></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={190} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (Currency)`} cellRenderer='priceFormatter'></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="ForType" headerName="Operation Type" minWidth={190}></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={185} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}
@@ -986,9 +1000,9 @@ function VerifySimulation(props) {
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={230} field="OldBasicRate" tooltipField="OldBasicRate" headerName="Existing Basic Rate (Master Currency)"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={230} field="NewBasicRate" tooltipField="NewBasicRate" cellRenderer='newRMBasicRateFormatter' headerName="Revised Basic Rate (Master Currency)"></AgGridColumn>}
                                             {(isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && <AgGridColumn width={230} field="OldOtherNetCost" cellRenderer={zeroFormatter} headerName="Existing Other Cost (Master Currency)"></AgGridColumn>}
-                                            {(isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && <AgGridColumn width={230} field="NewOtherNetCost" cellRenderer={zeroFormatter} headerName="Revised Other Cost (Master Currency)"></AgGridColumn>}
+                                            {(isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && <AgGridColumn width={230} field="NewOtherNetCost" cellRenderer={'newOtherCostFormatter'} headerName="Revised Other Cost (Master Currency)"></AgGridColumn>}
                                             {((isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && verifyList && verifyList[0]?.CostingHeadId === ZBCTypeId) && <AgGridColumn width={230} field="OldNetConditionCost" cellRenderer={zeroFormatter} headerName="Existing Condition Cost (Master Currency)"></AgGridColumn>}
-                                            {((isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && verifyList && verifyList[0]?.CostingHeadId === ZBCTypeId) && <AgGridColumn width={230} field="NewNetConditionCost" cellRenderer={zeroFormatter} headerName="Revised Condition Cost (Master Currency)"></AgGridColumn>}
+                                            {((isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && verifyList && verifyList[0]?.CostingHeadId === ZBCTypeId) && <AgGridColumn width={230} field="NewNetConditionCost" cellRenderer={'newConditionCostFormatter'} headerName="Revised Condition Cost (Master Currency)"></AgGridColumn>}
 
 
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={230} field="OldScrapRate" tooltipField="OldScrapRate" headerName="Existing Scrap Rate (Master Currency)"></AgGridColumn>}

@@ -25,6 +25,7 @@ import RMDetailListing from './RMDetailListing';
 import IndexCommodityListing from './IndexCommodityListing';
 import CommodityInIndexListing from './CommodityInIndexListing';
 import { useTranslation } from 'react-i18next';
+import { setListToggle } from '../../../actions/Common';
 export const ApplyPermission = React.createContext();
 function RowMaterialMaster(props) {
 
@@ -45,7 +46,8 @@ function RowMaterialMaster(props) {
     const [AddAccessibilityRMANDGRADE, setAddAccessibilityRMANDGRADE] = useState(false);
     const [EditAccessibilityRMANDGRADE, setEditAccessibilityRMANDGRADE] = useState(false);
     const [isRMAssociated, setIsRMAssociated] = useState(false);
-    const [isImport, setIsImport] = useState(false);
+    const { listToggle } = useSelector((state) => state.comman)
+    const [isImport, setIsImport] = useState(listToggle.RawMaterial);
     const [hideTabs, setHideTabs] = useState(false);
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
@@ -205,8 +207,9 @@ function RowMaterialMaster(props) {
     */
     const onRmToggle = () => {
         setIsImport(!isImport)
+        dispatch(setListToggle({ RawMaterial: !isImport }));
         dispatch(setSelectedRowForPagination([]));
-    dispatch(resetStatePagination());
+        dispatch(resetStatePagination());
     }
 
     const isOpenCallback = (params) => {

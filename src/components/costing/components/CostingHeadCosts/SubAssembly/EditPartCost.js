@@ -308,6 +308,8 @@ function EditPartCost(props) {
                     const tempObj = formViewData(dataFromAPI)
                     setTechnologyName(tempObj[0].technology)
                     dispatch(setCostingViewDataForAssemblyTechnology(tempObj))
+                    dispatch(setCostingViewData(tempObj))
+
                 }
             },
             ))

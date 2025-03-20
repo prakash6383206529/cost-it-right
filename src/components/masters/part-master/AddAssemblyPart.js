@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, change, untouch } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString, minLength3, hashValidation, validateFileName, checkForNull } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
@@ -86,8 +86,8 @@ class AddAssemblyPart extends Component {
       partName: '',
       showPopup: false,
       partAssembly: '',
-      uomSelected: []
-
+      uomSelected: [],
+      showErrors: false
     }
   }
 
@@ -179,17 +179,31 @@ class AddAssemblyPart extends Component {
 
 
   onSwitchChange = () => {
-
     setTimeout(() => {
-      this.setState({ convertPartToAssembly: !this.state.convertPartToAssembly })
+      this.setState({ 
+        convertPartToAssembly: !this.state.convertPartToAssembly,
+        showErrors: false, // Reset the error display flag for all fields
+        TechnologySelected: [], // Clear technology selection
+        uomSelected: [] // Clear UOM selection
+      });
     }, 200);
+    
+    // Clear all field values and their touched states
     let fields = ['EffectiveDate', 'ECNNumber', 'DrawingNumber', 'RevisionNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'BOMNumber', 'SAPCode', 'Description', 'Remark'];
     fields.forEach(field => {
-      this.props.change(field, "")
-    })
-    this.setState({ ProductGroup: [], BOMViewerData: [] })
-    this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [], uomSelected: [] })
-    this.setState({ partAssembly: { ...this.state.partAssembly, convertPartToAssembly: false } })
+      this.props.change(field, "");
+      this.props.untouch('AddAssemblyPart', field);
+    });
+    
+    // Reset other state values
+    this.setState({ 
+      ProductGroup: [], 
+      BOMViewerData: [],
+      minEffectiveDate: "", 
+      warningMessage: false, 
+      warningMessageTechnology: false,
+      partAssembly: { ...this.state.partAssembly, convertPartToAssembly: false }
+    });
   }
 
   isRequired = () => {
@@ -568,10 +582,24 @@ class AddAssemblyPart extends Component {
           return false
         }
         this.setDisableFalseFunction()
-        let Data = res.data[0]
-        const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        if ('response' in res) {
+          status = res && res?.response?.status
+          this.dropzone.current.files.pop()
+          this.setState({ attachmentLoader: false })
+          this.dropzone.current.files.pop() // Remove the failed file from dropzone
+          this.setState({ files: [...this.state.files] }) // Trigger re-render with current files
+          Toaster.warning('File upload failed. Please try again.')
+        }
+        else {
+          let Data = res.data[0]
+          const { files } = this.state;
+          let attachmentFileArray = [...files]
+          attachmentFileArray.push(Data)
+          this.setState({ attachmentLoader: false, files: attachmentFileArray })
+          setTimeout(() => {
+            this.setState(prevState => ({ isOpen: !prevState.isOpen }))
+          }, 500);
+        }
       })
     }
 
@@ -683,6 +711,27 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
+    this.setState({ showErrors: true });
+  
+  // Check for required fields
+  let hasErrors = false;
+  
+  // Check Technology field
+  if (!this.state.TechnologySelected || !this.state.TechnologySelected.value) {
+    hasErrors = true;
+    // Don't show toast here, just let the form validation display the error
+  }
+  
+  // Check UOM field if required
+  if (this.props.initialConfiguration.IsShowUnitOfMeasurementInPartMaster && 
+      (!this.state.uomSelected || !this.state.uomSelected.value)) {
+    hasErrors = true;
+  }
+  
+  // If there are validation errors, stop submission
+  if (hasErrors) {
+    return false;
+  }
     const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly, uploadAttachements } = this.state;
     const { partData, initialConfiguration } = this.props;
 
@@ -1487,7 +1536,8 @@ export default connect(mapStateToProps, {
   getProductGroupSelectList,
   getPartSelectList,
   getUOMSelectList,
-
+  change,
+  untouch
 })(reduxForm({
   form: 'AddAssemblyPart',
   validate: validateForm,
@@ -1496,5 +1546,4 @@ export default connect(mapStateToProps, {
   },
   enableReinitialize: true,
   touchOnChange: true,
-})(withTranslation(['PartMaster', 'MasterLabels'])(AddAssemblyPart)),
-)
+})(withTranslation(['PartMaster', 'MasterLabels'])(AddAssemblyPart)));

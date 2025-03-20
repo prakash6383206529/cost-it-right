@@ -115,7 +115,7 @@ function AddPackaging(props) {
   }, [fieldValues]);
 
   useEffect(() => {
-    let request = partType ? 'multiple technology assembly' : 'Packaging'
+    let request = partType ? 'multiple technology assembly' : 'packaging'
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
     const removeApplicabilityList = _.map(gridData, 'Applicability')
     setRemoveApplicability(removeApplicabilityList)
@@ -679,25 +679,34 @@ function AddPackaging(props) {
                           tooltipText={`Net Cost = ${checkForDecimalAndNull(totalTabCost, getConfigurationKey().NoOfDecimalForPrice)} (RM+CC+BOP + Surface Treatment + Overhead & Profit)`}
                         />
                       )}
-                      <TextFieldHookForm
-                        label="Packaging Cost"
-                        name={'PackagingCost'}
-                        id="Add_Packaging_Cost"
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={applicability?.label === 'Fixed' ? true : false}
-                        rules={{
-                          required: true,
-                          validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
-                        }}
-                        handleChange={packingCostHandler}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder mb-0'}
-                        errors={errors.PackagingCost}
-                        disabled={applicability?.label === 'Fixed' ? false : true}
-                      />
+                      <div className="packaging-cost-warpper">
+                        <TextFieldHookForm
+                          label="Packaging Cost"
+                          name={'PackagingCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={applicability?.label === 'Fixed' ? true : false}
+                          rules={{
+                            required: applicability?.label === 'Fixed' ? true : false,
+                            validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
+                          }}
+                          handleChange={packingCostHandler}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder w-100 mb-0'}
+                          errors={errors.PackagingCost}
+                          disabled={applicability?.label === 'Fixed' ? false : true}
+                        />
+                        {showCalculator && <button
+                          id={`RM_calculator`}
+                          className={`CalculatorIcon mb-0 mt-1 ml-2 cr-cl-icon RM_calculator`}
+                          type={'button'}
+                          onClick={() => toggleWeightCalculator()}
+                          disabled={false}
+                        />}
+                      </div>
+
                     </div>
                   </Col>}
 

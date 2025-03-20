@@ -255,7 +255,8 @@ function RubberWeightCalculator(props) {
                 obj.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
                 obj.RawMaterialCost = obj.NetRawMaterialCost
-                props.toggleDrawer('rubber', obj)
+                obj.CalculatorType = "Compound"
+                props.toggleDrawer('Compound', obj)
             }
         }))
     }), 500);

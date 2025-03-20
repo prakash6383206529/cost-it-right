@@ -618,6 +618,7 @@ export const API = {
   saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
   getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
   saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
+  getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -640,9 +641,11 @@ export const API = {
   getRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/get-raw-material-die-casting-calculation-details`,
   saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
+  getRawMaterialCalculationForRubberStandard: `${BASE_URL}/costing/get-raw-material-rubber-standard-calculation-details`,
   saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
   getSimulationRmFerrousCastingCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-ferrous-casting-calculation-details`,
   saveRawMaterialCalculationForRubberCompound: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
+  saveRawMaterialCalculationForRubberStandard: `${BASE_URL}/costing/save-raw-material-rubber-standard-calculation-details`,
   getSimulationRmRubberCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-rubber-calculation-details`,
   saveRawMaterialCalculationForMachining: `${BASE_URL}/costing/save-raw-material-machining-calculation-details`,
   getRawMaterialCalculationForMachining: `${BASE_URL}/costing/get-raw-material-machining-calculation-details`,
@@ -1765,6 +1768,7 @@ export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOU
 export const SET_COSTING_MODE = 'SET_COSTING_MODE'
 export const COSTING_ACC_OPEN_CLOSE_STATUS = 'COSTING_ACC_OPEN_CLOSE_STATUS'
 export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
+export const GET_COSTING_COST_DETAILS = 'GET_COSTING_COST_DETAILS'
 
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
 export const GET_TCO_DATA = 'GET_TCO_DATA'
@@ -1772,6 +1776,8 @@ export const SET_RFQ_COSTING_TYPE = 'SET_RFQ_COSTING_TYPE'
 export const SET_EXCHANGE_RATE_SOURCE = 'SET_EXCHANGE_RATE_SOURCE'
 export const SET_CURRENCY_SOURCE = 'SET_CURRENCY_SOURCE'
 export const SET_EXCHANGE_RATE_DATA = 'SET_EXCHANGE_RATE_DATA'
+export const SET_OPERATION_APPLICABILITY_SELECT = 'SET_OPERATION_APPLICABILITY_SELECT'
+export const SET_PROCESS_APPLICABILITY_SELECT = 'SET_PROCESS_APPLICABILITY_SELECT'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1840,6 +1846,7 @@ export const SET_CUTOFF_RMC = 'SET_CUTOFF_RMC';
 export const GET_COSTING_SPECIFIC_TECHNOLOGY = 'GET_COSTING_SPECIFIC_TECHNOLOGY'
 export const FORGING_CALCULATOR_MACHININGSTOCK_SECTION = 'FORGING_CALCULATOR_MACHININGSTOCK_SECTION';
 export const FERROUS_CALCULATOR_RESET = 'FERROUS_CALCULATOR_RESET';
+export const RUBBER_CALCULATOR_RESET = 'RUBBER_CALCULATOR_RESET';
 export const SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION = 'SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION'
 export const SET_MASTER_BATCH_OBJ = 'SET_MASTER_BATCH_OBJ'
 export const SELECTED_IDS_OF_OPERATION = 'SELECTED_IDS_OF_OPERATION'
@@ -2075,6 +2082,7 @@ export const GET_SIMULATION_COSTING_STATUS = 'GET_SIMULATION_COSTING_STATUS'
 export const SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV = 'SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV'
 export const GET_IMPACTED_DATA_LIST = 'GET_IMPACTED_DATA_LIST'
 export const SET_RAW_MATERIALS_EFFECTIVE_DATE = 'SET_RAW_MATERIALS_EFFECTIVE_DATE';
+export const SET_LIST_TOGGLE = 'SET_LIST_TOGGLE'
 
 
 // ASSEMBLY TECHNOLOGY
@@ -2199,7 +2207,15 @@ export const FOUR_DECIMAL_PRICE = 4
 
 //DECIMAL VALUES FOR WEIGHT
 export const FIVE_DECIMAL_WEIGHT = 5
-
+//OVERHEAD AND PROCESS APPLICABILITY IDS
+export const APPLICABILITY_OVERHEAD = 'Overhead';
+export const APPLICABILITY_PROFIT = 'Profit';
+export const APPLICABILITY_OVERHEAD_PROFIT = 'Overhead + Profit';
+export const APPLICABILITY_OVERHEAD_EXCL = 'Overhead(Excluding Int. + Dep.)';
+export const APPLICABILITY_PROFIT_EXCL = 'Profit(Excluding Int. + Dep.)';
+export const APPLICABILITY_OVERHEAD_PROFIT_EXCL = 'Overhead + Profit(Excluding Int. + Dep.)';
+export const APPLICABILITY_OVERHEAD_EXCL_PROFIT = 'Overhead(Excluding Int. + Dep.) + Profit';
+export const APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL = 'Overhead(Excluding Int. + Dep.) + Profit(Excluding Int. + Dep.)';
 //LABOUR ENUMS
 export const SKILLED = 'Skilled'
 export const CONTRACT = 'Contract'
@@ -3355,10 +3371,12 @@ export const effectiveDateRangeDays = null
 export const COMMODITYCOST = 'Commodity Cost'
 export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
+export const COSTINGOVERHEADANDPROFTFORPROCESS = "Costing Overhead Profit For Process"
+export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Operation"
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V4.1.4";
+export const VERSION = "V4.1.9";
 
 
 

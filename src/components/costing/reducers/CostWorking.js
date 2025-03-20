@@ -28,6 +28,7 @@ import {
     ADD_BOP_GRID_COSTING_SUCCESS,
     GET_RAW_MATERIAL_CALCI_INFO,
     FERROUS_CALCULATOR_RESET,
+    RUBBER_CALCULATOR_RESET,
     GET_CARRIER_TYPE_LIST_SUCCESS,
     SET_PACKAGING_CALCULATOR_AVAILABLE,
     SET_FREIGHT_CALCULATOR_AVAILABLE
@@ -239,6 +240,11 @@ export default function CostWorkingReducer(state = initialState, action) {
             return {
                 ...state,
                 ferrousCalculatorReset: action.payload
+            }
+        case RUBBER_CALCULATOR_RESET:
+            return {
+                ...state,
+                rubberCalculatorReset: action.payload
             }
         case GET_CARRIER_TYPE_LIST_SUCCESS:
             return {

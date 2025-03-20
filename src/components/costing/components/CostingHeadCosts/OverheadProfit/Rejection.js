@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, removeBOPfromApplicability } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, removeBOPfromApplicability } from '../../../../../helper';
 //MINDA
 // import { removeBOPFromList } from '../../../../../helper';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
@@ -347,7 +347,7 @@ function Rejection(props) {
         CostingPartDetails && CostingPartDetails?.CostingRawMaterialsCost?.map(item => {
             CostApplicability += checkForNull(item.ScrapRate) * checkForNull(item.FinishWeight)
         })
-        const rejectionRecoveryCost = CostApplicability * EffectiveRecovery / 100
+        const rejectionRecoveryCost = checkForNull(CostApplicability) * EffectiveRecovery / 100
         setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecoveryCost, initialConfiguration?.NoOfDecimalForPrice))
         dispatch(setRejectionRecoveryData({
             ...rejectionRecovery,
@@ -537,7 +537,7 @@ function Rejection(props) {
             <Row>
                 <Col md="11" className='first-section'>
                     <Row className="costing-border-inner-section border-bottom-none m-0">
-                        <Col md="2">
+                        <Col md={getConfigurationKey().IsRejectionRecoveryApplicable ? "2" : "4"}>
                             <span className="head-text">
                                 Applicability
                             </span>
@@ -557,11 +557,11 @@ function Rejection(props) {
                                 Rejection
                             </span>
                         </Col>
-                        <Col md="2">
+                        {getConfigurationKey().IsRejectionRecoveryApplicable && <Col md="2">
                             <span className="head-text word-nowrap">
                                 Rejection Recovery Cost
                             </span>
-                        </Col>
+                        </Col>}
                         <Col md={applicability.label === 'Fixed' ? '4' : '2'}>
                             <span className="head-text">
                                 Net Rejection
@@ -569,7 +569,7 @@ function Rejection(props) {
                         </Col>
                     </Row>
                     <Row className="costing-border costing-border-with-labels pt-3 m-0 overhead-profit-tab-costing">
-                        <Col md="2">
+                        <Col md={getConfigurationKey().IsRejectionRecoveryApplicable ? "2" : "4"}>
                             <SearchableSelectHookForm
                                 label={false}
                                 name={'Applicability'}
@@ -666,7 +666,7 @@ function Rejection(props) {
                                 disabled={true}
                             />
                         </Col>
-                        <Col md="2">
+                        {getConfigurationKey().IsRejectionRecoveryApplicable && <Col md="2">
                             {/* {RejectionRecoveryUI} */}
                             <div className='d-flex align-items-center'>
                                 <TextFieldHookForm
@@ -692,7 +692,7 @@ function Rejection(props) {
                                     title={viewAddButtonIcon([], "title")}
                                 />
                             </div>
-                        </Col>
+                        </Col>}
                         <Col md={applicability.label === 'Fixed' ? '4' : '2'}>
                             <TextFieldHookForm
                                 label={false}

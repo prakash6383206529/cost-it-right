@@ -12,6 +12,12 @@ import {
   RAW_MATERIAL,
   BOP,
   RAWMATERIAL,
+  APPLICABILITY_OVERHEAD,
+  APPLICABILITY_OVERHEAD_EXCL,
+  APPLICABILITY_PROFIT,
+  APPLICABILITY_PROFIT_EXCL,
+  APPLICABILITY_OVERHEAD_PROFIT,
+  APPLICABILITY_OVERHEAD_PROFIT_EXCL,
 
 } from '../config/constants'
 import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
@@ -1092,7 +1098,7 @@ export function isRMDivisorApplicable(technology) {
 export function findLostWeight(tableVal, isPlastic = false) {
   let sum = 0
   tableVal && tableVal.map(item => {
-    if (Number(item.LossOfType) === 2 && isPlastic) {
+    if ((Number(item.LossOfType) === 2 || Number(item.LossOfType) === 3) && isPlastic) {
       return false
     } else {
       sum = sum + item.LossWeight
@@ -1948,4 +1954,36 @@ export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendor
     vendorId: useVendorWise ? vendorId : EMPTY_GUID,
     clientId: clientValue
   };
+};
+/**
+ * Calculates net costs based on applicability type
+ * @param {number} cost - The cost value
+ * @param {object} applicability - The applicability object
+ * @param {string} prefix - 'Operation' or 'Process'
+ */
+export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation') => {
+  const result = {
+    [`Net${prefix}CostForOverhead`]: 0,
+    [`Net${prefix}CostForProfit`]: 0,
+    [`Net${prefix}CostForOverheadAndProfit`]: 0
+  };
+
+  switch (applicability) {
+    case APPLICABILITY_OVERHEAD:
+    case APPLICABILITY_OVERHEAD_EXCL:
+      result[`Net${prefix}CostForOverhead`] = cost ?? 0;
+      break;
+    case APPLICABILITY_PROFIT:
+    case APPLICABILITY_PROFIT_EXCL:
+      result[`Net${prefix}CostForProfit`] = cost ?? 0;
+      break;
+    case APPLICABILITY_OVERHEAD_PROFIT:
+    case APPLICABILITY_OVERHEAD_PROFIT_EXCL:
+      result[`Net${prefix}CostForOverheadAndProfit`] = cost ?? 0;
+      break;
+    default:
+      break
+  }
+
+  return result;
 };

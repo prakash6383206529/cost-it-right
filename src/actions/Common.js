@@ -75,6 +75,7 @@ import {
   GET_TAX_CODE_SELECTLIST,
   SET_COSTING_HEAD_FILTER,
   IS_RESET_COSTING_HEAD,
+  SET_LIST_TOGGLE
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1976,6 +1977,15 @@ const rmAPICalling = (params, dispatch) => {
       break;
     default:
       break;
+  }
+}
+
+export function setListToggle(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_LIST_TOGGLE,
+      payload: data
+    })
   }
 }
 
