@@ -39,7 +39,7 @@ export const TextFieldHooks = (input) => {
           {...inputProps}
           autoComplete={'off'}
         />
-        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+        {errors && (errors?.message || errors?.type) ? <div className="text-help">{(errors?.message || errors?.type)}</div> : ""}
       </div>
     </>
   )
@@ -228,8 +228,8 @@ export const PasswordFieldHookForm = (field) => {
           }
           }
         />
-        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className={`${disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors.message || errors.type)}</div>{!disableErrorOverflow && <div className="error-overflow">{(errors.message || errors.type)}</div>} </div> : ''}
+        {errors && errors?.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors?.type !== 'required' ? <div className={`${disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors?.message || errors?.type)}</div>{!disableErrorOverflow && <div className="error-overflow">{(errors?.message || errors?.type)}</div>} </div> : ''}
       </div>
     </>
   )
@@ -286,8 +286,8 @@ export const NumberFieldHookForm = (field) => {
         </div>
 
 
-        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className={`${disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors.message || errors.type)}</div>{!disableErrorOverflow && <div className="error-overflow">{(errors.message || errors.type)}</div>} </div> : ''}
+        {errors && errors?.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors?.type !== 'required' ? <div className={`${disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors?.message || errors?.type)}</div>{!disableErrorOverflow && <div className="error-overflow">{(errors?.message || errors?.type)}</div>} </div> : ''}
       </div>
     </>
   )
@@ -401,14 +401,14 @@ export const SearchableSelectHookForm = (field) => {
         }}
       />
 
-      {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
-      {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
-      {/*    {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''} */}
-      {/* {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''} */}
-      {errors !== undefined ? (errors.type === 'required' ? (<div className="text-help">This field is required</div>) : errors.ref?.value ? (null
-      ) : errors.message || errors.type ? (<div className="text-help">{errors.message || errors.type}</div>) : null
+      {/* {errors && errors?.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
+      {/* {errors && errors?.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
+      {/*    {errors && errors?.type === 'required' ? <div className="text-help">This field is required</div>
+        : errors && errors?.type !== 'required' ? <div className="text-help">{(errors?.message || errors?.type)}</div> : ''} */}
+      {/* {errors && errors?.type === 'required' ? <div className="text-help">This field is required</div>
+        : errors && errors?.type !== 'required' ? <div className="text-help">{(errors?.message || errors?.type)}</div> : ''} */}
+      {errors !== undefined ? (errors?.type === 'required' ? (<div className="text-help">This field is required</div>) : errors?.ref?.value ? (null
+      ) : errors?.message || errors?.type ? (<div className="text-help">{errors?.message || errors?.type}</div>) : null
       ) : null}
 
 
@@ -558,8 +558,8 @@ export const DatePickerHookForm = (field) => {
           {buttonCross && <button type="button" className={'btn-cross'} disabled={isDisabled} onClick={buttonCross}>
             <div className='cross-light'></div>
           </button>}
-          {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-            : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+          {errors && errors?.type === 'required' ? <div className="text-help">This field is required</div>
+            : errors && errors?.type !== 'required' ? <div className="text-help">{(errors?.message || errors?.type)}</div> : ''}
         </div>
       </div>
     </React.Fragment>
@@ -665,7 +665,7 @@ export const RadioHookForm = (field) => {
             }
           />
         </label>
-        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+        {errors && (errors?.message || errors?.type) ? <div className="text-help">{(errors?.message || errors?.type)}</div> : ""}
       </div>
     </>
   )
@@ -731,10 +731,10 @@ export const AsyncSearchableSelectHookForm = (field) => {
         }}
       />
 
-      {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
-      {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
-      {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+      {/* {errors && errors?.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
+      {/* {errors && errors?.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
+      {errors && errors?.type === 'required' ? <div className="text-help">This field is required</div>
+        : errors && errors?.type !== 'required' ? <div className="text-help">{(errors?.message || errors?.type)}</div> : ''}
 
     </div>
   )
@@ -797,8 +797,8 @@ export const DateTimePickerHookForm = (field) => {
               // )
             )}
           />
-          {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-            : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+          {errors && errors?.type === 'required' ? <div className="text-help">This field is required</div>
+            : errors && errors?.type !== 'required' ? <div className="text-help">{(errors?.message || errors?.type)}</div> : ''}
         </div>
       </div>
     </React.Fragment>
