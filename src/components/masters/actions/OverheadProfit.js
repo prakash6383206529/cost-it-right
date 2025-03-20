@@ -351,7 +351,7 @@ export function fileUploadOverHead(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -369,7 +369,7 @@ export function fileUploadProfit(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
+            callback(error);
         });
     };
 }

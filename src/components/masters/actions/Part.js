@@ -179,7 +179,7 @@ export function fileUploadPart(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -717,7 +717,7 @@ export function fileUploadProduct(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
+            callback(error);
         });
     };
 }

@@ -55,7 +55,7 @@ function MRSimulation(props) {
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const gridRef = useRef();
-const {vendorLabel} = useLabels()
+    const { vendorLabel } = useLabels()
     const { technologyLabel } = useLabels();
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -64,7 +64,7 @@ const {vendorLabel} = useLabels()
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation,selectedTechnologyForSimulation,exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
@@ -345,13 +345,14 @@ const {vendorLabel} = useLabels()
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 if (!res?.status && !res?.error) {
                     setValueFunction(true, res);
-                }            }))
-        }else{
+                }
+            }))
+        } else {
             setValueFunction(false, []);
         }
-       
+
     }, 500);
-    const setValueFunction=(isExchangeRate,res)=>{
+    const setValueFunction = (isExchangeRate, res) => {
         const filteredMasterId = masterList?.find(item => item?.Text === 'Machine Rate')?.Value;
         if (!isEffectiveDateSelected) {
             setIsWarningMessageShow(true)
@@ -542,6 +543,10 @@ const {vendorLabel} = useLabels()
                                                 enableBrowserTooltips={true}
                                             >
                                                 {!isImpactedMaster && <AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName={technologyLabel} minWidth={columnWidths.Technology}></AgGridColumn>}
+                                                {
+                                                    !isImpactedMaster &&
+                                                    <AgGridColumn minWidth={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                                }
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNo" tooltipField='PartNo' editable='false' headerName="Part No" minWidth={columnWidths.PartNo}></AgGridColumn>}
                                                 {/* props?.isImpactedMaster&& */<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
@@ -557,16 +562,16 @@ const {vendorLabel} = useLabels()
 
                                                     </>
                                                 }
-                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                 <AgGridColumn field="Currency" minWidth={120} headerName="Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                                                 {(isImpactedMaster || props?.lastRevision ) && <AgGridColumn field="LocalCurrency" minWidth={120}  headerName={"Plant Currency"}cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                <AgGridColumn field="Currency" minWidth={120} headerName="Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                {(isImpactedMaster || props?.lastRevision) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
 
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Machine Rate" marryChildren={true} >
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Cost (Currency)" marryChildren={true} >
                                                     <AgGridColumn minWidth={120} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
                                                     <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {(isImpactedMaster || props?.lastRevision || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
-                                                    "Net Machine Rate (Plant Currency)"                                                }>
+                                                    "Net Machine Rate (Plant Currency)"}>
                                                     <AgGridColumn minWidth={columnWidths.NetLandedCost} field="OldMachineRateLocalConversion" editable='false' cellRenderer='localConversionFormatter' headerName="Existing" colId='OldMachineRateLocalConversion'></AgGridColumn>
                                                     <AgGridColumn minWidth={columnWidths.NewNetLandedCost} field="NewMachineRateLocalConversion" editable='false' cellRenderer='localConversionFormatter' headerName="Revised" colId='NewMachineRateLocalConversion'></AgGridColumn>
                                                 </AgGridColumn>
