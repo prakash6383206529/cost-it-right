@@ -176,7 +176,7 @@ function SurfaceTreatmentCost(props) {
   }
 
   const SaveItem = (index) => {
-    if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.SurfaceArea !== undefined && Object.keys(errors?.OperationGridFields[index]?.SurfaceArea).length !== 0)) {
+    if (errors?.OperationGridFields && errors?.OperationGridFields?.length > 0) {
       return false
     }
     if (getValues(`${OperationGridFields}.${index}.SurfaceArea`) === '') {
@@ -222,7 +222,7 @@ function SurfaceTreatmentCost(props) {
     if (!isNaN(event.target.value)) {
 
       const SurfaceTreatmentCost = (checkForNull(event.target.value) * checkForNull(tempData.RatePerUOM)) + (checkForNull(tempData.LabourRate) * tempData.LabourQuantity);
-      tempData = { ...tempData, SurfaceArea: event.target.value, SurfaceTreatmentCost: SurfaceTreatmentCost }
+      tempData = { ...tempData, SurfaceArea: Number(event.target.value), SurfaceTreatmentCost: SurfaceTreatmentCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
@@ -366,7 +366,7 @@ function SurfaceTreatmentCost(props) {
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                                        validate: { number, checkWhiteSpaces, noDecimal }
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""

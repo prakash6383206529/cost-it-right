@@ -136,6 +136,22 @@ class AddExchangeRate extends Component {
       });
       return temp;
     }
+    if (label === 'currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0' || item.Value === this.state.toCurrency?.value) return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'toCurrency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0' || item.Value === this.state.currency?.value) return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
     if (label === 'exchangeSource') {
       exchangeRateSourceList && exchangeRateSourceList.map((item) => {
         if (item.Value === '--Exchange Rate Source Name--') return false

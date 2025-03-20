@@ -110,6 +110,7 @@ function AddRMDetails(props) {
         }
         dispatch(getExchangeRateSource((res) => { }))
     }, [])
+    const masterFields = ['Technology', 'RawMaterialName', 'RawMaterialCode', 'RawMaterialSpecification', 'RawMaterialGrade', 'RawMaterialCategory', 'Plants', 'ExchangeSource', 'vendorName', 'sourceVendorName', 'Source', 'SourceSupplierCityId']
     useEffect(() => {
         if (states.costingTypeId === CBCTypeId) {
             dispatch(getClientSelectList(() => { }))
@@ -119,6 +120,9 @@ function AddRMDetails(props) {
             vendor: [],
             sourceVendor: [],
         }))
+        masterFields.forEach(field => {
+            setValue(field, null)
+        })
     }, [states.costingTypeId])
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
@@ -937,7 +941,8 @@ function AddRMDetails(props) {
                                             }}
                                             onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
                                         />
-                                    </div>
+                                            {errors?.sourceVendorName && <div className="text-help">{errors.sourceLocationName.message}</div>}
+                                            </div>
                                 </div>
                                 {/* {((state.showErrorOnFocus && state.vendor?.length === 0)) && <div className='text-help mt-1'>This field is required.</div>} */}
                             </Col>}
@@ -1005,7 +1010,7 @@ function AddRMDetails(props) {
                                                 placeholder={"Select"}
                                                 className="mb-0 withBorder"
                                             />
-                                            {errors.SourceSupplierCityId && <div className="text-help">{errors.SourceSupplierCityId.message}</div>}
+                                            {errors?.SourceSupplierCityId && <div className="text-help">{errors.SourceSupplierCityId.message}</div>}
                                         </div>
                                     </div>
                                 </Col>

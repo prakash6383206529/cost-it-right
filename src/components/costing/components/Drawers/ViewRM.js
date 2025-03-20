@@ -8,7 +8,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID, TOOLING } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, getTechnology, ELECTRICAL_STAMPING, INSULATION } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
-import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationCorrugatedAndMonoCartonCalculation, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, getRawMaterialCalculationForInsulation, getRawMaterialCalculationForLamination, getSimulationLaminationCalculation } from '../../actions/CostWorking'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForRubberStandard, getRawMaterialCalculationForSheetMetal, getSimulationCorrugatedAndMonoCartonCalculation, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, getRawMaterialCalculationForInsulation, getRawMaterialCalculationForLamination, getSimulationLaminationCalculation } from '../../actions/CostWorking'
 import { Row, Col, Table } from 'reactstrap'
 import TooltipCustom from '../../../common/Tooltip';
 import _ from 'lodash';
@@ -63,7 +63,6 @@ function ViewRM(props) {
 
   const getWeightData = (index) => {
     setIndex(index)
-
     const tempData = viewCostingData[props.index]
     if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID)) && viewRM[index]?.RawMaterialCalculatorId === null && viewRM[index]?.IsCalculatorAvailable === true) {
       switch ((Number(tempData?.technologyId))) {
@@ -203,9 +202,15 @@ function ViewRM(props) {
           }))
           break;
         case RUBBER:
-          dispatch(getRawMaterialCalculationForRubber(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
-            setCalculatorData(res, index)
-          }))
+          if (viewCostingData[props.index]?.CalculatorType === 'Standard') {
+            dispatch(getRawMaterialCalculationForRubberStandard(tempData?.netRMCostView[index]?.CostingId, res => {
+              setCalculatorData(res, index, 'Standard')
+            }))
+          } else {
+            dispatch(getRawMaterialCalculationForRubber(tempData?.netRMCostView[index]?.CostingId, tempData?.netRMCostView[index]?.RawMaterialId, tempData?.netRMCostView[index]?.RawMaterialCalculatorId, res => {
+              setCalculatorData(res, index, 'Compound')
+            }))
+          }
           break;
         case MACHINING:
           dispatch(getRawMaterialCalculationForMachining(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
@@ -449,7 +454,7 @@ function ViewRM(props) {
                   rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
                   CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
                   fromCostingSummary={props.fromCostingSummary}
-                  rmData={viewCostingData[props.index]?.technologyId === RUBBER ? calciData.WeightCalculatorRequest.CostingRubberCalculationRawMaterials : calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
+                  rmData={viewCostingData[props.index]?.technologyId === RUBBER ? (viewCostingData[props.index]?.CalculatorType === "Standard" ? calciData.WeightCalculatorRequest.RawMaterialRubberStandardWeightCalculator : calciData.WeightCalculatorRequest.CostingRubberCalculationRawMaterials) : calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
                   calculatorType={viewCostingData[props.index]?.CalculatorType}
 
                 />
