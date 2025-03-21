@@ -22,7 +22,7 @@ const Hanger = (props) => {
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
     useEffect(() => {
         setValue(`HangerFactor`, surfaceTabData?.CostingPartDetails?.HangerRate)
-        setValue(`NoOfPartsPerHanger`, surfaceTabData?.CostingPartDetails?.Quantity)
+        setValue(`NoOfPartsPerHanger`, surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger)
         setValue(`HangerCostPerPart`, surfaceTabData?.CostingPartDetails?.HangerCostPerPart)
     }, [SurfaceTabData])
     const calculateHangerCost = debounce((hangerFactor, noOfPartsPerHanger) => {
@@ -30,7 +30,7 @@ const Hanger = (props) => {
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(hangerCost, NoOfDecimalForPrice))
         let obj = {
             HangerRate: hangerFactor,
-            Quantity: noOfPartsPerHanger,
+            NumberOfPartsPerHanger: noOfPartsPerHanger,
             HangerCostPerPart: hangerCost
         }
         let surfaceTabData = [...SurfaceTabData]
@@ -38,7 +38,6 @@ const Hanger = (props) => {
             item.CostingPartDetails = { ...item.CostingPartDetails, ...obj }
         })
         dispatch(setSurfaceData(surfaceTabData, () => { }))
-        console.log(surfaceTabData)
     }, 300)
     return (
         <>

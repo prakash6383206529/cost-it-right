@@ -13,6 +13,9 @@ import { MACHINING } from '../../../../config/masterData'
 import { getCostingLabourDetails } from '../../actions/Costing'
 import ViewDetailedForms from './ViewDetailedForms'
 import { useLabels } from '../../../../helper/core'
+import Hanger from '../CostingHeadCosts/SurfaceTreatMent/Hanger'
+import { viewAddButtonIcon } from '../../CostingUtil'
+import Button from '../../../layout/Button'
 
 function ViewConversionCost(props) {
 
@@ -33,7 +36,8 @@ function ViewConversionCost(props) {
   const { isPDFShow, stCostShow } = props
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { viewConversionCostData } = props
-  const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting } = viewConversionCostData
+  const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting, viewCostingDataObj } = viewConversionCostData
+  console.log(viewCostingDataObj, 'viewCostingDataObj')
   const { CostingOperationCostResponse, CostingProcessCostResponse, CostingOtherOperationCostResponse } = conversionData
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
@@ -55,6 +59,7 @@ function ViewConversionCost(props) {
   const [labourTable, setLabourTable] = useState([])
   const [openOperationForm, setOpenOperationForm] = useState(false)
   const [openMachineForm, setOpenMachineForm] = useState(false)
+  const [viewExtraCost, setViewExtraCost] = useState(false)
 
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
@@ -740,7 +745,38 @@ function ViewConversionCost(props) {
                   }
 
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
-                    <>{extraCostTableData()} </>
+                    <>
+                      <Hanger />
+                      <Row>
+                        <Col md="4">
+                          <label>Paint and Masking</label>
+                          <div className='d-flex align-items-center'>
+                            <input className='form-control w-100' type="text" disabled value={viewCostingDataObj?.TransportationCostConversion} />
+                            <Button
+                              id="viewConversion_extraCost"
+                              onClick={() => setViewExtraCost(true)}
+                              className={"right mt-0"}
+                              variant={viewAddButtonIcon([], "className", true)}
+                              title={viewAddButtonIcon([], "title", true)}
+                            />
+                          </div>
+                        </Col>
+                        <Col md="4">
+
+                          <label>Extra Cost</label>
+                          <div className='d-flex align-items-center'>
+                            <input className='form-control w-100' type="text" disabled value={viewCostingDataObj?.TransportationCostConversion} />
+                            <Button
+                              id="viewConversion_extraCost"
+                              onClick={() => setViewExtraCost(true)}
+                              className={"right mt-0"}
+                              variant={viewAddButtonIcon([], "className", true)}
+                              title={viewAddButtonIcon([], "title", true)}
+                            />
+                          </div>
+                        </Col>
+                      </Row>
+                      {extraCostTableData()} </>
                   }
 
 

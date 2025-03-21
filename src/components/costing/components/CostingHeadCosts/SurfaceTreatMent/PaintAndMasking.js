@@ -146,6 +146,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
             ...prev,
             Coats: prev.Coats.filter((_, i) => i !== parentIndex)
         }))
+        calculateTotalCost(calculateState.Coats.filter((_, i) => i !== parentIndex))
     }
 
     const addData = data => {
@@ -215,16 +216,29 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                 dispatch(setSurfaceData(newData, () => { }))
             }
         }))
+    }
 
-
+    const calculateTotalCost = (tableData) => {
+        let totalPaintCost = 0
+        const getTapValue = getValuesTableForm(`TapeCost`)
+        const totalNetCost = tableData.reduce((total, paintData) => {
+            return total + paintData.RawMaterials.reduce((rmTotal, rmItem) => {
+                return rmTotal + (rmItem.NetCost || 0);
+            }, 0);
+        }, 0);
+        totalPaintCost = totalNetCost + checkForNull(getTapValue)
+        setCalculateState(prev => ({
+            ...prev,
+            PaintCost: totalNetCost,
+            TotalPaintCost: totalPaintCost
+        }));
+        setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(totalPaintCost, NoOfDecimalForPrice))
     }
     const calculateValues = debounce((surfaceArea, consumption, rejectionAllowancePercentage, parentIndex, childIndex, rm) => {
         const surfaceAreaAndConsumption = surfaceArea * consumption
         const rejectionAllowance = surfaceAreaAndConsumption * rejectionAllowancePercentage / 100
         const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
         let paintDataListTemp = [...calculateState.Coats];
-        let totalPaintCost = 0
-        const getTapValue = getValuesTableForm(`TapeCost`)
         if (paintDataListTemp[parentIndex]?.RawMaterials[childIndex]) {
             paintDataListTemp[parentIndex].RawMaterials[childIndex] = {
                 ...paintDataListTemp[parentIndex].RawMaterials[childIndex],
@@ -237,25 +251,15 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
             }
 
             // Calculate total NetCost across all items
+            calculateTotalCost(paintDataListTemp)
 
-            const totalNetCost = paintDataListTemp.reduce((total, paintData) => {
-                return total + paintData.RawMaterials.reduce((rmTotal, rmItem) => {
-                    return rmTotal + (rmItem.NetCost || 0);
-                }, 0);
-            }, 0);
-            totalPaintCost = totalNetCost + checkForNull(getTapValue)
-            setCalculateState(prev => ({
-                ...prev,
-                PaintCost: totalNetCost,
-                TotalPaintCost: totalPaintCost
-            }));
         }
 
         setCalculateState(prev => ({
             ...prev,
             Coats: paintDataListTemp,
         }))
-        setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(totalPaintCost, NoOfDecimalForPrice))
+
         setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
         setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
     }, 300)

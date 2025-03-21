@@ -179,6 +179,7 @@ function SurfaceTreatment(props) {
           "TapeCost": item?.CostingPartDetails?.TapeCost,
           "HangerRate": item?.CostingPartDetails?.HangerRate,
           "HangerCostPerPart": item?.CostingPartDetails?.HangerCostPerPart,
+          "NumberOfPartsPerHanger": item?.CostingPartDetails?.NumberOfPartsPerHanger
         },
       }
       // IN COSTING VIEW MODE
