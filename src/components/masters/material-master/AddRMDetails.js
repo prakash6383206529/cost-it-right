@@ -7,7 +7,7 @@ import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId } fr
 import { setRawMaterialDetails, fileUploadRMDomestic, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild, SetCommodityIndexAverage } from "../actions/Material"
 import { useForm, Controller, useWatch } from "react-hook-form"
 import { Row, Col } from 'reactstrap'
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, } from '../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, VendorAsyncSelector, AsyncDropdownHookForm, } from '../../layout/HookFormInputs';
 import LoaderCustom from "../../common/LoaderCustom"
 import { MESSAGES } from "../../../config/message"
 import { autoCompleteDropdown, DropDownFilterList, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
@@ -329,8 +329,9 @@ function AddRMDetails(props) {
     };
 
     const handleVendor = (newValue, actionMeta) => {
+        console.log(newValue);
         if (newValue && newValue !== '') {
-            if (newValue.value === state?.sourceVendor?.value) {
+            if (newValue?.value === state?.sourceVendor?.value) {
                 Toaster.warning(`${vendorLabel} and Source ${vendorLabel} cannot be the same`);
                 setState(prevState => ({ ...prevState, vendor: [] }));
                 dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, Vendor: [] }, () => { }));
@@ -346,7 +347,7 @@ function AddRMDetails(props) {
 
     const handleSourceVendor = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            if (newValue.value === state?.vendor?.value) {
+            if (newValue?.value === state?.vendor?.value) {
                 Toaster.warning(`${vendorLabel} and Source ${vendorLabel} cannot be the same`);
 
                 setState(prevState => ({ ...prevState, sourceVendor: [] }));
@@ -391,7 +392,7 @@ function AddRMDetails(props) {
 
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, rmGrade: newValue, rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: true }));
-            dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
+            dispatch(fetchSpecificationDataAPI(newValue?.value, (res) => { }))
             getmaterial(newValue?.value)
         } else {
             setState(prevState => ({ ...prevState, rmGrade: [], rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: false }));
@@ -404,9 +405,9 @@ function AddRMDetails(props) {
    */
     const handleSpecification = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            setState(prevState => ({ ...prevState, rmSpec: newValue, rmCode: { label: newValue.RawMaterialCode, value: newValue.value }, rmCategory: [], isCodeDisabled: true }));
-            setValue('RawMaterialCode', { label: newValue.RawMaterialCode, value: newValue.value })
-            handleCommonFunction(IsMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, newValue.value)
+            setState(prevState => ({ ...prevState, rmSpec: newValue, rmCode: { label: newValue?.RawMaterialCode, value: newValue?.value }, rmCategory: [], isCodeDisabled: true }));
+            setValue('RawMaterialCode', { label: newValue?.RawMaterialCode, value: newValue?.value })
+            handleCommonFunction(IsMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, newValue?.value)
         } else {
             setState(prevState => ({ ...prevState, rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: false }));
         }
@@ -431,7 +432,7 @@ function AddRMDetails(props) {
             delete errors.RawMaterialSpecification
             delete errors.RawMaterialGrade
             delete errors.RawMaterialName
-            dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
+            dispatch(getRMSpecificationDataAPI(newValue?.value, true, (res) => {
                 if (res.status === 204) {
                     setState(prevState => ({
                         ...prevState,
@@ -485,7 +486,7 @@ function AddRMDetails(props) {
     const handleSourceSupplierCity = (newValue, actionMeta) => {
         const { isEditFlag, DataToChange } = state
         if (newValue && newValue !== '') {
-            if (newValue.value === state?.sourceLocation?.value) {
+            if (newValue?.value === state?.sourceLocation?.value) {
                 setState(prevState => ({ ...prevState, sourceLocation: [] }));
                 dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, SourceLocation: [] }, () => { }));
             } else {
@@ -493,7 +494,7 @@ function AddRMDetails(props) {
                 dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, SourceLocation: newValue }, () => { }));
             }
         }
-        if (isEditFlag && (DataToChange.SourceLocation !== newValue.value)) {
+        if (isEditFlag && (DataToChange.SourceLocation !== newValue?.value)) {
             setState(prevState => ({ ...prevState, IsFinancialDataChanged: true }))
 
         }
@@ -866,7 +867,20 @@ function AddRMDetails(props) {
                 </Col>
                 {<Row className={`align-items-center mb-3 ${state.isVendorAccOpen ? '' : 'd-none'}`}>
                     {states.costingTypeId !== CBCTypeId && (<>
-                        <Col className="col-md-15">
+                        <AsyncDropdownHookForm
+                            name="vendorName"
+                            label={`${vendorLabel} (Code)`}
+                            value={state.vendor}
+                            onChange={handleVendor}
+                            loadOptions={vendorFilterList}
+                            isDisabled={isEditFlag || isViewFlag}
+                            isRequired={true}
+                            error={errors?.vendorName}
+                            showAddButton={!(isEditFlag || isViewFlag)}
+                            onAddClick={vendorToggle}
+                            onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
+                        />
+                        {/* <Col className="col-md-15">
                             <label>{(states.costingTypeId === ZBCTypeId ? `${RMVendorLabel} (Code)` : `${vendorLabel} (Code)`)}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                 <div className="fullinput-icon p-relative">
@@ -895,7 +909,7 @@ function AddRMDetails(props) {
                                 )}
                             </div>
                             {errors?.vendorName && state.vendor?.length === 0 && <div className="text-help">{errors.vendorName.message}</div>}
-                        </Col>
+                        </Col> */}
                         <Col className="col-md-15 mt-4 pt-2 d-none">
                             <div className=" flex-fills d-flex justify-content-between align-items-center">
                                 {/* <h5>{"Vendor:"}</h5> */}
@@ -924,28 +938,21 @@ function AddRMDetails(props) {
                     )}
                     {states.costingTypeId === VBCTypeId && (
                         <>
-                            {getConfigurationKey().IsShowSourceVendorInRawMaterial && <Col className="col-md-15">
-                                <label>{`Source ${vendorLabel} (Code)`}</label>
-                                <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                                    <div className="fullinput-icon p-relative">
-                                        {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                        <AsyncSelect
-                                            name="sourceVendorName"
-                                            loadOptions={sourceVendorFilterList}
-                                            onChange={(e) => handleSourceVendor(e)}
-                                            value={state.sourceVendor}
-                                            noOptionsMessage={({ inputValue }) => inputValue?.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                            isDisabled={isEditFlag || isViewFlag}
-                                            onKeyDown={(onKeyDown) => {
-                                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                            }}
-                                            onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
-                                        />
-                                            {errors?.sourceVendorName && <div className="text-help">{errors.sourceLocationName.message}</div>}
-                                            </div>
-                                </div>
-                                {/* {((state.showErrorOnFocus && state.vendor?.length === 0)) && <div className='text-help mt-1'>This field is required.</div>} */}
-                            </Col>}
+                            {getConfigurationKey().IsShowSourceVendorInRawMaterial &&
+                                <AsyncDropdownHookForm
+                                    name="sourceVendorName"
+                                    label={`Source ${vendorLabel} (Code)`}
+                                    value={state.sourceVendor}
+                                    onChange={handleSourceVendor}
+                                    loadOptions={sourceVendorFilterList}
+                                    isDisabled={isEditFlag || isViewFlag}
+                                    isRequired={false}
+                                    error={errors?.sourceVendorName}
+                                    showAddButton={false}
+                                    onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
+                                    containerClassName="col-md-15"
+                                />
+                            }
                             {!getConfigurationKey().IsShowSourceVendorInRawMaterial && <>
                                 <Col md="3">
                                     <TextFieldHookForm
@@ -969,51 +976,21 @@ function AddRMDetails(props) {
 
                                     />
                                 </Col>
-                                {/* <Col md="3"> */}
-                                {/* <SearchableSelectHookForm
-                                        name="SourceSupplierCityId"
-                                        label="Source Location"
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        placeholder={"Select"}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                        }}
-                                        options={renderListing("SourceLocation")}
-                                        customClassName="mb-0 withBorder"
-                                        handleChange={handleSourceSupplierCity}
-                                        defaultValue={state.sourceLocation}
-                                        disabled={isViewFlag}
-                                        errors={errors.SourceSupplierCityId}
-                                        loadOptions={sourceVendorFilterList}
-
-                                    />
-                                </Col> */}
-                                <Col md="3">
-                                    <label>{`Source Location`}</label>
-                                    <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                                        <div className="fullinput-icon p-relative">
-                                            {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                            <AsyncSelect
-                                                name="SourceSupplierCityId"
-                                                loadOptions={sourceLocationFilterList}
-                                                onChange={(e) => handleSourceSupplierCity(e)}
-                                                value={state.sourceLocation}
-                                                noOptionsMessage={({ inputValue }) => inputValue?.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                                isDisabled={isViewFlag}
-                                                onKeyDown={(onKeyDown) => {
-                                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                                }}
-                                                onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
-                                                placeholder={"Select"}
-                                                className="mb-0 withBorder"
-                                            />
-                                            {errors?.SourceSupplierCityId && <div className="text-help">{errors.SourceSupplierCityId.message}</div>}
-                                        </div>
-                                    </div>
-                                </Col>
+                               
+                                <AsyncDropdownHookForm
+                                    name="SourceSupplierCityId"
+                                    label="Source Location"
+                                    value={state.sourceLocation}
+                                    onChange={handleSourceSupplierCity}
+                                    loadOptions={sourceLocationFilterList}
+                                    isDisabled={isViewFlag}
+                                    isRequired={false}
+                                    error={errors?.SourceSupplierCityId}
+                                    placeholder="Select"
+                                    className="mb-0 withBorder"
+                                    onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
+                                />
+                                
                             </>}
 
                         </>
