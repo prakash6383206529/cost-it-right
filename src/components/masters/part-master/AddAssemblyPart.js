@@ -722,11 +722,6 @@ class AddAssemblyPart extends Component {
     // Don't show toast here, just let the form validation display the error
   }
   
-  // Check UOM field if required
-  if (this.props.initialConfiguration.IsShowUnitOfMeasurementInPartMaster && 
-      (!this.state.uomSelected || !this.state.uomSelected.value)) {
-    hasErrors = true;
-  }
   
   // If there are validation errors, stop submission
   if (hasErrors) {

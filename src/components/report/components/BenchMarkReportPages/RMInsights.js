@@ -13,7 +13,7 @@ import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../das
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostingBenchMarkRmReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
-import { checkForDecimalAndNull } from '../../../../helper';
+import { checkForDecimalAndNull, loggedInUserId } from '../../../../helper';
 import { useLabels } from '../../../../helper/core';
 
 function Insights(props) {
@@ -404,6 +404,7 @@ const {vendorLabel} = useLabels()
             return arr
         })
         let data = {
+            LoggedInUserId: loggedInUserId(),
             FromDate: props.dateArray[0] ? props.dateArray[0] : null,
             ToDate: props.dateArray[1] ? props.dateArray[1] : null,
             RMCostBenchMarkingReports: arr
