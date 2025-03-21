@@ -392,6 +392,7 @@ class Department extends Component {
 												component={renderText}
 												required={true}
 												customClassName={'withBorder'}
+												disabled={getConfigurationKey().IsAssociated ? true : false}
 											/>
 										</div>
 										{<div className="input-group col-md-12 input-withouticon">
@@ -404,6 +405,7 @@ class Department extends Component {
 												component={renderText}
 												required={true}
 												customClassName={'withBorder'}
+												disabled={getConfigurationKey().IsAssociated ? true : false}
 											/>
 										</div>}
 										{getConfigurationKey().IsDivisionAllowedForDepartment && <>
