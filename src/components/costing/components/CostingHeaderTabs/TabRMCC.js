@@ -703,7 +703,7 @@ function TabRMCC(props) {
 
     //FUNCTION TO CALCULATE THE COSITNG VALUE OF PARTS AND SUBASSEMBLIES
     const calculateValue = (useLevel, item, tempArrForCosting) => {
-      
+
       let initialPartNo = ''
       let quant = ''
       for (let i = useLevel; i >= 0; i--) {
@@ -935,7 +935,7 @@ function TabRMCC(props) {
   }
 
   const setConversionCostInDataList = (conversionGrid, params, arr, item) => {
-
+    
 
     //FUNCTION TO CALCULATE THE COSITNG VALUE OF PARTS AND SUBASSEMBLIES
     const calculateValue = (useLevel, item, tempArrForCosting) => {
@@ -2044,6 +2044,7 @@ function TabRMCC(props) {
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostWithQuantity) * assemblyObj?.CostingPartDetails?.Quantity
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
           sessionStorage.setItem('costingArray', JSON.stringify([]))
+          
           sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
           return i;
         }

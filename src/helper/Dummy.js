@@ -164,3 +164,18 @@ export const response = {
         }
     ]
 }
+
+export const Paint = [
+    { label: 'Primer', value: 1 },
+    { label: 'Base Coat', value: 2 },
+    { label: 'Top Coat', value: 3 },
+]
+export const RawMaterialForPaint = [
+    { label: 'EPOXY PRIMER (RM001)', value: 1, RMCode: 'RM001', RmRate: 192.331646 },
+    { label: 'THINNER (RM002)', value: 2, RMCode: 'RM002', RmRate: 97.549849 },
+    { label: 'Matt Serene Gold (RM003)', value: 3, RMCode: 'RM003', RmRate: 856 },
+    { label: 'THINNER (RM004)', value: 4, RMCode: 'RM004', RmRate: 97.549849 },
+    { label: 'MATT CLEAR (RM005)', value: 5, RMCode: 'RM005', RmRate: 278.580517 },
+    { label: 'THINNER (RM006)', value: 6, RMCode: 'RM006', RmRate: 97.549849 },
+]
+

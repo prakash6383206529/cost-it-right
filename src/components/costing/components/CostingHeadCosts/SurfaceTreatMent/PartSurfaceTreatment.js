@@ -87,6 +87,8 @@ function PartSurfaceTreatment(props) {
           <td>{item && item.BOMLevel}</td>
           <td>{item && item.PartType}</td>
           <td>{item?.CostingPartDetails?.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.SurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.HangerCostPerPart !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalPaintCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
           <td>{item?.CostingPartDetails?.TransportationCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
           <td>{item?.Quantity}</td>
           <td>{item?.CostingPartDetails?.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost * item.Quantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>

@@ -30,6 +30,7 @@ import {
   SET_EXCHANGE_RATE_DATA,
   SET_OPERATION_APPLICABILITY_SELECT,
   SET_PROCESS_APPLICABILITY_SELECT,
+  GET_PAINT_COAT_LIST,
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -83,11 +84,12 @@ const initialState = {
   partSpecificationRFQData: [],
   evaluationType: [],
   plantExchangeRate: null,
-    baseExchangeRate: null,
-    plantFromCurrency: '',
-    plantToCurrency: '',
-    baseFromCurrency: '',
-    baseToCurrency: ''
+  baseExchangeRate: null,
+  plantFromCurrency: '',
+  plantToCurrency: '',
+  baseFromCurrency: '',
+  baseToCurrency: '',
+  paintCoatList: []
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -874,6 +876,12 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         getTcoDetails: action.payload
       }
+    case GET_PAINT_COAT_LIST:
+      return {
+        ...state,
+        loading: false,
+        paintCoatList: action.payload
+      }
     case SET_COSTING_VIEW_DATA_FOR_ASSEMBLY:
       return {
         ...state,
@@ -905,11 +913,11 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         exchangeRateSource: action.payload,
       }
-      case SET_CURRENCY_SOURCE:
-        return {
-          ...state,
-          currencySource: action.payload,
-        }
+    case SET_CURRENCY_SOURCE:
+      return {
+        ...state,
+        currencySource: action.payload,
+      }
     case SET_EXCHANGE_RATE_DATA:
       return {
         ...state,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -77,22 +77,35 @@ function TabOverheadProfit(props) {
 
 
 
-  //MANIPULATE TOP HEADER COSTS
+  // Move netCost calculation to a separate function for clarity
+  const calculateNetCost = (headerValues) => {
+    if (!headerValues) return 0;
+    return (checkForNull(headerValues?.OverheadCost) + checkForNull(headerValues?.ProfitCost) + checkForNull(headerValues?.RejectionCost) + checkForNull(headerValues?.ICCCost));
+  };
+
+  // Memoize the TopHeaderValues
+  const topHeaderValues = useMemo(() => {
+    if (!OverheadProfitTabData?.length || !OverheadProfitTabData[0]?.CostingPartDetails) {
+      return null;
+    }
+    return OverheadProfitTabData[0]?.CostingPartDetails;
+  }, [OverheadProfitTabData]);
+
+  // Memoize the netCost calculation
+  const netCost = useMemo(() => {
+    return calculateNetCost(topHeaderValues);
+  }, [topHeaderValues]);
+
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
-    if (CostingViewMode === false) {
-      let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData[0]?.CostingPartDetails : null;
-
-      let topHeaderData = {
-        NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
-          checkForNull(TopHeaderValues.ProfitCost) +
-          checkForNull(TopHeaderValues.RejectionCost) +
-          checkForNull(TopHeaderValues.ICCCost))
-      }
-
-      props.setHeaderCost(topHeaderData)
+    if (CostingViewMode === false && topHeaderValues) {
+      props.setHeaderCost({
+        NetOverheadProfitCost: netCost
+      });
     }
-  }, [OverheadProfitTabData]);
+  }, [CostingViewMode, netCost, topHeaderValues]);
+
+  // ... rest of component code ...
 
   /**
   * @method setPartDetails

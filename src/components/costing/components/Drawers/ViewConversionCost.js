@@ -13,6 +13,9 @@ import { MACHINING } from '../../../../config/masterData'
 import { getCostingLabourDetails } from '../../actions/Costing'
 import ViewDetailedForms from './ViewDetailedForms'
 import { useLabels } from '../../../../helper/core'
+import Hanger from '../CostingHeadCosts/SurfaceTreatMent/Hanger'
+import { viewAddButtonIcon } from '../../CostingUtil'
+import Button from '../../../layout/Button'
 
 function ViewConversionCost(props) {
 
@@ -33,7 +36,8 @@ function ViewConversionCost(props) {
   const { isPDFShow, stCostShow } = props
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { viewConversionCostData } = props
-  const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting } = viewConversionCostData
+  const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting, viewCostingDataObj } = viewConversionCostData
+  console.log(viewCostingDataObj, 'viewCostingDataObj')
   const { CostingOperationCostResponse, CostingProcessCostResponse, CostingOtherOperationCostResponse } = conversionData
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
@@ -55,6 +59,7 @@ function ViewConversionCost(props) {
   const [labourTable, setLabourTable] = useState([])
   const [openOperationForm, setOpenOperationForm] = useState(false)
   const [openMachineForm, setOpenMachineForm] = useState(false)
+  const [viewExtraCost, setViewExtraCost] = useState(false)
 
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
@@ -305,6 +310,7 @@ function ViewConversionCost(props) {
                 <th><span className='d-flex'>Quantity  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div>}</span></th>
                 <th>{`Net Cost`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                <th>{`Applicability`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
               {costingProcessCost &&
@@ -347,6 +353,7 @@ function ViewConversionCost(props) {
                         <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration?.NoOfDecimalForPrice) : 0} </td>
                         {initialConfiguration?.IsShowCRMHead && <td>{item.ProcessCRMHead}</td>}
+                        <td>{item?.CostingConditionNumber ? item?.CostingConditionNumber : '-'}</td>
 
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Remark ? item.Remark : "-"}>{item?.Remark ? item.Remark : "-"}</span></td>
                       </tr>
@@ -397,6 +404,7 @@ function ViewConversionCost(props) {
                 {initialConfiguration?.IsOperationLabourRateConfigure && costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
                 {initialConfiguration?.IsOperationLabourRateConfigure && costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
+                <th>{`Applicability`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
@@ -423,6 +431,7 @@ function ViewConversionCost(props) {
                           {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration?.NoOfDecimalForPrice) : 0}
                         </td>
                         {initialConfiguration?.IsShowCRMHead && <td>{item.OperationCRMHead}</td>}
+                        <td>{item?.CostingConditionNumber ? item?.CostingConditionNumber : '-'}</td>
                         <td>
                           {item.Remark !== null ? item.Remark : '-'}
                         </td>
@@ -740,7 +749,38 @@ function ViewConversionCost(props) {
                   }
 
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
-                    <>{extraCostTableData()} </>
+                    <>
+                      <Hanger />
+                      <Row>
+                        <Col md="4">
+                          <label>Paint and Masking</label>
+                          <div className='d-flex align-items-center'>
+                            <input className='form-control w-100' type="text" disabled value={viewCostingDataObj?.TransportationCostConversion} />
+                            <Button
+                              id="viewConversion_extraCost"
+                              onClick={() => setViewExtraCost(true)}
+                              className={"right mt-0"}
+                              variant={viewAddButtonIcon([], "className", true)}
+                              title={viewAddButtonIcon([], "title", true)}
+                            />
+                          </div>
+                        </Col>
+                        <Col md="4">
+
+                          <label>Extra Cost</label>
+                          <div className='d-flex align-items-center'>
+                            <input className='form-control w-100' type="text" disabled value={viewCostingDataObj?.TransportationCostConversion} />
+                            <Button
+                              id="viewConversion_extraCost"
+                              onClick={() => setViewExtraCost(true)}
+                              className={"right mt-0"}
+                              variant={viewAddButtonIcon([], "className", true)}
+                              title={viewAddButtonIcon([], "title", true)}
+                            />
+                          </div>
+                        </Col>
+                      </Row>
+                      {extraCostTableData()} </>
                   }
 
 
