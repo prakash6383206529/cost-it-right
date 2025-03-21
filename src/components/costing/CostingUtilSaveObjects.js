@@ -55,7 +55,14 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
             "IsToolCostProcessWise": true,
             "AssemblyCostingOperationCostRequest": isOperation ? gridData : item?.CostingPartDetails?.CostingOperationCostResponse,
             "AssemblyCostingProcessCostResponse": isOperation ? item?.CostingPartDetails?.CostingProcessCostResponse : gridData,
-            "AssemblyCostingToolsCostRequest": item?.CostingPartDetails?.CostingToolCostResponse
+            "AssemblyCostingToolsCostRequest": item?.CostingPartDetails?.CostingToolCostResponse,
+            "NetProcessCostForOverhead": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead,
+            "NetProcessCostForProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit,
+            "NetProcessCostForOverheadAndProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit,
+            "NetOperationCostForOverhead": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead,
+            "NetOperationCostForProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit,
+            "NetOperationCostForOverheadAndProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit,
+
         },
         "CostingId": item?.CostingId,
         "PartId": item?.PartId,

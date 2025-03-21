@@ -33,10 +33,26 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalConversionCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.TotalConversionCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalConversionCostWithQuantity,
           "TotalCalculatedRMBOPCCCostWithQuantity": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
           "TotalCalculatedRMBOPCCCostPerAssembly": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+
           "TotalOperationCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly),
+          "TotalOperationCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead),
+          "TotalOperationCostPerAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit),
+          "TotalOperationCostPerAssemblyForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit),
+
           "TotalOperationCostSubAssembly": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly),
+          "TotalOperationCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead),
+          "TotalOperationCostSubAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit),
+          "TotalOperationCostSubAssemblyForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverheadAndProfit),
+
           "TotalOperationCostComponent": item?.CostingPartDetails?.TotalOperationCostComponent,
+          "TotalOperationCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForOverhead),
+          "TotalOperationCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForProfit),
+          "TotalOperationCostComponentForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForOverheadAndProfit),
+
           "TotalOperationCostWithQuantity": item?.CostingPartDetails?.TotalOperationCostWithQuantity,
+          "TotalOperationCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostWithQuantityForOverhead),
+          "TotalOperationCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostWithQuantityForProfit),
+          "TotalOperationCostWithQuantityForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostWithQuantityForOverheadAndProfit),
 
           "TotalOtherOperationCostPerAssembly": item?.CostingPartDetails?.TotalOtherOperationCostPerAssembly,
           "TotalOtherOperationCostPerSubAssembly": item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly,
@@ -44,9 +60,24 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalOtherOperationCostWithQuantity": item?.CostingPartDetails?.TotalOtherOperationCostWithQuantity,
 
           "TotalProcessCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly),
+          "TotalProcessCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead),
+          "TotalProcessCostPerAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
+          "TotalProcessCostPerAssemblyForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit),
+
           "TotalProcessCostSubAssembly": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssembly),
+          "TotalProcessCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead),
+          "TotalProcessCostSubAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit),
+          "TotalProcessCostSubAssemblyForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverheadAndProfit),
+
           "TotalProcessCostComponent": item?.CostingPartDetails?.TotalProcessCostComponent,
+          "TotalProcessCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
+          "TotalProcessCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForProfit),
+          "TotalProcessCostComponentForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForOverheadAndProfit),
+
           "TotalProcessCostWithQuantity": item?.CostingPartDetails?.TotalProcessCostWithQuantity,
+          "TotalProcessCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostWithQuantityForOverhead),
+          "TotalProcessCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostWithQuantityForProfit),
+          "TotalProcessCostWithQuantityForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostWithQuantityForOverheadAndProfit),
 
           "SurfaceTreatmentCostPerAssembly": surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost,
           "TransportationCostPerAssembly": surfaceTabData?.CostingPartDetails?.TransportationCost,
@@ -142,10 +173,26 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalConversionCostWithQuantity": tabData && AddLabour ? (tabData?.CostingPartDetails?.TotalConversionCostWithQuantity + checkForNull(tabData?.CostingPartDetails?.NetLabourCost) + checkForNull(tabData?.CostingPartDetails?.IndirectLaborCost) + checkForNull(tabData?.CostingPartDetails?.StaffCost)) : tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
       "TotalCalculatedRMBOPCCCostWithQuantity": tabData && tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+
       "TotalOperationCostPerAssembly": tabData?.CostingPartDetails?.TotalOperationCostPerAssembly,
+      "TotalOperationCostPerAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead),
+      "TotalOperationCostPerAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit),
+      "TotalOperationCostPerAssemblyForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit),
+
       "TotalOperationCostSubAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssembly),
+      "TotalOperationCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead),
+      "TotalOperationCostSubAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit),
+      "TotalOperationCostSubAssemblyForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverheadAndProfit),
+
       "TotalOperationCostComponent": tabData?.CostingPartDetails?.TotalOperationCostComponent,
+      "TotalOperationCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForOverhead),
+      "TotalOperationCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForProfit),
+      "TotalOperationCostComponentForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForOverheadAndProfit),
+
       "TotalOperationCostWithQuantity": tabData?.CostingPartDetails?.TotalOperationCostWithQuantity,
+      "TotalOperationCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostWithQuantityForOverhead),
+      "TotalOperationCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostWithQuantityForProfit),
+      "TotalOperationCostWithQuantityForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostWithQuantityForOverheadAndProfit),
 
       "TotalOtherOperationCostPerAssembly": tabData?.CostingPartDetails?.TotalOtherOperationCostPerAssembly,
       "TotalOtherOperationCostPerSubAssembly": tabData?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly,
@@ -153,9 +200,24 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalOtherOperationCostWithQuantity": tabData?.CostingPartDetails?.TotalOtherOperationCostWithQuantity,
 
       "TotalProcessCostPerAssembly": tabData?.CostingPartDetails?.TotalProcessCostPerAssembly,
+      "TotalProcessCostPerAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead),
+      "TotalProcessCostPerAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
+      "TotalProcessCostPerAssemblyForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit),
+
       "TotalProcessCostSubAssembly": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssembly),
+      "TotalProcessCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead),
+      "TotalProcessCostSubAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit),
+      "TotalProcessCostSubAssemblyForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverheadAndProfit),
+
       "TotalProcessCostComponent": tabData?.CostingPartDetails?.TotalProcessCostComponent,
+      "TotalProcessCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
+      "TotalProcessCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForProfit),
+      "TotalProcessCostComponentForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForOverheadAndProfit),
+
       "TotalProcessCostWithQuantity": tabData?.CostingPartDetails?.TotalProcessCostWithQuantity,
+      "TotalProcessCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostWithQuantityForOverhead),
+      "TotalProcessCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostWithQuantityForProfit),
+      "TotalProcessCostWithQuantityForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostWithQuantityForOverheadAndProfit),
 
       "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly,
       "TotalSurfaceTreatmentCostPerSubAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly,
