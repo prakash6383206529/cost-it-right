@@ -779,7 +779,7 @@ function Tool(props) {
                         disabled={true}
                       />
                     </Col>}
-                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel}= (Maintenance Cost (%) * Cost(Applicability) / 100)`} />}
+                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel}= (Maintenance Cost (%) * Cost (Applicability) / 100)`} />}
                     <TextFieldHookForm
                       label={toolMaintenanceCostLabel}
                       name={`ToolMaintenanceCost`}
