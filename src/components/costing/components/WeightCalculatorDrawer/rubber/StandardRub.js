@@ -493,7 +493,7 @@ function StandardRub(props) {
         clearErrors();
     }
 
-    let volumeFormula = <div>Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length</div>
+    let volumeFormula = <div>Volume = 0.7857 * (Outer Diameter<sup>2</sup> - Inner Diameter <sup>2</sup>) * Total Length</div>
     return (
         <Fragment>
             <Row>
@@ -808,7 +808,7 @@ function StandardRub(props) {
                             </div>
                             {!agGridTable && <LoaderCustom />}
 
-                            {agGridTable && <Row>
+                            {agGridTable && <Row className='ag-grid-react'>
                                 <Col>
                                     <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData.length <= 0 ? "overlay-contain" : ""} `}>
 
