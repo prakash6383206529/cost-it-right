@@ -40,6 +40,7 @@ function StandardRub(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const [isDisable, setIsDisable] = useState(false)
+    const [isDisableAdd, setIsDisableAdd] = useState(false)
     const [reRender, setRerender] = useState(false)
     const [isVolumeAutoCalculate, setIsVolumeAutoCalculate] = useState(false)
     const { currencySource } = useSelector((state) => state?.costing);
@@ -172,7 +173,15 @@ function StandardRub(props) {
     const handleRMDropDownChange = (e) => {
         rmData && rmData.map((item, index) => {
             if (item.RMName === e.label) {
-                setRmRowDataState(rmData[index])
+                let data = rmData[index]
+                if(data?.Density === 0){
+                    setRmRowDataState({})
+                    setIsDisableAdd(true)
+                    Toaster.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
+                }else{
+                    setIsDisableAdd(false)
+                    setRmRowDataState(rmData[index])
+                }
             }
             return false
         })
@@ -493,7 +502,7 @@ function StandardRub(props) {
         clearErrors();
     }
 
-    let volumeFormula = <div>Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length</div>
+    let volumeFormula = <div>Volume = 0.7857 * (Outer Diameter<sup>2</sup> - Inner Diameter <sup>2</sup>) * Total Length</div>
     return (
         <Fragment>
             <Row>
@@ -787,7 +796,7 @@ function StandardRub(props) {
                                             type="button"
                                             className={'user-btn mt30 pull-left ml-3'}
                                             onClick={() => addRow()}
-                                            disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
+                                            disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || isDisableAdd}
                                         >
                                             <div className={'plus'}></div>{disableCondition ? "ADD" : "UPDATE"}
                                         </button>
@@ -808,7 +817,7 @@ function StandardRub(props) {
                             </div>
                             {!agGridTable && <LoaderCustom />}
 
-                            {agGridTable && <Row>
+                            {agGridTable && <Row className='ag-grid-react'>
                                 <Col>
                                     <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData.length <= 0 ? "overlay-contain" : ""} `}>
 
