@@ -1621,6 +1621,9 @@ const CostingSummaryTable = (props) => {
       delete templateObj.castingWeightExcel
       delete templateObj.meltingLossExcel
     }
+    if (viewCostingData?.[0]?.currency?.currencyTitle !== '-') {
+      delete templateObj.currencyTitle
+    }
     if (simulationMode) {
       ['costingVersion', 'vendorExcel', 'customer', 'InfoCategory', 'partType', 'RevisionNumber', 'plantExcel', 'scrapRecoveryPercentage'].forEach(key => delete templateObj[key]);
     }
@@ -1671,6 +1674,7 @@ const CostingSummaryTable = (props) => {
       item.rejectionRecoveryApplicablity = item?.CostingRejectionRecoveryDetails?.ApplicabilityType ?? "-"
       item.rejectionRecoveryPercent = item?.CostingRejectionRecoveryDetails?.EffectiveRecoveryPercentage ?? "-"
       item.rejectionRecoveryApplicablityValue = item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? "-"
+      item.currencyTitle = viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-' && viewCostingData?.[0]?.currency?.currencyTitle !== '' ? (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? `${item?.currency.currencyTitle}/${item?.CostingCurrency} ${item?.currency.currencyValue}` : '') : '-'
     })
 
     let masterDataArray = []
