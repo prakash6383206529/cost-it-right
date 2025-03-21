@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, loggedInUserId } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, positiveAndDecimalNumber, loggedInUserId } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
@@ -51,7 +51,7 @@ function StandardRub(props) {
         finishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     }
 
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+    const { register, handleSubmit, control, setValue, getValues, reset, trigger, clearErrors, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
@@ -179,7 +179,7 @@ function StandardRub(props) {
 
         if (tableData.length > 0) {
             let obj = tableData[tableData.length - 1]
-            setValue('InnerDiameter', obj.InnerDiameter)
+            setValue('InnerDiameter', obj.OuterDiameter)
             setValue('Length', obj.Length)
             setValue('CuttingAllowance', obj.CuttingAllowance)           
         }
@@ -314,7 +314,7 @@ function StandardRub(props) {
         params.api.paginationGoToPage(0);
     };
 
-    const addRow = () => {
+    const addRow = async () => {
         if (Object.keys(errors).length > 0) {
             return false
         }
@@ -339,7 +339,16 @@ function StandardRub(props) {
             IsVolumeAutoCalculate: isVolumeAutoCalculate
         }
 
-        if((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))){
+        const lastRow = tableData[tableData.length - 1]
+        const validationFields = [
+            ...(isVolumeAutoCalculate ? ["OuterDiameter"] : ["Volume"]),
+            "FinishWeight",
+            ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.InnerDiameter === 0) ? ["InnerDiameter"] : []),
+            ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.CuttingAllowance === 0) ? ["CuttingAllowance"] : []),
+            ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.Length === 0) ? ["Length"] : []),
+        ];
+        const isValid = await trigger(validationFields);
+        if(!isValid || (!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))   ){
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
@@ -351,7 +360,6 @@ function StandardRub(props) {
             array.pop()
             setTableData([...array, obj])
         }
-
 
         reset({
             InnerDiameter: "",
@@ -411,7 +419,7 @@ function StandardRub(props) {
 
         })
         setRmRowDataState({})
-
+        setIsVolumeAutoCalculate(false);
         setTimeout(() => {
             setValue('ScrapWeight', 0)
         }, 300);
@@ -482,6 +490,7 @@ function StandardRub(props) {
         setValue('Volume', "")
         setValue('NetRMCost', "")
         setIsVolumeAutoCalculate((prev) => !prev)
+        clearErrors();
     }
 
     let volumeFormula = <div>Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length</div>
@@ -536,14 +545,38 @@ function StandardRub(props) {
                                     <Row className={'mt15'}>
                                         <Col md="3">
                                             <TextFieldHookForm
+                                                label={`Inner Diameter(mm)`}
+                                                name={'InnerDiameter'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.InnerDiameter === 0))}
+                                                rules={{
+                                                    required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.InnerDiameter === 0)),
+                                                    validate: { number, decimalAndNumberValidation },
+                                                    max: {
+                                                        value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
+                                                        message: 'Inner Diameter should not be greater than outer diameter.'
+                                                    },
+                                                }}
+                                                handleChange={(e) => handleInnerDiameter(e.target.value)}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.InnerDiameter}
+                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition && (tableData[tableData.length - 1]?.InnerDiameter !== 0)) ? true : false)}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
                                                 label={`Outer Diameter(mm)`}
                                                 name={'OuterDiameter'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={false}
+                                                mandatory={isVolumeAutoCalculate}
                                                 rules={{
-                                                    required: false,
+                                                    required: isVolumeAutoCalculate,
                                                     validate: { number, decimalAndNumberValidation },
                                                     min: {
                                                         value: parseFloat(getValues('InnerDiameter')) + 0.00000001, // adjust the threshold here acc to decimal validation above
@@ -560,38 +593,14 @@ function StandardRub(props) {
                                         </Col>
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Inner Diameter(mm)`}
-                                                name={'InnerDiameter'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                rules={{
-                                                    required: false,
-                                                    validate: { number, decimalAndNumberValidation },
-                                                    max: {
-                                                        value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
-                                                        message: 'Inner Diameter should not be greater than outer diameter.'
-                                                    },
-                                                }}
-                                                handleChange={(e) => handleInnerDiameter(e.target.value)}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.InnerDiameter}
-                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <TextFieldHookForm
                                                 label={`Length(mm)`}
                                                 name={'Length'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={false}
+                                                mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.Length == 0))}
                                                 rules={{
-                                                    required: false,
+                                                    required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.Length == 0)),
                                                     validate: { number, decimalAndNumberValidation },
                                                 }}
                                                 handleChange={() => { }}
@@ -599,7 +608,7 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Length}
-                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
+                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition && (tableData[tableData.length - 1]?.Length !== 0)) ? true : false)}
                                             />
                                         </Col>
 
@@ -610,9 +619,9 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={false}
+                                                mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0))}
                                                 rules={{
-                                                    required: false,
+                                                    required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0)),
                                                     validate: { number, decimalAndNumberValidation },
                                                 }}
                                                 handleChange={() => { }}
@@ -620,7 +629,7 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.CuttingAllowance}
-                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
+                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition && (tableData[tableData.length - 1]?.CuttingAllowance !== 0)) ? true : false)}
                                             />
                                         </Col>
 
@@ -679,10 +688,10 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 rules={{
-                                                    required: false,
+                                                    required: !isVolumeAutoCalculate && (Object.keys(rmRowDataState).length > 0),
                                                     validate: { number, decimalAndNumberValidation },
                                                 }}
-                                                mandatory={false}
+                                                mandatory={!isVolumeAutoCalculate && (Object.keys(rmRowDataState).length > 0)}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
@@ -718,10 +727,10 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={false}
+                                                mandatory={(Object.keys(rmRowDataState).length > 0)}
                                                 rules={{
-                                                    required: false,
-                                                    validate: { number, decimalAndNumberValidation },
+                                                    required: (Object.keys(rmRowDataState).length > 0),
+                                                    validate: { number, decimalAndNumberValidation, positiveAndDecimalNumber },
                                                     max: {
                                                         value: getValues('GrossWeight'),
                                                         message: 'Finish weight should not be greater than gross weight.'
@@ -825,7 +834,7 @@ function StandardRub(props) {
                                                 <AgGridColumn minWidth="150" field="OuterDiameter" headerName="Outer Dia " cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="Length" headerName="Length(mm)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="CuttingAllowance" headerName="Cutting Allowance" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="150" field="TotalLength" headerName="TotalLength" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth="150" field="TotalLength" headerName="Total Length" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="Volume" headerName="Volume" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>

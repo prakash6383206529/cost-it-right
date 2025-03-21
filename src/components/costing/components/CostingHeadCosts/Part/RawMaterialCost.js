@@ -252,7 +252,7 @@ function RawMaterialCost(props) {
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
 
-    if((Number(costData?.TechnologyId) === Number(RUBBER)) && calculatorTypeStore === "Standard"){
+    if((gridData && gridData.length > 0) && (Number(costData?.TechnologyId) === Number(RUBBER)) && calculatorTypeStore === "Standard"){
       setShowPopup(true)
       setDrawerOpen(false)
     } else if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore !== 'CorrugatedBox'))))) {
@@ -997,13 +997,11 @@ function RawMaterialCost(props) {
               item.IsVolumeAutoCalculate = weightItem?.IsVolumeAutoCalculate ?? false
             }
 
-            setTimeout(() => {
-                setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData?.RawMaterialRubberStandardWeightCalculator[index]?.GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
-                setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData?.RawMaterialRubberStandardWeightCalculator[index]?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-                setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
-                // setValue(`${rmGridFields}.${index}.NetLandedCost`, checkForDecimalAndNull(weightData?.RawMaterialRubberStandardWeightCalculator[index].NetRmCost, getConfigurationKey().NoOfDecimalForInputOutput))
-                setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightData?.RawMaterialRubberStandardWeightCalculator[index]?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
-            }, 500)
+            setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightItem?.GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightItem?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+            // setValue(`${rmGridFields}.${index}.NetLandedCost`, checkForDecimalAndNull(weightData?.RawMaterialRubberStandardWeightCalculator[index].NetRmCost, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightItem?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
             return item;
           });
           setTimeout(() => {
@@ -1138,10 +1136,14 @@ function RawMaterialCost(props) {
   }
 
   const deleteMultiple = (index) => {
-
     if((Number(costData?.TechnologyId) === Number(RUBBER)) && calculatorTypeStore === "Standard"){
-      setShowPopupDelete(true)
+      let data = gridData[index]
       setDeleteIndex(index)
+      if(data.hasOwnProperty("NetLandedCost") && (data?.NetLandedCost !== "")){
+        setShowPopupDelete(true);
+      }else{
+        deleteItem(index);
+      }
     } else if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || Number(costData?.TechnologyId) === Number(CORRUGATEDBOX)))) {
       setShowPopupDelete(true)
       setDeleteIndex(index)
