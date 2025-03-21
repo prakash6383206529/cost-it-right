@@ -1,91 +1,86 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { Row, Col, Container, Table } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
 import { useForm, Controller } from 'react-hook-form'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { useDispatch, useSelector } from 'react-redux'
-import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation } from '../../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
-import { generateCombinations } from '../../../../common/CommonFunctions'
+import { generateCombinations, getCostingConditionTypes } from '../../../../common/CommonFunctions'
+import { getCostingCondition } from '../../../../../actions/Common'
+import { setSurfaceData } from '../../../actions/Costing'
+import { costingInfoContext } from '../../CostingDetailStepTwo'
 
 
 
 function ExtraCost(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const conditionTypeId = getCostingConditionTypes('Costing Surface Treatment Extra Cost')
+    const costData = useContext(costingInfoContext);
     const dispatch = useDispatch();
+    const { SurfaceTabData } = useSelector(state => state.costing)
+    let surfaceTabData = SurfaceTabData && SurfaceTabData[0]
+    let surfaceCostingPartDetails = surfaceTabData && surfaceTabData?.CostingPartDetails
+    const { rmBasicRate, RowData, RowIndex } = props
 
 
-
-    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP, RawMaterialNonIndexed = false, bopBasicRate } = props
-    const Currency = RawMaterialNonIndexed ? settlementCurrency : ((isBOP && isImport) ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency) || 'Currency'
-    const CurrencyLabel = RawMaterialNonIndexed ? settlementCurrency : (!props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency) || 'Currency'
-
-    const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
-    const [tableData, setTableData] = useState([]);
+    const [tableData, setTableData] = useState(surfaceCostingPartDetails?.TransportationDetails ?? []);
 
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [disableAllFields, setDisableAllFields] = useState(true)
     const [editIndex, setEditIndex] = useState('')
     const [isEditMode, setIsEditMode] = useState(false)
     const [type, setType] = useState('')
-    const [totalCostCurrency, setTotalCostCurrency] = useState('')
+    const [totalCostCurrency, setTotalCostCurrency] = useState(surfaceCostingPartDetails?.TransportationCost ?? 0)
     const [totalCostBase, setTotalCostBase] = useState('')
     const [disableCurrency, setDisableCurrency] = useState(false)
-    const [availableApplicabilities, setAvailableApplicabilities] = useState(["Basic Rate"]);
-    const [RawMaterialCommodityIndexRateAndOtherCostDetailsId, setRawMaterialCommodityIndexRateAndOtherCostDetailsId] = useState('')
+
     const ExchangeRate = RowData?.ExchangeRate
     const BasicRateIndexCurrency = RowData?.BasicRate
     const [state, setState] = useState({
         Applicability: false,
-        rowData: {},
+        tableData: [],
         disableApplicability: true,
         premiumCost: '',
         disableCostCurrency: false,
         disableCostBaseCurrency: false,
-        costDropdown: []
+        applicabilityDropdown: [],
+        ApplicabilityCost: 0,
+
     })
     useEffect(() => {
-        if (!tableData || tableData.length === 0) {
-            setTotalCostBase(0);
-            setTotalCostCurrency(0);
-            return;
-        }
-
-
-    }, [tableData]);
-    useEffect(() => {
-        if (props.rawMaterial === true || isBOP) {
-            setTableData(props.rmTableData)
-        } else {
-
-            if (Array.isArray(props.RowData?.RawMaterialCommodityIndexRateDetailsRequest)) {
-                const filteredData = props?.tableData?.filter(item =>
-                    props.RowData.RawMaterialCommodityIndexRateDetailsRequest.some(req =>
-                        req.RawMaterialCommodityIndexRateAndOtherCostDetailsId === item.RawMaterialCommodityIndexRateAndOtherCostDetailsId
-                    )
-                );
-                setTableData(filteredData);
-            } else {
-                setTableData([]);
+        let tempData = [...tableData]
+        tempData.map(item => {
+            if (item?.CostingConditionMasterId) {
+                if (item.CostingConditionNumber === 'Tape + Paint') {
+                    item.ApplicabiltyCost = surfaceCostingPartDetails?.TotalPaintCost
+                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.TotalPaintCost, item?.Rate)
+                } else if (item.CostingConditionNumber === 'Hanger') {
+                    item.ApplicabiltyCost = surfaceCostingPartDetails?.HangerCostPerPart
+                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.HangerCostPerPart, item?.Rate)
+                } else if (item.CostingConditionNumber === 'Surface Treatment') {
+                    item.ApplicabiltyCost = surfaceCostingPartDetails?.SurfaceTreatmentCost
+                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.SurfaceTreatmentCost, item?.Rate)
+                } else if (item.CostingConditionNumber === 'Tape') {
+                    item.ApplicabiltyCost = surfaceCostingPartDetails?.TapeCost
+                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.TapeCost, item?.Rate)
+                } else if (item.CostingConditionNumber === 'Paint') {
+                    item.ApplicabiltyCost = surfaceCostingPartDetails?.PaintCost
+                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.PaintCost, item?.Rate)
+                }
             }
-        }
-    }, [props.RowData, props.tableData]);
+        })
+        setTableData(tempData);
+        // Calculate total cost from all transportation costs in table data
+        const totalCost = tempData.reduce((sum, item) => {
+            return sum + (item?.TransportationCost ? Number(item.TransportationCost) : 0);
+        }, 0);
+        setTotalCostCurrency(totalCost);
+    }, [surfaceCostingPartDetails]);
 
-    useEffect(() => {
-        updateAvailableApplicabilities();
-    }, [tableData, state.costDropdown]);
-    const updateAvailableApplicabilities = () => {
-        const newApplicabilities = ["Basic Rate"];
-        tableData?.forEach(item => {
-            if (item.CostHeaderName !== "Basic Rate" && !newApplicabilities.includes(item.CostHeaderName)) {
-                newApplicabilities.push(item.CostHeaderName);
-            }
-        });
-        setAvailableApplicabilities(newApplicabilities);
-    };
     const editData = (indexValue, operation) => {
         if (operation === 'delete') {
             handleDelete(indexValue);
@@ -99,42 +94,27 @@ function ExtraCost(props) {
         setIsEditMode(true);
 
         let selectedData = tableData[indexValue];
-        setValue('Cost', {
-            label: selectedData.CostHeaderName,
-            value: selectedData.CostingConditionMasterId
-        });
-        setValue('Type', {
-            label: selectedData.Type,
-            value: selectedData.Type
-        });
-        setType({
-            label: selectedData.Type,
-            value: selectedData.Type
-        });
-        setValue('Percentage', selectedData.Value);
-        setValue('Applicability', {
-            label: selectedData.Applicability,
-            value: selectedData.Applicability
-        });
-        setValue('ApplicabilityCostCurrency', selectedData.ApplicabilityCost);
-        setValue('ApplicabilityBaseCost', isBOP ? selectedData.ApplicabilityCost : selectedData.ApplicabilityCostConversion);
-        setValue('CostCurrency', selectedData.NetCost);
-        setValue('CostBaseCurrency', isBOP || RawMaterialNonIndexed ? selectedData?.NetCost : selectedData.NetCostConversion);
-        setValue('CostDescription', selectedData.Description);
-        setValue('Remark', selectedData.Remark);
-        setRawMaterialCommodityIndexRateAndOtherCostDetailsId(selectedData?.RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null)
-        // setTotalCostCurrency(selectedData.CostCurrency);
-        // setType(selectedData.ConditionType);
+        if (selectedData?.UOM === 'Percentage') {
+            setType({ label: 'Percentage', value: 'Percentage' })
+            setValue('Type', { label: 'Percentage', value: 'Percentage' })
+            setValue('Applicability', { label: selectedData.CostingConditionNumber, value: selectedData.CostingConditionMasterId })
+            setValue('ApplicabilityCost', selectedData.ApplicabiltyCost)
+            setValue('Percentage', selectedData.Rate)
+        }
+        setValue('CostDescription', selectedData.Description)
+        setValue('Remark', selectedData.Remark)
+        setValue('NetCost', selectedData.TransportationCost)
+
 
         // Update UI state based on the type
-        // if (selectedData.Type === 'Fixed') {
-        //     setDisableTotalCost(false);
-        //     setDisableCurrency(false);
+        if (selectedData.Type === 'Fixed') {
+            setDisableTotalCost(false);
+            setDisableCurrency(false);
 
-        //     setDisableAllFields(true);
-        // } else {
-        //     setState(prevState => ({ ...prevState, disableApplicability: false }));
-        // }
+            setDisableAllFields(true);
+        } else {
+            setState(prevState => ({ ...prevState, disableApplicability: false }));
+        }
     };
 
     const handleDelete = (indexValue) => {
@@ -154,101 +134,45 @@ function ExtraCost(props) {
     })
     const toggleCondition = () => {
         let cssClass = '';
-        if (isFromImport) {
-            if (type === "") {
-                cssClass = 'mb-3';
-            } else if (type === "Fixed") {
-                cssClass = 'mb-3';
-            } else {
-                cssClass = 'mt-4 pt-1';
-            }
+        if (type?.label === "Percentage") {
+            cssClass = 'mt-4 pt-1';
         } else {
-            if (type === "") {
-                cssClass = 'mt-4 pt-1';
-            } else if (type === "Fixed") {
-                cssClass = 'mb-3';
-            } else {
-                cssClass = 'mt-4 pt-1 mb-5 pb-3';
-            }
-            if (props.isFromMaster) {
-                if (type === "Percentage") {
-                    cssClass = 'mb-3';
-                } else {
-                    cssClass = 'mt-4 pt-1 mb-5 pb-1';
-                }
-            }
+            cssClass = 'mb-3 mt-n3';
         }
         return cssClass
     }
     const applicabilityChange = (e) => {
 
-        // Handle Basic Rate separately
-        if (e?.label === 'Basic Rate') {
-            let basicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency * ExchangeRate
-            setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(BasicRateIndexCurrency, initialConfiguration?.NoOfDecimalForPrice));
-            setValue('ApplicabilityBaseCost', checkForDecimalAndNull(basicRate, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, Applicability: e?.label }));
-            return; // Exit early for Basic Rate
-        }
-
-        // For other applicabilities
-        // Check which applicabilities are selected
-        const selectedApplicabilities = e?.label?.split(' + ');
-
-        // Calculate total cost currency for selected applicabilities
-        let totalCostCurrency = 0;
-        let allExist = true;
-        let missingCosts = []; // Array to hold missing costs
-        let totalBasicRate
-        let total
-
-        selectedApplicabilities.forEach(Applicability => {
-            // Skip checking for "Basic Rate" in tableData
-            if (Applicability === 'Basic Rate') {
-                return;
-            }
-            const item = tableData.find(item => item?.CostHeaderName === Applicability);
-            if (item) {
-                totalCostCurrency += props.rawMaterial ? Number(item?.NetCostConversion) : Number(item?.NetCost);
-                if (selectedApplicabilities.includes('Basic Rate')) {
-                    // totalCostCurrency += BasicRateIndexCurrency;
-                    totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency
-                    total = checkForNull(totalCostCurrency) + checkForNull(totalBasicRate)
-                } else {
-                    total = checkForNull(totalCostCurrency)
-                }
-            } else {
-                // Add missing Applicability to the array
-                missingCosts.push(Applicability);
-                // Set flag to indicate not all applicabilities exist
-                allExist = false;
-            }
-        });
-
-        // If not all applicabilities exist, handle the condition
-        if (!allExist) {
-            // Show toaster message with all missing costs
-            Toaster.warning(`Cost(s) for ${missingCosts.join(', ')} do not exist in the table, please add data first before proceeding further`);
-            // You may choose to reset values or handle differently
-            setValue('ApplicabilityCostCurrency', 0);
-            setValue('ApplicabilityBaseCost', 0);
-        } else {
-            // Set ApplicabilityCostCurrency and ApplicabilityBaseCost if all exist
-            setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(total, initialConfiguration?.NoOfDecimalForPrice));
-            const totalBaseCost = props.rawMaterial ? total : total * ExchangeRate;
-            setValue('ApplicabilityBaseCost', checkForDecimalAndNull(totalBaseCost, initialConfiguration?.NoOfDecimalForPrice));
-        }
-
         setState(prevState => ({ ...prevState, Applicability: e?.label }));
+        // Handle Basic Rate separately
+        if (e?.label === 'Tape') {
+            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.TapeCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.TapeCost }));
+            return;
+        } else if (e?.label === 'Surface Treatment') {
+            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.SurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.SurfaceTreatmentCost }));
+            return;
+        } else if (e?.label === 'Paint') {
+            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.PaintCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.PaintCost }));
+            return;
+        } else if (e?.label === 'Tape + Paint') {
+            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.TotalPaintCost }));
+            return;
+        } else if (e?.label === 'Hanger') {
+            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.HangerCostPerPart }));
+            return;
+        }
+
+
     }
     const onPercentChange = (e) => {
-        if (e?.target?.value) {
-            let applicabilityCostCurrency = props.rawMaterial ? getValues('ApplicabilityBaseCost') : getValues('ApplicabilityCostCurrency')
-            let NetCost = checkForNull((e.target.value) / 100) * checkForNull(applicabilityCostCurrency)
-            let NetCostConversion = props.rawMaterial ? NetCost : NetCost * ExchangeRate
-            setValue('CostCurrency', checkForDecimalAndNull(NetCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('CostBaseCurrency', checkForDecimalAndNull(NetCostConversion, initialConfiguration?.NoOfDecimalForPrice))
-        }
+        const storeValue = checkForNull(e.target.value)
+        const calculateValue = (storeValue / 100) * state.ApplicabilityCost
+        setValue('NetCost', checkForDecimalAndNull(calculateValue, initialConfiguration?.NoOfDecimalForPrice))
     }
 
     const cancel = () => {
@@ -256,15 +180,7 @@ function ExtraCost(props) {
     }
 
 
-    const handleCostChangeCurrency = (e) => {
-        if (e?.target?.value) {
-            setValue('CostBaseCurrency', checkForDecimalAndNull((checkForNull(e.target.value) * ExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
-            setState(prevState => ({ ...prevState, disableCostBaseCurrency: true }));
-        } else {
-            setValue('CostBaseCurrency', '')
-            setState(prevState => ({ ...prevState, disableCostBaseCurrency: false }));
-        }
-    }
+
     const handleCostChangeBase = (e) => {
         if (e?.target?.value) {
             setValue('CostCurrency', checkForDecimalAndNull((checkForNull(e.target.value) / ExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
@@ -289,111 +205,61 @@ function ExtraCost(props) {
         return [];
     }
 
-    const combinations = generateCombinations(availableApplicabilities, "Basic Rate");
-
     const onSubmit = data => {
-        addData();
-    }
-    const addData = () => {
-        const type = getValues('Type');
-        const cost = getValues('Cost');
-        const applicability = getValues('Applicability');
-        const percentage = Number(getValues('Percentage'));
-        const costBaseCurrency = getValues('CostBaseCurrency');
-        const applicabilityBaseCost = getValues('ApplicabilityBaseCost');
-        const remark = getValues('Remark');
-        const costDescription = getValues('CostDescription');
-
-        // Check for form errors first
-        if (Object.keys(errors).length > 0) {
-            Toaster.warning('Please fix all validation errors before adding.');
-            return false;
-        }
-
-
-        // If 'Type' is not provided, return false
-        if (!type || !cost || !remark || !costDescription) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
-        if (type.label === "Percentage") {
-            // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
-            if (!applicability || !applicabilityBaseCost || !percentage || percentage === 0) {
-                Toaster.warning('Cost should not be zero or empty.');
-                return false;
-            }
-        } else if (type.label === 'Fixed') {
-            // If 'Type' is 'fixed', check for 'CostCurrency' and 'CostBaseCurrency'
-            if (!costBaseCurrency) { Toaster.warning('Please enter all details to add a row.'); return false };
-        }
-        // Create new data entry
-        const newData = {
-            MaterialCommodityStandardDetailsId: RowData?.MaterialCommodityStandardDetailsId, // Add MaterialCommodityStandardDetailsId
-            RawMaterialCommodityIndexRateAndOtherCostDetailsId: RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null,
-            Type: getValues('Type') ? getValues('Type').label : '',
-            CostHeaderName: getValues('Cost') ? getValues('Cost').label : '',
-            Applicability: getValues('Applicability') ? getValues('Applicability').label : '',
-            ApplicabilityCost: props.rawMaterial ? getValues('ApplicabilityBaseCost') : getValues('ApplicabilityCostCurrency') ? getValues('ApplicabilityCostCurrency') : '',
-            ApplicabilityCostConversion: getValues('ApplicabilityBaseCost') ? getValues('ApplicabilityBaseCost') : '',
-            Value: getValues('Percentage') ? getValues('Percentage') : '',
-            NetCost: props.rawMaterial ? getValues('CostBaseCurrency') : getValues('CostCurrency') ? getValues('CostCurrency') : '',
-            NetCostConversion: getValues('CostBaseCurrency'),
-            Description: getValues('CostDescription') ? getValues('CostDescription') : '',
-            CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '',
-            Remark: getValues('Remark')
-        };
-        // If the CostHeaderName is 'Discount Cost', prepend '-' sign
-        if (newData.CostHeaderName === 'Discount Cost') {
-            if (newData.NetCost === rmBasicRate) {
-                Toaster.warning('Discount should not be equal to Basic rate')
-                return false
-            }
-            newData.NetCost = `-${newData.NetCost}`;
-            newData.NetCostConversion = `-${newData.NetCostConversion}`;
-        }
-        // Assuming 'tableData' is an array of objects and you want to add MaterialCommodityStandardDetailsId separately,
-        // you can structure your updated data as follows:
-        const updatedData = {
-            MaterialCommodityStandardDetailsId: RowData?.MaterialCommodityStandardDetailsId,
-            data: [] // This will hold your actual tableData with the new item added if necessary
-        };
-
-        // Check if CostHeaderName already exists in tableData, excluding the current item in edit mode
-        const isCostValueExists = tableData && tableData.some((item, index) => {
-            if (isEditMode && index === editIndex) {
-                return false; // Skip the current edited item
-            }
-            return item.CostHeaderName === newData.CostHeaderName;
-        });
-
-        if (isCostValueExists) {
-            // Display toaster warning if CostHeaderName already exists
-            Toaster.warning('Cost already exists in the table.');
-            return; // Exit function early
-        }
-
-        // Update tableData state
         if (isEditMode) {
-            const updatedTableData = [...tableData];
-            updatedTableData[editIndex] = newData;
-            updatedData.data = updatedTableData;
-        } else {
-            updatedData.data = [...tableData, newData];
+            let tempData = [...tableData];
+            let obj = {
+                JsonStage: surfaceTabData?.JsonStage ?? null,
+                PartNumber: surfaceTabData?.PartNumber ?? null,
+                PartName: surfaceTabData?.PartName ?? null,
+                TransportationDetailId: null,
+                UOM: type?.label ?? null,
+                Rate: data?.Percentage ?? null,
+                TransportationCost: data?.NetCost ?? null,
+                TransportationCRMHead: "",
+                Description: data?.CostDescription ?? null,
+                ApplicabiltyCost: data?.ApplicabilityCost ?? null,
+                Remark: data?.Remark ?? null,
+                CostingConditionMasterId: data?.Applicability && data?.Applicability?.value ? data?.Applicability?.value : null,
+                CostingConditionNumber: data?.Applicability && data?.Applicability?.label ? data?.Applicability?.label : null
+            }
+            tempData[editIndex] = obj;
+            setTableData(tempData);
+            // Calculate total cost from all transportation costs in table data
+            const totalCost = tempData.reduce((sum, item) => {
+                return sum + (item.TransportationCost ? Number(item.TransportationCost) : 0);
+            }, 0);
+            setTotalCostCurrency(totalCost);
+            resetData();
+            return;
         }
+        let tempData = [...tableData]
+        let obj = {
+            JsonStage: surfaceTabData?.JsonStage ?? null,
+            PartNumber: surfaceTabData?.PartNumber ?? null,
+            PartName: surfaceTabData?.PartName ?? null,
+            TransportationDetailId: null,
+            UOM: type?.label ?? null,
+            Rate: data?.Percentage ?? null,
+            TransportationCost: data?.NetCost ?? null,
+            TransportationCRMHead: "",
+            Description: data?.CostDescription ?? null,
+            ApplicabiltyCost: data?.ApplicabilityCost ?? null,
+            Remark: data?.Remark ?? null,
+            CostingConditionMasterId: data?.Applicability && data?.Applicability?.value ? data?.Applicability?.value : null,
+            CostingConditionNumber: data?.Applicability && data?.Applicability?.label ? data?.Applicability?.label : null
+        }
+        tempData.push(obj)
+        setTableData(tempData)
+        // Calculate total cost from all transportation costs in table data
+        const totalCost = tempData.reduce((sum, item) => {
+            return sum + (item.TransportationCost ? Number(item.TransportationCost) : 0);
+        }, 0);
+        setTotalCostCurrency(totalCost);
+        resetData();
 
-        setTableData(updatedData.data);
+    }
 
-        // Reset input fields and states
-        resetData(); // Assuming resetData correctly resets form inputs
-        setIsEditMode(false);
-        setEditIndex('');
-
-        // Reset dropdowns to their initial state (placeholder)
-        setValue('Cost', ''); // Reset to an empty string or null to show the placeholder
-        setValue('Type', ''); // Reset to an empty string or null to show the placeholder
-        setValue('Percentage', ''); // Reset Percentage field
-        setValue('CostCurrency', ''); // Reset to an empty string or null to show the placeholder
-        setValue('CostBaseCurrency', '');
-        setValue('CostDescription', '');
-        setState(prevState => ({ ...prevState, disableCostBaseCurrency: false, disableCostCurrency: false }));
-    };
     const resetData = (type = '') => {
         const commonReset = () => {
             setDisableAllFields(true);
@@ -405,7 +271,7 @@ function ExtraCost(props) {
                 Cost: '',
                 Type: '',
                 Percentage: '',
-                CostCurrency: '',
+                NetCost: '',
                 CostBaseCurrency: '',
                 CostDescription: '',
                 Remark: ''
@@ -413,6 +279,20 @@ function ExtraCost(props) {
         };
         commonReset();
     };
+
+    const saveExtraCost = () => {
+        let newData = [...SurfaceTabData];
+        newData.map(item => {
+            if (item.CostingId === costData.CostingId) {
+                let CostingPartDetails = item?.CostingPartDetails
+                CostingPartDetails.TransportationDetails = tableData;
+                CostingPartDetails.TransportationCost = totalCostCurrency;
+            }
+            return null;
+        })
+        dispatch(setSurfaceData(SurfaceTabData, () => { }))
+        props.closeDrawer('Save', totalCostCurrency)
+    }
 
     const handleType = (type) => {
         if (type && type !== '') {
@@ -425,6 +305,18 @@ function ExtraCost(props) {
             setValue('ApplicabilityBaseCost', '')
             if (type?.label === "Percentage") {
                 setState(prevState => ({ ...prevState, disableApplicability: false }));
+                dispatch(getCostingCondition('', conditionTypeId, (res) => {
+                    if (res?.data?.DataList) {
+                        const temp = res?.data?.DataList?.map((item) => ({
+                            label: item?.CostingConditionNumber,
+                            value: item?.CostingConditionMasterId,
+                        }));
+                        setState((prevState) => ({
+                            ...prevState,
+                            applicabilityDropdown: temp
+                        }));
+                    }
+                }));
             } else {
                 setState(prevState => ({ ...prevState, disableApplicability: true }));
             }
@@ -453,7 +345,7 @@ function ExtraCost(props) {
                                     </div>
                                 </Col>
                             </Row>
-                            <form noValidate onSubmit={handleSubmit(onSubmit)}>
+                            <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className='hidepage-size'>
 
                                     <Row>
@@ -512,8 +404,7 @@ function ExtraCost(props) {
                                                         register={register}
                                                         mandatory={true}
                                                         rules={{ required: true, }}
-                                                        // options={conditionDropdown}
-                                                        options={combinations}
+                                                        options={state.applicabilityDropdown}
                                                         handleChange={applicabilityChange}
                                                         defaultValue={''}
                                                         className=""
@@ -522,47 +413,26 @@ function ExtraCost(props) {
                                                         disabled={false}
                                                     />
                                                 </Col>
-                                                {!props.rawMaterial && <Col md={3} className={'px-2'}>
-                                                    <TextFieldHookForm
-                                                        label={`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}
-                                                        name={'ApplicabilityCostCurrency'}
-                                                        id={'cost-by-percent'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        mandatory={true}
-                                                        rules={{
-                                                            required: true,
-                                                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                                        }}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.ApplicabilityCostCurrency}
-                                                        disabled={props.ViewMode || disableTotalCost || disableCurrency}
-                                                    />
-                                                </Col>}
+
                                                 <Col md={3} className={'px-2'}>
 
                                                     <TextFieldHookForm
-                                                        label={`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}
-                                                        name={'ApplicabilityBaseCost'}
+                                                        label={`Applicability Cost`}
+                                                        name={'ApplicabilityCost'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
 
                                                         control={control}
                                                         register={register}
-                                                        mandatory={true}
+                                                        mandatory={false}
                                                         rules={{
-                                                            required: true,
-                                                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                            required: false,
                                                         }}
                                                         handleChange={() => { }}
                                                         defaultValue={''}
                                                         className=""
                                                         customClassName={'withBorder'}
-                                                        errors={errors.ApplicabilityBaseCost}
+                                                        errors={errors.ApplicabilityCost}
                                                         disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                                     />
                                                 </Col>
@@ -576,7 +446,7 @@ function ExtraCost(props) {
                                                         register={register}
                                                         mandatory={true}
                                                         rules={{
-                                                            required: false,
+                                                            required: true,
                                                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                             max: {
                                                                 value: 100,
@@ -591,49 +461,26 @@ function ExtraCost(props) {
                                                         disabled={props.ViewMode}
                                                     />
                                                 </Col ></>}
-                                        {!props.rawMaterial && <Col md={3} className={'px-2'}>
 
-                                            <TextFieldHookForm
-                                                label={`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}
-                                                name={'CostCurrency'}
-                                                id={'cost-by-percent'}
-                                                Controller={Controller}
-
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: true,
-                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                                }}
-                                                handleChange={handleCostChangeCurrency}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.CostCurrency}
-                                                disabled={type?.label === 'Percentage' ? true : false || state.disableCostCurrency || props.ViewMode}
-                                            />
-                                        </Col>}
                                         <Col md={3} className={'px-2'}>
 
                                             <TextFieldHookForm
-                                                label={`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}
-                                                name={'CostBaseCurrency'}
+                                                label={`Cost`}
+                                                name={'NetCost'}
                                                 id={'cost-by-percent'}
                                                 Controller={Controller}
-
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={type?.label !== 'Percentage'}
                                                 rules={{
-                                                    required: true,
-                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                    required: type?.label !== 'Percentage',
+                                                    validate: type?.label === 'Percentage' ? {} : { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                 }}
                                                 handleChange={handleCostChangeBase}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.CostBaseCurrency}
+                                                errors={errors.NetCost}
                                                 disabled={type?.label === 'Percentage' ? true : false || state.disableCostBaseCurrency || props.ViewMode}
                                             />
                                         </Col>
@@ -661,7 +508,7 @@ function ExtraCost(props) {
                                         <Col md="3" className={toggleCondition()}>
                                             <button
                                                 type="submit"
-                                                className={"user-btn  pull-left mt-1 mr10"}
+                                                className={"user-btn  pull-left mt-1"}
                                                 // onClick={addData}
                                                 disabled={props.ViewMode || props?.disabled}
                                             >
@@ -684,12 +531,9 @@ function ExtraCost(props) {
                                                     <th>{`Type`}</th>
                                                     <th>{`Cost Description`}</th>
                                                     <th>{`Applicability`}</th>
-                                                    <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>
-                                                    {(!props.rawMaterial || isBOP) && <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    {!isBOP && <th>{`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    <th>{`Applicability Cost`}</th>
                                                     <th>{`Percentage (%)`}</th>
-                                                    {(!props.rawMaterial || isBOP) && <th>{`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    {!isBOP && <th>{`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    <th>{`Cost`}</th>
                                                     <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr >
@@ -697,15 +541,12 @@ function ExtraCost(props) {
                                                 {tableData && tableData.map((item, index) => (
                                                     <Fragment key={index}>
                                                         <tr>
-                                                            <td>{item.CostHeaderName}</td>
+                                                            <td>{item.UOM}</td>
                                                             <td>{item.Description}</td>
-                                                            <td>{item.Type}</td>
-                                                            <td>{item.Applicability}</td>
-                                                            {(!props.rawMaterial || isBOP) && <td>{item.ApplicabilityCost}</td>}
-                                                            {!isBOP && <td>{item.ApplicabilityCostConversion}</td>}
-                                                            <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                                                            {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
-                                                            {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ? RawMaterialNonIndexed ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                                            <td>{item.CostingConditionNumber}</td>
+                                                            <td>{item.ApplicabiltyCost}</td>
+                                                            <td>{item.Rate}</td>
+                                                            <td>{item.TransportationCost !== '-' ? checkForDecimalAndNull(item.TransportationCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             <td>{item.Remark}</td>
                                                             {
                                                                 !props.hideAction && (
@@ -732,17 +573,8 @@ function ExtraCost(props) {
                                                 }
 
                                                 <tr className='table-footer'>
-                                                    <td colSpan={props.rawMaterial ? 6 : 7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
-                                                    {!props.rawMaterial &&
-                                                        <td>
-                                                            <div className='d-flex justify-content-between'>
-                                                                {checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)}
-                                                            </div>
-                                                        </td>
-                                                    }
-                                                    <td colSpan={3} className="text-left">
-                                                        {checkForDecimalAndNull((isBOP || RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({(isImport ? settlementCurrency : plantCurrency) ?? initialConfiguration?.BaseCurrency})
-                                                    </td>
+                                                    <td colSpan={5} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                                                    <td colSpan={5}>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                                 </tr>
                                             </tbody >
                                         </Table >
@@ -753,14 +585,14 @@ function ExtraCost(props) {
                                     <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                         <button
                                             type={'button'}
-                                            className="reset cancel-btn mr15"
+                                            className="reset cancel-btn mr5"
                                             onClick={cancel || props?.disabled} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
                                             type={'button'}
                                             className="submit-button save-btn"
-                                            onClick={() => props.closeDrawer('Save', tableData, totalCostCurrency, totalCostBase, RowIndex)}
+                                            onClick={() => saveExtraCost()}
                                             disabled={props.ViewMode || props?.disabled}
                                         >
                                             <div className={"save-icon"}></div>

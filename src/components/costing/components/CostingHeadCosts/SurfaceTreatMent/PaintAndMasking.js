@@ -1,17 +1,19 @@
 import { Drawer } from '@material-ui/core'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Col, Container, Row, Table } from 'reactstrap'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
-import { Paint, RawMaterialForPaint } from '../../../../../helper/Dummy'
 import Button from '../../../../layout/Button'
-import { checkForDecimalAndNull, checkWhiteSpaces, maxLength7, number } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, loggedInUserId, maxLength7, number } from '../../../../../helper'
 import TooltipCustom from '../../../../common/Tooltip'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
+import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator, setSurfaceData } from '../../../actions/Costing'
+import { costingInfoContext } from '../../CostingDetailStepTwo'
+import LoaderCustom from '../../../../common/LoaderCustom'
 
 const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'Part Surface Area', 'Consumption', 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate', 'Paint Cost', 'Action']
 
@@ -21,14 +23,23 @@ const FORM_DEFAULTS = {
 }
 
 const INITIAL_STATE = {
-    editMode: false,
-    paintDataList: [],
+    Coats: [],
     TapeCost: 0,
-    PaintCost: 0
+    PaintCost: 0,
+    TotalPaintCost: 0
 }
 
 function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMode }) {
-    const [state, setState] = useState(INITIAL_STATE)
+    const [state, setState] = useState({
+        editMode: false,
+        rawMaterialList: [],
+        loader: false
+    })
+    const dispatch = useDispatch()
+    const costData = useContext(costingInfoContext);
+    const { rmDrawerList, CostingEffectiveDate, currencySource, paintCoatList, SurfaceTabData } = useSelector(state => state.costing)
+    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+    const [calculateState, setCalculateState] = useState(INITIAL_STATE)
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
 
     const {
@@ -48,26 +59,113 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
         formState: { errors: errorsTableForm },
     } = useForm(FORM_DEFAULTS)
 
-    const deleteItem = (item, parentIndex) => {
+    useEffect(() => {
+        getDetails()
+        if (!ViewMode) {
+            dispatch(getPaintCoatList(() => { }))
+            const data = {
+                VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+
+                PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId || costData.CostingTypeId === PFS1TypeId
+                    || costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+
+                TechnologyId: 31,
+                VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+                EffectiveDate: CostingEffectiveDate,
+                CostingId: costData.CostingId,
+                material_id: null,
+                grade_id: null,
+
+                CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
+                    || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
+
+                CustomerId: costData.CustomerId,
+                PartId: costData?.PartId,
+                IsRFQ: false,
+                QuotationPartId: null
+            }
+            dispatch(getRMDrawerDataList(data, false, [], true, (res) => {
+
+                if (res && res.status === 200) {
+                    let Data = res.data.DataList;
+                    setState(prev => ({
+                        ...prev,
+                        rawMaterialList: Data
+                    }))
+                }
+            }))
+        }
+    }, [costData])
+    const getDetails = () => {
         setState(prev => ({
             ...prev,
-            paintDataList: prev.paintDataList.filter((_, i) => i !== parentIndex)
+            loader: true
+        }))
+        dispatch(getSurfaceTreatmentRawMaterialCalculator({ BaseCostingId: costData.CostingId, LoggedInUserId: loggedInUserId() }, (res) => {
+            setState(prev => ({
+                ...prev,
+                loader: false
+            }))
+            if (res && res.status === 200) {
+                let Data = res.data.Data;
+                setCalculateState(prev => ({
+                    ...prev,
+                    Coats: Data.Coats,
+                    TapeCost: Data.TapeCost,
+                    PaintCost: Data.PaintCost,
+                    TotalPaintCost: Data.TotalPaintCost
+                }))
+                setTimeout(() => {
+                    Data.Coats.map((item, parentIndex) => {
+                        item.RawMaterials.map((rm, childIndex) => {
+                            setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rm?.SurfaceArea, NoOfDecimalForInputOutput))
+                            setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rm?.Consumption, NoOfDecimalForInputOutput))
+                            setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rm?.RejectionAllowancePercentage, NoOfDecimalForInputOutput))
+                            setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rm?.RejectionAllowance, NoOfDecimalForInputOutput))
+                            setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rm?.NetCost, NoOfDecimalForPrice))
+                        })
+
+                    })
+                    setState(prev => ({
+                        ...prev,
+                        loader: false
+                    }))
+                }, 100)
+                setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(Data.TotalPaintCost, NoOfDecimalForPrice))
+                setValueTableForm(`TapeCost`, checkForDecimalAndNull(Data.TapeCost, NoOfDecimalForPrice))
+            } else {
+                setState(prev => ({
+                    ...prev,
+                    loader: false
+                }))
+            }
+        }))
+    }
+    const deleteItem = (item, parentIndex) => {
+        setCalculateState(prev => ({
+            ...prev,
+            Coats: prev.Coats.filter((_, i) => i !== parentIndex)
         }))
     }
 
     const addData = data => {
-        const existingPaintCoat = state.paintDataList.find(item => item.paintCoat === data.PaintCoat?.label)
+        const existingPaintCoat = calculateState.Coats.find(item => item.PaintCoat === data.PaintCoat?.label)
 
         if (existingPaintCoat) {
             Toaster.warning("Paint Coat already exist")
             return
         }
-
-        setState(prev => ({
+        let paintCoatSequence = calculateState.Coats.length + 1
+        let rawMaterialSequence = data.RawMaterial.length + 1
+        setCalculateState(prev => ({
             ...prev,
-            paintDataList: [...prev.paintDataList, {
-                paintCoat: data.PaintCoat?.label,
-                rawMaterialList: data.RawMaterial
+            Coats: [...prev.Coats, {
+                PaintCoat: data.PaintCoat?.label,
+                PaintCoatSequence: paintCoatSequence,
+                RawMaterials: data.RawMaterial.map(item => ({
+                    ...item,
+                    RawMaterialSequence: rawMaterialSequence
+                }))
             }]
         }))
 
@@ -76,73 +174,114 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
             RawMaterial: null
         })
     }
+
+    const renderList = (type) => {
+        let temp = []
+        if (type === 'RawMaterial') {
+            temp = state.rawMaterialList && state.rawMaterialList.length !== 0 && state.rawMaterialList.map(item => ({
+                ...item,
+                label: item.RawMaterial,
+                value: item.RawMaterialId
+            }))
+        }
+        if (type === 'PaintCoat') {
+            paintCoatList && paintCoatList.length !== 0 && paintCoatList.map(item => {
+                if (item.Value === '--0--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+        }
+        return temp
+    }
     const onSubmit = (data) => {
-        console.log(state.TotalPaintCost, "test test")
-        closeDrawer(state.TotalPaintCost)
+        let obj = {
+            ...calculateState,
+            LoggedInUserId: loggedInUserId(),
+            BaseCostingId: costData.CostingId
+        }
+        dispatch(saveSurfaceTreatmentRawMaterialCalculator(obj, (response) => {
+            if (response && response.status === 200) {
+                Toaster.success("Data saved successfully")
+                closeDrawer(calculateState.TotalPaintCost)
+                let newData = [...SurfaceTabData];
+                newData.map(item => {
+                    if (item.CostingId === costData.CostingId) {
+                        let CostingPartDetails = item?.CostingPartDetails
+                        CostingPartDetails.TotalPaintCost = calculateState.TotalPaintCost
+                        CostingPartDetails.PaintCost = calculateState.PaintCost
+                        CostingPartDetails.TapeCost = calculateState.TapeCost
+                    }
+                })
+                dispatch(setSurfaceData(newData, () => { }))
+            }
+        }))
+
 
     }
     const calculateValues = debounce((surfaceArea, consumption, rejectionAllowancePercentage, parentIndex, childIndex, rm) => {
         const surfaceAreaAndConsumption = surfaceArea * consumption
         const rejectionAllowance = surfaceAreaAndConsumption * rejectionAllowancePercentage / 100
-        const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.RmRate
-
-        let paintDataListTemp = [...state.paintDataList];
-        if (paintDataListTemp[parentIndex]?.rawMaterialList[childIndex]) {
-            paintDataListTemp[parentIndex].rawMaterialList[childIndex] = {
-                ...paintDataListTemp[parentIndex].rawMaterialList[childIndex],
+        const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
+        let paintDataListTemp = [...calculateState.Coats];
+        let totalPaintCost = 0
+        const getTapValue = getValuesTableForm(`TapeCost`)
+        if (paintDataListTemp[parentIndex]?.RawMaterials[childIndex]) {
+            paintDataListTemp[parentIndex].RawMaterials[childIndex] = {
+                ...paintDataListTemp[parentIndex].RawMaterials[childIndex],
                 RejectionAllowance: rejectionAllowance,
                 NetCost: netCost,
                 SurfaceArea: surfaceArea,
                 Consumption: consumption,
                 RejectionAllowancePercentage: rejectionAllowancePercentage,
-                id: rm?.value
+                id: rm?.RawMaterialId
             }
 
             // Calculate total NetCost across all items
+
             const totalNetCost = paintDataListTemp.reduce((total, paintData) => {
-                return total + paintData.rawMaterialList.reduce((rmTotal, rmItem) => {
+                return total + paintData.RawMaterials.reduce((rmTotal, rmItem) => {
                     return rmTotal + (rmItem.NetCost || 0);
                 }, 0);
             }, 0);
-
-            setState(prev => ({
+            totalPaintCost = totalNetCost + checkForNull(getTapValue)
+            setCalculateState(prev => ({
                 ...prev,
                 PaintCost: totalNetCost,
-                TotalPaintCost: totalNetCost + prev.TapeCost
+                TotalPaintCost: totalPaintCost
             }));
         }
 
-        setState(prev => ({
+        setCalculateState(prev => ({
             ...prev,
-            paintDataList: paintDataListTemp,
+            Coats: paintDataListTemp,
         }))
-
-        setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(state.TotalPaintCost, NoOfDecimalForPrice))
-        setValueTableForm(`RejectionAllowance${rm?.value}${rm?.label}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
-        setValueTableForm(`NetCost${rm?.value}${rm?.label}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
-
-    }, 700)
-    const renderInputBox = ({ item, name, coat, parentIndex, childIndex, disabled, onHandleChange }) => (
-        <TextFieldHookForm
-            label={false}
-            name={`${name}${item?.value}${coat}${parentIndex}${childIndex}`}
-            Controller={Controller}
-            control={controlTableForm}
-            register={registerTableForm}
-            rules={{
-                required: true,
-                validate: { number, checkWhiteSpaces, maxLength7 }
-            }}
-            handleChange={onHandleChange ?? (() => { })}
-            defaultValue={''}
-            customClassName={'withBorder mb-0'}
-            errors={errorsTableForm[`${item?.value}${coat}${parentIndex}${childIndex}`]}
-            disabled={disabled}
-        />
-    )
+        setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(totalPaintCost, NoOfDecimalForPrice))
+        setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
+        setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
+    }, 300)
+    const renderInputBox = ({ item, name, coat, parentIndex, childIndex, disabled, onHandleChange }) => {
+        return (
+            <TextFieldHookForm
+                label={false}
+                name={`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`}
+                Controller={Controller}
+                control={controlTableForm}
+                register={registerTableForm}
+                rules={{
+                    required: true,
+                    validate: { number, checkWhiteSpaces, maxLength7 }
+                }}
+                handleChange={onHandleChange ?? (() => { })}
+                defaultValue={''}
+                customClassName={'withBorder mb-0'}
+                errors={errorsTableForm[`${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
+                disabled={disabled}
+            />
+        )
+    }
 
     const renderTableRows = () => {
-        if (!state.paintDataList?.length) {
+        if (!calculateState.Coats?.length) {
             return (
                 <tr>
                     <td colSpan={TABLE_HEADERS.length}>
@@ -152,27 +291,27 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
             )
         }
 
-        return state.paintDataList.map((item, parentIndex) => {
-            if (!item?.rawMaterialList?.length) return null
+        return calculateState.Coats.map((item, parentIndex) => {
+            if (!item?.RawMaterials?.length) return null
 
-            return item.rawMaterialList.map((rm, childIndex) => (
+            return item.RawMaterials.map((rm, childIndex) => (
                 <tr key={`${parentIndex}-${childIndex}`}>
                     {childIndex === 0 && (
-                        <td width="90" rowSpan={item.rawMaterialList.length}>
-                            {item.paintCoat || '-'}
+                        <td width="90" rowSpan={item.RawMaterials.length}>
+                            {item.PaintCoat || '-'}
                         </td>
                     )}
-                    <td>{rm?.label || '-'}</td>
+                    <td>{rm?.RawMaterial || '-'}</td>
                     <td>{renderInputBox({
                         item: rm,
                         name: 'SurfaceArea',
-                        coat: rm?.label,
+                        coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
                         onHandleChange: e => calculateValues(
                             e.target.value,
-                            getValuesTableForm(`Consumption${rm?.value}${rm?.label}${parentIndex}${childIndex}`),
-                            getValuesTableForm(`RejectionAllowancePercentage${rm?.value}${rm?.label}${parentIndex}${childIndex}`),
+                            getValuesTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
+                            getValuesTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
                             parentIndex,
                             childIndex,
                             rm
@@ -181,13 +320,13 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                     <td>{renderInputBox({
                         item: rm,
                         name: 'Consumption',
-                        coat: rm?.label,
+                        coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
                         onHandleChange: e => calculateValues(
-                            getValuesTableForm(`SurfaceArea${rm?.value}${rm?.label}${parentIndex}${childIndex}`),
+                            getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
                             e.target.value,
-                            getValuesTableForm(`RejectionAllowancePercentage${rm?.value}${rm?.label}${parentIndex}${childIndex}`),
+                            getValuesTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
                             parentIndex,
                             childIndex,
                             rm
@@ -196,12 +335,12 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                     <td>{renderInputBox({
                         item: rm,
                         name: 'RejectionAllowancePercentage',
-                        coat: rm?.label,
+                        coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
                         onHandleChange: e => calculateValues(
-                            getValuesTableForm(`SurfaceArea${rm?.value}${rm?.label}${parentIndex}${childIndex}`),
-                            getValuesTableForm(`Consumption${rm?.value}${rm?.label}${parentIndex}${childIndex}`),
+                            getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
+                            getValuesTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
                             e.target.value,
                             parentIndex,
                             childIndex,
@@ -211,22 +350,22 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                     <td>{renderInputBox({
                         item: rm,
                         name: 'RejectionAllowance',
-                        coat: rm?.label,
+                        coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
                         disabled: true
                     })}</td>
-                    <td>{checkForDecimalAndNull(rm?.RmRate, NoOfDecimalForInputOutput) || ''}</td>
+                    <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, NoOfDecimalForInputOutput) || ''}</td>
                     <td>{renderInputBox({
                         item: rm,
                         name: 'NetCost',
-                        coat: rm?.label,
+                        coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
                         disabled: true
                     })}</td>
                     {childIndex === 0 && (
-                        <td width="50" rowSpan={item.rawMaterialList.length}>
+                        <td width="50" rowSpan={item.RawMaterials.length}>
                             <Button
                                 id={`PaintAndMasking_delete${parentIndex}-${childIndex}`}
                                 className="mr-1 Tour_List_Delete"
@@ -240,11 +379,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
             ))
         })
     }
-    console.log(errorsInitialForm, errorsTableForm, "test test")
     const handleTapeCostChange = (e) => {
         const value = (e && e?.target && e?.target?.value) ? Number(e?.target?.value) : 0
-        let calculateCost = value + state.PaintCost
-        setState(prev => ({
+        let calculateCost = value + calculateState.PaintCost
+        setCalculateState(prev => ({
             ...prev,
             TapeCost: value,
             TotalPaintCost: calculateCost
@@ -261,7 +399,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                 <div className="header-wrapper left">
                                     <h3>Paint and Masking:</h3>
                                 </div>
-                                <div onClick={() => closeDrawer(state.TotalPaintCost)} className="close-button right" />
+                                <div onClick={() => closeDrawer(calculateState.TotalPaintCost)} className="close-button right" />
                             </Col>
                         </Row>
 
@@ -277,7 +415,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                         register={registerInitialForm}
                                         mandatory
                                         rules={{ required: true }}
-                                        options={Paint}
+                                        options={renderList('PaintCoat')}
                                         handleChange={() => { }}
                                         defaultValue=""
                                         customClassName="withBorder"
@@ -295,7 +433,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                         register={registerInitialForm}
                                         mandatory
                                         rules={{ required: true }}
-                                        options={RawMaterialForPaint}
+                                        options={renderList('RawMaterial')}
                                         isMulti
                                         handleChange={() => { }}
                                         defaultValue=""
@@ -319,7 +457,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                         </form>
                     </div>
 
-                    <form onSubmit={handleSubmitTableForm(onSubmit)}>
+                    {state.loader ? <LoaderCustom /> : <form onSubmit={handleSubmitTableForm(onSubmit)}>
                         <Table responsive bordered className="table-with-input-data">
                             <thead>
                                 <tr>
@@ -341,7 +479,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                             tooltipText="Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM..."
                                         /> */}
                                         <div className="w-fit" id="totalGSM">
-                                            {checkForDecimalAndNull(state.PaintCost, NoOfDecimalForInputOutput)}
+                                            {checkForDecimalAndNull(calculateState.PaintCost, NoOfDecimalForInputOutput)}
                                         </div>
                                     </td>
                                 </tr>
@@ -387,7 +525,9 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                         id="PaintAndMasking_cancel"
                                         className="mr-2"
                                         variant="cancel-btn"
-                                        onClick={closeDrawer}
+                                        onClick={() => {
+                                            closeDrawer(calculateState.TotalPaintCost)
+                                        }}
                                         icon="cancel-icon"
                                         buttonName="Cancel"
                                     />
@@ -401,7 +541,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                 </Col>
                             </Row>
                         )}
-                    </form>
+                    </form>}
                 </Container>
             </div>
         </Drawer>

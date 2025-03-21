@@ -78,6 +78,7 @@ import {
   GET_COSTING_COST_DETAILS,
   SET_OPERATION_APPLICABILITY_SELECT,
   SET_PROCESS_APPLICABILITY_SELECT,
+  GET_PAINT_COAT_LIST
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -611,7 +612,7 @@ export function getBOPData(data, callback) {
  * @method getRMDrawerDataList
  * @description GET RM DATALIST IN RM DRAWER IN COSTING VBC
  */
-export function getRMDrawerDataList(data, isNFR, rmNameList, callback) {
+export function getRMDrawerDataList(data, isNFR, rmNameList, surfaceTreatment = false, callback) {
   return (dispatch) => {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&vendorId=${data.VendorId}&customerId=${data.CustomerId}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&partId=${data.PartId}&isRFQ=${data.IsRFQ}&quotationPartId=${data.QuotationPartId}`
@@ -621,7 +622,7 @@ export function getRMDrawerDataList(data, isNFR, rmNameList, callback) {
       if (response.data.Result || response.status === 204) {
         dispatch({
           type: GET_RM_DRAWER_DATA_LIST,
-          payload: response.status === 204 ? [] : response.data.DataList,
+          payload: surfaceTreatment ? [] : response.status === 204 ? [] : response.data.DataList,
           isNFR: isNFR,
           rmNameList: rmNameList
         })
@@ -2049,10 +2050,10 @@ export function setRMCutOff(cutOffObj) {
  * @method getCostingTechnologySelectList
  * @description GET TECHNOLOGY SELECTLIST
  */
-export function getCostingSpecificTechnology(loggedInUserId, callback) {
+export function getCostingSpecificTechnology(loggedInUserId, callback, ListFor = '') {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getCostingSpecificTechnology}?loggedInUserId=${loggedInUserId}`, config())
+    const request = axios.get(`${API.getCostingSpecificTechnology}?loggedInUserId=${loggedInUserId}&ListFor=${ListFor}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -3222,3 +3223,48 @@ export function setProcessApplicabilitySelect(data) {
     });
   }
 };
+export function saveSurfaceTreatmentRawMaterialCalculator(data, callback) {
+  return (dispatch) => {
+    const request = axiosInstance.post(API.saveSurfaceTreatmentRawMaterialCalculator, data, config())
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      callback(error.response)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+export function getSurfaceTreatmentRawMaterialCalculator(params, callback) {
+  let param = `BaseCostingId=${params.BaseCostingId}&LoggedInUserId=${params.LoggedInUserId}`
+  return (dispatch) => {
+    const request = axiosInstance.get(`${API.getSurfaceTreatmentRawMaterialCalculator}?${param}`, config())
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      callback(error.response)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+
+  }
+}
+
+export function getPaintCoatList(callback) {
+  return (dispatch) => {
+    const request = axiosInstance.get(API.getPaintCoatList, config())
+    request.then((response) => {
+      if (response.data.Result || response?.status === 204) {
+        dispatch({
+          type: GET_PAINT_COAT_LIST,
+          payload: response?.status === 200 ? response?.data?.SelectList : [],
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
