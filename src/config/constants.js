@@ -18,7 +18,7 @@ export const config = () => {
 }
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+// const BASE_URL = `http://10.10.1.102:8002/api/v1`;
 
 
 
@@ -561,6 +561,9 @@ export const API = {
   getSurfaceTreatmentTabData: `${BASE_URL}/costing/get-costing-detail-for-surface-treatment`,
   saveCostingSurfaceTab: `${BASE_URL}/costing/save-costing-detail-for-surface-treatment`,
   getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-costing-surface-treatment-operation-list`,
+  getPaintCoatList: `${BASE_URL}/costing/select-list-paint-coat`,
+  getSurfaceTreatmentRawMaterialCalculator: `${BASE_URL}/costing/get-costing-surface-treatment-raw-material-paint-coat-details`,
+  saveSurfaceTreatmentRawMaterialCalculator: `${BASE_URL}/costing/save-costing-surface-treatment-raw-material-paint-coat-details`,
 
   getOverheadProfitTabData: `${BASE_URL}/costing/get-costing-detail-for-overhead-and-profit`,
   getOverheadProfitDataByModelType: `${BASE_URL}/costing/get-costing-overhead-profit-details`,
@@ -1868,6 +1871,7 @@ export const GET_BOP_DETAILS = 'GET_BOP_DETAILS';
 export const GET_CARRIER_TYPE_LIST_SUCCESS = 'GET_CARRIER_TYPE_LIST_SUCCESS';
 export const SET_PACKAGING_CALCULATOR_AVAILABLE = 'SET_PACKAGING_CALCULATOR_AVAILABLE';
 export const SET_FREIGHT_CALCULATOR_AVAILABLE = 'SET_FREIGHT_CALCULATOR_AVAILABLE';
+export const GET_PAINT_COAT_LIST = 'GET_PAINT_COAT_LIST';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -3373,6 +3377,15 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const COSTINGOVERHEADANDPROFTFORPROCESS = "Costing Overhead Profit For Process"
 export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Operation"
+export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra Cost"
+
+export const TAPEANDPAINT = "Tape + Paint"
+export const TAPE = "Tape"
+export const PAINT = "Paint"
+export const HANGER = "Hanger"
+export const SURFACETREATMENTLABEL = "Surface Treatment"
+export const PAINTTECHNOLOGY = 31
+
 export const IsSelectSinglePlant = true
 
 //VERSION 

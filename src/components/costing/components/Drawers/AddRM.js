@@ -145,7 +145,7 @@ function AddRM(props) {
       IsRFQ: false,
       QuotationPartId: null
     }
-    dispatch(getRMDrawerDataList(data, isNFR, rmNameList, (res) => {
+    dispatch(getRMDrawerDataList(data, isNFR, rmNameList, false, (res) => {
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         setTableDataList(Data)
@@ -359,7 +359,7 @@ function AddRM(props) {
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorName" headerName={vendorLabel} ></AgGridColumn>}
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorLocation" headerName={`${vendorLabel} Location`}></AgGridColumn>}
                         {initialConfiguration?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer={'sourceVendorFormatter'}></AgGridColumn>}
-                        <AgGridColumn field="Currency"  headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="Currency" headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UOM"></AgGridColumn>
