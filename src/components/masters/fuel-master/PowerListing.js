@@ -394,7 +394,7 @@ const PowerListing = (props) => {
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}
               >
-                <AgGridColumn field="CostingType"></AgGridColumn>
+                <AgGridColumn field="CostingType" headerName="Costing Head"></AgGridColumn>
                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>

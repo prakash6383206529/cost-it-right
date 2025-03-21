@@ -436,8 +436,8 @@ function LabourListing(props) {
               frameworkComponents={frameworkComponents}
               suppressRowClickSelection={true}
             >
-              <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
               <AgGridColumn field="CostingHead"minWidth={170} headerName="Costing Head"></AgGridColumn>
+              <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
 
               <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
