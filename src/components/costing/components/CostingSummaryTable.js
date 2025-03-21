@@ -1619,13 +1619,13 @@ const CostingSummaryTable = (props) => {
       delete templateObj.meltingLossExcel
     }
     if (simulationMode) {
-      ['costingVersion', 'vendorExcel', 'customer', 'InfoCategory','partType', 'RevisionNumber', 'plantExcel', 'scrapRecoveryPercentage'].forEach(key => delete templateObj[key]);
-  }
-  if (!showConvertedCurrencyCheckbox) {
-    ['nPOPrice', 'NetPOPriceLocalConversion','NetPOPriceConversion', 'currencyTitle'].forEach(key => delete templateObj[key]);
-  }
-  
-      for (var prop in templateObj) {
+      ['costingVersion', 'vendorExcel', 'customer', 'InfoCategory', 'partType', 'RevisionNumber', 'plantExcel', 'scrapRecoveryPercentage'].forEach(key => delete templateObj[key]);
+    }
+    if (!showConvertedCurrencyCheckbox) {
+      ['nPOPrice', 'NetPOPriceLocalConversion', 'NetPOPriceConversion', 'currencyTitle'].forEach(key => delete templateObj[key]);
+    }
+
+    for (var prop in templateObj) {
       if (viewCostingData[0]?.technologyId === LOGISTICS) {
         costingSummary.push({ label: VIEW_COSTING_DATA_LOGISTICS[prop], value: prop, })
       } else {
@@ -1664,7 +1664,7 @@ const CostingSummaryTable = (props) => {
       item.RejectionRemark = item?.rejectionOn?.RejectionRemark ? item?.rejectionOn?.RejectionRemark : '-'
       item.ICCRemark = item?.iccOn?.ICCRemark ? item?.iccOn?.ICCRemark : '-'
       item.PaymentTermRemark = item?.paymentTerms?.PaymentTermRemark ? item?.paymentTerms?.PaymentTermRemark : '-'
-      item.TaxCode = item?.TaxCodeList?.length ? item.TaxCodeList.map(item => item?.TaxCodeAndDescription).join(',') : '-';
+      item.TaxCode = item?.TaxCodeList?.length && getConfigurationKey()?.IsTaxCodeVisible ? item.TaxCodeList.map(item => item?.TaxCodeAndDescription).join(',') : '-';
       item.rejectionRecoveryApplicablity = item?.CostingRejectionRecoveryDetails?.ApplicabilityType ?? "-"
       item.rejectionRecoveryPercent = item?.CostingRejectionRecoveryDetails?.EffectiveRecoveryPercentage ?? "-"
       item.rejectionRecoveryApplicablityValue = item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? "-"
@@ -3003,8 +3003,8 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
                                           {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
-                                         
-                                     </span>
+
+                                        </span>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getOverheadPercentage(data)}
                                         </span>{' '}
