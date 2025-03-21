@@ -1603,6 +1603,9 @@ const CostingSummaryTable = (props) => {
     if (!getConfigurationKey().IsSourceExchangeRateNameVisible) {
       delete templateObj.ExchangeRateSourceName
     }
+    if (!getConfigurationKey()?.IsTaxCodeVisible) {
+      delete templateObj?.TaxCode
+    }
     if (props?.isRfqCosting) {
       templateObj.costingHeadCheck = 'VBC'
     }
