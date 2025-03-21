@@ -3377,6 +3377,15 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const COSTINGOVERHEADANDPROFTFORPROCESS = "Costing Overhead Profit For Process"
 export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Operation"
+export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra Cost"
+
+export const TAPEANDPAINT = "Tape + Paint"
+export const TAPE = "Tape"
+export const PAINT = "Paint"
+export const HANGER = "Hanger"
+export const SURFACETREATMENTLABEL = "Surface Treatment"
+export const PAINTTECHNOLOGY = 31
+
 export const IsSelectSinglePlant = true
 
 //VERSION 

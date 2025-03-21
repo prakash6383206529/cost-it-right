@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
-import { ASSEMBLY, ASSEMBLYNAME, LEVEL0, WACTypeId } from '../../../../../config/constants';
+import { ASSEMBLY, ASSEMBLYNAME, HANGER, LEVEL0, PAINT, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { PreviousTabData } from '../../CostingHeaderTabs';
 import Hanger from './Hanger';
@@ -354,19 +354,19 @@ function SurfaceTreatment(props) {
     let tempData = [...surfaceTabData?.CostingPartDetails?.TransportationDetails]
     tempData.map(item => {
       if (item?.CostingConditionMasterId) {
-        if (item.CostingConditionNumber === 'Tape + Paint') {
+        if (item.CostingConditionNumber === TAPEANDPAINT) {
           item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.TotalPaintCost
           item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.TotalPaintCost, item?.Rate)
-        } else if (item.CostingConditionNumber === 'Hanger') {
+        } else if (item.CostingConditionNumber === HANGER) {
           item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.HangerCostPerPart
           item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.HangerCostPerPart, item?.Rate)
-        } else if (item.CostingConditionNumber === 'Surface Treatment') {
+        } else if (item.CostingConditionNumber === SURFACETREATMENTLABEL) {
           item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost
           item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost, item?.Rate)
-        } else if (item.CostingConditionNumber === 'Tape') {
+        } else if (item.CostingConditionNumber === TAPE) {
           item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.TapeCost
           item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.TapeCost, item?.Rate)
-        } else if (item.CostingConditionNumber === 'Paint') {
+        } else if (item.CostingConditionNumber === PAINT) {
           item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.PaintCost
           item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.PaintCost, item?.Rate)
         }

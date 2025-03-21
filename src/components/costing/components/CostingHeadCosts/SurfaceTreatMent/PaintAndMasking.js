@@ -8,7 +8,7 @@ import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, loggedInUserId,
 import TooltipCustom from '../../../../common/Tooltip'
 import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../../../common/NoContentFound'
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, NFRTypeId, PAINTTECHNOLOGY, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
 import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator, setSurfaceData } from '../../../actions/Costing'
@@ -37,7 +37,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
     })
     const dispatch = useDispatch()
     const costData = useContext(costingInfoContext);
-    const { rmDrawerList, CostingEffectiveDate, currencySource, paintCoatList, SurfaceTabData } = useSelector(state => state.costing)
+    const { CostingEffectiveDate, paintCoatList, SurfaceTabData } = useSelector(state => state.costing)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [calculateState, setCalculateState] = useState(INITIAL_STATE)
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
@@ -64,22 +64,22 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
         if (!ViewMode) {
             dispatch(getPaintCoatList(() => { }))
             const data = {
-                VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+                VendorId: costData?.VendorId ? costData?.VendorId : EMPTY_GUID,
 
                 PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId || costData.CostingTypeId === PFS1TypeId
                     || costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
 
-                TechnologyId: 31,
-                VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+                TechnologyId: PAINTTECHNOLOGY,
+                VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData?.VendorPlantId : EMPTY_GUID,
                 EffectiveDate: CostingEffectiveDate,
-                CostingId: costData.CostingId,
+                CostingId: costData?.CostingId,
                 material_id: null,
                 grade_id: null,
 
                 CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
                     || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
 
-                CustomerId: costData.CustomerId,
+                CustomerId: costData?.CustomerId,
                 PartId: costData?.PartId,
                 IsRFQ: false,
                 QuotationPartId: null
@@ -87,10 +87,15 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
             dispatch(getRMDrawerDataList(data, false, [], true, (res) => {
 
                 if (res && res.status === 200) {
-                    let Data = res.data.DataList;
+                    let Data = res?.data?.DataList;
                     setState(prev => ({
                         ...prev,
                         rawMaterialList: Data
+                    }))
+                } else if (res && res.status === 204) {
+                    setState(prev => ({
+                        ...prev,
+                        rawMaterialList: []
                     }))
                 }
             }))
@@ -110,10 +115,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                 let Data = res.data.Data;
                 setCalculateState(prev => ({
                     ...prev,
-                    Coats: Data.Coats,
-                    TapeCost: Data.TapeCost,
-                    PaintCost: Data.PaintCost,
-                    TotalPaintCost: Data.TotalPaintCost
+                    Coats: Data?.Coats,
+                    TapeCost: checkForNull(Data?.TapeCost),
+                    PaintCost: checkForNull(Data?.PaintCost),
+                    TotalPaintCost: checkForNull(Data?.TotalPaintCost)
                 }))
                 setTimeout(() => {
                     Data.Coats.map((item, parentIndex) => {
@@ -131,8 +136,8 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                         loader: false
                     }))
                 }, 100)
-                setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(Data.TotalPaintCost, NoOfDecimalForPrice))
-                setValueTableForm(`TapeCost`, checkForDecimalAndNull(Data.TapeCost, NoOfDecimalForPrice))
+                setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(Data?.TotalPaintCost, NoOfDecimalForPrice))
+                setValueTableForm(`TapeCost`, checkForDecimalAndNull(Data?.TapeCost, NoOfDecimalForPrice))
             } else {
                 setState(prev => ({
                     ...prev,
@@ -150,20 +155,20 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
     }
 
     const addData = data => {
-        const existingPaintCoat = calculateState.Coats.find(item => item.PaintCoat === data.PaintCoat?.label)
+        const existingPaintCoat = calculateState?.Coats?.find(item => item?.PaintCoat === data?.PaintCoat?.label)
 
         if (existingPaintCoat) {
             Toaster.warning("Paint Coat already exist")
             return
         }
-        let paintCoatSequence = calculateState.Coats.length + 1
-        let rawMaterialSequence = data.RawMaterial.length + 1
+        let paintCoatSequence = calculateState?.Coats?.length + 1
+        let rawMaterialSequence = data?.RawMaterial?.length + 1
         setCalculateState(prev => ({
             ...prev,
             Coats: [...prev.Coats, {
-                PaintCoat: data.PaintCoat?.label,
+                PaintCoat: data?.PaintCoat?.label,
                 PaintCoatSequence: paintCoatSequence,
-                RawMaterials: data.RawMaterial.map(item => ({
+                RawMaterials: data?.RawMaterial?.map(item => ({
                     ...item,
                     RawMaterialSequence: rawMaterialSequence
                 }))
@@ -179,16 +184,16 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
     const renderList = (type) => {
         let temp = []
         if (type === 'RawMaterial') {
-            temp = state.rawMaterialList && state.rawMaterialList.length !== 0 && state.rawMaterialList.map(item => ({
+            temp = state.rawMaterialList && state.rawMaterialList?.length !== 0 && state.rawMaterialList?.map(item => ({
                 ...item,
-                label: item.RawMaterial,
-                value: item.RawMaterialId
+                label: item?.RawMaterial,
+                value: item?.RawMaterialId
             }))
         }
         if (type === 'PaintCoat') {
-            paintCoatList && paintCoatList.length !== 0 && paintCoatList.map(item => {
-                if (item.Value === '--0--') return false
-                temp.push({ label: item.Text, value: item.Value })
+            paintCoatList && paintCoatList?.length !== 0 && paintCoatList?.map(item => {
+                if (item?.Value === '--0--') return false
+                temp.push({ label: item?.Text, value: item?.Value })
                 return null
             })
         }
@@ -198,19 +203,19 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
         let obj = {
             ...calculateState,
             LoggedInUserId: loggedInUserId(),
-            BaseCostingId: costData.CostingId
+            BaseCostingId: costData?.CostingId
         }
         dispatch(saveSurfaceTreatmentRawMaterialCalculator(obj, (response) => {
-            if (response && response.status === 200) {
+            if (response && response?.status === 200) {
                 Toaster.success("Data saved successfully")
-                closeDrawer(calculateState.TotalPaintCost)
+                closeDrawer(checkForNull(calculateState?.TotalPaintCost))
                 let newData = [...SurfaceTabData];
                 newData.map(item => {
-                    if (item.CostingId === costData.CostingId) {
+                    if (item?.CostingId === costData?.CostingId) {
                         let CostingPartDetails = item?.CostingPartDetails
-                        CostingPartDetails.TotalPaintCost = calculateState.TotalPaintCost
-                        CostingPartDetails.PaintCost = calculateState.PaintCost
-                        CostingPartDetails.TapeCost = calculateState.TapeCost
+                        CostingPartDetails.TotalPaintCost = checkForNull(calculateState?.TotalPaintCost)
+                        CostingPartDetails.PaintCost = checkForNull(calculateState?.PaintCost)
+                        CostingPartDetails.TapeCost = checkForNull(calculateState?.TapeCost)
                     }
                 })
                 dispatch(setSurfaceData(newData, () => { }))
@@ -220,10 +225,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
 
     const calculateTotalCost = (tableData) => {
         let totalPaintCost = 0
-        const getTapValue = getValuesTableForm(`TapeCost`)
-        const totalNetCost = tableData.reduce((total, paintData) => {
-            return total + paintData.RawMaterials.reduce((rmTotal, rmItem) => {
-                return rmTotal + (rmItem.NetCost || 0);
+        const getTapValue = checkForNull(getValuesTableForm(`TapeCost`))
+        const totalNetCost = tableData?.reduce((total, paintData) => {
+            return total + paintData?.RawMaterials?.reduce((rmTotal, rmItem) => {
+                return rmTotal + (rmItem?.NetCost || 0);
             }, 0);
         }, 0);
         totalPaintCost = totalNetCost + checkForNull(getTapValue)
@@ -242,11 +247,11 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
         if (paintDataListTemp[parentIndex]?.RawMaterials[childIndex]) {
             paintDataListTemp[parentIndex].RawMaterials[childIndex] = {
                 ...paintDataListTemp[parentIndex].RawMaterials[childIndex],
-                RejectionAllowance: rejectionAllowance,
-                NetCost: netCost,
-                SurfaceArea: surfaceArea,
-                Consumption: consumption,
-                RejectionAllowancePercentage: rejectionAllowancePercentage,
+                RejectionAllowance: checkForNull(rejectionAllowance),
+                NetCost: checkForNull(netCost),
+                SurfaceArea: checkForNull(surfaceArea),
+                Consumption: checkForNull(consumption),
+                RejectionAllowancePercentage: checkForNull(rejectionAllowancePercentage),
                 id: rm?.RawMaterialId
             }
 
@@ -285,7 +290,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
     }
 
     const renderTableRows = () => {
-        if (!calculateState.Coats?.length) {
+        if (!calculateState?.Coats?.length) {
             return (
                 <tr>
                     <td colSpan={TABLE_HEADERS.length}>
@@ -295,14 +300,14 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
             )
         }
 
-        return calculateState.Coats.map((item, parentIndex) => {
+        return calculateState?.Coats?.map((item, parentIndex) => {
             if (!item?.RawMaterials?.length) return null
 
-            return item.RawMaterials.map((rm, childIndex) => (
+            return item?.RawMaterials?.map((rm, childIndex) => (
                 <tr key={`${parentIndex}-${childIndex}`}>
                     {childIndex === 0 && (
-                        <td width="90" rowSpan={item.RawMaterials.length}>
-                            {item.PaintCoat || '-'}
+                        <td width="90" rowSpan={item?.RawMaterials?.length}>
+                            {item?.PaintCoat || '-'}
                         </td>
                     )}
                     <td>{rm?.RawMaterial || '-'}</td>
@@ -314,8 +319,8 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                         childIndex,
                         onHandleChange: e => calculateValues(
                             e.target.value,
-                            getValuesTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
-                            getValuesTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
+                            checkForNull(getValuesTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
+                            checkForNull(getValuesTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
                             parentIndex,
                             childIndex,
                             rm
@@ -328,9 +333,9 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                         parentIndex,
                         childIndex,
                         onHandleChange: e => calculateValues(
-                            getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
+                            checkForNull(getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
                             e.target.value,
-                            getValuesTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
+                            checkForNull(getValuesTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
                             parentIndex,
                             childIndex,
                             rm
@@ -343,8 +348,8 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                         parentIndex,
                         childIndex,
                         onHandleChange: e => calculateValues(
-                            getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
-                            getValuesTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`),
+                            checkForNull(getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
+                            checkForNull(getValuesTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
                             e.target.value,
                             parentIndex,
                             childIndex,
@@ -385,7 +390,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
     }
     const handleTapeCostChange = (e) => {
         const value = (e && e?.target && e?.target?.value) ? Number(e?.target?.value) : 0
-        let calculateCost = value + calculateState.PaintCost
+        let calculateCost = checkForNull(value) + checkForNull(calculateState.PaintCost)
         setCalculateState(prev => ({
             ...prev,
             TapeCost: value,
@@ -483,7 +488,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                             tooltipText="Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM..."
                                         /> */}
                                         <div className="w-fit" id="totalGSM">
-                                            {checkForDecimalAndNull(calculateState.PaintCost, NoOfDecimalForInputOutput)}
+                                            {checkForDecimalAndNull(calculateState?.PaintCost, NoOfDecimalForInputOutput)}
                                         </div>
                                     </td>
                                 </tr>

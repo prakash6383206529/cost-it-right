@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setSurfaceData } from '../../../actions/Costing'
 
 const Hanger = (props) => {
-    const { register, control, formState: { errors }, setValue, getValues, handleSubmit } = useForm({
+    const { register, control, formState: { errors }, setValue, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -21,9 +21,9 @@ const Hanger = (props) => {
     })
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
     useEffect(() => {
-        setValue(`HangerFactor`, surfaceTabData?.CostingPartDetails?.HangerRate)
-        setValue(`NoOfPartsPerHanger`, surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger)
-        setValue(`HangerCostPerPart`, surfaceTabData?.CostingPartDetails?.HangerCostPerPart)
+        setValue(`HangerFactor`, checkForDecimalAndNull(surfaceTabData?.CostingPartDetails?.HangerRate, NoOfDecimalForInputOutput))
+        setValue(`NoOfPartsPerHanger`, checkForDecimalAndNull(surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger, NoOfDecimalForInputOutput))
+        setValue(`HangerCostPerPart`, checkForDecimalAndNull(surfaceTabData?.CostingPartDetails?.HangerCostPerPart, NoOfDecimalForPrice))
     }, [SurfaceTabData])
     const calculateHangerCost = debounce((hangerFactor, noOfPartsPerHanger) => {
         const hangerCost = checkForNull(hangerFactor) / checkForNull(noOfPartsPerHanger)
@@ -34,8 +34,8 @@ const Hanger = (props) => {
             HangerCostPerPart: hangerCost
         }
         let surfaceTabData = [...SurfaceTabData]
-        surfaceTabData && surfaceTabData?.map(item => {
-            item.CostingPartDetails = { ...item.CostingPartDetails, ...obj }
+        surfaceTabData?.map(item => {
+            item.CostingPartDetails = { ...item?.CostingPartDetails, ...obj }
         })
         dispatch(setSurfaceData(surfaceTabData, () => { }))
     }, 300)
@@ -59,7 +59,7 @@ const Hanger = (props) => {
             {state.showHanger && <Row>
                 <Col md="4">
                     <TextFieldHookForm
-                        label="Hanger Factor (rate)"
+                        label="Hanger Factor (Rate)"
                         name={`HangerFactor`}
                         Controller={Controller}
                         control={control}
@@ -82,7 +82,7 @@ const Hanger = (props) => {
                 </Col>
                 <Col md="4">
                     <TextFieldHookForm
-                        label="No. of Parts per Hanger "
+                        label="No. of Parts per Hanger"
                         name={`NoOfPartsPerHanger`}
                         Controller={Controller}
                         control={control}
