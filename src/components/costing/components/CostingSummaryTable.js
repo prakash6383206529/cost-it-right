@@ -1589,9 +1589,9 @@ const CostingSummaryTable = (props) => {
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
-    if (!(getConfigurationKey().IsBasicRateAndCostingConditionVisible)) {
-      delete templateObj.conditionCost
-      // delete templateObj.BasicRate
+    if (!(getConfigurationKey()?.IsBasicRateAndCostingConditionVisible)) {
+      delete templateObj?.conditionCost
+      delete templateObj?.BasicRate
     }
     if (Number(viewCostingData[0]?.technologyId) !== PLASTIC) {
       delete templateObj.BurningLossWeight
