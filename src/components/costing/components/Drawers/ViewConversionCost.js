@@ -310,6 +310,7 @@ function ViewConversionCost(props) {
                 <th><span className='d-flex'>Quantity  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div>}</span></th>
                 <th>{`Net Cost`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                <th>{`Applicability`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
               {costingProcessCost &&
@@ -352,6 +353,7 @@ function ViewConversionCost(props) {
                         <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration?.NoOfDecimalForPrice) : 0} </td>
                         {initialConfiguration?.IsShowCRMHead && <td>{item.ProcessCRMHead}</td>}
+                        <td>{item?.CostingConditionNumber ? item?.CostingConditionNumber : '-'}</td>
 
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Remark ? item.Remark : "-"}>{item?.Remark ? item.Remark : "-"}</span></td>
                       </tr>
@@ -402,6 +404,7 @@ function ViewConversionCost(props) {
                 {initialConfiguration?.IsOperationLabourRateConfigure && costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
                 {initialConfiguration?.IsOperationLabourRateConfigure && costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
+                <th>{`Applicability`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
@@ -428,6 +431,7 @@ function ViewConversionCost(props) {
                           {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration?.NoOfDecimalForPrice) : 0}
                         </td>
                         {initialConfiguration?.IsShowCRMHead && <td>{item.OperationCRMHead}</td>}
+                        <td>{item?.CostingConditionNumber ? item?.CostingConditionNumber : '-'}</td>
                         <td>
                           {item.Remark !== null ? item.Remark : '-'}
                         </td>
