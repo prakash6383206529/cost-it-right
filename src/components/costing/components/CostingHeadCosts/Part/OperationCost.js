@@ -5,7 +5,7 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME, EMPTY_GUID, APPLICABILITY_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_PROFIT, APPLICABILITY_OVERHEAD } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME, EMPTY_GUID} from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculateNetCosts, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -252,12 +252,13 @@ function OperationCost(props) {
       setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
     })
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
-    let totalFinishWeight = 0
-    totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.OperationCost)
-    }, 0)
+    //let totalFinishWeight = 0
+    // totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {
+    //   return accummlator + checkForNull(el.OperationCost)
+    // }, 0)
+    const totals = calculateOperationTotals(tempArr);
     if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId)) {
-      props.getOperationGrid(tempArr, totalFinishWeight, true)
+      props.getOperationGrid(tempArr, totals?.OperationCostTotal, true)
     }
   }
 
@@ -328,13 +329,13 @@ function OperationCost(props) {
         CostingConditionMasterAndTypeLinkingId: tempData?.CostingConditionMasterAndTypeLinkingId,
         ...netCosts
       };
+tempArr = Object.assign([...gridData], { [index]: tempData });
+      // let value = tempArr && tempArr.length > 0 && tempArr.reduce((accumulator, el) => {
+      //   return accumulator + checkForNull(el?.OperationCost);
+      // }, 0);
+      const totals = calculateOperationTotals(tempArr);
 
-      tempArr = Object.assign([...gridData], { [index]: tempData });
-      let value = tempArr && tempArr.length > 0 && tempArr.reduce((accumulator, el) => {
-        return accumulator + checkForNull(el?.OperationCost);
-      }, 0);
-
-      setOperationCostAssemblyTechnology(value);
+      setOperationCostAssemblyTechnology(totals?.OperationCostTotal);
       setGridData(tempArr);
     }
   };
@@ -399,7 +400,19 @@ function OperationCost(props) {
     dragEnd = e?.target?.title
 
   }
-
+  const calculateOperationTotals = (operationGrid) => {
+    return operationGrid?.reduce((acc, el) => ({
+      OperationCostTotal: acc?.OperationCostTotal + checkForNull(el?.OperationCost),
+      NetOperationCostForOverhead: acc?.NetOperationCostForOverhead + checkForNull(el?.NetOperationCostForOverhead),
+      NetOperationCostForOverheadAndProfit: acc?.NetOperationCostForOverheadAndProfit + checkForNull(el?.NetOperationCostForOverheadAndProfit),
+      NetOperationCostForProfit: acc?.NetOperationCostForProfit + checkForNull(el?.NetOperationCostForProfit)
+    }), {
+      OperationCostTotal: 0,
+      NetOperationCostForOverhead: 0,
+      NetOperationCostForOverheadAndProfit: 0,
+      NetOperationCostForProfit: 0
+    });
+  };
   const onDragComplete = (e) => {   //SWAPPING ROWS LOGIC FOR PROCESS
     let dragStart = e?.target?.title
 
