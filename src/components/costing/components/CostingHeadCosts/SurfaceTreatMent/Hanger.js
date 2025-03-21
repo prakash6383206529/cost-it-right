@@ -1,0 +1,134 @@
+import React, { useEffect, useState } from 'react'
+import { Col, Row } from 'reactstrap'
+import { TextFieldHookForm } from '../../../../layout/HookFormInputs'
+import { Controller, useForm } from 'react-hook-form'
+import { NUMBERMAXLENGTH } from '../../../../../config/masterData'
+import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLimit6, number } from '../../../../../helper'
+import { debounce } from 'lodash'
+import { useDispatch, useSelector } from 'react-redux'
+import { setSurfaceData } from '../../../actions/Costing'
+
+const Hanger = (props) => {
+    const { register, control, formState: { errors }, setValue, getValues } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    });
+    const { SurfaceTabData } = useSelector(state => state.costing)
+    let surfaceTabData = SurfaceTabData && SurfaceTabData[0]
+    const dispatch = useDispatch()
+    const [state, setState] = useState({
+        showHanger: false
+    })
+    const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
+    useEffect(() => {
+        setValue(`HangerFactor`, checkForDecimalAndNull(surfaceTabData?.CostingPartDetails?.HangerRate, NoOfDecimalForInputOutput))
+        setValue(`NoOfPartsPerHanger`, checkForDecimalAndNull(surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger, NoOfDecimalForInputOutput))
+        setValue(`HangerCostPerPart`, checkForDecimalAndNull(surfaceTabData?.CostingPartDetails?.HangerCostPerPart, NoOfDecimalForPrice))
+    }, [SurfaceTabData])
+    const calculateHangerCost = debounce((hangerFactor, noOfPartsPerHanger) => {
+        const hangerCost = checkForNull(hangerFactor) / checkForNull(noOfPartsPerHanger)
+        setValue(`HangerCostPerPart`, checkForDecimalAndNull(hangerCost, NoOfDecimalForPrice))
+        let obj = {
+            HangerRate: hangerFactor,
+            NumberOfPartsPerHanger: noOfPartsPerHanger,
+            HangerCostPerPart: hangerCost
+        }
+        let surfaceTabData = [...SurfaceTabData]
+        surfaceTabData?.map(item => {
+            item.CostingPartDetails = { ...item?.CostingPartDetails, ...obj }
+        })
+        dispatch(setSurfaceData(surfaceTabData, () => { }))
+    }, 300)
+    return (
+        <>
+            <Row>
+                <Col md="8"><div className="left-border">
+                    {'Hanger Cost:'}
+                </div></Col>
+                <Col md="4" className="text-right">
+                    <button id="Dashboard_Costing_Accordian" className="btn btn-small-primary-circle ml-1 " type="button" onClick={() => { setState({ ...state, showHanger: !state.showHanger }) }}>
+                        {state.showHanger ? (
+                            <i className="fa fa-minus" ></i>
+                        ) : (
+                            <i className="fa fa-plus"></i>
+                        )}
+
+                    </button>
+                </Col>
+            </Row>
+            {state.showHanger && <Row>
+                <Col md="4">
+                    <TextFieldHookForm
+                        label="Hanger Factor (Rate)"
+                        name={`HangerFactor`}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                            maxLength: NUMBERMAXLENGTH
+                        }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        handleChange={(e) => {
+                            e.preventDefault()
+                            calculateHangerCost(e.target.value, getValues(`NoOfPartsPerHanger`))
+                        }}
+                        errors={errors && errors.HangerFactor}
+                    // disabled={(!TransportationType || TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                    />
+                </Col>
+                <Col md="4">
+                    <TextFieldHookForm
+                        label="No. of Parts per Hanger"
+                        name={`NoOfPartsPerHanger`}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                            maxLength: NUMBERMAXLENGTH
+                        }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        handleChange={(e) => {
+                            e.preventDefault()
+                            calculateHangerCost(getValues(`HangerFactor`), e.target.value)
+                        }}
+                        errors={errors && errors.NoOfPartsPerHanger}
+                    // disabled={(!TransportationType || TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                    />
+                </Col>
+                <Col md="4">
+                    <TextFieldHookForm
+                        label="Hanger Cost per Part"
+                        name={`HangerCostPerPart`}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                            // validate: TransportationType === 'Percentage' ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                            // maxLength: NUMBERMAXLENGTH
+                        }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        handleChange={(e) => {
+                            e.preventDefault()
+                            // handleQuantityChange(e)
+                        }}
+                        errors={errors && errors.HangerCostPerPart}
+                        disabled={true}
+                    />
+                </Col>
+            </Row>}
+        </>
+    )
+}
+
+export default Hanger

@@ -138,19 +138,7 @@ function AddConditionCosting(props) {
 
     }, [fieldValues])
 
-    useEffect(() => {
-        updateAvailableApplicabilities();
-    }, [tableData, state.costDropdown]);
 
-    const updateAvailableApplicabilities = () => {
-        const newApplicabilities = ["Basic Price"];
-        tableData.forEach(item => {
-            if (item.Description !== "Basic Price" && !newApplicabilities.includes(item.Description)) {
-                newApplicabilities.push(item.Description);
-            }
-        });
-        setAvailableApplicabilities(newApplicabilities);
-    };
     const combinations = generateCombinations(availableApplicabilities, "Basic Price");
 
     const toggleCondition = () => {

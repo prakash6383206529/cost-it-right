@@ -18,6 +18,8 @@ import {
   APPLICABILITY_PROFIT_EXCL,
   APPLICABILITY_OVERHEAD_PROFIT,
   APPLICABILITY_OVERHEAD_PROFIT_EXCL,
+  APPLICABILITY_OVERHEAD_EXCL_PROFIT,
+  APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL,
 
 } from '../config/constants'
 import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
@@ -1979,6 +1981,8 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation')
       break;
     case APPLICABILITY_OVERHEAD_PROFIT:
     case APPLICABILITY_OVERHEAD_PROFIT_EXCL:
+    case APPLICABILITY_OVERHEAD_EXCL_PROFIT:
+    case APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL:
       result[`Net${prefix}CostForOverheadAndProfit`] = cost ?? 0;
       break;
     default:

@@ -558,3 +558,21 @@ export const checkNegativeValue = (arr = [], keyName = 'NetLandedCost', displayN
   }
   return hasNegativeValue;
 }
+
+export const viewAddButtonIcon = (data, type, CostingViewMode) => {
+
+  let className = ''
+  let title = ''
+  if (data.length !== 0 || CostingViewMode) {
+    className = 'view-icon-primary'
+    title = 'View'
+  } else {
+    className = 'plus-icon-square'
+    title = 'Add'
+  }
+  if (type === "className") {
+    return className
+  } else if (type === "title") {
+    return title
+  }
+}

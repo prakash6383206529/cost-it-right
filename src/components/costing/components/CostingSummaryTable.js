@@ -569,7 +569,8 @@ const CostingSummaryTable = (props) => {
       let netTransportationCostView = viewCostingData[index]?.CostingPartDetails?.netTransportationCostView
       let surfaceTreatmentDetails = viewCostingData[index]?.CostingPartDetails?.CostingPartDetailssurfaceTreatmentDetails
       let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
-      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false })
+      let viewCostingDataObj = viewCostingData[index]
+      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, viewCostingDataObj: viewCostingDataObj })
     }
   }
   /**
@@ -585,7 +586,8 @@ const CostingSummaryTable = (props) => {
       let netTransportationCostView = viewCostingData[index]?.netTransportationCostView
       let surfaceTreatmentDetails = viewCostingData[index]?.surfaceTreatmentDetails
       let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
-      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: true })
+      let viewCostingDataObj = viewCostingData[index]
+      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: true, viewCostingDataObj: viewCostingDataObj })
     }
   }
 
@@ -1817,7 +1819,7 @@ const CostingSummaryTable = (props) => {
           let netTransportationCostView = viewCostingData[index]?.netTransportationCostView
           let surfaceTreatmentDetails = viewCostingData[index]?.surfaceTreatmentDetails
           let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
-          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, operationHide: true })
+          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, operationHide: true, })
         }
 
         break;
@@ -1829,7 +1831,8 @@ const CostingSummaryTable = (props) => {
           let netTransportationCostView = viewCostingData[index]?.netTransportationCostView
           let surfaceTreatmentDetails = viewCostingData[index]?.surfaceTreatmentDetails
           let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
-          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, processHide: true })
+          let viewCostingDataObj = viewCostingData[index]
+          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, processHide: true, viewCostingDataObj: viewCostingDataObj })
         }
         break;
 
@@ -1993,7 +1996,7 @@ const CostingSummaryTable = (props) => {
     {viewRejectAndModelType?.isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
     {viewRejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
   </>
-    const iccToolTipText = <>
+  const iccToolTipText = <>
     {viewRejectAndModelType?.isIncludeToolCostInCCForICC && <p>Tool Cost Included</p>}
     {viewRejectAndModelType?.isIncludeOverheadAndProfitInICC && <p>Overhead and Profit Included</p>}
   </>
@@ -3083,8 +3086,7 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
                                           {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
-                                         
-                                          {console.log(viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit, "viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit")}
+
                                         </span>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getOverheadPercentage(data)}

@@ -101,7 +101,7 @@ function AddRMDetails(props) {
 
     useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
-        dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
+        dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }, 'RawMaterial'))
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRawMaterialCategory((res) => { }))
         dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
