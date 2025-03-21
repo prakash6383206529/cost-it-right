@@ -2343,7 +2343,7 @@ const CostingSummaryTable = (props) => {
                                             />
                                           </label>
                                         </span><TooltipCustom customClass="mt-n2 ml-n3 " id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Base Currency Conversion'."} /></> :
-                                          <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> ({heading(data).subHeading}) </span></span><span className='sub-heading'>{data.costingHeadCheck} {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></div></span>
+                                          <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span>{data.costingTypeId !== ZBCTypeId && (heading(data).subHeading)}</span></span><span className='sub-heading'>{data.costingHeadCheck} {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></div></span>
                                     }
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
                                   </div >
