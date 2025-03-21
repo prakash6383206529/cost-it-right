@@ -296,7 +296,7 @@ function ViewRM(props) {
                   <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.RMName}>{item?.RMName}</span></td>
                   {checkTechnologyIdAndRfq(viewCostingData) && (<td><div className={getChangeHighlightClass(item?.RMName, item?.UpdatedRawMaterialName)}>{item?.UpdatedRawMaterialName ? item?.UpdatedRawMaterialName : '-'}</div></td>)}
 
-                  <td>{item?.RMCode ? item?.RMCode : '-'}</td>
+                  <td>{item?.RawMaterialCode ? item?.RawMaterialCode : '-'}</td>
                   <td>{checkForDecimalAndNull(item?.RMRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
                   {isScrapRecoveryApplied && <td>{checkForDecimalAndNull(item?.ScrapRecoveryPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>}

@@ -208,6 +208,12 @@ function AddRMMaster(props) {
             finalUserCheckAndMasterLevelCheckFunction()
         }
     }, [state.costingTypeId])
+    useEffect(() => {
+               // If you have a vendorName field too
+        register("vendorName", { 
+          required: "This field is required" 
+        });
+      }, [register,state.costingTypeId]);
 
     const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
         if (!isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {

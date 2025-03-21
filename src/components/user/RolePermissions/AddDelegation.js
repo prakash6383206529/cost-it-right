@@ -189,6 +189,10 @@ const AddDelegation = (props) => {
     };
 
     const onSubmit = debounce(values => {
+        if(gridData.length === 0){
+            Toaster.warning('Please add at least one delegation entry before saving');
+            return;
+        }
         let formData = {
             "DelegatorUserId": props?.data?.UserId,
             "LoggedInUserId": loggedInUserId(),

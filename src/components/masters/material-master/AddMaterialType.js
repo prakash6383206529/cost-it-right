@@ -97,6 +97,10 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
   };
 
   const onSubmit = debounce(values => {
+    if(state.tableData.length === 0){
+      Toaster.warning('Please add at least one material type detail before saving');
+      return false;
+    }
     if (isEditFlag) {
       const isMaterialTypeUnchanged = materialTypeData?.materialTypeData?.MaterialType === values?.MaterialType;
       const isDensityUnchanged = checkForNull(materialTypeData?.materialTypeData?.Density) === checkForNull(values?.CalculatedDensityValue);
