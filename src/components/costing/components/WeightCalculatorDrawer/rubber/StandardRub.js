@@ -806,7 +806,7 @@ function StandardRub(props) {
                                             type="submit"
                                             value="CANCEL"
                                             className="reset ml-2 cancel-btn mt30"
-                                            disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
+                                            disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0) || ((!Array.isArray(getValues('RawMaterial')) && Object.keys(getValues('RawMaterial') || {}).length > 0) && isDisableAdd) ? false : true}
                                         >
                                             <div className={''}></div>
                                             RESET
@@ -880,7 +880,7 @@ function StandardRub(props) {
                                 type="button"
                                 className="submit-button  save-btn"
                                 onClick={onSubmit}
-                                disabled={props.CostingViewMode || isDisable ? true : false}
+                                disabled={(props.CostingViewMode || isDisable || tableData?.length === 0) ? true : false}
                             >
                                 <div className={'save-icon'}></div>
                                 {'SAVE'}
