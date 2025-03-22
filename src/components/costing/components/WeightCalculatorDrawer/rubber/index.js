@@ -65,7 +65,8 @@ function RubberCalciTab(props) {
                                 onClick={() => {
                                     toggle('2')
                                 }}
-                                disabled={false}
+                                disabled={props.rmRowData && props.rmRowData?.CalculatorType === "Compound"}
+                                // disabled={false}
                             // disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
                             >
                                 STANDARD
