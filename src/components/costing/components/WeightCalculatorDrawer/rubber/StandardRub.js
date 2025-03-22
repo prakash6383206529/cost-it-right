@@ -357,7 +357,9 @@ function StandardRub(props) {
             ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.Length === 0) ? ["Length"] : []),
         ];
         const isValid = await trigger(validationFields);
-        if(!isValid || (!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))   ){
+        if(!isValid){
+            return false;
+        }else if((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))   ){
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
