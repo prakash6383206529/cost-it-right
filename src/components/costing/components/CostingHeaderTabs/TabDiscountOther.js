@@ -1461,7 +1461,7 @@ function TabDiscountOther(props) {
     } else {
       setIsConditionCostingOpen(false)
       seConditionTableData(data)
-      const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+      const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
       setTotalConditionCost(sum)
       dispatch(isDiscountDataChange(true))
       setDiscountObj({
