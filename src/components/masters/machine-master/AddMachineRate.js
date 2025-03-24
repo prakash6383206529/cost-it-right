@@ -1762,10 +1762,10 @@ class AddMachineRate extends Component {
   };
   machineRateTitle = () => {
     return {
-      tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      tooltipTextPlantCurrency: `Machine Rate/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label??'Currency'}) * Plant Currency Rate (${this.state?.plantCurrency})`,
       toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency
-        ? `Machine Rate * Currency Rate (${this.state?.plantCurrency ?? ''})`
-        : `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+        ? `Machine Rate/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label ?? 'Currency'}) * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Machine Rate/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this?.props?.fieldsObj?.plantCurrency ?? 'Currency'}) * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {

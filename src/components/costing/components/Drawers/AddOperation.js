@@ -239,7 +239,8 @@ function AddOperation(props) {
                         onRowSelected={onRowSelect}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
-                        <AgGridColumn cellClass="has-checkbox" field="OperationName" headerName="Operation Name"></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="Operation Type"></AgGridColumn>
+                        <AgGridColumn  field="OperationName" headerName="Operation Name"></AgGridColumn>
                         <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
                         <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
                         <AgGridColumn field="Currency"  headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>

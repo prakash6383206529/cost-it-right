@@ -319,7 +319,7 @@ function AddRMFinancialDetails(props) {
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency ? netCostText : `${netCostlabel} * Plant Currency Rate (${states.isImport ? CurrencyExchangeRate?.plantCurrencyRate : CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
-            toolTipTextNetCostBaseCurrency: `Net Cost (${getValues('plantCurrency') ?? 'Plant Currency'}) * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
+            toolTipTextNetCostBaseCurrency: `Net Cost (${state.hidePlantCurrency ? getValues('currency')?.label : getValues('plantCurrency') ?? 'Plant Currency'}) * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
         };
     };
 
@@ -465,7 +465,7 @@ function AddRMFinancialDetails(props) {
 
     const allFieldsInfoIcon = (scrapLabel) => {
         let obj = {
-            toolTipBasicPrice: `Basic Rate + Other Cost`,
+            toolTipBasicPrice: `Basic Price = Basic Rate + Other Cost`,
             toolTipTextCalculatedFactor: <>{labelWithUOMAndUOM("Calculated Factor", state.UOM?.label, state.ScrapRateUOM?.label)} = 1 / {labelWithUOMAndUOM("Calculated Ratio", state.ScrapRateUOM?.label, state.UOM?.label)}</>,
             toolTipTextScrapCostPerOldUOM: <>{labelWithUOMAndCurrency(scrapLabel, state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = {labelForScrapRate()?.labelBaseCurrency} * Calculated Factor</>
         }

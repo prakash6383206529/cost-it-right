@@ -226,6 +226,8 @@ function AddRMMaster(props) {
      */
     const onPressVendor = (costingHeadFlag, setStateData) => {
         reset()
+        setValue('plantCurrency', '');
+        setValue('currency', '');
         setState((prevState) => ({
             ...initialState, // Reset all states to the initial state
             isImport: prevState.isImport, // Preserve the current value of isImport

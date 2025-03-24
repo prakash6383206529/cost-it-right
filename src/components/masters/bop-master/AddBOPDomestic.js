@@ -2061,7 +2061,7 @@ class AddBOPDomestic extends Component {
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                          {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
+                          {this.state.showWarning || this.state.effectiveDate && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
                           <Button
                             id="AddBOPDomestic_cancel"
                             onClick={this.cancelHandler}

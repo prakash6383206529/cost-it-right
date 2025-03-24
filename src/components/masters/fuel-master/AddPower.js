@@ -223,7 +223,7 @@ class AddPower extends Component {
                 showWarning: showWarning1
 
               }, () => {
-                this.handleCalculation(fieldsObj?.Rate)
+                this.handleCalculation(fieldsObj?.NetPowerCostPerUnit)
               });
             });
         } else {
@@ -260,7 +260,6 @@ class AddPower extends Component {
   }
   handleCalculation = (powerRate) => {
 
-    const { fieldsObj } = this.props
     const { plantCurrency, settlementCurrency, isImport, netContributionValue, isDetailEntry } = this.state
     const rate = isDetailEntry ? netContributionValue : powerRate
 
@@ -782,7 +781,7 @@ class AddPower extends Component {
       this.setState({ UOM: newValue, }, () => {
         const { StateName, UOM, effectiveDate, client, selectedPlants, vendorName } = this.state;
 
-        let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY'), fuelId: this.props.fuelId, cityId: this.props.cityId }
+        let data = { StateID: StateName?.value, UOMID: UOM?.value, plantId: selectedPlants[0]?.Value, vendorId: vendorName?.value, customerId: client?.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY'), fuelId: this.props?.fuelId, cityId: this.props?.cityId }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res?.data?.DynamicData;
           this.props.change('CostPerUnitOfMeasurement', DynamicData?.FuelRate)
@@ -1712,8 +1711,8 @@ class AddPower extends Component {
     const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.plantCurrency ?? ''})`
-        : `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Net Cost/Unit (${this.state.currency?.label ?? 'Currency'}) * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'}) * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   /**
@@ -2111,7 +2110,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                                    label={`Net Cost/Unit g(${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                                     name={"NetPowerCostPerUnitLocalConversion"}
                                     type="text"
                                     id="cost-local"
@@ -2133,7 +2132,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
+                                    label={`Net Cost/Unit t(${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"NetPowerCostPerUnitConversion"}
                                     id="fuel-rate"
                                     type="text"
