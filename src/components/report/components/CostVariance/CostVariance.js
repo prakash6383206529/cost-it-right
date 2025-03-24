@@ -46,6 +46,7 @@ const CostVariance = () => {
         }
         else if (type === "PartType") {
             partTypeList && partTypeList.map((item) => {
+                if (item.Value === '0') return false        // SPECIFIC FOR RE, HIDE Raw Material IN COSTING DROPDOWN
                 temp.push({ label: item.Text, value: item.Value })
                 return null
             })
