@@ -1576,7 +1576,7 @@ const CostingSummaryTable = (props) => {
       } else {
         let objNew = { ...obj }
         for (var prop in objNew) {
-          if (prop !== "netRM" && prop !== "nConvCost" && prop !== "nPOPrice" && prop !== "nPoPriceCurrency" && prop !== "netBOP" && prop !== "netSurfaceTreatmentCost" && prop !== "nOverheadProfit" && prop !== "nPackagingAndFreight" && prop !== "totalToolCost" && prop !== "BasicRate" && prop !== "NetPOPriceConversion" && prop !== "NetPOPriceLocalConversion") {
+          if (prop !== "netRM" && prop !== "nConvCost" && prop !== "nPOPrice" && prop !== "nPoPriceCurrency" && prop !== "netBOP" && prop !== "netSurfaceTreatmentCost" && prop !== "nOverheadProfit" && prop !== "nPackagingAndFreight" && prop !== "totalToolCost" && prop !== "BasicRate" && prop !== "NetPOPriceConversion" && prop !== "NetPOPriceLocalConversion" && prop !== "netCost") {
             objNew[prop] = "-"
           }
         }
@@ -1621,16 +1621,19 @@ const CostingSummaryTable = (props) => {
       delete templateObj.castingWeightExcel
       delete templateObj.meltingLossExcel
     }
-    if (!(viewCostingData?.[0]?.currency?.currencyTitle !== '-')) {
+    if (!(viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-')) {
       delete templateObj.currencyTitle
+      delete templateObj.nPoPriceCurrency
+    }else{
+      delete templateObj.netCost
     }
 
-    if(!isScrapRecoveryPercentageApplied  ){
+    if(!isScrapRecoveryPercentageApplied){
       delete templateObj.scrapRecoveryPercentage
     }
 
     if (simulationMode) {
-      ['costingVersion', 'vendorExcel', 'customer', 'InfoCategory', 'partType', 'RevisionNumber', 'plantExcel', 'scrapRecoveryPercentage'].forEach(key => delete templateObj[key]);
+      ['costingVersion', 'vendorExcel', 'customer', 'InfoCategory', 'partType', 'RevisionNumber', 'plantExcel'].forEach(key => delete templateObj[key]);
     }
     if (!showConvertedCurrencyCheckbox) {
       ['nPOPrice', 'NetPOPriceLocalConversion', 'NetPOPriceConversion', 'currencyTitle'].forEach(key => delete templateObj[key]);
@@ -1659,9 +1662,8 @@ const CostingSummaryTable = (props) => {
     if (!showConvertedCurrencyCheckbox) {
       templateObj.nPoPriceCurrency = `Net Cost (${getConfigurationKey().BaseCurrency})`
     }
-    console.log("viewCostingData",viewCostingData)
     viewCostingData && viewCostingData.map((item) => {
-      item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.scrapRecoveryPercentage : '-') : '-'
+      item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.ScrapRecoveryPercentage : 0) : 0
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
       item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
@@ -1681,6 +1683,7 @@ const CostingSummaryTable = (props) => {
       item.rejectionRecoveryPercent = item?.CostingRejectionRecoveryDetails?.EffectiveRecoveryPercentage ?? "-"
       item.rejectionRecoveryApplicablityValue = item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? "-"
       item.currencyTitle = viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-' && viewCostingData?.[0]?.currency?.currencyTitle !== '' ? (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? `${item?.currency.currencyTitle}/${item?.CostingCurrency} ${item?.currency.currencyValue}` : '') : '-'
+      item.netCost = item?.nPoPriceCurrency
     })
 
     let masterDataArray = []
