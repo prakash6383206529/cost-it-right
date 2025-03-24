@@ -12,7 +12,7 @@ import { getCostMovementReport } from '../../../actions/Common';
 import RenderGraphList from '../../common/RenderGraphList';
 import HeaderTitle from '../../common/HeaderTitle';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getConfigurationKey, getCurrencySymbol, showBopLabel } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol, showBopLabel } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { BOP_DOMESTIC_TEMPLATE, BOP_IMPORT_TEMPLATE, MACHINE_TEMPLATE, OPERATION_TEMPLATE, RM_DOMESTIC_TEMPLATE, RM_IMPORT_TEMPLATE } from '../../report/ExcelTemplate';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -46,9 +46,26 @@ function AnalyticsDrawer(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);
 
 
+
     useEffect(() => {
-        setUomValue(props.rowData?.UOM ? props.rowData?.UOM : props.rowData?.UnitOfMeasurement ?? props.rowData?.UnitOfMeasurement)
-        setUomValue(props.rowData?.NetLandedCost)
+        const getUomValue = (modeId, rowData) => {
+            console.log("rowData", rowData, "modeId", modeId);
+            if (!rowData) return null;
+
+            switch (modeId) {
+                case 1:
+                case 2:
+                    return rowData?.NetLandedCost || 0;
+                case 3:
+                    return rowData?.OperationBasicRate || 0;
+                case 4:
+                    return rowData?.MachineRate || 0;
+                default:
+                    return rowData?.NetLandedCost || 0;
+            }
+        };
+        const calculatedUomValue = getUomValue(props.ModeId, props.rowData);
+        setUomValue(checkForDecimalAndNull(calculatedUomValue, getConfigurationKey().NoOfDecimalForPrice))
         setCurrency(props.rowData?.Currency)
         let obj = {}
         obj.ModeId = props.ModeId
@@ -76,7 +93,7 @@ function AnalyticsDrawer(props) {
                 let netLandedCostArray = []
                 arr && arr.map((item) => {
                     dateArray.push(`${DayTime(item.EffectiveDate).format('DD-MM-YYYY')}`)
-                    netLandedCostArray.push(item.NetLandedCost)
+                    netLandedCostArray.push(checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice))
                 })
                 setNetLandedCostArray(netLandedCostArray)
                 setDateRangeArray(dateArray)
@@ -85,6 +102,7 @@ function AnalyticsDrawer(props) {
 
     }, [])
 
+    console.log("uomValue", uomValue);
 
     const valueChanged = (event) => {
 
@@ -123,7 +141,7 @@ function AnalyticsDrawer(props) {
         labels: dateRangeArray,
         datasets: [
             {
-                label: `Net Landed Rate ${uomValue ? `(${uomValue})` : ''}`,
+                label: `Net Landed Rate (${uomValue})`,
                 fill: false,
                 lineTension: 0,
                 backgroundColor: primaryColor,
@@ -220,12 +238,8 @@ function AnalyticsDrawer(props) {
                 anchor: 'end',
                 align: 'top',
                 formatter: function (value) {
-                    return new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }).format(value);
+                    const formattedValue = checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice);
+                    return formattedValue;
                 }
             }
         },
@@ -350,7 +364,7 @@ function AnalyticsDrawer(props) {
                                                             {ModeId === 1 && <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                            {<AgGridColumn field="NetLandedCost" headerName={props.import ? `Net Landed (${currency})` : "Net Landed (Total)"} cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {<AgGridColumn field="NetLandedCost" headerName={props.import ? `Net Landed (${currency})` : `Net Landed Total (${currency})`} cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName={`Net Landed Total (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
 
@@ -386,18 +400,14 @@ function AnalyticsDrawer(props) {
                                                         tooltip: {
                                                             callbacks: {
                                                                 label: function (context) {
+
                                                                     let label = '';
 
                                                                     if (label) {
                                                                         label += ': ';
                                                                     }
                                                                     if (context.parsed.y !== null) {
-                                                                        label += new Intl.NumberFormat('en-US', {
-                                                                            style: 'currency',
-                                                                            currency: (props?.rowData?.Currency && props?.rowData?.Currency !== '-')
-                                                                                ? props.rowData.Currency
-                                                                                : 'INR'
-                                                                        }).format(context.parsed.y);
+                                                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency && props?.rowData?.Currency !== '-') ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
                                                                     }
                                                                     return label;
                                                                 }
@@ -409,6 +419,7 @@ function AnalyticsDrawer(props) {
                                                                 boxWidth: 16,
                                                                 boxHeight: 14,
                                                                 color: '#000',
+
                                                             }
                                                         },
                                                         datalabels: {
@@ -418,12 +429,8 @@ function AnalyticsDrawer(props) {
                                                             align: 'top',
                                                             offset: 5,
                                                             formatter: function (value) {
-                                                                return new Intl.NumberFormat('en-US', {
-                                                                    style: 'currency',
-                                                                    currency: (props?.rowData?.Currency && props?.rowData?.Currency !== '-') ? props.rowData.Currency : 'INR',
-                                                                    minimumFractionDigits: 2,
-                                                                    maximumFractionDigits: 2
-                                                                }).format(value);
+                                                                const formattedValue = checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice);
+                                                                return formattedValue;
                                                             }
                                                         }
                                                     },
@@ -435,10 +442,9 @@ function AnalyticsDrawer(props) {
                                                                 padding: 5,
                                                             }
                                                         }
-                                                    },
+                                                    }
                                                 }}
                                             />
-
                                         </Col>
                                     </Row>
                                 }
