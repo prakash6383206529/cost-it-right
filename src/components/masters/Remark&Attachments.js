@@ -21,7 +21,7 @@ const Preview = ({ meta }) => (
 function RemarksAndAttachments(props) {
     const { Controller, control, register, setValue, getValues, errors, useWatch, states, data } = props
     const { isEditFlag, isViewFlag } = data
-    const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
+    const rawMaterailDetails = useSelector((state) => state?.material?.rawMaterailDetails)
     const initialState = {
         remarks: '',
         attachmentLoader: false,
@@ -40,6 +40,8 @@ function RemarksAndAttachments(props) {
         handleNonFinancialData()
     }, [nonFinancialFieldValues, files])
     useEffect(() => {
+        console.log("files", files);
+
         dispatch(setRawMaterialDetails({ ...rawMaterailDetails, Files: files }, () => { }))
     }, [files])
 
@@ -96,8 +98,9 @@ function RemarksAndAttachments(props) {
 
     // called every time a file's `status` changes
     const handleChangeStatus = ({ meta, file }, status) => {
+        console.log("file", file);
         const fileName = file.name;
-
+        console.log("fileName", fileName);
         setState(prevState => ({ ...prevState, attachmentLoader: true }))
 
         if (status === 'removed') {
@@ -106,12 +109,14 @@ function RemarksAndAttachments(props) {
             let tempArr = files.filter(
                 (item) => item.OriginalFileName !== removedFileName,
             )
+            console.log("tempArr", tempArr);
             setFiles(tempArr)
             setState(prevState => ({ ...prevState, isOpen: !state.isOpen }))
         }
 
         if (status === 'done') {
             let data = new FormData()
+            console.log("file", file);
             data.append('file', file)
             if (!validateFileName(fileName)) {
                 dropzone.current.files.pop()
@@ -119,6 +124,7 @@ function RemarksAndAttachments(props) {
                 return false;
             }
             dispatch(fileUploadRMDomestic(data, (res) => {
+                console.log("data", data);
                 if (res && res?.status !== 200) {
                     setDisableFalseFunction()
                     dropzone.current.files.pop()
@@ -129,16 +135,18 @@ function RemarksAndAttachments(props) {
                 if ('response' in res) {
                     status = res && res?.response?.status
                     dropzone.current.files.pop()
+                    console.log(files);
+
                     setState(prevState => ({ ...prevState, attachmentLoader: false }))
                     dropzone.current.files.pop() // Remove the failed file from dropzone
                     setFiles([...files]) // Trigger re-render with current files
                     Toaster.warning('File upload failed. Please try again.')
                 }
                 else {
+                    // let Data = res.data[0]
                     let Data = res.data[0]
-                    files.push(Data)
+                    setFiles(prevFiles => [...prevFiles, Data])
                     setState(prevState => ({ ...prevState, attachmentLoader: false }))
-                    setFiles(files)
                     setTimeout(() => {
                         setState(prevState => ({ ...prevState, isOpen: !state.isOpen }))
                     }, 500);

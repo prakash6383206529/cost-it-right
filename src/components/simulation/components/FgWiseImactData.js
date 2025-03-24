@@ -41,7 +41,7 @@ export function Fgwiseimactdata(props) {
         }
     }, [isSimulation, isCosting, SimulationId]);
 
-    const initialConfiguration = useSelector((state) => state?.auth.initialConfiguration)
+    const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
 
     const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId, CostingApprovalProcessSummaryId) => {
         if (approvalSummaryTrue) {
@@ -55,12 +55,12 @@ export function Fgwiseimactdata(props) {
     const toggleAcc = (value) => {
         let temp = acc1
         if (temp.currentIndex !== value) {
-            setAcc1({ currentIndex: temp.currentIndex, isClicked: false })
+            setAcc1({ currentIndex: temp?.currentIndex, isClicked: false })
             setTimeout(() => {
                 setAcc1({ currentIndex: value, isClicked: true })
             }, 200);
         } else {
-            setAcc1({ currentIndex: value, isClicked: !acc1.isClicked })
+            setAcc1({ currentIndex: value, isClicked: !acc1?.isClicked })
         }
     }
 
@@ -93,7 +93,7 @@ export function Fgwiseimactdata(props) {
                             </thead >
 
                             {
-                                showTableData && impactData && impactData.map((item, index) => {
+                                showTableData && impactData && impactData?.length > 0 && impactData?.map((item, index) => {
                                     return (<>
                                         <tbody >
                                             <tr className="accordian-with-arrow" key={index} id={"fg-wise"}>

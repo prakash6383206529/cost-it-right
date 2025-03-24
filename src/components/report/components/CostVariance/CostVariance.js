@@ -38,15 +38,16 @@ const CostVariance = () => {
     const renderListing = (type) => {
         const temp = []
         if (type === "Technology") {
-            technology && technology.map((item) => {
-                if (item.Value === '0') return false        // SPECIFIC FOR RE, HIDE Machining TECHNOLOGY IN COSTING DROPDOWN
-                temp.push({ label: item.Text, value: item.Value })
+            technology && technology?.map((item) => {
+                if (item?.Value === '0') return false        // SPECIFIC FOR RE, HIDE Machining TECHNOLOGY IN COSTING DROPDOWN
+                temp.push({ label: item?.Text, value: item?.Value })
                 return null
             })
         }
         else if (type === "PartType") {
-            partTypeList && partTypeList.map((item) => {
-                temp.push({ label: item.Text, value: item.Value })
+            partTypeList && partTypeList?.map((item) => {
+                if (item?.Value === '0') return false        // SPECIFIC FOR RE, HIDE Raw Material IN COSTING DROPDOWN
+                temp.push({ label: item?.Text, value: item?.Value })
                 return null
             })
         }
@@ -60,10 +61,10 @@ const CostVariance = () => {
     }
     const handlePartChange = (e) => {
         setIsLoader(true)
-        dispatch(checkPartWithTechnology({ TechnologyId: selectedTechnology.value, PartId: e.value }, (response) => {
+        dispatch(checkPartWithTechnology({ TechnologyId: selectedTechnology?.value, PartId: e?.value }, (response) => {
             if (response.data.Result) {
-                dispatch(getPartInfo(e.value, (res) => {
-                    dispatch(getExistingCosting(e.value, (res) => {
+                dispatch(getPartInfo(e?.value, (res) => {
+                    dispatch(getExistingCosting(e?.value, (res) => {
                         const DataList = res?.data?.DataList;
                         const approvedCosting = DataList?.map(item => item?.CostingOptions?.filter(item => ApprovedCostingStatus.includes(String(item?.StatusId))))
                         const finalData = approvedCosting?.flat()

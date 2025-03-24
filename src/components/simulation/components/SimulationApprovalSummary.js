@@ -659,7 +659,7 @@ function SimulationApprovalSummary(props) {
     }
 
     const ecnFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         
         // Return a value to prevent the "Nothing was returned from render" error
         return cellValue ? cellValue : '-';
@@ -667,7 +667,7 @@ function SimulationApprovalSummary(props) {
       
 
     const revisionFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
     }
     const returnVarianceClass = (value1, value2) => {
@@ -680,77 +680,77 @@ function SimulationApprovalSummary(props) {
         }
     }
     const oldPOFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewPOPrice, row.OldPOPrice)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newPOFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewPOPrice, row.OldPOPrice)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const oldRMFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewNetRawMaterialsCost, row.OldNetRawMaterialsCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newRMFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewNetRawMaterialsCost, row.OldNetRawMaterialsCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
     const oldPOCurrencyFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewNetPOPriceOtherCurrency, row.OldNetPOPriceOtherCurrency)
         // const classGreen = (row.NewNetPOPriceOtherCurrency > row.OldNetPOPriceOtherCurrency) ? 'red-value form-control' : (row.NewNetPOPriceOtherCurrency < row.OldNetPOPriceOtherCurrency) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newPOCurrencyFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewNetPOPriceOtherCurrency, row.OldNetPOPriceOtherCurrency)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const oldERFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewExchangeRate, row.OldExchangeRate)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newERFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewExchangeRate, row.OldExchangeRate)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const oldBOPFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewNetBoughtOutPartCost, row.OldNetBoughtOutPartCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newBOPFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewNetBoughtOutPartCost, row.OldNetBoughtOutPartCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
     const processFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = returnVarianceClass(row.NewNetProcessCost, row.OldNetProcessCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
@@ -763,67 +763,67 @@ function SimulationApprovalSummary(props) {
     }
 
     const BOPVarianceFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetBoughtOutPartCostVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
     const OPVarianceFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.OperationCostVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
     const STVarianceFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetSurfaceTreatmentCostVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
     const processVarianceFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetProcessCostVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
 
     const POVarianceFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.POVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
 
     const oldSTFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewNetSurfaceTreatmentCost < row.OldNetSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newSTFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewNetSurfaceTreatmentCost < row.OldNetSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const oldOperationFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newOperationFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const plantFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const temp = `${row.PlantName}`
         return <span title={temp}>{temp}</span>
     }
@@ -871,8 +871,8 @@ function SimulationApprovalSummary(props) {
         }, 500);
     }
     const buttonFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 <Link to="compare-costing" spy={true} title="Compare" smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
@@ -882,8 +882,8 @@ function SimulationApprovalSummary(props) {
     }
 
     const newBasicRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.BasicRate} </span>
@@ -892,8 +892,8 @@ function SimulationApprovalSummary(props) {
     }
 
     const newScrapRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.ScrapRate}</span>
@@ -901,26 +901,26 @@ function SimulationApprovalSummary(props) {
         )
     }
     const freightCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
     const shearingCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
 
 
 
     const costFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const NewcostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
         const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
@@ -928,7 +928,7 @@ function SimulationApprovalSummary(props) {
     }
 
     const effectiveDateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
 
@@ -939,38 +939,38 @@ function SimulationApprovalSummary(props) {
     }
     //MINDA
     const rawMaterailFormat = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const temp = row.IsMultipleRM === true ? 'Multiple RM' : `${cell}- ${row.RMGrade}`
         return cell != null ? temp : '-';
     }
 
     const rawMaterailCodeSpecFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const temp = row.IsMultipleRM === true ? 'Multiple RM' : cell
         return cell != null ? temp : '-';
     }
 
     const bopNameFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let temp = ''
         temp = (row.IsMultipleBOP === true) ? 'Multiple BOP' : row.BoughtOutPartName
         return cell != null ? temp : '-';
     }
 
     const processNameFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let temp = ''
         temp = (row.IsMultipleProcess === true) ? 'Multiple Process' : row.ProcessName
         return cell != null ? temp : '-';
     }
 
     const processCodeFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let temp = ''
         temp = (row.IsMultipleProcess === true) ? 'Multiple Process' : row.ProcessCode
         return cell != null ? temp : '-';
@@ -982,16 +982,16 @@ function SimulationApprovalSummary(props) {
     }
 
     const bopNumberFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let temp = ''
         temp = (row.IsMultipleBOP === true) ? 'Multiple BOP' : row.BoughtOutPartNumber
         return cell != null ? temp : '-';
     }
 
     const operationNameFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let temp = ''
         temp = row.OperationName
         if (row.IsMultipleSTOperation === true) {
@@ -1003,8 +1003,8 @@ function SimulationApprovalSummary(props) {
     }
 
     const operationCodeFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let temp = ''
         temp = row.OperationCode
         if (row.IsMultipleSTOperation === true) {
@@ -1022,8 +1022,8 @@ function SimulationApprovalSummary(props) {
     };
 
     const partFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {cell}
@@ -1468,7 +1468,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="PartName" tooltipField='PartName' headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="PartType" tooltipField='PartType' headerName='Part Type'></AgGridColumn>
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
-                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer={revisionFormatter}></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="InfoCategory" tooltipField='InfoCategory' headerName="Category"></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>}
