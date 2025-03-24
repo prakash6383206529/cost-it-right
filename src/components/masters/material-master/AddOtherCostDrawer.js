@@ -570,7 +570,7 @@ function AddOtherCostDrawer(props) {
                                                         // options={conditionDropdown}
                                                         options={combinations}
                                                         handleChange={applicabilityChange}
-                                                        defaultValue={''}
+                                                        defaultValue={'-'}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.Applicability}
@@ -591,7 +591,7 @@ function AddOtherCostDrawer(props) {
                                                             validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                         }}
                                                         handleChange={() => { }}
-                                                        defaultValue={''}
+                                                        defaultValue={'-'}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.ApplicabilityCostCurrency}
