@@ -1252,8 +1252,8 @@ class AddOperation extends Component {
     const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.plantCurrency ?? ''})`
-        : `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Rate (${this.state.currency?.label ?? 'Currency'}) * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {
@@ -1759,7 +1759,7 @@ class AddOperation extends Component {
                         />
                       </Col>
                       {!hidePlantCurrency && <Col md="3">
-                        <TooltipCustom disabledIcon={true} width="350px" id="operation-rate" tooltipText={this.state.isImport ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />
+                        <TooltipCustom disabledIcon={true}  id="operation-rate" tooltipText={this.state.isImport ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />
                         <Field
                           name="RateConversion"
                           type="text"
