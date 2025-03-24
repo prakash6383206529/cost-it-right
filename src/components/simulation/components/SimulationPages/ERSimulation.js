@@ -131,15 +131,15 @@ function ERSimulation(props) {
     const effectiveDateFormatter = (props) => {
 
         const cellValue = props?.valueFormatted
-            ? props.valueFormatted
+            ? props?.valueFormatted
             : props?.value;
 
         return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
 
     }
     const newERFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         return (
             <>
@@ -154,8 +154,8 @@ function ERSimulation(props) {
     }
 
     const oldERFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         return (
             <>
@@ -172,8 +172,8 @@ function ERSimulation(props) {
 
     const costFormatter = (props) => {
 
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
@@ -272,15 +272,15 @@ function ERSimulation(props) {
     };
 
     const newRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewCurrencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice) :
                         <span
-                            id={`newCurrencyExchangeRate-${props.rowIndex}`}
+                            id={`newCurrencyExchangeRate-${props?.rowIndex}`}
                             className={`${!isbulkUpload ? 'form-control' : ''}`}
                             title={cell ? Number(cell) : Number(row.NewCurrencyExchangeRate)}
                         >
@@ -297,7 +297,7 @@ function ERSimulation(props) {
         customNoRowsOverlay: NoContentFound,
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
-        nullHandler: props.nullHandler && props.nullHandler,
+        nullHandler: props?.nullHandler && props?.nullHandler,
         revisedBasicRateHeader: revisedBasicRateHeader,
         newRateFormatter: newRateFormatter
     };
@@ -548,7 +548,7 @@ function ERSimulation(props) {
                                                 <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>
                                                 <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>
                                             </>}
-                                            {props.children}
+                                            {props?.children}
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 

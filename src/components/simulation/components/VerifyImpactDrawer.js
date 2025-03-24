@@ -51,7 +51,7 @@ function VerifyImpactDrawer(props) {
     ) {
       return
     }
-    props.closeDrawer('', type)
+    props?.closeDrawer('', type)
   }
   useEffect(() => {
     if (handleEditMasterPage) {
@@ -109,8 +109,8 @@ function VerifyImpactDrawer(props) {
   return (
     <>
       <Drawer
-        anchor={props.anchor}
-        open={props.isOpen}
+        anchor={props?.anchor}
+        open={props?.isOpen}
         className="drawer-full-top "
       //onClose={(e) => toggleDrawer(e)}
       >
