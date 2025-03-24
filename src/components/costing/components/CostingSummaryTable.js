@@ -1621,7 +1621,7 @@ const CostingSummaryTable = (props) => {
       delete templateObj.castingWeightExcel
       delete templateObj.meltingLossExcel
     }
-    if (viewCostingData?.[0]?.currency?.currencyTitle !== '-') {
+    if (!(viewCostingData?.[0]?.currency?.currencyTitle !== '-')) {
       delete templateObj.currencyTitle
     }
 
@@ -1659,6 +1659,7 @@ const CostingSummaryTable = (props) => {
     if (!showConvertedCurrencyCheckbox) {
       templateObj.nPoPriceCurrency = `Net Cost (${getConfigurationKey().BaseCurrency})`
     }
+    console.log("viewCostingData",viewCostingData)
     viewCostingData && viewCostingData.map((item) => {
       item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.scrapRecoveryPercentage : '-') : '-'
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
