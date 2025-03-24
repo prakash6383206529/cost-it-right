@@ -45,39 +45,21 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
 
 export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCostSaveAPI, effectiveDate, gridData, isOperation) => {
     const requestObj = {
-        "PartNumber": item?.PartNumber,
-        "TotalCalculatedRMBOPCCCostWithQuantity": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "NetOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
-        "NetToolCostPerAssembly": 0,
         "CostingPartDetails": {
-            "IsShowToolCost": true,
-            "IsToolCostProcessWise": true,
             "AssemblyCostingOperationCostRequest": isOperation ? gridData : item?.CostingPartDetails?.CostingOperationCostResponse,
-            "AssemblyCostingProcessCostResponse": isOperation ? item?.CostingPartDetails?.CostingProcessCostResponse : gridData,
-            "AssemblyCostingToolsCostRequest": item?.CostingPartDetails?.CostingToolCostResponse,
-            "NetProcessCostForOverhead": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead,
-            "NetProcessCostForProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit,
-            "NetProcessCostForOverheadAndProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit,
-            "NetOperationCostForOverhead": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead,
-            "NetOperationCostForProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit,
-            "NetOperationCostForOverheadAndProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit,
-
+            "AssemblyCostingProcessCostRequest": isOperation ? item?.CostingPartDetails?.CostingProcessCostResponse : gridData,
         },
         "CostingId": item?.CostingId,
-        "PartId": item?.PartId,
         "AssemblyCostingId": item?.AssemblyCostingId,
         "SubAssemblyCostingId": item?.SubAssemblyCostingId,
-        "TechnologyId": costData?.TechnologyId,
-        "NetRawMaterialsCost": 0,                                       // ASK MR
+        "NetRawMaterialsCost": 0,
         "NetBoughtOutPartCost": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
         "NetConversionCost": item?.CostingPartDetails?.TotalConversionCostWithQuantity,
         "NetOperationCost": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
-        "NetOtherOperationCost": 0,                                       // ASK MR
+        "NetOtherOperationCost": 0,
         "NetProcessCost": item?.CostingPartDetails?.TotalProcessCostPerAssembly,
-        "NetToolCost": 0,                                       // ASK MR
         "NetTotalRMBOPCC": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
         "BasicRate": basicRate,
-        "EffectiveDate": effectiveDate,
         "LoggedInUserId": loggedInUserId(),
         "NetLabourCost": 0,                                       // ASK MR
         "IndirectLaborCost": 0,                                       // ASK MR
@@ -88,7 +70,13 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "IndirectLabourCRMHead": "string",                                       // ASK MR
         "StaffCRMHead": "string",                                       // ASK MR
         "NetPOPrice": totalCostSaveAPI,
-        "NetChildPartsCost": 0                                       // ASK MR
+        "NetChildPartsCost": 0,
+        "NetProcessCostForOverhead": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead,
+        "NetProcessCostForProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit,
+        "NetProcessCostForOverheadAndProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit,
+        "NetOperationCostForOverhead": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead,
+        "NetOperationCostForProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit,
+        "NetOperationCostForOverheadAndProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit,       // ASK MR
     }
     return requestObj;
 }
