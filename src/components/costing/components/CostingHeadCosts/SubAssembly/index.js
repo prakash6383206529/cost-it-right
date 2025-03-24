@@ -219,7 +219,6 @@ function AssemblyPart(props) {
         setBOPCost={props.setBOPCost}
         setBOPHandlingCost={props.setBOPHandlingCost}
         setConversionCost={props.setConversionCost}
-        setToolCost={props.setToolCost}
         subAssembId={item.CostingId}
       />
     }
@@ -273,9 +272,7 @@ function AssemblyPart(props) {
       setBOPCost={props.setBOPCost}
       setBOPHandlingCost={props.setBOPHandlingCost}
       setConversionCost={props.setConversionCost}
-      setToolCost={props.setToolCost}
       setAssemblyOperationCost={props.setAssemblyOperationCost}
-      setAssemblyToolCost={props.setAssemblyToolCost}
       subAssembId={item.CostingId}
       setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
       setAssemblyProcessCost={props.setAssemblyProcessCost}
@@ -420,7 +417,6 @@ function AssemblyPart(props) {
           item={item}
           CostingViewMode={CostingViewMode}
           setAssemblyOperationCost={props.setAssemblyOperationCost}
-          setAssemblyToolCost={props.setAssemblyToolCost}
           itemInState={itemInState}
         />
       }

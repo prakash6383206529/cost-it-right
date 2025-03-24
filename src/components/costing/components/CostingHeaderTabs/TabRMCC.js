@@ -1043,7 +1043,7 @@ function TabRMCC(props) {
   }
 
   const setConversionCostInDataList = (conversionGrid, params, arr, item) => {
-    
+
 
     //FUNCTION TO CALCULATE THE COSITNG VALUE OF PARTS AND SUBASSEMBLIES
     const calculateValue = (useLevel, item, tempArrForCosting) => {
@@ -1166,44 +1166,7 @@ function TabRMCC(props) {
     return tempArr;
   }
 
-  /**
-   * @method setToolCost
-   * @description SET TOOL COST
-   */
-  const setToolCost = (toolGrid, params) => {
-    setToolCostInDataList(toolGrid, params, RMCCTabData)
-  }
 
-  const setToolCostInDataList = (toolGrid, params, arr) => {
-    let tempArr = [];
-    try {
-      tempArr = arr && arr.map(i => {
-
-        if (i.IsAssemblyPart === true) {
-
-          i.CostingPartDetails.ToolsCostTotal = getToolTotalCost(i.CostingChildPartDetails, toolGrid && toolGrid.ToolsCostTotal !== undefined ? checkForNull(toolGrid.ToolsCostTotal) : 0, params);
-          i.CostingPartDetails.TotalToolCost = getToolTotalCost(i.CostingChildPartDetails, toolGrid && toolGrid.ToolsCostTotal !== undefined ? checkForNull(toolGrid.ToolsCostTotal) : 0, params);
-          setToolCostInDataList(toolGrid, params, i.CostingChildPartDetails)
-
-        } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
-          i.CostingPartDetails.IsShowToolCost = true;
-          i.CostingPartDetails.IsToolCostProcessWise = true;
-          i.CostingPartDetails.CostingConversionCost = toolGrid;
-          i.CostingPartDetails.TotalToolCost = toolGrid && toolGrid.ToolsCostTotal !== undefined ? checkForNull(toolGrid.ToolsCostTotal) : 0;
-
-        } else {
-          setToolCostInDataList(toolGrid, params, i.CostingChildPartDetails)
-        }
-        return i;
-      });
-
-
-    } catch (error) {
-
-    }
-    return tempArr;
-  }
 
   /**
   * @method toggleAssembly
@@ -1816,41 +1779,7 @@ function TabRMCC(props) {
     }
   }
 
-  /**
-  * @method setAssemblyToolCost
-  * @description SET RM COST
-  */
-  const setAssemblyToolCost = (ToolGrid, params) => {
-    setAssemblyToolCostInDataList(ToolGrid, params, RMCCTabData)
-    // dispatch(setRMCCData(arr, () => { }))
-  }
 
-  const setAssemblyToolCostInDataList = (ToolGrid, params, arr) => {
-    let tempArr = [];
-    try {
-
-      tempArr = arr && arr.map(i => {
-        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
-          let GrandTotalCost = GetToolCostTotal(ToolGrid) + checkForNull(i?.CostingPartDetails?.TotalOperationCostPerAssembly);
-
-          i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-          i.CostingPartDetails.TotalToolCostPerAssembly = GetToolCostTotal(ToolGrid);
-          i.CostingPartDetails.IsShowToolCost = true;
-          i.CostingPartDetails.IsToolCostProcessWise = true;
-
-        } else {
-          setAssemblyToolCostInDataList(ToolGrid, params, i.CostingChildPartDetails)
-        }
-        return i;
-      });
-
-    } catch (error) {
-
-    }
-    return tempArr;
-  }
 
   /**
   * @method GetToolCostTotal
@@ -2332,7 +2261,7 @@ function TabRMCC(props) {
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostWithQuantity) * assemblyObj?.CostingPartDetails?.Quantity
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
           sessionStorage.setItem('costingArray', JSON.stringify([]))
-          
+
           sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
           return i;
         }
@@ -2456,7 +2385,6 @@ function TabRMCC(props) {
                                     setRMCost={setRMCost}
                                     setBOPCost={setBOPCost}
                                     setConversionCost={setConversionCost}
-                                    setToolCost={setToolCost}
                                     subAssembId={selectedCostingDetail.SubAssemblyCostingId ? selectedCostingDetail.SubAssemblyCostingId : costData.CostingId}
                                   />
                                 </>
@@ -2473,10 +2401,8 @@ function TabRMCC(props) {
                                     setRMCost={setRMCost}
                                     setBOPCost={setBOPCost}
                                     setConversionCost={setConversionCost}
-                                    setToolCost={setToolCost}
                                     setAssemblyOperationCost={setAssemblyOperationCost}
                                     setAssemblyLabourCost={setAssemblyLabourCost}
-                                    setAssemblyToolCost={setAssemblyToolCost}
                                     subAssembId={selectedCostingDetail.SubAssemblyCostingId ? selectedCostingDetail.SubAssemblyCostingId : costData.CostingId}
                                     setBOPCostWithAsssembly={setBOPCostWithAsssembly}
                                     setAssemblyProcessCost={setAssemblyProcessCost}

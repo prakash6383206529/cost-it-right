@@ -11,18 +11,12 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
         "NetOtherOperationCost": rmccData?.CostingPartDetails?.CostingConversionCost && rmccData?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal !== undefined ? rmccData?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal : 0,
         "NetTotalRMBOPCC": rmccData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
         "LoggedInUserId": loggedInUserId(),
-        "EffectiveDate": CostingEffectiveDate,
         "CostingId": rmccData?.CostingId,
-        "PartId": rmccData?.PartId,
         "AssemblyCostingId": rmccData?.AssemblyCostingId,
         "SubAssemblyCostingId": rmccData?.SubAssemblyCostingId,
-        "TechnologyId": rmccData?.TechnologyId,
-        "IsASMChildPartRequest": rmccData?.IsAssemblyPart,
-        "NetToolCost": rmccData?.CostingPartDetails?.CostingConversionCost && rmccData?.CostingPartDetails?.CostingConversionCost.ToolsCostTotal !== undefined ? rmccData?.CostingPartDetails?.CostingConversionCost.ToolsCostTotal : 0,
         "BasicRate": basicRate,
         "NetPOPrice": netPOPrice,
         "CalculatorType": rmccData?.CalculatorType ? rmccData?.CalculatorType : rmccData?.CostingPartDetails?.CalculatorType,
-
         // NOT USED AT THIS POINT
         "NetLabourCost": 0,
         "IndirectLaborCost": 0,

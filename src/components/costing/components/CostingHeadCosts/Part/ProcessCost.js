@@ -11,7 +11,7 @@ import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVER
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
-import { gridDataAdded, isDataChange, setIdsOfProcess, setIdsOfProcessGroup, setIsToolCostUsed, setProcessGroupGrid, setRMCCErrors, setSelectedDataOfCheckBox } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setIdsOfProcess, setIdsOfProcessGroup, setProcessGroupGrid, setRMCCErrors, setSelectedDataOfCheckBox } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
@@ -287,7 +287,7 @@ function ProcessCost(props) {
   }, 500);
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
-    
+
     setIsCalculator(false)
     if (Object.keys(weightData).length === 0) return false;
     const calculateNetCosts = (processCost, applicabilityType) => {
@@ -524,9 +524,6 @@ function ProcessCost(props) {
     button.click()
   }
 
-  useEffect(() => {
-    dispatch(setIsToolCostUsed(data && data.IsShowToolCost))
-  }, [data && data.IsShowToolCost])
 
   /**
    * @method DrawerToggle
@@ -779,7 +776,7 @@ function ProcessCost(props) {
         ProcessCostTotal: totals?.ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
-      
+
       let selectedIds = []
       let selectedMachineIds = []
       tempArrAfterDelete.map(el => {
@@ -1011,7 +1008,7 @@ function ProcessCost(props) {
   };
 
   const onHandleChangeApplicability = (e, index) => {
-    
+
     let gridTempArr = JSON.parse(JSON.stringify(processGroupGrid));
 
     let tempData = gridTempArr[index];
@@ -1172,7 +1169,7 @@ function ProcessCost(props) {
   const setOperationCost = (operationGrid, params, index) => {
     const OperationCostTotal = calculateTotalCosts(operationGrid, 'OperationCost');
     const apiArr = formatMainArr(gridData);
-    
+
     const operationsWithNetCosts = operationGrid?.map(operation => ({
       ...operation,
       ...calculateNetCosts(operation?.OperationCost, operation?.CostingConditionNumber, "Operation")
