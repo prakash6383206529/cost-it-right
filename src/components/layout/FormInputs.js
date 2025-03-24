@@ -33,6 +33,7 @@ const handleInputChange = (input, field, e) => {
   }
 };
 export const validateForm = values => {
+  
   const errors = {};
   Object.keys(values).forEach(fieldName => {
     const convertLowerCase = fieldName ? fieldName.toLowerCase() : '';

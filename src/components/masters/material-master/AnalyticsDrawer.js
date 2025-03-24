@@ -49,7 +49,6 @@ function AnalyticsDrawer(props) {
 
     useEffect(() => {
         const getUomValue = (modeId, rowData) => {
-            console.log("rowData", rowData, "modeId", modeId);
             if (!rowData) return null;
 
             switch (modeId) {
@@ -102,7 +101,6 @@ function AnalyticsDrawer(props) {
 
     }, [])
 
-    console.log("uomValue", uomValue);
 
     const valueChanged = (event) => {
 
