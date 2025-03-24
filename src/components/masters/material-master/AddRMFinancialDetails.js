@@ -320,7 +320,7 @@ function AddRMFinancialDetails(props) {
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency ? netCostText : `${netCostlabel} * Plant Currency Rate (${states.isImport ? CurrencyExchangeRate?.plantCurrencyRate : CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
-            toolTipTextNetCostBaseCurrency: `Net Cost (${getValues('plantCurrency') ?? 'Plant Currency'}) * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
+            toolTipTextNetCostBaseCurrency: `Net Cost (${state.hidePlantCurrency ? getValues('currency')?.label : getValues('plantCurrency') ?? 'Plant Currency'}) * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
         };
     };
 
