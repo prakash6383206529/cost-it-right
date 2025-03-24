@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Select, { createFilter } from "react-select";
 import "./formInputs.scss";
 import AsyncSelect from 'react-select/async';
@@ -7,6 +7,9 @@ import { SPACEBAR } from "../../config/constants";
 import DatePicker, { ReactDatePicker } from 'react-datepicker'
 import Popup from "reactjs-popup";
 import { validateSpecialChars } from "../../helper";
+import { MESSAGES } from "../../config/message";
+import {  Col } from "reactstrap";
+import Button from "../layout/Button";
 
 export const TextFieldHooks = (input) => {
 
@@ -839,3 +842,80 @@ export const AllApprovalField = (props) => {
     </>
   )
 }
+
+export const AsyncDropdownHookForm = ({
+  name,
+  label,
+  value,
+  onChange,
+  loadOptions,
+  isDisabled = false,
+  isRequired = true,
+  error,
+  showAddButton = false,
+  onAddClick,
+  placeholder = "Select",
+  className = "",
+  containerClassName = "col-md-15",
+  onBlur = () => {}
+}) => {
+  const [inputLoader, setInputLoader] = useState(false);
+  
+  const handleLoadOptions = (inputValue) => {
+    setInputLoader(true);
+    return Promise.resolve(loadOptions(inputValue))
+      .finally(() => {
+        setInputLoader(false);
+      });
+  };
+  
+  // Check if the value is empty (considering different possible formats)
+  const isValueEmpty = () => {
+    if (!value) return true;
+    if (Array.isArray(value) && value.length === 0) return true;
+    if (typeof value === 'object' && Object.keys(value).length === 0) return true;
+    return false;
+  };
+  
+  return (
+    <Col className={containerClassName}>
+      <label>
+        {label}
+        {isRequired && <span className="asterisk-required">*</span>}
+      </label>
+      <div className="d-flex justify-space-between align-items-center p-relative async-select">
+        <div className="fullinput-icon p-relative">
+          {inputLoader && <LoaderCustom customClass={`input-loader`} />}
+          <AsyncSelect
+            name={name}
+            loadOptions={handleLoadOptions}
+            onChange={onChange}
+            value={value}
+            noOptionsMessage={({ inputValue }) => 
+              inputValue?.length < 3 
+                ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN 
+                : "No results found"
+            }
+            isDisabled={isDisabled}
+            onKeyDown={(onKeyDown) => {
+              if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) 
+                onKeyDown.preventDefault();
+            }}
+            onBlur={onBlur}
+            placeholder={placeholder}
+            className={className}
+          />
+        </div>
+        {showAddButton && !isDisabled && (
+          <Button
+            id={`${name}_toggle`}
+            onClick={onAddClick}
+            className={"right mt-0"}
+            variant="plus-icon-square"
+          />
+        )}
+      </div>
+      {error && isValueEmpty() && <div className="text-help">{error.message || "This field is required."}</div>}
+    </Col>
+  );
+};

@@ -2,7 +2,6 @@ import { loggedInUserId } from "../../helper"
 
 
 export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicRate, netPOPrice) => {
-
     const requestObj = {
         "NetRawMaterialsCost": rmccData?.CostingPartDetails?.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": rmccData?.CostingPartDetails?.TotalBoughtOutPartCost,
@@ -22,7 +21,7 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
         "NetToolCost": rmccData?.CostingPartDetails?.CostingConversionCost && rmccData?.CostingPartDetails?.CostingConversionCost.ToolsCostTotal !== undefined ? rmccData?.CostingPartDetails?.CostingConversionCost.ToolsCostTotal : 0,
         "BasicRate": basicRate,
         "NetPOPrice": netPOPrice,
-        "CalculatorType": rmccData?.CostingPartDetails?.CalculatorType,
+        "CalculatorType": rmccData?.CalculatorType ? rmccData?.CalculatorType : rmccData?.CostingPartDetails?.CalculatorType,
 
         // NOT USED AT THIS POINT
         "NetLabourCost": 0,

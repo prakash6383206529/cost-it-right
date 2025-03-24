@@ -35,7 +35,7 @@ import { fetchDivisionId } from "../../costing/CostingUtil";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
-    
+
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated, clearErrors } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -208,16 +208,11 @@ function AddRMMaster(props) {
             finalUserCheckAndMasterLevelCheckFunction()
         }
     }, [state.costingTypeId])
-    useEffect(() => {
-               // If you have a vendorName field too
-        register("vendorName", { 
-          required: "This field is required" 
-        });
-      }, [register,state.costingTypeId]);
+
 
     const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
         if (!isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID,null, (res) => {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, null, (res) => {
                 setState(prevState => ({ ...prevState, masterLevels: res?.data?.Data?.MasterLevels }))
                 setTimeout(() => {
                     commonFunction(plantId, isDivision, res?.data?.Data?.MasterLevels)
@@ -356,8 +351,9 @@ function AddRMMaster(props) {
     };
 
     const onSubmit = debounce(handleSubmit((values, isDivision) => {
-        
-        
+        console.log(values);
+        console.log(state);
+        console.log(rawMaterailDetails);
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -409,19 +405,19 @@ function AddRMMaster(props) {
         } else {
             plantArray.push({ PlantName: values?.Plants?.label, PlantId: values?.Plants?.value, PlantCode: '', })
         }
-        
-        const netLandedCostLocalConversion=convertIntoCurrency(rawMaterailDetails?.states?.NetLandedCost, exchangeRateDetails?.LocalCurrencyExchangeRate)
-        const netconditionCostLocalConversion=convertIntoCurrency(rawMaterailDetails?.states?.NetConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate)
-        const netOtherCostLocalConversion=convertIntoCurrency(rawMaterailDetails?.states?.totalOtherCost, exchangeRateDetails?.LocalCurrencyExchangeRate)
-        const netCostWithoutConditionCost=convertIntoCurrency(rawMaterailDetails?.states?.NetCostWithoutConditionCost ?? NetCostWithoutConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate) 
-        const basicRatePerUOMLocalConversion=convertIntoCurrency(values?.BasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
-        const commodityNetCostLocalConversion=convertIntoCurrency(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
-        const cutOffPriceLocalConversion=convertIntoCurrency(values?.cutOffPrice, exchangeRateDetails?.LocalCurrencyExchangeRate)
+
+        const netLandedCostLocalConversion = convertIntoCurrency(rawMaterailDetails?.states?.NetLandedCost, exchangeRateDetails?.LocalCurrencyExchangeRate)
+        const netconditionCostLocalConversion = convertIntoCurrency(rawMaterailDetails?.states?.NetConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate)
+        const netOtherCostLocalConversion = convertIntoCurrency(rawMaterailDetails?.states?.totalOtherCost, exchangeRateDetails?.LocalCurrencyExchangeRate)
+        const netCostWithoutConditionCost = convertIntoCurrency(rawMaterailDetails?.states?.NetCostWithoutConditionCost ?? NetCostWithoutConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate)
+        const basicRatePerUOMLocalConversion = convertIntoCurrency(values?.BasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
+        const commodityNetCostLocalConversion = convertIntoCurrency(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
+        const cutOffPriceLocalConversion = convertIntoCurrency(values?.cutOffPrice, exchangeRateDetails?.LocalCurrencyExchangeRate)
         let formData =
         {
             "Attachements": rawMaterailDetails?.Files,
             "BasicRatePerUOM": values?.BasicRate,
-            "BasicRatePerUOMLocalConversion": state?.isImport ?basicRatePerUOMLocalConversion : values?.BasicRate,
+            "BasicRatePerUOMLocalConversion": state?.isImport ? basicRatePerUOMLocalConversion : values?.BasicRate,
             "BasicRatePerUOMConversion": state?.isImport ? convertIntoCurrency(basicRatePerUOMLocalConversion, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.BasicRate, exchangeRateDetails?.CurrencyExchangeRate),
             "CalculatedFactor": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? rawMaterailDetails?.states?.CalculatedFactor : '',
             "Category": values?.RawMaterialCategory?.value,
@@ -430,7 +426,7 @@ function AddRMMaster(props) {
             "CommodityNetCostConversion": state?.isImport ? convertIntoCurrency(commodityNetCostLocalConversion, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.CurrencyExchangeRate),
             "CostingTypeId": state?.costingTypeId,
             "Currency": state?.isImport ? values?.currency?.label : values?.plantCurrency,
-            "CurrencyExchangeRate": /* state?.isImport ? exchangeRateDetails?.LocalCurrencyExchangeRate :  */exchangeRateDetails?.CurrencyExchangeRate?exchangeRateDetails?.CurrencyExchangeRate:null,
+            "CurrencyExchangeRate": /* state?.isImport ? exchangeRateDetails?.LocalCurrencyExchangeRate :  */exchangeRateDetails?.CurrencyExchangeRate ? exchangeRateDetails?.CurrencyExchangeRate : null,
             "CurrencyId": state?.isImport ? values?.currency?.value : exchangeRateDetails?.LocalCurrencyId,
             "CustomerId": state.costingTypeId === CBCTypeId ? values?.clientName?.value : '',
             "CustomerCode": state.costingTypeId === CBCTypeId ? getCodeBySplitting(values?.clientName?.label) : '',
@@ -439,7 +435,7 @@ function AddRMMaster(props) {
             "CutOffPriceLocalConversion": state?.isImport ? cutOffPriceLocalConversion : values?.cutOffPrice,
             "CutOffPriceInINR": state?.isImport ? convertIntoCurrency(cutOffPriceLocalConversion, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.cutOffPrice, exchangeRateDetails?.CurrencyExchangeRate),
             "EffectiveDate": DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-            "ExchangeRateId": /* state?.isImport ? exchangeRateDetails?.LocalExchangeRateId : */ exchangeRateDetails?.ExchangeRateId?exchangeRateDetails?.ExchangeRateId:null,
+            "ExchangeRateId": /* state?.isImport ? exchangeRateDetails?.LocalExchangeRateId : */ exchangeRateDetails?.ExchangeRateId ? exchangeRateDetails?.ExchangeRateId : null,
             "ExchangeRateSourceName": values?.ExchangeSource?.label,
             "FrequencyOfSettlement": values?.frequencyOfSettlement?.label,
             "FromDate": DayTime(values?.fromDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -455,8 +451,8 @@ function AddRMMaster(props) {
             "JaliScrapCostConversion": state?.isImport ? convertIntoCurrency(values?.CircleScrapCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.CircleScrapCost, exchangeRateDetails?.CurrencyExchangeRate),
             "LoggedInUserId": loggedInUserId(),
             "LocalCurrency": state?.isImport ? values?.plantCurrency : null,
-            "LocalCurrencyExchangeRate": state?.isImport ?exchangeRateDetails?.LocalCurrencyExchangeRate : null,
-            "LocalExchangeRateId": state?.isImport ?exchangeRateDetails?.LocalExchangeRateId : null,
+            "LocalCurrencyExchangeRate": state?.isImport ? exchangeRateDetails?.LocalCurrencyExchangeRate : null,
+            "LocalExchangeRateId": state?.isImport ? exchangeRateDetails?.LocalExchangeRateId : null,
             "LocalCurrencyId": state?.isImport ? exchangeRateDetails?.LocalCurrencyId : null,
             "MachiningScrapRate": values?.MachiningScrap,
             "MachiningScrapRateLocalConversion": state?.isImport ? convertIntoCurrency(values?.MachiningScrap, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.MachiningScrap,
