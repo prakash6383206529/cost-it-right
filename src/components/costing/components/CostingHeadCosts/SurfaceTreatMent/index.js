@@ -506,8 +506,8 @@ function SurfaceTreatment(props) {
                                 id="surfaceTreatment_paintAndMasking"
                                 onClick={() => setViewPaintAndMasking(true)}
                                 className={"right mt-0 mb-2"}
-                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost === 0 ? [] : ['1'], "className", CostingViewMode)}
-                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost === 0 ? [] : ['1'], "title", CostingViewMode)}
+                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "className", CostingViewMode)}
+                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "title", CostingViewMode)}
                               />
                             </Col>
                             <Col md="4" className="d-flex align-items-center">
