@@ -1624,6 +1624,11 @@ const CostingSummaryTable = (props) => {
     if (viewCostingData?.[0]?.currency?.currencyTitle !== '-') {
       delete templateObj.currencyTitle
     }
+
+    if(!isScrapRecoveryPercentageApplied  ){
+      delete templateObj.scrapRecoveryPercentage
+    }
+
     if (simulationMode) {
       ['costingVersion', 'vendorExcel', 'customer', 'InfoCategory', 'partType', 'RevisionNumber', 'plantExcel', 'scrapRecoveryPercentage'].forEach(key => delete templateObj[key]);
     }
@@ -1655,7 +1660,7 @@ const CostingSummaryTable = (props) => {
       templateObj.nPoPriceCurrency = `Net Cost (${getConfigurationKey().BaseCurrency})`
     }
     viewCostingData && viewCostingData.map((item) => {
-      item.scrapRecoveryPercentage = item?.CostingPartDetails?.CostingRawMaterialsCost.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.scrapRecoveryPercentage : '-') : '-'
+      item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.scrapRecoveryPercentage : '-') : '-'
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
       item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
