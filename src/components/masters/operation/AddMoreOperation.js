@@ -1082,7 +1082,7 @@ function AddMoreOperation(props) {
     const OperationRateTitle = () => {
        return {
             tooltipTextPlantCurrency: `Rate * Plant Currency Rate (${state?.plantCurrency ?? ''})`,
-            toolTipTextNetCostBaseCurrency:state.hidePlantCurrency ?`Rate * Currency Rate (${state?.plantCurrency ?? ''})`: `Rate * Currency Rate (${state?.settlementCurrency ?? ''})`
+            toolTipTextNetCostBaseCurrency:state.hidePlantCurrency ?`Rate * Currency Rate (${state?.settlementCurrency ?? ''})`: `Rate * Currency Rate (${state?.plantCurrency ?? ''})`
         };
     };
     const getTooltipTextForCurrency = () => {
