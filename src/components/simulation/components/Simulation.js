@@ -1643,43 +1643,43 @@ function Simulation(props) {
 
                 if (type?.label === "Indexed") {
                     return <ApplyPermission.Provider value={permissionData}>
-                        <RMIndexationSimulation isCostingSimulation={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} />
+                        <RMIndexationSimulation isCostingSimulation={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology?.label} technologyId={technology?.value} />
                     </ApplyPermission.Provider>
                 } else {
                     return <ApplyPermission.Provider value={permissionData}>
-                        <RMSimulation isDomestic={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />
+                        <RMSimulation isDomestic={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData?.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology?.label} technologyId={technology?.value} master={master?.label} tokenForMultiSimulation={tempObject} />
                     </ApplyPermission.Provider> //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
                 }
             case RMIMPORT:
-                return <RMSimulation isCostingSimulation={true} isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isCostingSimulation={true} isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData?.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology?.label} technologyId={technology?.value} master={master?.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
-                return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label} masterId={master?.value} tokenForMultiSimulation={tempObject} technologyId={technology.value} selectionForListingMasterAPI={selectionForListingMasterAPI} vendor={vendor} />
+                return <ERSimulation backToSimulation={backToSimulation} list={tableData?.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology?.label} master={master?.label} masterId={master?.value} tokenForMultiSimulation={tempObject} technologyId={technology?.value} selectionForListingMasterAPI={selectionForListingMasterAPI} vendor={vendor} />
             case COMBINED_PROCESS:
-                return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology?.label} master={master?.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case SURFACETREATMENT:
-                return <OperationSTSimulation backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                return <OperationSTSimulation backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology?.label} master={master?.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case OPERATIONS:
-                return <OperationSTSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                return <OperationSTSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology?.label} master={master?.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case MACHINERATE:
-                return <MRSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} technologyId={technology.value} />
+                return <MRSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology?.label} master={master?.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} technologyId={technology?.value} />
             case BOPDOMESTIC:
                 if (isMasterAssociatedWithCosting) {
-                    return <BDSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                    return <BDSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology?.label} master={master?.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
                 } else if (!isMasterAssociatedWithCosting) {
-                    return <BDNonAssociatedSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                    return <BDNonAssociatedSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology?.label} master={master?.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
                 } else {
                     return ''
                 }
             case BOPIMPORT:
                 if (isMasterAssociatedWithCosting) {
-                    return <BDSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                    return <BDSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology?.label} master={master?.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
                 } else if (!isMasterAssociatedWithCosting) {
-                    return <BDNonAssociatedSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                    return <BDNonAssociatedSimulation isOperation={true} backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology?.label} master={master?.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
                 } else {
                     return ''
                 }
             case String(RAWMATERIALINDEX):
-                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} masterId={master?.value} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} isRMNonIndexSimulation={type?.value === NONINDEXED ? true : false} />
+                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master?.label} masterId={master?.value} tokenForMultiSimulation={tempObject} technology={technology?.label} technologyId={technology?.value} isRMNonIndexSimulation={type?.value === NONINDEXED ? true : false} />
             default:
                 break;
         }
