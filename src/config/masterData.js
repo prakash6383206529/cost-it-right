@@ -7093,12 +7093,9 @@ export const BOP_IMPACT_DOWNLOAD_EXCEl_IMPORT = [
     { label: "Existing Other Cost", value: "OtherNetCost", },
     { label: "Revised Other Cost", value: "NewOtherNetCost", },
     { label: "Existing Net Cost", value: "NetLandedCost", },
-    { label: "Existing Net Cost (Plant Currency)", value: "OldNetLandedCostConversion", },
-    { label: "Revised Net Cost (Plant Currency)", value: "NewNetLandedCostConversion", },
-
-
-
     { label: "Revised Net Cost", value: "NewNetLandedCostConversion", },
+    { label: "Existing Net Cost (Plant Currency)", value: "OldBoughtOutPartNetLandedCostLocalConversion", },
+    { label: "Revised Net Cost (Plant Currency)", value: "NewBoughtOutPartNetLandedCostLocalConversion", },
     { label: "Previous Min.", value: "PreviousMinimum", },
     { label: "Previous Max.", value: "PreviousMaximum", },
     { label: "Previous Avg.", value: "PreviousAverage", },
