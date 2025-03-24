@@ -5,7 +5,7 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME, EMPTY_GUID} from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME, EMPTY_GUID } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculateNetCosts, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -92,6 +92,11 @@ function OperationCost(props) {
           }, 200);
 
         } else {
+          gridData && gridData.map((el, index) => {
+            setValue(`${OperationGridFields}.${index}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+            setValue(`${OperationGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
+            return null
+          })
           props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
         }
       }
@@ -156,6 +161,8 @@ function OperationCost(props) {
       tempArr && tempArr.map((el, index) => {
         netCostTotal = checkForNull(netCostTotal) + checkForNull(el.OperationCost)
         setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el?.Quantity, initialConfiguration?.NoOfDecimalForInputOutput))
+        setValue(`${OperationGridFields}.${index}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+        setValue(`${OperationGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
         return null
       })
       setOperationCostAssemblyTechnology(netCostTotal)
@@ -250,6 +257,8 @@ function OperationCost(props) {
     setValue(`${OperationGridFields}.${index}.remarkPopUp`, '')
     tempArr && tempArr.map((el, i) => {
       setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
+      setValue(`${OperationGridFields}.${i}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+      setValue(`${OperationGridFields}.${i}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
     })
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
     //let totalFinishWeight = 0
@@ -301,6 +310,9 @@ function OperationCost(props) {
     setGridData(tempArr)
     setRowObjData({})
     setValue(`${OperationGridFields}.${index}.Quantity`, tempArr?.Quantity)
+    setValue(`${OperationGridFields}.${index}.Applicability`, { label: tempArr?.CostingConditionNumber, value: tempArr?.CostingConditionMasterAndTypeLinkingId })
+    setValue(`${OperationGridFields}.${index}.ProcessCRMHead`, { label: tempArr?.ProcessCRMHead, value: tempArr?.index })
+
     errors.OperationGridFields = {}
   }
 
@@ -311,6 +323,7 @@ function OperationCost(props) {
       Toaster.warning("Enter value less than gross weight.")
       setTimeout(() => {
         setValue(`${OperationGridFields}.${index}.Quantity`, '')
+
       }, 50);
       return false;
     }
@@ -329,7 +342,7 @@ function OperationCost(props) {
         CostingConditionMasterAndTypeLinkingId: tempData?.CostingConditionMasterAndTypeLinkingId,
         ...netCosts
       };
-tempArr = Object.assign([...gridData], { [index]: tempData });
+      tempArr = Object.assign([...gridData], { [index]: tempData });
       // let value = tempArr && tempArr.length > 0 && tempArr.reduce((accumulator, el) => {
       //   return accumulator + checkForNull(el?.OperationCost);
       // }, 0);
@@ -562,10 +575,10 @@ tempArr = Object.assign([...gridData], { [index]: tempData });
                             <td>{netCost(item)}</td>
                             {initialConfiguration?.IsShowCRMHead && <td>
                               <SearchableSelectHookForm
-                                name={`crmHeadOperation${index}`}
+                                name={`${OperationGridFields}.${index}.OperationCRMHead`}
                                 type="text"
                                 label="CRM Head"
-                                errors={`${errors.crmHeadOperation}${index}`}
+                                errors={`${errors.OperationGridFields}.${index}.OperationCRMHead`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -584,10 +597,10 @@ tempArr = Object.assign([...gridData], { [index]: tempData });
                             </td>}
                             <td>
                               <SearchableSelectHookForm
-                                name={`Applicability${index}`}
+                                name={`${OperationGridFields}.${index}.Applicability`}
                                 type="text"
                                 label="Applicability"
-                                errors={`${errors.Applicability}${index}`}
+                                errors={`${errors.OperationGridFields}?.${index}?.Applicability`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -627,10 +640,10 @@ tempArr = Object.assign([...gridData], { [index]: tempData });
                             <td><div className='w-fit' id={`operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`operation-cost${index}`} tooltipText={initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />{netCost(item)}</div></td>
                             {initialConfiguration?.IsShowCRMHead && <td>
                               <SearchableSelectHookForm
-                                name={`crmHeadOperation${index}`}
+                                name={`${OperationGridFields}.${index}.OperationCRMHead`}
                                 type="text"
                                 label="CRM Head"
-                                errors={`${errors.crmHeadOperation}${index}`}
+                                errors={`${errors.OperationGridFields}.${index}.OperationCRMHead`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -649,10 +662,10 @@ tempArr = Object.assign([...gridData], { [index]: tempData });
                             </td>}
                             <td>
                               <SearchableSelectHookForm
-                                name={`Applicability${index}`}
+                                name={`${OperationGridFields}.${index}.Applicability`}
                                 type="text"
                                 label="Applicability"
-                                errors={`${errors.Applicability}${index}`}
+                                errors={`${errors.OperationGridFields}.${index}.Applicability`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
