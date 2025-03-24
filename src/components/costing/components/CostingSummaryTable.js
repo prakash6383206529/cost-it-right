@@ -1520,77 +1520,97 @@ const CostingSummaryTable = (props) => {
   }
 
   const getOverheadPercentage = (data) => {
-    if (data?.bestCost === true) {
+    if (!data) return ' ';
+    
+    if (data.bestCost === true) {
       return ' ';
     } else if (data?.CostingHeading !== VARIANCE) {
-      const overheadTitle = data?.overheadOn.overheadTitle;
-      let isOverheadCombined = data.CostingPartDetails?.CostingOverheadDetail.IsOverheadCombined
+      const overheadTitle = data?.overheadOn?.overheadTitle;
+      const isOverheadCombined = data?.CostingPartDetails?.CostingOverheadDetail?.IsOverheadCombined || false;
+      const overheadOn = data?.overheadOn || {};
+      
+      if (!overheadTitle) return ' ';
+
       switch (overheadTitle) {
         case 'RM':
-          return data?.overheadOn.overheadRMPercentage;
+          return overheadOn.overheadRMPercentage || ' ';
         case 'BOP':
-          return data?.overheadOn.overheadBOPPercentage;
+          return overheadOn.overheadBOPPercentage || ' ';
         case 'CC':
-          return data?.overheadOn.overheadCCPercentage;
+          return overheadOn.overheadCCPercentage || ' ';
         case 'RM + CC':
         case 'Part Cost + CC':
-          return `${isOverheadCombined ? data?.overheadOn.overheadPercentage : `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage}`}`;
+          return isOverheadCombined 
+            ? (overheadOn.overheadPercentage || ' ')
+            : `${overheadOn.overheadRMPercentage || '-'} + ${overheadOn.overheadCCPercentage || '-'}`;
         case 'RM + BOP':
         case 'Part Cost + BOP':
-          return `${isOverheadCombined ? data?.overheadOn.overheadPercentage : `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadBOPPercentage}`}`;
+          return isOverheadCombined
+            ? (overheadOn.overheadPercentage || ' ')
+            : `${overheadOn.overheadRMPercentage || '-'} + ${overheadOn.overheadBOPPercentage || '-'}`;
         case 'BOP + CC':
-          return `${isOverheadCombined ? data?.overheadOn.overheadPercentage : `${data?.overheadOn.overheadBOPPercentage} + ${data?.overheadOn.overheadCCPercentage}`}`;
+          return isOverheadCombined
+            ? (overheadOn.overheadPercentage || ' ')
+            : `${overheadOn.overheadBOPPercentage || '-'} + ${overheadOn.overheadCCPercentage || '-'}`;
         case 'RM + CC + BOP':
         case 'Part Cost + CC + BOP':
-          if (data?.overheadOn.overheadRMPercentage !== '-') {
-            return `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage} + ${data?.overheadOn.overheadBOPPercentage}`;
-          } else {
-            return data?.overheadOn.overheadPercentage;
+          if (overheadOn.overheadRMPercentage !== '-') {
+            return `${overheadOn.overheadRMPercentage || '-'} + ${overheadOn.overheadCCPercentage || '-'} + ${overheadOn.overheadBOPPercentage || '-'}`;
           }
+          return overheadOn.overheadPercentage || ' ';
         default:
-          return data?.overheadOn.overheadPercentage;
+          return overheadOn.overheadPercentage || ' ';
       }
     }
-    else {
-      return ' ';
-    }
+    return ' ';
   };
+
   const getProfitPercentage = (data) => {
-    if (data?.bestCost === true) {
+    if (!data) return ' ';
+
+    if (data.bestCost === true) {
       return ' ';
     } else if (data?.CostingHeading !== VARIANCE) {
-      const profitTitle = data?.profitOn.profitTitle;
-      let isProfitCombined = data.CostingPartDetails?.CostingProfitDetail.IsProfitCombined
+      const profitTitle = data?.profitOn?.profitTitle;
+      const isProfitCombined = data?.CostingPartDetails?.CostingProfitDetail?.IsProfitCombined || false;
+      const profitOn = data?.profitOn || {};
+
+      if (!profitTitle) return ' ';
+
       switch (profitTitle) {
         case 'RM':
-          return data?.profitOn.profitRMPercentage;
+          return profitOn.profitRMPercentage || ' ';
         case 'BOP':
-          return data?.profitOn.profitBOPPercentage;
+          return profitOn.profitBOPPercentage || ' ';
         case 'CC':
-          return data?.profitOn.profitCCPercentage;
+          return profitOn.profitCCPercentage || ' ';
         case 'RM + CC':
         case 'Part Cost + CC':
-          return `${isProfitCombined ? data?.profitOn.profitPercentage : `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage}`}`;
+          return isProfitCombined
+            ? (profitOn.profitPercentage || ' ')
+            : `${profitOn.profitRMPercentage || '-'} + ${profitOn.profitCCPercentage || '-'}`;
         case 'BOP + CC':
-          return `${isProfitCombined ? data?.profitOn.profitPercentage : `${data?.profitOn.profitBOPPercentage} + ${data?.profitOn.profitCCPercentage}`}`;
+          return isProfitCombined
+            ? (profitOn.profitPercentage || ' ')
+            : `${profitOn.profitBOPPercentage || '-'} + ${profitOn.profitCCPercentage || '-'}`;
         case 'RM + BOP':
         case 'Part Cost + BOP':
-          return `${isProfitCombined ? data?.profitOn.profitPercentage : `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitBOPPercentage}`}`;
+          return isProfitCombined
+            ? (profitOn.profitPercentage || ' ')
+            : `${profitOn.profitRMPercentage || '-'} + ${profitOn.profitBOPPercentage || '-'}`;
         case 'RM + CC + BOP':
         case 'Part Cost + CC + BOP':
-          if (data?.profitOn.profitRMPercentage !== '-') {
-            return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage} + ${data?.profitOn.profitBOPPercentage}`;
-          } else {
-            return data?.profitOn.profitPercentage;
+          if (profitOn.profitRMPercentage !== '-') {
+            return `${profitOn.profitRMPercentage || '-'} + ${profitOn.profitCCPercentage || '-'} + ${profitOn.profitBOPPercentage || '-'}`;
           }
+          return profitOn.profitPercentage || ' ';
         default:
-          return data?.profitOn.profitPercentage;
+          return profitOn.profitPercentage || ' ';
       }
     }
-    else {
-      return ' ';
-    }
+    return ' ';
   };
+
   const onBtExport = () => {
     function checkAssembly(obj) {
       if (obj.IsAssemblyCosting && !obj?.bestCost) {
