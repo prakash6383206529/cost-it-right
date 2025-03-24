@@ -2984,6 +2984,12 @@ const CostingSummaryTable = (props) => {
                                 <span className={highlighter("tCost")}>
                                   Extra Surface Treatment Cost
                                 </span>
+                                <span className={highlighter("HangerCostPerPart")}>
+                                  Hanger Cost
+                                </span>
+                                <span className={highlighter("TotalPaintCost")}>
+                                  Paint and Masking Cost
+                                </span>
                               </td>
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
@@ -2995,6 +3001,16 @@ const CostingSummaryTable = (props) => {
                                       <span className={highlighter("tCost")}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
                                           (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                          : '')}
+                                      </span>
+                                      <span className={highlighter("HangerCostPerPart")}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                          : '')}
+                                      </span>
+                                      <span className={highlighter("TotalPaintCost")}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                           : '')}
                                       </span>
                                     </td>

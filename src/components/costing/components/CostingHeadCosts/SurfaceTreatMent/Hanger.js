@@ -8,7 +8,7 @@ import { debounce } from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSurfaceData } from '../../../actions/Costing'
 
-const Hanger = (props) => {
+const Hanger = ({ ViewMode, viewCostingDataObj }) => {
     const { register, control, formState: { errors }, setValue, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -21,16 +21,17 @@ const Hanger = (props) => {
     })
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
     useEffect(() => {
-        setValue(`HangerFactor`, checkForDecimalAndNull(surfaceTabData?.CostingPartDetails?.HangerRate, NoOfDecimalForInputOutput))
-        setValue(`NoOfPartsPerHanger`, checkForDecimalAndNull(surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger, NoOfDecimalForInputOutput))
-        setValue(`HangerCostPerPart`, checkForDecimalAndNull(surfaceTabData?.CostingPartDetails?.HangerCostPerPart, NoOfDecimalForPrice))
+        const data = ViewMode ? viewCostingDataObj?.CostingPartDetails : surfaceTabData?.CostingPartDetails
+        setValue(`HangerFactor`, checkForDecimalAndNull(data?.HangerRate, NoOfDecimalForInputOutput))
+        setValue(`NoOfPartsPerHanger`, checkForDecimalAndNull(data?.NumberOfPartsPerHanger, NoOfDecimalForInputOutput))
+        setValue(`HangerCostPerPart`, checkForDecimalAndNull(data?.HangerCostPerPart, NoOfDecimalForPrice))
     }, [SurfaceTabData])
     const calculateHangerCost = debounce((hangerFactor, noOfPartsPerHanger) => {
         const hangerCost = checkForNull(hangerFactor) / checkForNull(noOfPartsPerHanger)
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(hangerCost, NoOfDecimalForPrice))
         let obj = {
             HangerRate: hangerFactor,
-            NumberOfPartsPerHanger: noOfPartsPerHanger,
+            NumberOfPartsPerHanger: checkForNull(noOfPartsPerHanger),
             HangerCostPerPart: hangerCost
         }
         let surfaceTabData = [...SurfaceTabData]
@@ -77,7 +78,7 @@ const Hanger = (props) => {
                             calculateHangerCost(e.target.value, getValues(`NoOfPartsPerHanger`))
                         }}
                         errors={errors && errors.HangerFactor}
-                    // disabled={(!TransportationType || TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                        disabled={ViewMode}
                     />
                 </Col>
                 <Col md="4">
@@ -100,7 +101,7 @@ const Hanger = (props) => {
                             calculateHangerCost(getValues(`HangerFactor`), e.target.value)
                         }}
                         errors={errors && errors.NoOfPartsPerHanger}
-                    // disabled={(!TransportationType || TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                        disabled={ViewMode}
                     />
                 </Col>
                 <Col md="4">
