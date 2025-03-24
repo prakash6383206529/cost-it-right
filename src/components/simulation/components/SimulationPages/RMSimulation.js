@@ -86,8 +86,8 @@ function RMSimulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { technologyLabel, vendorLabel } = useLabels();
     const dispatch = useDispatch()
+    const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
     const currencySelectList = useSelector(state => state?.comman?.currencySelectList)
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft, simulationCostingStatus } = useSelector(state => state?.simulation)
@@ -96,7 +96,7 @@ function RMSimulation(props) {
     const masterList = useSelector(state => state?.simulation.masterSelectListSimulation)
     const { filteredRMData } = useSelector(state => state?.material)
     const columnWidths = {
-        CostingHead: showCompressedColumns ? 50 : 140,
+        CostingHead: showCompressedColumns ? 50 : 200,
         VendorCode: showCompressedColumns ? 50 : 160,
         RawMaterialName: showCompressedColumns ? 50 : 160,
         RawMaterialGradeName: showCompressedColumns ? 50 : 120,
@@ -438,17 +438,17 @@ function RMSimulation(props) {
         return cell != null ? <span title={DayTime(cell).format('DD/MM/YYYY')}>{DayTime(cell).format('DD/MM/YYYY')}</span> : '';
     }
 
-    // const combinedCostingHeadRenderer = (props) => {
-    //     // Call the existing checkBoxRenderer
-    //     costingHeadFormatter(props);
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        costingHeadFormatter(props);
 
-    //     // Get and localize the cell value
-    //     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
-    //     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
 
-    //     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
-    //     return localizedValue;
-    // };
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
 
     const costingHeadFormatter = (props) => {
         const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
@@ -1064,7 +1064,7 @@ function RMSimulation(props) {
         const cellValue = checkForNull(props?.value);
         return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
     }
-
+    
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
 
@@ -1096,7 +1096,9 @@ function RMSimulation(props) {
         revisedConditionCostFormatter: revisedConditionCostFormatter,
         zeroFormatter: zeroFormatter,
         netLanedCostFormatter: netLanedCostFormatter,
-        localConversionFormatter: localConversionFormatter
+        localConversionFormatter: localConversionFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
+        statusFilter: CostingHeadDropdownFilter,
 
     };
 
@@ -1281,7 +1283,7 @@ function RMSimulation(props) {
                                             >
                                                 {
                                                     !isImpactedMaster &&
-                                                    <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'combinedCostingHeadRenderer'}
+                                                    <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={combinedCostingHeadRenderer}
                                                         floatingFilterComponentParams={floatingFilterStatus}
                                                         floatingFilterComponent="statusFilter"></AgGridColumn>
                                                 }
