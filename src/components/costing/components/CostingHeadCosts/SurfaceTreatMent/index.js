@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Controller, useForm, } from 'react-hook-form';
-import { getCostingCostDetails, gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
+import { getCostingCostDetails, gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setSurfaceData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -245,10 +245,20 @@ function SurfaceTreatment(props) {
 
   // }
 
-  const setSurfaceData = (obj, errorObjectSurfaceTreatment) => {
+  const SetSurfaceData = (obj, errorObjectSurfaceTreatment) => {
     setErrorObjectSurfaceTreatment(errorObjectSurfaceTreatment)
     setSurfacTreatmenteData(obj)
     setSurfacetableData(obj.gridData)
+    let newData = [...SurfaceTabData];
+    newData.map(item => {
+      if (item?.CostingId === costData?.CostingId) {
+        let CostingPartDetails = item?.CostingPartDetails
+        CostingPartDetails.SurfaceTreatmentDetails = obj.gridData;
+        CostingPartDetails.SurfaceTreatmentCost = surfaceCost(obj.gridData);
+      }
+      return null;
+    })
+    dispatch(setSurfaceData(newData, () => { }))
   }
 
 
@@ -462,10 +472,10 @@ function SurfaceTreatment(props) {
                             IsAssemblyCalculation={props.IsAssemblyCalculation}
                             setAssemblySurfaceCost={props.setAssemblySurfaceCost}
                             setAssemblyTransportationCost={props.setAssemblyTransportationCost}
-                            setSurfaceData={setSurfaceData}
+                            setSurfaceData={SetSurfaceData}
                           />
                           {/* <hr /> */}
-                          <Hanger />
+                          <Hanger ViewMode={CostingViewMode} />
                           {/* <TransportationCost
                             index={props.index}
                             data={transportationData}

@@ -96,14 +96,22 @@ function TabOverheadProfit(props) {
     return calculateNetCost(topHeaderValues);
   }, [topHeaderValues]);
 
+ 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
-    if (CostingViewMode === false && topHeaderValues) {
-      props.setHeaderCost({
-        NetOverheadProfitCost: netCost
-      });
+    if (CostingViewMode === false) {
+      let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData[0]?.CostingPartDetails : null;
+
+      let topHeaderData = {
+        NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
+          checkForNull(TopHeaderValues.ProfitCost) +
+          checkForNull(TopHeaderValues.RejectionCost) +
+          checkForNull(TopHeaderValues.ICCCost))
+      }
+
+      props.setHeaderCost(topHeaderData)
     }
-  }, [CostingViewMode, netCost, topHeaderValues]);
+  }, [OverheadProfitTabData]);
 
   // ... rest of component code ...
 

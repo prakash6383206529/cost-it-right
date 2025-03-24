@@ -287,7 +287,7 @@ function ProcessCost(props) {
   }, 500);
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
-
+    
     setIsCalculator(false)
     if (Object.keys(weightData).length === 0) return false;
     const calculateNetCosts = (processCost, applicabilityType) => {
@@ -312,6 +312,8 @@ function ProcessCost(props) {
         ProcessCalculationId: EMPTY_GUID,
         ProcessCalculatorId: weightData.ProcessCalculationId,
         WeightCalculatorRequest: weightData,
+        // netProcessMHRWithOutInterestAndDepreciation: weightData?.netProcessMHRWithOutInterestAndDepreciation || null,
+        // processMHRWithOutInterestAndDepreciation: weightData?.processMHRWithOutInterestAndDepreciation || null,
         ...netCosts
       }
 
@@ -404,12 +406,6 @@ function ProcessCost(props) {
 
       }
       let processTemparr = Object.assign([...gridData], { [parentCalciIndex]: processTempData })
-
-      setValue(`${ProcessGridFields}.${parentCalciIndex}.Quantity`,
-        checkForDecimalAndNull(groupTotals.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
-      setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`,
-        checkForDecimalAndNull(groupTotals.ProcessCostTotal, initialConfiguration?.NoOfDecimalForPrice))
-
       let apiArr = formatMainArr(processTemparr)
       const finalTotals = processTemparr.reduce((acc, el) => ({
         ProcessCostTotal: acc.ProcessCostTotal + checkForNull(el.ProcessCost),
@@ -570,10 +566,12 @@ function ProcessCost(props) {
 
     const setDataInGridAndApi = (tempArr) => {
       tempArr && tempArr.map((el, index) => {
-        el.CostingConditionMasterAndTypeLinkingId = el.Applicability?.value || null
-        el.CostingConditionNumber = processApplicabilitySelect.find(type => type.value === el.Applicability?.value)?.label || null
+        // el.CostingConditionMasterAndTypeLinkingId = el.Applicability?.value || null
+        // el.CostingConditionNumber = processApplicabilitySelect?.find(type => type?.value === el?.Applicability?.value)?.label || null
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${ProcessGridFields}.${index}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+        setValue(`${ProcessGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
         return null
       })
       const totals = calculateProcessTotals(tempArr);
@@ -781,7 +779,7 @@ function ProcessCost(props) {
         ProcessCostTotal: totals?.ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
-
+      
       let selectedIds = []
       let selectedMachineIds = []
       tempArrAfterDelete.map(el => {
@@ -800,6 +798,9 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${ProcessGridFields}.${i}.remarkPopUp`, el.Remark)
+        setValue(`${ProcessGridFields}.${i}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+        setValue(`${ProcessGridFields}.${i}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
+
         return null
       })
     }, 200)
@@ -1008,9 +1009,9 @@ function ProcessCost(props) {
       NetProcessCostForProfit: 0
     });
   };
-  
-  const onHandleChangeApplicability = (e, index) => {
 
+  const onHandleChangeApplicability = (e, index) => {
+    
     let gridTempArr = JSON.parse(JSON.stringify(processGroupGrid));
 
     let tempData = gridTempArr[index];
@@ -1171,8 +1172,7 @@ function ProcessCost(props) {
   const setOperationCost = (operationGrid, params, index) => {
     const OperationCostTotal = calculateTotalCosts(operationGrid, 'OperationCost');
     const apiArr = formatMainArr(gridData);
-
-    // Calculate operation net costs
+    
     const operationsWithNetCosts = operationGrid?.map(operation => ({
       ...operation,
       ...calculateNetCosts(operation?.OperationCost, operation?.CostingConditionNumber, "Operation")
@@ -1185,7 +1185,7 @@ function ProcessCost(props) {
     // Calculate process net costs
     const processNetCosts = calculateNetCostTotals(gridData, ['NetProcessCostForOverhead', 'NetProcessCostForProfit', 'NetProcessCostForOverheadAndProfit']
     );
-    
+
     const tempArr = {
       ...tabData,
       ...processNetCosts,
@@ -1719,10 +1719,10 @@ function ProcessCost(props) {
                             {
                               initialConfiguration?.IsShowCRMHead && <td>
                                 <SearchableSelectHookForm
-                                  name={`crmHeadProcess${index}`}
+                                  name={`${ProcessGridFields}.${index}.ProcessCRMHead`}
                                   type="text"
                                   label="CRM Head"
-                                  errors={`${errors.crmHeadProcess}${index}`}
+                                  errors={`${ProcessGridFields}.${index}.ProcessCRMHead`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
@@ -1743,10 +1743,10 @@ function ProcessCost(props) {
 
                             <td>
                               <SearchableSelectHookForm
-                                name={`Applicability${index}`}
+                                name={`${ProcessGridFields}.${index}.Applicability`}
                                 type="text"
                                 label="Applicability"
-                                errors={`${errors.Applicability}${index}`}
+                                errors={`${ProcessGridFields}.${index}.Applicability`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}

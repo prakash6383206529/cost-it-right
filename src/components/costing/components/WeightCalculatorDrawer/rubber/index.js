@@ -52,7 +52,8 @@ function RubberCalciTab(props) {
                                 onClick={() => {
                                     toggle('1')
                                 }}
-                                disabled={props.rmRowData && props.rmRowData?.CalculatorType === "Standard"}
+                                disabled={props.rmRowData && Object.keys(props.rmRowData?.WeightCalculatorRequest).length === 0 ? false : props.rmRowData && props.rmRowData?.CalculatorType === "Standard" ? true : false}
+                                // disabled={props.rmRowData && props.rmRowData?.CalculatorType === "Standard"}
                             //  disabled={rmRowData.WeightCalculatorRequest.LayoutType && rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
                             // disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
                             >
@@ -65,8 +66,9 @@ function RubberCalciTab(props) {
                                 onClick={() => {
                                     toggle('2')
                                 }}
-                                disabled={false}
-                            // disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
+                                disabled={props.rmRowData && Object.keys(props.rmRowData?.WeightCalculatorRequest).length === 0 ? false : props.rmRowData && props.rmRowData?.CalculatorType === "Compound" ? true : false}
+                                // disabled={props.rmRowData && props.rmRowData?.CalculatorType === "Compound"}
+                                // disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
                             >
                                 STANDARD
                             </NavLink>

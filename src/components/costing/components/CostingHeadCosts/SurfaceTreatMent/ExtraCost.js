@@ -13,11 +13,13 @@ import { generateCombinations, getCostingConditionTypes } from '../../../../comm
 import { getCostingCondition } from '../../../../../actions/Common'
 import { setSurfaceData } from '../../../actions/Costing'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { ViewCostingContext } from '../../CostingDetails'
 
 function ExtraCost(props) {
     const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
     const conditionTypeId = getCostingConditionTypes(COSTINGSURFACETREATMENTEXTRACOST)
     const costData = useContext(costingInfoContext);
+    const CostingViewMode = useContext(ViewCostingContext);
     const dispatch = useDispatch();
     const { SurfaceTabData } = useSelector(state => state?.costing)
     let surfaceTabData = SurfaceTabData[0]
@@ -77,6 +79,22 @@ function ExtraCost(props) {
         setTotalCostCurrency(totalCost);
     }, [surfaceCostingPartDetails]);
 
+    useEffect(() => {
+        if (!CostingViewMode) {
+            dispatch(getCostingCondition('', conditionTypeId, (res) => {
+                if (res?.data?.DataList) {
+                    const temp = res?.data?.DataList?.map((item) => ({
+                        label: item?.CostingConditionNumber,
+                        value: item?.CostingConditionMasterId,
+                    }));
+                    setState((prevState) => ({
+                        ...prevState,
+                        applicabilityDropdown: temp
+                    }));
+                }
+            }));
+        }
+    }, [])
     const editData = (indexValue, operation) => {
         if (operation === 'delete') {
             handleDelete(indexValue);
@@ -94,8 +112,8 @@ function ExtraCost(props) {
             setType({ label: 'Percentage', value: 'Percentage' })
             setValue('Type', { label: 'Percentage', value: 'Percentage' })
             setValue('Applicability', { label: selectedData?.CostingConditionNumber, value: selectedData?.CostingConditionMasterId })
-            setValue('ApplicabilityCost', selectedData?.ApplicabiltyCost)
-            setValue('Percentage', selectedData?.Rate)
+            setValue('ApplicabilityCost', checkForDecimalAndNull(selectedData?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('Percentage', checkForDecimalAndNull(selectedData?.Rate, initialConfiguration?.NoOfDecimalForPrice))
         }
         setValue('CostDescription', selectedData?.Description)
         setValue('Remark', selectedData?.Remark)
@@ -292,18 +310,6 @@ function ExtraCost(props) {
             setValue('ApplicabilityBaseCost', '')
             if (type?.label === "Percentage") {
                 setState(prevState => ({ ...prevState, disableApplicability: false }));
-                dispatch(getCostingCondition('', conditionTypeId, (res) => {
-                    if (res?.data?.DataList) {
-                        const temp = res?.data?.DataList?.map((item) => ({
-                            label: item?.CostingConditionNumber,
-                            value: item?.CostingConditionMasterId,
-                        }));
-                        setState((prevState) => ({
-                            ...prevState,
-                            applicabilityDropdown: temp
-                        }));
-                    }
-                }));
             } else {
                 setState(prevState => ({ ...prevState, disableApplicability: true }));
             }
@@ -348,7 +354,7 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors?.Type}
-                                                disabled={props?.ViewMode}
+                                                disabled={CostingViewMode}
                                             />
                                         </Col>
                                         <Col md="3" className='px-2'>
@@ -368,7 +374,7 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={"withBorder"}
                                                 errors={errors?.CostDescription}
-                                                disabled={props?.ViewMode}
+                                                disabled={CostingViewMode}
                                             />
                                         </Col>
 
@@ -412,7 +418,7 @@ function ExtraCost(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors?.ApplicabilityCost}
-                                                        disabled={props?.ViewMode || disableTotalCost || disableCurrency}
+                                                        disabled={CostingViewMode || disableTotalCost || disableCurrency}
                                                     />
                                                 </Col>
                                                 <Col md={3} className='px-2'>
@@ -436,7 +442,7 @@ function ExtraCost(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors?.Percentage}
-                                                        disabled={props?.ViewMode}
+                                                        disabled={CostingViewMode}
                                                     />
                                                 </Col>
                                             </>
@@ -460,7 +466,7 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors?.NetCost}
-                                                disabled={type?.label === 'Percentage' ? true : false || state?.disableCostBaseCurrency || props?.ViewMode}
+                                                disabled={type?.label === 'Percentage' ? true : false || state?.disableCostBaseCurrency || CostingViewMode}
                                             />
                                         </Col>
                                         <Col md="3" className='px-2'>
@@ -480,14 +486,14 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={"withBorder"}
                                                 errors={errors?.Remark}
-                                                disabled={props?.ViewMode}
+                                                disabled={CostingViewMode}
                                             />
                                         </Col>
                                         <Col md="3" className={toggleCondition()}>
                                             <button
                                                 type="submit"
                                                 className={"user-btn  pull-left mt-1"}
-                                                disabled={props?.ViewMode || props?.disabled}
+                                                disabled={CostingViewMode || props?.disabled}
                                             >
                                                 {isEditMode ? "" : <div className={"plus"}></div>} {isEditMode ? "UPDATE" : 'ADD'}
                                             </button>
@@ -495,7 +501,7 @@ function ExtraCost(props) {
                                                 type="button"
                                                 className={"reset-btn pull-left mt-1 ml5"}
                                                 onClick={() => resetData("reset")}
-                                                disabled={props?.ViewMode || props?.disabled}
+                                                disabled={CostingViewMode || props?.disabled}
                                             >
                                                 {isEditMode ? "CANCEL" : 'RESET'}
                                             </button>
@@ -521,16 +527,16 @@ function ExtraCost(props) {
                                                             <td>{item?.UOM ?? '-'}</td>
                                                             <td>{item?.Description ?? '-'}</td>
                                                             <td>{item?.CostingConditionNumber ?? '-'}</td>
-                                                            <td>{item?.ApplicabiltyCost ?? '-'}</td>
-                                                            <td>{item?.Rate ?? '-'}</td>
+                                                            <td>{item?.ApplicabiltyCost ? checkForDecimalAndNull(item?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                                            <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             <td>{item?.TransportationCost !== '-' ? checkForDecimalAndNull(item?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                                                            <td>{item?.Remark ?? '-'}</td>
+                                                            <td>{item?.Remark ? item?.Remark : '-'}</td>
                                                             {
                                                                 !props?.hideAction && (
                                                                     <td>
                                                                         <div className='text-right'>
-                                                                            <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={props?.ViewMode} />
-                                                                            <button title='Delete' className="Delete mr-1" type='button' onClick={() => editDeleteData(index, 'delete')} disabled={props?.ViewMode} />
+                                                                            <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={CostingViewMode} />
+                                                                            <button title='Delete' className="Delete mr-1" type='button' onClick={() => editDeleteData(index, 'delete')} disabled={CostingViewMode} />
                                                                         </div>
                                                                     </td>
                                                                 )
@@ -569,7 +575,7 @@ function ExtraCost(props) {
                                             type={'button'}
                                             className="submit-button save-btn"
                                             onClick={() => saveExtraCost()}
-                                            disabled={props?.ViewMode || props?.disabled}
+                                            disabled={CostingViewMode || props?.disabled}
                                         >
                                             <div className={"save-icon"}></div>
                                             {'Save'}
