@@ -14,10 +14,12 @@ import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../..
 
 function Broaching(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+    const processMHRWithOutInterestAndDepreciation = props?.calculatorData?.ProcessMHRWithOutInterestAndDepreciation
     const costData = useContext(costingInfoContext);
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const [isDisable, setIsDisable] = useState(false)
+    const [netProcessCostWithOutInterestAndDepreciation, setNetProcessCostWithoutInterestAndDepreciation] = useState(1)
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const defaultValues = {
@@ -103,8 +105,9 @@ function Broaching(props) {
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
         // const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
-        const processCost = findProcessCost(props?.calculatorData?.UOM, props?.calculatorData?.MHR, partsPerHour)
-        setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
+        const { processCost, processCostWithoutInterestAndDepreciation } = findProcessCost(props?.calculatorData?.UOM, props?.calculatorData?.MHR, partsPerHour, processMHRWithOutInterestAndDepreciation)
+        setNetProcessCostWithoutInterestAndDepreciation(processCostWithoutInterestAndDepreciation)
+        setDataToSend(prevState => ({ ...prevState, processCost: processCost, netProcessMHRWithOutInterestAndDepreciation: processMHRWithOutInterestAndDepreciation }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
 
     }
@@ -182,6 +185,9 @@ function Broaching(props) {
         obj.ProcessCost = dataToSend.processCost
         obj.MachineRate = props.calculatorData.MHR
         obj.TotalMachiningTime = totalMachiningTime
+        obj.NetProcessCostWithOutInterestAndDepreciation = netProcessCostWithOutInterestAndDepreciation
+        obj.ProcessMHRWithOutInterestAndDepreciation = processMHRWithOutInterestAndDepreciation
+
 
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
             setIsDisable(false)

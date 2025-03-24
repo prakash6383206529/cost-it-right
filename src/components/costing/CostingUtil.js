@@ -220,23 +220,44 @@ export const findProductionPerHour = (quantity) => {
 }
 
 // TO FIND PROCESS COST IF UOM TYPE IS TIME AND ON THE BASIS OF UOM (HOURS,MINUTES,SECONDS)
-export const findProcessCost = (uom, mhr, productionPerHour) => {
-  let processCost = 0
-  if (uom === HOUR) {
-    processCost = checkForNull((checkForNull(mhr) / checkForNull(productionPerHour)))
-  } else if (uom === MINUTES) {
-    processCost = checkForNull(((checkForNull(mhr) * 60) / checkForNull(productionPerHour)))
-  } else if (uom === SECONDS) {
-    processCost = checkForNull(((checkForNull(mhr) * 3600) / checkForNull(productionPerHour)))
+export const findProcessCost = (uom, mhr, productionPerHour, mhrWithoutInterestAndDepreciation = null) => {
+ let processCost = 0;
+  let processCostWithoutInterestAndDepreciation = 0;
+  const multiplier = getTimeMultiplier(uom);
+if (multiplier) {
+    processCost = checkForNull((checkForNull(mhr) * multiplier) / checkForNull(productionPerHour));
+    
+    if (mhrWithoutInterestAndDepreciation) {
+      processCostWithoutInterestAndDepreciation = checkForNull(
+        (checkForNull(mhrWithoutInterestAndDepreciation) * multiplier) / checkForNull(productionPerHour)
+      );
+      
+    }
   }
-  else if (uom === MILLISECONDS) {
-    processCost = checkForNull(((checkForNull(mhr) * 3600000) / checkForNull(productionPerHour)))
+ 
+return {
+    processCost: checkForNull(processCost),
+    processCostWithoutInterestAndDepreciation: checkForNull(processCostWithoutInterestAndDepreciation)
+  };
+};
+
+// Helper function to get time multiplier
+const getTimeMultiplier = (uom) => {
+  switch (uom) {
+    case HOUR:
+      return 1;
+    case MINUTES:
+      return 60;
+    case SECONDS:
+      return 3600;
+    case MILLISECONDS:
+      return 3600000;
+    case MICROSECONDS:
+      return 3600000000;
+    default:
+      return 0;
   }
-  else if (uom === MICROSECONDS) {
-    processCost = checkForNull(((checkForNull(mhr) * 3600000000) / checkForNull(productionPerHour)))
-  }
-  return processCost
-}
+};
 
 
 // function findVolumeFields(res){
