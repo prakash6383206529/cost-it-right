@@ -780,14 +780,14 @@ function TabSurfaceTreatment(props) {
         obj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid));
         obj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
         obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(surfaceCost(surfaceGrid)) + obj?.CostingPartDetails?.TransportationCost)
-        obj.CostingPartDetails.BasicRate = checkForNull(obj.CostingPartDetails.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)
+        obj.CostingPartDetails.BasicRate = checkForNull(obj.CostingPartDetails.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC)
 
         break;
       case 'Transport':
         obj.CostingPartDetails.TransportationCost = checkForNull(TransportationObj?.TransportationCost)
         obj.CostingPartDetails.TransportationDetails = TransportationObj
         obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(obj?.CostingPartDetails?.SurfaceTreatmentCost) + checkForNull(TransportationObj.TransportationCost) + checkForNull(obj?.CostingPartDetails?.HangerCostPerPart) + checkForNull(obj?.CostingPartDetails?.TotalPaintCost))
-        obj.CostingPartDetails.BasicRate = checkForNull(obj.CostingPartDetails.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)
+        obj.CostingPartDetails.BasicRate = checkForNull(obj.CostingPartDetails.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC)
         break;
       default:
         break;
@@ -830,7 +830,7 @@ function TabSurfaceTreatment(props) {
     subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly + subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerSubAssembly
     subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostComponent + subAssemblyObj?.CostingPartDetails?.TotalTransportationCostComponent
     subAssemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostWithQuantity)
-    subAssemblyObj.CostingPartDetails.BasicRate = checkForNull(rmCcData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)
+    subAssemblyObj.CostingPartDetails.BasicRate = checkForNull(rmCcData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC)
     return subAssemblyObj
   }
 

@@ -33,7 +33,7 @@ function AddAssemblyOperation(props) {
   const drawerRef = useRef();
 
   const [operationGridData, setOperationGridData] = useState([]);
-  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost);
+  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.NetOperationCost);
 
   const costData = useContext(costingInfoContext)
   const isPartType = useContext(IsPartType);
@@ -103,18 +103,18 @@ function AddAssemblyOperation(props) {
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingOperationCostResponse = grid;
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
         checkForNull(costPerPieceTotal) +
-        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
-        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
+        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
         checkForNull(totalOperationCost)
-      tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost =
+      tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
         checkForNull(costPerPieceTotal) +
-        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
-        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
+        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
         checkForNull(totalOperationCost) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
-      tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost = totalOperationCost ? totalOperationCost : 0;
+      tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetOperationCost = totalOperationCost ? totalOperationCost : 0;
 
       dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
     }
@@ -159,17 +159,17 @@ function AddAssemblyOperation(props) {
     dispatch(getCostingCostDetails(obj, response => {
       let allCostingData = response?.data?.Data
       if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY && !isAssemblyTechnology) {
-        basicRate = checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(allCostingData?.NetSurfaceTreatmentCost)
+        basicRate = checkForNull(item?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(allCostingData?.NetSurfaceTreatmentCost)
         if (isTopRowAssemblyClicked) {
           basicRate = checkForNull(basicRate) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost)
             + checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
         }
       } else if (isAssemblyTechnology) {
-        basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+        basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
           checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
           checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
       } else {
-        basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetTotalRMBOPCC) +
           checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
           checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
       }
@@ -181,7 +181,7 @@ function AddAssemblyOperation(props) {
 
       let requestObj = createSaveAssemblyRMCCObject(item, costData, basicRate, totalCostSaveAPI, CostingEffectiveDate, operationGridData, true)
       if (isAssemblyTechnology) {
-        item.TotalOperationCost = operationCostAssemblyTechnology
+        item.NetOperationCost = operationCostAssemblyTechnology
         let request = formatMultiTechnologyUpdate(item, netPOPrice, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
         }))

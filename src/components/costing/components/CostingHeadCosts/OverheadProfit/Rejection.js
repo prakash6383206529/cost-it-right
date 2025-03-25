@@ -171,7 +171,7 @@ function Rejection(props) {
             let RM_CC = 0
             let BOP_CC = 0
             let RM_BOP = 0
-            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.NetProcessCost + headerCosts.NetOperationCost
             const NetSurfaceTreatmentCost = (IsIncludedSurfaceInRejection ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) : 0)
             const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost)
 
@@ -182,7 +182,7 @@ function Rejection(props) {
 
             // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE BLOCK WILL EXECUTE
             if (partType) {
-                const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
+                const assemblyLevelCC = checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost)
 
                 // RM FOR ASSEMBLY TECHNOLOGY COSTING WILL BE PART COST ONLY (SUM OF ALL COST PER ASSEMBLIES OF CHILD PART)
                 RM = checkForNull(headerCosts?.NetRawMaterialsCost)
@@ -193,7 +193,7 @@ function Rejection(props) {
                 BOP_CC = (checkForNull(assemblyLevelCC) + checkForNull(headerCosts?.NetBoughtOutPartCost) + checkForNull(NetSurfaceTreatmentCost))
                 RM_BOP = (checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(headerCosts?.NetBoughtOutPartCost))
             } else {
-                const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
+                const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.NetProcessCost + headerCosts?.NetOperationCost
 
                 RM = headerCosts?.NetRawMaterialsCost
                 BOP = headerCosts?.NetBoughtOutPartCost

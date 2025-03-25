@@ -343,7 +343,7 @@ function CostingDetailStepTwo(props) {
 
   const findApplicabilityCost = (data, Text, headCostData, costData, percent) => {
     if (data && Text && Object.keys(headCostData).length > 0) {
-      const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
+      const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.NetProcessCost + headCostData.NetOperationCost
       const RMBOPCC = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
       const RMBOP = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost);
       const RMCC = checkForNull(headCostData.NetRawMaterialsCost) + ConversionCostForCalculation;

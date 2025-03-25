@@ -221,7 +221,7 @@ function CostingHeaderTabs(props) {
 
       let stCostingData = findSurfaceTreatmentData(ComponentItemData)
 
-      const basicRateComponent = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+      const basicRateComponent = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetTotalRMBOPCC) +
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
@@ -245,8 +245,8 @@ function CostingHeaderTabs(props) {
           basicRate = basicRateComponent
           netPOPriceTemp = checkForNull(basicRateComponent) + checkForNull(DiscountCostData?.totalConditionCost)
         } else if (ComponentItemData?.PartType === "Part") {          // CHILD PART OF ASM : COMPONENT
-          basicRate = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost))
-          netPOPriceTemp = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost))
+          basicRate = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC))
+          netPOPriceTemp = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC))
         }
 
         if (response?.data?.Result) {

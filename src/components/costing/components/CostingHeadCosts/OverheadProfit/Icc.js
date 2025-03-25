@@ -166,7 +166,7 @@ function Icc(props) {
                 NetRawMaterialsCost = headerCosts.NetRawMaterialsCost
             }
             const toolCost = checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost)
-            const ConversionCostForCalculation = costData?.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) + checkForNull(includeToolCostIcc ? toolCost : 0) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal + checkForNull(includeToolCostIcc ? toolCost : 0);
+            const ConversionCostForCalculation = costData?.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) + checkForNull(includeToolCostIcc ? toolCost : 0) : headerCosts.NetProcessCost + headerCosts.NetOperationCost + checkForNull(includeToolCostIcc ? toolCost : 0);
             const RMBOPCC = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
             const RMBOP = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
             const RMCC = NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);

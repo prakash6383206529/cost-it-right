@@ -3,13 +3,13 @@ import { loggedInUserId } from "../../helper"
 
 export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicRate, netPOPrice) => {
     const requestObj = {
-        "NetRawMaterialsCost": rmccData?.CostingPartDetails?.TotalRawMaterialsCost,
-        "NetBoughtOutPartCost": rmccData?.CostingPartDetails?.TotalBoughtOutPartCost,
-        "NetConversionCost": rmccData?.CostingPartDetails?.TotalConversionCost,
-        "NetOperationCost": rmccData?.CostingPartDetails?.CostingConversionCost && rmccData?.CostingPartDetails?.CostingConversionCost.OperationCostTotal !== undefined ? rmccData?.CostingPartDetails?.CostingConversionCost.OperationCostTotal : 0,
-        "NetProcessCost": rmccData?.CostingPartDetails?.CostingConversionCost && rmccData?.CostingPartDetails?.CostingConversionCost.ProcessCostTotal !== undefined ? rmccData?.CostingPartDetails?.CostingConversionCost.ProcessCostTotal : 0,
-        "NetOtherOperationCost": rmccData?.CostingPartDetails?.CostingConversionCost && rmccData?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal !== undefined ? rmccData?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal : 0,
-        "NetTotalRMBOPCC": rmccData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+        "NetRawMaterialsCost": rmccData?.CostingPartDetails?.NetRawMaterialsCost,
+        "NetBoughtOutPartCost": rmccData?.CostingPartDetails?.NetBoughtOutPartCost,
+        "NetConversionCost": rmccData?.CostingPartDetails?.NetConversionCost,
+        "NetOperationCost": rmccData?.CostingPartDetails?.CostingConversionCost && rmccData?.CostingPartDetails?.CostingConversionCost.NetOperationCost !== undefined ? rmccData?.CostingPartDetails?.CostingConversionCost.NetOperationCost : 0,
+        "NetProcessCost": rmccData?.CostingPartDetails?.CostingConversionCost && rmccData?.CostingPartDetails?.CostingConversionCost.NetProcessCost !== undefined ? rmccData?.CostingPartDetails?.CostingConversionCost.NetProcessCost : 0,
+        "NetOtherOperationCost": rmccData?.CostingPartDetails?.CostingConversionCost && rmccData?.CostingPartDetails?.CostingConversionCost.NetOtherOperationCost !== undefined ? rmccData?.CostingPartDetails?.CostingConversionCost.NetOtherOperationCost : 0,
+        "NetTotalRMBOPCC": rmccData?.CostingPartDetails?.NetTotalRMBOPCC,
         "LoggedInUserId": loggedInUserId(),
         "CostingId": rmccData?.CostingId,
         "AssemblyCostingId": rmccData?.AssemblyCostingId,

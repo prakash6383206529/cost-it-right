@@ -69,9 +69,8 @@ function OverheadProfit(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
 
   const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData } = useSelector(state => state.costing)
-
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
-  
+
 
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
 
@@ -884,7 +883,7 @@ function OverheadProfit(props) {
         RM_CC_BOP_Overhead = (IsCutOffApplicable && headerCosts) ? (CutOffCost + headerCosts.NetBoughtOutPartCost + ConversionCostForOverheadCalculation) + totalToolCost : RMBOPCC_Overhead + totalToolCost;
 
         RM_CC_Overhead = (IsCutOffApplicable ? CutOffRMC : headerCosts?.NetRawMaterialsCost) + ConversionCostForOverheadCalculation + totalToolCost;
-BOP_CC_Overhead = headerCosts?.NetBoughtOutPartCost + ConversionCostForOverheadCalculation + totalToolCost;
+        BOP_CC_Overhead = headerCosts?.NetBoughtOutPartCost + ConversionCostForOverheadCalculation + totalToolCost;
         RM_CC_BOP_Profit = (IsCutOffApplicable && headerCosts) ? (CutOffCost + headerCosts.NetBoughtOutPartCost + ConversionCostForProfitCalculation) + totalToolCost : RMBOPCC_Profit + totalToolCost;
         RM_CC_Profit = (IsCutOffApplicable ? CutOffRMC : headerCosts?.NetRawMaterialsCost) + ConversionCostForProfitCalculation + totalToolCost;
         BOP_CC_Profit = headerCosts?.NetBoughtOutPartCost + ConversionCostForProfitCalculation + totalToolCost;

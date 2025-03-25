@@ -337,11 +337,11 @@ function EditPartCost(props) {
       * @description TO CALCULATE TOTAL SOB PERCENTAGE 
       */
     const calcTotalSOBPercent = (grid) => {
-        let ProcessCostTotal = 0
-        ProcessCostTotal = grid && grid.reduce((accummlator, el, index) => {
+        let NetProcessCost = 0
+        NetProcessCost = grid && grid.reduce((accummlator, el, index) => {
             return checkForNull(accummlator) + checkForNull(el.SOBPercentage)
         }, 0)
-        return ProcessCostTotal
+        return NetProcessCost
     }
 
     const addGrid = () => {
@@ -412,7 +412,7 @@ function EditPartCost(props) {
             let editedChildPart = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails[index]
 
             editedChildPart.CostingPartDetails.NetPOPrice = weightedCost
-            editedChildPart.CostingPartDetails.TotalCalculatedRMBOPCCCost = weightedCost
+            editedChildPart.CostingPartDetails.NetTotalRMBOPCC = weightedCost
             editedChildPart.CostingPartDetails.NetChildPartsCostWithQuantity = checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity)
 
             Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
@@ -424,13 +424,13 @@ function EditPartCost(props) {
             // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyWithoutQuantity = costPerAssemblyWithoutQuantity
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = costPerAssemblyTotalWithQuantity
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerAssemblyTotalWithQuantity) +
-                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
-                (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
-                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost))
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(costPerAssemblyTotalWithQuantity) +
-                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
-                (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
-                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost))
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+                (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
+                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC = checkForNull(costPerAssemblyTotalWithQuantity) +
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+                (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
+                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
             let tempArray = []
             gridData && gridData?.map((item) => {
                 let tempObject = {}
@@ -456,7 +456,7 @@ function EditPartCost(props) {
             let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
                 checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) +
                 checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
-            let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+            let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) +
                 checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
                 checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
                 checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
