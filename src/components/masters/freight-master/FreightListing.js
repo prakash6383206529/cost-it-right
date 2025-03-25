@@ -23,9 +23,11 @@ import Button from '../../layout/Button';
 import DayTime from '../../common/DayTimeWrapper';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import Switch from 'react-switch'
+import { setListToggle } from '../../../actions/Common';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
+  const { listToggle } = useSelector((state) => state.comman)
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -42,7 +44,7 @@ const FreightListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    isImport: false,
+    isImport: listToggle.Freight,
     globalTake: defaultPageSize,
   })
   const permissions = useContext(ApplyPermission);
@@ -271,6 +273,7 @@ const FreightListing = (props) => {
   };
   const importToggle = () => {
     setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
+    dispatch(setListToggle({ Freight: !state.isImport }));
     getDataList(null, null, null, null, !state.isImport)
 
   }
@@ -327,38 +330,38 @@ const FreightListing = (props) => {
             <div className={`ag-theme-material`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
               {!state.isLoader &&
-              <AgGridReact
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout='autoHeight'
-                rowData={freightDetail}
-                pagination={true}
-                paginationPageSize={defaultPageSize}
-                onGridReady={onGridReady}
-                gridOptions={gridOptions}
-                noRowsOverlayComponent={'customNoRowsOverlay'}
-                onFilterModified={onFloatingFilterChanged}
-                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
-                rowSelection={'multiple'}
-                onSelectionChanged={onRowSelect}
-                frameworkComponents={frameworkComponents}
-                suppressRowClickSelection={true}
-              >
-                <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'} ></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
-                {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                {/* <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout='autoHeight'
+                  rowData={freightDetail}
+                  pagination={true}
+                  paginationPageSize={defaultPageSize}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  onFilterModified={onFloatingFilterChanged}
+                  noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
+                  rowSelection={'multiple'}
+                  onSelectionChanged={onRowSelect}
+                  frameworkComponents={frameworkComponents}
+                  suppressRowClickSelection={true}
+                >
+                  <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                  <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                  {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                  {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                  <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                  <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                  {/* <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                 <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn> */}
 
-                <AgGridColumn width='220px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
-              </AgGridReact>
+                  <AgGridColumn width='220px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
+                </AgGridReact>
               }
-              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake}/>}
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
             </div>
           </div>
         </Col>
