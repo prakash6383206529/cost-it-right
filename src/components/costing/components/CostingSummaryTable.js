@@ -1678,7 +1678,7 @@ const CostingSummaryTable = (props) => {
       item.RejectionRemark = item?.rejectionOn?.RejectionRemark ? item?.rejectionOn?.RejectionRemark : '-'
       item.ICCRemark = item?.iccOn?.ICCRemark ? item?.iccOn?.ICCRemark : '-'
       item.PaymentTermRemark = item?.paymentTerms?.PaymentTermRemark ? item?.paymentTerms?.PaymentTermRemark : '-'
-      item.TaxCode = item?.TaxCodeList?.length && getConfigurationKey()?.IsTaxCodeVisible ? item.TaxCodeList.map(item => item?.TaxCodeAndDescription).join(',') : '-';
+      item.TaxCode = item?.TaxCodeList && Array.isArray(item?.TaxCodeList) && item.TaxCodeList.length > 0 && getConfigurationKey()?.IsTaxCodeVisible ? item.TaxCodeList.map(item => item?.TaxCodeAndDescription).join(',') : '-';
       item.rejectionRecoveryApplicablity = item?.CostingRejectionRecoveryDetails?.ApplicabilityType ?? "-"
       item.rejectionRecoveryPercent = item?.CostingRejectionRecoveryDetails?.EffectiveRecoveryPercentage ?? "-"
       item.rejectionRecoveryApplicablityValue = item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? "-"
