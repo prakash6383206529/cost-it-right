@@ -1060,6 +1060,7 @@ function RMDomesticListing(props) {
                                         enableBrowserTooltips={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                        {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>}
                                         <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>
