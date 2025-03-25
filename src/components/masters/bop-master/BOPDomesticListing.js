@@ -44,7 +44,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPDomesticListing = (props) => {
-
+  console.log("propsListing..", props)
   const permissions = useContext(ApplyPermission);
   const dispatch = useDispatch();
   const searchRef = useRef(null);
@@ -940,6 +940,7 @@ const BOPDomesticListing = (props) => {
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}  >
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>}
                 <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
