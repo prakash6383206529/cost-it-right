@@ -558,7 +558,7 @@ class AddLabour extends Component {
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId, efficiency, workingHours, city, country } = this.state
     const { fieldsObj } = this.props
-   if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || country.length === 0 || city.length === 0) {
+    if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || country.length === 0 || city.length === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
@@ -1378,7 +1378,7 @@ class AddLabour extends Component {
                               className=" "
                               customClassName="withBorder"
                             />
-                           {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRate &&
+                            {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRate &&
                               <div className='text-help'>This field is required.</div>
                             }                          </div>
                         </Col>
@@ -1524,7 +1524,7 @@ class AddLabour extends Component {
                                       <td>{item.MachineType}</td>
                                       <td>{item.LabourType}</td>
                                       <td>{checkForDecimalAndNull(item?.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                                      {!this?.state?.hidePlantCurrency && <td>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                      {!this?.state?.hidePlantCurrency && <td><div className="w-fit" id={`rate-${index}`}>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}<TooltipCustom disabledIcon={true} width={"350px"} id={`rate-${index}`} tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} /></div></td>}
                                       <td>{checkForDecimalAndNull(item?.WorkingTime, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                       <td>{checkForDecimalAndNull(item?.Efficiency, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                       <td>
