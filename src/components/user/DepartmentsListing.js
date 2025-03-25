@@ -179,12 +179,14 @@ const DepartmentsListing = (props) => {
 
   const buttonFormatter = (props) => {
     const cellValue = props.data.DepartmentId;
+    const isDepartmentAssociated = getConfigurationKey().IsAssociated ? true : false
+
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     const { EditAccessibility, DeleteAccessibility } = state;
     return (
       <>
-        {EditAccessibility && <Button id={`departmentListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />}
-        {DeleteAccessibility && <Button id={`departmentListing_delete${props.rowIndex}`} className={"Delete m15 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+        {EditAccessibility && !isDepartmentAssociated && <Button id={`departmentListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />}
+        {DeleteAccessibility && !isDepartmentAssociated && <Button id={`departmentListing_delete${props.rowIndex}`} className={"Delete m15 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };

@@ -100,7 +100,7 @@ function OperationSTSimulation(props) {
     }
 
     const effectiveDateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell != null ? <span title={DayTime(cell).format('DD/MM/YYYY')}>{DayTime(cell).format('DD/MM/YYYY')}</span> : '';
     }
 
@@ -135,8 +135,8 @@ function OperationSTSimulation(props) {
     }, [])
 
     // const newRateFormatter = (props) => {
-    //     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    //     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    //     const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+    //     const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
     //     const value = beforeSaveCell(cell)
     //     let valueShow
@@ -154,15 +154,15 @@ function OperationSTSimulation(props) {
     //             {
     //                 isImpactedMaster ?
     //                     valueShow ://NewNetOperationCost
-    //                     <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
+    //                     <span id={`newOperationRate-${props?.rowIndex}`} className={`${true ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
     //             }
 
     //         </>
     //     )
     // }
     const newWeldingRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = row?.IsSimulated ? row?.NewOperation && row?.NewOperation?.Rate : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewOperation && row?.NewOperation?.Rate : props?.valueFormatted ? props?.valueFormatted : props?.value;
 
         const value = beforeSaveCell(cell)
 
@@ -171,7 +171,7 @@ function OperationSTSimulation(props) {
                 {
                     row.ForType !== "Welding" ?
                         '-' ://NewNetOperationCost
-                        <span id={`newOperationRate-${props.rowIndex}`} className={`${!isImpactedMaster ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
+                        <span id={`newOperationRate-${props?.rowIndex}`} className={`${!isImpactedMaster ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
                 }
 
             </>
@@ -194,8 +194,8 @@ function OperationSTSimulation(props) {
         }, 500);
     }
     const oldRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let valueShow
         if (lastRevision) {
             if (row.IsSurfaceTreatmenOperation === true) {
@@ -219,8 +219,8 @@ function OperationSTSimulation(props) {
         )
     }
     const rateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = row?.IsSimulated ? row?.NewOperation && row?.NewOperation?.Rate : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewOperation && row?.NewOperation?.Rate : props?.valueFormatted ? props?.valueFormatted : props?.value;
         const value = beforeSaveCell(cell)
         let valueShow
         if (lastRevision) {
@@ -237,7 +237,7 @@ function OperationSTSimulation(props) {
                 {
                     isImpactedMaster ?
                         valueShow ://NewNetOperationCost
-                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.NewRate)}>{cell && value ? Number(cell) : Number(row.NewRate)} </span>
+                        <span id={`newOperationRate-${props?.rowIndex}`} className={`${true ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.NewRate)}>{cell && value ? Number(cell) : Number(row.NewRate)} </span>
 
                 }
 
@@ -247,8 +247,8 @@ function OperationSTSimulation(props) {
     }
 
     const vendorFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {isbulkUpload ? row[`Vendor (Code)`] : cell}
@@ -258,8 +258,8 @@ function OperationSTSimulation(props) {
     }
 
     const plantFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {isbulkUpload ? row['DestinationPlant (Code)'] : cell}
@@ -269,14 +269,14 @@ function OperationSTSimulation(props) {
     }
 
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return <div className={cell}>{row.DisplayStatus}</div>
     }
 
     const costFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
@@ -316,7 +316,7 @@ function OperationSTSimulation(props) {
             item.NewRate = undefined
             return null
         })
-        props.backToSimulation()
+        props?.backToSimulation()
     }
 
     const closeDrawer = (e = '') => {
@@ -352,7 +352,7 @@ function OperationSTSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         if (!row.NewRate || Number(row.Rate) === Number(row.NewRate) || row.NewRate === '') return ''
         const NewRate = Number(row.NewRate) + checkForNull(row.RemainingTotal)
         const NetCost = Number(row.Rate) + checkForNull(row.RemainingTotal)
@@ -361,7 +361,7 @@ function OperationSTSimulation(props) {
     }
 
     const OldcostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const Rate = Number(row.Rate) + checkForNull(row.RemainingTotal)
         return row.Rate != null ? checkForDecimalAndNull(Rate, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
@@ -377,7 +377,7 @@ function OperationSTSimulation(props) {
         costingHeadFormatter(props);
 
         // Get and localize the cell value
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
 
         // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
@@ -385,20 +385,20 @@ function OperationSTSimulation(props) {
     };
 
     const costingHeadFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell ? cell : '-';
     }
 
     const customerFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
     const oldBasicRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return isImpactedMaster ? row?.OldOperationBasicRate : row?.OperationBasicRate
     }
     const consumptionFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return isImpactedMaster ? row?.OldOperationConsumption : row?.OperationConsumption
     }
     const localConversionFormatter = (props) => {
@@ -423,7 +423,7 @@ function OperationSTSimulation(props) {
         combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         customerFormatter: customerFormatter,
         revisedRateHeader: revisedRateHeader,
-        nullHandler: props.nullHandler && props.nullHandler,
+        nullHandler: props?.nullHandler && props?.nullHandler,
         rateFormatter: rateFormatter,
         oldBasicRateFormatter: oldBasicRateFormatter,
         consumptionFormatter: consumptionFormatter,
@@ -581,7 +581,7 @@ function OperationSTSimulation(props) {
                                                 <button type="button" className="user-btn float-right mr-2 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
-                                                {(props.lastRevision || isImpactedMaster) && < ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
+                                                {(props?.lastRevision || isImpactedMaster) && < ExcelFile filename={`${props?.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                     {onBtExport()}
                                                 </ExcelFile>}
@@ -702,8 +702,8 @@ function OperationSTSimulation(props) {
                                                     <AgGridColumn minWidth={120} field="NewOperationBasicRateLocalConversion" editable='false' headerName="Revised" colId='NewOperationNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
-                                                {props.children}
-                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                {props?.children}
+                                                <AgGridColumn field="EffectiveDate" headerName={props?.isImpactedMaster && !props?.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact>}

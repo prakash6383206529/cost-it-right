@@ -539,7 +539,6 @@ function SimulationApprovalListing(props) {
         setShowPopup(false)
     }
     const requestedByFormatter = (props) => {
-        console.log(props);
         
         const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
@@ -880,8 +879,6 @@ function SimulationApprovalListing(props) {
           * @description This method is used to render the row data.
           */
     const renderRowData = () => {
-        console.log(simualtionApprovalList);
-        console.log(simualtionApprovalListDraft);
         if (isDashboard) {
             return simualtionApprovalList; // Return simulationApprovalList if isDashboard is true
         } else {

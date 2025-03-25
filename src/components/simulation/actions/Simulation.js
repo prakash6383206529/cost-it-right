@@ -1445,6 +1445,7 @@ export function setTokenForSimulation(value) {
     }
 }
 // START----> FOR SHOWING ERROR AND SUCCESS MESSAGE WITH BOX IN SIMULATION APPROVAL SUMMARY AND COSTING APPROVAL SUMMARY ****THIS IS THE DUMMY API CALL FOR CONSISTANCY IT WILL USE IN FUTURE
+//As per the discussion this api we used for RE now we are not using this in base
 export function getAmmendentStatus(params, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAmmendentStatus}?simulationId=${params?.simulationId}&costingId=${params?.costingId}&rawMaterialId=${params?.rawMaterialId}&boughtOutPartId=${params?.boughtOutPartId}`, config())

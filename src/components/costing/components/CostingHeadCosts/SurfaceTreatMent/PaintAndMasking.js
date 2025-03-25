@@ -14,6 +14,7 @@ import { debounce } from 'lodash'
 import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator, setSurfaceData } from '../../../actions/Costing'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
+import { ViewCostingContext } from '../../CostingDetails'
 
 const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'Part Surface Area', 'Consumption', 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate', 'Paint Cost', 'Action']
 
@@ -29,7 +30,7 @@ const INITIAL_STATE = {
     TotalPaintCost: 0
 }
 
-function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMode }) {
+function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
     const [state, setState] = useState({
         editMode: false,
         rawMaterialList: [],
@@ -37,6 +38,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
     })
     const dispatch = useDispatch()
     const costData = useContext(costingInfoContext);
+    const CostingViewMode = useContext(ViewCostingContext);
     const { CostingEffectiveDate, paintCoatList, SurfaceTabData } = useSelector(state => state.costing)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [calculateState, setCalculateState] = useState(INITIAL_STATE)
@@ -106,7 +108,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
             ...prev,
             loader: true
         }))
-        dispatch(getSurfaceTreatmentRawMaterialCalculator({ BaseCostingId: costData.CostingId, LoggedInUserId: loggedInUserId() }, (res) => {
+        dispatch(getSurfaceTreatmentRawMaterialCalculator({ BaseCostingId: ViewMode ? CostingId : costData.CostingId, LoggedInUserId: loggedInUserId() }, (res) => {
             setState(prev => ({
                 ...prev,
                 loader: false
@@ -184,11 +186,14 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
     const renderList = (type) => {
         let temp = []
         if (type === 'RawMaterial') {
-            temp = state.rawMaterialList && state.rawMaterialList?.length !== 0 && state.rawMaterialList?.map(item => ({
-                ...item,
-                label: item?.RawMaterial,
-                value: item?.RawMaterialId
-            }))
+            state.rawMaterialList && state.rawMaterialList?.length !== 0 && state.rawMaterialList?.map(item => {
+                temp.push({
+                    ...item,
+                    label: item?.RawMaterial,
+                    value: item?.RawMaterialId
+                })
+                return null
+            })
         }
         if (type === 'PaintCoat') {
             paintCoatList && paintCoatList?.length !== 0 && paintCoatList?.map(item => {
@@ -284,7 +289,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                 defaultValue={''}
                 customClassName={'withBorder mb-0'}
                 errors={errorsTableForm[`${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
-                disabled={disabled}
+                disabled={ViewMode || CostingViewMode || disabled}
             />
         )
     }
@@ -373,12 +378,13 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                         childIndex,
                         disabled: true
                     })}</td>
-                    {childIndex === 0 && (
+                    {childIndex === 0 && !ViewMode && (
                         <td width="50" rowSpan={item.RawMaterials.length}>
                             <Button
                                 id={`PaintAndMasking_delete${parentIndex}-${childIndex}`}
                                 className="mr-1 Tour_List_Delete"
                                 variant="Delete"
+                                disabled={ViewMode || CostingViewMode}
                                 onClick={() => deleteItem(item, parentIndex)}
                                 title="Delete"
                             />
@@ -413,7 +419,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                         </Row>
 
                         <form onSubmit={handleSubmitInitialForm(addData)}>
-                            <Row>
+                            {!ViewMode && <Row>
                                 <Col md="4">
                                     <SearchableSelectHookForm
                                         label="Paint Coat"
@@ -429,7 +435,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                         defaultValue=""
                                         customClassName="withBorder"
                                         errors={errorsInitialForm.PaintCoat}
-                                        disabled={ViewMode || state.editMode}
+                                        disabled={ViewMode || CostingViewMode}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -448,7 +454,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                         defaultValue=""
                                         customClassName="withBorder"
                                         errors={errorsInitialForm.RawMaterial}
-                                        disabled={ViewMode || state.editMode}
+                                        disabled={ViewMode || CostingViewMode}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -459,10 +465,11 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                             className="mr5 mb-2"
                                             icon="plus"
                                             buttonName="Add"
+                                            disabled={CostingViewMode}
                                         />
                                     </div>
                                 </Col>
-                            </Row>
+                            </Row>}
                         </form>
                     </div>
 
@@ -470,9 +477,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                         <Table responsive bordered className="table-with-input-data">
                             <thead>
                                 <tr>
-                                    {TABLE_HEADERS.map((item, index) => (
-                                        <th key={index}>{item}</th>
-                                    ))}
+                                    {TABLE_HEADERS.map((item, index) => {
+                                        if (item === 'Action' && ViewMode) return false
+                                        return <th key={index}>{item}</th>
+                                    })}
                                 </tr>
                             </thead>
                             <tbody>
@@ -509,6 +517,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                     defaultValue=""
                                     customClassName="withBorder mb-0"
                                     errors={errorsTableForm.TapeCost}
+                                    disabled={ViewMode || CostingViewMode}
                                 />
                             </Col>
                             <Col md="4">
@@ -527,8 +536,8 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                             </Col>
                         </Row>
 
-                        {!CostingViewMode && (
-                            <Row className="sticky-footer">
+                        {!ViewMode && (
+                            <Row className="sticky-footer pr-0">
                                 <Col md="12" className="text-right bluefooter-butn d-flex align-items-center justify-content-end">
                                     <Button
                                         id="PaintAndMasking_cancel"
@@ -543,7 +552,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingViewMod
                                     <Button
                                         id="PaintAndMasking_submit"
                                         type="submit"
-                                        disabled={CostingViewMode}
+                                        disabled={ViewMode || CostingViewMode}
                                         icon="save-icon"
                                         buttonName="Save"
                                     />

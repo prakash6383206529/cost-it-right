@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BOPImpactDownloadArray, ERImpactDownloadArray, MachineImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray, STOperationImpactDownloadArray, CPImpactDownloadArray, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_RAWMATERIAL_SIMULATION } from "../../config/masterData";
 import { Errorbox } from "../common/ErrorBox";
-import { getAmmendentStatus } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
 import imgGreencross from '../../assests/images/greenCross.png';
 import DayTime from "../common/DayTimeWrapper";
@@ -299,31 +298,31 @@ export const ErrorMessage = (props) => {
         return statusWithButton
     }
 
-    useEffect(() => {
-        if (getConfigurationKey()?.IsSAPConfigured) {
-            const obj = {
-                costingId: props?.module === 'Costing' ? props?.id : null,
-                simulationId: props?.module === 'Simulation' ? props?.id : null,
-                rawMaterialId: props?.module === 'RM' ? props?.id : null,
-                boughtOutPartId: props?.module === 'BOP' ? props?.id : null
-            }
-            // dispatch(getAmmendentStatus(obj, res => {
-            //     if (res?.status !== 204) {
-            //         const { IsSuccessfullyUpdated, ErrorStatus, Status } = res?.data?.DataList[0]
-            //         if (IsSuccessfullyUpdated === true) {
-            //             setIsGreen(true)
-            //             setAmendentstatus(Status)
-            //             setShowButton(Status?.length > 245 ? true : false)
-            //         } else {
-            //             setIsGreen(false)
-            //             setAmendentstatus(ErrorStatus)
-            //             setShowButton(ErrorStatus?.length > 245 ? true : false)
-            //         }
-            //         setRecordInsertStatusBox(true)
-            //     }
-            // }))
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (getConfigurationKey()?.IsSAPConfigured) {
+    //         const obj = {
+    //             costingId: props?.module === 'Costing' ? props?.id : null,
+    //             simulationId: props?.module === 'Simulation' ? props?.id : null,
+    //             rawMaterialId: props?.module === 'RM' ? props?.id : null,
+    //             boughtOutPartId: props?.module === 'BOP' ? props?.id : null
+    //         }
+    //         // dispatch(getAmmendentStatus(obj, res => {
+    //         //     if (res?.status !== 204) {
+    //         //         const { IsSuccessfullyUpdated, ErrorStatus, Status } = res?.data?.DataList[0]
+    //         //         if (IsSuccessfullyUpdated === true) {
+    //         //             setIsGreen(true)
+    //         //             setAmendentstatus(Status)
+    //         //             setShowButton(Status?.length > 245 ? true : false)
+    //         //         } else {
+    //         //             setIsGreen(false)
+    //         //             setAmendentstatus(ErrorStatus)
+    //         //             setShowButton(ErrorStatus?.length > 245 ? true : false)
+    //         //         }
+    //         //         setRecordInsertStatusBox(true)
+    //         //     }
+    //         // }))
+    //     }
+    // }, [])
 
 
     useEffect(() => {

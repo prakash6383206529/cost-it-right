@@ -340,7 +340,6 @@ export function checkRFQBulkUpload(data, callback) {
     };
 }
 export function checkComponentOrAssemblyRFQBulkUpload(data, callback) {
-    console.log("data", data);
     
     return (dispatch) => {
         const request = axios.post(API.checkComponentOrAssemblyRFQBulkUpload, data, config());

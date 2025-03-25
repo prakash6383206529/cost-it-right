@@ -89,7 +89,7 @@ function MRSimulation(props) {
     }
 
     const effectiveDateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell != null ? <span title={moment(cell).format('DD/MM/YYYY')}>{moment(cell).format('DD/MM/YYYY')}</span> : '';
     }
 
@@ -117,8 +117,8 @@ function MRSimulation(props) {
     }, [list])
 
     const oldRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         return (
             <>
@@ -132,29 +132,29 @@ function MRSimulation(props) {
     }
 
     const newRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = row?.IsSimulated ? row?.NewMachineRate : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewMachineRate : props?.valueFormatted ? props?.valueFormatted : props?.value;
         const value = row?.IsSimulated ? row?.NewMachineRate : beforeSaveCell(cell)
         return (
             <>
                 {
                     isImpactedMaster ?
                         row.NewMachineRate :
-                        <span id={`newRateMachineRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} netCost_revised`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
+                        <span id={`newRateMachineRate-${props?.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} netCost_revised`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
                 }
 
             </>
         )
     }
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return <div className={cell}>{row.DisplayStatus}</div>
     }
 
     const costFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
@@ -199,7 +199,7 @@ function MRSimulation(props) {
             item.NewMachineRate = undefined
             return null
         })
-        props.backToSimulation()
+        props?.backToSimulation()
     }
 
     const closeDrawer = (e = '') => {
@@ -254,7 +254,7 @@ function MRSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         if (!row.NewMachineRate || Number(row.ConversionCost) === Number(row.NewMachineRate) || row.NewMachineRate === '') return ''
         const NewMachineRate = Number(row.NewMachineRate) + checkForNull(row.RemainingTotal)
         const NetCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
@@ -263,7 +263,7 @@ function MRSimulation(props) {
     }
 
     const OldcostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const ConversionCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
         return row.ConversionCost != null ? checkForDecimalAndNull(ConversionCost, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
@@ -289,8 +289,8 @@ function MRSimulation(props) {
     }
 
     const vendorFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {isbulkUpload ? row['Vendor (Code)'] : cell}
@@ -300,8 +300,8 @@ function MRSimulation(props) {
     }
 
     const plantFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {isbulkUpload ? row['Plant (Code)'] : cell}
@@ -338,7 +338,7 @@ function MRSimulation(props) {
         revisedBasicRateHeader: revisedBasicRateHeader,
         localConversionFormatter: localConversionFormatter,
         hyphenFormatter: hyphenFormatter,
-        nullHandler: props.nullHandler && props.nullHandler
+        nullHandler: props?.nullHandler && props?.nullHandler
     };
     const verifySimulation = debounce(() => {
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
@@ -466,7 +466,7 @@ function MRSimulation(props) {
                                                 <button type="button" className="user-btn float-right mr-2 Tour_List_Reset Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
-                                                <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
+                                                <ExcelFile filename={`${props?.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                     {onBtExport()}
                                                 </ExcelFile>
@@ -587,8 +587,8 @@ function MRSimulation(props) {
                                                     <AgGridColumn minWidth={columnWidths.NewNetLandedCost} field="NewMachineRateLocalConversion" editable='false' cellRenderer='localConversionFormatter' headerName="Revised" colId='NewMachineRateLocalConversion'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
-                                                {props.children}
-                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                {props?.children}
+                                                <AgGridColumn field="EffectiveDate" headerName={props?.isImpactedMaster && !props?.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 

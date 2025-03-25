@@ -3236,7 +3236,7 @@ export function saveSurfaceTreatmentRawMaterialCalculator(data, callback) {
   }
 }
 export function getSurfaceTreatmentRawMaterialCalculator(params, callback) {
-  let param = `baseCostingId=${params.baseCostingId}&loggedInUserId=${params.loggedInUserId}`
+  let param = `baseCostingId=${params.BaseCostingId}&loggedInUserId=${params.LoggedInUserId}`
   return (dispatch) => {
     const request = axios.get(`${API.getSurfaceTreatmentRawMaterialCalculator}?${param}`, config())
     request.then((response) => {

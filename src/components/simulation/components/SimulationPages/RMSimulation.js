@@ -86,17 +86,17 @@ function RMSimulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { technologyLabel, vendorLabel } = useLabels();
     const dispatch = useDispatch()
+    const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
-    const currencySelectList = useSelector(state => state.comman.currencySelectList)
-    const { selectedMasterForSimulation, exchangeRateListBeforeDraft, simulationCostingStatus } = useSelector(state => state.simulation)
-    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    const currencySelectList = useSelector(state => state?.comman?.currencySelectList)
+    const { selectedMasterForSimulation, exchangeRateListBeforeDraft, simulationCostingStatus } = useSelector(state => state?.simulation)
+    const simulationApplicability = useSelector(state => state?.simulation.simulationApplicability)
 
-    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
-    const { filteredRMData } = useSelector(state => state.material)
+    const masterList = useSelector(state => state?.simulation.masterSelectListSimulation)
+    const { filteredRMData } = useSelector(state => state?.material)
     const columnWidths = {
-        CostingHead: showCompressedColumns ? 50 : 140,
+        CostingHead: showCompressedColumns ? 50 : 200,
         VendorCode: showCompressedColumns ? 50 : 160,
         RawMaterialName: showCompressedColumns ? 50 : 160,
         RawMaterialGradeName: showCompressedColumns ? 50 : 120,
@@ -122,9 +122,9 @@ function RMSimulation(props) {
     };
     useEffect(() => {
         if (isbulkUpload) {
-            setValue('NoOfCorrectRow', rowCount.correctRow)
-            setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
-            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
+            setValue('NoOfCorrectRow', rowCount?.correctRow)
+            setValue('NoOfRowsWithoutChange', rowCount?.NoOfRowsWithoutChange)
+            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount?.correctRow, rowWithoutChanges: rowCount?.NoOfRowsWithoutChange }))
         }
         setIsLoader(true)
         let scrapUOMApplyList = _.map(list, 'IsScrapUOMApply')
@@ -139,15 +139,15 @@ function RMSimulation(props) {
         }, 200);
         if (!isImpactedMaster && !isbulkUpload) {
             list && list?.map(item => {
-                item.NewBasicRate = item.BasicRatePerUOM
-                item.NewScrapRatePerScrapUOM = item.ScrapRatePerScrapUOM
-                item.NewOtherNetCost = item.OtherNetCost
-                item.NewNetConditionCost = item.NetConditionCost  // ADD KEY FROM API
+                item.NewBasicRate = item?.BasicRatePerUOM
+                item.NewScrapRatePerScrapUOM = item?.ScrapRatePerScrapUOM
+                item.NewOtherNetCost = item?.OtherNetCost
+                item.NewNetConditionCost = item?.NetConditionCost  // ADD KEY FROM API
                 //item.NewNetLandedCost = item.EntryType === DOMESTIC ? item?.NetLandedCost : item?.NetLandedCostConversion
-                item.NewNetCostWithoutConditionCost = item.NetCostWithoutConditionCost
-                item.NewRawMaterialOtherCostDetails = item.RawMaterialOtherCostDetails || []; // Set to existing data or empty array
-                item.NewRawMaterialConditionCostDetails = item.RawMaterialConditionsDetails || []; // Set to existing data or empty array
-                setNetCostWithoutConditionCost(item.NewNetCostWithoutConditionCost)
+                item.NewNetCostWithoutConditionCost = item?.NetCostWithoutConditionCost
+                item.NewRawMaterialOtherCostDetails = item?.RawMaterialOtherCostDetails || []; // Set to existing data or empty array
+                item.NewRawMaterialConditionCostDetails = item?.RawMaterialConditionsDetails || []; // Set to existing data or empty array
+                setNetCostWithoutConditionCost(item?.NewNetCostWithoutConditionCost)
             })
         }
     }, [])
@@ -226,8 +226,8 @@ function RMSimulation(props) {
             ExchangeRateSimulationTechnologyId: filteredMasterId
         };
 
-        if (filteredRMData.plantId && filteredRMData.plantId.value) {
-            obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
+        if (filteredRMData?.plantId && filteredRMData?.plantId?.value) {
+            obj.PlantId = filteredRMData?.plantId ? filteredRMData?.plantId?.value : ''
         }
         let tempArr = []
         if (String(selectedMasterForSimulation.value) === String(RMDOMESTIC) || String(selectedMasterForSimulation.value) === String(RMIMPORT) || String(selectedMasterForSimulation.value) === String(EXCHNAGERATE)) {
@@ -235,35 +235,35 @@ function RMSimulation(props) {
                 if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && ((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : (Number(item.BasicRate)) !== Number(item.BasicRatePerUOM) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                     let tempObj = {
                         IsAppliedChanges: true,
-                        CostingHead: item.CostingHead === 'Vendor Based' ? VBC : ZBC,
-                        RawMaterialId: item.RawMaterialId,
-                        NewRawMaterialId: (item.NewRawMaterialDetails && item.NewRawMaterialDetails.RawMaterialId) ? item.NewRawMaterialDetails.RawMaterialId : null,
-                        PlantId: item.PlantId,
-                        RawMaterialName: item.RawMaterialName,
-                        RawMaterialGrade: item.RawMaterialGradeName,
-                        RawMaterialSpecification: item.RawMaterialSpecificationName,
-                        MaterialType: item.MaterialType,
-                        RawMaterialCategory: item.Category,
-                        RawMaterialEntryType: item.RawMaterialEntryType || 0, // Assuming a default value
-                        UOM: item.UnitOfMeasurementName,
-                        OldBasicRate: isbulkUpload ? item.BasicRate : item.BasicRatePerUOM,
-                        NewBasicRate: item.NewBasicRate ? item.NewBasicRate : item.NewBasicrateFromPercentage ? item.NewBasicrateFromPercentage : item.BasicRate,
-                        OldScrapRate: item.ScrapRate,
-                        NewScrapRate: item.NewScrapRate ? item.NewScrapRate : item.ScrapRate,
-                        RawMaterialFreightCost: checkForNull(item.RMFreightCost),
-                        RawMaterialShearingCost: checkForNull(item.RMShearingCost),
-                        OldNetLandedCost: item.NetLandedCost,
-                        NewNetLandedCost: Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost) + checkForNull(item.NewNetConditionCost) + checkForNull(item.NewOtherNetCost),
-                        EffectiveDate: item.EffectiveDate,
-                        VendorId: item.VendorId,
+                        CostingHead: item?.CostingHead === 'Vendor Based' ? VBC : ZBC,
+                        RawMaterialId: item?.RawMaterialId,
+                        NewRawMaterialId: (item?.NewRawMaterialDetails && item?.NewRawMaterialDetails?.RawMaterialId) ? item?.NewRawMaterialDetails?.RawMaterialId : null,
+                        PlantId: item?.PlantId,
+                        RawMaterialName: item?.RawMaterialName,
+                        RawMaterialGrade: item?.RawMaterialGradeName,
+                        RawMaterialSpecification: item?.RawMaterialSpecificationName,
+                        MaterialType: item?.MaterialType,
+                        RawMaterialCategory: item?.Category,
+                        RawMaterialEntryType: item?.RawMaterialEntryType || 0, // Assuming a default value
+                        UOM: item?.UnitOfMeasurementName,
+                        OldBasicRate: isbulkUpload ? item?.BasicRate : item?.BasicRatePerUOM,
+                        NewBasicRate: item?.NewBasicRate ? item?.NewBasicRate : item?.NewBasicrateFromPercentage ? item?.NewBasicrateFromPercentage : item?.BasicRate,
+                        OldScrapRate: item?.ScrapRate,
+                        NewScrapRate: item?.NewScrapRate ? item?.NewScrapRate : item?.ScrapRate,
+                        RawMaterialFreightCost: checkForNull(item?.RMFreightCost),
+                        RawMaterialShearingCost: checkForNull(item?.RMShearingCost),
+                        OldNetLandedCost: item?.NetLandedCost,
+                        NewNetLandedCost: Number(item?.NewBasicRate ? item?.NewBasicRate : item?.BasicRate) + checkForNull(item?.RMShearingCost) + checkForNull(item?.RMFreightCost) + checkForNull(item?.NewNetConditionCost) + checkForNull(item?.NewOtherNetCost),
+                        EffectiveDate: item?.EffectiveDate,
+                        VendorId: item?.VendorId,
                         Delta: 0,
-                        OldScrapRatePerScrapUOM: item.ScrapRatePerScrapUOM,
-                        NewScrapRatePerScrapUOM: item.NewScrapRatePerScrapUOM,
-                        NewNetConditionCost: item.NewNetConditionCost || 0,
-                        NewOtherNetCost: item.NewOtherNetCost || 0,
-                        NewNetCostWithoutConditionCost: Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.NewOtherNetCost) || 0,
-                        RawMaterialConditionsDetails: item.NewRawMaterialConditionCostDetails || [],
-                        RawMaterialOtherCostDetails: item.NewRawMaterialOtherCostDetails || []
+                        OldScrapRatePerScrapUOM: item?.ScrapRatePerScrapUOM,
+                        NewScrapRatePerScrapUOM: item?.NewScrapRatePerScrapUOM,
+                        NewNetConditionCost: item?.NewNetConditionCost || 0,
+                        NewOtherNetCost: item?.NewOtherNetCost || 0,
+                        NewNetCostWithoutConditionCost: Number(item?.NewBasicRate ? item?.NewBasicRate : item?.BasicRate) + checkForNull(item?.NewOtherNetCost) || 0,
+                        RawMaterialConditionsDetails: item?.NewRawMaterialConditionCostDetails || [],
+                        RawMaterialOtherCostDetails: item?.NewRawMaterialOtherCostDetails || []
                     };
                     tempArr.push(tempObj);
                 }
@@ -272,34 +272,34 @@ function RMSimulation(props) {
         } else {
             list && list.map(item => {
                 let tempObj = {}
-                tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
-                tempObj.RawMaterialName = item.RawMaterialName
-                tempObj.MaterialType = item.MaterialType
-                tempObj.RawMaterialGrade = item.RawMaterialGradeName
-                tempObj.RawMaterialSpecification = item.RawMaterialSpecificationName
-                tempObj.RawMaterialCategory = item.Category
-                tempObj.UOM = item.UnitOfMeasurementName
-                tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
-                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : (item.NewBasicrateFromPercentage !== 0 && item.NewBasicrateFromPercentage !== null && item.NewBasicrateFromPercentage !== undefined) ? item.NewBasicrateFromPercentage : (isbulkUpload ? item.BasicRate : item.BasicRatePerUOM)
-                tempObj.OldScrapRate = item.ScrapRate
-                tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-                tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-                tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-                tempObj.OldNetLandedCost = item.NetLandedCost
-                tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
-                tempObj.NewNetCostWithoutConditionCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.NewOtherNetCost)
-                tempObj.EffectiveDate = item.EffectiveDate
-                tempObj.RawMaterialId = item.RawMaterialId
-                tempObj.PlantId = item.PlantId
-                tempObj.VendorId = item.VendorId
+                tempObj.CostingHead = item?.CostingHead === 'Vendor Based' ? VBC : ZBC
+                tempObj.RawMaterialName = item?.RawMaterialName
+                tempObj.MaterialType = item?.MaterialType
+                tempObj.RawMaterialGrade = item?.RawMaterialGradeName
+                tempObj.RawMaterialSpecification = item?.RawMaterialSpecificationName
+                tempObj.RawMaterialCategory = item?.Category
+                tempObj.UOM = item?.UnitOfMeasurementName
+                tempObj.OldBasicRate = isbulkUpload ? item?.BasicRate : item?.BasicRatePerUOM
+                tempObj.NewBasicRate = item?.NewBasicRate ? item?.NewBasicRate : (item?.NewBasicrateFromPercentage !== 0 && item?.NewBasicrateFromPercentage !== null && item?.NewBasicrateFromPercentage !== undefined) ? item?.NewBasicrateFromPercentage : (isbulkUpload ? item?.BasicRate : item?.BasicRatePerUOM)
+                tempObj.OldScrapRate = item?.ScrapRate
+                tempObj.NewScrapRate = item?.NewScrapRate ? item?.NewScrapRate : item?.ScrapRate
+                tempObj.RawMaterialFreightCost = checkForNull(item?.RMFreightCost)
+                tempObj.RawMaterialShearingCost = checkForNull(item?.RMShearingCost)
+                tempObj.OldNetLandedCost = item?.NetLandedCost
+                tempObj.NewNetLandedCost = Number(item?.NewBasicRate ? item?.NewBasicRate : item?.BasicRate) + checkForNull(item?.RMShearingCost) + checkForNull(item?.RMFreightCost)
+                tempObj.NewNetCostWithoutConditionCost = Number(item?.NewBasicRate ? item?.NewBasicRate : item?.BasicRate) + checkForNull(item?.NewOtherNetCost)
+                tempObj.EffectiveDate = item?.EffectiveDate
+                tempObj.RawMaterialId = item?.RawMaterialId
+                tempObj.PlantId = item?.PlantId
+                tempObj.VendorId = item?.VendorId
                 tempObj.Delta = 0
-                tempObj.NewRawMaterialId = (item.NewRawMaterialDetails && item.NewRawMaterialDetails.RawMaterialId) ? item.NewRawMaterialDetails.RawMaterialId : null
-                tempObj.OldScrapRatePerScrapUOM = item.ScrapRatePerScrapUOM
-                tempObj.NewScrapRatePerScrapUOM = item.NewScrapRatePerScrapUOM
-                tempObj.NewNetConditionCost = item.NewNetConditionCost || 0
-                tempObj.NewOtherNetCost = item.NewOtherNetCost || 0
-                tempObj.RawMaterialConditionsDetails = item.NewRawMaterialConditionCostDetails || []
-                tempObj.RawMaterialOtherCostDetails = item.NewRawMaterialOtherCostDetails || []
+                tempObj.NewRawMaterialId = (item?.NewRawMaterialDetails && item?.NewRawMaterialDetails?.RawMaterialId) ? item?.NewRawMaterialDetails?.RawMaterialId : null
+                tempObj.OldScrapRatePerScrapUOM = item?.ScrapRatePerScrapUOM
+                tempObj.NewScrapRatePerScrapUOM = item?.NewScrapRatePerScrapUOM
+                tempObj.NewNetConditionCost = item?.NewNetConditionCost || 0
+                tempObj.NewOtherNetCost = item?.NewOtherNetCost || 0
+                tempObj.RawMaterialConditionsDetails = item?.NewRawMaterialConditionCostDetails || []
+                tempObj.RawMaterialOtherCostDetails = item?.NewRawMaterialOtherCostDetails || []
 
                 tempArr.push(tempObj)
 
@@ -420,7 +420,7 @@ function RMSimulation(props) {
      * @description Renders buttons
      */
     const CostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
         return cell != null ? cell : '-';
     }
@@ -433,25 +433,25 @@ function RMSimulation(props) {
         }, 500);
     }
     const effectiveDateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
         return cell != null ? <span title={DayTime(cell).format('DD/MM/YYYY')}>{DayTime(cell).format('DD/MM/YYYY')}</span> : '';
     }
 
-    // const combinedCostingHeadRenderer = (props) => {
-    //     // Call the existing checkBoxRenderer
-    //     costingHeadFormatter(props);
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        costingHeadFormatter(props);
 
-    //     // Get and localize the cell value
-    //     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    //     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
 
-    //     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
-    //     return localizedValue;
-    // };
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
 
     const costingHeadFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell ? cell : '-';
     }
     const vendorFormatter = (props) => {
@@ -459,7 +459,7 @@ function RMSimulation(props) {
     }
 
     const customerFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (<span title={isbulkUpload ? row['Customer (Code)'] : row?.CustomerName}>{isbulkUpload ? row['Customer (Code)'] : row?.CustomerName}</span>);
     }
 
@@ -467,8 +467,8 @@ function RMSimulation(props) {
         return (<span title={isbulkUpload ? props?.value : props?.data.DestinationPlantName}>{isbulkUpload ? props?.value : props?.data.DestinationPlantName}</span>);
     }
     const newBasicRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.BasicRatePerUOM : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.BasicRatePerUOM : props?.valueFormatted ? props?.valueFormatted : props?.value;
         const value = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.BasicRatePerUOM : beforeSaveCell(cell, props, "basicRate")
         let PercentageCalc = 0
         if (row?.Percentage) {
@@ -482,7 +482,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row?.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate || row?.IsSimulated ? 'disabled' : ''} basicRate_revised`} title={cell && value ? Number(cell) : Number(row?.BasicRatePerUOM)}>{cell && value ? Number(cell) : row?.Percentage ? PercentageCalc : isbulkUpload ? checkForNull(cell) : checkForNull(row?.BasicRatePerUOM)} </span>
+                        <span id={`newBasicRate-${props?.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate || row?.IsSimulated ? 'disabled' : ''} basicRate_revised`} title={cell && value ? Number(cell) : Number(row?.BasicRatePerUOM)}>{cell && value ? Number(cell) : row?.Percentage ? PercentageCalc : isbulkUpload ? checkForNull(cell) : checkForNull(row?.BasicRatePerUOM)} </span>
                 }
 
             </>
@@ -490,8 +490,8 @@ function RMSimulation(props) {
     }
 
     const oldBasicRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         return (
             <>
@@ -506,22 +506,22 @@ function RMSimulation(props) {
     }
 
     const newScrapRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.ScrapRate : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.ScrapRate : props?.valueFormatted ? props?.valueFormatted : props?.value;
         const value = beforeSaveCell(cell, props, "scrapRate")
         return (
             <>
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row?.NewScrapRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${(row?.IsScrapUOMApply === 'Yes' || row?.IsSimulated) ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}</span>
+                        <span id={`newScrapRate-${props?.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${(row?.IsScrapUOMApply === 'Yes' || row?.IsSimulated) ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}</span>
                 }
             </>
         )
     }
     const newScrapRateUOMFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const newScrapRateInOldUOM = checkForDecimalAndNull(cell * row?.CalculatedFactor, getConfigurationKey().NoOfDecimalForPrice)
         const value = beforeSaveCell(newScrapRateInOldUOM, props, "scrapRate")
         if (value && !isImpactedMaster) {
@@ -533,15 +533,15 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row?.NewScrapRatePerScrapUOM, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsScrapUOMApply === 'No' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}</span>
+                        <span id={`newScrapRate-${props?.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsScrapUOMApply === 'No' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}</span>
                 }
             </>
         )
     }
 
     const oldScrapRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         return (
             <>
@@ -555,8 +555,8 @@ function RMSimulation(props) {
     }
 
     const oldScrapRateFormatterPerScrapUOM = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         return (
             <>
@@ -572,8 +572,8 @@ function RMSimulation(props) {
     // const colorCheck = 
 
     const costFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return isImpactedMaster ? checkForDecimalAndNull(row?.OldNetLandedCost, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
     }
 
@@ -583,7 +583,7 @@ function RMSimulation(props) {
   */
     const beforeSaveCell = (cell, props, type) => {
         const cellValue = cell
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         if ((row?.NewBasicRate === undefined || row?.NewBasicRate === '' ? Number(row?.BasicRatePerUOM) : Number(row?.NewBasicRate)) <
             (row?.NewScrapRate === undefined || row?.NewScrapRate === '' ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
             if (type === "basicRate") {
@@ -625,7 +625,7 @@ function RMSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         // if (!row?.NewBasicRate || Number(row?.BasicRate) === Number(row?.NewBasicRate) || row?.NewBasicRate === '') return ''
         let NewBasicRate = '';
         if (row?.NewBasicRate) {
@@ -647,7 +647,7 @@ function RMSimulation(props) {
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
     const NewBasicPriceFormmater = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const classGreen = ((checkForNull(row?.NewNetCostWithoutConditionCost) + checkForNull(checkForNull(row?.NewOtherNetCost))) > row?.NetCostWithoutConditionCost) ? 'red-value form-control' : (checkForNull(row?.NewNetCostWithoutConditionCost) + checkForNull(checkForNull(row?.NewOtherNetCost)) < row?.NetCostWithoutConditionCost) ? 'green-value form-control' : 'form-class'
         return showValue(row, classGreen, row?.NewNetCostWithoutConditionCost)
     }
@@ -671,7 +671,7 @@ function RMSimulation(props) {
             item.NewScrapRate = undefined
             return null
         })
-        props.backToSimulation()
+        props?.backToSimulation()
         // setShowMainSimulation(true)                    //RE
     }
 
@@ -779,19 +779,19 @@ function RMSimulation(props) {
     };
 
     const percentageFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         let cellValue = cell
         if (cell && cell > 100) {
             Toaster.warning("Percentage should be less than or equal to 100")
-            list[props.rowIndex].Percentage = 0
+            list[props?.rowIndex].Percentage = 0
             cellValue = 0
         }
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cellValue, props, 'Percentage')
         return (
             <>
                 {
-                    <span id={`percentage${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.NewBasicRate ? 'disabled' : ''}`} >{cell && value ? row?.NewBasicRate ? 0 : Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
+                    <span id={`percentage${props?.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.NewBasicRate ? 'disabled' : ''}`} >{cell && value ? row?.NewBasicRate ? 0 : Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
                 }
             </>
         )
@@ -898,9 +898,9 @@ function RMSimulation(props) {
     }
 
     const existingOtherCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         const value = beforeSaveCell(cell, props, 'otherCost')
 
@@ -915,7 +915,7 @@ function RMSimulation(props) {
                 {true && <button
                     type="button"
                     className={'View small'}
-                    onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'Old')}
+                    onClick={() => otherCostDrawer(cell, row, props?.rowIndex, 'Old')}
                     title="Add"
                 >
                 </button>}
@@ -925,8 +925,8 @@ function RMSimulation(props) {
     }
 
     const existingConditionCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell, props, 'otherCost')
         return (
             <>
@@ -939,7 +939,7 @@ function RMSimulation(props) {
                 {true && <button
                     type="button"
                     className={'View small'}
-                    onClick={() => conditionCostDrawer(cell, row, props.rowIndex, 'Old')}
+                    onClick={() => conditionCostDrawer(cell, row, props?.rowIndex, 'Old')}
                     title="Add"
                 >
                 </button>}
@@ -949,8 +949,8 @@ function RMSimulation(props) {
     }
 
     const revisedOtherCostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.OtherNetCost : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.OtherNetCost : props?.valueFormatted ? props?.valueFormatted : props?.value;
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)
 
@@ -969,9 +969,9 @@ function RMSimulation(props) {
                 {true && <button
                     type="button"
                     // className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    // onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
+                    // onClick={() => otherCostDrawer(cell, row, props?.rowIndex, 'New')}
                     className={`${isImpactedMaster || row?.IsSimulated ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
+                    onClick={() => otherCostDrawer(cell, row, props?.rowIndex, 'New')}
                     title="Add"
                 >
                 </button>}
@@ -981,8 +981,8 @@ function RMSimulation(props) {
     }
 
     const revisedConditionCostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.NetConditionCost : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewRawMaterialDetails && row?.NewRawMaterialDetails?.NetConditionCost : props?.valueFormatted ? props?.valueFormatted : props?.value;
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
@@ -1001,9 +1001,9 @@ function RMSimulation(props) {
                 {true && <button
                     type="button"
                     // className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    // onClick={() => ConditionCostDrawer(cell, row, props.rowIndex, 'New')}
+                    // onClick={() => ConditionCostDrawer(cell, row, props?.rowIndex, 'New')}
                     className={`${isImpactedMaster || row?.IsSimulated ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    onClick={() => conditionCostDrawer(cell, row, props.rowIndex, 'New')}
+                    onClick={() => conditionCostDrawer(cell, row, props?.rowIndex, 'New')}
                     title="Add"
                 >
                 </button>}
@@ -1045,8 +1045,8 @@ function RMSimulation(props) {
 
     };
     const netLanedCostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
         if (isImpactedMaster) {
             return (row?.OldNetLandedCost ?? '-');
@@ -1064,7 +1064,7 @@ function RMSimulation(props) {
         const cellValue = checkForNull(props?.value);
         return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
     }
-
+    
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
 
@@ -1087,7 +1087,7 @@ function RMSimulation(props) {
         ageValueGetterPer: ageValueGetterPer,
         percentageFormatter: percentageFormatter,
         percentageHeader: percentageHeader,
-        nullHandler: props.nullHandler && props.nullHandler,
+        nullHandler: props?.nullHandler && props?.nullHandler,
         oldScrapRateFormatterPerScrapUOM: oldScrapRateFormatterPerScrapUOM,
         hyphenFormatter: hyphenFormatter,
         existingOtherCostFormatter: existingOtherCostFormatter,
@@ -1096,7 +1096,9 @@ function RMSimulation(props) {
         revisedConditionCostFormatter: revisedConditionCostFormatter,
         zeroFormatter: zeroFormatter,
         netLanedCostFormatter: netLanedCostFormatter,
-        localConversionFormatter: localConversionFormatter
+        localConversionFormatter: localConversionFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
+        statusFilter: CostingHeadDropdownFilter,
 
     };
 
@@ -1168,7 +1170,7 @@ function RMSimulation(props) {
     return (
 
         <div>
-            <div className={`ag-grid-react ${props.customClass}`}>
+            <div className={`ag-grid-react ${props?.customClass}`}>
                 {!showverifyPage &&
                     // {(!showverifyPage && !showMainSimulation) &&                    //RE
                     <Fragment>
@@ -1183,7 +1185,7 @@ function RMSimulation(props) {
                                             <button type="button" className="user-btn float-right mr-3 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
-                                            <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
+                                            <ExcelFile filename={`${props?.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
                                             </ExcelFile>
@@ -1281,7 +1283,7 @@ function RMSimulation(props) {
                                             >
                                                 {
                                                     !isImpactedMaster &&
-                                                    <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'combinedCostingHeadRenderer'}
+                                                    <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={combinedCostingHeadRenderer}
                                                         floatingFilterComponentParams={floatingFilterStatus}
                                                         floatingFilterComponent="statusFilter"></AgGridColumn>
                                                 }
@@ -1374,8 +1376,8 @@ function RMSimulation(props) {
                                                     <AgGridColumn minWidth={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion' cellRenderer='localConversionFormatter'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
-                                                {props.children}
-                                                <AgGridColumn minWidth={columnWidths.EffectiveDate} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} ></AgGridColumn>
+                                                {props?.children}
+                                                <AgGridColumn minWidth={columnWidths.EffectiveDate} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props?.isImpactedMaster && !props?.lastRevision ? "Current Effective date" : "Effective Date"} ></AgGridColumn>
                                                 <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
                                             </AgGridReact >))

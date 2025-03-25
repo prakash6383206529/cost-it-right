@@ -96,7 +96,7 @@ function OtherCostDrawer(props) {
             ];
         }
         if (label === 'Applicability') {
-            costingHead && costingHead.map(item => {
+            costingHead && costingHead?.length > 0 && costingHead?.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
@@ -445,7 +445,7 @@ function OtherCostDrawer(props) {
                                             name={`crmHeadOtherCost`}
                                             type="text"
                                             label="CRM Head"
-                                            errors={errors.crmHeadOtherCost}
+                                            errors={errors?.crmHeadOtherCost}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -478,7 +478,7 @@ function OtherCostDrawer(props) {
                                             defaultValue={""}
                                             className=""
                                             customClassName={"withBorder"}
-                                            errors={errors.OtherCostDescription}
+                                            errors={errors?.OtherCostDescription}
                                             disabled={CostingViewMode ? true : false}
                                         />
                                     </Col>
@@ -494,12 +494,12 @@ function OtherCostDrawer(props) {
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
+                                                defaultValue={otherCostApplicability?.length !== 0 ? otherCostApplicability : '-'}
                                                 options={renderListing('Applicability')}
                                                 mandatory={true}
                                                 disabled={CostingViewMode ? true : false}
                                                 handleChange={handleOherCostApplicabilityChange}
-                                                errors={errors.OtherCostApplicability}
+                                                errors={errors?.OtherCostApplicability}
                                             />
                                         </Col>
                                     }
@@ -523,10 +523,10 @@ function OtherCostDrawer(props) {
                                                 handleChange={(e) => {
                                                     e.preventDefault();
                                                 }}
-                                                defaultValue={""}
+                                                defaultValue={"-"}
                                                 className=""
                                                 customClassName={"withBorder"}
-                                                errors={errors.PercentageOtherCost}
+                                                errors={errors?.PercentageOtherCost}
                                                 disabled={CostingViewMode || !(otherCostType && otherCostType.value === 'Percentage') ? true : false}
                                             />
                                         </Col>}
@@ -546,7 +546,7 @@ function OtherCostDrawer(props) {
                                                 handleChange={(e) => {
                                                     e.preventDefault();
                                                 }}
-                                                defaultValue={""}
+                                                defaultValue={"-"}
                                                 className=""
                                                 customClassName={"withBorder"}
                                                 errors={errors?.ApplicabilityCost}
@@ -573,7 +573,7 @@ function OtherCostDrawer(props) {
                                             defaultValue={""}
                                             className=""
                                             customClassName={"withBorder"}
-                                            errors={errors.AnyOtherCost}
+                                            errors={errors?.AnyOtherCost}
                                             disabled={true}
                                         />
 
