@@ -6,7 +6,7 @@ export function PaginationWrappers(props) {
 
     const dispatch = useDispatch();
     const { currentRowIndex, globalTakes } = useSelector((state) => state.pagination);
-    const { getDataList, totalRecordCount, floatingFilterData, gridApi, module } = props;
+    const { getDataList, totalRecordCount, floatingFilterData, gridApi, module ,isImport } = props;
 
 
 
@@ -31,7 +31,7 @@ export function PaginationWrappers(props) {
                 getDataList(null, null, null, null, newSkip, numericPageSize, true, floatingFilterData);
                 break;
             case 'Operations':
-                getDataList(null, null, null, null, newSkip, numericPageSize, true, floatingFilterData);
+                getDataList(null, null, null, null, newSkip, numericPageSize, true, floatingFilterData,isImport);
                 break;
             case 'Volume':
                 getDataList(newSkip, numericPageSize, true);

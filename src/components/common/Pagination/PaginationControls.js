@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Button from '../../layout/Button';
 import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from './paginationAction';
 
-const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module }) => {
+const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module,isImport }) => {
     
     const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state.pagination);
     const dispatch = useDispatch();
@@ -41,7 +41,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
                 getDataList(null, null, null, null, newSkip, pageSizeValue, true, floatingFilterData);
                 break;
             case 'Operations':
-                getDataList(null, null, null, null, newSkip, pageSizeValue, true, floatingFilterData);
+                getDataList(null, null, null, null, newSkip, pageSizeValue, true, floatingFilterData,isImport);
                 break;
             case 'Volume':
                 getDataList(newSkip, pageSizeValue, true);
