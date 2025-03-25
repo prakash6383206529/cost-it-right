@@ -186,11 +186,14 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
     const renderList = (type) => {
         let temp = []
         if (type === 'RawMaterial') {
-            temp = state.rawMaterialList && state.rawMaterialList?.length !== 0 && state.rawMaterialList?.map(item => ({
-                ...item,
-                label: item?.RawMaterial,
-                value: item?.RawMaterialId
-            }))
+            state.rawMaterialList && state.rawMaterialList?.length !== 0 && state.rawMaterialList?.map(item => {
+                temp.push({
+                    ...item,
+                    label: item?.RawMaterial,
+                    value: item?.RawMaterialId
+                })
+                return null
+            })
         }
         if (type === 'PaintCoat') {
             paintCoatList && paintCoatList?.length !== 0 && paintCoatList?.map(item => {
