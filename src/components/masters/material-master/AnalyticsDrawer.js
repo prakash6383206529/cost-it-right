@@ -24,7 +24,6 @@ const gridOptions = {};
 function AnalyticsDrawer(props) {
 
     const { ModeId, rowData, importEntry } = props
-
     const toggleDrawer = (event, mode = false) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -47,7 +46,23 @@ function AnalyticsDrawer(props) {
 
 
     useEffect(() => {
-        setUomValue(checkForDecimalAndNull(props.rowData?.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice))
+        const getUomValue = (modeId, rowData) => {
+            if (!rowData) return null;
+
+            switch (modeId) {
+                case 1:
+                case 2:
+                    return rowData?.NetLandedCost || 0;
+                case 3:
+                    return rowData?.Rate  || 0;
+                case 4:
+                    return rowData?.MachineRate || 0;
+                default:
+                    return rowData?.NetLandedCost || 0;
+            }
+        };
+        const calculatedUomValue = getUomValue(props.ModeId, props.rowData);
+        setUomValue(checkForDecimalAndNull(calculatedUomValue, getConfigurationKey().NoOfDecimalForPrice))
         setCurrency(props.rowData?.Currency)
         let obj = {}
         obj.ModeId = props.ModeId
