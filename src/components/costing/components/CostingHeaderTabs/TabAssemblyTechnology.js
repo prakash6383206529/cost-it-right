@@ -162,7 +162,7 @@ function TabAssemblyTechnology(props) {
     //           "SurfaceTreatmentCostPerAssembly": 0,
     //           "TransportationCostPerAssembly": 0,
     //           "TotalSurfaceTreatmentCostPerAssembly": 0,
-    //           "TotalCostINR": netPOPrice
+    //           "NetPOPrice": netPOPrice
     //         }
     //         assemblyWorkingRow.push(subAssemblyObj)
     //         return assemblyWorkingRow
@@ -178,10 +178,10 @@ function TabAssemblyTechnology(props) {
     //         "TotalConversionCostWithQuantity": tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
     //         "TotalCalculatedRMBOPCCCostPerPC": tabData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
     //         "TotalCalculatedRMBOPCCCostPerAssembly": tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-    //         "NetRMCostPerAssembly": tabData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-    //         "NetBOPCostAssembly": tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-    //         "NetConversionCostPerAssembly": tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
-    //         "NetRMBOPCCCost": tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+    //         "NetRawMaterialsCost": tabData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+    //         "NetBoughtOutPartCost": tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+    //         "NetConversionCost": tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
+    //         "NetTotalRMBOPCC": tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
     //         "TotalOperationCostPerAssembly": tabData?.CostingPartDetails?.TotalOperationCostPerAssembly,
     //         "TotalOperationCostSubAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssembly),
     //         "TotalOperationCostComponent": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponent),
@@ -193,8 +193,8 @@ function TabAssemblyTechnology(props) {
     //         "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]??.CostingPartDetails?.NetFreightPackagingCost,
     //         "NetToolCost": ToolTabData[0]??.CostingPartDetails?.TotalToolCost,
     //         "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
-    //         "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
-    //         "TotalCostINR": netPOPrice,
+    //         "NetDiscountsCost": discountAndOtherTabData?.HundiOrDiscountValue,
+    //         "NetPOPrice": netPOPrice,
     //         "TabId": 1
     //       },
     //       "WorkingRows": assemblyWorkingRow,
