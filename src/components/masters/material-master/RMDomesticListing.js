@@ -49,6 +49,7 @@ function RMDomesticListing(props) {
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
     const dispatch = useDispatch();
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const allRmDataList = useSelector((state) => state.material.allRmDataList);
@@ -215,7 +216,6 @@ function RMDomesticListing(props) {
     */
     const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
         const { isSimulation } = props
-        console.log("isSimulation", isSimulation)
 
         if (filterModel?.EffectiveDate && !isReset) {
 
@@ -287,16 +287,7 @@ function RMDomesticListing(props) {
                 }
 
                 if (res) {
-                    let isReset = true
                     setTimeout(() => {
-                        for (var prop in floatingFilterData) {
-
-                            if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
-                                isReset = false
-                            }
-
-                        }
-                        // Sets the filter model via the grid API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                     }, 300);
 
@@ -430,7 +421,7 @@ function RMDomesticListing(props) {
                 floatingFilterData[prop] = ""
             }
         }
-        console.log(floatingFilterData, "floatingFilterData")
+
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(updatePageNumber(1))
@@ -924,10 +915,6 @@ function RMDomesticListing(props) {
         attachmentFormatter: attachmentFormatter,
 
     }
-
-
-
-
 
 
     return (

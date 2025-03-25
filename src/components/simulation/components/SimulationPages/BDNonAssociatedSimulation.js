@@ -865,8 +865,8 @@ function BDNonAssociatedSimulation(props) {
             if (item?.NewNetLandedCostConversion === null || item?.NewNetLandedCostConversion === undefined) {
                 item.NewNetLandedCostConversion = item?.OriginalNetLandedCost
             }
-            if (item?.NewNetCostWithoutConditionCost === null || item?.NewNetCostWithoutConditionCost === undefined) {
-                item.NewNetLandedCost = item?.NewBasicRate
+            if (item?.NewNetCostWithoutConditionCost === null || item?.NewNetCostWithoutConditionCost === undefined || item?.NewNetCostWithoutConditionCost === 0) {
+                item.NewNetCostWithoutConditionCost = item?.NewBasicRate
             }
 
             if (!item?.IsBOPAssociated) {
@@ -999,7 +999,7 @@ function BDNonAssociatedSimulation(props) {
                                                 {<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
-                                                {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()} Category`} minWidth={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
+                                                {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()} Part Category`} minWidth={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
                                                 {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName={vendorLabel + " (Code)"} minWidth={columnWidths.Vendor} cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={columnWidths.CustomerName} cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {<AgGridColumn field="Plants" tooltipField='Plants' editable='false' headerName="Plant (Code)" minWidth={columnWidths.Plants} cellRenderer='plantFormatter'></AgGridColumn>}
