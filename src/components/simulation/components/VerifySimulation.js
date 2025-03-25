@@ -69,7 +69,7 @@ function VerifySimulation(props) {
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
     const gridRef = useRef();
     const { vendorLabel } = useLabels()
-    const verifyList = useSelector(state => state.simulation.simulationVerifyList)
+    const verifyList = useSelector(state => state?.simulation?.simulationVerifyList)
 
     // const isAssemblyCosting = true
     const dispatch = useDispatch()
@@ -493,6 +493,10 @@ function VerifySimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return isMasterAssociatedWithCosting ? (row?.OldBoughtOutPartRate ? row?.OldBoughtOutPartRate : '-') : (row?.OldBOPRate ? row?.OldBOPRate : '-')
     }
+    const CategoryFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return row?.InfoCategory ? row?.InfoCategory : '-'
+    }
 
     /**
      * @method hyphenFormatter
@@ -885,7 +889,8 @@ function VerifySimulation(props) {
         operationRateFormatter: operationRateFormatter,
         machineRateFormatter: machineRateFormatter,
         newOtherCostFormatter: newOtherCostFormatter,
-        newConditionCostFormatter: newConditionCostFormatter
+        newConditionCostFormatter: newConditionCostFormatter,
+        CategoryFormatter:CategoryFormatter
     };
     function getOperationTypes(list) {
         return list && list?.map(item => item.ForType);
@@ -963,7 +968,7 @@ function VerifySimulation(props) {
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartName" tooltipField="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartType" tooltipField="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={130} field="RevisionNumber" tooltipField="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
-                                            {isMasterAssociatedWithCosting && <AgGridColumn width={160} field="InfoCategory" tooltipField="InfoCategory" cellRenderer='hyphenFormatter' headerName="Category"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={160} field="InfoCategory" tooltipField="InfoCategory" cellRenderer={CategoryFormatter} headerName="Category"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" tooltipField="RMName" headerName="RM Name" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" tooltipField="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" tooltipField="ProcessName" headerName="Process Name"></AgGridColumn>}

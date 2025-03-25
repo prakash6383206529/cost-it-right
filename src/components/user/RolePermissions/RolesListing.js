@@ -108,7 +108,7 @@ const RolesListing = (props) => {
     const userRoleCheck = userDetails()?.Role
     return (
       <>
-        {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && EditAccessibility && <Button id={`roleListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />
+        {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && (rowData?.IsActive) && EditAccessibility && <Button id={`roleListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />
         }
 
         {/* {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />} */}

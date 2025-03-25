@@ -351,9 +351,6 @@ function AddRMMaster(props) {
     };
 
     const onSubmit = debounce(handleSubmit((values, isDivision) => {
-        console.log(values);
-        console.log(state);
-        console.log(rawMaterailDetails);
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -413,7 +410,6 @@ function AddRMMaster(props) {
         const basicRatePerUOMLocalConversion = convertIntoCurrency(values?.BasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
         const commodityNetCostLocalConversion = convertIntoCurrency(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
         const cutOffPriceLocalConversion = convertIntoCurrency(values?.cutOffPrice, exchangeRateDetails?.LocalCurrencyExchangeRate)
-        console.log("rawMaterailDetails", rawMaterailDetails);
         
         let formData =
         {

@@ -329,7 +329,6 @@ function AddRMDetails(props) {
     };
 
     const handleVendor = (newValue, actionMeta) => {
-        console.log(newValue);
         if (newValue && newValue !== '') {
             if (newValue?.value === state?.sourceVendor?.value) {
                 Toaster.warning(`${vendorLabel} and Source ${vendorLabel} cannot be the same`);
