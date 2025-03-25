@@ -44,7 +44,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPDomesticListing = (props) => {
-  console.log("propsListing..", props)
   const permissions = useContext(ApplyPermission);
   const dispatch = useDispatch();
   const searchRef = useRef(null);
