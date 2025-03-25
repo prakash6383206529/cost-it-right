@@ -14,7 +14,7 @@ import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../..
 
 function UomTimeProcessDefaultCalculator(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
-    const processMHRWithOutInterestAndDepreciation=props?.calculatorData?.ProcessMHRWithOutInterestAndDepreciation
+    const processMHRWithOutInterestAndDepreciation=props?.calculatorData?.MHRWithOutInterestAndDepreciation
     const costData = useContext(costingInfoContext);
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
@@ -187,8 +187,8 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.ProcessCost = dataToSend.processCost
         obj.MachineRate = props.calculatorData.MHR
         obj.TotalMachiningTime = totalMachiningTime
-        obj.NetProcessCostWithOutInterestAndDepreciation = netProcessCostWithOutInterestAndDepreciation
-        obj.ProcessMHRWithOutInterestAndDepreciation = processMHRWithOutInterestAndDepreciation
+        obj.ProcessCostWithOutInterestAndDepreciation = netProcessCostWithOutInterestAndDepreciation
+        obj.MHRWithOutInterestAndDepreciation = processMHRWithOutInterestAndDepreciation
 
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
             setIsDisable(false)

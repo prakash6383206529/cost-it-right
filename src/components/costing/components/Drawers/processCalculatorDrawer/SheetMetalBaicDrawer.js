@@ -54,7 +54,7 @@ function SheetMetalBaicDrawer(props) {
   const [processCostTooltip, setProcessCostTooltip] = useState();
   const [netProcessCostWithOutInterestAndDepreciation, setNetProcessCostWithoutInterestAndDepreciation] = useState(1)
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
-  const processMHRWithOutInterestAndDepreciation=props?.calculatorData?.ProcessMHRWithOutInterestAndDepreciation||null
+  const processMHRWithOutInterestAndDepreciation=props?.calculatorData?.MHRWithOutInterestAndDepreciation||null
   const fieldValues = useWatch({
     control,
     name: ['Efficiency', 'Cavity', 'CycleTime', 'PartLength', 'ExtrusionSpeed'],
@@ -179,8 +179,8 @@ function SheetMetalBaicDrawer(props) {
     obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : ''
     obj.ExtrusionSpeed = getValues('ExtrusionSpeed')
     obj.PartLength = getValues('PartLength')
-    obj.NetProcessCostWithOutInterestAndDepreciation = netProcessCostWithOutInterestAndDepreciation
-    obj.ProcessMHRWithOutInterestAndDepreciation = processMHRWithOutInterestAndDepreciation
+    obj.ProcessCostWithOutInterestAndDepreciation = netProcessCostWithOutInterestAndDepreciation
+    obj.MHRWithOutInterestAndDepreciation = processMHRWithOutInterestAndDepreciation
 
     dispatch(saveDefaultProcessCostCalculationData(obj, res => {
       setIsDisable(false)
