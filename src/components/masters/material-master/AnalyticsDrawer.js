@@ -56,7 +56,7 @@ function AnalyticsDrawer(props) {
                 case 2:
                     return rowData?.NetLandedCost || 0;
                 case 3:
-                    return rowData?.OperationBasicRate || 0;
+                    return rowData?.Rate || 0;
                 case 4:
                     return rowData?.MachineRate || 0;
                 default:
