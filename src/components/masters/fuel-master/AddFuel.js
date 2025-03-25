@@ -74,7 +74,9 @@ class AddFuel extends Component {
       errorObj: {
         state: false,
         rate: false,
-        effectiveDate: false
+        effectiveDate: false,
+        CountryId: false,
+        CityId: false
       },
       isGridEdit: false,
       showPopup: false,
@@ -359,11 +361,22 @@ class AddFuel extends Component {
 
     let count = 0;
     setTimeout(() => {
-
-      if (country.length === 0 || city.length === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, state: true } })
+      if (country.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, CountryId: true } })
         count++
       }
+      if (city.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, CityId: true } })
+        count++
+      }
+      if ((this.state?.country?.length === 0 || this.state?.country?.label === 'India') && StateName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, StateId: true } })
+        count++
+      }
+      // if (country.length === 0 || city.length === 0 || StateName.length === 0) {
+      //   this.setState({ errorObj: { ...this.state.errorObj, state: true } })
+      //   count++
+      // }
       if (fieldsObj?.RateLocalConversion === undefined || Number(fieldsObj?.RateLocalConversion) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
         count++
@@ -851,11 +864,11 @@ class AddFuel extends Component {
 
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ country: newValue, state: [], city: [], StateName: [] }, () => {
+      this.setState({ country: newValue, state: [], city: [], errorObj: { ...this.state.errorObj, CountryId: false }, StateName: [] }, () => {
         this.getAllCityData()
       });
     } else {
-      this.setState({ country: [], state: [], city: [] })
+      this.setState({ country: [], state: [], city: [], errorObj: { ...this.state.errorObj, CountryId: true } })
     }
     this.setState({ DropdownChanged: false })
   };
@@ -866,12 +879,12 @@ class AddFuel extends Component {
   */
   stateHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ StateName: newValue, city: [] }, () => {
+      this.setState({ StateName: newValue, city: [], errorObj: { ...this.state.errorObj, StateId: false } }, () => {
         const { StateName } = this.state;
         this.props.fetchCityDataAPI(StateName.value, () => { })
       });
     } else {
-      this.setState({ StateName: [], city: [] });
+      this.setState({ StateName: [], city: [], errorObj: { ...this.state.errorObj, StateId: true } });
     }
 
   };
@@ -888,9 +901,9 @@ class AddFuel extends Component {
 
   cityHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ city: newValue });
+      this.setState({ city: newValue, errorObj: { ...this.state.errorObj, CityId: false } });
     } else {
-      this.setState({ city: [] });
+      this.setState({ city: [], errorObj: { ...this.state.errorObj, CityId: true } });
     }
     this.setState({ DropdownChanged: false })
   };
@@ -1271,7 +1284,6 @@ class AddFuel extends Component {
                               <h5>{"Rate:"}</h5>
                             </div>
                           </Col>
-
                           <Col md="3">
                             <div className="form-group inputbox withBorder ">
                               <Field
@@ -1287,6 +1299,7 @@ class AddFuel extends Component {
                                 valueDescription={this.state.country}
                                 disabled={isViewMode}
                               />
+                              {this.state.errorObj.CountryId && this.state.country.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
 
@@ -1306,6 +1319,7 @@ class AddFuel extends Component {
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj.StateId && this.state.StateName.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
                             </Col>}
 
@@ -1324,6 +1338,7 @@ class AddFuel extends Component {
                                 valueDescription={this.state.city}
                                 disabled={isViewMode}
                               />
+                              {this.state.errorObj.CityId && this.state.city.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
                           <Col md="3">
@@ -1569,7 +1584,7 @@ class AddFuel extends Component {
 */
 function mapStateToProps(state) {
   const { fuel, auth, comman, client } = state;
-  const fieldsObj = selector(state, "Rate", "RateLocalConversion", "Currency", "ExchangeSource", "plantCurrency", "RateConversion");
+  const fieldsObj = selector(state, "Rate", "RateLocalConversion", "Currency", "ExchangeSource", "plantCurrency", "RateConversion", "CountryId", "StateId", "CityId");
   let initialValues = {};
 
   const { UOMSelectList, stateList, plantSelectList, countryList, cityList, exchangeRateSourceList, currencySelectList } = comman;
