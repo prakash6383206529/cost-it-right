@@ -277,12 +277,13 @@ function ProcessCost(props) {
       }))
     }
 
-    dispatch(getProcessDefaultCalculation(tempData.ProcessCalculatorId, res => {
-      if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
-        const data = res.status === 204 ? {} : res.data.Data
-        setCalculatorData(data, list, id, parentIndex)
-      }
-    }))
+    // dispatch(getProcessDefaultCalculation(tempData.ProcessCalculatorId, res => {
+    //   
+    //   if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+    //     const data = res.status === 204 ? {} : res.data.Data
+    //     setCalculatorData(data, list, id, parentIndex)
+    //   }
+    // }))
     // setCalculatorData(calciData)
   }, 500);
 
@@ -566,9 +567,10 @@ function ProcessCost(props) {
 
     const setDataInGridAndApi = (tempArr) => {
       tempArr && tempArr.map((el, index) => {
+        
         // el.CostingConditionMasterAndTypeLinkingId = el.Applicability?.value || null
         // el.CostingConditionNumber = processApplicabilitySelect?.find(type => type?.value === el?.Applicability?.value)?.label || null
-        setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el?.ProcessCost, initialConfiguration?.NoOfDecimalForInputOutput))
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el?.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${ProcessGridFields}.${index}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
         setValue(`${ProcessGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
@@ -948,6 +950,7 @@ let processCostResult;
         productionPerHour = findProductionPerHour(event.target.value)
         processCostResult = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour, tempData?.ProcessMHRWithOutInterestAndDepreciation);
       }
+      
       const netCosts = calculateNetCosts(processCostResult.processCost, tempData?.Applicability?.label, "Process");
       tempData = {
         ...tempData,
@@ -980,7 +983,8 @@ let processCostResult;
       }
       setGridData(gridTempArr)
       dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
-      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCostResult?.processCost, initialConfiguration?.NoOfDecimalForInputOutput))
+      
+      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCostResult?.processCost, initialConfiguration?.NoOfDecimalForPrice))
     }
     //  else {
 
@@ -1530,6 +1534,7 @@ let processCostResult;
       }
 
 
+
       const setTabDataCommon = (processArray) => {
         let apiArr = formatMainArr(processArray)
         let obj = {
@@ -1594,7 +1599,8 @@ let processCostResult;
 
         finalTemp && finalTemp.map((el, index) => {
           // Update field values
-          setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForInputOutput))
+          
+          setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
           setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
           setValue(`${ProcessGridFields}.${index}.remarkPopUp`, (el.Remark))
           setValue(`crmHeadProcess${index}`, { label: el.ProcessCRMHead, value: 1 })

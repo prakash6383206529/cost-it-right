@@ -54,7 +54,7 @@ function SheetMetalBaicDrawer(props) {
   const [processCostTooltip, setProcessCostTooltip] = useState();
   const [netProcessCostWithOutInterestAndDepreciation, setNetProcessCostWithoutInterestAndDepreciation] = useState(1)
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
-  const processMHRWithOutInterestAndDepreciation=props?.calculatorData?.ProcessMHRWithOutInterestAndDepreciation||1
+  const processMHRWithOutInterestAndDepreciation=props?.calculatorData?.ProcessMHRWithOutInterestAndDepreciation||null
   const fieldValues = useWatch({
     control,
     name: ['Efficiency', 'Cavity', 'CycleTime', 'PartLength', 'ExtrusionSpeed'],
