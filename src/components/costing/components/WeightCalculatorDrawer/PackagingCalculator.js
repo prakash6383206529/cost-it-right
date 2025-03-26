@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Row, Col, Container, } from 'reactstrap'
+import { Row, Col, Container, Table, } from 'reactstrap'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { number, checkWhiteSpaces, maxLength7, maxLength5, maxLength4, maxLength3, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey } from '../../../../helper'
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,9 +11,11 @@ import { getPackagingCalculation, getSimulationPackagingCalculation, getVolumePe
 import { Drawer } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
 import { ViewCostingContext } from '../CostingDetails'
-import { AWAITING_APPROVAL_ID, DRAFT, DRAFTID, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants'
+import { AWAITING_APPROVAL_ID, DRAFT, DRAFTID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants'
 import { debounce } from 'lodash'
 import LoaderCustom from '../../../common/LoaderCustom'
+import FormFieldsRenderer from '../../../common/FormFieldsRenderer'
+import NoContentFound from '../../../common/NoContentFound'
 function PackagingCalculator(props) {
     const { rowObjData } = props
     const [state, setState] = useState({
@@ -26,21 +28,39 @@ function PackagingCalculator(props) {
         totalCostOfSpacerPackingInsert: 0,
         disableSubmit: false,
         loader: false,
+        typeOfCost: '',
+        disableCost: true,
+        totalAddedCost: '',
+        gridTable: [],
+        isEditIndex: false,
+        totalCostOfCrateWithAddedCost: '',
     })
     const { costingData, CostingEffectiveDate } = useSelector(state => state.costing)
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
+    const typeOfCostList = useSelector(state => state.costWorking.typeOfCostList)
     const costingViewMode = useContext(ViewCostingContext);
     const CostingViewMode = costingViewMode ?? props?.CostingViewMode
     const PackagingCalculationId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingPackagingCalculationDetailsId : props?.costingPackagingCalculationDetailsId ?? null
     const DaysInMonthForVolumePerDay = getConfigurationKey().DaysInMonthForVolumePerDayPackagingCalculation
     const dispatch = useDispatch()
     const {
-        register,
-        handleSubmit,
-        control,
-        setValue,
-        getValues,
-        formState: { errors },
+        register: registerPackaging,
+        handleSubmit: handleSubmitPackaging,
+        control: controlPackaging,
+        setValue: setValuePackaging,
+        getValues: getValuesPackaging,
+        formState: { errors: errorsPackaging },
+    } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    });
+    const {
+        register: registerCost,
+        handleSubmit: handleSubmitCost,
+        control: controlCost,
+        setValue: setValueCost,
+        getValues: getValuesCost,
+        formState: { errors: errorsCost },
     } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -48,7 +68,7 @@ function PackagingCalculator(props) {
     const isSubmitting = useRef(false)
     const { t } = useTranslation('CostingLabels');
     const calclulationFieldValues = useWatch({
-        control: control,
+        control: controlPackaging,
         name: ['NoOfComponentsPerCrate', 'StockNormDays', 'WeightOfCover', 'CostOfCrate', 'CostOfCoverPerKg', 'AmortizedNoOfYears', 'NoOfPartsPerCover', 'SpacerPackingInsertCost', 'NoOfSpacerPackingInsert'],
         defaultValue: []
     })
@@ -88,6 +108,24 @@ function PackagingCalculator(props) {
         getPackagingCalculationData()
         // }
     }, [])
+    useEffect(() => {
+        if (state.totalCostOfCrate > 0) {
+            setState((prevState) => ({ ...prevState, disableCost: false }))
+        }
+    }, [state.totalCostOfCrate])
+    useEffect(() => {
+        const totalAddedCost = state.gridTable?.reduce((sum, item) => {
+            return sum + Number(item.NetCost || 0);
+
+        }, 0);
+        let totalCostOfCrateWithAddedCost = state.totalCostOfCrate + totalAddedCost
+        setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice))
+        setState(prev => ({
+            ...prev,
+            totalAddedCost,
+            totalCostOfCrateWithAddedCost
+        }));
+    }, [state.gridTable])
     const getVolumePerDayData = () => {
         dispatch(getVolumePerDayForPackagingCalculator(costingData?.PartId, costingData?.PlantId, CostingEffectiveDate, costingData?.VendorId, (res) => {
             if (res?.status === 204) {
@@ -96,27 +134,56 @@ function PackagingCalculator(props) {
                 return false
             }
             let data = res?.data?.Data
-            setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
-            setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
+            setValuePackaging('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
+            setValuePackaging('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
             setState((prevState) => ({ ...prevState, volumePerDay: data?.VolumePerDay, volumePerAnnum: data?.VolumePerAnnum, disableSubmit: false }))
         }))
     }
+    const renderListing = (label) => {
+        const temp = [];
+
+        if (label === 'typeOfCost') {
+            // typeOfCostList && typeOfCostList.map((item) => {
+            //     temp.push({ label: item?.Text, value: item?.Value });
+            //     return null;
+            // });
+            let temp = [{
+                label: 'Fixed',
+                value: 1,
+            },
+            {
+                label: 'Maintenance',
+                value: 2,
+            },
+            {
+                label: 'Interest',
+                value: 3,
+            },
+            {
+                label: 'Depreciation',
+                value: 4,
+            },]
+            return temp;
+        }
+
+    };
     const setFormValues = (data) => {
-        setValue('NoOfComponentsPerCrate', data?.NoOfComponentsPerCrate ? checkForDecimalAndNull(data?.NoOfComponentsPerCrate, NoOfDecimalForInputOutput) : '')
-        setValue('NoOfCratesRequiredPerDay', data?.NoOfCratesRequiredPerDay ? checkForDecimalAndNull(data?.NoOfCratesRequiredPerDay, NoOfDecimalForInputOutput) : '')
-        setValue('StockNormDays', data?.StockNormDays ? checkForDecimalAndNull(data?.StockNormDays, NoOfDecimalForInputOutput) : '')
-        setValue('CostOfCrate', data?.CostOfCrate ? checkForDecimalAndNull(data?.CostOfCrate, NoOfDecimalForPrice) : '')
-        setValue('TotalCostOfCrate', data?.TotalCostOfCrate ? checkForDecimalAndNull(data?.TotalCostOfCrate, NoOfDecimalForPrice) : '')
-        setValue('AmortizedNoOfYears', data?.AmortizedNoOfYears ? checkForDecimalAndNull(data?.AmortizedNoOfYears, NoOfDecimalForInputOutput) : '')
-        setValue('WeightOfCover', data?.WeightOfCoverPerKg ? checkForDecimalAndNull(data?.WeightOfCoverPerKg, NoOfDecimalForInputOutput) : '')
-        setValue('CostOfCoverPerKg', data?.CostOfCoverPerKg ? checkForDecimalAndNull(data?.CostOfCoverPerKg, NoOfDecimalForPrice) : '')
-        setValue('NoOfPartsPerCover', data?.NoOfPartsPerCover ? checkForDecimalAndNull(data?.NoOfPartsPerCover, NoOfDecimalForInputOutput) : '')
-        setValue('SpacerPackingInsertCost', data?.SpacerPackingInsertCostIfAny ? checkForDecimalAndNull(data?.SpacerPackingInsertCostIfAny, NoOfDecimalForPrice) : '')
-        setValue('NoOfSpacerPackingInsert', data?.NoOfSpacersPackingInsert ? checkForDecimalAndNull(data?.NoOfSpacersPackingInsert, NoOfDecimalForInputOutput) : '')
-        setValue('SpacerPackingInsertRecovery', data?.SpacersPackingInsertRecoveryPercentage ? checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryPercentage, NoOfDecimalForInputOutput) : '')
-        setValue('SpacerPackingInsertRecoveryCostPerKg', data?.SpacersPackingInsertRecoveryCostPerKg ? checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryCostPerKg, NoOfDecimalForPrice) : '')
-        setValue('TotalCostOfSpacerPackingInsert', data?.CostOfSpacersPackingInsert ? checkForDecimalAndNull(data?.CostOfSpacersPackingInsert, NoOfDecimalForPrice) : '')
-        setValue('PackingCost', data?.PackingCost ? checkForDecimalAndNull(data?.PackingCost, NoOfDecimalForPrice) : '')
+        setValuePackaging('NoOfComponentsPerCrate', data?.NoOfComponentsPerCrate ? checkForDecimalAndNull(data?.NoOfComponentsPerCrate, NoOfDecimalForInputOutput) : '')
+        setValuePackaging('NoOfCratesRequiredPerDay', data?.NoOfCratesRequiredPerDay ? checkForDecimalAndNull(data?.NoOfCratesRequiredPerDay, NoOfDecimalForInputOutput) : '')
+        setValuePackaging('StockNormDays', data?.StockNormDays ? checkForDecimalAndNull(data?.StockNormDays, NoOfDecimalForInputOutput) : '')
+        setValuePackaging('CostOfCrate', data?.CostOfCrate ? checkForDecimalAndNull(data?.CostOfCrate, NoOfDecimalForPrice) : '')
+        setValuePackaging('TotalCostOfCrate', data?.TotalCostOfCrate ? checkForDecimalAndNull(data?.TotalCostOfCrate, NoOfDecimalForPrice) : '')
+        setValuePackaging('AmortizedNoOfYears', data?.AmortizedNoOfYears ? checkForDecimalAndNull(data?.AmortizedNoOfYears, NoOfDecimalForInputOutput) : '')
+        setValuePackaging('WeightOfCover', data?.WeightOfCoverPerKg ? checkForDecimalAndNull(data?.WeightOfCoverPerKg, NoOfDecimalForInputOutput) : '')
+        setValuePackaging('CostOfCoverPerKg', data?.CostOfCoverPerKg ? checkForDecimalAndNull(data?.CostOfCoverPerKg, NoOfDecimalForPrice) : '')
+        setValuePackaging('NoOfPartsPerCover', data?.NoOfPartsPerCover ? checkForDecimalAndNull(data?.NoOfPartsPerCover, NoOfDecimalForInputOutput) : '')
+        setValuePackaging('SpacerPackingInsertCost', data?.SpacerPackingInsertCostIfAny ? checkForDecimalAndNull(data?.SpacerPackingInsertCostIfAny, NoOfDecimalForPrice) : '')
+        setValuePackaging('NoOfSpacerPackingInsert', data?.NoOfSpacersPackingInsert ? checkForDecimalAndNull(data?.NoOfSpacersPackingInsert, NoOfDecimalForInputOutput) : '')
+        setValuePackaging('SpacerPackingInsertRecovery', data?.SpacersPackingInsertRecoveryPercentage ? checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryPercentage, NoOfDecimalForInputOutput) : '')
+        setValuePackaging('SpacerPackingInsertRecoveryCostPerKg', data?.SpacersPackingInsertRecoveryCostPerKg ? checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryCostPerKg, NoOfDecimalForPrice) : '')
+        setValuePackaging('TotalCostOfSpacerPackingInsert', data?.CostOfSpacersPackingInsert ? checkForDecimalAndNull(data?.CostOfSpacersPackingInsert, NoOfDecimalForPrice) : '')
+        setValuePackaging('PackingCost', data?.PackingCost ? checkForDecimalAndNull(data?.PackingCost, NoOfDecimalForPrice) : '')
+        setValuePackaging('TotalCostOfCrateWithAddedCost', data?.TotalCostOfCrateWithAddedCost ? checkForDecimalAndNull(data?.TotalCostOfCrateWithAddedCost, NoOfDecimalForPrice) : '')
         setState((prevState) => ({
             ...prevState,
             noOfCratesRequiredPerDay: data?.NoOfCratesRequiredPerDay,
@@ -126,10 +193,13 @@ function PackagingCalculator(props) {
             packingCost: data?.PackingCost,
             volumePerDay: data?.VolumePerDay,
             volumePerAnnum: data?.VolumePerAnnum,
+            totalAddedCost: data?.NetAddedCost,
+            gridTable: data?.PackagingAddedCosts,
+            totalCostOfCrateWithAddedCost: data?.TotalCostOfCrateWithAddedCost,
         }))
         if (CostingViewMode) {
-            setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
-            setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
+            setValuePackaging('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
+            setValuePackaging('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
             setState((prevState) => ({
                 ...prevState,
                 volumePerDay: data?.VolumePerDay,
@@ -137,7 +207,15 @@ function PackagingCalculator(props) {
             }))
         }
     }
-    const packagingCalculatorFields = [
+    const handleTypeOfCostChange = (value) => {
+        setState((prevState) => ({ ...prevState, typeOfCost: value }))
+
+    }
+    const handleCostPercentageChange = (value) => {
+        let cost = state.totalCostOfCrate * (value / 100)
+        setValueCost('cost', checkForDecimalAndNull(cost, NoOfDecimalForPrice))
+    }
+    const packagingCalculatorSection1 = [
         { label: t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' }), name: 'NoOfComponentsPerCrate', mandatory: true, searchable: false, validate: { maxLength5 }, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('volumePerDay', { defaultValue: 'Volume per day' }), name: 'VolumePerDay', mandatory: false, disabled: true, tooltip: { text: `Coming from the volume master, budgeted for the specified effective date (Budgeted Quantity / ${DaysInMonthForVolumePerDay})`, width: '250px', customClass: "mt-4", disabledIcon: false } },
         { label: t('volumePerAnnum', { defaultValue: 'Volume per annum' }), name: 'VolumePerAnnum', mandatory: false, disabled: true, tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} * ${DaysInMonthForVolumePerDay} * 12`, width: '250px', disabledIcon: true } },
@@ -145,6 +223,18 @@ function PackagingCalculator(props) {
         { label: t('stockNormDays', { defaultValue: 'Stock Norm days' }), name: 'StockNormDays', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('costOfCrate', { defaultValue: 'Cost of crate/trolley' }), name: 'CostOfCrate', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' }), name: 'TotalCostOfCrate', mandatory: false, disabled: true, tooltip: { text: `${t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' })} * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })} * ${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })}`, width: '250px', disabledIcon: true } },
+    ]
+
+    const tableFields = [
+        { label: t('typeOfCost', { defaultValue: 'Type of cost' }), name: 'typeOfCost', handleChange: handleTypeOfCostChange, options: renderListing('typeOfCost'), searchable: true, mandatory: true, disabled: state.disableCost || CostingViewMode },
+        ...(state.typeOfCost?.label !== 'Fixed' ? [
+            { label: t('costPercentage', { defaultValue: 'Cost (%)' }), name: 'costPercentage', handleChange: (e) => { handleCostPercentageChange(e?.target?.value) }, mandatory: false, percentageLimit: true, disabled: state.disableCost || CostingViewMode }
+        ] : []),
+        { label: t('cost', { defaultValue: 'Cost' }), name: 'cost', mandatory: false, disabled: state.typeOfCost?.label !== 'Fixed' || CostingViewMode, tooltip: { text: state.typeOfCost?.label !== 'Fixed' ? `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} * (${t('costPercentage', { defaultValue: 'Cost (%)' })} / 100)` : '', width: '250px', disabledIcon: true } },
+    ]
+
+    const packagingCalculatorSection2 = [
+        { label: t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with added costs)' }), name: 'TotalCostOfCrateWithAddedCost', mandatory: false, disabled: true, tooltip: { text: `${t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' })} * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })} * ${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })}`, width: '250px', disabledIcon: true } },
         { label: t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' }), name: 'AmortizedNoOfYears', validate: { maxLength3 }, mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('weightOfCover', { defaultValue: 'Weight of cover (kg)' }), name: 'WeightOfCover', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' }), name: 'CostOfCoverPerKg', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
@@ -156,7 +246,7 @@ function PackagingCalculator(props) {
         { label: t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' }), name: 'TotalCostOfSpacerPackingInsert', mandatory: false, disabled: true, tooltip: { text: `${t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' })} * ${t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' })} - ${t('spacerPackingInsertRecoveryCostPerKg', { defaultValue: 'Spacer/packing/insert recovery cost per kg' })}`, width: '250px', disabledIcon: true } },
         {
             label: t('packagingCost', { defaultValue: 'Packaging Cost' }), name: 'PackingCost', mandatory: false, disabled: true, tooltip: {
-                text: `(${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} / (${t('volumePerAnnum', { defaultValue: 'Volume per annum' })} * ${t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' })})) + 
+                text: `(${t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with added costs)' })} / (${t('volumePerAnnum', { defaultValue: 'Volume per annum' })} * ${t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' })})) + 
             ((${t('weightOfCover', { defaultValue: 'Weight of cover (kg)' })} * ${t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' })}) / ${t('noOfPartsPerCover', { defaultValue: 'No. of parts per cover' })}) + 
             ${t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' })}`,
                 width: '250px', disabledIcon: true
@@ -164,24 +254,24 @@ function PackagingCalculator(props) {
         }
     ]
     const calculateAllValues = () => {
-        const noOfComponentsPerCrate = checkForNull(getValues('NoOfComponentsPerCrate'))
+        const noOfComponentsPerCrate = checkForNull(getValuesPackaging('NoOfComponentsPerCrate'))
         // Calculate all values
         const noOfCratesRequiredPerDay = Math.ceil(state?.volumePerDay / noOfComponentsPerCrate)
-        const stockNormDays = checkForNull(getValues('StockNormDays'))
-        const costOfCrate = checkForNull(getValues('CostOfCrate'))
+        const stockNormDays = checkForNull(getValuesPackaging('StockNormDays'))
+        const costOfCrate = checkForNull(getValuesPackaging('CostOfCrate'))
         const totalCostOfCrate = noOfCratesRequiredPerDay * stockNormDays * costOfCrate
 
-        const spacerPackingInsertCost = checkForNull(getValues('SpacerPackingInsertCost'))
-        const noOfSpacerPackingInsert = checkForNull(getValues('NoOfSpacerPackingInsert'))
+        const spacerPackingInsertCost = checkForNull(getValuesPackaging('SpacerPackingInsertCost'))
+        const noOfSpacerPackingInsert = checkForNull(getValuesPackaging('NoOfSpacerPackingInsert'))
         const costOfSpacerPackingInsert = (spacerPackingInsertCost * noOfSpacerPackingInsert) - state.spacerPackingInsertRecoveryCostPerKg
 
-        const amortizedNoOfYears = checkForNull(getValues('AmortizedNoOfYears'))
-        const weightOfCover = checkForNull(getValues('WeightOfCover'))
-        const costOfCoverPerKg = checkForNull(getValues('CostOfCoverPerKg'))
-        const noOfPartsPerCover = checkForNull(getValues('NoOfPartsPerCover'))
+        const amortizedNoOfYears = checkForNull(getValuesPackaging('AmortizedNoOfYears'))
+        const weightOfCover = checkForNull(getValuesPackaging('WeightOfCover'))
+        const costOfCoverPerKg = checkForNull(getValuesPackaging('CostOfCoverPerKg'))
+        const noOfPartsPerCover = checkForNull(getValuesPackaging('NoOfPartsPerCover'))
 
         const packingCost = (
-            (checkForNull(totalCostOfCrate / (state.volumePerAnnum * amortizedNoOfYears))) +
+            (checkForNull(state.totalCostOfCrateWithAddedCost / (state.volumePerAnnum * amortizedNoOfYears))) +
             (checkForNull((weightOfCover * costOfCoverPerKg) / noOfPartsPerCover)) +
             checkForNull(costOfSpacerPackingInsert)
         )
@@ -195,25 +285,26 @@ function PackagingCalculator(props) {
         }))
 
         // Set form values
-        setValue('NoOfCratesRequiredPerDay', checkForDecimalAndNull(noOfCratesRequiredPerDay, NoOfDecimalForInputOutput));
-        setValue('TotalCostOfCrate', checkForDecimalAndNull(totalCostOfCrate, NoOfDecimalForPrice));
-        setValue('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(costOfSpacerPackingInsert, NoOfDecimalForPrice));
-        setValue('PackingCost', checkForDecimalAndNull(packingCost, NoOfDecimalForPrice));
+        setValuePackaging('NoOfCratesRequiredPerDay', checkForDecimalAndNull(noOfCratesRequiredPerDay, NoOfDecimalForInputOutput));
+        setValuePackaging('TotalCostOfCrate', checkForDecimalAndNull(totalCostOfCrate, NoOfDecimalForPrice));
+        setValuePackaging('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(costOfSpacerPackingInsert, NoOfDecimalForPrice));
+        setValuePackaging('PackingCost', checkForDecimalAndNull(packingCost, NoOfDecimalForPrice));
     }
     const handleSpacerPackingInsertCost = (value) => {
-        calculateSpacerPackingInsertRecoveryCost(value, getValues('NoOfSpacerPackingInsert'), getValues('SpacerPackingInsertRecovery'))
+        calculateSpacerPackingInsertRecoveryCost(value, getValuesPackaging('NoOfSpacerPackingInsert'), getValuesPackaging('SpacerPackingInsertRecovery'))
     }
     const handleNoOfSpacerPackingInsert = (value) => {
-        calculateSpacerPackingInsertRecoveryCost(getValues('SpacerPackingInsertCost'), value, getValues('SpacerPackingInsertRecovery'))
+        calculateSpacerPackingInsertRecoveryCost(getValuesPackaging('SpacerPackingInsertCost'), value, getValuesPackaging('SpacerPackingInsertRecovery'))
     }
     const handleSpacerPackingInsertRecovery = (value) => {
-        calculateSpacerPackingInsertRecoveryCost(getValues('SpacerPackingInsertCost'), getValues('NoOfSpacerPackingInsert'), value)
+        calculateSpacerPackingInsertRecoveryCost(getValuesPackaging('SpacerPackingInsertCost'), getValuesPackaging('NoOfSpacerPackingInsert'), value)
     }
     const calculateSpacerPackingInsertRecoveryCost = (spacerCost, noOfSpacerInsert, spacerRecovery) => {
         const recoveryCost = spacerCost * noOfSpacerInsert * (spacerRecovery / 100)
-        setValue('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(recoveryCost, NoOfDecimalForPrice));
+        setValuePackaging('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(recoveryCost, NoOfDecimalForPrice));
         setState((prevState) => ({ ...prevState, spacerPackingInsertRecoveryCostPerKg: recoveryCost }))
     }
+
     const onSubmit = debounce((value) => {
         setState((prevState) => ({ ...prevState, disableSubmit: true }))
         let formData = {
@@ -237,7 +328,10 @@ function PackagingCalculator(props) {
             "SpacersPackingInsertRecoveryPercentage": value?.SpacerPackingInsertRecovery,
             "SpacersPackingInsertRecoveryCostPerKg": state?.spacerPackingInsertRecoveryCostPerKg,
             "CostOfSpacersPackingInsert": state?.totalCostOfSpacerPackingInsert,
-            "PackingCost": state?.packingCost
+            "PackingCost": state?.packingCost,
+            "TotalCostOfCrateWithAddedCost": state?.totalCostOfCrateWithAddedCost,
+            "NetAddedCost": state?.totalAddedCost,
+            "PackagingAddedCosts": state?.gridTable
         }
             ;
         if (!isSubmitting.current) {
@@ -255,6 +349,99 @@ function PackagingCalculator(props) {
     const cancelHandler = () => {
         props.closeCalculator(props?.costingPackagingCalculationDetailsId, '', 'Cancel')
     }
+    const fieldProps = {
+        control: controlCost,
+        register: registerCost,
+        errors: errorsCost,
+        disabled: CostingViewMode ? CostingViewMode : false,
+        colSize: '3'
+    }
+    const editGridItemDetails = (index) => {
+        setState(prev => ({
+            ...prev,
+            isEditIndex: true,
+            typeOfCost: prev.gridTable[index].typeOfCost,
+            costPercentage: prev.gridTable[index].costPercentage,
+            cost: prev.gridTable[index].cost
+        }));
+    }
+    const deleteGridItem = (index) => {
+        const updatedGrid = state.gridTable.filter((_, i) => i !== index);
+        setState(prev => ({
+            ...prev,
+            gridTable: updatedGrid,
+            isEditIndex: false
+        }));
+    }
+    const resetFormFields = () => {
+        // Reset form state
+        setState(prev => ({
+            ...prev,
+            isEditIndex: false,
+            typeOfCost: '',
+            costPercentage: '',
+            cost: '',
+        }));
+        setValueCost('typeOfCost', '')
+        setValueCost('costPercentage', '')
+        setValueCost('cost', '')
+    }
+
+    const gridHandler = () => {
+        const isDuplicate = state.gridTable.some((item, index) => {
+            // When editing, skip checking the current item being edited
+            if (state.isEditIndex === index) return false;
+            return item.TypeOfCost === state.typeOfCost?.label;
+        });
+        // Check for duplicate entry
+        if (isDuplicate) {
+            Toaster.warning("This entry already exists.");
+            return false;
+        }
+
+        const newGridItem = {
+            TypeOfCost: state.typeOfCost?.label,
+            TypeOfCostId: state.typeOfCost?.value,
+            CostPercentage: getValuesCost('costPercentage'),
+            NetCost: getValuesCost('cost')
+        };
+        console.log(newGridItem, 'newGridItem')
+        setState(prev => ({
+            ...prev,
+            gridTable: [...prev?.gridTable, newGridItem],
+        }));
+
+        resetFormFields();
+    };
+    const updateGrid = () => {
+        // Filter out edited item to check duplicates
+        const otherItems = state.gridTable.filter((_, i) => i !== state.isEditIndex);
+        const isDuplicate = otherItems.some((item) => item.TypeOfCost === state.typeOfCost?.label);
+        if (isDuplicate) {
+            Toaster.warning("This entry already exists.");
+            return false;
+        }
+
+        const updatedItem = {
+            ...state.gridTable[state.isEditIndex],
+            TypeOfCost: state.typeOfCost?.label,
+            TypeOfCostId: state.typeOfCost?.value,
+            CostPercentage: getValuesCost('costPercentage'),
+            NetCost: getValuesCost('cost')
+        };
+
+        const updatedGrid = [...state.gridTable];
+        updatedGrid[state.isEditIndex] = updatedItem;
+
+        setState(prev => ({
+            ...prev,
+            gridTable: updatedGrid ?? [],
+            isEditIndex: false,
+            AddUpdate: false
+        }));
+
+        resetFormFields();
+    };
     return (
         <Drawer anchor={props.anchor} open={props.isOpen}
         // onClose={(e) => toggleDrawer(e)}
@@ -274,9 +461,9 @@ function PackagingCalculator(props) {
                         </Col>
                     </Row>
                     <Row>
-                        <form onSubmit={handleSubmit(onSubmit)}>
+                        <form>
                             <Row className="packaging-cost-calculator-warpper">
-                                {packagingCalculatorFields.map(item => {
+                                {packagingCalculatorSection1.map(item => {
                                     const { tooltip, name, label } = item ?? {};
                                     return <Col md="3">
                                         {item.tooltip && <TooltipCustom
@@ -292,8 +479,8 @@ function PackagingCalculator(props) {
                                             id={tooltip?.disabledIcon ? item?.name : `nonTarget${item?.name}`}
                                             name={name}
                                             Controller={Controller}
-                                            control={control}
-                                            register={register}
+                                            control={controlPackaging}
+                                            register={registerPackaging}
                                             mandatory={item.mandatory}
                                             rules={{
                                                 required: item.mandatory,
@@ -307,7 +494,117 @@ function PackagingCalculator(props) {
                                             defaultValue={item.disabled ? 0 : ''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors[name]}
+                                            errors={errorsPackaging[name]}
+                                            disabled={item.disabled} />
+                                    </Col>
+                                })}
+                            </Row>
+                            <Row className="packaging-cost-calculator-warpper">
+                                <form>
+                                    <Col md="12">
+                                        <div className="left-border">
+                                            {"Cost:"}
+                                        </div>
+                                    </Col>
+                                    <Row >
+                                        <FormFieldsRenderer
+                                            fieldProps={fieldProps}
+                                            fields={tableFields}
+                                        />
+                                        <Col md="3">
+                                            {state.isEditIndex ? (
+                                                <div>
+                                                    <button type="button" className="btn btn-primary pull-left mr5" onClick={handleSubmitCost(updateGrid)}>Update</button>
+                                                    <button type="button" className="reset-btn pull-left" onClick={resetFormFields}>Cancel</button>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <button type="submit" disabled={CostingViewMode} className="user-btn pull-left" onClick={handleSubmitCost(gridHandler)}>
+                                                        <div className="plus"></div>ADD
+                                                    </button>
+                                                    <button type="button" className="reset-btn pull-left ml5" onClick={resetFormFields} disabled={CostingViewMode}>Reset</button>
+                                                </div>
+                                            )}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="12 mt-3">
+                                            <Table className="table border" size="sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{`Type of Cost`}</th>
+                                                        <th>{`Cost (%)`}</th>
+                                                        <th>{`Cost`}</th>
+                                                        <th>{`Action`}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {state.gridTable?.length > 0 &&
+                                                        state.gridTable?.map((item, index) => {
+                                                            return (
+                                                                <tr key={index}>
+                                                                    <td>{item?.TypeOfCost ?? '-'}</td>
+                                                                    <td>{item?.CostPercentage ?? '-'}</td>
+                                                                    <td>{item?.NetCost ?? '-'}</td>
+                                                                    <td>
+                                                                        <button className="Edit mr-2" type={"button"} disabled={CostingViewMode} onClick={() => editGridItemDetails(index)} />
+                                                                        <button className="Delete" type={"button"} disabled={CostingViewMode} onClick={() => deleteGridItem(index)} />
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    {state.gridTable?.length === 0 &&
+                                                        <tr>
+                                                            <td colSpan={"5"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                                        </tr>
+
+                                                    }
+                                                    <tr className='table-footer'>
+                                                        <td colSpan={2} className="text-right font-weight-600 fw-bold">{'Total Added Cost:'}</td>
+
+                                                        <td colSpan={3} className="text-left">
+                                                            {checkForDecimalAndNull(state?.totalAddedCost, NoOfDecimalForPrice)}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </Table>
+                                        </Col>
+                                    </Row>
+                                </form>
+                            </Row>
+                            <Row className="packaging-cost-calculator-warpper">
+                                {packagingCalculatorSection2.map(item => {
+                                    const { tooltip, name, label } = item ?? {};
+                                    return <Col md="3">
+                                        {item.tooltip && <TooltipCustom
+                                            customClass={tooltip.customClass ?? ''}
+                                            width={tooltip.width}
+                                            tooltipClass={tooltip.className ?? ''}
+                                            disabledIcon={tooltip?.disabledIcon ?? false}
+                                            id={item?.name}
+                                            tooltipText={!tooltip?.disabledIcon ? tooltip.text : `${item.label} = ${tooltip.text ?? ''}`}
+                                        />}
+                                        <TextFieldHookForm
+                                            label={label}
+                                            id={tooltip?.disabledIcon ? item?.name : `nonTarget${item?.name}`}
+                                            name={name}
+                                            Controller={Controller}
+                                            control={controlPackaging}
+                                            register={registerPackaging}
+                                            mandatory={item.mandatory}
+                                            rules={{
+                                                required: item.mandatory,
+                                                validate: { number, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
+                                                max: item.percentageLimit ? {
+                                                    value: 100,
+                                                    message: 'Percentage value should be equal to 100'
+                                                } : {},
+                                            }}
+                                            handleChange={item.handleChange ? item.handleChange : () => { }}
+                                            defaultValue={item.disabled ? 0 : ''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errorsPackaging[name]}
                                             disabled={item.disabled} />
                                     </Col>
                                 })}
@@ -325,6 +622,7 @@ function PackagingCalculator(props) {
                                     {!CostingViewMode && <Button
                                         id="packagingCalculator_submit"
                                         type="submit"
+                                        onClick={handleSubmitPackaging(onSubmit)}
                                         disabled={CostingViewMode || state?.disableSubmit}
                                         icon={"save-icon"}
                                         buttonName={"Save"} />}

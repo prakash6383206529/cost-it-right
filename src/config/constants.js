@@ -663,6 +663,7 @@ export const API = {
   getCarrierTypeList: `${BASE_URL}/costing/get-carrier-type`,
   getFreightCalculation: `${BASE_URL}/costing/get-costing-freight-calculation-details`,
   saveFreightCalculation: `${BASE_URL}/costing/save-costing-freight-calculation-details`,
+  getTypeOfCost: `${BASE_URL}/costing/get-type-of-cost`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
@@ -1872,6 +1873,7 @@ export const GET_CARRIER_TYPE_LIST_SUCCESS = 'GET_CARRIER_TYPE_LIST_SUCCESS';
 export const SET_PACKAGING_CALCULATOR_AVAILABLE = 'SET_PACKAGING_CALCULATOR_AVAILABLE';
 export const SET_FREIGHT_CALCULATOR_AVAILABLE = 'SET_FREIGHT_CALCULATOR_AVAILABLE';
 export const GET_PAINT_COAT_LIST = 'GET_PAINT_COAT_LIST';
+export const GET_TYPE_OF_COST_SUCCESS = 'GET_TYPE_OF_COST_SUCCESS';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
