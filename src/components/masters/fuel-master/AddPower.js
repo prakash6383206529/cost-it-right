@@ -926,11 +926,11 @@ class AddPower extends Component {
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
-        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+        powerTotalT =  Number(item.PowerContributionPercentage)
         return null
       })
 
-      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
+      powerTotalT =  Number(fieldsObj.SEBPowerContributaion)
 
     }
 
@@ -1081,9 +1081,9 @@ class AddPower extends Component {
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
         if (index === powerGridEditIndex) {
-          powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
+          powerTotalT =  Number(fieldsObj.SelfPowerContribution)
         } else {
-          powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+          powerTotalT =  Number(item.PowerContributionPercentage)
         }
         return null
       })

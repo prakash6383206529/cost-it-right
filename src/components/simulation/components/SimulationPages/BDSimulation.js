@@ -282,13 +282,13 @@ function BDSimulation(props) {
                 if (!res?.status && !res?.error) {
 
                     apiCall(true, res);
-                }else{
+                } else {
                     setIsDisable(false)
 
                 }
             }))
         } else {
-            apiCall(false,[]);
+            apiCall(false, []);
         }
         setShowTooltip(false)
     }, 500)
@@ -413,10 +413,10 @@ function BDSimulation(props) {
         const existingNetLandedCost = existingBasicPrice + checkForNull(row?.NetConditionCost);
         const newNetLandedCost = newBasicPrice + checkForNull(row?.NewNetConditionCost);
 
-        
-        
+
+
         const displayCost = row.NewBasicRate != null ? newNetLandedCost : existingNetLandedCost;
-        
+
         // const classGreen = (newNetLandedCost > existingNetLandedCost) ? 'red-value form-control' 
         //             : (newNetLandedCost < existingNetLandedCost) ? 'green-value form-control' 
         //             : 'form-class';
@@ -850,7 +850,7 @@ function BDSimulation(props) {
             processedItem.OtherNetCost = isImpactedMaster ? processedItem?.OldOtherCost : processedItem?.OtherNetCost
             processedItem.NewOtherNetCost = isImpactedMaster ? processedItem?.NewOtherCost : processedItem?.OtherNetCost
             processedItem.NetLandedCost = isImpactedMaster ? processedItem?.OldNetBoughtOutPartCost : processedItem?.NetLandedCost
-                    
+
             Object.keys(processedItem).forEach(key => {
                 if (processedItem[key] === null || processedItem[key] === undefined || processedItem[key] === '') {
                     processedItem[key] = "-";
@@ -860,18 +860,18 @@ function BDSimulation(props) {
         })
         if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
             tempData = hideColumnFromExcel(data, 'Quantity')
-        }else {
+        } else {
             tempData = data
         }
 
-        if(isImpactedMaster && temp[0]?.EntryType === "Domestic"){
+        if (isImpactedMaster && temp[0]?.EntryType === "Domestic") {
             tempData = hideColumnFromExcel(data, "LocalCurrency")
         }
         if (isImpactedMaster) {
-            tempData = tempData.filter(column => !['BoughtOutPartCategory', 'Vendor', 'Plants',column?.EntryType === "Import" ? "LocalCurrency" : undefined].includes(column.value));
+            tempData = tempData.filter(column => !['BoughtOutPartCategory', 'Vendor', 'Plants', column?.EntryType === "Import" ? "LocalCurrency" : undefined].includes(column.value));
         } else {
             tempData = tempData.filter(column => !['PreviousMinimum', 'PreviousMaximum', 'PreviousAverage',
-                'Minimum', 'Maximum', 'Average','LocalCurrency'].includes(column.value));
+                'Minimum', 'Maximum', 'Average', 'LocalCurrency'].includes(column.value));
         }
         return (
             <ExcelSheet data={temp} name={`${showBopLabel()} Data`}>
@@ -985,6 +985,10 @@ function BDSimulation(props) {
                                                 onCellValueChanged={onCellValueChanged}
                                             >
                                                 {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
+                                                {
+                                                    !isImpactedMaster &&
+                                                    <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                                }
                                                 {<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName="BOP Part No" minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName="BOP Part Name" minWidth={columnWidths.BoughtOutPartName}></AgGridColumn>

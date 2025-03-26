@@ -837,8 +837,8 @@ const MachineRateListing = (props) => {
                     suppressRowClickSelection={true}
                     enableBrowserTooltips={true}
                   >
-                    { }
                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                    {isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>}
                     {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
 
                     <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>

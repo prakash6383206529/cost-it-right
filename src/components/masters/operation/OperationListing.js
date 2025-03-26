@@ -89,6 +89,7 @@ const OperationListing = (props) => {
 
 
     })
+    const [skip, setSkip] = useState(0)
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const { t } = useTranslation("common")
     const { technologyLabel, vendorLabel } = useLabels();
@@ -169,7 +170,7 @@ const OperationListing = (props) => {
 
     const getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 10, isPagination = true, dataObj, OperationEntryType = false) => {
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
-
+        setSkip(skip)
         if (state.filterModel?.EffectiveDate) {
             if (state.filterModel.EffectiveDate.dateTo) {
                 let temp = []
@@ -797,7 +798,7 @@ const OperationListing = (props) => {
 
     const importToggle = () => {
         setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
-        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData, !state.isImport)
+        getTableListData(null, null, null, null, skip, globalTakes, true, state.floatingFilterData, !state.isImport)
 
     }
 
@@ -929,18 +930,11 @@ const OperationListing = (props) => {
                                     floatingFilter={true}
                                     domLayout='autoHeight'
                                     rowData={state.showExtraData ? [...setLoremIpsum(state.tableData[0]), ...state.tableData] : state.tableData}
-
-
                                     pagination={true}
-
                                     paginationPageSize={globalTakes}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: 'imagClass'
-                                    }}
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
                                     //onSelectionChanged={onRowSelect}
@@ -949,7 +943,6 @@ const OperationListing = (props) => {
                                     onFilterModified={onFloatingFilterChanged}
                                     enableBrowserTooltips={true}
                                 >
-                                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
@@ -972,10 +965,10 @@ const OperationListing = (props) => {
                                 </AgGridReact>}
                                 <div className='button-wrapper'>
                                     {!state.isLoader &&
-                                        <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
+                                        <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" isImport={state.isImport} />
                                     }
                                     {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                        <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
+                                        <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" isImport={state.isImport} />
 
                                     }
                                 </div>
