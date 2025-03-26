@@ -13,6 +13,7 @@ import { calculatePercentageValue, calculateScrapWeight, checkForDecimalAndNull,
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForPlastic } from '../../../actions/CostWorking'
 import LossStandardTable from '../LossStandardTable'
+import { hasNegativeValues } from '../../../../common/CommonFunctions'
 
 function Plastic(props) {
     const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox, activeTab } = props
@@ -210,8 +211,7 @@ function Plastic(props) {
         props.toggleDrawer('')
     }
     const onSubmit = debounce(handleSubmit((values) => {
-        if (dataToSend?.materialCost < 0) return Toaster.warning("Net Landed Cost cannot be negative")
-
+        if(hasNegativeValues(values)) return false
         !props?.fromPackaging && DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
         setIsDisable(true)
         let obj = {}
@@ -476,10 +476,10 @@ function Plastic(props) {
                                         rules={{
                                             required: true,
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
-                                            max: {
-                                                value: getValues('grossWeight'),
-                                                message: 'Finish weight should not be greater than gross weight.'
-                                            },
+                                            // max: {
+                                            //     value: getValues('grossWeight'),
+                                            //     message: 'Finish weight should not be greater than gross weight.'
+                                            // },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
