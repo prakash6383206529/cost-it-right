@@ -1209,7 +1209,7 @@ const SendForApproval = (props) => {
 
                             <Col md="4">
                               <div className="form-group">
-                                <TooltipCustom id={"impact-for-year-formula"} disabledIcon={true} tooltipText={`(Total Budget Quantity (Refer From Volume Master) * Consumed Quantity) - Variance`} />
+                                <TooltipCustom id={"impact-for-year-formula"} disabledIcon={true} tooltipText={`(Total Budget Quantity (Refer From Volume Master) - Consumed Quantity) * Variance`} />
                                 <label>Impact for the Year</label>
                                 <label id={"impact-for-year-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
                                   {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration?.NoOfDecimalForPrice) : 0}

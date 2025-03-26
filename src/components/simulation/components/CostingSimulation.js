@@ -1557,6 +1557,10 @@ function CostingSimulation(props) {
     }
 
     const sendForApproval = () => {
+        if (!selectedRowData || selectedRowData.length === 0) {
+            Toaster.warning('Please select at least one row to proceed with approval')
+            return false
+        }
         if (getConfigurationKey().IsReleaseStrategyConfigured) {
             let returnValue = true
             let dataList = costingIdObj(selectedRowData)

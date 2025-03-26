@@ -183,7 +183,6 @@ function AddRMFinancialDetails(props) {
                     if ((IsFetchExchangeRateVendorWiseForZBCRawMaterial() || IsFetchExchangeRateVendorWiseForParts()) && (!rawMaterailDetails?.Vendor && !rawMaterailDetailsRefFinancial.current?.customer)) {
                         return false;
                     }
-                    console.log("rawMaterailDetailsRefFinancial.current?.customer?.value", rawMaterailDetailsRefFinancial.current?.customer?.value)
                     if ((rawMaterailDetails?.Vendor?.value || rawMaterailDetailsRefFinancial.current?.customer?.value) && states.isImport) {
 
                         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: state.currency?.label, toCurrency: Data?.Currency, defaultCostingTypeId: costingTypeId, vendorId: rawMaterailDetails?.Vendor?.value, clientValue: rawMaterailDetailsRefFinancial.current?.customer?.value, master: RAWMATERIAL, plantCurrency: getValues("plantCurrency") });
@@ -320,7 +319,7 @@ function AddRMFinancialDetails(props) {
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency ? netCostText : `${netCostlabel} * Plant Currency Rate (${states.isImport ? CurrencyExchangeRate?.plantCurrencyRate : CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
-            toolTipTextNetCostBaseCurrency: `Net Cost (${getValues('plantCurrency') ?? 'Plant Currency'}) * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
+            toolTipTextNetCostBaseCurrency: `Net Cost (${state.hidePlantCurrency ? getValues('currency')?.label : getValues('plantCurrency') ?? 'Plant Currency'}) * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
         };
     };
 
@@ -512,7 +511,6 @@ function AddRMFinancialDetails(props) {
 
         let NetLandedCostConversion
         let NetLandedCostLocalConversion
-        console.log("CurrencyExchangeRate", CurrencyExchangeRate)
         NetLandedCostLocalConversion = checkForDecimalAndNull(NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
 
         if (states.isImport) {

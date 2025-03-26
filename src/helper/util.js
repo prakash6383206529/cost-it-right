@@ -1083,7 +1083,7 @@ export function getTechnologyPermission(technology) {
 }
 
 export function isRMDivisorApplicable(technology) {
-  const allowedTechnologyForRMDivisor = [SPRINGS, HARDWARE, FASTNERS, RIVETS];
+  const allowedTechnologyForRMDivisor = [SPRINGS, FASTNERS, RIVETS];
   return allowedTechnologyForRMDivisor.includes(technology);
 }
 

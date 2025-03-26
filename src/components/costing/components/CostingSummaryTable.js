@@ -1576,7 +1576,7 @@ const CostingSummaryTable = (props) => {
       } else {
         let objNew = { ...obj }
         for (var prop in objNew) {
-          if (prop !== "netRM" && prop !== "nConvCost" && prop !== "nPOPrice" && prop !== "nPoPriceCurrency" && prop !== "netBOP" && prop !== "netSurfaceTreatmentCost" && prop !== "nOverheadProfit" && prop !== "nPackagingAndFreight" && prop !== "totalToolCost") {
+          if (prop !== "netRM" && prop !== "nConvCost" && prop !== "nPOPrice" && prop !== "nPoPriceCurrency" && prop !== "netBOP" && prop !== "netSurfaceTreatmentCost" && prop !== "nOverheadProfit" && prop !== "nPackagingAndFreight" && prop !== "totalToolCost" && prop !== "BasicRate" && prop !== "NetPOPriceConversion" && prop !== "NetPOPriceLocalConversion" && prop !== "netCost") {
             objNew[prop] = "-"
           }
         }
@@ -1589,9 +1589,9 @@ const CostingSummaryTable = (props) => {
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
-    if (!(getConfigurationKey().IsBasicRateAndCostingConditionVisible)) {
-      delete templateObj.conditionCost
-      delete templateObj.BasicRate
+    if (!(getConfigurationKey()?.IsBasicRateAndCostingConditionVisible)) {
+      delete templateObj?.conditionCost
+      delete templateObj?.BasicRate
     }
     if (Number(viewCostingData[0]?.technologyId) !== PLASTIC) {
       delete templateObj.BurningLossWeight
@@ -1600,7 +1600,12 @@ const CostingSummaryTable = (props) => {
     if (getConfigurationKey().IsBoughtOutPartCostingConfigured && viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart) {
       delete templateObj.netBOP
     }
-
+    if (!getConfigurationKey().IsSourceExchangeRateNameVisible) {
+      delete templateObj.ExchangeRateSourceName
+    }
+    if (!getConfigurationKey()?.IsTaxCodeVisible) {
+      delete templateObj?.TaxCode
+    }
     if (props?.isRfqCosting) {
       templateObj.costingHeadCheck = 'VBC'
     }
@@ -1616,6 +1621,24 @@ const CostingSummaryTable = (props) => {
       delete templateObj.castingWeightExcel
       delete templateObj.meltingLossExcel
     }
+    if (!(viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-')) {
+      delete templateObj.currencyTitle
+      delete templateObj.nPoPriceCurrency
+    }else{
+      delete templateObj.netCost
+    }
+
+    if(!isScrapRecoveryPercentageApplied){
+      delete templateObj.scrapRecoveryPercentage
+    }
+
+    if (simulationMode) {
+      ['costingVersion', 'vendorExcel', 'customer', 'InfoCategory', 'partType', 'RevisionNumber', 'plantExcel'].forEach(key => delete templateObj[key]);
+    }
+    if (!showConvertedCurrencyCheckbox) {
+      ['nPOPrice', 'NetPOPriceLocalConversion', 'NetPOPriceConversion', 'currencyTitle'].forEach(key => delete templateObj[key]);
+    }
+
     for (var prop in templateObj) {
       if (viewCostingData[0]?.technologyId === LOGISTICS) {
         costingSummary.push({ label: VIEW_COSTING_DATA_LOGISTICS[prop], value: prop, })
@@ -1636,7 +1659,11 @@ const CostingSummaryTable = (props) => {
       }
     }
 
+    if (!showConvertedCurrencyCheckbox) {
+      templateObj.nPoPriceCurrency = `Net Cost (${getConfigurationKey().BaseCurrency})`
+    }
     viewCostingData && viewCostingData.map((item) => {
+      item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.ScrapRecoveryPercentage : 0) : 0
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
       item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
@@ -1651,6 +1678,12 @@ const CostingSummaryTable = (props) => {
       item.RejectionRemark = item?.rejectionOn?.RejectionRemark ? item?.rejectionOn?.RejectionRemark : '-'
       item.ICCRemark = item?.iccOn?.ICCRemark ? item?.iccOn?.ICCRemark : '-'
       item.PaymentTermRemark = item?.paymentTerms?.PaymentTermRemark ? item?.paymentTerms?.PaymentTermRemark : '-'
+      item.TaxCode = item?.TaxCodeList && Array.isArray(item?.TaxCodeList) && item.TaxCodeList.length > 0 && getConfigurationKey()?.IsTaxCodeVisible ? item.TaxCodeList.map(item => item?.TaxCodeAndDescription).join(',') : '-';
+      item.rejectionRecoveryApplicablity = item?.CostingRejectionRecoveryDetails?.ApplicabilityType ?? "-"
+      item.rejectionRecoveryPercent = item?.CostingRejectionRecoveryDetails?.EffectiveRecoveryPercentage ?? "-"
+      item.rejectionRecoveryApplicablityValue = item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? "-"
+      item.currencyTitle = viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-' && viewCostingData?.[0]?.currency?.currencyTitle !== '' ? (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? `${item?.currency.currencyTitle}/${item?.CostingCurrency} ${item?.currency.currencyValue}` : '') : '-'
+      item.netCost = item?.nPoPriceCurrency
     })
 
     let masterDataArray = []
@@ -1715,6 +1748,7 @@ const CostingSummaryTable = (props) => {
         dataArray = newArr
       }
     })
+
     return returnExcelColumn(masterDataArray, dataArray)
   };
 
@@ -1961,7 +1995,7 @@ const CostingSummaryTable = (props) => {
     {viewRejectAndModelType?.isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
     {viewRejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
   </>
-    const iccToolTipText = <>
+  const iccToolTipText = <>
     {viewRejectAndModelType?.isIncludeToolCostInCCForICC && <p>Tool Cost Included</p>}
     {viewRejectAndModelType?.isIncludeOverheadAndProfitInICC && <p>Overhead and Profit Included</p>}
   </>
@@ -2985,8 +3019,7 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
                                           {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
-                                         
-                                          {console.log(viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit, "viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit")}
+
                                         </span>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getOverheadPercentage(data)}
