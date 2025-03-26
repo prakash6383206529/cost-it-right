@@ -675,7 +675,7 @@ function RubberWeightCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.grossWeight}
-                                                disabled={props.CostingViewMode}
+                                                disabled={props.CostingViewMode || (tableData && tableData.length > 0)}
                                             />
                                         </Col>
 
@@ -700,7 +700,7 @@ function RubberWeightCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.finishedWeight}
-                                                disabled={props.CostingViewMode}
+                                                disabled={props.CostingViewMode || (tableData && tableData.length > 0)}
                                             />
                                         </Col>
 
@@ -742,7 +742,7 @@ function RubberWeightCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.scrapRecoveryPercentage}
-                                                disabled={props.CostingViewMode}
+                                                disabled={props.CostingViewMode || (tableData && tableData.length > 0)}
                                             />
                                         </Col>
 
