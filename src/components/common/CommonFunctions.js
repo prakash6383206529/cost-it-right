@@ -563,17 +563,3 @@ export const updateCostValue = (isConditionCost, state, price, isSimulation = fa
         tableData: table
     };
 };
-
-/**
- * Checks if any values in an object are negative and shows warning if found
- * @param {Object} values Object to check for negative values
- * @returns {boolean} True if negative values found, false otherwise
- */
-export const hasNegativeValues = (values) => {
-    const hasNegative = Object.entries(values).some(([key, value]) => Number(value) < 0);
-    if (hasNegative) {
-        const negativeFields = Object.entries(values).filter(([key, value]) => Number(value) < 0).map(([key]) => key);
-        Toaster.warning(`${negativeFields.length > 1 ? 'The fields' : 'The field'} ${negativeFields.slice(0, -1).join(', ')}${negativeFields.length > 1 ? ' and ' : ''}${negativeFields[negativeFields.length - 1]} contain${negativeFields.length > 1 ? '' : 's'} negative value${negativeFields.length > 1 ? 's' : ''}. Please verify your calculations.`);
-    }
-    return hasNegative;
-};
