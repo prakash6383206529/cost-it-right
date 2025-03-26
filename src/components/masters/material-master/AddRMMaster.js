@@ -345,7 +345,6 @@ function AddRMMaster(props) {
 
     const onSubmit = debounce(handleSubmit((values, isDivision) => {
         
-        
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -502,7 +501,8 @@ function AddRMMaster(props) {
         let financialDataNotChanged = (checkForNull(values.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
             && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) 
             && (checkForNull(values.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)) && (checkForNull(values.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate)) 
-            && checkForNull(values?.NetLandedCostConversion) === checkForNull(DataToChange?.NetLandedCostConversion)
+            && checkForNull(values?.NetLandedCostConversion) === checkForNull(DataToChange?.NetLandedCostConversion)&&
+            checkForNull(values?.ScrapRate) === checkForNull(DataToChange?.ScrapRate)
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
         if (state.isEditFlag) {
             if (!isRMAssociated) {
