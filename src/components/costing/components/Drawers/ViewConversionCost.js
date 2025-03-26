@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../src/helper'
 import { Container, Row, Col, Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
@@ -16,6 +16,7 @@ import { useLabels } from '../../../../helper/core'
 import Hanger from '../CostingHeadCosts/SurfaceTreatMent/Hanger'
 import { viewAddButtonIcon } from '../../CostingUtil'
 import Button from '../../../layout/Button'
+import PaintAndMasking from '../CostingHeadCosts/SurfaceTreatMent/PaintAndMasking'
 
 function ViewConversionCost(props) {
 
@@ -37,13 +38,13 @@ function ViewConversionCost(props) {
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { viewConversionCostData } = props
   const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting, viewCostingDataObj } = viewConversionCostData
-  console.log(viewCostingDataObj, 'viewCostingDataObj')
   const { CostingOperationCostResponse, CostingProcessCostResponse, CostingOtherOperationCostResponse } = conversionData
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
   const [othercostingOperationCost, setOtherCostingOperationCostResponse] = useState([])
   const [surfaceTreatmentCost, setSurfaceTreatmentCost] = useState([])
   const [transportCost, setTransportCost] = useState([])
+  const [showPaintCost, setShowPaintCost] = useState(false)
   const [activeTab, setActiveTab] = useState(0);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [partNumberList, setPartNumberList] = useState([])
@@ -631,49 +632,61 @@ function ViewConversionCost(props) {
   const extraCostTableData = () => {
     return <>
       <Row>
-        <Col md="12" className='mt-1'>
+        <Col md="12" className='mt-3'>
           <div className="left-border">{'Extra Cost:'}</div>
         </Col>
       </Row>
       <Row>
         {/*TRANSPORTATION COST GRID */}
         <Col md="12" className='mb-3'>
-          <Table className="table cr-brdr-main mb-0" size="sm">
+          <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
             <tbody>
               <tr className='thead'>
-                {/* {partNumberList.length ===0 && <th>{`Part No`}</th>}  */}
-                {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Type`}</th>
-                <th>{`Rate`}</th>
-                <th>{`Quantity`}</th>
-                <th className="costing-border-right">{`Cost`}</th>
+                <th>{`Cost Description`}</th>
+                <th>{`Applicability`}</th>
+                <th>{`Applicability Cost`}</th>
+                <th>{`Percentage (%)`}</th>
+                <th>{`Cost`}</th>
+                <th>{`Remark`}</th>
               </tr>
-              {transportCost &&
-                transportCost.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
-                      {initialConfiguration?.IsShowCRMHead && <td>{item.TransportationCRMHead ? item.TransportationCRMHead : '-'}</td>}
-                      <td>{item.UOM ? item.UOM : '-'}</td>
-                      <td>{item.Rate ? item.Rate : '-'}</td>
-                      <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.TransportationCost ? checkForDecimalAndNull(item.TransportationCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
 
-                    </tr>
-                  )
-                })}
-              {transportCost && transportCost.length === 0 && (
-                <tr>
-                  <td colSpan={12}>
-                    <NoContentFound title={EMPTY_DATA} />
-                  </td>
-                </tr>
-              )}
+              {transportCost && transportCost.map((item, index) => (
+                <Fragment key={index}>
+                  <tr>
+                    <td>{item?.UOM ?? '-'}</td>
+                    <td>{item?.Description ?? '-'}</td>
+                    <td>{item?.CostingConditionNumber ?? '-'}</td>
+                    <td>{item?.ApplicabiltyCost ? checkForDecimalAndNull(item?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{item?.TransportationCost !== '-' ? checkForDecimalAndNull(item?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{item?.Remark ? item?.Remark : '-'}</td>
+                  </tr>
+                </Fragment>
+              ))}
+
+              {
+                transportCost && transportCost.length === 0 && (
+                  <tr>
+                    <td colSpan="12">
+                      <NoContentFound title={EMPTY_DATA} />
+                    </td>
+                  </tr>
+                )
+              }
+
+              <tr className='table-footer'>
+                <td colSpan={5} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                <td colSpan={5}>{checkForDecimalAndNull(viewCostingDataObj?.TransportationCostConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>
+              </tr>
             </tbody>
           </Table>
         </Col>
       </Row>
     </>
+  }
+  const closePaintAndMasking = () => {
+    setShowPaintCost(false)
   }
   //  checkMultiplePart()
   return (
@@ -750,29 +763,15 @@ function ViewConversionCost(props) {
 
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                     <>
-                      <Hanger />
+                      <Hanger ViewMode={true} viewCostingDataObj={viewCostingDataObj} />
                       <Row>
                         <Col md="4">
                           <label>Paint and Masking</label>
                           <div className='d-flex align-items-center'>
-                            <input className='form-control w-100' type="text" disabled value={viewCostingDataObj?.TransportationCostConversion} />
+                            <input className='form-control w-100' type="text" disabled value={viewCostingDataObj ? checkForDecimalAndNull(viewCostingDataObj?.CostingPartDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice) : '-'} />
                             <Button
                               id="viewConversion_extraCost"
-                              onClick={() => setViewExtraCost(true)}
-                              className={"right mt-0"}
-                              variant={viewAddButtonIcon([], "className", true)}
-                              title={viewAddButtonIcon([], "title", true)}
-                            />
-                          </div>
-                        </Col>
-                        <Col md="4">
-
-                          <label>Extra Cost</label>
-                          <div className='d-flex align-items-center'>
-                            <input className='form-control w-100' type="text" disabled value={viewCostingDataObj?.TransportationCostConversion} />
-                            <Button
-                              id="viewConversion_extraCost"
-                              onClick={() => setViewExtraCost(true)}
+                              onClick={() => setShowPaintCost(true)}
                               className={"right mt-0"}
                               variant={viewAddButtonIcon([], "className", true)}
                               title={viewAddButtonIcon([], "title", true)}
@@ -804,6 +803,7 @@ function ViewConversionCost(props) {
               />
             )}
           </div>
+          {showPaintCost && <PaintAndMasking isOpen={showPaintCost} ViewMode={true} anchor={'right'} CostingId={viewCostingDataObj?.costingId} closeDrawer={closePaintAndMasking} />}
         </Container>
       </Drawer> : <>
         {!stCostShow && costingProcessCost.length !== 0 && !props?.processShow && !props?.operationShow && processTableData()}

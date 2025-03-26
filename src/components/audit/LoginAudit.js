@@ -198,18 +198,43 @@ function LoginAudit(props) {
     const onFilterTextBoxChanged = (e) => {
         setSearchText(state.gridApi.setQuickFilter(e.target.value));
     }
-    //daterangerconst handleFromDateChange = (date) => {
     const handleFromDateChange = (date) => {
         setFromDate(date);
-        if (date && toDate) {
-            // Enable the filter button
-            setState(prevState => ({ ...prevState, disableFilter: false, }));
-        } else {
-            // Disable the filter button if toDate is not selected yet
-            setState(prevState => ({ ...prevState, disableFilter: true }));
-        }
-        if (date && toDate && date > toDate) {
+        
+        // When clearing the from date
+        if (!date) {
+            // Reset to date since from date is required first
             setToDate(null);
+            setState(prevState => ({ 
+                ...prevState, 
+                disableFilter: true,
+                warningMessage: false 
+            }));
+            return;
+        }
+
+        // When selecting a new from date
+        if (date && toDate) {
+            // Check if new from date is after existing to date
+            if (date > toDate) {
+                setToDate(null);
+                setState(prevState => ({ 
+                    ...prevState, 
+                    disableFilter: true,
+                    warningMessage: false
+                }));
+            } else {
+                setState(prevState => ({ 
+                    ...prevState, 
+                    disableFilter: false,
+                    warningMessage: true 
+                }));
+            }
+        } else {
+            setState(prevState => ({ 
+                ...prevState, 
+                disableFilter: true 
+            }));
         }
     };
 

@@ -327,6 +327,7 @@ function UserRegistration(props) {
 
     if (label === 'role') {
       roleList && roleList.map(item => {
+        if(item?.IsActive === false) return false
         if (item.RoleName === 'SuperAdmin') return false
         temp.push({ label: item.RoleName, value: item.RoleId })
         return null

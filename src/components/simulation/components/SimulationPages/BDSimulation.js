@@ -300,36 +300,36 @@ function BDSimulation(props) {
     }
 
     const effectiveDateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
         return cell != null ? <span title={DayTime(cell).format('DD/MM/YYYY')}>{DayTime(cell).format('DD/MM/YYYY')}</span> : '';
     }
 
     const costingHeadFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell ? cell : '-';
     }
 
     const hyphenFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell ? cell : '-';
     }
 
     const customerFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
 
     const newBasicRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = row?.IsSimulated ? row?.NewBoughtOutPart?.BasicRate : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewBoughtOutPart?.BasicRate : props?.valueFormatted ? props?.valueFormatted : props?.value;
         const value = row?.IsSimulated ? row?.NewBoughtOutPart?.BasicRate : beforeSaveCell(cell)
         return (
             <>
                 {
                     isImpactedMaster ?
                         Number(row.NewBOPRate) :
-                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRate)}>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span id={`newBasicRate-${props?.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRate)}>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
             </>
@@ -337,8 +337,8 @@ function BDSimulation(props) {
     }
 
     const oldBasicRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         return (
             <>
@@ -353,8 +353,8 @@ function BDSimulation(props) {
     }
 
     const vendorFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {isbulkUpload ? row[`Vendor (Code)`] : cell}
@@ -364,8 +364,8 @@ function BDSimulation(props) {
     }
 
     const plantFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {<span title={isbulkUpload ? row['Plant (Code)'] : cell}>{isbulkUpload ? row['Plant (Code)'] : cell}</span>}
@@ -376,8 +376,8 @@ function BDSimulation(props) {
 
     const costFormatter = (props) => {
 
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
@@ -487,7 +487,7 @@ function BDSimulation(props) {
     };
     const quantityFormatter = (props) => {
 
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         return (
             <>
@@ -507,7 +507,7 @@ function BDSimulation(props) {
             return null
         })
 
-        props.backToSimulation(true)
+        props?.backToSimulation(true)
     }
 
     const closeDrawer = (e = '') => {
@@ -661,9 +661,9 @@ function BDSimulation(props) {
 
     }
     const existingOtherCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         const value = beforeSaveCell(cell, props, 'otherCost')
 
@@ -678,7 +678,7 @@ function BDSimulation(props) {
                 {true && <button
                     type="button"
                     className={'View small'}
-                    onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'Old')}
+                    onClick={() => otherCostDrawer(cell, row, props?.rowIndex, 'Old')}
                     title="Add"
                 >
                 </button>}
@@ -688,8 +688,8 @@ function BDSimulation(props) {
     }
 
     const existingConditionCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell, props, 'otherCost')
         return (
             <>
@@ -702,7 +702,7 @@ function BDSimulation(props) {
                 {true && <button
                     type="button"
                     className={'View small'}
-                    onClick={() => conditionCostDrawer(cell, row, props.rowIndex, 'Old')}
+                    onClick={() => conditionCostDrawer(cell, row, props?.rowIndex, 'Old')}
                     title="Add"
                 >
                 </button>}
@@ -712,9 +712,9 @@ function BDSimulation(props) {
     }
 
     const revisedOtherCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
 
         const value = beforeSaveCell(cell, props, 'otherCost')
@@ -734,9 +734,9 @@ function BDSimulation(props) {
                 {true && <button
                     type="button"
                     // className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    // onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
+                    // onClick={() => otherCostDrawer(cell, row, props?.rowIndex, 'New')}
                     className={`${isImpactedMaster ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
+                    onClick={() => otherCostDrawer(cell, row, props?.rowIndex, 'New')}
                     title="Add"
                 >
                 </button>}
@@ -746,8 +746,8 @@ function BDSimulation(props) {
     }
 
     const revisedConditionCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
 
         const value = beforeSaveCell(cell, props, 'otherCost')
@@ -767,9 +767,9 @@ function BDSimulation(props) {
                 {true && <button
                     type="button"
                     // className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    // onClick={() => ConditionCostDrawer(cell, row, props.rowIndex, 'New')}
+                    // onClick={() => ConditionCostDrawer(cell, row, props?.rowIndex, 'New')}
                     className={`${isImpactedMaster ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    onClick={() => conditionCostDrawer(cell, row, props.rowIndex, 'New')}
+                    onClick={() => conditionCostDrawer(cell, row, props?.rowIndex, 'New')}
                     title="Add"
                 >
                 </button>}
@@ -822,7 +822,7 @@ function BDSimulation(props) {
         plantFormatter: plantFormatter,
         customerFormatter: customerFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
-        nullHandler: props.nullHandler && props.nullHandler,
+        nullHandler: props?.nullHandler && props?.nullHandler,
         quantityFormatter: quantityFormatter,
         hyphenFormatter: hyphenFormatter,
         existingOtherCostFormatter: existingOtherCostFormatter,
@@ -886,7 +886,7 @@ function BDSimulation(props) {
                                             <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
-                                            <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
+                                            <ExcelFile filename={`${props?.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
                                             </ExcelFile>
@@ -1024,7 +1024,7 @@ function BDSimulation(props) {
                                                     </AgGridColumn>
                                                 }
                                                 {props?.children}
-                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                <AgGridColumn field="EffectiveDate" headerName={props?.isImpactedMaster && !props?.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 

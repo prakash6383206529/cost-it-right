@@ -449,7 +449,6 @@ function RMDomesticListing(props) {
                 floatingFilterData[prop] = ""
             }
         }
-        console.log(floatingFilterData, "floatingFilterData")
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(updatePageNumber(1))

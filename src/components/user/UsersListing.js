@@ -36,7 +36,6 @@ import { disabledClass } from '../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash';
 import AddDelegation from './RolePermissions/AddDelegation';
-import { PaginationWrapper } from '../common/commonPagination';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -88,7 +87,7 @@ const UsersListing = (props) => {
 	const [skip, setSkip] = useState(0);  // Starting record
 	const [take, setTake] = useState(10); // Number of records per page
 	const [totalRecordCount, setTotalRecordCount] = useState(0);
-	const [floatingFilterData, setFloatingFilterData] = useState({ UserName: "", CreatedDate: "", ModifiedDate: "", RoleName: "", EmailAddress: "", FullName: "", Mobile: "", DepartmentName: "", CreatedBy: "", PhoneNumber: "", ModifiedBy: "" });
+	const [floatingFilterData, setFloatingFilterData] = useState({ UserName: "", CreatedDate: "", ModifiedDate: "", DelegationStatus: "", DelegationStartDate: "", DelegationEndDate: "", RoleName: "", EmailAddress: "", FullName: "", Mobile: "", DepartmentName: "", CreatedBy: "", PhoneNumber: "", ModifiedBy: ""})
 	const { globalTakes } = useSelector((state) => state?.pagination);
 	const [disableFilter, setDisableFilter] = useState(true)
 	const [filterModel, setFilterModel] = useState({});
@@ -160,7 +159,7 @@ const UsersListing = (props) => {
 		}
 	}, [])
 
-	var filterParams = (fieldName) => ({
+	const filterParams = (fieldName) => ({
 		date: "",
 		inRangeInclusive: true,
 		filterOptions: ['equals', 'inRange'],
@@ -174,7 +173,13 @@ const UsersListing = (props) => {
 			var newDate = filterLocalDateAtMidnight
 				? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY')
 				: '';
-			setDate(newDate, fieldName);
+
+			// Update only the specific field's filter data
+			setFloatingFilterData((prevState) => ({
+				...prevState,
+				[fieldName]: newDate
+			}));
+
 			var dateParts = dateAsString?.split('/');
 			if (dateParts?.length !== 3) {
 				return -1;
@@ -198,25 +203,6 @@ const UsersListing = (props) => {
 		browserDatePicker: true,
 		minValidYear: 2000,
 	});
-
-
-
-	// Updated setDate function 
-	var setDate = (date, fieldName) => {
-		setFloatingFilterData((prevState) => ({
-			...prevState,
-			[fieldName]: date
-		}));
-
-		setTimeout(() => {
-			let dateInputs = document.getElementsByClassName('ag-input-field-input');
-			for (let i = 0; i < dateInputs?.length; i++) {
-				if (dateInputs[i].type === 'radio') {
-					dateInputs[i].click();
-				}
-			}
-		}, 300);
-	};
 
 
 
@@ -245,20 +231,24 @@ const UsersListing = (props) => {
 			userType: props?.RFQUser ? 'RFQ' : 'CIR',
 			skip: skip ?? 0,
 			take: take ?? 10,
-			userName: dataObj?.UserName ?? null,
-			name: dataObj?.FullName ?? null,
-			email: dataObj?.EmailAddress ?? null,
-			mobileNo: dataObj?.Mobile ?? null,
-			phone: dataObj?.PhoneNumber ?? null,
-			company: dataObj?.DepartmentName ?? null,
-			createdDate: dataObj?.CreatedDate ?? null,
-			modifiedDate: dataObj?.ModifiedDate ?? null,
-			createdBy: dataObj?.CreatedBy ?? null,
-			role: dataObj?.RoleName ?? null,
-			modifiedBy: dataObj?.ModifiedBy ?? null,
+			userName: dataObj?.UserName ?? "",
+			name: dataObj?.FullName ?? "",
+			email: dataObj?.EmailAddress ?? "",
+			mobileNo: dataObj?.Mobile ?? "",
+			phone: dataObj?.PhoneNumber ?? "",
+			company: dataObj?.DepartmentName ?? "",
+			createdDate: dataObj?.CreatedDate ?? "",
+			modifiedDate: dataObj?.ModifiedDate ?? "",
+			createdBy: dataObj?.CreatedBy ?? "",
+			role: dataObj?.RoleName ?? "",
+			modifiedBy: dataObj?.ModifiedBy ?? "",
 			isPagination: isPagination ?? true,
 			isShowDelegation: props?.isDelegation ?? false,
-			isSelfDelegatedOnly: isSelfDelegatedOnly
+			isSelfDelegatedOnly: isSelfDelegatedOnly,
+			delegatedTo: dataObj?.DelegateeUsers ?? "",
+			delegationStatus: dataObj?.DelegationStatus ?? "",
+			startDate: dataObj?.DelegationStartDate ?? "",
+			endDate: dataObj?.DelegationEndDate ?? ""
 		};
 		setState((prevState) => ({ ...prevState, isLoader: true }));
 
@@ -266,11 +256,31 @@ const UsersListing = (props) => {
 		function callback(res) {
 			setState((prevState) => ({ ...prevState, isLoader: false }));
 
-			if (res.status === 204 && res?.data === '') {
-				setTotalRecordCount(0)
-				dispatch(updatePageNumber(0))
-				setState((prevState) => ({ ...prevState, noData: true, userData: [], dataCount: 0 }));
-			} else if (res && res?.data && res?.data?.DataList) {
+			let isReset = true;
+			Object.keys(floatingFilterData || {}).forEach((prop) => {
+				if (floatingFilterData[prop] !== "") {
+					isReset = false;
+				}
+			});
+
+			setTimeout(() => {
+				if (isReset) {
+					gridOptions?.api?.setFilterModel({});
+				} else {
+					gridOptions?.api?.setFilterModel(filterModel ?? {});
+				}
+			}, 300);
+
+			if (res?.status === 204 && !res?.data) {
+				setTotalRecordCount(0);
+				dispatch(updatePageNumber(0));
+				setState((prevState) => ({
+					...prevState,
+					noData: true,
+					userData: [],
+					dataCount: 0
+				}));
+			} else if (res?.data?.DataList) {
 				let Data = res?.data?.DataList;
 				setTotalRecordCount(Data[0]?.TotalRecordCount ?? 0);
 				setWarningMessage(false);
@@ -326,13 +336,16 @@ const UsersListing = (props) => {
 			setWarningMessage(true);
 		}
 
+		const columnId = value?.column?.colId;
+		const isDateField = ["ModifiedDate", "CreatedDate", "DelegationStartDate", "DelegationEndDate"].includes(columnId);
+
 		if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
 			let isFilterEmpty = true;
 			if (model && Object.keys(model)?.length > 0) {
 				isFilterEmpty = false;
 				setFloatingFilterData((prevData) => ({
 					...prevData,
-					[value.column.colId]: "",
+					[columnId]: "",
 				}));
 			}
 
@@ -346,14 +359,18 @@ const UsersListing = (props) => {
 				);
 			}
 		} else {
-			if (value?.column?.colId === "ModifiedDate" || value?.column?.colId === "CreatedDate") {
-				return false;
-			}
+			if (isDateField && value?.filterInstance?.appliedModel?.dateFrom) {
+				setFloatingFilterData(prevData => ({
+					...prevData,
+					[columnId]: DayTime(value?.filterInstance?.appliedModel?.dateFrom).format('DD/MM/YYYY')
+				}));
+			} else {
 
-			setFloatingFilterData({
-				...floatingFilterData,
-				[value?.column?.colId]: value?.filterInstance?.appliedModel?.filter
-			});
+				setFloatingFilterData(prevData => ({
+					...prevData,
+					[columnId]: value?.filterInstance?.appliedModel?.filter
+				}))
+			}
 		}
 	};
 
@@ -430,10 +447,15 @@ const UsersListing = (props) => {
 			if (item?.ModifiedDate?.includes('T')) {
 				item.ModifiedDate = DayTime(item?.ModifiedDate).format('DD/MM/YYYY HH:mm:ss');
 			}
+			if (item?.DelegationStartDate) {
+				item.DelegationStartDate = item.DelegationStartDate.replace(/-/g, '/');
+			}
+			if (item?.DelegationEndDate) {
+				item.DelegationEndDate = item.DelegationEndDate.replace(/-/g, '/');
+			}
 			return item;
 		});
-	};
-
+	}
 
 	const returnExcelColumn = (data = [], TempData) => {
 		if (!TempData || TempData?.length === 0) {
@@ -546,7 +568,7 @@ const UsersListing = (props) => {
 		const isEdit = rowData?.IsDelegated === true ? true : false
 		return (
 			<div className="">
-				{AddAccessibility && <Button id={`userListing_add${props?.rowIndex}`} className={"Add Tour_List_Edit ml-1"} variant={isEdit ? "Edit" : "Add"} onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false, false, isEdit)} title={isEdit ? "Edit" : "Add"} />}
+				{(AddAccessibility || state?.isSelfDelegatedOnly) && <Button id={`userListing_add${props?.rowIndex}`} className={"Add Tour_List_Edit ml-1"} variant={isEdit ? "Edit" : "Add"} onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false, false, isEdit)} title={isEdit ? "Edit" : "Add"} />}
 				{isEdit && ViewAccessibility && <Button id={`userListing_view${props?.rowIndex}`} className={"View Tour_List_Edit ml-1"} variant="View" onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false, true, isEdit)} title={"View"} />}
 				{<button title='Remark History' id='ViewRfq_remarkHistory' className="btn-history-remark ml-1" type={'button'} onClick={() => { editDelegationItemDetails(rowData?.UserId, rowData, true, false, isEdit) }}><div className='history-remark'></div></button>}
 				{isEdit && DeleteAccessibility && <Button
@@ -564,7 +586,7 @@ const UsersListing = (props) => {
 		*/
 	const hyphenFormatter = (props) => {
 		const cellValue = props?.value;
-		return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+		return cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined ? cellValue : '-';
 	}
 
 	const handleChange = (cell, row) => {
@@ -620,10 +642,7 @@ const UsersListing = (props) => {
 		props.formToggle(props?.RFQUser)
 	}
 
-	const onPageSizeChanged = (newPageSize) => {
-		state.gridApi.paginationSetPageSize(Number(newPageSize));
-		setState((prevState) => ({ ...prevState, globalTake: newPageSize }));
-	};
+
 
 	const onFilterTextBoxChanged = (e) => {
 		const filterValue = e?.target?.value || "";
@@ -657,7 +676,6 @@ const UsersListing = (props) => {
 		reactLocalStorage.remove('selectedRow');
 		dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
 		dispatch(resetStatePagination());
-		// getUsersListData(); //Shaylendra will check it
 		if (isSimulation) {
 			props.isReset()
 		}
@@ -749,7 +767,6 @@ const UsersListing = (props) => {
 										onClick={onExcelDownload}
 										title={`Download ${state?.dataCount === 0 ? "All" : `(${state?.dataCount})`}`}
 										icon={"download mr-1"}
-										disabled = {totalRecordCount ===0}
 										buttonName={`${state?.dataCount === 0 ? "All" : `(${state?.dataCount})`}`}
 									/>
 
@@ -768,7 +785,7 @@ const UsersListing = (props) => {
 						</Col>
 					</Row>
 				</form>
-				{state?.isLoader ? <LoaderCustom customClass="loader-center" /> : <div className={`ag-grid-wrapper height-width-wrapper ${(userDataList && userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+				{state?.isLoader ? <LoaderCustom customClass="loader-center" /> : <div className={`ag-grid-wrapper height-width-wrapper ${(renderRowData() && renderRowData()?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 					<div className="ag-grid-header">
 
 						<input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -779,7 +796,6 @@ const UsersListing = (props) => {
 							}} />
 					</div>
 					<div className={`ag-theme-material ${state?.isLoader && "max-loader-height"}`}>
-						{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 						<AgGridReact
 							defaultColDef={defaultColDef}
 							floatingFilter={true}
@@ -824,9 +840,9 @@ const UsersListing = (props) => {
 								<>
 									<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 									<AgGridColumn field="DelegateeUsers" headerName="Delegated To (Substitute User)"></AgGridColumn>
-									<AgGridColumn field="DelegationStartDate" headerName="Start Date"></AgGridColumn>
-									<AgGridColumn field="DelegationEndDate" headerName="End Date"></AgGridColumn>
-									<AgGridColumn field="DelegationStatus" width={160} headerName="Status" floatingFilter={false}></AgGridColumn>
+									<AgGridColumn field="DelegationStartDate" headerName="Start Date" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams("DelegationStartDate")} ></AgGridColumn>
+									<AgGridColumn field="DelegationEndDate" headerName="End Date" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams("DelegationEndDate")} ></AgGridColumn>
+									<AgGridColumn field="DelegationStatus" width={160} headerName="Status"></AgGridColumn>
 									<AgGridColumn field="DelegationStatus" width={160} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'actionButtonFormatter'}></AgGridColumn>
 								</>
 							}
@@ -843,10 +859,9 @@ const UsersListing = (props) => {
 							{<PaginationWrappers gridApi={state?.gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="User" />}
 							<PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="User" />
 						</div>
+
 					</div>
 				</div>}
-				
-
 
 				{state?.isOpen && (<ViewUserDetails UserId={state?.UserId} isOpen={state?.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props?.RFQUser} />)}
 
