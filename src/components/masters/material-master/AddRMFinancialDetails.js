@@ -511,7 +511,6 @@ function AddRMFinancialDetails(props) {
 
         let NetLandedCostConversion
         let NetLandedCostLocalConversion
-        console.log("CurrencyExchangeRate", CurrencyExchangeRate)
         NetLandedCostLocalConversion = checkForDecimalAndNull(NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
 
         if (states.isImport) {

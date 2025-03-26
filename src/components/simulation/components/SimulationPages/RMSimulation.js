@@ -1154,7 +1154,7 @@ function RMSimulation(props) {
         if(isImpactedMaster){
             data = data.filter(column => !['CostingHead', 'VendorName', 'DestinationPlantName','Category','TechnologyName'].includes(column.value));
         } else {
-            data = data.filter(column => !['LocalCurrency', 'PreviousMinimum', 'PreviousMaximum', 'PreviousAverage','Minimum', 'Maximum', 'Average', 'NewRMNetLandedCostConversion','ExchangeRate','OldRMNetLandedCostConversion'].includes(column.value));
+            data = data.filter(column => !['LocalCurrency', 'PreviousMinimum', 'PreviousMaximum', 'PreviousAverage','Minimum', 'Maximum', 'Average', 'NewRMNetLandedCostConversion','ExchangeRate','OldRMNetLandedCostConversion','NewNetLandedCostLocalConversion','OldNetLandedCostLocalConversion'].includes(column.value));
         }
         return (
             <ExcelSheet data={temp} name={'RM Data'}>

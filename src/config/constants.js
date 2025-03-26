@@ -2489,6 +2489,7 @@ export const VIEW_COSTING_DATA = {
   NetPOPriceConversion: `Net Cost (Base Currency)`,
   currencyTitle: 'Currency',
   nPoPriceCurrency: 'Net Cost (In Currency)',
+  netCost: 'Net Cost',
   // currencyRate: 'Currency Rate',
   NCCPartQuantity: "Quantity",
   IsRegularized: "Is Regularized",
