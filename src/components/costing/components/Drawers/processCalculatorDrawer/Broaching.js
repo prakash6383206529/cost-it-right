@@ -13,35 +13,42 @@ import TooltipCustom from '../../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 function Broaching(props) {
-    const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+    
+    const WeightCalculatorRequest = props?.calculatorData?.WeightCalculatorRequest
+    
+    const processMHRWithOutInterestAndDepreciation = props?.calculatorData?.MHRWithOutInterestAndDepreciation
     const costData = useContext(costingInfoContext);
     const dispatch = useDispatch()
-    const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
-    const [isDisable, setIsDisable] = useState(false)
+    const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest?.TotalCycleTimeSec ?? '',
+        partsPerHour: WeightCalculatorRequest?.PartPerHour ?? '',
+        processCost: WeightCalculatorRequest?.NetProcessCost ?? ''
+    }) 
+    
+       const [isDisable, setIsDisable] = useState(false)
+    const [netProcessCostWithOutInterestAndDepreciation, setNetProcessCostWithoutInterestAndDepreciation] = useState(1)
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
-
     const defaultValues = {
-        noOFTeeth: WeightCalculatorRequest && WeightCalculatorRequest.NoOFTeeth !== undefined ? WeightCalculatorRequest.NoOFTeeth : '',
-        module: WeightCalculatorRequest && WeightCalculatorRequest.Module !== undefined ? WeightCalculatorRequest.Module : '',
-        majorDiameter: WeightCalculatorRequest && WeightCalculatorRequest.MajorDiameter !== undefined ? WeightCalculatorRequest.MajorDiameter : '',
-        minorDiameter: WeightCalculatorRequest && WeightCalculatorRequest.MinorDiameter !== undefined ? WeightCalculatorRequest.MinorDiameter : '',
-        cuttingLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingLength !== undefined ? WeightCalculatorRequest.CuttingLength : '',
-        cuttingResistance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingResistance !== undefined ? WeightCalculatorRequest.CuttingResistance : '',
-        stepForwardThinning: WeightCalculatorRequest && WeightCalculatorRequest.StepForwardThinning !== undefined ? WeightCalculatorRequest.StepForwardThinning : '',
-        broachingForceInTon: WeightCalculatorRequest && WeightCalculatorRequest.BroachingForceInTon !== undefined ? WeightCalculatorRequest.BroachingForceInTon : '',
-        toolLength: WeightCalculatorRequest && WeightCalculatorRequest.ToolLength !== undefined ? WeightCalculatorRequest.ToolLength : '',
-        cuttingSpeedForward: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeedForward !== undefined ? WeightCalculatorRequest.CuttingSpeedForward : '',
-        cuttingSpeedReturn: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeedReturn !== undefined ? WeightCalculatorRequest.CuttingSpeedReturn : '',
-        cuttingTimeMins: WeightCalculatorRequest && WeightCalculatorRequest.CuttingTimeMins !== undefined ? WeightCalculatorRequest.CuttingTimeMins : '',
-        chipToChipTiming: WeightCalculatorRequest && WeightCalculatorRequest.ChipToChipTiming !== undefined ? WeightCalculatorRequest.ChipToChipTiming : '',
-        totalNonCuttingTime: WeightCalculatorRequest && WeightCalculatorRequest.TotalNonCuttingTime !== undefined ? WeightCalculatorRequest.TotalNonCuttingTime : '',
-        indexingTablePositioningTime: WeightCalculatorRequest && WeightCalculatorRequest.IndexingTablePositioningTime !== undefined ? WeightCalculatorRequest.IndexingTablePositioningTime : '',
-        loadingAndUnloadingTime: WeightCalculatorRequest && WeightCalculatorRequest.LoadingAndUnloadingTime !== undefined ? WeightCalculatorRequest.LoadingAndUnloadingTime : '',
-        totalCycleTimeMins: WeightCalculatorRequest && WeightCalculatorRequest.TotalCycleTimeMins !== undefined ? WeightCalculatorRequest.TotalCycleTimeMins : '',
-        TotalCycleTimeSec: WeightCalculatorRequest && WeightCalculatorRequest.TotalCycleTimeSec !== undefined ? WeightCalculatorRequest.TotalCycleTimeSec : '',
-        efficiencyPercentage: WeightCalculatorRequest && WeightCalculatorRequest.EfficiencyPercentage !== undefined ? WeightCalculatorRequest.EfficiencyPercentage : '',
-        partsPerHour: WeightCalculatorRequest && WeightCalculatorRequest.PartPerHour !== undefined ? WeightCalculatorRequest.PartPerHour : '',
-        processCost: WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== undefined ? WeightCalculatorRequest.ProcessCost : '',
+        noOFTeeth: WeightCalculatorRequest?.NoOFTeeth ?? '',
+        module: WeightCalculatorRequest?.Module ?? '',
+        majorDiameter: WeightCalculatorRequest?.MajorDiameter ?? '',
+        minorDiameter: WeightCalculatorRequest?.MinorDiameter ?? '',
+        cuttingLength: WeightCalculatorRequest?.CuttingLength ?? '',
+        cuttingResistance: WeightCalculatorRequest?.CuttingResistance ?? '',
+        stepForwardThinning: WeightCalculatorRequest?.StepForwardThinning ?? '',
+        broachingForceInTon: WeightCalculatorRequest?.BroachingForceInTon ?? '',
+        toolLength: WeightCalculatorRequest?.ToolLength ?? '',
+        cuttingSpeedForward: WeightCalculatorRequest?.CuttingSpeedForward ?? '',
+        cuttingSpeedReturn: WeightCalculatorRequest?.CuttingSpeedReturn ?? '',
+        cuttingTimeMins: WeightCalculatorRequest?.CuttingTimeMins ?? '',
+        chipToChipTiming: WeightCalculatorRequest?.ChipToChipTiming ?? '',
+        totalNonCuttingTime: WeightCalculatorRequest?.TotalNonCuttingTime ?? '',
+        indexingTablePositioningTime: WeightCalculatorRequest?.IndexingTablePositioningTime ?? '',
+        loadingAndUnloadingTime: WeightCalculatorRequest?.LoadingAndUnloadingTime ?? '',
+        totalCycleTimeMins: WeightCalculatorRequest?.TotalCycleTimeMins ?? '',
+        TotalCycleTimeSec: WeightCalculatorRequest?.TotalCycleTimeSec ?? '',
+        efficiencyPercentage: WeightCalculatorRequest?.EfficiencyPercentage ?? '',
+        partsPerHour: WeightCalculatorRequest?.PartPerHour ?? '',
+        processCost: WeightCalculatorRequest?.NetProcessCost ?? '',
     }
     const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -103,8 +110,9 @@ function Broaching(props) {
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
         // const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
-        const processCost = findProcessCost(props?.calculatorData?.UOM, props?.calculatorData?.MHR, partsPerHour)
-        setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
+        const { processCost, processCostWithoutInterestAndDepreciation } = findProcessCost(props?.calculatorData?.UOM, props?.calculatorData?.MHR, partsPerHour, processMHRWithOutInterestAndDepreciation)
+        setNetProcessCostWithoutInterestAndDepreciation(processCostWithoutInterestAndDepreciation)
+        setDataToSend(prevState => ({ ...prevState, processCost: processCost, netProcessMHRWithOutInterestAndDepreciation: processMHRWithOutInterestAndDepreciation }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
 
     }
@@ -182,6 +190,9 @@ function Broaching(props) {
         obj.ProcessCost = dataToSend.processCost
         obj.MachineRate = props.calculatorData.MHR
         obj.TotalMachiningTime = totalMachiningTime
+        obj.ProcessCostWithOutInterestAndDepreciation = netProcessCostWithOutInterestAndDepreciation
+        obj.MHRWithOutInterestAndDepreciation = processMHRWithOutInterestAndDepreciation
+
 
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
             setIsDisable(false)

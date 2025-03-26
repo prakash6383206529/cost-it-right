@@ -14,10 +14,12 @@ import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../..
 
 function UomTimeProcessDefaultCalculator(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+    const processMHRWithOutInterestAndDepreciation=props?.calculatorData?.MHRWithOutInterestAndDepreciation
     const costData = useContext(costingInfoContext);
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const [isDisable, setIsDisable] = useState(false)
+    const [netProcessCostWithOutInterestAndDepreciation, setNetProcessCostWithoutInterestAndDepreciation] = useState(1)
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
     let TotalCycleTimeSecGlobal = 0
 
@@ -134,8 +136,9 @@ function UomTimeProcessDefaultCalculator(props) {
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
         // const processCost = (props?.calculatorData?.MHR) / partsPerHour
-        const processCost = findProcessCost(props?.calculatorData?.UOM, props?.calculatorData?.MHR, partsPerHour)
-        setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
+        const {processCost,processCostWithoutInterestAndDepreciation} = findProcessCost(props?.calculatorData?.UOM, props?.calculatorData?.MHR, partsPerHour,processMHRWithOutInterestAndDepreciation)
+        setNetProcessCostWithoutInterestAndDepreciation(processCostWithoutInterestAndDepreciation)
+        setDataToSend(prevState => ({ ...prevState, processCost: processCost,netProcessCostWithoutInterestAndDepreciation:processCostWithoutInterestAndDepreciation }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
     }
 
@@ -184,6 +187,8 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.ProcessCost = dataToSend.processCost
         obj.MachineRate = props.calculatorData.MHR
         obj.TotalMachiningTime = totalMachiningTime
+        obj.ProcessCostWithOutInterestAndDepreciation = netProcessCostWithOutInterestAndDepreciation
+        obj.MHRWithOutInterestAndDepreciation = processMHRWithOutInterestAndDepreciation
 
         dispatch(saveMachiningProcessCostCalculationData(obj, res => {
             setIsDisable(false)

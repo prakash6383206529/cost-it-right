@@ -1968,7 +1968,8 @@ export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendor
  * @param {object} applicability - The applicability object
  * @param {string} prefix - 'Operation' or 'Process'
  */
-export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation') => {
+export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation', costWithoutInterestAndDepreciation = 0) => {
+  
   const result = {
     [`Net${prefix}CostForOverhead`]: 0,
     [`Net${prefix}CostForProfit`]: 0,
@@ -1977,21 +1978,27 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation')
 
   switch (applicability) {
     case APPLICABILITY_OVERHEAD:
-    case APPLICABILITY_OVERHEAD_EXCL:
       result[`Net${prefix}CostForOverhead`] = cost ?? 0;
       break;
+    case APPLICABILITY_OVERHEAD_EXCL:
+      result[`Net${prefix}CostForOverhead`] = costWithoutInterestAndDepreciation ?? 0;
+      break;
     case APPLICABILITY_PROFIT:
-    case APPLICABILITY_PROFIT_EXCL:
       result[`Net${prefix}CostForProfit`] = cost ?? 0;
       break;
+    case APPLICABILITY_PROFIT_EXCL:
+      result[`Net${prefix}CostForProfit`] = costWithoutInterestAndDepreciation ?? 0;
+      break;
     case APPLICABILITY_OVERHEAD_PROFIT:
+      result[`Net${prefix}CostForOverheadAndProfit`] = cost ?? 0;
+      break;
     case APPLICABILITY_OVERHEAD_PROFIT_EXCL:
     case APPLICABILITY_OVERHEAD_EXCL_PROFIT:
     case APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL:
-      result[`Net${prefix}CostForOverheadAndProfit`] = cost ?? 0;
+      result[`Net${prefix}CostForOverheadAndProfit`] = costWithoutInterestAndDepreciation ?? 0;
       break;
     default:
-      break
+      break;
   }
 
   return result;

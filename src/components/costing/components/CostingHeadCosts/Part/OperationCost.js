@@ -231,10 +231,26 @@ function OperationCost(props) {
     let tempArr = [];
     let tempData = gridData[index];
 
+   // Handle clearing the selection
+   if (!e) {
+    tempData = {
+        ...tempData,
+        CostingConditionMasterAndTypeLinkingId: null,
+        CostingConditionNumber: null,
+        NetOperationCostForOverhead: 0,
+        NetOperationCostForProfit: 0,
+        NetOperationCostForOverheadAndProfit: 0
+    };
+} else {
     // Recalculate net costs with new applicability
     const netCosts = calculateNetCosts(tempData?.OperationCost, e?.label, 'Operation');
-    tempData = { ...tempData, CostingConditionMasterAndTypeLinkingId: e.value, CostingConditionNumber: e.label, ...netCosts };
-
+    tempData = {
+        ...tempData,
+        CostingConditionMasterAndTypeLinkingId: e.value,
+        CostingConditionNumber: e.label,
+        ...netCosts
+    };
+}
     tempArr = Object.assign([...gridData], { [index]: tempData });
     setGridData(tempArr);
   };
@@ -615,7 +631,8 @@ function OperationCost(props) {
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
                                 disabled={CostingViewMode}
-                              />
+                                isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
+                                />
                             </td>
                             <td>
                               <div className='action-btn-wrapper'>
@@ -680,7 +697,8 @@ function OperationCost(props) {
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
                                 disabled={CostingViewMode}
-                              />
+                                isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
+                                />
                             </td>
                             <td>
                               <div className='action-btn-wrapper'>

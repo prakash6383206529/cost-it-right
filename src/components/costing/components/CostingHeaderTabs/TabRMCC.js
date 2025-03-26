@@ -1799,17 +1799,16 @@ function TabRMCC(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit(() => {
-    setSaveDisable(true)
-
     if (ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length > 0) {
       const operations = ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
       const hasMissingApplicability = operations?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
-
       if (operations?.length > 0 && hasMissingApplicability) {
         Toaster.warning('Please select Applicability for all operations');
         return false;
       }
     }
+    setSaveDisable(true)
+
     let count = 0
     for (var prop in ErrorObjRMCC) {
       if (ErrorObjRMCC && ErrorObjRMCC[prop] && Object.keys(ErrorObjRMCC[prop])?.length > 0) {
