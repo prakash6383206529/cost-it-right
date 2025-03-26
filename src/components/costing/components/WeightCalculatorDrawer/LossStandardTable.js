@@ -493,7 +493,7 @@ function LossStandardTable(props) {
     setUseformula(false)
     setFlashLossType(false)
     setBarCuttingAllowanceLossType(false)
-    setPercentage(true)
+    setPercentage(false)
   }
   /**
    * @method deleteRow
