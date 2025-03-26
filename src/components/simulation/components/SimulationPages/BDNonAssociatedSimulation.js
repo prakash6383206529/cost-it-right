@@ -42,7 +42,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function BDNonAssociatedSimulation(props) {
     const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
-const {vendorLabel}= useLabels()
+    const { vendorLabel } = useLabels()
     const { list, isbulkUpload, rowCount, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -81,7 +81,7 @@ const {vendorLabel}= useLabels()
     const dispatch = useDispatch()
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation ,exchangeRateListBeforeDraft} = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const columnWidths = {
         BoughtOutPartNumber: showCompressedColumns ? 50 : 140,
         BoughtOutPartName: showCompressedColumns ? 100 : 140,
@@ -419,7 +419,7 @@ const {vendorLabel}= useLabels()
 
         } else {
             if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            returnValue = checkForDecimalAndNull(((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100))+checkForNull(row?.OtherNetCost) / NumberOfPieces)+checkForNull(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice);
+                returnValue = checkForDecimalAndNull(((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) + checkForNull(row?.OtherNetCost) / NumberOfPieces) + checkForNull(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice);
             } else {
                 // returnValue = checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)
                 returnValue = checkForDecimalAndNull(NewNetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
@@ -442,7 +442,7 @@ const {vendorLabel}= useLabels()
     const OldcostFormatter = (props) => {
         const row = props?.data;
         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
-         const NetLandedCost = (checkForNull(row.BasicRate)+checkForNull(row?.OtherNetCost) / NumberOfPieces)+checkForNull(row?.NetConditionCost)
+        const NetLandedCost = (checkForNull(row.BasicRate) + checkForNull(row?.OtherNetCost) / NumberOfPieces) + checkForNull(row?.NetConditionCost)
         if (!row.BasicRate || row.BasicRate === '') return ''
         //return row.BasicRate != null ? <span title={checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}>{checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         return checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
@@ -799,11 +799,11 @@ const {vendorLabel}= useLabels()
 
 
         // Calculate the new basic price (basic rate + other costs)
-    const newBasicRate = props?.isImpactedMaster ? row.NewBOPRate : (row.NewBasicRate || row.BasicRate);
+        const newBasicRate = props?.isImpactedMaster ? row.NewBOPRate : (row.NewBasicRate || row.BasicRate);
 
-    const newOtherCost = props?.isImpactedMaster ? row.NewOtherCost : row.NewOtherNetCost || row.OtherNetCost;
+        const newOtherCost = props?.isImpactedMaster ? row.NewOtherCost : row.NewOtherNetCost || row.OtherNetCost;
         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1;
-    const newBasicPrice = props?.isImpactedMaster ? row?.NewNetCostWithoutConditionCost : (checkForNull(newBasicRate) + checkForNull(newOtherCost)) / NumberOfPieces;
+        const newBasicPrice = props?.isImpactedMaster ? row?.NewNetCostWithoutConditionCost : (checkForNull(newBasicRate) + checkForNull(newOtherCost)) / NumberOfPieces;
 
         const returnValue = checkForDecimalAndNull(newBasicPrice, getConfigurationKey().NoOfDecimalForPrice);
 
@@ -863,26 +863,26 @@ const {vendorLabel}= useLabels()
         TempData && TempData.map((item) => {
             item.EffectiveDate = (item?.EffectiveDate)?.slice(0, 10)
             if (item?.NewNetLandedCostConversion === null || item?.NewNetLandedCostConversion === undefined) {
-                item.NewNetLandedCostConversion =  item?.OriginalNetLandedCost 
+                item.NewNetLandedCostConversion = item?.OriginalNetLandedCost
             }
-            if(item?.NewNetCostWithoutConditionCost === null || item?.NewNetCostWithoutConditionCost === undefined || item?.NewNetCostWithoutConditionCost === 0){
+            if (item?.NewNetCostWithoutConditionCost === null || item?.NewNetCostWithoutConditionCost === undefined || item?.NewNetCostWithoutConditionCost === 0) {
                 item.NewNetCostWithoutConditionCost = item?.NewBasicRate
-            }   
+            }
 
-            if(!item?.IsBOPAssociated){
+            if (!item?.IsBOPAssociated) {
                 item.OriginalNetLandedCost = item?.NetLandedCost
                 item.NewNetLandedCostConversion = item?.NewNetLandedCost
-            }else{
+            } else {
                 item.OriginalNetLandedCost = item?.OldNetLandedCost
-                item.NewNetLandedCostConversion =  item?.NewNetLandedCostConversion==="-" ? item?.OriginalNetLandedCost : item?.NewNetLandedCostConversion 
+                item.NewNetLandedCostConversion = item?.NewNetLandedCostConversion === "-" ? item?.OriginalNetLandedCost : item?.NewNetLandedCostConversion
             }
-            
+
             Object.keys(item)?.forEach(key => {
                 if (item[key] === null || item[key] === undefined || item[key] === '') {
                     item[key] = "-";
                 }
             });
-            
+
             temp.push(item)
         })
 
@@ -995,6 +995,7 @@ const {vendorLabel}= useLabels()
                                                 onCellValueChanged={onCellValueChanged}
                                             >
                                                 {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
+                                                <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                                 {<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
