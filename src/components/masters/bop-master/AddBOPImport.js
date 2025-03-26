@@ -59,6 +59,7 @@ class AddBOPImport extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
+    this.debouncedCompareRate = debounce(this.compareRate, 1000);
     this.initialState = {
       isEditFlag: this.props?.data?.isEditFlag ? true : false,
       IsVendor: false,
@@ -1027,7 +1028,7 @@ class AddBOPImport extends Component {
     let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPrice)
     let netLandedCostPlantCurrency = checkForDecimalAndNull(checkForNull(netLandedCost) * checkForNull(this.state.plantCurrencyValue), getConfigurationKey().NoOfDecimalForPrice)
     let netLandedCostBaseCurrency = checkForDecimalAndNull(checkForDecimalAndNull(netLandedCostPlantCurrency, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(this.state.currencyValue), getConfigurationKey().NoOfDecimalForPrice)
-    this.props.change('NetConditionCost', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
+    // this.props.change('NetConditionCost', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCost', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCostPlantCurrency', checkForDecimalAndNull(netLandedCostPlantCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
@@ -1314,6 +1315,7 @@ class AddBOPImport extends Component {
   };
   handleBasicRateChange = (e) => {
     this.setState({ totalBasicRate: e.target.value })
+    this.state.isEditFlag && this.debouncedCompareRate()
   }
   handleBOPOperation = (formData, isEditFlag) => {
     const operation = isEditFlag ? this.props.updateBOP : this.props.createBOP;
@@ -1532,6 +1534,16 @@ class AddBOPImport extends Component {
     this.setState({ isOpenConditionDrawer: true })
   }
 
+  compareRate = () => {
+    if (this.state?.DataToChange?.BoughtOutPartOtherCostDetailsSchema[0]?.Applicability === "Basic Rate" && this.state?.DataToChange?.BoughtOutPartConditionsDetails[0]?.Applicability === "Basic Price") {
+      Toaster.warning("Please click on refresh button to update Other Cost and Condition Cost data.")
+    } else if (this.state?.DataToChange?.BoughtOutPartOtherCostDetailsSchema[0]?.Applicability === "Basic Rate") {
+      Toaster.warning("Please click on refresh button to update Other Cost data.")
+    } else if (this.state?.DataToChange?.BoughtOutPartConditionsDetails[0]?.Applicability === "Basic Price") {
+      Toaster.warning("Please click on refresh button to update Condition Cost data.")
+    }
+  }
+
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
     const { initialConfiguration } = this.props
     const { NetCostWithoutConditionCost, plantCurrencyValue, currencyValue } = this.state
@@ -1595,7 +1607,7 @@ class AddBOPImport extends Component {
         this.state.NetConditionCost &&
         Array.isArray(this.state?.conditionTableData) &&
         this.state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
-        Toaster.warning("Please click on refresh button to update condition cost data.")
+        Toaster.warning("Please click on refresh button to update Condition Cost data.")
       }
       const basicPrice = checkForNull(this.props.fieldsObj?.BasicRate) + checkForNull(totalBase)
       const netLandedCost = checkForNull(basicPrice) + checkForNull(NetConditionCost)
@@ -1625,6 +1637,7 @@ class AddBOPImport extends Component {
     // Handle any additional actions based on isConditionCost
     if (isConditionCost) {
       // Update condition cost related data
+      this.props.change('NetConditionCost', checkForDecimalAndNull(result?.formValue?.value, getConfigurationKey().NoOfDecimalForPrice))
       this.setState({
         ...this.state,
         states: result.updatedState
