@@ -995,7 +995,7 @@ function BDNonAssociatedSimulation(props) {
                                                 onCellValueChanged={onCellValueChanged}
                                             >
                                                 {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                                <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth={140} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                                 {<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
