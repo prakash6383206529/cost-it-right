@@ -280,14 +280,21 @@ function AddConditionCosting(props) {
         const Applicability = getValues('Applicability')?.label
         const ApplicabilityCost = getValues('ApplicabilityCost')
         const Percentage = getValues('Percentage')
+        const CostCurrency = getValues('CostCurrency')
+        const Quantity = getValues('Quantity')
+
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
             if (!Applicability || !ApplicabilityCost || !Percentage || Percentage === 0) {
                 Toaster.warning('Cost should not be zero or empty.');
                 return false;
             }
+        }else if (type.label === 'Quantity' && !Quantity) {
+            Toaster.warning("Please enter all details to add a row.");
+            return false;
         }
-        if (!getValues('Type') || !getValues('Condition') || ((getValues('Type') === 'Fixed' || getValues('Type') === 'Quantity') && !getValues('CostCurrency')) || (getValues('Type') === 'Percentage' && !getValues('Percentage'))) {
+
+        if (!getValues('Type') || !getValues('Condition') || !CostCurrency) {
             Toaster.warning("Please enter all details to add a row.");
             return false;
         }
