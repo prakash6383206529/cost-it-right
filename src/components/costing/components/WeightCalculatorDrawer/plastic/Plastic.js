@@ -474,10 +474,10 @@ function Plastic(props) {
                                         rules={{
                                             required: true,
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
-                                            // max: {
-                                            //     value: getValues('grossWeight'),
-                                            //     message: 'Finish weight should not be greater than gross weight.'
-                                            // },
+                                            max: {
+                                                value: getValues('grossWeight'),
+                                                message: 'Finish weight should not be greater than gross weight.'
+                                            },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
