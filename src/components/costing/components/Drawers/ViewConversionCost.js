@@ -763,7 +763,7 @@ function ViewConversionCost(props) {
 
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                     <>
-                      <Hanger ViewMode={true} viewCostingDataObj={viewCostingDataObj} />
+                      <Hanger ViewMode={true} isSummary={true} viewCostingDataObj={viewCostingDataObj} />
                       <Row>
                         <Col md="4">
                           <label>Paint and Masking</label>
