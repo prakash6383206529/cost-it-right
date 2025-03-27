@@ -635,7 +635,7 @@ function OperationSTSimulation(props) {
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn minWidth={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {operationTypes.includes('Welding') && <AgGridColumn field="OperationConsumption" editable='false' headerName="Consumption" minWidth={190} cellRenderer='consumptionFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                <AgGridColumn field="Currency" minWidth={150} headerName="Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="Currency" minWidth={180} headerName="Currency/Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 {(isImpactedMaster || lastRevision ) && <AgGridColumn field="LocalCurrency" minWidth={120}  headerName={"Plant Currency"}cellRenderer={"hyphenFormatter"}></AgGridColumn>}
 
                                                 {operationTypes.includes('Welding') && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={320} headerName="Welding Material Rate/Kg" marryChildren={true} >
