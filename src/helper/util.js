@@ -20,12 +20,14 @@ import {
   APPLICABILITY_OVERHEAD_PROFIT_EXCL,
   APPLICABILITY_OVERHEAD_EXCL_PROFIT,
   APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL,
+  TIME,
 
 } from '../config/constants'
 import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
 import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID } from '../config/masterData';
+import Toaster from '../components/common/Toaster';
 /**
  * @method  apiErrors
  * @desc Response error handler.
@@ -1963,13 +1965,32 @@ export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendor
  * @param {object} applicability - The applicability object
  * @param {string} prefix - 'Operation' or 'Process'
  */
-export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation', costWithoutInterestAndDepreciation = 0) => {
+export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation', costWithoutInterestAndDepreciation = 0, isDetailed = false, uomType = '') => {
+  
   
   const result = {
     [`Net${prefix}CostForOverhead`]: 0,
     [`Net${prefix}CostForProfit`]: 0,
     [`Net${prefix}CostForOverheadAndProfit`]: 0
   };
+
+  // Check if excluding applicability is selected but form is not detailed
+  const isExcludingApplicability = [
+    APPLICABILITY_OVERHEAD_EXCL,
+    APPLICABILITY_PROFIT_EXCL,
+    APPLICABILITY_OVERHEAD_PROFIT_EXCL,
+    APPLICABILITY_OVERHEAD_EXCL_PROFIT,
+    APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
+  ].includes(applicability);
+
+  // Show warning if excluding applicability selected but not detailed form
+  if (isExcludingApplicability) {
+    if(!isDetailed||uomType !== TIME){
+    Toaster.warning("Detailed cost is unavailable for the selected process, and UOM is not time-based. Overhead & profit will be calculated on the actual machine rate.");
+    costWithoutInterestAndDepreciation = cost;
+  }}
+
+  
 
   switch (applicability) {
     case APPLICABILITY_OVERHEAD:
