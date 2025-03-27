@@ -663,7 +663,7 @@ export const API = {
   getCarrierTypeList: `${BASE_URL}/costing/get-carrier-type`,
   getFreightCalculation: `${BASE_URL}/costing/get-costing-freight-calculation-details`,
   saveFreightCalculation: `${BASE_URL}/costing/save-costing-freight-calculation-details`,
-  getTypeOfCost: `${BASE_URL}/costing/get-type-of-cost`,
+  getTypeOfCost: `${BASE_URL}/costing/select-list-packaging-cost-type`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,

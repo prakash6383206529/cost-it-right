@@ -7,7 +7,7 @@ import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
 import Button from '../../../layout/Button'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
-import { getPackagingCalculation, getSimulationPackagingCalculation, getVolumePerDayForPackagingCalculator, savePackagingCalculation } from '../../actions/CostWorking'
+import { getPackagingCalculation, getSimulationPackagingCalculation, getVolumePerDayForPackagingCalculator, savePackagingCalculation, getTypeOfCost } from '../../actions/CostWorking'
 import { Drawer } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
 import { ViewCostingContext } from '../CostingDetails'
@@ -34,6 +34,7 @@ function PackagingCalculator(props) {
         gridTable: [],
         isEditIndex: false,
         totalCostOfCrateWithAddedCost: '',
+        editIndex: '',
     })
     const { costingData, CostingEffectiveDate } = useSelector(state => state.costing)
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
@@ -76,7 +77,7 @@ function PackagingCalculator(props) {
         if (!CostingViewMode && calclulationFieldValues.some(value => value !== undefined)) {
             calculateAllValues();
         }
-    }, [calclulationFieldValues, state?.spacerPackingInsertRecoveryCostPerKg, state?.volumePerDay, state?.volumePerAnnum]);
+    }, [calclulationFieldValues, state?.spacerPackingInsertRecoveryCostPerKg, state?.volumePerDay, state?.volumePerAnnum, state?.totalCostOfCrate, state?.totalAddedCost, state?.totalCostOfCrateWithAddedCost]);
     useEffect(() => {
 
         const tempData = rowObjData?.SimulationTempData
@@ -106,7 +107,7 @@ function PackagingCalculator(props) {
         }
 
         getPackagingCalculationData()
-        // }
+        dispatch(getTypeOfCost(res => {}))
     }, [])
     useEffect(() => {
         if (state.totalCostOfCrate > 0) {
@@ -143,26 +144,11 @@ function PackagingCalculator(props) {
         const temp = [];
 
         if (label === 'typeOfCost') {
-            // typeOfCostList && typeOfCostList.map((item) => {
-            //     temp.push({ label: item?.Text, value: item?.Value });
-            //     return null;
-            // });
-            let temp = [{
-                label: 'Fixed',
-                value: 1,
-            },
-            {
-                label: 'Maintenance',
-                value: 2,
-            },
-            {
-                label: 'Interest',
-                value: 3,
-            },
-            {
-                label: 'Depreciation',
-                value: 4,
-            },]
+            typeOfCostList && typeOfCostList.map((item) => {
+                if (item.Value === '--0--') return false;
+                temp.push({ label: item?.Text, value: item?.Value });
+                return null;
+            });
             return temp;
         }
 
@@ -194,7 +180,7 @@ function PackagingCalculator(props) {
             volumePerDay: data?.VolumePerDay,
             volumePerAnnum: data?.VolumePerAnnum,
             totalAddedCost: data?.NetAddedCost,
-            gridTable: data?.PackagingAddedCosts,
+            gridTable: data?.PackagingAddedCosts ?? [],
             totalCostOfCrateWithAddedCost: data?.TotalCostOfCrateWithAddedCost,
         }))
         if (CostingViewMode) {
@@ -209,6 +195,8 @@ function PackagingCalculator(props) {
     }
     const handleTypeOfCostChange = (value) => {
         setState((prevState) => ({ ...prevState, typeOfCost: value }))
+        setValueCost('costPercentage', '')
+        setValueCost('cost', '')
 
     }
     const handleCostPercentageChange = (value) => {
@@ -230,11 +218,11 @@ function PackagingCalculator(props) {
         ...(state.typeOfCost?.label !== 'Fixed' ? [
             { label: t('costPercentage', { defaultValue: 'Cost (%)' }), name: 'costPercentage', handleChange: (e) => { handleCostPercentageChange(e?.target?.value) }, mandatory: false, percentageLimit: true, disabled: state.disableCost || CostingViewMode }
         ] : []),
-        { label: t('cost', { defaultValue: 'Cost' }), name: 'cost', mandatory: false, disabled: state.typeOfCost?.label !== 'Fixed' || CostingViewMode, tooltip: { text: state.typeOfCost?.label !== 'Fixed' ? `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} * (${t('costPercentage', { defaultValue: 'Cost (%)' })} / 100)` : '', width: '250px', disabledIcon: true } },
+        { label: t('cost', { defaultValue: 'Cost' }), name: 'cost', mandatory: false, disabled: state.typeOfCost?.label !== 'Fixed' || CostingViewMode, tooltip: state.typeOfCost?.label !== 'Fixed' ? { text: `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} * (${t('costPercentage', { defaultValue: 'Cost (%)' })} / 100)`, width: '250px', disabledIcon: true } : false },
     ]
 
     const packagingCalculatorSection2 = [
-        { label: t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with added costs)' }), name: 'TotalCostOfCrateWithAddedCost', mandatory: false, disabled: true, tooltip: { text: `${t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' })} * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })} * ${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })}`, width: '250px', disabledIcon: true } },
+        { label: t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with added costs)' }), name: 'TotalCostOfCrateWithAddedCost', mandatory: false, disabled: true, tooltip: { text: `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Total added cost' })}`, width: '250px', disabledIcon: true } },
         { label: t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' }), name: 'AmortizedNoOfYears', validate: { maxLength3 }, mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('weightOfCover', { defaultValue: 'Weight of cover (kg)' }), name: 'WeightOfCover', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' }), name: 'CostOfCoverPerKg', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
@@ -360,17 +348,22 @@ function PackagingCalculator(props) {
         setState(prev => ({
             ...prev,
             isEditIndex: true,
-            typeOfCost: prev.gridTable[index].typeOfCost,
-            costPercentage: prev.gridTable[index].costPercentage,
-            cost: prev.gridTable[index].cost
+            typeOfCost: { label: state?.gridTable[index].TypeOfCost, value: state?.gridTable[index].TypeOfCost },
+            costPercentage: state?.gridTable[index].CostPercentage,
+            cost: state?.gridTable[index].NetCost,
+            editIndex: index
         }));
+        setValueCost('typeOfCost', { label: state?.gridTable[index].TypeOfCost, value: state?.gridTable[index].TypeOfCost })
+        setValueCost('costPercentage', state?.gridTable[index].CostPercentage)
+        setValueCost('cost', state?.gridTable[index].NetCost)
     }
     const deleteGridItem = (index) => {
         const updatedGrid = state.gridTable.filter((_, i) => i !== index);
         setState(prev => ({
             ...prev,
             gridTable: updatedGrid,
-            isEditIndex: false
+            isEditIndex: false,
+            editIndex: ''
         }));
     }
     const resetFormFields = () => {
@@ -381,67 +374,53 @@ function PackagingCalculator(props) {
             typeOfCost: '',
             costPercentage: '',
             cost: '',
+            editIndex: ''
         }));
         setValueCost('typeOfCost', '')
         setValueCost('costPercentage', '')
         setValueCost('cost', '')
     }
+    const addData = () => {
 
-    const gridHandler = () => {
-        const isDuplicate = state.gridTable.some((item, index) => {
-            // When editing, skip checking the current item being edited
-            if (state.isEditIndex === index) return false;
-            return item.TypeOfCost === state.typeOfCost?.label;
+        const newData = {
+            TypeOfCost: state.typeOfCost?.label,
+            CostPercentage: getValuesCost('costPercentage'),
+            NetCost: getValuesCost('cost')
+        };
+
+        let isDuplicate = false
+        state?.gridTable?.map((item, index) => {
+            if (index !== state.editIndex) {
+                if ((item?.TypeOfCost) === (state.typeOfCost?.label)) {
+                    isDuplicate = true
+                }
+            }
+            return null
         });
-        // Check for duplicate entry
+
         if (isDuplicate) {
-            Toaster.warning("This entry already exists.");
+            Toaster.warning('Duplicate entry is not allowed.');
             return false;
         }
 
-        const newGridItem = {
-            TypeOfCost: state.typeOfCost?.label,
-            TypeOfCostId: state.typeOfCost?.value,
-            CostPercentage: getValuesCost('costPercentage'),
-            NetCost: getValuesCost('cost')
-        };
-        console.log(newGridItem, 'newGridItem')
-        setState(prev => ({
-            ...prev,
-            gridTable: [...prev?.gridTable, newGridItem],
-        }));
-
-        resetFormFields();
-    };
-    const updateGrid = () => {
-        // Filter out edited item to check duplicates
-        const otherItems = state.gridTable.filter((_, i) => i !== state.isEditIndex);
-        const isDuplicate = otherItems.some((item) => item.TypeOfCost === state.typeOfCost?.label);
-        if (isDuplicate) {
-            Toaster.warning("This entry already exists.");
-            return false;
+        if (state.isEditIndex) {
+            const updatedTableData = [...state.gridTable];
+            updatedTableData[state.isEditIndex] = newData;
+            setState(prev => ({
+                ...prev,
+                gridTable: updatedTableData
+            }));
+        } else {
+            setState(prev => ({
+                ...prev,
+                gridTable: [...state.gridTable, newData]
+            }));
         }
 
-        const updatedItem = {
-            ...state.gridTable[state.isEditIndex],
-            TypeOfCost: state.typeOfCost?.label,
-            TypeOfCostId: state.typeOfCost?.value,
-            CostPercentage: getValuesCost('costPercentage'),
-            NetCost: getValuesCost('cost')
-        };
-
-        const updatedGrid = [...state.gridTable];
-        updatedGrid[state.isEditIndex] = updatedItem;
-
-        setState(prev => ({
-            ...prev,
-            gridTable: updatedGrid ?? [],
-            isEditIndex: false,
-            AddUpdate: false
-        }));
-
         resetFormFields();
+
     };
+
     return (
         <Drawer anchor={props.anchor} open={props.isOpen}
         // onClose={(e) => toggleDrawer(e)}
@@ -510,22 +489,14 @@ function PackagingCalculator(props) {
                                         <FormFieldsRenderer
                                             fieldProps={fieldProps}
                                             fields={tableFields}
-                                        />
-                                        <Col md="3">
-                                            {state.isEditIndex ? (
+                                        >
+                                            <Col md="3">
                                                 <div>
-                                                    <button type="button" className="btn btn-primary pull-left mr5" onClick={handleSubmitCost(updateGrid)}>Update</button>
-                                                    <button type="button" className="reset-btn pull-left" onClick={resetFormFields}>Cancel</button>
+                                                    <button type="button" className="user-btn pull-left mt-5 mr-2" onClick={handleSubmitCost(addData)}>{state.isEditIndex ? 'Update' : 'Add'}</button>
+                                                    <button type="button" className="reset-btn pull-left mt-5" onClick={resetFormFields}>Cancel</button>
                                                 </div>
-                                            ) : (
-                                                <div>
-                                                    <button type="submit" disabled={CostingViewMode} className="user-btn pull-left" onClick={handleSubmitCost(gridHandler)}>
-                                                        <div className="plus"></div>ADD
-                                                    </button>
-                                                    <button type="button" className="reset-btn pull-left ml5" onClick={resetFormFields} disabled={CostingViewMode}>Reset</button>
-                                                </div>
-                                            )}
-                                        </Col>
+                                            </Col>
+                                        </FormFieldsRenderer>
                                     </Row>
                                     <Row>
                                         <Col md="12 mt-3">
@@ -544,8 +515,8 @@ function PackagingCalculator(props) {
                                                             return (
                                                                 <tr key={index}>
                                                                     <td>{item?.TypeOfCost ?? '-'}</td>
-                                                                    <td>{item?.CostPercentage ?? '-'}</td>
-                                                                    <td>{item?.NetCost ?? '-'}</td>
+                                                                    <td>{!item?.CostPercentage ? '-' : item?.CostPercentage}</td>
+                                                                    <td>{!item?.NetCost ? '-' : item?.NetCost}</td>
                                                                     <td>
                                                                         <button className="Edit mr-2" type={"button"} disabled={CostingViewMode} onClick={() => editGridItemDetails(index)} />
                                                                         <button className="Delete" type={"button"} disabled={CostingViewMode} onClick={() => deleteGridItem(index)} />
