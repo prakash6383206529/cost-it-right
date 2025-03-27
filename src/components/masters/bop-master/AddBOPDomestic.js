@@ -29,7 +29,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, compareRateCommon, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser, getExchangeRateByCurrency } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -55,7 +55,7 @@ class AddBOPDomestic extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
-    this.debouncedCompareRate = debounce(this.compareRate, 1000);
+    this.debouncedCompareRate = debounce(() => { compareRateCommon(this.props.bopData?.BoughtOutPartOtherCostDetailsSchema, this.props.bopData?.BoughtOutPartConditionsDetails)}, 1000);
     this.initialState = {
       BOPID: EMPTY_GUID,
       isEditFlag: this.props?.data?.isEditFlag ? true : false,
@@ -1182,15 +1182,6 @@ class AddBOPDomestic extends Component {
     return value
   }
 
-  compareRate = () => {
-    if (this.props.bopData?.BoughtOutPartOtherCostDetailsSchema[0]?.Applicability === "Basic Rate" && this.props.bopData?.BoughtOutPartConditionsDetails[0]?.Applicability === "Basic Price") {
-      Toaster.warning("Please click on refresh button to update Other Cost and Condition Cost data.")
-    } else if (this.props.bopData?.BoughtOutPartOtherCostDetailsSchema[0]?.Applicability === "Basic Rate") {
-      Toaster.warning("Please click on refresh button to update Other Cost data.")
-    } else if (this.props.bopData?.BoughtOutPartConditionsDetails[0]?.Applicability === "Basic Price") {
-      Toaster.warning("Please click on refresh button to update Condition Cost data.")
-    }
-  }
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
 

@@ -31,7 +31,7 @@ import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 import { getPlantUnitAPI } from "../actions/Plant"
 import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
-import { getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
+import { compareRateCommon, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -1048,13 +1048,7 @@ function AddRMFinancialDetails(props) {
     const debouncedCompareRate = () => {        
         clearTimeout(debounceTimerRef.current);
         debounceTimerRef.current = setTimeout(() => {
-            if (state?.conditionTableData[0]?.Applicability === "Basic Price" && state?.otherCostTableData[0]?.Applicability === "Basic Rate") {
-                Toaster.warning("Please click on refresh button to update Other Cost and Condition Cost data.");
-            } else if (state?.otherCostTableData[0]?.Applicability === "Basic Rate") {
-                Toaster.warning("Please click on refresh button to update Other Cost data.");
-            } else if (state?.conditionTableData[0]?.Applicability === "Basic Price") {
-                Toaster.warning("Please click on refresh button to update Condition Cost data.");
-            }
+            compareRateCommon(state?.otherCostTableData, state?.conditionTableData);
         }, 1000);
     };
 
