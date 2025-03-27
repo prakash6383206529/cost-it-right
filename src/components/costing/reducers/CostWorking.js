@@ -31,7 +31,8 @@ import {
     RUBBER_CALCULATOR_RESET,
     GET_CARRIER_TYPE_LIST_SUCCESS,
     SET_PACKAGING_CALCULATOR_AVAILABLE,
-    SET_FREIGHT_CALCULATOR_AVAILABLE
+    SET_FREIGHT_CALCULATOR_AVAILABLE,
+    GET_TYPE_OF_COST_SUCCESS
 } from '../../../config/constants';
 
 const initialState = {
@@ -266,6 +267,13 @@ export default function CostWorkingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 freightCalculatorAvailable: action.payload
+            }
+        case GET_TYPE_OF_COST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                typeOfCostList: action.payload
             }
         default:
             return state;

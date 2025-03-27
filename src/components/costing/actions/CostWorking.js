@@ -7,7 +7,8 @@ import {
   ADD_PROCESS_COSTING_SUCCESS, SET_COSTING_DETAIL_ROW_DATA, UPDATE_COSTING_OTHER_OPERATION_SUCCESS, SAVE_COSTING_AS_DRAFT_SUCCESS, ADD_BOP_GRID_COSTING_SUCCESS,
   SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET, RUBBER_CALCULATOR_RESET, GET_CARRIER_TYPE_LIST_SUCCESS,
   SET_PACKAGING_CALCULATOR_AVAILABLE,
-  SET_FREIGHT_CALCULATOR_AVAILABLE
+  SET_FREIGHT_CALCULATOR_AVAILABLE,
+  GET_TYPE_OF_COST_SUCCESS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -1916,5 +1917,29 @@ export function setFreightCalculatorAvailable(data) {
   return {
     type: SET_FREIGHT_CALCULATOR_AVAILABLE,
     payload: data
+  };
+}
+/**
+ * @method getTypeOfCost
+ * @description Get type of cost dropdown list
+*/
+export function getTypeOfCost(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(API.getTypeOfCost, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_TYPE_OF_COST_SUCCESS,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+    });
   };
 }
