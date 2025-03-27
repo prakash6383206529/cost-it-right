@@ -399,7 +399,7 @@ const PowerListing = (props) => {
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" tooltipField="PlantWithCode"></AgGridColumn>
-                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
+                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} tooltipField="VendorWithCode"></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)"></AgGridColumn>}
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
