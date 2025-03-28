@@ -55,7 +55,7 @@ function MRSimulation(props) {
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const gridRef = useRef();
-const {vendorLabel} = useLabels()
+    const { vendorLabel } = useLabels()
     const { technologyLabel } = useLabels();
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -64,7 +64,7 @@ const {vendorLabel} = useLabels()
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation,selectedTechnologyForSimulation,exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
@@ -140,7 +140,7 @@ const {vendorLabel} = useLabels()
                 {
                     isImpactedMaster ?
                         row.NewMachineRate :
-                        <span id={`newRateMachineRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} netCost_revised`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
+                        <span id={`newRateMachineRate-${props.rowIndex}`} className={`form-control netCost_revised`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
                 }
 
             </>
@@ -269,8 +269,8 @@ const {vendorLabel} = useLabels()
     }
 
     const customerFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
+        const row = props?.valueFormatted || props?.data;
+        return row ? (isbulkUpload ? row['Customer (Code)'] : row.CustomerName) || '-' : '-';
     }
 
     // TRIGGER ON EVERY CHNAGE IN CELL
@@ -318,7 +318,10 @@ const {vendorLabel} = useLabels()
         setIsEffectiveDateSelected(true)
         setIsWarningMessageShow(false)
     }
-
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
@@ -334,6 +337,7 @@ const {vendorLabel} = useLabels()
         customerFormatter: customerFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
         localConversionFormatter: localConversionFormatter,
+        hyphenFormatter: hyphenFormatter,
         nullHandler: props.nullHandler && props.nullHandler
     };
     const verifySimulation = debounce(() => {
@@ -341,13 +345,14 @@ const {vendorLabel} = useLabels()
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 if (!res?.status && !res?.error) {
                     setValueFunction(true, res);
-                }            }))
-        }else{
+                }
+            }))
+        } else {
             setValueFunction(false, []);
         }
-       
+
     }, 500);
-    const setValueFunction=(isExchangeRate,res)=>{
+    const setValueFunction = (isExchangeRate, res) => {
         const filteredMasterId = masterList?.find(item => item?.Text === 'Machine Rate')?.Value;
         if (!isEffectiveDateSelected) {
             setIsWarningMessageShow(true)
@@ -423,10 +428,26 @@ const {vendorLabel} = useLabels()
 
         let temp = []
         TempData && TempData.map((item) => {
-            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-            temp.push(item)
-        })
+            let newItem = { ...item }
+            newItem.EffectiveDate = (newItem.EffectiveDate)?.slice(0, 10)
+            newItem.NewMachineRate = newItem?.NewMachineRate ? newItem?.NewMachineRate : newItem?.MachineRate
+            newItem.MachineRate = isImpactedMaster ? newItem?.OldMachineRate : newItem?.MachineRate
 
+            Object.keys(newItem).forEach(key => {
+                if (newItem[key] === null || newItem[key] === undefined || newItem[key] === '') {
+                    newItem[key] = "-"
+                }
+            })
+            
+            temp.push(newItem)
+        })
+        
+        if(isImpactedMaster){
+            data = data.filter(column => !['CostingHead', 'Technology', 'Plant','VendorName'].includes(column.value));
+        } else {
+            data = data.filter(column => !['LocalCurrency', 'PreviousMinimum', 'PreviousMaximum', 'PreviousAverage',
+                'Minimum', 'Maximum', 'Average','NewMachineRateLocalConversion','OldMachineRateLocalConversion'].includes(column.value));
+        }
         return (
             <ExcelSheet data={temp} name={'Machine Data'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -538,6 +559,10 @@ const {vendorLabel} = useLabels()
                                                 enableBrowserTooltips={true}
                                             >
                                                 {!isImpactedMaster && <AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName={technologyLabel} minWidth={columnWidths.Technology}></AgGridColumn>}
+                                                {
+                                                    !isImpactedMaster &&
+                                                    <AgGridColumn minWidth={columnWidths.CostingNumber} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                                }
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNo" tooltipField='PartNo' editable='false' headerName="Part No" minWidth={columnWidths.PartNo}></AgGridColumn>}
                                                 {/* props?.isImpactedMaster&& */<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
@@ -553,16 +578,16 @@ const {vendorLabel} = useLabels()
 
                                                     </>
                                                 }
-                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                 <AgGridColumn field="Currency" minWidth={120}cellRenderer={"currencyFormatter"}></AgGridColumn>
-                                                 {(isImpactedMaster || props?.lastRevision ) && <AgGridColumn field="LocalCurrency" minWidth={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
+                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                <AgGridColumn field="Currency" minWidth={180} headerName="Currency/Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                {(isImpactedMaster || props?.lastRevision) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
 
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Machine Rate" marryChildren={true} >
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Cost (Currency)" marryChildren={true} >
                                                     <AgGridColumn minWidth={120} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
                                                     <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {(isImpactedMaster || props?.lastRevision || String(props?.masterId) === String(EXCHNAGERATE)) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={
-                                                    "Net Machine Rate (Plant Currency)"                                                }>
+                                                    "Net Machine Rate (Plant Currency)"}>
                                                     <AgGridColumn minWidth={columnWidths.NetLandedCost} field="OldMachineRateLocalConversion" editable='false' cellRenderer='localConversionFormatter' headerName="Existing" colId='OldMachineRateLocalConversion'></AgGridColumn>
                                                     <AgGridColumn minWidth={columnWidths.NewNetLandedCost} field="NewMachineRateLocalConversion" editable='false' cellRenderer='localConversionFormatter' headerName="Revised" colId='NewMachineRateLocalConversion'></AgGridColumn>
                                                 </AgGridColumn>

@@ -160,7 +160,7 @@ function AddMoreOperation(props) {
     }, [localCurrencyLabel]);
 
     const callExchangeRateAPI = (obj) => {
-       const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
+        const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
         const toCurrency = reactLocalStorage.getObject("baseCurrency");
         const hasCurrencyAndDate = Boolean(localCurrencyLabel?.current && getValues('effectiveDate'));
 
@@ -169,7 +169,7 @@ function AddMoreOperation(props) {
                 return;
             }
 
-            const callAPI = (from, to,costingType,vendorValue,clientValue) => {
+            const callAPI = (from, to, costingType, vendorValue, clientValue) => {
                 return new Promise((resolve) => {
                     dispatch(getExchangeRateByCurrency(
                         from,
@@ -196,40 +196,53 @@ function AddMoreOperation(props) {
             };
 
             if (state.isImport) {
-                // First API call
-                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: localCurrencyLabel?.current, defaultCostingTypeId:  addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+                if (this.props?.fieldsObj?.plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
+                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: this?.props?.fieldsObj?.plantCurrency, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+                    callAPI(fromCurrency, this?.props?.fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
+                        .then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+                            this.setState({
+                                plantCurrency: rate1,
+                                plantExchangeRateId: exchangeRateId1,
+                                settlementCurrency: 1,
+                                settlementExchangeRateId: null,
+                            });
+                        });
+                }
+                else {
+                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: localCurrencyLabel?.current, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
 
-                callAPI(fromCurrency, localCurrencyLabel?.current,costingHeadTypeId,vendorId,clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId:  addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
+                    callAPI(fromCurrency, localCurrencyLabel?.current, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+                        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
 
-                    callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"),costingHeadTypeId,vendorId,clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
-                        setState(prevState => ({
-                            ...prevState,
-                            plantCurrency: rate1,
-                            settlementCurrency: rate2,
-                            plantExchangeRateId: exchangeRateId1,
-                            settlementExchangeRateId: exchangeRateId2
-                        }));
-                        plantCurrencyRef.current = rate1
-                        settlementCurrencyRef.current = rate2
-                        if (isWelding) {
-                            obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
-                            setDataToSend(prevState => ({ ...prevState, ...obj }))
-                            setNetCostWelding(obj)
-                        } else if (other) {
-                            setRejectionReworkAndProfitCost()
-                        } else {
-                            obj = { ...setMaterialCostWelding(), ...setPowerCostWelding() }
-                            setDataToSend(prevState => ({ ...prevState, ...obj }))
-                            setRejectionReworkAndProfitCostPlating(obj)
-                            setNetCostPlating(obj)
-                        }
+                        callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+                            setState(prevState => ({
+                                ...prevState,
+                                plantCurrency: rate1,
+                                settlementCurrency: rate2,
+                                plantExchangeRateId: exchangeRateId1,
+                                settlementExchangeRateId: exchangeRateId2
+                            }));
+                            plantCurrencyRef.current = rate1
+                            settlementCurrencyRef.current = rate2
+                            if (isWelding) {
+                                obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
+                                setDataToSend(prevState => ({ ...prevState, ...obj }))
+                                setNetCostWelding(obj)
+                            } else if (other) {
+                                setRejectionReworkAndProfitCost()
+                            } else {
+                                obj = { ...setMaterialCostWelding(), ...setPowerCostWelding() }
+                                setDataToSend(prevState => ({ ...prevState, ...obj }))
+                                setRejectionReworkAndProfitCostPlating(obj)
+                                setNetCostPlating(obj)
+                            }
+                        });
                     });
-                });
+                }
             } else if (localCurrencyLabel.current !== reactLocalStorage?.getObject("baseCurrency")) {
                 // Original single API call for non-import case
-                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId:  addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value,plantCurrency:this?.props?.fieldsObj?.plantCurrency});
-                callAPI(fromCurrency, toCurrency,costingHeadTypeId,vendorId,clientId).then(({ rate, exchangeRateId }) => {
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+                callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId }) => {
                     setState(prevState => ({
                         ...prevState,
                         plantCurrency: rate,
@@ -310,8 +323,8 @@ function AddMoreOperation(props) {
         let totalCost = wireCost + gasCost + electricityCost + labourCost + machineConsumableCost + welderCost + otherCostWelding + interestDepriciationCost
         setDataToSend(prevState => ({ ...prevState, netCostWelding: totalCost }))
         if (state.isImport) {
-            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(totalCost)
             const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
+            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForDecimalAndNull(rateLocalConversion,initialConfiguration?.NoOfDecimalForPrice)
 
             setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration?.NoOfDecimalForPrice))
@@ -361,8 +374,8 @@ function AddMoreOperation(props) {
         let totalCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation + rejectionReworkCost + profitCostState + otherCost
         setDataToSend(prevState => ({ ...prevState, RateLocalConversion: totalCost }))
         if (state.isImport) {
-            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(totalCost)
             const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
+            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForDecimalAndNull(rateLocalConversion,initialConfiguration?.NoOfDecimalForPrice)
             setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration?.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
@@ -414,8 +427,8 @@ function AddMoreOperation(props) {
         let Rate = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense + rejectionReworkCost + profitCostState)
         setDataToSend(prevState => ({ ...prevState, RateLocalConversion: Rate }))
         if (state.isImport) {
-            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(Rate)
             const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(Rate)
+            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForDecimalAndNull(rateLocalConversion,initialConfiguration?.NoOfDecimalForPrice)
             setValue('Rate', checkForDecimalAndNull(Rate, initialConfiguration?.NoOfDecimalForPrice))
             setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration?.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration?.NoOfDecimalForPrice))
@@ -800,6 +813,7 @@ function AddMoreOperation(props) {
         if (label === 'currency') {
             currencySelectList && currencySelectList.map(item => {
                 if (item.Value === '0') return false;
+                if (item.Text === localCurrencyLabel.current) return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
@@ -964,6 +978,10 @@ function AddMoreOperation(props) {
                 if ('response' in res) {
                     status = res && res?.response?.status
                     dropzone.current.files.pop()
+                    setAttachmentLoader(false)
+                    dropzone.current.files.pop() // Remove the failed file from dropzone
+                    setFiles([...files]) // Trigger re-render with current files
+                    Toaster.warning('File upload failed. Please try again.')
                 }
                 else {
                     let Data = res.data[0]
@@ -1062,9 +1080,9 @@ function AddMoreOperation(props) {
         callExchangeRateAPI()
     }
     const OperationRateTitle = () => {
-        return {
+       return {
             tooltipTextPlantCurrency: `Rate * Plant Currency Rate (${state?.plantCurrency ?? ''})`,
-            toolTipTextNetCostBaseCurrency: `Rate * Currency Rate (${state?.settlementCurrency ?? ''})`,
+            toolTipTextNetCostBaseCurrency:state.hidePlantCurrency ?`Rate * Currency Rate (${state?.settlementCurrency ?? ''})`: `Rate * Currency Rate (${state?.plantCurrency ?? ''})`
         };
     };
     const getTooltipTextForCurrency = () => {
@@ -1079,10 +1097,10 @@ function AddMoreOperation(props) {
 
         // Generate tooltip text based on the condition
         return <>
-            {!state?.hidePlantCurrency
-                ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
-                : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
-        </>;
+      {!state.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+        : ''}<p>{state.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
+    </>;
     };
     return (
         <div className="container-fluid">

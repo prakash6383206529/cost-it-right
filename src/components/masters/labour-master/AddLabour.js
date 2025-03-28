@@ -349,12 +349,6 @@ class AddLabour extends Component {
    * @description EMPLOYEE TERMS
    */
   onPressEmployeeTerms = () => {
-    const fieldsToClear = [
-      'vendorName', 'state', 'Plant'
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddLabour', false, false, fieldName));
-    });
     this.setState({
       IsEmployeContractual: !this.state.IsEmployeContractual,
     })
@@ -1128,9 +1122,9 @@ class AddLabour extends Component {
                           <div className={"left-title"}>Employed</div>
                           <Switch
                             onChange={this.onPressEmployeeTerms}
-                            checked={this.state.IsEmployeContractual}
+                            checked={this.state?.IsEmployeContractual}
                             id="normal-switch"
-                            disabled={isEditFlag ? true : false}
+                            disabled={isEditFlag || this.state?.gridTable?.length > 0}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
@@ -1236,7 +1230,7 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.countryHandler}
                             valueDescription={this.state.country}
-                            disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
+                            disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
                           />
                         </div>
                       </Col>
@@ -1255,7 +1249,7 @@ class AddLabour extends Component {
                               required={true}
                               handleChangeDescription={this.stateHandler}
                               valueDescription={this.state?.StateName}
-                              disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
+                              disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
                             />
                           </div>
                         </Col>}
@@ -1273,7 +1267,7 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.cityHandler}
                             valueDescription={this.state.city}
-                            disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
+                            disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
                           />
                         </div>
                       </Col>
@@ -1539,7 +1533,7 @@ class AddLabour extends Component {
                                       <td>{item.MachineType}</td>
                                       <td>{item.LabourType}</td>
                                       <td>{checkForDecimalAndNull(item?.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                                      {!this?.state?.hidePlantCurrency && <td>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                      {!this?.state?.hidePlantCurrency && <td><div className="w-fit" id={`rate-${index}`}>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}<TooltipCustom disabledIcon={true} width={"350px"} id={`rate-${index}`} tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} /></div></td>}
                                       <td>{checkForDecimalAndNull(item?.WorkingTime, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                       <td>{checkForDecimalAndNull(item?.Efficiency, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                       <td>

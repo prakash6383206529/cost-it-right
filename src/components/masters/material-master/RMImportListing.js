@@ -1105,8 +1105,8 @@ function RMImportListing(props) {
                     suppressRowClickSelection={true}
                   >
                     <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-                    <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                     {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                    <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                     <AgGridColumn field="RawMaterialName" headerName='Raw Material' ></AgGridColumn>
                     <AgGridColumn field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>
                     <AgGridColumn field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>
@@ -1119,7 +1119,7 @@ function RMImportListing(props) {
                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
                     {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
+                    <AgGridColumn field="Currency" headerName="Currency/Settlement Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                     <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                     <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -1128,8 +1128,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="ScrapRate" headerName="Scrap Rate" cellRenderer='commonCostFormatter'></AgGridColumn>
                     {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Rate'></AgGridColumn>}
                     {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                    {/* {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
-                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer='commonCostFormatter'></AgGridColumn>} */}
+                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>}
                     <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>

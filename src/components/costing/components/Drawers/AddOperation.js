@@ -143,14 +143,17 @@ function AddOperation(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return rowData?.IsValidExchangeRate ? (cellValue ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-') : '-'
   }
-
+  const currencyFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue !== undefined && cellValue !== null && cellValue !== '' && cellValue !== '-' ? cellValue : '-';
+  }
   const frameworkComponents = {
     // totalValueRenderer: this.buttonFormatter,
     // effectiveDateRenderer: this.effectiveDateFormatter,
     // costingHeadRenderer: this.costingHeadFormatter,
     // netLandedFormat: netLandedFormat,
     // netLandedConversionFormat: netLandedConversionFormat,
-    // currencyFormatter: currencyFormatter,
+    currencyFormatter: currencyFormatter,
     rateFormat: rateFormat,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
@@ -236,9 +239,13 @@ function AddOperation(props) {
                         onRowSelected={onRowSelect}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
-                        <AgGridColumn cellClass="has-checkbox" field="OperationName" headerName="Operation Name"></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="Operation Type"></AgGridColumn>
+                        <AgGridColumn  field="OperationName" headerName="Operation Name"></AgGridColumn>
                         <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
                         <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
+                        <AgGridColumn field="Currency"  headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Rate" cellRenderer={'rateFormat'}></AgGridColumn>
                         {initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure && <AgGridColumn field="LabourRate" headerName='Labour Rate' ></AgGridColumn>}

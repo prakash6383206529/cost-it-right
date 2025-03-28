@@ -735,14 +735,14 @@ function SimulationApprovalSummary(props) {
     const oldBOPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewNetBoughtOutPartCost, row.OldNetBoughtOutPartCost)
+        const classGreen = returnVarianceClass(row.NewNetBoughtOutPartCost, checkForDecimalAndNull(row.OldNetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice))
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newBOPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewNetBoughtOutPartCost, row.OldNetBoughtOutPartCost)
+        const classGreen = returnVarianceClass(row.NewNetBoughtOutPartCost, checkForDecimalAndNull(row.OldNetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice))
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
     const processFormatter = (props) => {
@@ -824,7 +824,11 @@ function SimulationApprovalSummary(props) {
         const temp = `${row.PlantName}`
         return <span title={temp}>{temp}</span>
     }
-
+    const categoryFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data ?? '-';
+        const temp = `${row?.Category ?? '-'}`
+        return <span title={temp}>{temp}</span>
+    }
     const percentageFormatter = (props) => {
         const cell = props?.value;
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice) : '-'
@@ -1126,6 +1130,7 @@ function SimulationApprovalSummary(props) {
         newOperationFormatter: newOperationFormatter,
         oldOperationFormatter: oldOperationFormatter,
         plantFormatter: plantFormatter,
+        categoryFormatter: categoryFormatter,
         rawMaterailCodeSpecFormatter: rawMaterailCodeSpecFormatter,
         operationCodeFormatter: operationCodeFormatter,
         bopNumberFormatter: bopNumberFormatter,
@@ -1440,7 +1445,7 @@ function SimulationApprovalSummary(props) {
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
-                                                                {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="InfoCategory" tooltipField='InfoCategory' headerName="Category"></AgGridColumn>}
+                                                                {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' headerName="Category" cellRenderer='categoryFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName="Customer (Code)"></AgGridColumn>}
@@ -1510,7 +1515,7 @@ function SimulationApprovalSummary(props) {
                                                                     < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft Net Cost" ></AgGridColumn>
                                                                 }
                                                                 {isMasterAssociatedWithCosting && < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
-                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn minWidth={160} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned"></AgGridColumn>}
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>

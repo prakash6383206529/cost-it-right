@@ -173,6 +173,13 @@ const BOPImportListing = (props) => {
     }, 300);
 
   }, [])
+
+  useEffect(() => {
+    if (!props.stopApiCallOnCancel) {
+      getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
+    }
+  }, [props?.isBOPAssociated]);
+  
   useEffect(() => {
     setTimeout(() => {
       if (!props?.stopApiCallOnCancel) {
@@ -194,7 +201,7 @@ const BOPImportListing = (props) => {
       }
     }, 300);
     if (props.isSimulation && !props?.isFromVerifyPage) {
-      props?.callBackLoader(state.isLoader);
+      props?.callBackLoader(true);
     }
     if (props.isMasterSummaryDrawer) {
       setState((prevState) => ({
@@ -1155,15 +1162,14 @@ const BOPImportListing = (props) => {
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>)}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
                         {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                        <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                        <AgGridColumn minWidth={180} field="Currency" headerName="Currency/Settlement Currency"></AgGridColumn>
                         <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={"commonCostFormatter"} ></AgGridColumn>
+                        <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                         {/* <AgGridColumn field="BasicRateConversion" headerName={headerNames?.BasicRate} cellRenderer={"commonCostFormatter"}></AgGridColumn> */}
-                        {/* {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
-                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer={"commonCostFormatter"}></AgGridColumn>)} */}
+                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
 
                         {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
                         {/* {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer={"commonCostFormatter"}></AgGridColumn>)} */}
-                        <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
 
                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer="costFormatter"></AgGridColumn>
                         {/* <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer={"commonCostFormatter"}></AgGridColumn> */}

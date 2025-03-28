@@ -106,7 +106,7 @@ function AddPackaging(props) {
   }, [fieldValues]);
 
   useEffect(() => {
-    let request = partType ? 'multiple technology assembly' : ''
+    let request = partType ? 'multiple technology assembly' : 'packaging'
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
     const removeApplicabilityList = _.map(gridData, 'Applicability')
     setRemoveApplicability(removeApplicabilityList)

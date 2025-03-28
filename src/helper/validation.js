@@ -412,24 +412,53 @@ export const checkPercentageValue = (value, msg = "Percentage value should not b
 }
 
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
-export const CheckIsCostingDateSelected = (costingDate, currency, exchangeRateData={}) => {
-    
+export const CheckIsCostingDateSelected = (costingDate, currency, exchangeRateData = {}) => {
+
     const IsSelected = DayTime(costingDate).isValid() ? true : false;
     if (!IsSelected || currency?.label === null || currency?.label === undefined) {
         Toaster.warning('Please select Costing effective date and Currency.')
         return true;
     }
-    // if(exchangeRateData?.baseFromCurrency!==exchangeRateData?.baseToCurrency || exchangeRateData?.plantFromCurrency!==exchangeRateData?.plantToCurrency){
-    // if (!exchangeRateData?.plantExchangeRate && !exchangeRateData?.baseExchangeRate) {
-    //     let message = "Data does not exist in the Exchange Rate Master";
-    //     const plantPair = exchangeRateData?.plantFromCurrency !== exchangeRateData?.plantToCurrency 
-    //         ? ` for ${exchangeRateData.plantFromCurrency} to ${exchangeRateData.plantToCurrency}` : '';
-    //     const basePair = exchangeRateData?.baseFromCurrency !== exchangeRateData?.baseToCurrency 
-    //         ? `${plantPair ? ' and' : ' for'} ${exchangeRateData.baseFromCurrency} to ${exchangeRateData.baseToCurrency}` : '';
-        
-    //     Toaster.warning(`${message}${plantPair}${basePair}. Please add it first and try again.`);
-    //     return true;
-    // }}
+    // Check if both exchange rates are true
+    if (exchangeRateData?.plantExchangeRate && exchangeRateData?.baseExchangeRate) {
+        return false;
+    }
+    // Check currencies when one rate is true and other is false
+    const isPlantCurrencySame = exchangeRateData?.plantFromCurrency === exchangeRateData?.plantToCurrency;
+    const isBaseCurrencySame = exchangeRateData?.baseFromCurrency === exchangeRateData?.baseToCurrency;
+
+    // If plant rate is true, check base currencies
+    if (exchangeRateData?.plantExchangeRate && !exchangeRateData?.baseExchangeRate) {
+        if (isBaseCurrencySame) {
+            return false;
+        }
+        Toaster.warning(`Data does not exist in the Exchange Rate Master for ${exchangeRateData?.baseFromCurrency} to ${exchangeRateData?.baseToCurrency}. Please add it first and try again.`);
+        return true;
+    }
+    // If base rate is true, check plant currencies
+    if (!exchangeRateData?.plantExchangeRate && exchangeRateData?.baseExchangeRate) {
+        if (isPlantCurrencySame) {
+            return false;
+        }
+        Toaster.warning(`Data does not exist in the Exchange Rate Master for ${exchangeRateData?.plantFromCurrency} to ${exchangeRateData?.plantToCurrency}. Please add it first and try again.`);
+        return true;
+    }
+    // If both rates are false, show both errors
+    if (!exchangeRateData?.plantExchangeRate && !exchangeRateData?.baseExchangeRate) {
+        let errorPairs = [];
+        if (!isPlantCurrencySame) {
+            errorPairs.push(`${exchangeRateData?.plantFromCurrency} to ${exchangeRateData?.plantToCurrency}`);
+        }
+        if (!isBaseCurrencySame) {
+            errorPairs.push(`${exchangeRateData?.baseFromCurrency} to ${exchangeRateData?.baseToCurrency}`);
+        }
+        if (errorPairs.length > 0) {
+
+            Toaster.warning(`Data does not exist in the Exchange Rate Master for ${errorPairs.join(' and ')}. Please add it first and try again.`);
+            return true;
+        }
+        return false;
+    }
 
     return false;
 }

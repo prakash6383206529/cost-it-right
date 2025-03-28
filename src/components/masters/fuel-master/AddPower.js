@@ -93,8 +93,8 @@ class AddPower extends Component {
       inputLoader: false,
       isImport: false,
       hidePlantCurrency: false,
-      settlementCurrency: null,
-      plantCurrency: null,
+      settlementCurrency: 1,
+      plantCurrency: 1,
       ExchangeSource: [],
       currency: [],
       plantExchangeRateId: '',
@@ -179,7 +179,7 @@ class AddPower extends Component {
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
-    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    const hasCurrencyAndDate = fromCurrency && effectiveDate;
     if (hasCurrencyAndDate) {
       if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return;
@@ -210,25 +210,44 @@ class AddPower extends Component {
       };
 
       if (isImport) {
-        // First API call
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+        if (this.props?.fieldsObj?.plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
+          // Make only one API call
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
 
-        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
-          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
-          callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
-            this.setState({
-              plantCurrency: rate1,
-              settlementCurrency: rate2,
-              plantExchangeRateId: exchangeRateId1,
-              settlementExchangeRateId: exchangeRateId2,
-              showPlantWarning: showPlantWarning1,
-              showWarning: showWarning2
+          callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
+            .then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1 }) => {
+              this.setState({
+                plantCurrency: rate1,
+                plantExchangeRateId: exchangeRateId1,
+                settlementCurrency: 1,
+                settlementExchangeRateId: null,
+                showPlantWarning: showPlantWarning1,
+                showWarning: showWarning1
 
-            }, () => {
-              this.handleCalculation(fieldsObj?.NetPowerCostPerUnit)
+              }, () => {
+                this.handleCalculation(fieldsObj?.NetPowerCostPerUnit)
+              });
+            });
+        } else {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+
+          callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+            const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+            callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+              this.setState({
+                plantCurrency: rate1,
+                settlementCurrency: rate2,
+                plantExchangeRateId: exchangeRateId1,
+                settlementExchangeRateId: exchangeRateId2,
+                showPlantWarning: showPlantWarning1,
+                showWarning: showWarning2
+
+              }, () => {
+                this.handleCalculation(fieldsObj?.NetPowerCostPerUnit)
+              });
             });
           });
-        });
+        }
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
@@ -243,20 +262,19 @@ class AddPower extends Component {
   }
   handleCalculation = (powerRate) => {
 
-    const { fieldsObj } = this.props
     const { plantCurrency, settlementCurrency, isImport, netContributionValue, isDetailEntry } = this.state
     const rate = isDetailEntry ? netContributionValue : powerRate
 
     if (isImport) {
-      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
       this.props.change('NetPowerCostPerUnitLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
-      const rateBaseCurrency = checkForNull(rate) * checkForNull(settlementCurrency)
+      const rateBaseCurrency = checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(settlementCurrency) ?? 1
       this.props.change('NetPowerCostPerUnitConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
       this.setState({
         netContributionConvertedInBaseCurrency: checkForNull(rateBaseCurrency), netContributionConvertedInLocalCurrency: checkForNull(ratePlantCurrency)
       })
     } else {
-      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
 
       this.props.change('NetPowerCostPerUnitConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
       this.setState({
@@ -404,10 +422,10 @@ class AddPower extends Component {
       if (isEditIndex) {
         this.setState({ ind: powerGridEditIndex })
         let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
-        powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
+        powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj?.PowerContributionPercentage);
       } else if (isEditSEBIndex) {
         let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
-        powerContributionTotal = electricBoardPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
+        powerContributionTotal = electricBoardPowerContribution + totalContributionFromGrid - checkForNull(rowObj?.PowerContributionPercentage);
       } else {
         powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid;
       }
@@ -766,12 +784,7 @@ class AddPower extends Component {
       this.setState({ UOM: newValue, }, () => {
         const { StateName, UOM, effectiveDate, client, selectedPlants, vendorName } = this.state;
 
-        if (StateName.length === 0) {
-          Toaster.warning("Please select state first.")
-          return false
-        }
-
-        let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY'), fuelId: this.props.fuelId, cityId: this.props.cityId }
+        let data = { StateID: StateName?.value, UOMID: UOM?.value, plantId: selectedPlants[0]?.Value, vendorId: vendorName?.value, customerId: client?.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY'), fuelId: this.props?.fuelId, cityId: this.props?.cityId }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res?.data?.DynamicData;
           this.props.change('CostPerUnitOfMeasurement', DynamicData?.FuelRate)
@@ -916,11 +929,11 @@ class AddPower extends Component {
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
-        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+        powerTotalT =  Number(item.PowerContributionPercentage)
         return null
       })
 
-      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
+      powerTotalT =  Number(fieldsObj.SEBPowerContributaion)
 
     }
 
@@ -946,6 +959,7 @@ class AddPower extends Component {
     }, 0)
 
     this.setState({
+      isEditFlagForStateElectricity: true,
       powerGrid: tempArray,
       netContributionValue: NetPowerCostPerUnit,
       powerGridEditIndex: '',
@@ -1070,9 +1084,9 @@ class AddPower extends Component {
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
         if (index === powerGridEditIndex) {
-          powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
+          powerTotalT =  Number(fieldsObj.SelfPowerContribution)
         } else {
-          powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+          powerTotalT =  Number(item.PowerContributionPercentage)
         }
         return null
       })
@@ -1316,6 +1330,7 @@ class AddPower extends Component {
     if (label === 'country') {
       countryList && countryList.map(item => {
         if (item.Value === '0') return false;
+        if (item.Text === this.props.fieldsObj?.plantCurrency) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null
       });
@@ -1377,6 +1392,7 @@ class AddPower extends Component {
     } if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
         if (item.Value === '0') return false;
+        if (item.Text === this.props.fieldsObj?.plantCurrency) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -1697,14 +1713,15 @@ class AddPower extends Component {
     return <>
       {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
     </>;
   };
   powerRateTitle = () => {
     const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Net Cost/Unit (${this.state.currency?.label ?? 'Currency'}) * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'}) * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   /**
@@ -2102,7 +2119,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                                    label={`Net Cost/Unit g(${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                                     name={"NetPowerCostPerUnitLocalConversion"}
                                     type="text"
                                     id="cost-local"
@@ -2124,7 +2141,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
+                                    label={`Net Cost/Unit t(${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"NetPowerCostPerUnitConversion"}
                                     id="fuel-rate"
                                     type="text"

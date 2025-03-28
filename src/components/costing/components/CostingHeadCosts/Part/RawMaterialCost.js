@@ -521,7 +521,7 @@ function RawMaterialCost(props) {
   }
 
   const removeErrorGrossFinishWeight = (grossValue, finishWeight, index) => {
-    if (checkForNull(grossValue) > checkForNull(finishWeight) && errors?.rmGridFields) {
+    if (checkForNull(grossValue) >= checkForNull(finishWeight) && errors?.rmGridFields) {
       delete errors?.rmGridFields[index]?.FinishWeight
       delete errors?.rmGridFields[index]?.GrossWeight
     }
@@ -549,12 +549,15 @@ function RawMaterialCost(props) {
       let recoveredScrapWeight;
       if (isScrapRecoveryPercentageApplied) {
         const ScrapRecoveryPercentage = checkForNull(tempData.ScrapRecoveryPercentage);
-        recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
-        scrapWeight = recoveredScrapWeight
+        if(ScrapRecoveryPercentage){
+          recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
+          scrapWeight = recoveredScrapWeight
+        }
       }
 
       // const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
-      const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+      // const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+      const ScrapCost = (checkForNull(tempData.FinishWeight) < 0) ? 0 : scrapWeight * tempData.ScrapRate;
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
       if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
@@ -633,7 +636,9 @@ function RawMaterialCost(props) {
           }
 
           // ternary condition
-          const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData?.ScrapRate) : 0;
+          // const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData?.ScrapRate) : 0;
+          const ScrapCost = FinishWeight < 0 ? 0 : scrapWeight * checkForNull(tempData?.ScrapRate);
+          // const ScrapCost = scrapWeight * tempData?.ScrapRate;
           const CutOffRMC = tempData?.IsCutOffApplicable ? ((GrossWeight * checkForNull(tempData?.CutOffPrice)) - ScrapCost) : 0;
           if (tempData?.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
             return false
@@ -712,7 +717,8 @@ function RawMaterialCost(props) {
       }
 
       // const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
-      const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+      // const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+      const ScrapCost = (checkForNull(tempData.FinishWeight) < 0) ? 0 : scrapWeight * tempData.ScrapRate;
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
       if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
@@ -1640,7 +1646,7 @@ function RawMaterialCost(props) {
                                 </div>
                               </td>
                             }
-                            <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration?.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied && item?.ScrapRecoveryPercentage ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div> </td>
+                            <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied && item?.ScrapRecoveryPercentage ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div> </td>
                             <td>
                               <div className='d-flex'>
                                 <div className='w-fit' id={`net-rm-cost${index}`}>

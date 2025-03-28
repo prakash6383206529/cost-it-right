@@ -111,13 +111,13 @@ const Table = (props) => {
                                             onChange={() => onConvertedCurrencyChange(!showConvertedCurrency)}
                                         />
                                         <span className="before-box pl-0" />
-                                        <span>Show Converted Currency</span>
+                                        <span>Show Base Currency Conversion</span>
                                     </label>
                                     <TooltipCustom
                                         id={'converted-currency-tooltip'}
                                         width={"290px"}
                                         customClass={"ml-2 mt-1"}
-                                        tooltipText={"If you wish to see Best Cost, Please click on 'Show Converted Currency'."}
+                                        tooltipText={"If you wish to see Best Cost, Please click on 'Show Base Currency Conversion'."}
                                     />
                                 </div>
                             )}                        </th>

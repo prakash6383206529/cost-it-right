@@ -353,14 +353,14 @@ export const SearchableSelectHookForm = (field) => {
                 name={name}
                 placeholder={placeholder ? placeholder : isDisable ? '-' : 'Select'}
                 isDisabled={isDisable}
-                onChange={(e, action) => {
+                onChange={isDisable? ()=>{}:(e, action) => {
                   handleChange(e, action);
                   document.activeElement.blur();
                   onChange(e)
 
                 }}
                 classNamePrefix="multi-select-container"
-                className="multidropdown-container"
+                className="multidropdown-container cursor-allowed"
                 menuPlacement="auto"
                 styles={dropDownClass && customStyles}
                 onFocus={onFocusChange}

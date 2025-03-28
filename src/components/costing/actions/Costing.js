@@ -1111,7 +1111,7 @@ export function getRateCriteriaByCapacitySelectList(Capacity) {
  */
 export function getRateByCapacityCriteria(data, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}`, config(),)
+    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}&costingId=${data?.costingId}`, config(),)
     request.then((response) => {
       if (response?.data?.Result) {
         callback(response)

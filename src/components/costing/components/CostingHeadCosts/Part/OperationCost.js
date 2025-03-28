@@ -122,7 +122,7 @@ function OperationCost(props) {
           OperationCode: el.OperationCode,
           UOM: el.UnitOfMeasurement,
           Rate: el.Rate,
-          Quantity: finalQuantity,
+          Quantity: Number(finalQuantity),
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
@@ -243,7 +243,7 @@ function OperationCost(props) {
   }
 
   const SaveItem = (index) => {
-    if (errors?.OperationGridFields && (errors?.OperationGridFields?.[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields?.[index]?.Quantity).length !== 0)) {
+    if (errors?.OperationGridFields &&errors?.OperationGridFields?.length > 0) {
       return false
     }
     if (getValues(`${OperationGridFields}.${index}.Quantity`) === '') {
@@ -282,7 +282,7 @@ function OperationCost(props) {
       const WithLaboutCost = checkForNull(tempData.Rate) * event.target.value;
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
+      tempData = { ...tempData, Quantity: Number(event.target.value), OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       let value = tempArr && tempArr.length > 0 && tempArr.reduce((accummlator, el) => {
         return accummlator + checkForNull(el?.OperationCost)
@@ -468,7 +468,7 @@ function OperationCost(props) {
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                        validate: { number, checkWhiteSpaces,noDecimal },
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""

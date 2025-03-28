@@ -394,12 +394,12 @@ const PowerListing = (props) => {
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}
               >
-                <AgGridColumn field="CostingType"></AgGridColumn>
+                <AgGridColumn field="CostingType" headerName="Costing Head"></AgGridColumn>
                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" tooltipField="PlantWithCode"></AgGridColumn>
-                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
+                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} tooltipField="VendorWithCode"></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)"></AgGridColumn>}
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>

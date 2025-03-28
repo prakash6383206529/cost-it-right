@@ -103,7 +103,8 @@ function CostingHeaderTabs(props) {
       plantFromCurrency: costData?.CostingCurrency,
       plantToCurrency: costData?.LocalCurrency,
       baseFromCurrency: costData?.CostingCurrency,
-       baseToCurrency: initialConfiguration?.BaseCurrency,}))
+      baseToCurrency: initialConfiguration?.BaseCurrency,
+    }))
     setValue('Currency', { label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
     setValue('ExchangeSource', { label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
   }, [costingData, costData])
@@ -134,43 +135,61 @@ function CostingHeaderTabs(props) {
         baseFromCurrency: currency?.label
       };
       if (currency?.label !== costData?.LocalCurrency || costData?.LocalCurrency !== initialConfiguration?.BaseCurrency) {
-        callExchangeRateAPI(currency?.label, costData?.LocalCurrency).then(res => { //plant
-         exchangeData = {
-            plantExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? Boolean(res?.data?.Data) : false,
-            baseExchangeRate: null,
-            plantToCurrency: initialConfiguration?.BaseCurrencyy,
+        callExchangeRateAPI(currency?.label, costData?.LocalCurrency).then(res => {
+          exchangeData = {
+            baseExchangeRate: res?.data?.Data && Object.keys(res?.data?.Data).length > 0 ? true : false,
+            plantExchangeRate: null,
+            plantToCurrency: initialConfiguration?.BaseCurrency,
             plantFromCurrency: costData?.LocalCurrency,
             baseToCurrency: costData?.LocalCurrency,
             baseFromCurrency: currency?.label
           };
-          
-          
+
           arr.push(res?.data?.Data);
 
-          callExchangeRateAPI(costData?.LocalCurrency, initialConfiguration?.BaseCurrency).then(resp => {
-            exchangeData.baseExchangeRate = resp?.data?.Data && Object.keys(resp?.data?.Data).length > 0 ? Boolean(resp?.data?.Data) : false;
-            
-            arr.push(resp?.data?.Data);
-          });
-        })
+          return callExchangeRateAPI(costData?.LocalCurrency, initialConfiguration?.BaseCurrency);
+        }).then(resp => {
+
+          exchangeData.plantExchangeRate = resp?.data?.Data && Object.keys(resp?.data?.Data).length > 0 ? Boolean(resp?.data?.Data) : false;
+          arr.push(resp?.data?.Data);
+
+          dispatch(exchangeRateReducer(exchangeData));
+
+          // Create and dispatch saveCostingBasicDetails only after both API calls complete
+          let obj = {
+            "BaseCostingId": costData?.CostingId,
+            "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD'),
+            "ExchangeRateSourceName": exchangeRateSource?.value,
+            "CostingCurrencyId": currency?.value,
+            "LocalCurrencyExchangeRate": arr[0]?.CurrencyExchangeRate ?? 1,
+            "BaseCurrencyExchangeRate": arr[1]?.CurrencyExchangeRate ?? 1,
+            "ExchangeRateId": arr[0]?.ExchangeRateId ?? null,
+            "LocalExchangeRateId": arr[1]?.ExchangeRateId ?? null,
+            "LoggedInUserId": loggedInUserId()
+          };
+
+          dispatch(saveCostingBasicDetails(obj, res => { }));
+        });
+      } else {
+
+
+        // If no API calls needed, just dispatch the actions with default values
+        dispatch(exchangeRateReducer(exchangeData));
+
+        let obj = {
+          "BaseCostingId": costData?.CostingId,
+          "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD'),
+          "ExchangeRateSourceName": exchangeRateSource?.value,
+          "CostingCurrencyId": currency?.value,
+          "LocalCurrencyExchangeRate": 1,
+          "BaseCurrencyExchangeRate": 1,
+          "ExchangeRateId": null,
+          "LocalExchangeRateId": null,
+          "LoggedInUserId": loggedInUserId()
+        };
+
+        dispatch(saveCostingBasicDetails(obj, res => { }));
       }
-      dispatch(exchangeRateReducer(exchangeData));
-
-      let obj = {
-        "BaseCostingId": costData?.CostingId,
-        "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD'),
-        "ExchangeRateSourceName": exchangeRateSource?.value,
-        "CostingCurrencyId": currency?.value,// selected currency
-        "LocalCurrencyExchangeRate": arr[0]?.CurrencyExchangeRate??1,  //plant
-        "BaseCurrencyExchangeRate": arr[1]?.CurrencyExchangeRate??1,    //base
-        "ExchangeRateId": arr[0]?.ExchangeRateId??null, //base 
-        "LocalExchangeRateId": arr[1]?.ExchangeRateId??null,//plant 
-        "LoggedInUserId": loggedInUserId()
-      };
-
-      dispatch(saveCostingBasicDetails(obj, res => { }));
-      ;
-
     }
   }, [currency, exchangeRateSource, effectiveDate]);
 

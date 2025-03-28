@@ -370,11 +370,17 @@ function OperationSTSimulation(props) {
     }
     const consumptionFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return isImpactedMaster ? row?.OldOperationConsumption : row?.OperationConsumption
+        const value = isImpactedMaster ? row?.OldOperationConsumption : row?.OperationConsumption
+
+        return <span>{value}</span>;
     }
     const localConversionFormatter = (props) => {
         const cellValue = checkForNull(props?.value);
         return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -394,7 +400,8 @@ function OperationSTSimulation(props) {
         rateFormatter: rateFormatter,
         oldBasicRateFormatter: oldBasicRateFormatter,
         consumptionFormatter: consumptionFormatter,
-        localConversionFormatter: localConversionFormatter
+        localConversionFormatter: localConversionFormatter,
+        hyphenFormatter: hyphenFormatter
     };
 
     const verifySimulation = debounce(() => {
@@ -618,7 +625,7 @@ function OperationSTSimulation(props) {
                                             // frameworkComponents={frameworkComponents}
                                             >
                                                 {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
-                                                <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>
+                                                {getConfigurationKey()?.IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>}
                                                 {<AgGridColumn field="EntryType"  minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
@@ -628,8 +635,8 @@ function OperationSTSimulation(props) {
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn minWidth={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {operationTypes.includes('Welding') && <AgGridColumn field="OperationConsumption" editable='false' headerName="Consumption" minWidth={190} cellRenderer='consumptionFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                <AgGridColumn field="Currency" minWidth={150} cellRenderer={"currencyFormatter"}></AgGridColumn>
-                                                {(isImpactedMaster || lastRevision ) && <AgGridColumn field="LocalCurrency" minWidth={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
+                                                <AgGridColumn field="Currency" minWidth={180} headerName="Currency/Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                {(isImpactedMaster || lastRevision ) && <AgGridColumn field="LocalCurrency" minWidth={120}  headerName={"Plant Currency"}cellRenderer={"hyphenFormatter"}></AgGridColumn>}
 
                                                 {operationTypes.includes('Welding') && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={320} headerName="Welding Material Rate/Kg" marryChildren={true} >
                                                     <AgGridColumn minWidth={150} field="" editable={false} headerName="Existing" colId="oldOperationBasicRate" cellRenderer='oldBasicRateFormatter'></AgGridColumn>

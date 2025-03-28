@@ -111,17 +111,26 @@ class AddExchangeRate extends Component {
   renderListing = (label) => {
     const { currencySelectList, clientSelectList, exchangeRateSourceList } = this.props;
     const temp = [];
-    if (label === 'currency') {
-      currencySelectList && currencySelectList.map(item => {
+  
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
       return temp;
     }
-    if (label === 'ClientList') {
-      clientSelectList && clientSelectList.map(item => {
-        if (item.Value === '0') return false;
+    if (label === 'currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0' || item.Value === this.state.toCurrency?.value) return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'toCurrency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0' || item.Value === this.state.currency?.value) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -606,7 +615,7 @@ class AddExchangeRate extends Component {
                           component={searchableSelect}
                           placeholder={isEditFlag ? '-' : "Select"}
                           onChange={this.onFinancialDataChange}
-                          options={this.renderListing("currency")}
+                          options={this.renderListing("toCurrency")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
                             this.state.toCurrency == null ||
@@ -638,7 +647,7 @@ class AddExchangeRate extends Component {
                       </Col>}
                       <Col md="3">
                         <Field
-                          label={`Currency Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          label={`Currency Exchange Rate (${this.state.currency?.label ? this.state.currency?.label : "From Currency"})`}
                           name={"CurrencyExchangeRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
@@ -653,7 +662,7 @@ class AddExchangeRate extends Component {
                       </Col>
                       <Col md="3">
                         <Field
-                          label={`Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          label={`Bank Rate (${this.state.currency?.label ? this.state.currency?.label : "From Currency"})`}
                           name={"BankRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
@@ -683,7 +692,7 @@ class AddExchangeRate extends Component {
 
                       <Col md="3">
                         <Field
-                          label={`Custom Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          label={`Custom Rate (${this.state.currency?.label ? this.state.currency?.label : "From Currency"})`}
                           name={"CustomRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}

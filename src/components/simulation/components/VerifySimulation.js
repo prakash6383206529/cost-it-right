@@ -21,6 +21,7 @@ import DatePicker from "react-datepicker";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '.';
 import { useLabels } from '../../../helper/core';
+import { returnVarianceClass } from '../SimulationUtils';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -486,7 +487,18 @@ function VerifySimulation(props) {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '0';
     }
-
+    const newOtherCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const varianceClass = returnVarianceClass(row, row.NewOtherNetCost, row.OldOtherNetCost)
+        return cell != null ? <span className={varianceClass}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const newConditionCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const varianceClass = returnVarianceClass(row, row.NewNetConditionCost, row.OldNetConditionCost)
+        return cell != null ? <span className={varianceClass}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         setSelectedRowData(selectedRows)
@@ -811,17 +823,17 @@ function VerifySimulation(props) {
     }
     const currencytooltipToggle = () => {
         // Only toggle tooltip if currency column is visible
-        const shouldShowCurrency = !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && isMasterAssociatedWithCosting && isRMDomesticOrRMImport === true;
+        const shouldShowCurrency = showTooltip && !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&(isMasterAssociatedWithCosting||isRMDomesticOrRMImport === true) 
        if (shouldShowCurrency) {
             setCurrencyViewTooltip(!currencyViewTooltip);
         }
     }
     const currencyHeader = (props) => {
-        const shouldShowCurrency = !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && isMasterAssociatedWithCosting && isRMDomesticOrRMImport === true;
+        const shouldShowCurrency = !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&(isMasterAssociatedWithCosting||isRMDomesticOrRMImport === true)
         if (!shouldShowCurrency) {
             return null;
         }
-    
+
         return (
             <div className='ag-header-cell-label'>
                 <span className='ag-header-cell-text ' style={{ display: 'flex', gridGap: '5px' }}>
@@ -855,7 +867,9 @@ function VerifySimulation(props) {
         hyphenFormatter: hyphenFormatter,
         currencyHeader: currencyHeader,
         newNetLandedCostFormatter: newNetLandedCostFormatter,
-        zeroFormatter: zeroFormatter
+        zeroFormatter: zeroFormatter,
+        newOtherCostFormatter: newOtherCostFormatter,
+        newConditionCostFormatter: newConditionCostFormatter
     };
     function getOperationTypes(list) {
         return list && list?.map(item => item.ForType);
@@ -884,9 +898,7 @@ function VerifySimulation(props) {
                         </Col>
                     </Row>
 
-                    {showTooltip&&!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&isMasterAssociatedWithCosting&&isRMDomesticOrRMImport === true && <Tooltip className="simulation-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
-                        {"This is the currency selected during the costing"}
-                    </Tooltip>}
+                   
                     <Row>
                         <Col>
                             <div className={`ag-grid-react`}>
@@ -928,77 +940,77 @@ function VerifySimulation(props) {
                                             enableBrowserTooltips={true}
                                         >
                                             <AgGridColumn field="CostingId" hide ></AgGridColumn>
-                                            {isMasterAssociatedWithCosting && <AgGridColumn width={185} field="CostingNumber" tooltipField='CostingNumber' headerName="Costing Number"></AgGridColumn>}
-                                            {isMasterAssociatedWithCosting && <AgGridColumn width={110} field="PartNo" tooltipField="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}
-                                            {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartName" tooltipField="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
-                                            {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartType" tooltipField="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
-                                            {isMasterAssociatedWithCosting && <AgGridColumn width={130} field="RevisionNumber" tooltipField="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
-                                            {isMasterAssociatedWithCosting && <AgGridColumn width={160} field="InfoCategory" tooltipField="InfoCategory" cellRenderer='hyphenFormatter' headerName="Category"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" tooltipField="RMName" headerName="RM Name" ></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" tooltipField="RMGrade" headerName="Grade" ></AgGridColumn>}
-                                            {isMachineRate && <AgGridColumn width={145} field="ProcessName" tooltipField="ProcessName" headerName="Process Name"></AgGridColumn>}
-                                            {isMachineRate && <AgGridColumn width={150} field="MachineNumber" tooltipField="MachineNumber" headerName="Machine Number"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" tooltipField="BoughtOutPartCode" headerName={`${showBopLabel()} Number`} cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField="BoughtOutPartName" cellRenderer='BoughtOutPartName' headerName={`${showBopLabel()} Name`}></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" tooltipField="OperationCode" headerName="Operation Code"></AgGridColumn>}
-                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
-                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
-                                            <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
+                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={150} field="CostingNumber" tooltipField='CostingNumber' headerName="Costing Number"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={90} field="PartNo" tooltipField="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="PartName" tooltipField="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="PartType" tooltipField="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="RevisionNumber" tooltipField="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={80} field="InfoCategory" tooltipField="InfoCategory" cellRenderer='hyphenFormatter' headerName="Category"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={120} field="RMName" tooltipField="RMName" headerName="RM Name" ></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={120} field="RMGrade" tooltipField="RMGrade" headerName="Grade" ></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn minWidth={120} field="ProcessName" tooltipField="ProcessName" headerName="Process Name"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn minWidth={120} field="MachineNumber" tooltipField="MachineNumber" headerName="Machine Number"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn minWidth={150} field="BoughtOutPartCode" tooltipField="BoughtOutPartCode" headerName={`${showBopLabel()} Number`} cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn minWidth={130} field="BoughtOutPartName" tooltipField="BoughtOutPartName" cellRenderer='BoughtOutPartName' headerName={`${showBopLabel()} Name`}></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn minWidth={150} field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn minWidth={150} field="OperationCode" tooltipField="OperationCode" headerName="Operation Code"></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn minWidth={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn minWidth={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
+                                            <AgGridColumn minWidth={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                                             {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&(isMasterAssociatedWithCosting||isRMDomesticOrRMImport === true) && <AgGridColumn field="CostingCurrency" tooltipField='Costing Currency' editable='false' headerName="Costing Currency" headerComponent={'currencyHeader'} minWidth={140} ></AgGridColumn>}
-                                            {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={190} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (Currency)`} cellRenderer='priceFormatter'></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="ForType" headerName="Operation Type" minWidth={190}></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={185} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Material Rate/kg"></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
-                                            {simulationApplicability?.value !== APPLICABILITY_PART_SIMULATION && <AgGridColumn field='Currency' headerName='Master Currency' />}
-                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
+                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && (isMasterAssociatedWithCosting || isRMDomesticOrRMImport === true) && <AgGridColumn field="CostingCurrency" tooltipField='Costing Currency' editable='false' headerName="Costing Currency" headerComponent={'currencyHeader'} minminWidth={140} ></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn minWidth={190} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (Currency)`} cellRenderer='priceFormatter'></AgGridColumn>}
+                                            {(isSurfaceTreatmentOrOperation === true && getConfigurationKey()?.IsShowDetailedOperationBreakup) && <AgGridColumn minWidth={150} field="ForType" headerName="Operation Type"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn minWidth={100} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn minWidth={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Material Rate/kg"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn minWidth={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
+                                            {simulationApplicability?.value !== APPLICABILITY_PART_SIMULATION && <AgGridColumn field='Currency' minWidth={120} headerName='Master Currency' />}
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn minWidth={120} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn minWidth={120} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={230} field="OldBoughtOutPartRate" tooltipField="OldBoughtOutPartRate" headerName="Existing Basic Rate (Master Currency)" cellRenderer={existingBasicFormatter}></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={230} field="NewBoughtOutPartRate" tooltipField="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate (Master Currency)"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn minWidth={230} field="OldBoughtOutPartRate" tooltipField="OldBoughtOutPartRate" headerName="Existing Basic Rate (Master Currency)" cellRenderer={existingBasicFormatter}></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn minWidth={230} field="NewBoughtOutPartRate" tooltipField="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate (Master Currency)"></AgGridColumn>}
 
                                             {/* {isBOPDomesticOrImport === true && <AgGridColumn width={140} field="OldNetLandedCost" tooltipField='OldNetLandedCost' headerName='Existing Net Landed Cost (Currency)' cellRenderer={priceFormatter} ></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={140} field="NewNetLandedCost" tooltipField='NewNetLandedCost' headerName='Revised Net Landed Cost (Currency)' cellRenderer={priceFormatter} ></AgGridColumn>} */}
 
-                                            {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" tooltipField="OldMachineRate" headerName="Existing Machine Rate"></AgGridColumn>}
-                                            {isMachineRate && <AgGridColumn width={150} field="NewMachineRate" tooltipField="NewMachineRate" headerName="Revised Machine Rate"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn minWidth={145} field="OldMachineRate" tooltipField="OldMachineRate" headerName="Existing Machine Rate"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn minWidth={150} field="NewMachineRate" tooltipField="NewMachineRate" headerName="Revised Machine Rate"></AgGridColumn>}
 
 
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={230} field="OldBasicRate" tooltipField="OldBasicRate" headerName="Existing Basic Rate (Master Currency)"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={230} field="NewBasicRate" tooltipField="NewBasicRate" cellRenderer='newRMBasicRateFormatter' headerName="Revised Basic Rate (Master Currency)"></AgGridColumn>}
-                                            {(isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && <AgGridColumn width={230} field="OldOtherNetCost" cellRenderer={zeroFormatter} headerName="Existing Other Cost (Master Currency)"></AgGridColumn>}
-                                            {(isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && <AgGridColumn width={230} field="NewOtherNetCost" cellRenderer={zeroFormatter} headerName="Revised Other Cost (Master Currency)"></AgGridColumn>}
-                                            {((isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && verifyList && verifyList[0]?.CostingHeadId === ZBCTypeId) && <AgGridColumn width={230} field="OldNetConditionCost" cellRenderer={zeroFormatter} headerName="Existing Condition Cost (Master Currency)"></AgGridColumn>}
-                                            {((isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && verifyList && verifyList[0]?.CostingHeadId === ZBCTypeId) && <AgGridColumn width={230} field="NewNetConditionCost" cellRenderer={zeroFormatter} headerName="Revised Condition Cost (Master Currency)"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={230} field="OldBasicRate" tooltipField="OldBasicRate" headerName="Existing Basic Rate (Master Currency)"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={230} field="NewBasicRate" tooltipField="NewBasicRate" cellRenderer='newRMBasicRateFormatter' headerName="Revised Basic Rate (Master Currency)"></AgGridColumn>}
+                                            {(isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && <AgGridColumn minWidth={200} field="OldOtherNetCost" cellRenderer={zeroFormatter} headerName="Existing Other Cost (Master Currency)"></AgGridColumn>}
+                                            {(isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && <AgGridColumn minWidth={200} field="NewOtherNetCost" cellRenderer={zeroFormatter} headerName="Revised Other Cost (Master Currency)"></AgGridColumn>}
+                                            {((isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && verifyList && verifyList[0]?.CostingHeadId === ZBCTypeId) && <AgGridColumn minWidth={230} field="OldNetConditionCost" cellRenderer={zeroFormatter} headerName="Existing Condition Cost (Master Currency)"></AgGridColumn>}
+                                            {((isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && verifyList && verifyList[0]?.CostingHeadId === ZBCTypeId) && <AgGridColumn minWidth={230} field="NewNetConditionCost" cellRenderer={'newConditionCostFormatter'} headerName="Revised Condition Cost (Master Currency)"></AgGridColumn>}
 
 
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={230} field="OldScrapRate" tooltipField="OldScrapRate" headerName="Existing Scrap Rate (Master Currency)"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={230} field="NewScrapRate" tooltipField="NewScrapRate" cellRenderer='newSRFormatter' headerName="Revised Scrap Rate (Master Currency)" ></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={230} field="OldScrapRate" tooltipField="OldScrapRate" headerName="Existing Scrap Rate (Master Currency)"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={230} field="NewScrapRate" tooltipField="NewScrapRate" cellRenderer='newSRFormatter' headerName="Revised Scrap Rate (Master Currency)" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
 
-                                            {(isRMDomesticOrRMImport || isBOPDomesticOrImport) && <AgGridColumn width={230} field="OldNetLandedCost" tooltipField="OldNetLandedCost" headerName="Old Net Landed Cost(Master Currency)" cellRenderer='hyphenFormatter'></AgGridColumn>}
-                                            {(isRMDomesticOrRMImport || isBOPDomesticOrImport) && <AgGridColumn width={230} field="NewNetLandedCost" tooltipField="NewNetLandedCost" headerName="New Net Landed Cost(Master Currency)" cellRenderer='newNetLandedCostFormatter'></AgGridColumn>}
+                                            {(isRMDomesticOrRMImport || isBOPDomesticOrImport) && <AgGridColumn minWidth={230} field="OldNetLandedCost" tooltipField="OldNetLandedCost" headerName="Old Net Landed Cost(Master Currency)" cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                            {(isRMDomesticOrRMImport || isBOPDomesticOrImport) && <AgGridColumn minWidth={230} field="NewNetLandedCost" tooltipField="NewNetLandedCost" headerName="New Net Landed Cost(Master Currency)" cellRenderer='newNetLandedCostFormatter'></AgGridColumn>}
 
                                             {/* {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                             {isExchangeRate && <AgGridColumn width={130} field="Currency" tooltipField="Currency" headerName="Currency"></AgGridColumn>} */}
                                             {/* {isExchangeRate && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName="Existing Net Cost (INR)"></AgGridColumn>} */}
-                                            {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" tooltipField="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}
-                                            {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" tooltipField="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="Revised Exchange Rate"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn minWidth={145} field="OldExchangeRate" tooltipField="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn minWidth={150} field="NewExchangeRate" tooltipField="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="Revised Exchange Rate"></AgGridColumn>}
 
-                                            {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName={`Revised Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='combinedProcessCostFormatter'></AgGridColumn>}
-                                            {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Existing CC" cellRenderer='combinedProcessCostFormatter'></AgGridColumn>}
-                                            {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='combinedProcessCostFormatter' headerName="Revised CC" ></AgGridColumn>}
+                                            {isCombinedProcess && <AgGridColumn minWidth={130} field="NewPOPrice" headerName={`Revised Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='combinedProcessCostFormatter'></AgGridColumn>}
+                                            {isCombinedProcess && <AgGridColumn minWidth={145} field="OldNetCC" headerName="Existing CC" cellRenderer='combinedProcessCostFormatter'></AgGridColumn>}
+                                            {isCombinedProcess && <AgGridColumn minWidth={150} field="NewNetCC" cellRenderer='combinedProcessCostFormatter' headerName="Revised CC" ></AgGridColumn>}
 
-                                            {isMultiTechnology && <AgGridColumn width={150} field="Delta" tooltipField="Delta" headerName="Delta"></AgGridColumn>}
-                                            {isMultiTechnology && <AgGridColumn width={150} field="DeltaSign" tooltipField="DeltaSign" headerName="DeltaSign"></AgGridColumn>}
-                                            {isMultiTechnology && <AgGridColumn width={150} field="NetCost" tooltipField="NetCost" headerName="Net Cost"></AgGridColumn>}
-                                            {isMultiTechnology && <AgGridColumn width={150} field="SOBPercentage" tooltipField="SOBPercentage" headerName="SOB Percentage"></AgGridColumn>}
-                                            {isMultiTechnology && <AgGridColumn width={150} field="OldPOPrice" tooltipField="OldPOPrice" headerName="Existing Net Cost"></AgGridColumn>}
-                                            {isMultiTechnology && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn minWidth={100} field="Delta" tooltipField="Delta" headerName="Delta"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn minWidth={100} field="DeltaSign" tooltipField="DeltaSign" headerName="DeltaSign"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn minWidth={100} field="NetCost" tooltipField="NetCost" headerName="Net Cost"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn minWidth={120} field="SOBPercentage" tooltipField="SOBPercentage" headerName="SOB Percentage"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn minWidth={150} field="OldPOPrice" tooltipField="OldPOPrice" headerName="Existing Net Cost"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn minWidth={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
 
-                                            {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" cellRenderer='overHeadFormatter' tooltipField="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
+                                            {isOverHeadProfit === true && <AgGridColumn minWidth={120} field="OverheadName" cellRenderer='overHeadFormatter' tooltipField="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
                                         </AgGridReact >}
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div >
@@ -1031,6 +1043,9 @@ function VerifySimulation(props) {
                     </Row >
                 </>
             }
+             {showTooltip && !isMultiTechnology && !isOverHeadProfit && !isCombinedProcess&&(isMasterAssociatedWithCosting||isRMDomesticOrRMImport === true) && <Tooltip className="simulation-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
+                        {"This is the currency selected during the costing"}
+                    </Tooltip>}
             {
                 costingPage &&
                 <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />

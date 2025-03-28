@@ -75,14 +75,16 @@ class AddFuel extends Component {
       errorObj: {
         state: false,
         rate: false,
-        effectiveDate: false
+        effectiveDate: false,
+        CountryId: false,
+        CityId: false
       },
       isGridEdit: false,
       showPopup: false,
       isImport: false,
       hidePlantCurrency: false,
-      settlementCurrency: null,
-      plantCurrency: null,
+      settlementCurrency: 1,
+      plantCurrency: 1,
       ExchangeSource: [],
       currency: null,
       plantExchangeRateId: '',
@@ -121,12 +123,12 @@ class AddFuel extends Component {
     const { plantCurrency, settlementCurrency, isImport } = this.state
 
     if (isImport) {
-      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
-      const rateBaseCurrency = checkForNull(rate) * checkForNull(settlementCurrency)
+      const rateBaseCurrency = checkForNull(checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice)) * checkForNull(settlementCurrency) ?? 1
       this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     } else {
-      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency) ?? 1
       this.props.change('RateConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     }
   }
@@ -137,7 +139,7 @@ class AddFuel extends Component {
 
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
-    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    const hasCurrencyAndDate = fromCurrency && effectiveDate;
 
     if (hasCurrencyAndDate) {
       if (IsFetchExchangeRateVendorWiseForParts() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
@@ -169,24 +171,39 @@ class AddFuel extends Component {
 
       if (isImport) {
         // First API call
-        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
-        callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
-          // Second API call
-          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
-          callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
-            this.setState({
-              plantCurrency: rate1,
-              settlementCurrency: rate2,
-              plantExchangeRateId: exchangeRateId1,
-              settlementExchangeRateId: exchangeRateId2,
-              showPlantWarning: showPlantWarning1,
-              showWarning: showWarning2
-
-            }, () => {
-              this.handleCalculation(fieldsObj?.Rate)
+        if (fieldsObj?.plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+          callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
+            .then(result => {
+              this.setState({
+                plantCurrency: result.rate,
+                settlementCurrency: 1,
+                plantExchangeRateId: result.exchangeRateId,
+                settlementExchangeRateId: null,
+                showPlantWarning: result.showPlantWarning,
+                showWarning: result.showWarning
+              });
             });
-          });
-        });
+        } else {
+          const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: fieldsObj?.plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+          callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
+            .then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1 }) => {
+              const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+              callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId)
+                .then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+                  this.setState({
+                    plantCurrency: rate1,
+                    settlementCurrency: rate2,
+                    plantExchangeRateId: exchangeRateId1,
+                    settlementExchangeRateId: exchangeRateId2,
+                    showPlantWarning: showPlantWarning1,
+                    showWarning: showWarning2
+                  }, () => {
+                    this.handleCalculation(fieldsObj?.Rate)
+                  });
+                });
+            });
+        }
       } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
@@ -345,11 +362,22 @@ class AddFuel extends Component {
 
     let count = 0;
     setTimeout(() => {
-
-      if (country.length === 0 || city.length === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, state: true } })
+      if (country.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, CountryId: true } })
         count++
       }
+      if (city.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, CityId: true } })
+        count++
+      }
+      if ((this.state?.country?.length === 0 || this.state?.country?.label === 'India') && StateName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, StateId: true } })
+        count++
+      }
+      // if (country.length === 0 || city.length === 0 || StateName.length === 0) {
+      //   this.setState({ errorObj: { ...this.state.errorObj, state: true } })
+      //   count++
+      // }
       if (fieldsObj?.RateLocalConversion === undefined || Number(fieldsObj?.RateLocalConversion) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
         count++
@@ -601,7 +629,7 @@ class AddFuel extends Component {
       city: { list: cityList, labelKey: 'Text', valueKey: 'Value' },
       ClientList: { list: clientSelectList, labelKey: 'Text', valueKey: 'Value' },
       ExchangeSource: { list: exchangeRateSourceList, labelKey: 'Text', valueKey: 'Value', filter: item => item.Value !== '--Exchange Rate Source Name--' },
-      currency: { list: currencySelectList, labelKey: 'Text', valueKey: 'Value' }
+      currency: { list: currencySelectList, labelKey: 'Text', valueKey: 'Value', filter: item => item.Text !== this.props?.fieldsObj?.plantCurrency }
     };
 
     const { list, labelKey, valueKey, filter } = listingMap[label] || {};
@@ -844,11 +872,11 @@ class AddFuel extends Component {
 
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ country: newValue, state: [], city: [], StateName: [] }, () => {
+      this.setState({ country: newValue, state: [], city: [], errorObj: { ...this.state.errorObj, CountryId: false }, StateName: [] }, () => {
         this.getAllCityData()
       });
     } else {
-      this.setState({ country: [], state: [], city: [] })
+      this.setState({ country: [], state: [], city: [], errorObj: { ...this.state.errorObj, CountryId: true } })
     }
     this.setState({ DropdownChanged: false })
   };
@@ -859,12 +887,12 @@ class AddFuel extends Component {
   */
   stateHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ StateName: newValue, city: [] }, () => {
+      this.setState({ StateName: newValue, city: [], errorObj: { ...this.state.errorObj, StateId: false } }, () => {
         const { StateName } = this.state;
         this.props.fetchCityDataAPI(StateName.value, () => { })
       });
     } else {
-      this.setState({ StateName: [], city: [] });
+      this.setState({ StateName: [], city: [], errorObj: { ...this.state.errorObj, StateId: true } });
     }
 
   };
@@ -881,9 +909,9 @@ class AddFuel extends Component {
 
   cityHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ city: newValue });
+      this.setState({ city: newValue, errorObj: { ...this.state.errorObj, CityId: false } });
     } else {
-      this.setState({ city: [] });
+      this.setState({ city: [], errorObj: { ...this.state.errorObj, CityId: true } });
     }
     this.setState({ DropdownChanged: false })
   };
@@ -908,7 +936,9 @@ class AddFuel extends Component {
     const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency
+        ? `Rate (${this.state.currency?.label ?? 'Currency'}) * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'}) * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {
@@ -926,7 +956,7 @@ class AddFuel extends Component {
     return <>
       {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-        : ''}<p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
     </>;
   };
   /**
@@ -1262,7 +1292,6 @@ class AddFuel extends Component {
                               <h5>{"Rate:"}</h5>
                             </div>
                           </Col>
-
                           <Col md="3">
                             <div className="form-group inputbox withBorder ">
                               <Field
@@ -1278,6 +1307,7 @@ class AddFuel extends Component {
                                 valueDescription={this.state.country}
                                 disabled={isViewMode}
                               />
+                              {this.state.errorObj.CountryId && this.state.country.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
 
@@ -1297,6 +1327,7 @@ class AddFuel extends Component {
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj.StateId && this.state.StateName.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
                             </Col>}
 
@@ -1315,6 +1346,7 @@ class AddFuel extends Component {
                                 valueDescription={this.state.city}
                                 disabled={isViewMode}
                               />
+                              {this.state.errorObj.CityId && this.state.city.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
                           <Col md="3">
@@ -1560,7 +1592,7 @@ class AddFuel extends Component {
 */
 function mapStateToProps(state) {
   const { fuel, auth, comman, client } = state;
-  const fieldsObj = selector(state, "Rate", "RateLocalConversion", "Currency", "ExchangeSource", "plantCurrency", "RateConversion");
+  const fieldsObj = selector(state, "Rate", "RateLocalConversion", "Currency", "ExchangeSource", "plantCurrency", "RateConversion", "CountryId", "StateId", "CityId");
   let initialValues = {};
 
   const { UOMSelectList, stateList, plantSelectList, countryList, cityList, exchangeRateSourceList, currencySelectList } = comman;

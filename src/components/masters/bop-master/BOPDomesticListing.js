@@ -44,7 +44,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPDomesticListing = (props) => {
-
   const permissions = useContext(ApplyPermission);
   const dispatch = useDispatch();
   const searchRef = useRef(null);
@@ -124,13 +123,20 @@ const BOPDomesticListing = (props) => {
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []);
+
+  useEffect(() => {
+    if (!props.stopApiCallOnCancel) {
+      getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
+    }
+  }, [props?.isBOPAssociated]);
+
   useEffect(() => {
     if (bopDomesticList?.length > 0) {
       setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, isLoader: false, }));
     }
 
     if (props.isSimulation) {
-      props.callBackLoader(state.isLoader);
+      props.callBackLoader(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bopDomesticList]);
@@ -933,6 +939,7 @@ const BOPDomesticListing = (props) => {
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}  >
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>}
                 <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
@@ -947,11 +954,11 @@ const BOPDomesticListing = (props) => {
                 {props?.isMasterSummaryDrawer && getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>}
                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                <AgGridColumn minWidth={180} field="Currency" headerName="Currency/Settlement Currency"></AgGridColumn>
                 <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                 <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
 
-                {/* {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>} */}
+                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
 
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>

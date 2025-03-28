@@ -29,7 +29,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, compareRateCommon, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser, getExchangeRateByCurrency } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -55,6 +55,7 @@ class AddBOPDomestic extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
+    this.debouncedCompareRate = debounce(() => { compareRateCommon(this.props.bopData?.BoughtOutPartOtherCostDetailsSchema, this.props.bopData?.BoughtOutPartConditionsDetails)}, 1000);
     this.initialState = {
       BOPID: EMPTY_GUID,
       isEditFlag: this.props?.data?.isEditFlag ? true : false,
@@ -192,7 +193,7 @@ class AddBOPDomestic extends Component {
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource } = this.state;
-const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
+    const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
       if (IsFetchExchangeRateVendorWiseForParts() && (vendorName?.length === 0 && client?.length === 0)) {
         return false;
@@ -253,6 +254,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
+
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.toolTipNetCost()
       this.handleCalculation()
@@ -748,7 +750,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     let netLandedCostPlantCurrency = checkForNull(sumBase) + checkForNull(basicPriceAndOtherCost)
     const netCostBaseCurrency = this.state.currencyValue * netLandedCostPlantCurrency
     this.props.change("BasicPrice", checkForDecimalAndNull(basicPriceAndOtherCost, initialConfiguration?.NoOfDecimalForPrice))
-    this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration?.NoOfDecimalForPrice))
+    // this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCostPlantCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.setState({
@@ -836,11 +838,24 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
       data.append('file', file)
       this.props.fileUploadBOPDomestic(data, (res) => {
         this.setDisableFalseFunction()
-        let Data = res.data[0]
-        const { files } = this.state;
-        let attachmentFileArray = [...files]
-        attachmentFileArray.push(Data)
-        this.setState({ files: attachmentFileArray })
+        if ('response' in res) {
+          status = res && res?.response?.status
+          this.dropzone.current.files.pop()
+          this.setState({ attachmentLoader: false })
+          this.dropzone.current.files.pop() // Remove the failed file from dropzone
+          this.setState({ files: [...this.state.files] }) // Trigger re-render with current files
+          Toaster.warning('File upload failed. Please try again.')
+        }
+        else {
+          let Data = res.data[0]
+          const { files } = this.state;
+          let attachmentFileArray = [...files]
+          attachmentFileArray.push(Data)
+          this.setState({ attachmentLoader: false, files: attachmentFileArray })
+          setTimeout(() => {
+            this.setState(prevState => ({ isOpen: !prevState.isOpen }))
+          }, 500);
+        }
       })
     }
 
@@ -1132,7 +1147,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
   labelWithUOM = (value) => {
     const { initialConfiguration } = this.props
     return <div>
-      <span className='d-flex'>Basic Rate/{displayUOM(value)} ({this.props.fieldsObj?.plantCurrency ?? 'Currency'})</span>
+      <span className='d-flex'>Basic Rate ({this.props.fieldsObj?.plantCurrency ?? 'Currency'}/{displayUOM(value)})</span>
     </div>
   }
   onIsClientVendorBOP = () => {
@@ -1166,6 +1181,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     }
     return value
   }
+
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
 
@@ -1213,8 +1229,11 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
   }
   closeOtherCostToggle = (type, data, total, totalBase) => {
     if (type === 'Save') {
-      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) && this.state.NetConditionCost) {
-        Toaster.warning("Please click on refresh button to update condition cost data.")
+      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) &&
+        this.state.NetConditionCost &&
+        Array.isArray(this.state?.conditionTableData) &&
+        this.state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
+        Toaster.warning("Please click on refresh button to update Condition Cost data.")
       }
     }
     const netCost = checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate)
@@ -1240,6 +1259,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     // Handle any additional actions based on isConditionCost
     if (isConditionCost) {
       // Update condition cost related data
+      this.props.change('ConditionCost', checkForDecimalAndNull(result?.formValue?.value, getConfigurationKey().NoOfDecimalForPrice))
       this.setState({
         ...this.state,
         states: result.updatedState
@@ -1791,6 +1811,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                                 disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                                 className=" "
                                 customClassName=" withBorder"
+                                onChange={(e) => { this.state.isEditFlag && this.debouncedCompareRate() }}
                               />
                             </Col></>}
                           {!isTechnologyVisible &&(<Col md="3">
@@ -1798,7 +1819,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                               
                                 <div className="w-100">
                                   <Field
-                                    label={`Other Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props?.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                    label={`Other Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                     name={"OtherCost"}
                                     type="text"
                                     placeholder={"-"}
@@ -1834,7 +1855,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                             <Col md="3">
                               <TooltipCustom width="350px" id="bop-basic-price" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
                               <Field
-                                label={`Basic Price/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                label={`Basic Price (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                 name={"BasicPrice"}
                                 type="text"
                                 id="bop-basic-price"
@@ -1851,7 +1872,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                               <div className='d-flex align-items-center'>
                                 <div className="w-100">
                                   <Field
-                                    label={`Condition Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                    label={`Condition Cost (${this.props.fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                     name={"ConditionCost"}
                                     type="text"
                                     placeholder={"-"}
@@ -1889,7 +1910,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                               <Col md="3">
                                 <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                                  label={`Net Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}  
                                   name={`${"NetCostPlantCurrency"}`}
                                   id="bop-net-cost-plant"
                                   type="text"
@@ -1903,9 +1924,9 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                                 />
                               </Col>
                               {!hidePlantCurrency && <Col md="3">
-                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost(${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                   name={`${"NetCostBaseCurrency"}`}
                                   type="text"
                                   id="bop-net-cost"
@@ -2053,7 +2074,7 @@ const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                          {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
+                          {this.state.showWarning || this.state.effectiveDate && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
                           <Button
                             id="AddBOPDomestic_cancel"
                             onClick={this.cancelHandler}

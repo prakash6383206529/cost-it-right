@@ -75,7 +75,6 @@ function Simulation(props) {
     const operationList = useSelector(state => state.material.operationList)
     const customerList = useSelector(state => state.client.clientSelectList)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    console.log(simulationApplicability, "simulationApplicability")
 
 
     const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
@@ -123,7 +122,6 @@ function Simulation(props) {
     const { technologyLabel } = useLabels();
     const dispatch = useDispatch()
     const [applicabilityMasterId, setApplicabilityMasterId] = useState(findApplicabilityMasterId(masterList, simulationApplicability?.value) ?? null)
-    console.log(applicabilityMasterId, "applicabilityMasterId")
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     useEffect(() => {
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
@@ -1622,11 +1620,11 @@ function Simulation(props) {
                     </ApplyPermission.Provider>
                 } else {
                     return <ApplyPermission.Provider value={permissionData}>
-                        <RMSimulation isDomestic={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />
+                        <RMSimulation isDomestic={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master?.value} tokenForMultiSimulation={tempObject} />
                     </ApplyPermission.Provider> //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
                 }
             case RMIMPORT:
-                return <RMSimulation isCostingSimulation={true} isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isCostingSimulation={true} isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master?.value} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
                 return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label} masterId={master?.value} tokenForMultiSimulation={tempObject} technologyId={technology.value} selectionForListingMasterAPI={selectionForListingMasterAPI} vendor={vendor} />
             case COMBINED_PROCESS:
@@ -1728,7 +1726,6 @@ function Simulation(props) {
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (props?.isFromApprovalListing === true && String(props?.master) !== RAWMATERIALINDEX && String(simulationApplicability?.value) !== String(RAWMATERIALINDEX)) {
-        console.log("COMING HERE")
         const simulationId = props?.approvalProcessId;
         const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
@@ -1736,7 +1733,6 @@ function Simulation(props) {
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} />
     }
     if ((props?.isFromApprovalListing === true && String(props?.master) === RAWMATERIALINDEX) || (props?.isFromApprovalListing === true && String(simulationApplicability?.value) === String(RAWMATERIALINDEX))) {
-        console.log("COMING HERE 2")
         const simulationId = props?.approvalProcessId;
         const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
@@ -1816,7 +1812,7 @@ function Simulation(props) {
                                                 handleChange={handleAssociationChange}
                                                 errors={errors.Association}
                                             />
-                                            {!bopLoader && <TooltipCustom id="association-tooltip" width="310px" tooltipText='To run a simulation on BOPs associated with costing, please select "Associate with Costing". Otherwise, select "Not Associate with Costing"' />}
+                                            {bopLoader && <TooltipCustom id="association-tooltip" width="310px" tooltipText='To run a simulation on BOPs associated with costing, please select "Associate with Costing". Otherwise, select "Not Associate with Costing"' />}
                                         </div>
                                     </div>
                                 }

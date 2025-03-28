@@ -109,10 +109,14 @@ function AddRMDetails(props) {
         }
         dispatch(getExchangeRateSource((res) => { }))
     }, [])
+    const masterFields = ['Technology', 'RawMaterialName', 'RawMaterialCode', 'RawMaterialSpecification', 'RawMaterialGrade', 'RawMaterialCategory', 'Plants', 'ExchangeSource', 'vendorName', 'sourceVendorName', 'Source', 'SourceSupplierCityId']
     useEffect(() => {
         if (states.costingTypeId === CBCTypeId) {
             dispatch(getClientSelectList(() => { }))
         }
+        masterFields.forEach(field => {
+            setValue(field, null)
+        })
     }, [states.costingTypeId])
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
