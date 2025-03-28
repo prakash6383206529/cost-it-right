@@ -151,7 +151,7 @@ function StandardRub(props) {
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
             let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
-            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight }))
+            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) }))
             setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }
     }, 500)
@@ -359,7 +359,7 @@ function StandardRub(props) {
         const isValid = await trigger(validationFields);
         if(!isValid){
             return false;
-        }else if((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))   ){
+        }else if((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0))   ){
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
