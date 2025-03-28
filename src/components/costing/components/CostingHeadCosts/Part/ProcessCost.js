@@ -61,7 +61,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource,exchangeRateData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const { rmFinishWeight, rmGrossWeight } = props
   const [openMachineForm, setOpenMachineForm] = useState(false)
 
@@ -473,7 +473,7 @@ function ProcessCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
@@ -837,9 +837,9 @@ function ProcessCost(props) {
     }
     let tempArr = []
     let tempData = processGroupGrid[index]
+    let processCost = 0
 
     if (!isNaN(event.target.value) && event.target.value !== '') {
-      let processCost = 0
       let productionPerHour = 0
       if (tempData.UOMType !== TIME) {
         processCost = tempData.MHR * event.target.value
@@ -854,7 +854,18 @@ function ProcessCost(props) {
         ProductionPerHour: tempData.UOMType !== TIME ? '-' : productionPerHour,
         ProcessCost: processCost
       }
-      let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
+    } else {
+      // Set process cost to 0 when quantity is empty/null/undefined
+      tempData = {
+        ...tempData,
+        Quantity: '',
+        IsCalculatedEntry: false,
+        ProductionPerHour: tempData.UOMType !== TIME ? '-' : 0,
+        ProcessCost: 0
+      }
+    }
+
+    let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
 
       let ProcessCostTotal = 0
       ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
@@ -878,7 +889,7 @@ function ProcessCost(props) {
       setGridData(gridTempArr)
       dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
       setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration?.NoOfDecimalForPrice))
-    }
+    
     //  else {
 
     //   const ProcessCost = tempData.MHR * 0
@@ -958,8 +969,19 @@ function ProcessCost(props) {
         ProductionPerHour: productionPerHour,
         ProcessCost: processCost
       }
-      let gridTempArr = Object.assign([...list], { [index]: tempData })
-      setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
+    } else {
+      // Set process cost to 0 when quantity is empty/null/undefined
+      tempData = {
+        ...tempData,
+        Quantity: '',
+        IsCalculatedEntry: false,
+        ProductionPerHour: tempData.UOMType !== TIME ? '-' : 0,
+        ProcessCost: 0
+      }
+    }
+
+    let gridTempArr = Object.assign([...list], { [index]: tempData })
+    setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(tempData.ProcessCost, getConfigurationKey().NoOfDecimalForInputOutput))
 
       //MAIN PROCESS ROW WITH GROUP
       let ProcessCostTotal = 0
@@ -1005,7 +1027,7 @@ function ProcessCost(props) {
       setGridData(processTemparr)
 
       dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
-    }
+
   }
 
   /**

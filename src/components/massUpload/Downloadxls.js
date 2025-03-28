@@ -597,21 +597,21 @@ class Downloadxls extends React.Component {
             return (
                 <>
                     {(costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) &&
-                        <ExcelFile filename={costingTypeId === ZBCADDMOREOPERATION ? 'ZBC More Details' : `${downloadFileName} ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download ZBC</button>}>
+                        <ExcelFile filename={costingTypeId === ZBCADDMOREOPERATION ? 'ZBC More Details' : `${downloadFileName} ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download</button>}>
                             {costingTypeId !== ZBCADDMOREOPERATION ? this.renderZBCSwitch(fileName) : this.renderZBCSwitch(costingTypeId)}
                         </ExcelFile>}
 
                     {(costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION) &&
-                        <ExcelFile filename={costingTypeId === VBCADDMOREOPERATION ? 'VBC More Details' : `${downloadFileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC</button>}>
+                        <ExcelFile filename={costingTypeId === VBCADDMOREOPERATION ? 'VBC More Details' : `${downloadFileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download</button>}>
 
                             {(costingTypeId === VBCADDMOREOPERATION ? this.renderVBCSwitch(Number(costingTypeId)) : this.renderVBCSwitch(fileName))}
                         </ExcelFile>}
                     {(costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) &&
-                        <ExcelFile filename={costingTypeId === CBCADDMOREOPERATION ? 'CBC More Details' : `${downloadFileName} CBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download CBC</button>}>
+                        <ExcelFile filename={costingTypeId === CBCADDMOREOPERATION ? 'CBC More Details' : `${downloadFileName} CBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download</button>}>
                             {costingTypeId !== CBCADDMOREOPERATION ? this.renderCBCSwitch(fileName) : this.renderCBCSwitch(costingTypeId)}
                         </ExcelFile>}
                     {bopType === DETAILED_BOP &&
-                        <ExcelFile filename={`${fileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC Detailed {showBopLabel()}</button>}>
+                        <ExcelFile filename={`${fileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download</button>}>
                             {fileName ? this.renderVBCSwitch(fileName, bopType) : ''}
                         </ExcelFile>}
                     {/* ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER */}

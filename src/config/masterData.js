@@ -5178,6 +5178,7 @@ export const RMDomesticSimulation = [
     // ******* RMShearingCost AND RMFreightCost WILL NOT COME IN RE *****
 
     { label: "CostingHead", value: "CostingHead" },
+    { label: "EntryType", value: "EntryType" },
     { label: "RawMaterial", value: "RawMaterialName" },
     { label: "Grade", value: "RawMaterialGradeName" },
     { label: "Spec", value: "RawMaterialSpecificationName" },
@@ -5190,6 +5191,7 @@ export const RMDomesticSimulation = [
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "VendorLocation", value: "VendorLocation" },
     { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Currency", value: "Currency" },
     { label: "UOM", value: "UnitOfMeasurementName" },
     { label: "BasicRate", value: "BasicRatePerUOM" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
@@ -5207,6 +5209,7 @@ export const RMDomesticSimulation = [
 
 export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
+    { label: "EntryType", value: "EntryType" },
     { label: "RawMaterial", value: "RawMaterialName" },
     { label: "Grade", value: "RawMaterialGradeName" },
     { label: "Spec", value: "RawMaterialSpecificationName" },
@@ -5219,6 +5222,7 @@ export const RMImportSimulation = [
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "VendorLocation", value: "VendorLocation" },
     { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Currency", value: "Currency" },
     { label: "UOM", value: "UnitOfMeasurementName" },
     { label: "BasicRate", value: "BasicRatePerUOM" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
@@ -5233,8 +5237,9 @@ export const RMImportSimulation = [
 ]
 
 export const SurfaceTreatmentSimulation = [
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "CostingHead", value: "CostingHead" },
+    { label: "EntryType", value: "EntryType" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant (Code)", value: "Plants" },
@@ -5243,6 +5248,7 @@ export const SurfaceTreatmentSimulation = [
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "UOM", value: "UOM" },
+    { label: "Currency", value: "Currency" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -5251,8 +5257,9 @@ export const SurfaceTreatmentSimulation = [
 ]
 
 export const OperationSimulation = [
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "CostingHead", value: "CostingHead" },
+    { label: "EntryType", value: "EntryType" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "OperationType", value: "ForType", },
@@ -5262,6 +5269,7 @@ export const OperationSimulation = [
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "UOM", value: "UOM" },
+    { label: "Currency", value: "Currency" },
     { label: "Consumption", value: "OperationConsumption" },
     { label: "WeldingMaterialRate/kg", value: "OperationBasicRate" },
     { label: "Revised WeldingMaterialRate/kg", value: "NewOperationBasicRate" },
@@ -5275,12 +5283,14 @@ export const OperationSimulation = [
 
 export const MachineRateSimulation = [
     { label: "CostingHead", value: "CostingHead" },
+    { label: "EntryType", value: "EntryType" },
     { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "Plant" },
+    { label: "Currency", value: "Currency" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "MachineTonnage", value: "MachineTonnage" },
     { label: "ProcessName", value: "ProcessName" },
@@ -5294,6 +5304,7 @@ export const MachineRateSimulation = [
 
 export const BOPDomesticSimulation = [
     { label: "CostingHead", value: "CostingHead" },
+    { label: "EntryType", value: "EntryType" },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
@@ -5303,6 +5314,7 @@ export const BOPDomesticSimulation = [
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "NumberOfPieces", value: "NumberOfPieces" },
     { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Currency", value: "Currency" },
     { label: "Percentage", value: "Percentage" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
@@ -5314,6 +5326,7 @@ export const BOPDomesticSimulation = [
 
 export const BOPImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
+    { label: "EntryType", value: "EntryType" },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
@@ -5323,6 +5336,7 @@ export const BOPImportSimulation = [
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "NumberOfPieces", value: "NumberOfPieces" },
     { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Currency", value: "Currency" },
     { label: "Percentage", value: "Percentage" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
@@ -7541,17 +7555,17 @@ export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'Mach
 
 export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "ExistingNetCC", "RevisedNetCC", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate"]         // KEEP COMMENTED ON RE						//RE
 
-export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "Technology"]
+export const RawMaterialDomesticFileHeads = ["CostingHead", "EntryType", "RawMaterial", "Grade", "Spec", "Code", "Category", "Technology"]
 
-export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "Technology"]
+export const RawMaterialImportFileHeads = ["CostingHead", "EntryType", "RawMaterial", "Grade", "Spec", "Code", "Category", "Technology"]
 
-export const OperationFileHeads = ['Technology', 'CostingHead', 'OperationName', 'OperationCode']
+export const OperationFileHeads = ['Technology', 'CostingHead', 'EntryType', 'OperationName', 'OperationCode']
 
-export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory']
+export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'EntryType', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory']
 
-export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory']
+export const BoughtOutPartImportFileHeads = ['CostingHead', 'EntryType', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory']
 
-export const MachineRateFileHeads = ['CostingHead', 'Technology', 'MachineName', 'MachineNumber']
+export const MachineRateFileHeads = ['CostingHead', 'EntryType', 'Technology', 'MachineName', 'MachineNumber']
 
 export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost']         // KEEP COMMENTED ON RE						//RE
 export const TechnologyDropdownBulkUploadV1 = [
@@ -9314,8 +9328,8 @@ export const statusDropdownforRfq = [
     { label: "History", value: "10" },
     { label: "Not Selected", value: "11" },
     { label: "PreDraft", value: "12" },
-    {label: 'Awarded', value: "13" },
-    {label: 'Non Awarded', value: "14" },
+    { label: 'Awarded', value: "13" },
+    { label: 'Non Awarded', value: "14" },
 
 ];
 export const statusDropdownforNfr = [
@@ -9336,13 +9350,13 @@ export const CostingBulkUploadTechnologyDropdown = [
 
 export const applicabilityList = [
     { label: 'RM With Parts', value: 'RM With Parts' },
-    {label:"RM",value:"RM"},
+    { label: "RM", value: "RM" },
     { label: 'BOP With Parts', value: 'BOP With Parts' },
     { label: 'BOP', value: 'BOP' },
     { label: 'Part', value: 'Part' },
     { label: 'Operations', value: 'Operations' },
     { label: 'Machine Rate', value: 'Machine Rate' },
-    {label:"Surface Treatment",value:"Surface Treatment"},
+    { label: "Surface Treatment", value: "Surface Treatment" },
 ];
 
 export const APPLICABILITY_RM_SIMULATION = "RM With Parts"
@@ -9350,10 +9364,10 @@ export const APPLICABILITY_BOP_SIMULATION = "BOP With Parts"
 export const APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION = "BOP"
 
 export const APPLICABILITY_PART_SIMULATION = "Part"
-export const APPLICABILITY_MACHINE_RATES_SIMULATION="Machine Rate"
-export const APPLICABILITY_OPERATIONS_SIMULATION="Operations"
-export const APPLICABILITY_SURFACE_TREATMENT_SIMULATION="Surface Treatment"
-export const APPLICABILITY_RAWMATERIAL_SIMULATION="RM"
+export const APPLICABILITY_MACHINE_RATES_SIMULATION = "Machine Rate"
+export const APPLICABILITY_OPERATIONS_SIMULATION = "Operations"
+export const APPLICABILITY_SURFACE_TREATMENT_SIMULATION = "Surface Treatment"
+export const APPLICABILITY_RAWMATERIAL_SIMULATION = "RM"
 
 export const nfrDropdown = [
     { label: "00000563", value: "160e1194-ae06-4ab8-a1ca-98acc064a017" },
