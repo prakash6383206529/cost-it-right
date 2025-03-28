@@ -1298,7 +1298,7 @@ function RMSimulation(props) {
                                                 {/* {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>} */}
                                                 {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                <AgGridColumn field="Currency" headerName="Settlement Currency" minWidth={120} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="Currency" headerName="Currency/Settlement Currency" minWidth={180} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 {(isImpactedMaster || props?.lastRevision ) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>}
 
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName={

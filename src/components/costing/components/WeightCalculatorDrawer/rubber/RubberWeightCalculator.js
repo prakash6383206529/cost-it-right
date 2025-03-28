@@ -487,9 +487,13 @@ function RubberWeightCalculator(props) {
 
         let obj = tableData[index]
         setValue('description', obj.Description)
-        setValue('additionalCostType', { label: obj.Type, value: 5 })
+        setValue('additionalCostType', { label: obj.Type, value: obj.Type === 'Percentage' ? 6 : 5  })
         setValue('valueAdditional', obj.Value)
         setValue('netCostAdditional', obj.NetCost)
+        if(obj.Type){
+            setDisableAdditionalFields(false);
+            setAdditionalCostType({ label: obj.Type, value: obj.Type === 'Percentage' ? 6 : 5 })
+        }
     }
 
     const handleFinishWeight = (e) => {
@@ -671,7 +675,7 @@ function RubberWeightCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.grossWeight}
-                                                disabled={props.CostingViewMode}
+                                                disabled={props.CostingViewMode || (tableData && tableData.length > 0)}
                                             />
                                         </Col>
 
@@ -696,7 +700,7 @@ function RubberWeightCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.finishedWeight}
-                                                disabled={props.CostingViewMode}
+                                                disabled={props.CostingViewMode || (tableData && tableData.length > 0)}
                                             />
                                         </Col>
 
@@ -738,7 +742,7 @@ function RubberWeightCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.scrapRecoveryPercentage}
-                                                disabled={props.CostingViewMode}
+                                                disabled={props.CostingViewMode || (tableData && tableData.length > 0)}
                                             />
                                         </Col>
 

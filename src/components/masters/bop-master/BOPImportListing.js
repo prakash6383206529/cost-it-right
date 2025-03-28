@@ -1162,7 +1162,7 @@ const BOPImportListing = (props) => {
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>)}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
                         {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                        <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                        <AgGridColumn minWidth={180} field="Currency" headerName="Currency/Settlement Currency"></AgGridColumn>
                         <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={"commonCostFormatter"} ></AgGridColumn>
                         <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                         {/* <AgGridColumn field="BasicRateConversion" headerName={headerNames?.BasicRate} cellRenderer={"commonCostFormatter"}></AgGridColumn> */}

@@ -345,8 +345,8 @@ const FuelListing = (props) => {
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
-                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"}tooltipField="PlantWithCode"></AgGridColumn>
-                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
+                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"} tooltipField="PlantWithCode"></AgGridColumn>
+                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={"commonCostFormatter"} tooltipField="VendorWithCode"></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (<AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateRenderer"}></AgGridColumn>
                 <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={"effectiveDateRenderer"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
