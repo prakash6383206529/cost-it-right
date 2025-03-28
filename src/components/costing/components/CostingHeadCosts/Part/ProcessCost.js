@@ -46,7 +46,7 @@ function ProcessCost(props) {
   })
   const [gridData, setGridData] = useState(data && data?.CostingProcessCostResponse ? data && data?.CostingProcessCostResponse : [])
   const trimValue = getConfigurationKey()
-  const trimForCost = trimValue.NoOfDecimalForPrice
+  const trimForCost = trimValue.NoOfDecimalForInputOutput
   const [calciIndex, setCalciIndex] = useState('')
   const [parentCalciIndex, setParentCalciIndex] = useState('')
   const [listData, setListData] = useState([])
@@ -277,32 +277,40 @@ function ProcessCost(props) {
       }))
     }
 
-    dispatch(getProcessDefaultCalculation(tempData.ProcessCalculatorId, res => {
-      if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
-        const data = res.status === 204 ? {} : res.data.Data
-        setCalculatorData(data, list, id, parentIndex)
-      }
-    }))
+    // dispatch(getProcessDefaultCalculation(tempData.ProcessCalculatorId, res => {
+    //   
+    //   if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+    //     const data = res.status === 204 ? {} : res.data.Data
+    //     setCalculatorData(data, list, id, parentIndex)
+    //   }
+    // }))
     // setCalculatorData(calciData)
   }, 500);
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
     
+
     setIsCalculator(false)
     if (Object.keys(weightData).length === 0) return false;
-    const calculateNetCosts = (processCost, applicabilityType) => {
+    const calculateNetCosts = (processCost, applicabilityType,processName, processNetCostWithoutInterestAndDepreciation) => {
+      
       return {
-        NetProcessCostForOverhead: [APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL].includes(applicabilityType) ? processCost : 0,
-        NetProcessCostForProfit: [APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL].includes(applicabilityType) ? processCost : 0,
-        NetProcessCostForOverheadAndProfit: [APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT].includes(applicabilityType) ? processCost : 0
+        NetProcessCostForOverhead: [APPLICABILITY_OVERHEAD]?.includes(applicabilityType) ? processCost :
+          [APPLICABILITY_OVERHEAD_EXCL].includes(applicabilityType) ? processNetCostWithoutInterestAndDepreciation : 0,
+
+        NetProcessCostForProfit: [APPLICABILITY_PROFIT]?.includes(applicabilityType) ? processCost :
+          [APPLICABILITY_PROFIT_EXCL].includes(applicabilityType) ? processNetCostWithoutInterestAndDepreciation : 0,
+
+        NetProcessCostForOverheadAndProfit: [APPLICABILITY_OVERHEAD_PROFIT]?.includes(applicabilityType) ? processCost :
+          [APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT]?.includes(applicabilityType) ? processNetCostWithoutInterestAndDepreciation : 0
       };
     };
-
+    
     if (parentCalciIndex === '') {
       let tempData = gridData[calciIndex]
       let tempArray
       let tempArr2 = [];
-      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionNumber, "Process");
+      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionNumber, "Process", weightData?.ProcessCostWithOutInterestAndDepreciation);
       tempData = {
         ...tempData,
         Quantity: tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity,
@@ -312,8 +320,8 @@ function ProcessCost(props) {
         ProcessCalculationId: EMPTY_GUID,
         ProcessCalculatorId: weightData.ProcessCalculationId,
         WeightCalculatorRequest: weightData,
-        // netProcessMHRWithOutInterestAndDepreciation: weightData?.netProcessMHRWithOutInterestAndDepreciation || null,
-        // processMHRWithOutInterestAndDepreciation: weightData?.processMHRWithOutInterestAndDepreciation || null,
+        ProcessCostWithOutInterestAndDepreciation: weightData?.ProcessCostWithOutInterestAndDepreciation || null,
+        MHRWithOutInterestAndDepreciation: weightData?.MHRWithOutInterestAndDepreciation || null,
         ...netCosts
       }
 
@@ -351,7 +359,7 @@ function ProcessCost(props) {
       let tempArr = []
       let processTempData = gridData[parentCalciIndex]
       let tempData = listData[calciIndex]
-      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionNumber, "Process");
+      const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionNumber, "Process", weightData?.ProcessCostWithOutInterestAndDepreciation);
 
       tempData = {
         ...tempData,
@@ -566,9 +574,10 @@ function ProcessCost(props) {
 
     const setDataInGridAndApi = (tempArr) => {
       tempArr && tempArr.map((el, index) => {
+
         // el.CostingConditionMasterAndTypeLinkingId = el.Applicability?.value || null
         // el.CostingConditionNumber = processApplicabilitySelect?.find(type => type?.value === el?.Applicability?.value)?.label || null
-        setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el?.ProcessCost, initialConfiguration?.NoOfDecimalForInputOutput))
         setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${ProcessGridFields}.${index}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
         setValue(`${ProcessGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
@@ -611,19 +620,30 @@ function ProcessCost(props) {
           }
           // THIS IS FOR GROUP PROCESS
           let rowArray = item.ProcessList && item.ProcessList.map((el) => {
-
             let processQuantity = 1
             let productionPerHour = ''
+            let processCostResult
+
             if (el.UOMType === MASS) {
               processQuantity = rmFinishWeight ? rmFinishWeight : 1
             }
             productionPerHour = el.UOMType !== TIME ? '-' : findProductionPerHour(processQuantity)
+            if (el.UOMType !== TIME) {
+              processCostResult = {
+                processCost: el.MachineRate * processQuantity,
+                ProcessCostWithOutInterestAndDepreciation: el?.MachineRateWithOutInterestAndDepreciation * processQuantity
+              }
+            } else {
+              processCostResult = findProcessCost(el.UOM, el.MachineRate, productionPerHour, el?.MachineRateWithOutInterestAndDepreciation)
+            }
+
             return {
               ProcessId: el.ProcessId,
               ProcessDetailId: '',
               MachineId: el.MachineId,
               MachineRateId: el.MachineRateId,
               MHR: el.MachineRate,
+              MHRWithOutInterestAndDepreciation: el?.MachineRateWithOutInterestAndDepreciation,
               ProcessName: el.ProcessName,
               ProcessDescription: el.Description,
               MachineName: el.MachineName,
@@ -631,7 +651,8 @@ function ProcessCost(props) {
               UnitOfMeasurementId: el.UnitOfMeasurementId,
               Tonnage: el.Tonnage,
               Quantity: processQuantity,
-              ProcessCost: el.UOMType !== TIME ? el.MachineRate * processQuantity : findProcessCost(el.UOM, el.MachineRate, productionPerHour),
+              ProcessCost: processCostResult?.processCost,
+              ProcessCostWithOutInterestAndDepreciation: processCostResult?.processCostWithoutInterestAndDepreciation,
               UOMType: el.UOMType,
               UOMTypeId: el.UnitTypeId,
               ProductionPerHour: productionPerHour,
@@ -641,6 +662,24 @@ function ProcessCost(props) {
               CurrencyExchangeRate: el.CurrencyExchangeRate
             }
           })
+
+          let mainProcessCostResult;
+          if (rowArray?.length > 0) {
+            mainProcessCostResult = {
+              processCost: calculateRowProcessCost(rowArray),
+              ProcessCostWithOutInterestAndDepreciation: rowArray?.reduce((acc, el) => acc + checkForNull(el?.ProcessCostWithOutInterestAndDepreciation), 0)
+            }
+          } else {
+            if (item.UOMType !== TIME) {
+              mainProcessCostResult = {
+                processCost: item.MachineRate * processQuantityMain,
+                ProcessCostWithOutInterestAndDepreciation: item?.MachineRateWithOutInterestAndDepreciation * processQuantityMain
+              }
+            } else {
+              mainProcessCostResult = findProcessCost(item.UOM, item.MachineRate, productionPerHrs(rowArray, item?.UOMType, processQuantityMain), item?.MachineRateWithOutInterestAndDepreciation)
+            }
+          }
+
           return {
             GroupName: item.GroupName,
             ProcessId: item.ProcessId ? item.ProcessId : '',
@@ -648,31 +687,30 @@ function ProcessCost(props) {
             MachineId: item.MachineId,
             MachineRateId: item.MachineRateId,
             MHR: item.MachineRate,
+            MHRWithOutInterestAndDepreciation: item?.MachineRateWithOutInterestAndDepreciation,
             ProcessName: item.ProcessName,
             ProcessDescription: item.Description,
             MachineName: item.MachineName,
             UOM: item.UOM,
             UnitOfMeasurementId: item.UnitOfMeasurementId,
             Tonnage: item.Tonnage,
-            Quantity: rowArray.length > 0 ? calculateRowQuantity(rowArray) : processQuantityMain,
-            // HERE IF GROUP NAME IS THERE THEN PROCESS COST WILL BE SUM UP OF ALL PROCESS'S PROCESS COST OF THAT GROUP,OTHERWISE WE WILL CHECK  UOMTYPE ON THAT BASIS ,PROCESS COST WILL BE CALCULATED
-            ProcessCost: rowArray.length > 0 ? calculateRowProcessCost(rowArray) : item.UOMType !== TIME ? item.MachineRate * processQuantityMain : findProcessCost(item.UOM, item.MachineRate, productionPerHrs(rowArray, item.UOMType, processQuantityMain)),
+            Quantity: rowArray?.length > 0 ? calculateRowQuantity(rowArray) : processQuantityMain,
+            ProcessCost: mainProcessCostResult.processCost,
+            ProcessCostWithOutInterestAndDepreciation: mainProcessCostResult?.processCostWithoutInterestAndDepreciation,
             UOMType: item.UOMType,
             UOMTypeId: item.UnitTypeId,
-            ProductionPerHour: productionPerHrs(rowArray, rowArray.length > 0 ? rowArray[0].UOMType : item.UOMType, processQuantityMain),
+            ProductionPerHour: productionPerHrs(rowArray, rowArray?.length > 0 ? rowArray[0].UOMType : item.UOMType, processQuantityMain),
             ProcessTechnologyId: item.ProcessTechnologyId,
             Technologies: item.Technologies,
             ProcessList: rowArray,
             ConvertedExchangeRateId: item.ConvertedExchangeRateId === EMPTY_GUID ? null : item.ConvertedExchangeRateId,
             CurrencyExchangeRate: item.CurrencyExchangeRate
-
           }
         })
 
         let tempArr = [...gridData, ...rowArr]
         setDataInGridAndApi(tempArr)
         dispatch(setProcessGroupGrid(formatReducerArray(tempArr)))
-
       }
     } else {
       if (rowData.length > 0) {
@@ -686,12 +724,23 @@ function ProcessCost(props) {
             processQuantityMain = rmFinishWeight ? rmFinishWeight : 1
           }
           productionPerHourMain = el.UOMType !== TIME ? '-' : findProductionPerHour(processQuantityMain)
+          let processCostResult;
+          if (el.UOMType !== TIME) {
+            processCostResult = {
+              processCost: el?.MachineRate * processQuantityMain,
+              ProcessCostWithOutInterestAndDepreciation: el?.MachineRateWithOutInterestAndDepreciation * processQuantityMain
+            }
+          } else {
+            processCostResult = findProcessCost(el.UOM, el.MachineRate, productionPerHourMain, el?.MachineRateWithOutInterestAndDepreciation)
+          }
+
           return {
             ProcessId: el.ProcessId,
             ProcessDetailId: '',
             MachineId: el.MachineId,
             MachineRateId: el.MachineRateId,
             MHR: el.MachineRate,
+            MHRWithOutInterestAndDepreciation: el?.MachineRateWithOutInterestAndDepreciation,
             ProcessName: el.ProcessName,
             ProcessDescription: el.Description,
             MachineName: el.MachineName,
@@ -699,16 +748,16 @@ function ProcessCost(props) {
             UnitOfMeasurementId: el.UnitOfMeasurementId,
             Tonnage: el.Tonnage,
             Quantity: processQuantityMain,
-            ProcessCost: el.UOMType !== TIME ? el.MachineRate * processQuantityMain : findProcessCost(el.UOM, el.MachineRate, productionPerHourMain),
+            ProcessCost: processCostResult?.processCost,
+            ProcessCostWithOutInterestAndDepreciation: processCostResult?.processCostWithoutInterestAndDepreciation,
             UOMType: el.UOMType,
             UOMTypeId: el.UnitTypeId,
             ProductionPerHour: productionPerHourMain,
             ProcessTechnologyId: el.ProcessTechnologyId,
             Technologies: el.Technologies,
-            ConvertedExchangeRateId: item.ConvertedExchangeRateId === EMPTY_GUID ? null : item.ConvertedExchangeRateId,
+            ConvertedExchangeRateId: item?.ConvertedExchangeRateId === EMPTY_GUID ? null : item?.ConvertedExchangeRateId,
             CurrencyExchangeRate: el.CurrencyExchangeRate
           }
-
         })
         let arr = [...parentProcessList, ...rowArr]
         parentTempData = {
@@ -779,7 +828,7 @@ function ProcessCost(props) {
         ProcessCostTotal: totals?.ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
-      
+
       let selectedIds = []
       let selectedMachineIds = []
       tempArrAfterDelete.map(el => {
@@ -896,25 +945,36 @@ function ProcessCost(props) {
     }
     let tempArr = []
     let tempData = processGroupGrid[index]
+    
 
     if (!isNaN(event.target.value) && event.target.value !== '') {
-      let processCost = 0
       let productionPerHour = 0
+      let processCostResult;
       if (tempData.UOMType !== TIME) {
-        processCost = tempData.MHR * event.target.value
+        
+        processCostResult = {
+          processCost: tempData.MHR * event.target.value,
+          ProcessCostWithOutInterestAndDepreciation: tempData?.MHRWithOutInterestAndDepreciation * event.target.value
+        };
       } else {
+        
         productionPerHour = findProductionPerHour(event.target.value)
-        processCost = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour)
+        processCostResult = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour, tempData?.MHRWithOutInterestAndDepreciation);
       }
-      const netCosts = calculateNetCosts(processCost, tempData?.Applicability?.label, "Process");
+      
+      
+      const netCosts = calculateNetCosts(processCostResult.processCost, tempData?.CostingConditionNumber, "Process", processCostResult?.processCostWithoutInterestAndDepreciation);
+      
       tempData = {
         ...tempData,
         Quantity: event.target.value,
         IsCalculatedEntry: false,
         ProductionPerHour: tempData.UOMType !== TIME ? '-' : productionPerHour,
-        ProcessCost: processCost,
-        CostingConditionMasterAndTypeLinkingId: tempData.Applicability?.value || null,
-        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === tempData.Applicability?.value)?.label || null,
+        ProcessCost: processCostResult?.processCost,
+        ProcessCostWithOutInterestAndDepreciation: processCostResult?.processCostWithoutInterestAndDepreciation,
+        CostingConditionMasterAndTypeLinkingId: tempData?.CostingConditionMasterAndTypeLinkingId || null,
+        CostingConditionNumber: tempData?.CostingConditionNumber||null,
+        MHRWithOutInterestAndDepreciation:tempData?.MHRWithOutInterestAndDepreciation,
         ...netCosts
       }
 
@@ -937,7 +997,8 @@ function ProcessCost(props) {
       }
       setGridData(gridTempArr)
       dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
-      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration?.NoOfDecimalForPrice))
+
+      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCostResult?.processCost, initialConfiguration?.NoOfDecimalForInputOutput))
     }
     //  else {
 
@@ -1011,29 +1072,43 @@ function ProcessCost(props) {
   };
 
   const onHandleChangeApplicability = (e, index) => {
-    
+
     let gridTempArr = JSON.parse(JSON.stringify(processGroupGrid));
 
     let tempData = gridTempArr[index];
+    
+    const netCosts = calculateNetCosts(tempData.ProcessCost, e?.label, "Process", tempData?.ProcessCostWithOutInterestAndDepreciation);
 
-    const netCosts = calculateNetCosts(tempData.ProcessCost, e?.label, "Process");
 
-
-    tempData = {
-      ...tempData,
-      CostingConditionMasterAndTypeLinkingId: e.value,
-      CostingConditionNumber: e.label,
-      Applicability: {  // Store complete applicability object
-        value: e.value,
-        label: e.label
-      },
-      ...netCosts
+    if (!e) {
+      tempData = {
+        ...tempData,
+        CostingConditionMasterAndTypeLinkingId: null,
+        CostingConditionNumber: null,
+        Applicability: null,
+        NetProcessCostForOverhead: 0,
+        NetProcessCostForProfit: 0,
+        NetProcessCostForOverheadAndProfit: 0
+      }
+    } else {
+      const netCosts = calculateNetCosts(tempData.ProcessCost, e?.label, "Process", tempData?.ProcessCostWithOutInterestAndDepreciation);
+      tempData = {
+        ...tempData,
+        CostingConditionMasterAndTypeLinkingId: e.value,
+        CostingConditionNumber: e.label,
+        Applicability: {
+          value: e.value,
+          label: e.label
+        },
+        ...netCosts
+      }
     }
 
     // If process has child processes, update them with same applicability
     if (tempData.ProcessList?.length > 0) {
       tempData.ProcessList = tempData.ProcessList.map(childProcess => {
-        const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.label, "Process");
+        
+        const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.label, "Process", childProcess?.ProcessCostWithOutInterestAndDepreciation);
         return {
           ...childProcess,
           CostingConditionMasterAndTypeLinkingId: e.value,
@@ -1082,20 +1157,26 @@ function ProcessCost(props) {
     if (!isNaN(event.target.value) && event.target.value !== '') {
       let processCost = 0
       let productionPerHour = 0
+      let ProcessCostWithOutInterestAndDepreciation = 0
       if (tempData.UOMType !== TIME) {
         processCost = tempData.MHR * event.target.value
+        ProcessCostWithOutInterestAndDepreciation = tempData?.MHRWithOutInterestAndDepreciation * event.target.value
+
       } else {
         productionPerHour = findProductionPerHour(event.target.value)
         processCost = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour)
+        ProcessCostWithOutInterestAndDepreciation = findProcessCost(tempData.UOM, tempData?.MHRWithOutInterestAndDepreciation, productionPerHour)
+
       }
       const parentApplicability = processTempData.Applicability?.label;
-      const netCosts = calculateNetCosts(processCost, parentApplicability, "Process");
+      const netCosts = calculateNetCosts(processCost, parentApplicability, "Process", ProcessCostWithOutInterestAndDepreciation);
       tempData = {
         ...tempData,
         Quantity: event.target.value,
         IsCalculatedEntry: false,
         ProductionPerHour: productionPerHour,
         ProcessCost: processCost,
+        ProcessCostWithOutInterestAndDepreciation: ProcessCostWithOutInterestAndDepreciation,
         ...netCosts,
         CostingConditionMasterAndTypeLinkingId: parentApplicability,
         CostingConditionNumber: processApplicabilitySelect.find(type => type.value === parentApplicability)?.label,
@@ -1172,7 +1253,7 @@ function ProcessCost(props) {
   const setOperationCost = (operationGrid, params, index) => {
     const OperationCostTotal = calculateTotalCosts(operationGrid, 'OperationCost');
     const apiArr = formatMainArr(gridData);
-    
+
     const operationsWithNetCosts = operationGrid?.map(operation => ({
       ...operation,
       ...calculateNetCosts(operation?.OperationCost, operation?.CostingConditionNumber, "Operation")
@@ -1481,6 +1562,7 @@ function ProcessCost(props) {
       }
 
 
+
       const setTabDataCommon = (processArray) => {
         let apiArr = formatMainArr(processArray)
         let obj = {
@@ -1545,7 +1627,8 @@ function ProcessCost(props) {
 
         finalTemp && finalTemp.map((el, index) => {
           // Update field values
-          setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
+
+          setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForInputOutput))
           setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
           setValue(`${ProcessGridFields}.${index}.remarkPopUp`, (el.Remark))
           setValue(`crmHeadProcess${index}`, { label: el.ProcessCRMHead, value: 1 })
@@ -1627,7 +1710,7 @@ function ProcessCost(props) {
                 </thead>
                 <tbody>
                   {processGroupGrid &&
-                    processGroupGrid.map((item, index) => {
+                    processGroupGrid.map((  item, index) => {
                       return (
                         <>
                           <tr key={index}>
@@ -1761,7 +1844,8 @@ function ProcessCost(props) {
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
                                 disabled={CostingViewMode}
-                              />
+                                isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
+                                />
                             </td>
 
                             <td>

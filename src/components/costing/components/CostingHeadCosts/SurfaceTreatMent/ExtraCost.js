@@ -131,6 +131,10 @@ function ExtraCost(props) {
 
     const handleDelete = (indexValue) => {
         let updatedData = tableData.filter((_, index) => index !== indexValue);
+        const totalCost = updatedData.reduce((sum, item) => {
+            return sum + (item?.TransportationCost ? Number(item.TransportationCost) : 0);
+        }, 0);
+        setTotalCostCurrency(totalCost);
         setTableData(updatedData);
         resetData();
     };

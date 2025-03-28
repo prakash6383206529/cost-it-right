@@ -5,7 +5,7 @@ import TooltipCustom from '../common/Tooltip';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../layout/HookFormInputs';
 import { number, checkWhiteSpaces, decimalIntegerNumberLimit, nonZero } from '../../helper';
 
-const FormFieldsRenderer = ({ fields, fieldProps, buttonProps }) => {
+const FormFieldsRenderer = ({ fields, fieldProps, buttonProps,children }) => {
     const { control, register, errors, containerClassName = "", colSize } = fieldProps;
     // const { buttonProps } = buttonProps;
     return (
@@ -68,6 +68,7 @@ const FormFieldsRenderer = ({ fields, fieldProps, buttonProps }) => {
                     </Col>
                 );
             })}
+            {children}
         </Row>
     );
 };

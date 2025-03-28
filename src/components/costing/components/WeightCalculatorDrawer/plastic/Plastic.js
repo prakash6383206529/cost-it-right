@@ -7,7 +7,7 @@ import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookF
 import { setPlasticArray } from '../../../actions/Costing'
 import { CORRUGATEDBOX } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
-import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation } from '../../../../../helper/validation'
+import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation,disableNegativeNumber } from '../../../../../helper/validation'
 import { debounce } from 'lodash'
 import { calculatePercentageValue, calculateScrapWeight, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
@@ -210,8 +210,6 @@ function Plastic(props) {
         props.toggleDrawer('')
     }
     const onSubmit = debounce(handleSubmit((values) => {
-        if (dataToSend?.materialCost < 0) return Toaster.warning("Net Landed Cost cannot be negative")
-
         !props?.fromPackaging && DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
         setIsDisable(true)
         let obj = {}
@@ -524,6 +522,10 @@ function Plastic(props) {
                                         register={register}
                                         mandatory={false}
                                         handleChange={() => { }}
+                                        rules={{
+                                            required: false,
+                                            validate: { disableNegativeNumber },
+                                        }}
                                         defaultValue={WeightCalculatorRequest &&
                                             WeightCalculatorRequest?.ScrapWeight !== undefined
                                             ? WeightCalculatorRequest?.ScrapWeight
@@ -584,6 +586,10 @@ function Plastic(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { disableNegativeNumber },
+                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -603,6 +609,10 @@ function Plastic(props) {
                                         register={register}
                                         id={'scrap-cost-plastic'}
                                         mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { disableNegativeNumber },
+                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -623,6 +633,10 @@ function Plastic(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { disableNegativeNumber },
+                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
