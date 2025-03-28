@@ -5,7 +5,7 @@ import { Row, Col, Label, } from 'reactstrap';
 import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, } from "../../../helper/validation";
 import { renderDatePicker, renderMultiSelectField, renderText, renderTextInputField, searchableSelect, validateForm, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
-import { getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import DayTime from '../../common/DayTimeWrapper'
@@ -96,7 +96,7 @@ class AddInterestRate extends Component {
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     this.getDetail()
     this.props.getICCAppliSelectList(() => { })
-    this.props.getPaymentTermsAppliSelectList(() => { })
+    this.props.fetchCostingHeadsAPI('paymentterms', false, res => { });
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
     }
@@ -113,7 +113,7 @@ class AddInterestRate extends Component {
    * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList, clientSelectList, rawMaterialNameSelectList, gradeSelectList } = this.props;
+    const { plantSelectList, costingHead, iccApplicabilitySelectList, clientSelectList, rawMaterialNameSelectList, gradeSelectList } = this.props;
     const temp = [];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
@@ -158,7 +158,7 @@ class AddInterestRate extends Component {
 
 
     if (label === 'PaymentTerms') {
-      paymentTermsSelectList && paymentTermsSelectList.map(item => {
+      costingHead && costingHead.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -454,9 +454,9 @@ class AddInterestRate extends Component {
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
-            const { paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
+            const { costingHead, iccApplicabilitySelectList, } = this.props;
             const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
-            const paymentObj = paymentTermsSelectList && paymentTermsSelectList.find(item => item.Value === Data.PaymentTermApplicability)
+            const paymentObj = costingHead && costingHead.find(item => item.Value === Data.PaymentTermApplicability)
             this.setState({
               isEditFlag: true,
               costingTypeId: Data.CostingTypeId,
@@ -1108,8 +1108,8 @@ function mapStateToProps(state) {
   const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent');
 
 
-  const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateData } = interestRate;
-  const { vendorWithVendorCodeSelectList, plantSelectList } = comman;
+  const {  iccApplicabilitySelectList, interestRateData } = interestRate;
+  const { vendorWithVendorCodeSelectList, plantSelectList ,costingHead } = comman;
   const { clientSelectList } = client;
   const { rawMaterialNameSelectList, gradeSelectList } = material
   let initialValues = {};
@@ -1123,7 +1123,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj, clientSelectList, rawMaterialNameSelectList, gradeSelectList
+    costingHead, iccApplicabilitySelectList, plantSelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj, clientSelectList, rawMaterialNameSelectList, gradeSelectList
   }
 }
 
@@ -1139,6 +1139,7 @@ export default connect(mapStateToProps, {
   createInterestRate,
   getInterestRateData,
   getPaymentTermsAppliSelectList,
+  fetchCostingHeadsAPI ,
   getICCAppliSelectList,
   getClientSelectList,
   getRawMaterialNameChild,

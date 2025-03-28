@@ -97,7 +97,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
   };
 
   const onSubmit = debounce(values => {
-    if(state.tableData.length === 0){
+    if(state?.tableData?.length === 0 && RMIndex){
       Toaster.warning('Please add at least one material type detail before saving');
       return false;
     }
