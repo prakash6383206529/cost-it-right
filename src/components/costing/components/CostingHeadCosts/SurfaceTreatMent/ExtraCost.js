@@ -246,6 +246,15 @@ function ExtraCost(props) {
             resetData();
             return;
         }
+        // Check if CostingConditionMasterId already exists in tableData
+        const existingCondition = tableData.find(item =>
+            item.CostingConditionMasterId === data?.Applicability?.value
+        );
+
+        if (existingCondition) {
+            Toaster.warning('Applicability already exists');
+            return;
+        }
         let tempData = [...tableData]
         let obj = {
             JsonStage: surfaceTabData?.JsonStage ?? null,
