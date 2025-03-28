@@ -39,6 +39,7 @@ import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
 import WarningMessage from '../../common/WarningMessage';
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddPower');
 
@@ -120,7 +121,8 @@ class AddPower extends Component {
       country: [],
       city: [],
       isDisabled: false,
-      showPlantWarning: false
+      showPlantWarning: false,
+      dataToChange: {}
 
     }
     this.state = { ...this.initialState };
@@ -536,6 +538,7 @@ class AddPower extends Component {
             this.props.change('City', Data.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : {})
 
             this.setState({
+              dataToChange: Data,
               isEditFlag: true,
               isLoader: false,
               IsVendor: Data.IsVendor,
@@ -1442,12 +1445,18 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country, isImport, netContributionConvertedInLocalCurrency, netContributionConvertedInBaseCurrency, netContributionValue } = this.state;
+      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country, isImport, netContributionConvertedInLocalCurrency, netContributionConvertedInBaseCurrency, netContributionValue, dataToChange } = this.state;
     const NetContributionConvertedInBaseCurrency = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? netContributionConvertedInBaseCurrency : netContributionValue
     const NetContributionConvertedInLocalCurrency = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? netContributionConvertedInLocalCurrency : netContributionValue
     const NetPowerCostPerUnitConversion = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? this.props.fieldsObj?.NetPowerCostPerUnitConversion : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion
     const NetPowerCostPerUnitLocalConversion = isDetailEntry ? NetContributionConvertedInLocalCurrency : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion
     const { fieldsObj } = this.props
+    let financialDataChanged = (Number(fieldsObj?.NetPowerCostPerUnitConversion && fieldsObj?.NetPowerCostPerUnitConversion) !== Number(dataToChange?.NetPowerCostPerUnitLocalConversion)) || (fieldsObj?.NetPowerCostPerUnit && Number(fieldsObj?.NetPowerCostPerUnit) !== Number(dataToChange?.NetPowerCostPerUnitLocalConversion))
+
+    if (financialDataChanged && checkEffectiveDate(effectiveDate, dataToChange?.effectiveDate)) {
+      Toaster.warning('Please update the Effective date.')
+      return false
+    }
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -2072,7 +2081,7 @@ class AddPower extends Component {
                                     changeHandler={(e) => { }}
                                     component={renderDatePicker}
                                     className="form-control"
-                                    disabled={(isEditFlag || isViewMode) ? true : false}
+                                    disabled={(isViewMode) ? true : false}
                                     placeholder={isViewMode ? '-' : "Select Date"}
                                     onFocus={() => onFocus(this, true)}
                                     minDate={getEffectiveDateMinDate()}

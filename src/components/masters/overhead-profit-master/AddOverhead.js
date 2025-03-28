@@ -32,6 +32,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -289,11 +290,11 @@ class AddOverhead extends Component {
     if (label === 'OverheadApplicability') {
       costingHead && costingHead.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
-         if (!this.state.isAssemblyCheckbox && item.Text.includes('Part Cost')) {
+        if (!this.state.isAssemblyCheckbox && item.Text.includes('Part Cost')) {
           return false;
-        }if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) {
+        } if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) {
           return false;
-        }temp.push({ label: item.Text, value: item.Value });
+        } temp.push({ label: item.Text, value: item.Value });
         return null;
       });
       return temp;
@@ -784,6 +785,7 @@ class AddOverhead extends Component {
         return plantArray
       })
     }
+
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
       cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
@@ -861,12 +863,14 @@ class AddOverhead extends Component {
         RawMaterialGrade: RMGrade?.label,
         IsFinancialDataChanged: IsFinancialDataChanged
       }
-      if (isEditFlag && IsFinancialDataChanged) {
-        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-          Toaster.warning('Please update the effective date')
-          this.setState({ setDisable: false })
-          return false
-        }
+      let financialDataChanged = (Number(ModelType?.value) !== Number(DataToChange?.ModelTypeId)) || (Number(DataToChange?.OverheadApplicabilityId) !== Number(overheadAppli?.value)) || (values?.OverheadRMPercentage && (Number(DataToChange?.OverheadRMPercentage) !== Number(values?.OverheadRMPercentage))) || (values?.OverheadCCPercentage && (Number(DataToChange?.OverheadCCPercentage) !== Number(values?.OverheadCCPercentage))) || (values?.OverheadBOPPercentage && (Number(DataToChange?.OverheadBOPPercentage) !== Number(values?.OverheadBOPPercentage)))
+      if (financialDataChanged && checkEffectiveDate(effectiveDate, DataToChange?.EffectiveDate)) {
+        this.setState({ setDisable: false })
+        Toaster.warning('Please update the Effective date.')
+        return false
+      } else if (!financialDataChanged) {
+        this.cancel('cancel')
+        return false
       }
       this.props.updateOverhead(requestData, (res) => {
         this.setState({ setDisable: false })
@@ -925,9 +929,9 @@ class AddOverhead extends Component {
   * @description Used for Surface Treatment
   */
   onPressAssemblyCheckbox = () => {
-    this.setState({ 
+    this.setState({
       isAssemblyCheckbox: !this.state.isAssemblyCheckbox,
-      overheadAppli: [], 
+      overheadAppli: [],
       isRM: false,
       isCC: false,
       isBOP: false,
@@ -937,10 +941,10 @@ class AddOverhead extends Component {
       isHideCC: false,
       isHideRM: false
     });
-    
+
     this.props.change('OverheadApplicability', '');
   };
-  
+
   /**
   * @method render
   * @description Renders the component
@@ -1339,7 +1343,7 @@ class AddOverhead extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isViewMode || !IsFinancialDataChanged}
+                              disabled={isViewMode}
                               placeholder={isViewMode || !IsFinancialDataChanged ? '-' : "Select Date"}
                             />
                           </div>
