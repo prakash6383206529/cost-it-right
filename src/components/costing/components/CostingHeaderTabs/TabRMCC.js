@@ -8,7 +8,7 @@ import {
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, savePartNumber, setMessageForAssembly, saveBOMLevel, gridDataAdded, setIsBreakupBoughtOutPartCostingFromAPI, saveCostingPaymentTermDetail, getCostingCostDetails
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { checkForNull, getConfigurationKey, loggedInUserId, showBopLabel } from '../../../../helper';
+import { checkForNull, getConfigurationKey, getOverheadAndProfitCostTotal, loggedInUserId, showBopLabel } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
@@ -22,7 +22,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 import { createSaveComponentObject } from '../../CostingUtilSaveObjects';
 import { PreviousTabData } from '.';
-import { LEVEL0, LEVEL1, TOOLINGPART } from '../../../../config/constants';
+import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, LEVEL0, LEVEL1, TOOLINGPART } from '../../../../config/constants';
 
 
 
@@ -478,16 +478,17 @@ function TabRMCC(props) {
 
         break;
       case 'CC':
+        const overheadCosts = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Overhead");
+        const profitCosts = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Profit");
+        const overheadAndProfitCosts = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "OverheadAndProfit");
         partObj.CostingPartDetails.TotalConversionCost = gridData.NetConversionCost
         partObj.CostingPartDetails.TotalProcessCost = gridData.ProcessCostTotal
-        partObj.CostingPartDetails.NetProcessCostForOverhead = gridData?.NetProcessCostForOverhead
-        // partObj.CostingPartDetails.NetProcessCostForOverheadExcl = gridData?.NetProcessCostForOverheadExcl
-        partObj.CostingPartDetails.NetProcessCostForProfit = gridData?.NetProcessCostForProfit
-        // partObj.CostingPartDetails.NetProcessCostForProfitExcl = gridData?.NetProcessCostForProfitExcl
-        partObj.CostingPartDetails.NetProcessCostForOverheadAndProfit = gridData?.NetProcessCostForOverheadAndProfit
-        partObj.CostingPartDetails.NetOperationCostForOverhead = gridData?.NetOperationCostForOverhead
-        partObj.CostingPartDetails.NetOperationCostForProfit = gridData?.NetOperationCostForProfit
-        partObj.CostingPartDetails.NetOperationCostForOverheadAndProfit = gridData?.NetOperationCostForOverheadAndProfit
+        partObj.CostingPartDetails.NetProcessCostForOverhead = overheadCosts?.overheadProcessCost;
+        partObj.CostingPartDetails.NetProcessCostForProfit = profitCosts?.profitProcessCost;
+        partObj.CostingPartDetails.NetProcessCostForOverheadAndProfit = overheadAndProfitCosts?.overheadAndProfitProcessCost;
+
+        partObj.CostingPartDetails.NetOperationCostForOverhead = overheadCosts?.overheadOperationCost;
+        partObj.CostingPartDetails.NetOperationCostForProfit = profitCosts?.overheadAndProfitOperationCost;
         // partObj.CostingPartDetails.NetOperationCostForOverheadExcl = gridData?.NetOperationCostForOverheadExcl
         // partObj.CostingPartDetails.NetOperationCostForProfitExcl = gridData?.NetOperationCostForProfitExcl
         partObj.CostingPartDetails.TotalOperationCost = gridData?.OperationCostTotal

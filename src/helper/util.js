@@ -1966,8 +1966,8 @@ export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendor
  * @param {string} prefix - 'Operation' or 'Process'
  */
 export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation', costWithoutInterestAndDepreciation = 0, isDetailed = false, uomType = '') => {
-  
-  
+
+
   const result = {
     [`Net${prefix}CostForOverhead`]: 0,
     [`Net${prefix}CostForProfit`]: 0,
@@ -1982,15 +1982,13 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
     APPLICABILITY_OVERHEAD_EXCL_PROFIT,
     APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
   ].includes(applicability);
-
-  // Show warning if excluding applicability selected but not detailed form
   if (isExcludingApplicability) {
-    if(!isDetailed||uomType !== TIME){
-    Toaster.warning("Detailed cost is unavailable for the selected process, and UOM is not time-based. Overhead & profit will be calculated on the actual machine rate.");
-    costWithoutInterestAndDepreciation = cost;
-  }}
+    if (!isDetailed || uomType !== TIME) {
+      costWithoutInterestAndDepreciation = cost;
+    }
+  }
 
-  
+
 
   switch (applicability) {
     case APPLICABILITY_OVERHEAD:
@@ -2019,3 +2017,65 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
 
   return result;
 };
+export const getOverheadAndProfitCostTotal = (arr = [], type) => {
+  
+  const filterAndSum = (conditionNumbers, costType) => {
+    return arr?.filter(item =>
+      conditionNumbers.includes(item?.CostingConditionNumber)
+    )?.reduce((acc, el) => {
+      // Determine if excluding applicability is selected
+      const isExcludingApplicability = [
+        APPLICABILITY_OVERHEAD_EXCL,
+        APPLICABILITY_PROFIT_EXCL,
+        APPLICABILITY_OVERHEAD_PROFIT_EXCL,
+        APPLICABILITY_OVERHEAD_EXCL_PROFIT,
+        APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
+      ].includes(el?.CostingConditionNumber);
+      // For process cost, use ProcessCostWithOutInterestAndDepreciation if conditions met
+      const processAmount = isExcludingApplicability ? (el?.IsDetailed && el?.UOMType === TIME ? checkForNull(el?.ProcessCostWithOutInterestAndDepreciation) : checkForNull(el?.ProcessCost)) : checkForNull(el?.ProcessCost);
+
+      return {
+        operationCost: acc.operationCost + checkForNull(el?.OperationCost),
+        processCost: acc.processCost + processAmount
+      };
+    }, { operationCost: 0, processCost: 0 }) ?? { operationCost: 0, processCost: 0 };
+  };
+
+  switch (type) {
+    case 'Overhead':
+      const overhead = filterAndSum([APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL]);
+      return {
+        overheadOperationCost: overhead?.operationCost ?? 0,
+        overheadProcessCost: overhead?.processCost ?? 0
+      };
+
+    case 'Profit':
+      const profit = filterAndSum([APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL]);
+      return {
+        profitOperationCost: profit?.operationCost ?? 0,
+        profitProcessCost: profit?.processCost ?? 0
+      };
+
+    case 'OverheadAndProfit':
+      const overheadAndProfit = filterAndSum([
+        APPLICABILITY_OVERHEAD_PROFIT,
+        APPLICABILITY_OVERHEAD_PROFIT_EXCL,
+        APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL,
+        APPLICABILITY_OVERHEAD_EXCL_PROFIT
+      ]);
+      return {
+        overheadAndProfitOperationCost: overheadAndProfit?.operationCost ?? 0,
+        overheadAndProfitProcessCost: overheadAndProfit?.processCost ?? 0
+      };
+
+    default:
+      return {
+        overheadOperationCost: 0,
+        overheadProcessCost: 0,
+        profitOperationCost: 0,
+        profitProcessCost: 0,
+        overheadAndProfitOperationCost: 0,
+        overheadAndProfitProcessCost: 0
+      };
+  }
+}
