@@ -1462,30 +1462,6 @@ export function getICCAppliSelectList(callback) {
 }
 
 /**
- * @method getPaymentTermsAppliSelectList
- * @description GET PAYMENT TERMS APPLICABILITY SELECTLIST
- */
-export function getPaymentTermsAppliSelectList(callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPaymentTermsAppliSelectList}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
-          payload: response.data.SelectList,
-        });
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE, });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-
-/**
  * @method getPaymentTermsAppliSelectListKeyValue
  * @description GET PAYMENT TERMS APPLICABILITY SELECTLIST KEY VALUE
  */

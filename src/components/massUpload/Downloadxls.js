@@ -39,6 +39,7 @@ import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
 import { IsShowFreightAndShearingCostFields } from "../../helper";
 import { localizeHeadersWithLabels } from "../../helper/core";
 import { withTranslation } from "react-i18next";
+import { reactLocalStorage } from "reactjs-localstorage";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -114,6 +115,15 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
 
 
     return excelData.filter((el) => {
+        // Check permissions for VBC and CBC
+        const costingTypePermission = reactLocalStorage.getObject('CostingTypePermission');
+        
+        // Remove CustomerCode column if CBC permission is false
+        if (!costingTypePermission?.cbc) {
+            if (el.value === 'CustomerCode') return false;
+        }
+        
+
         if (checkVendorPlantConfigurable() === false) {
             if (el.value === 'VendorPlant') return false;
             /**********************DON'T REMOVE NOW MAY BE USED LATER**********************************/
@@ -330,10 +340,14 @@ class Downloadxls extends React.Component {
                 const localizedMachineHeaders = this.localizeHeaders(MachineZBC);
                 return this.returnExcelColumn(checkVendorPlantConfig(localizedMachineHeaders), MachineZBCTempData);
             case ZBCADDMORE:
-            case VBCADDMORE:
-            case CBCADDMORE:
                 const localizedMHRMoreHeaders = this.localizeHeaders(MHRMoreZBC);
-                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(localizedMHRMoreHeaders), MHRMoreZBCTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(checkRM_Process_OperationConfigurable(localizedMHRMoreHeaders), ZBCADDMORE), MHRMoreZBCTempData);
+            case VBCADDMORE:
+                const localizedMHRMoreHeadersVBC = this.localizeHeaders(MHRMoreZBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(checkRM_Process_OperationConfigurable(localizedMHRMoreHeadersVBC), VBCADDMORE), MHRMoreZBCTempData);
+            case CBCADDMORE:
+                const localizedMHRMoreHeadersCBC = this.localizeHeaders(MHRMoreZBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(checkRM_Process_OperationConfigurable(localizedMHRMoreHeadersCBC), CBCADDMORE), MHRMoreZBCTempData);
             case `${showBopLabel()} Domestic`:
                 const localizedBOPHeaders = this.localizeHeaders(BOP_ZBC_DOMESTIC);
                 ({ updatedLabels } = updateBOPValues(localizedBOPHeaders, BOP_ZBC_DOMESTIC_TempData, bopMasterName, 'label'));
@@ -382,18 +396,17 @@ class Downloadxls extends React.Component {
             case 'RM':
                 if (!this.props.isImport) {
                     const localizedHeaders = this.localizeHeaders(RMDomesticVBC);
-                    return this.returnExcelColumn(checkVendorPlantConfig(localizedHeaders), RMDomesticVBCTempData, true);
+                    return this.returnExcelColumn(checkVendorPlantConfig(localizedHeaders, VBCTypeId), RMDomesticVBCTempData, true);
                 } else {
                     const localizedHeaders = this.localizeHeaders(RMImportVBC);
-                    return this.returnExcelColumn(checkVendorPlantConfig(localizedHeaders), RMImportVBCTempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(localizedHeaders, VBCTypeId), RMImportVBCTempData);
                 }
             case 'Operation':
                 const localizedOperationHeaders = this.localizeHeaders(VBCOperationSmallForm);
-
-                return this.returnExcelColumn(checkLabourRateConfigure(localizedOperationHeaders), VBCOperationTempData, true);
+                return this.returnExcelColumn(checkLabourRateConfigure(checkVendorPlantConfig(localizedOperationHeaders, VBCTypeId)), VBCOperationTempData, true);
             case 'Machine':
                 const localizedMachineHeaders = this.localizeHeaders(MachineVBC);
-                return this.returnExcelColumn(checkVendorPlantConfig(localizedMachineHeaders), MachineVBCTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedMachineHeaders, VBCTypeId), MachineVBCTempData);
             case `${showBopLabel()} Domestic`:
                 if (bopType === DETAILED_BOP) {
                     const localizedBOPHeaders = this.localizeHeaders(BOP_DETAILED_DOMESTIC);
@@ -420,7 +433,6 @@ class Downloadxls extends React.Component {
                 }
             case `Overhead`:
                 const localizedOverheadHeaders = this.localizeHeaders(OverheadVBC);
-
                 return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadVBC_TempData, this.props?.modelText));
             case `Profit`:
                 const localizedProfitHeaders = this.localizeHeaders(ProfitVBC);
@@ -442,13 +454,13 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkLabourRateConfigure(localizedLabourHeaders), LabourTempData);
             case VBCADDMOREOPERATION:
                 const localizedAddMoreOperationHeaders = this.localizeHeaders(VBCOperation);
-                return this.returnExcelColumn(checkLabourRateConfigure(localizedAddMoreOperationHeaders), VBCOperationTempData, true);
+                return this.returnExcelColumn(checkLabourRateConfigure(checkVendorPlantConfig(localizedAddMoreOperationHeaders, VBCTypeId)), VBCOperationTempData, true);
             default:
                 return 'foo';
         }
     }
     /**
-     * @method renderVBCSwitch
+     * @method renderCBCSwitch
      * @description Switch case for different xls file head according to master
      */
     renderCBCSwitch = (master) => {
@@ -457,17 +469,17 @@ class Downloadxls extends React.Component {
             case 'RM':
                 if (!this.props.isImport) {
                     const localizedRMHeaders = this.localizeHeaders(RMDomesticCBC);
-                    return this.returnExcelColumn(checkVendorPlantConfig(localizedRMHeaders), RMDomesticCBCTempData, true);
+                    return this.returnExcelColumn(checkVendorPlantConfig(localizedRMHeaders, CBCTypeId), RMDomesticCBCTempData, true);
                 } else {
                     const localizedRMHeaders = this.localizeHeaders(RMImportCBC);
-                    return this.returnExcelColumn(checkVendorPlantConfig(localizedRMHeaders), RMImportCBCTempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(localizedRMHeaders, CBCTypeId), RMImportCBCTempData);
                 }
             case 'Operation':
                 const localizedOperationHeaders = this.localizeHeaders(CBCOperationSmallForm);
-                return this.returnExcelColumn(checkLabourRateConfigure(localizedOperationHeaders), CBCOperationTempData, true);
+                return this.returnExcelColumn(checkLabourRateConfigure(checkVendorPlantConfig(localizedOperationHeaders, CBCTypeId)), CBCOperationTempData, true);
             case 'Machine':
                 const localizedMachineHeaders = this.localizeHeaders(MachineCBC);
-                return this.returnExcelColumn(checkVendorPlantConfig(localizedMachineHeaders), MachineCBCTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedMachineHeaders, CBCTypeId), MachineCBCTempData);
             case `${showBopLabel()} Domestic`:
                 const localizedBOPHeaders = this.localizeHeaders(BOP_CBC_DOMESTIC);
                 ({ updatedLabels } = updateBOPValues(localizedBOPHeaders, [], bopMasterName, 'label'));
@@ -501,7 +513,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkLabourRateConfigure(localizedLabourHeaders), LabourTempData);
             case CBCADDMOREOPERATION:
                 const localizedAddMoreOperationHeaders = this.localizeHeaders(CBCOperation);
-                return this.returnExcelColumn(checkLabourRateConfigure(localizedAddMoreOperationHeaders), CBCOperationTempData, true);
+                return this.returnExcelColumn(checkLabourRateConfigure(checkVendorPlantConfig(localizedAddMoreOperationHeaders, CBCTypeId)), CBCOperationTempData, true);
             default:
                 return 'foo';
         }
