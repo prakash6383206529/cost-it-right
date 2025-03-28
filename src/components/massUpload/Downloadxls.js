@@ -123,10 +123,6 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
             if (el.value === 'CustomerCode') return false;
         }
         
-        // Remove VendorPlantCode column if VBC permission is false
-        if (!costingTypePermission?.vbc) {
-            if (el.value === 'VendorCode') return false;
-        }
 
         if (checkVendorPlantConfigurable() === false) {
             if (el.value === 'VendorPlant') return false;
