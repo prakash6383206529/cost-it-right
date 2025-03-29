@@ -9,7 +9,7 @@ import { getLabourDataList, deleteLabour } from '../actions/Labour';
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
-import { checkPermission, searchNocontentFilter } from '../../../helper/util';
+import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter } from '../../../helper/util';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import { LABOUR_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -80,6 +80,7 @@ function LabourListing(props) {
       setState((prevState) => ({ ...prevState, isLoader: true }))
     } setTimeout(() => { filterList() }, 500);
   }, [topAndLeftMenuData])
+  const {  vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
 
   const applyPermission = (topAndLeftMenuData) => {
@@ -356,7 +357,26 @@ function LabourListing(props) {
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: isFirstColumn
   };
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+        setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+        setState((prevState) => ({ ...prevState, disableFilter: false, warningMessage: true }));
+    }
+};
+const combinedCostingHeadRenderer = (props) => {
+  // Call the existing checkBoxRenderer
+  costingHeadFormatter(props);
 
+  // Get and localize the cell value
+  const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+  const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+  // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+  return localizedValue;
+};
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
@@ -365,8 +385,8 @@ function LabourListing(props) {
     hyphenFormatter: hyphenFormatter,
     commonCostFormatter: commonCostFormatter,
     customerFormatter: customerFormatter,
-    statusFilter: CostingHeadDropdownFilterm,
-    combinedCostingHeadRenderer: combinedCostingHeadRenderer
+    statusFilter: CostingHeadDropdownFilter,
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     
   };
 
@@ -444,7 +464,7 @@ function LabourListing(props) {
               <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
               <AgGridColumn field="CostingHead" minWidth={170} headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
                                             floatingFilterComponent="statusFilter"
-                                            cellRenderer={combinedCostingHeadRenderer}></AgGridColumn>
+                                            cellRenderer={"combinedCostingHeadRenderer"}></AgGridColumn>
 
               <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
