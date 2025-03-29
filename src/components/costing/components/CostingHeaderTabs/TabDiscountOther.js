@@ -2358,10 +2358,11 @@ function TabDiscountOther(props) {
                             mandatory={true}
                             customClassName="mb-0"
                             handleChange={handleCurrencyChange}
-                            errors={errors.Currency}
+                            errors={errors?.Currency}
                             disabled={CostingViewMode || CostingEffectiveDate === '' ? true : false}
                           />
-                          {showWarning && <WarningMessage dClass="mt-n3" message={`${currency.label} rate is not present in the Exchange Master`} />}
+                          {currency && currency.label && currency.label.trim() !== '' && showWarning && 
+                            <WarningMessage dClass="mt-n3" message={`${currency.label} rate is not present in the Exchange Master`} />}
                         </Col>
                         <TooltipCustom disabledIcon={true} width="280px" id="net-po-price-currency" tooltipText={`Net Cost (${currency?.label ?? initialConfiguration?.BaseCurrency}) = Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency}) * ${CurrencyExchangeRate ?? 0}`} />
                         <Col md="3">

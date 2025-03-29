@@ -698,6 +698,7 @@ const MachineRateListing = (props) => {
     getDataList("", 0, '', 0, "", "", 0, globalTakes, true, state?.floatingFilterData, !state?.isImport)
 
   }
+  
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
@@ -868,7 +869,9 @@ const MachineRateListing = (props) => {
                     enableBrowserTooltips={true}
                   >
                     { }
-                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                    <AgGridColumn field="CostingHead" headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
+                                            floatingFilterComponent="statusFilter"
+                                            cellRenderer={combinedCostingHeadRenderer}></AgGridColumn>
                     {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
 
                     <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>

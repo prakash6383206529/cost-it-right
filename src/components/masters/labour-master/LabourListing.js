@@ -26,6 +26,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import Button from '../../layout/Button';
 import { useLabels } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -363,7 +364,10 @@ function LabourListing(props) {
     effectiveDateRenderer: effectiveDateFormatter,
     hyphenFormatter: hyphenFormatter,
     commonCostFormatter: commonCostFormatter,
-    customerFormatter: customerFormatter
+    customerFormatter: customerFormatter,
+    statusFilter: CostingHeadDropdownFilterm,
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer
+    
   };
 
   return (
@@ -438,7 +442,9 @@ function LabourListing(props) {
               suppressRowClickSelection={true}
             >
               <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-              <AgGridColumn field="CostingHead" minWidth={170} headerName="Costing Head"></AgGridColumn>
+              <AgGridColumn field="CostingHead" minWidth={170} headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
+                                            floatingFilterComponent="statusFilter"
+                                            cellRenderer={combinedCostingHeadRenderer}></AgGridColumn>
 
               <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}

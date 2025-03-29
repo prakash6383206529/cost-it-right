@@ -837,7 +837,7 @@ const OperationListing = (props) => {
         component: CostingHeadDropdownFilter,
         onFilterChange: (originalValue, value) => {
             setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
-            setState((prevState) => ({ ...prevState, disableFilter: false }));
+            setState((prevState) => ({ ...prevState, disableFilter: false, warningMessage: true }));
         }
     }
     const cancel = () => {
@@ -991,7 +991,9 @@ const OperationListing = (props) => {
                                 >
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 
-                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head"  floatingFilterComponentParams={floatingFilterStatus}
+                                            floatingFilterComponent="statusFilter"
+                                            cellRenderer={combinedCostingHeadRenderer}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
                                     {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                     {getConfigurationKey().IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
