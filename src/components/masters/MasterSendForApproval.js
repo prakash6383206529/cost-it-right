@@ -1007,7 +1007,7 @@ function MasterSendForApproval(props) {
                                                     </div>
                                                 </div>
                                                 <Col md="6">
-                                                    <TooltipCustom id="rm-net-cost-currency" width="350px" tooltipText={props?.toolTipTextObject?.netCostCurrency} />
+                                                {props?.toolTipTextObject && Object.keys(props?.toolTipTextObject).length > 0 && <TooltipCustom id="rm-net-cost-currency" width="350px" tooltipText={props?.toolTipTextObject?.netCostCurrency} />}
                                                     <TextFieldHookForm
                                                         label={`Net Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
                                                         name={"NetLandedCostCurrency"}
@@ -1024,7 +1024,7 @@ function MasterSendForApproval(props) {
                                                     />
                                                 </Col>
                                                 {props?.IsImportEntry && <Col md="6">
-                                                    <TooltipCustom width="350px" id="rm-net-cost-base-currency" tooltipText={props?.toolTipTextObject?.netCostBaseCurrency} />
+                                                  {props?.toolTipTextObject && Object.keys(props?.toolTipTextObject).length > 0 &&  <TooltipCustom width="350px" id="rm-net-cost-base-currency" tooltipText={props?.toolTipTextObject?.netCostBaseCurrency} />}
                                                     <TextFieldHookForm
                                                         label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                                         name={"NetLandedCostBase"}

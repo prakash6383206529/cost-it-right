@@ -9,7 +9,7 @@ import "react-input-range/lib/css/index.css";
 import DayTime from "../../common/DayTimeWrapper";
 import BulkUpload from "../../massUpload/BulkUpload";
 import LoaderCustom from "../../common/LoaderCustom";
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter } from "../../../helper";
 import { FuelMaster } from "../../../config/constants";
 import { FUELLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import ReactExport from "react-export-excel";
@@ -26,6 +26,7 @@ import Button from "../../layout/Button";
 import { checkMasterCreateByCostingPermission } from "../../common/CommonFunctions";
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import Switch from 'react-switch'
+import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -53,10 +54,10 @@ const FuelListing = (props) => {
     totalRecordCount: 0,
     globalTake: defaultPageSize,
   });
+  const {  vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
   const { fuelDataList } = useSelector((state) => state.fuel);
-  const { vendorLabel } = useLabels()
   useEffect(() => {
     if (permissions) {
       getDataList(null, null);
@@ -250,12 +251,24 @@ const FuelListing = (props) => {
     return thisIsFirstColumn;
   };
   const defaultColDef = { resizable: true, filter: true, sortable: false, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: isFirstColumn, tooltipShowDelay: 0 };
-
+ 
+const floatingFilterStatus = {
+  maxValue: 1,
+  suppressFilterButton: true,
+  component: CostingHeadDropdownFilter,
+  onFilterChange: (originalValue, value) => {
+    setState((prevState) => ({ ...prevState, warningMessage: true }));
+    setState((prevState) => ({ ...prevState, disableFilter: false }));
+    setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+  }
+};
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
     customNoRowsOverlay: NoContentFound,
     commonCostFormatter: commonCostFormatter,
+        statusFilter: CostingHeadDropdownFilter,
+
   };
 
   return (
@@ -338,7 +351,9 @@ const FuelListing = (props) => {
                   suppressRowClickSelection={true}
                   enableBrowserTooltips={true}
                 >
-                  <AgGridColumn field="CostingHead" minWidth={170} headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                  <AgGridColumn field="CostingHead" minWidth={170} headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
+                    floatingFilterComponent="statusFilter"
+                    cellRenderer={"combinedCostingHeadRenderer"}></AgGridColumn>
                   <AgGridColumn field="FuelName" headerName="Fuel" width={250} cellRenderer={"costingHeadFormatter"} tooltipField="FuelName"></AgGridColumn>
                   <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                   <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>

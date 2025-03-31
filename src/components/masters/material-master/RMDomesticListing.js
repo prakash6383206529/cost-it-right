@@ -895,6 +895,7 @@ function RMDomesticListing(props) {
         setAnalyticsDrawer(false)
     }
 
+console.log(warningMessage);
 
     const floatingFilterStatus = {
         maxValue: 1,
@@ -904,6 +905,7 @@ function RMDomesticListing(props) {
 
             setSelectedCostingHead(originalValue);
             setDisableFilter(false);
+            setWarningMessage(true);
             setFloatingFilterData(prevState => ({
                 ...prevState,
                 CostingHead: value
