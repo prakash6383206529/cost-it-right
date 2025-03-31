@@ -1662,8 +1662,8 @@ const CostingSummaryTable = (props) => {
     if (!showConvertedCurrencyCheckbox) {
       templateObj.nPoPriceCurrency = `Net Cost (${getConfigurationKey().BaseCurrency})`
     }
-    viewCostingData && viewCostingData.map((item) => {
-      item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.ScrapRecoveryPercentage : 0) : 0
+    viewCostingData && viewCostingData?.map((item) => {
+      item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost?.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost?.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.ScrapRecoveryPercentage : 0) : 0
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
       item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
