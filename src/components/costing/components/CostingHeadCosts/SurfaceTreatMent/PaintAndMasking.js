@@ -11,7 +11,7 @@ import NoContentFound from '../../../../common/NoContentFound'
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, NFRTypeId, PAINTTECHNOLOGY, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
-import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator, setSurfaceData } from '../../../actions/Costing'
+import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator } from '../../../actions/Costing'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -30,7 +30,7 @@ const INITIAL_STATE = {
     TotalPaintCost: 0
 }
 
-function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
+function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, setSurfaceData }) {
     const [state, setState] = useState({
         editMode: false,
         rawMaterialList: [],
@@ -214,16 +214,17 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
             if (response && response?.status === 200) {
                 Toaster.success("Data saved successfully")
                 closeDrawer(checkForNull(calculateState?.TotalPaintCost))
-                let newData = [...SurfaceTabData];
-                newData.map(item => {
-                    if (item?.CostingId === costData?.CostingId) {
-                        let CostingPartDetails = item?.CostingPartDetails
-                        CostingPartDetails.TotalPaintCost = checkForNull(calculateState?.TotalPaintCost)
-                        CostingPartDetails.PaintCost = checkForNull(calculateState?.PaintCost)
-                        CostingPartDetails.TapeCost = checkForNull(calculateState?.TapeCost)
-                    }
-                })
-                dispatch(setSurfaceData(newData, () => { }))
+                // let newData = [...SurfaceTabData];
+                // newData.map(item => {
+                //     if (item?.CostingId === costData?.CostingId) {
+                //         let CostingPartDetails = item?.CostingPartDetails
+                //         CostingPartDetails.TotalPaintCost = checkForNull(calculateState?.TotalPaintCost)
+                //         CostingPartDetails.PaintCost = checkForNull(calculateState?.PaintCost)
+                //         CostingPartDetails.TapeCost = checkForNull(calculateState?.TapeCost)
+                //     }
+                // })
+                // dispatch(setSurfaceData(newData, () => { }))
+                setSurfaceData({ paintAndMaskingObj: { TotalPaintCost: calculateState?.TotalPaintCost, PaintCost: calculateState?.PaintCost, TapeCost: calculateState?.TapeCost }, type: 'PaintAndMasking' })
             }
         }))
     }

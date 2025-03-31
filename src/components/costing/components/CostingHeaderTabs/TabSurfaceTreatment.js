@@ -523,19 +523,19 @@ function TabSurfaceTreatment(props) {
   * @method setSurfaceCost
   * @description SET SURFACE TREATMENT COST
   */
-  const setSurfaceCost = (surfaceGrid, params) => {
-
-    let arr = dispatchSurfaceCost(surfaceGrid, params, SurfaceTabData)
+  const setSurfaceCost = (surfaceGrid, params, IsGridChanged, hangerCostDetails, extraCostDetails, paintAndMaskingDetails) => {
+    let arr = dispatchSurfaceCost(surfaceGrid, params, SurfaceTabData, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
 
     // let arr1 = assemblyTotalSurfaceTransportCost(arr)
     dispatch(setSurfaceData(arr, () => { }))
   }
 
   /**
-  * @method dispatchSurfaceCost
+  * @method dispatchSurfaceCosts
   * @description DISPATCHED SURFACE COST
   */
-  const dispatchSurfaceCost = (surfaceGrid, params, arr) => {
+  const dispatchSurfaceCost = (surfaceGrid, params, arr, hangerCostDetails, extraCostDetails, paintAndMaskingDetails) => {
+
     let tempArr = [];
     let dataList = CostingDataList[0]
     try {
@@ -554,29 +554,57 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.TotalTransportationCostPerAssembly = checkForNull(i?.CostingPartDetails?.TotalTransportationCostPerAssembly);
           i.CostingPartDetails.SurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(surfaceCost(surfaceGrid)), params);
           i.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
+          i.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
+          i.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
+          i.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
+          i.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
+          i.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
+          i.CostingPartDetails.TapeCost = checkForNull(paintAndMaskingDetails?.TapeCost)
+          i.CostingPartDetails.TransportationCost = checkForNull(extraCostDetails?.TransportationCost)
+          i.CostingPartDetails.TransportationDetails = extraCostDetails?.TransportationDetails
 
-          dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails)
+          dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-          NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i?.CostingPartDetails?.TransportationCost) + checkForNull(i?.CostingPartDetails?.HangerCostPerPart) + checkForNull(i?.CostingPartDetails?.TotalPaintCost);
 
-          i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
+
           i.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
           i.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
+          i.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
+          i.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
+          i.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
+          i.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
+          i.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
+          i.CostingPartDetails.TapeCost = checkForNull(paintAndMaskingDetails?.TapeCost)
+          i.CostingPartDetails.TransportationCost = checkForNull(extraCostDetails?.TransportationCost)
+          i.CostingPartDetails.TransportationDetails = extraCostDetails?.TransportationDetails
+          i.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i?.CostingPartDetails?.TransportationCost) + checkForNull(i?.CostingPartDetails?.HangerCostPerPart) + checkForNull(i?.CostingPartDetails?.TotalPaintCost);
 
         } else {
-          dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails)
+
+          dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
         }
         let tempArr = _.cloneDeep(JSON.parse(sessionStorage.getItem('surfaceCostingArray')))
 
 
         let partObj = tempArr[0]
 
-        partObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i?.CostingPartDetails?.TransportationCost) + checkForNull(i?.CostingPartDetails?.HangerCostPerPart) + checkForNull(i?.CostingPartDetails?.TotalPaintCost);
         partObj.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
         partObj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
+        partObj.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
+        partObj.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
+        partObj.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
+        partObj.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
+        partObj.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
+        partObj.CostingPartDetails.TapeCost = checkForNull(paintAndMaskingDetails?.TapeCost)
+        partObj.CostingPartDetails.TransportationCost = checkForNull(extraCostDetails?.TransportationCost)
+        partObj.CostingPartDetails.TransportationDetails = extraCostDetails?.TransportationDetails
+        partObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(partObj.CostingPartDetails.TransportationCost) + checkForNull(partObj.CostingPartDetails.HangerCostPerPart) + checkForNull(partObj.CostingPartDetails.TotalPaintCost);
+
+
         const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost) + checkForNull(dataList.NetOtherCost) - checkForNull(dataList.NetDiscountsCost)
+
         partObj.CostingPartDetails.BasicRate = total;
         tempArr = Object.assign([...tempArr], { 0: partObj })
 
@@ -734,6 +762,31 @@ function TabSurfaceTreatment(props) {
 
     return total
   }
+
+  const paintCostSubAssembly = (arr) => {
+    const total = arr && arr.reduce((accummlator, item) => {
+      if (item.PartType === 'Sub Assembly') {
+        return accummlator + checkForNull(item?.CostingPartDetails?.TotalPaintCostWithQuantity) * checkForNull(item?.Quantity)
+      } else {
+        return accummlator
+      }
+    }, 0)
+
+    return total
+  }
+  const maskCostSubAssembly = (arr) => {
+    const total = arr && arr.reduce((accummlator, item) => {
+      if (item.PartType === 'Sub Assembly') {
+        return accummlator + checkForNull(item?.CostingPartDetails?.TotalMaskCostWithQuantity) * checkForNull(item?.Quantity)
+      } else {
+        return accummlator
+      }
+    }, 0)
+    return total
+  }
+
+
+
   const transportCostSubAssembly = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Sub Assembly') {
@@ -757,6 +810,39 @@ function TabSurfaceTreatment(props) {
     }, 0)
     return total
   }
+
+  const tapeCostPart = (arr) => {
+    const total = arr && arr.reduce((accummlator, item) => {
+      if (item.PartType === 'Part') {
+        return accummlator + checkForNull(item?.CostingPartDetails?.TapeCost) * checkForNull(item.Quantity)
+      } else {
+        return accummlator
+      }
+    }, 0)
+    return total
+  }
+  const paintCostPart = (arr) => {
+    const total = arr && arr.reduce((accummlator, item) => {
+      if (item.PartType === 'Part') {
+        return accummlator + checkForNull(item?.CostingPartDetails?.PaintCost) * checkForNull(item.Quantity)
+      } else {
+        return accummlator
+      }
+    }, 0)
+    return total
+  }
+
+  const totalPaintCostPart = (arr) => {
+    const total = arr && arr.reduce((accummlator, item) => {
+      if (item.PartType === 'Part') {
+        return accummlator + checkForNull(item?.CostingPartDetails?.TotalPaintCost) * checkForNull(item.Quantity)
+      } else {
+        return accummlator
+      }
+    }, 0)
+    return total
+  }
+
   const transportCostPart = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Part') {
@@ -769,29 +855,23 @@ function TabSurfaceTreatment(props) {
   }
 
 
-  const calculationForPart = (surfaceGrid = [], item, type, TransportationObj = {}) => {
+  const calculationForPart = (surfaceGrid = [], item, hangerCostDetails = {}, extraCostDetails = {}, paintAndMaskingDetails = {}) => {
     let obj = item
     let rmCcData = findrmCctData(item)
 
+    obj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid));
+    obj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
+    obj.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
+    obj.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
+    obj.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
+    obj.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
+    obj.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
+    obj.CostingPartDetails.TapeCost = checkForNull(paintAndMaskingDetails?.TapeCost)
+    obj.CostingPartDetails.TransportationCost = checkForNull(extraCostDetails?.TransportationCost)
+    obj.CostingPartDetails.TransportationDetails = extraCostDetails?.TransportationDetails
+    obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(obj?.CostingPartDetails?.SurfaceTreatmentCost) + checkForNull(extraCostDetails?.TransportationCost) + checkForNull(obj?.CostingPartDetails?.HangerCostPerPart) + checkForNull(obj?.CostingPartDetails?.TotalPaintCost))
+    obj.CostingPartDetails.BasicRate = checkForNull(obj.CostingPartDetails.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC)
 
-
-    switch (type) {
-      case 'Operation':
-        obj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid));
-        obj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
-        obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(surfaceCost(surfaceGrid)) + obj?.CostingPartDetails?.TransportationCost)
-        obj.CostingPartDetails.BasicRate = checkForNull(obj.CostingPartDetails.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC)
-
-        break;
-      case 'Transport':
-        obj.CostingPartDetails.TransportationCost = checkForNull(TransportationObj?.TransportationCost)
-        obj.CostingPartDetails.TransportationDetails = TransportationObj
-        obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(obj?.CostingPartDetails?.SurfaceTreatmentCost) + checkForNull(TransportationObj.TransportationCost) + checkForNull(obj?.CostingPartDetails?.HangerCostPerPart) + checkForNull(obj?.CostingPartDetails?.TotalPaintCost))
-        obj.CostingPartDetails.BasicRate = checkForNull(obj.CostingPartDetails.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC)
-        break;
-      default:
-        break;
-    }
     return obj
   }
 
@@ -801,31 +881,26 @@ function TabSurfaceTreatment(props) {
 
     let subAssemblyObj = obj
     let rmCcData = findrmCctData(subAssemblyObj)
-    switch (type) {
-      case 'Operation':
-        subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = (surfaceGrid.length > 0 || params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(surfaceCost(surfaceGrid)) : checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) //OPERATION COST ADDED ON THAT PARTICULAR ASSEMBLY
 
-        subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = checkForNull(surfaceCostSubAssembly(tempArr)) // SURFACE TREATMENT COST OF IT'S SUBASSEMBLIES
-        subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent = surfaceCostPart(tempArr) //SURFACE TREATMENT COST OF COMPONENE OF THAT ASSEMBLY
-        subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity = checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostComponent)
-        subAssemblyObj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly)
-        subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = (checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostWithQuantity)) * checkForNull(subAssemblyObj?.Quantity)
-        subAssemblyObj.CostingPartDetails.SurfaceTreatmentDetails = (surfaceGrid.length > 0 || params.PartNumber === subAssemblyObj.PartNumber) ? surfaceGrid : subAssemblyObj?.CostingPartDetails?.SurfaceTreatmentDetails;
+    subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = (surfaceGrid.length > 0 || params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(surfaceCost(surfaceGrid)) : checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) //OPERATION COST ADDED ON THAT PARTICULAR ASSEMBLY
+    subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = checkForNull(surfaceCostSubAssembly(tempArr)) // SURFACE TREATMENT COST OF IT'S SUBASSEMBLIES
+    subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent = surfaceCostPart(tempArr) //SURFACE TREATMENT COST OF COMPONENE OF THAT ASSEMBLY
+    subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity = checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostComponent)
+    subAssemblyObj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly)
+    subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = (checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostWithQuantity)) * checkForNull(subAssemblyObj?.Quantity)
+    subAssemblyObj.CostingPartDetails.SurfaceTreatmentDetails = (surfaceGrid.length > 0 || params.PartNumber === subAssemblyObj.PartNumber) ? surfaceGrid : subAssemblyObj?.CostingPartDetails?.SurfaceTreatmentDetails;
 
-        break;
-      case 'Transport':
-        subAssemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly = (Object.keys(TransportationObj).length > 0 && params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(TransportationObj?.TransportationCost) : checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
-        subAssemblyObj.CostingPartDetails.TransportationCostPerAssembly = (Object.keys(TransportationObj).length > 0 && params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(TransportationObj?.TransportationCost) : checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
-        subAssemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly = transportCostSubAssembly(tempArr)
-        subAssemblyObj.CostingPartDetails.TotalTransportationCostComponent = transportCostPart(tempArr)
-        subAssemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerSubAssembly) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostComponent)
-        subAssemblyObj.CostingPartDetails.TransportationCost = checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
-        subAssemblyObj.CostingPartDetails.TransportationDetails = (Object.keys(TransportationObj).length > 0 && params.PartNumber === subAssemblyObj.PartNumber) ? TransportationObj : subAssemblyObj?.CostingPartDetails?.TransportationDetails
-        subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = (checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostWithQuantity)) * checkForNull(subAssemblyObj?.Quantity)
-        break;
-      default:
-        break;
-    }
+
+    subAssemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly = (Object.keys(TransportationObj).length > 0 && params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(TransportationObj?.TransportationCost) : checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
+    subAssemblyObj.CostingPartDetails.TransportationCostPerAssembly = (Object.keys(TransportationObj).length > 0 && params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(TransportationObj?.TransportationCost) : checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
+    subAssemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly = transportCostSubAssembly(tempArr)
+    subAssemblyObj.CostingPartDetails.TotalTransportationCostComponent = transportCostPart(tempArr)
+    subAssemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerSubAssembly) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostComponent)
+    subAssemblyObj.CostingPartDetails.TransportationCost = checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
+    subAssemblyObj.CostingPartDetails.TransportationDetails = (Object.keys(TransportationObj).length > 0 && params.PartNumber === subAssemblyObj.PartNumber) ? TransportationObj : subAssemblyObj?.CostingPartDetails?.TransportationDetails
+    subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = (checkForNull(subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyObj?.CostingPartDetails?.TotalTransportationCostWithQuantity)) * checkForNull(subAssemblyObj?.Quantity)
+
+
     subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly + subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly
     subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly + subAssemblyObj?.CostingPartDetails?.TotalTransportationCostPerSubAssembly
     subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = subAssemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostComponent + subAssemblyObj?.CostingPartDetails?.TotalTransportationCostComponent
@@ -852,6 +927,12 @@ function TabSurfaceTreatment(props) {
       if (obj && Object.keys(obj).length > 0) {
         newItem.CostingPartDetails.TransportationCost = checkForNull(obj?.CostingPartDetails?.TransportationCost)
         newItem.CostingPartDetails.SurfaceTreatmentCost = checkForNull(obj?.CostingPartDetails?.SurfaceTreatmentCost)
+        newItem.CostingPartDetails.HangerCostPerPart = checkForNull(obj?.CostingPartDetails?.HangerCostPerPart)
+        newItem.CostingPartDetails.HangerRate = checkForNull(obj?.CostingPartDetails?.HangerRate)
+        newItem.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(obj?.CostingPartDetails?.NumberOfPartsPerHanger)
+        newItem.CostingPartDetails.TotalPaintCost = checkForNull(obj?.CostingPartDetails?.TotalPaintCost)
+        newItem.CostingPartDetails.PaintCost = checkForNull(obj?.CostingPartDetails?.PaintCost)
+        newItem.CostingPartDetails.TapeCost = checkForNull(obj?.CostingPartDetails?.TapeCost)
         newItem.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(obj?.CostingPartDetails?.NetSurfaceTreatmentCost)
         newItem.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = checkForNull(obj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly)
         newItem.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly)
@@ -886,17 +967,15 @@ function TabSurfaceTreatment(props) {
   * @method setAssemblySurfaceCost
   * @description SET ASSEMBLY SURFACE COST
   */
-  const setAssemblySurfaceCost = (surfaceGrid, params, IsGridChanged, item) => {
+  const setAssemblySurfaceCost = (surfaceGrid, params, IsGridChanged, item, hangerCostDetails, extraCostDetails, paintAndMaskingDetails) => {
     // if (IsGridChanged) {
 
-    dispatchAssemblySurfaceCost(surfaceGrid, params, SurfaceTabData, IsGridChanged, item)
+    dispatchAssemblySurfaceCost(surfaceGrid, params, SurfaceTabData, IsGridChanged, item, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
     // }
     // dispatch(setSurfaceData(arr, () => { }))
   }
 
-  const dispatchAssemblySurfaceCost = (surfaceGrid, params, arr, IsGridChanged, item) => {
-
-
+  const dispatchAssemblySurfaceCost = (surfaceGrid, params, arr, IsGridChanged, item, hangerCostDetails, extraCostDetails, paintAndMaskingDetails) => {
 
 
     let tempArr = [];
@@ -913,7 +992,7 @@ function TabSurfaceTreatment(props) {
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
-            let partObj = calculationForPart(surfaceGrid, item, 'Operation')
+            let partObj = calculationForPart(surfaceGrid, item, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
 
             tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
             initialPartNo = item.AssemblyPartNumber

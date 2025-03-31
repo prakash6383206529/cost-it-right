@@ -7,25 +7,29 @@ import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLi
 import { debounce } from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSurfaceData } from '../../../actions/Costing'
+import _ from 'lodash';
 
-const Hanger = ({ ViewMode, viewCostingDataObj }) => {
+const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Params, item }) => {
     const { register, control, formState: { errors }, setValue, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
     const { SurfaceTabData } = useSelector(state => state.costing)
     let surfaceTabData = SurfaceTabData && SurfaceTabData[0]
+
     const dispatch = useDispatch()
     const [state, setState] = useState({
         showHanger: false
     })
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
     useEffect(() => {
-        const data = ViewMode ? viewCostingDataObj?.CostingPartDetails : surfaceTabData?.CostingPartDetails
+        const data = isSummary ? viewCostingDataObj?.CostingPartDetails : item?.CostingPartDetails
+
         setValue(`HangerFactor`, checkForDecimalAndNull(data?.HangerRate, NoOfDecimalForInputOutput))
         setValue(`NoOfPartsPerHanger`, checkForDecimalAndNull(data?.NumberOfPartsPerHanger, NoOfDecimalForInputOutput))
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(data?.HangerCostPerPart, NoOfDecimalForPrice))
-    }, [SurfaceTabData])
+    }, [])
+
     const calculateHangerCost = debounce((hangerFactor, noOfPartsPerHanger) => {
         const hangerCost = checkForNull(hangerFactor) / checkForNull(noOfPartsPerHanger)
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(hangerCost, NoOfDecimalForPrice))
@@ -34,11 +38,22 @@ const Hanger = ({ ViewMode, viewCostingDataObj }) => {
             NumberOfPartsPerHanger: checkForNull(noOfPartsPerHanger),
             HangerCostPerPart: hangerCost
         }
-        let surfaceTabData = [...SurfaceTabData]
-        surfaceTabData?.map(item => {
-            item.CostingPartDetails = { ...item?.CostingPartDetails, ...obj }
-        })
-        dispatch(setSurfaceData(surfaceTabData, () => { }))
+        setSurfaceData({ Params, hangerObj: obj, type: 'Hanger' }, errors)
+        // let tempArray = _.cloneDeep(JSON.parse(sessionStorage.getItem('surfaceCostingArray')))
+        // 
+        // let indexForUpdate = _.findIndex(tempArray, tempArrayItem => tempArrayItem.PartNumber === item.PartNumber && tempArrayItem.AssemblyPartNumber === item.AssemblyPartNumber);
+
+        // let objectToUpdate = tempArray[indexForUpdate]
+        // 
+        // objectToUpdate.CostingPartDetails = { ...objectToUpdate.CostingPartDetails, ...obj }
+        // // objectToUpdate.CostingPartDetails.HangerRate = hangerFactor
+        // // objectToUpdate.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(noOfPartsPerHanger)
+        // // objectToUpdate.CostingPartDetails.HangerCostPerPart = hangerCost
+        // 
+        // tempArray = Object.assign([...tempArray], { [indexForUpdate]: objectToUpdate })
+        // 
+        // sessionStorage.setItem('surfaceCostingArray', JSON.stringify(tempArray))
+        // dispatch(setSurfaceData(surfaceTabData, () => { }))
     }, 300)
     return (
         <>

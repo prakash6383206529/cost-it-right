@@ -11,11 +11,12 @@ import NoContentFound from '../../../../common/NoContentFound'
 import { COSTINGSURFACETREATMENTEXTRACOST, EMPTY_DATA, HANGER, PAINT, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT } from '../../../../../config/constants'
 import { generateCombinations, getCostingConditionTypes } from '../../../../common/CommonFunctions'
 import { getCostingCondition } from '../../../../../actions/Common'
-import { setSurfaceData } from '../../../actions/Costing'
+// import { setSurfaceData } from '../../../actions/Costing'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { ViewCostingContext } from '../../CostingDetails'
 
 function ExtraCost(props) {
+    const { setSurfaceData, item } = props
     const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
     const conditionTypeId = getCostingConditionTypes(COSTINGSURFACETREATMENTEXTRACOST)
     const costData = useContext(costingInfoContext);
@@ -23,7 +24,7 @@ function ExtraCost(props) {
     const dispatch = useDispatch();
     const { SurfaceTabData } = useSelector(state => state?.costing)
     let surfaceTabData = SurfaceTabData[0]
-    let surfaceCostingPartDetails = surfaceTabData?.CostingPartDetails
+    let surfaceCostingPartDetails = item?.CostingPartDetails
     const { rmBasicRate, RowData, RowIndex } = props
 
     const [tableData, setTableData] = useState(surfaceCostingPartDetails?.TransportationDetails ?? []);
@@ -286,17 +287,19 @@ function ExtraCost(props) {
     };
 
     const saveExtraCost = () => {
-        let newData = [...SurfaceTabData];
-        newData.map(item => {
-            if (item?.CostingId === costData?.CostingId) {
-                let CostingPartDetails = item?.CostingPartDetails
-                CostingPartDetails.TransportationDetails = tableData;
-                CostingPartDetails.TransportationCost = totalCostCurrency;
-            }
-            return null;
-        })
-        dispatch(setSurfaceData(SurfaceTabData, () => { }))
+        // let newData = [...SurfaceTabData];
+        // newData.map(item => {
+        //     if (item?.CostingId === costData?.CostingId) {
+        //         let CostingPartDetails = item?.CostingPartDetails
+        //         CostingPartDetails.TransportationDetails = tableData;
+        //         CostingPartDetails.TransportationCost = totalCostCurrency;
+        //     }
+        //     return null;
+        // })
+        // console.log(SurfaceTabData, "Coming here in saveExtraCost", newData)
+        // dispatch(setSurfaceData(SurfaceTabData, () => { }))
         props.closeDrawer('Save', totalCostCurrency)
+        setSurfaceData({ Params: { index: props.index }, extraCostObj: { TransportationDetails: tableData, TransportationCost: totalCostCurrency }, type: 'ExtraCost' }, errors)
     }
 
     const handleType = (type) => {

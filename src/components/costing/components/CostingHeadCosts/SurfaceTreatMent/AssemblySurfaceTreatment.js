@@ -11,6 +11,7 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 function AssemblySurfaceTreatment(props) {
+
   const { children, item, index } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
@@ -153,6 +154,8 @@ function AssemblySurfaceTreatment(props) {
                 </div> : ''
             }
           </td>
+          <td>{item?.CostingPartDetails?.HangerCostPerPartWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.HangerCostPerPartWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalPaintCostWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalPaintCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
           <td>{item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}
             {
               item?.CostingPartDetails && (item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== null && item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== 0) ?
