@@ -194,8 +194,6 @@ function CostingDetailStepTwo(props) {
         IsRMCutOffApplicable: data?.IsRMCutOffApplicable,
         NetProcessCostForOverhead: data?.NetProcessCostForOverhead,
         NetProcessCostForProfit: data?.NetProcessCostForProfit,
-        NetProcessCostForOverheadAndProfit: data?.NetProcessCostForOverheadAndProfit,
-        NetOperationCostForOverheadAndProfit: data?.NetOperationCostForOverheadAndProfit,
         NetOperationCostForOverhead: data?.NetOperationCostForOverhead,
         NetOperationCostForProfit: data?.NetOperationCostForProfit,
       }

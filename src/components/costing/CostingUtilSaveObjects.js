@@ -34,10 +34,8 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
         "StaffCRMHead": "string",
         "NetProcessCostForOverhead": rmccData?.CostingPartDetails?.NetProcessCostForOverhead || null,
         "NetProcessCostForProfit": rmccData?.CostingPartDetails?.NetProcessCostForProfit || null,
-        "NetProcessCostForOverheadAndProfit": rmccData?.CostingPartDetails?.NetProcessCostForOverheadAndProfit || null,
         "NetOperationCostForOverhead": rmccData?.CostingPartDetails?.NetOperationCostForOverhead || null,
         "NetOperationCostForProfit": rmccData?.CostingPartDetails?.NetOperationCostForProfit || null,
-        "NetOperationCostForOverheadAndProfit": rmccData?.CostingPartDetails?.NetOperationCostForOverheadAndProfit || null,
         CostingPartDetails: { ...rmccData?.CostingPartDetails, BasicRate: basicRate, NetPOPrice: netPOPrice },
     }
     return requestObj;
