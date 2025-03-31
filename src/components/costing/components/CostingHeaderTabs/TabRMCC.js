@@ -475,14 +475,18 @@ function TabRMCC(props) {
 
         break;
       case 'CC':
-        const overheadCosts = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Overhead");
-        const profitCosts = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Profit");
+        
+        const overheadProcessCosts = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Overhead");
+        const profitProcessCosts = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Profit");
+        const overheadOperationCosts = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Overhead");
+        const profitOperationCosts = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Profit");
+
         partObj.CostingPartDetails.TotalConversionCost = gridData.NetConversionCost
         partObj.CostingPartDetails.TotalProcessCost = gridData.ProcessCostTotal
-        partObj.CostingPartDetails.NetProcessCostForOverhead = overheadCosts?.overheadProcessCost;
-        partObj.CostingPartDetails.NetProcessCostForProfit = profitCosts?.profitProcessCost;
-        partObj.CostingPartDetails.NetOperationCostForOverhead = overheadCosts?.overheadOperationCost;
-        partObj.CostingPartDetails.NetOperationCostForProfit = profitCosts?.profitOperationCost;
+        partObj.CostingPartDetails.NetProcessCostForOverhead = overheadProcessCosts?.overheadProcessCost;
+        partObj.CostingPartDetails.NetProcessCostForProfit = profitProcessCosts?.profitProcessCost;
+        partObj.CostingPartDetails.NetOperationCostForOverhead = overheadOperationCosts?.overheadOperationCost;
+        partObj.CostingPartDetails.NetOperationCostForProfit = profitOperationCosts?.profitOperationCost;
         partObj.CostingPartDetails.TotalOperationCost = gridData?.OperationCostTotal
         partObj.CostingPartDetails.TotalOtherOperationCost = gridData.OtherOperationCostTotal
         partObj.CostingPartDetails.TotalConversionCostComponent = gridData.NetConversionCost

@@ -316,13 +316,11 @@ function ProcessCost(props) {
       tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
       const overheadCosts = getOverheadAndProfitCostTotal(tempArray, "Overhead");
       const profitCosts = getOverheadAndProfitCostTotal(tempArray, "Profit");
-      const overheadAndProfitCosts = getOverheadAndProfitCostTotal(tempArray, "OverheadAndProfit");
 
       const totals = {
         ProcessCostTotal: tempArray?.reduce((acc, el) => acc + checkForNull(el.ProcessCost), 0) || 0,
         NetProcessCostForOverhead: overheadCosts.overheadProcessCost,
         NetProcessCostForProfit: profitCosts.profitProcessCost,
-        NetProcessCostForOverheadAndProfit: overheadAndProfitCosts.overheadAndProfitProcessCost
       }
 
       // const totals = tempArray?.reduce((acc, el) => ({
@@ -1279,7 +1277,7 @@ function ProcessCost(props) {
 
     const operationsWithNetCosts = operationGrid?.map(operation => ({
       ...operation,
-      ...calculateNetCosts(operation?.OperationCost, operation?.CostingConditionNumber, "Operation")
+      // ...calculateNetCosts(operation?.OperationCost, operation?.CostingConditionNumber, "Operation")
     }));
 
     // Calculate totals for all operations
