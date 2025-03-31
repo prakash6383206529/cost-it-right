@@ -28,6 +28,7 @@ import WarningMessage from '../../common/WarningMessage';
 import TooltipCustom from '../../common/Tooltip';
 import { subDays } from 'date-fns';
 import { labels, LabelsClass } from '../../../helper/core';
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -568,7 +569,7 @@ class AddInterestRate extends Component {
         this.cancel('cancel')
         return false;
       }
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
@@ -592,12 +593,14 @@ class AddInterestRate extends Component {
         RawMaterialGrade: RMGrade?.label,
         IsFinancialDataChanged: data?.IsAssociatedData && !this.state.isDataChanged
       }
-      if (this.state.isEditFlag) {
-        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-          Toaster.warning('Please update the effective date')
-          this.setState({ setDisable: false })
+      let financialDataChanged = (Number(Data?.ICCPercent) !== Number(values?.ICCPercent)) || (Number(Data?.PaymentTermPercent) !== Number(values?.PaymentTermPercent)) || (Number(Data?.RepaymentPeriod) !== Number(values?.RepaymentPeriod) || Number(Data?.ICCApplicability) !== Number(values?.ICCApplicability.value) || Number(Data?.PaymentTermApplicability) !== Number(values?.PaymentTermsApplicability.value))
+      if (data?.IsAssociatedData) {
+        if (financialDataChanged && checkEffectiveDate(effectiveDate, Data?.EffectiveDate)) {
+          Toaster.warning('Please update the Effective date.')
           return false
         }
+      }
+      if (this.state.isEditFlag) {
         this.props.updateInterestRate(updateData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
@@ -1045,7 +1048,7 @@ class AddInterestRate extends Component {
 
                               }}
                               component={renderDatePicker}
-                              disabled={isViewMode || isDataChanged}
+                              disabled={isViewMode}
                               className="form-control"
                             />
                           </div>
