@@ -1493,28 +1493,28 @@ const CostingSummaryTable = (props) => {
       let isOverheadCombined = data.CostingPartDetails?.CostingOverheadDetail.IsOverheadCombined
       switch (overheadTitle) {
         case 'RM':
-          return data?.overheadOn.overheadRMPercentage;
+          return data?.overheadOn?.overheadRMPercentage || '';
         case 'BOP':
-          return data?.overheadOn.overheadBOPPercentage;
+          return data?.overheadOn?.overheadBOPPercentage || '';
         case 'CC':
-          return data?.overheadOn.overheadCCPercentage;
+          return data?.overheadOn?.overheadCCPercentage || '';
         case 'RM + CC':
         case 'Part Cost + CC':
-          return `${isOverheadCombined ? data?.overheadOn.overheadPercentage : `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage}`}`;
+          return `${isOverheadCombined ? (data?.overheadOn?.overheadPercentage || '') : `${data?.overheadOn?.overheadRMPercentage || ''} + ${data?.overheadOn?.overheadCCPercentage || ''}`}`;
         case 'RM + BOP':
         case 'Part Cost + BOP':
-          return `${isOverheadCombined ? data?.overheadOn.overheadPercentage : `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadBOPPercentage}`}`;
+          return `${isOverheadCombined ? (data?.overheadOn?.overheadPercentage || '') : `${data?.overheadOn?.overheadRMPercentage || ''} + ${data?.overheadOn?.overheadBOPPercentage || ''}`}`;
         case 'BOP + CC':
-          return `${isOverheadCombined ? data?.overheadOn.overheadPercentage : `${data?.overheadOn.overheadBOPPercentage} + ${data?.overheadOn.overheadCCPercentage}`}`;
+          return `${isOverheadCombined ? (data?.overheadOn?.overheadPercentage || '') : `${data?.overheadOn?.overheadBOPPercentage || ''} + ${data?.overheadOn?.overheadCCPercentage || ''}`}`;
         case 'RM + CC + BOP':
         case 'Part Cost + CC + BOP':
-          if (data?.overheadOn.overheadRMPercentage !== '-') {
-            return `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage} + ${data?.overheadOn.overheadBOPPercentage}`;
+          if (data?.overheadOn?.overheadRMPercentage !== '-') {
+            return `${data?.overheadOn?.overheadRMPercentage || ''} + ${data?.overheadOn?.overheadCCPercentage || ''} + ${data?.overheadOn?.overheadBOPPercentage || ''}`;
           } else {
-            return data?.overheadOn.overheadPercentage;
+            return data?.overheadOn?.overheadPercentage || '';
           }
         default:
-          return data?.overheadOn.overheadPercentage;
+          return data?.overheadOn?.overheadPercentage || '';
       }
     }
     else {
@@ -1529,28 +1529,28 @@ const CostingSummaryTable = (props) => {
       let isProfitCombined = data.CostingPartDetails?.CostingProfitDetail.IsProfitCombined
       switch (profitTitle) {
         case 'RM':
-          return data?.profitOn.profitRMPercentage;
+          return data?.profitOn?.profitRMPercentage || '';
         case 'BOP':
-          return data?.profitOn.profitBOPPercentage;
+          return data?.profitOn?.profitBOPPercentage || '';
         case 'CC':
-          return data?.profitOn.profitCCPercentage;
+          return data?.profitOn?.profitCCPercentage || '';
         case 'RM + CC':
         case 'Part Cost + CC':
-          return `${isProfitCombined ? data?.profitOn.profitPercentage : `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage}`}`;
+          return `${isProfitCombined ? (data?.profitOn?.profitPercentage || '') : `${data?.profitOn?.profitRMPercentage || ''} + ${data?.profitOn?.profitCCPercentage || ''}`}`;
         case 'BOP + CC':
-          return `${isProfitCombined ? data?.profitOn.profitPercentage : `${data?.profitOn.profitBOPPercentage} + ${data?.profitOn.profitCCPercentage}`}`;
+          return `${isProfitCombined ? (data?.profitOn?.profitPercentage || '') : `${data?.profitOn?.profitBOPPercentage || ''} + ${data?.profitOn?.profitCCPercentage || ''}`}`;
         case 'RM + BOP':
         case 'Part Cost + BOP':
-          return `${isProfitCombined ? data?.profitOn.profitPercentage : `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitBOPPercentage}`}`;
+          return `${isProfitCombined ? (data?.profitOn?.profitPercentage || '') : `${data?.profitOn?.profitRMPercentage || ''} + ${data?.profitOn?.profitBOPPercentage || ''}`}`;
         case 'RM + CC + BOP':
         case 'Part Cost + CC + BOP':
-          if (data?.profitOn.profitRMPercentage !== '-') {
-            return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage} + ${data?.profitOn.profitBOPPercentage}`;
+          if (data?.profitOn?.profitRMPercentage !== '-') {
+            return `${data?.profitOn?.profitRMPercentage || ''} + ${data?.profitOn?.profitCCPercentage || ''} + ${data?.profitOn?.profitBOPPercentage || ''}`;
           } else {
-            return data?.profitOn.profitPercentage;
+            return data?.profitOn?.profitPercentage || '';
           }
         default:
-          return data?.profitOn.profitPercentage;
+          return data?.profitOn?.profitPercentage || '';
       }
     }
     else {
@@ -1624,11 +1624,11 @@ const CostingSummaryTable = (props) => {
     if (!(viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-')) {
       delete templateObj.currencyTitle
       delete templateObj.nPoPriceCurrency
-    }else{
+    } else {
       delete templateObj.netCost
     }
 
-    if(!isScrapRecoveryPercentageApplied){
+    if (!isScrapRecoveryPercentageApplied) {
       delete templateObj.scrapRecoveryPercentage
     }
 
@@ -1682,7 +1682,7 @@ const CostingSummaryTable = (props) => {
       item.rejectionRecoveryApplicablity = item?.CostingRejectionRecoveryDetails?.ApplicabilityType ?? "-"
       item.rejectionRecoveryPercent = item?.CostingRejectionRecoveryDetails?.EffectiveRecoveryPercentage ?? "-"
       item.rejectionRecoveryApplicablityValue = item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? "-"
-      item.currencyTitle = viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-' && viewCostingData?.[0]?.currency?.currencyTitle !== '' ? (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? `${item?.currency.currencyTitle}/${item?.CostingCurrency} ${item?.currency.currencyValue}` : '') : '-'
+      item.currencyTitle = viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-' && viewCostingData?.[0]?.currency?.currencyTitle !== '' ? (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? `${item?.CostingCurrency}/${item?.currency.currencyTitle} ${item?.currency.currencyValue}` : '') : '-'
       item.netCost = item?.nPoPriceCurrency
     })
 
@@ -2747,7 +2747,7 @@ const CostingSummaryTable = (props) => {
                                 </th></tr>}
 
                               <tr className={highlighter("netRM", "main-row")}>
-                                <th>Net RM Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
+                                <th>Net RM Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT))}</th>                                
                                 {viewCostingData &&
                                   viewCostingData?.map((data, index) => {
                                     return (
@@ -3017,28 +3017,26 @@ const CostingSummaryTable = (props) => {
                                       </div>
                                       <div style={pdfHead ? { marginTop: '-4px' } : {}} className={`d-flex ${highlighter(["overheadOn", "overheadValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
-                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn?.overheadTitle : '')}
+                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText && data?.CostingHeading !== VARIANCE && data?.overheadOn?.overheadValue) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
 
                                         </span>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getOverheadPercentage(data)}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
-                                        </span>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.overheadOn?.overheadValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.overheadOn?.overheadValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}                                        </span>
                                       </div>
                                       <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : '')}
-                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="profit-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn?.profitTitle : '')}
+                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText && data?.CostingHeading !== VARIANCE && data?.profitOn?.profitValue) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="profit-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getProfitPercentage(data)}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
-                                        </span>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn?.profitValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn?.profitValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}                                        </span>
                                       </div>
                                       <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
@@ -3059,15 +3057,15 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : data?.rejectionOn.rejectionPercentage : '')}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)}{!pdfHead && !drawerDetailPDF && RejectionRecoveryNetCost && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="rejection-recovery" width="280px" tooltipText={"Rejection Cost = Net Rejection Cost - Rejection Recovery Cost"} />}</span> : '')}
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)} {!pdfHead && !drawerDetailPDF && RejectionRecoveryNetCost && data?.rejectionOn?.rejectionValue && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="rejection-recovery" width="280px" tooltipText={"Rejection Cost = Net Rejection Cost - Rejection Recovery Cost"} />}
+                                          </span> : '')}
                                         </span>
                                       </div>
                                       <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex  ${highlighter(["iccOn", "iccValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           <span>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle : '')}
-                                            {(!pdfHead && !drawerDetailPDF && iccToolTipText) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="icc-toolcost-include" tooltipText={iccToolTipText} />}
-                                          </span></span>{' '}
+                                            {(!pdfHead && !drawerDetailPDF && iccToolTipText && data?.CostingHeading !== VARIANCE && data?.iccOn?.iccValue) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="icc-toolcost-include" tooltipText={iccToolTipText} />}                                          </span></span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle === 'Fixed' ? '-' : data?.iccOn.iccPercentage : '')}
                                         </span>{' '}
@@ -3588,7 +3586,7 @@ const CostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   <div>
-                                    <span className={`small-grey-text mr-1 ${data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? `${data?.currency.currencyTitle}/${data?.CostingCurrency}` : '')}</span> {' '}
+                                    <span className={`small-grey-text mr-1 ${data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? `${data?.CostingCurrency}/${data?.currency.currencyTitle}` : '')}</span> {' '}
                                     <span className="">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data?.currency.currencyValue, initialConfiguration?.NoOfDecimalForPrice) : '')}</span>
                                   </div>
                                 </td>
