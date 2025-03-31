@@ -720,6 +720,7 @@ export const API = {
   login: `${BASE_URL}/user/login`,
   // login: `${BASE_URL}/user/login-ad`,         //RE
   tokenAPI: `${BASE_URL}/token`,
+  refreshTokenAPI: `${BASE_URL}/user/refresh_token`,
   AutoSignin: `${BASE_URL}/user/external-login`,
   logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,

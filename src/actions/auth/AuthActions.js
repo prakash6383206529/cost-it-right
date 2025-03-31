@@ -196,6 +196,11 @@ export function logoutUserAPI(requestData, callback) {
         axios.post(API.logout, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
+                     // Clear user details from localStorage
+                     localStorage.removeItem("userDetail");
+                     // Remove Axios Interceptors
+                     axios.interceptors.request.handlers = [];
+                     axios.interceptors.response.handlers = [];
                     callback(response);
                 }
             }).catch((error) => {
