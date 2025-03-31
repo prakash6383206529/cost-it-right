@@ -20,12 +20,14 @@ import {
   APPLICABILITY_OVERHEAD_PROFIT_EXCL,
   APPLICABILITY_OVERHEAD_EXCL_PROFIT,
   APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL,
+  TIME,
 
 } from '../config/constants'
 import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
 import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID } from '../config/masterData';
+import Toaster from '../components/common/Toaster';
 /**
  * @method  apiErrors
  * @desc Response error handler.
@@ -1965,13 +1967,30 @@ export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendor
  * @param {object} applicability - The applicability object
  * @param {string} prefix - 'Operation' or 'Process'
  */
-export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation', costWithoutInterestAndDepreciation = 0) => {
-  
+export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation', costWithoutInterestAndDepreciation = 0, isDetailed = false, uomType = '') => {
+
+
   const result = {
     [`Net${prefix}CostForOverhead`]: 0,
     [`Net${prefix}CostForProfit`]: 0,
     [`Net${prefix}CostForOverheadAndProfit`]: 0
   };
+
+  // Check if excluding applicability is selected but form is not detailed
+  const isExcludingApplicability = [
+    APPLICABILITY_OVERHEAD_EXCL,
+    APPLICABILITY_PROFIT_EXCL,
+    APPLICABILITY_OVERHEAD_PROFIT_EXCL,
+    APPLICABILITY_OVERHEAD_EXCL_PROFIT,
+    APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
+  ].includes(applicability);
+  if (isExcludingApplicability) {
+    if (!isDetailed || uomType !== TIME) {
+      costWithoutInterestAndDepreciation = cost;
+    }
+  }
+
+
 
   switch (applicability) {
     case APPLICABILITY_OVERHEAD:
@@ -1999,4 +2018,37 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
   }
 
   return result;
+};
+export const getOverheadAndProfitCostTotal = (arr = []) => {
+
+  const totals = {
+    overheadOperationCost: 0,
+    overheadProcessCost: 0,
+    profitOperationCost: 0,
+    profitProcessCost: 0
+  };
+
+  arr.forEach(item => {
+    const { OperationCost, ProcessCost, ProcessCostWithOutInterestAndDepreciation, IsDetailed, UOMType, CostingConditionNumber: type } = item;
+    const operation = checkForNull(OperationCost);
+    const process = checkForNull(ProcessCost);
+    const processExcl = IsDetailed && UOMType === TIME ? checkForNull(ProcessCostWithOutInterestAndDepreciation) : checkForNull(process);
+    // Handle overhead calculations
+    if ([APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type)) {
+      totals.overheadOperationCost += operation;
+      // Use excluding rate for overhead when type contains "Overhead(Excluding Int. + Dep.)"
+      const useExcludingForOverhead = [APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type);
+      totals.overheadProcessCost += useExcludingForOverhead ? processExcl : process;
+    }
+
+    // Handle profit calculations
+    if ([APPLICABILITY_PROFIT, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type)) {
+      totals.profitOperationCost += operation;
+      // Use excluding rate for profit when type contains "Profit(Excluding Int. + Dep.)"
+      const useExcludingForProfit = [APPLICABILITY_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type);
+      totals.profitProcessCost += useExcludingForProfit ? processExcl : process;
+    }
+  });
+
+  return totals;
 };
