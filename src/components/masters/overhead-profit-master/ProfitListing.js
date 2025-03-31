@@ -331,7 +331,7 @@ function ProfitListing(props) {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode
         }
-        props.getDetails(data);
+        props.getDetails(data,rowData?.IsAssociated);
     }
 
     /**
@@ -391,6 +391,7 @@ function ProfitListing(props) {
         }
     }
 
+    
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -398,12 +399,12 @@ function ProfitListing(props) {
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        ;
         return (
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {EditAccessibility && rowData?.IsEditable && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {DeleteAccessibility && !rowData?.IsAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };

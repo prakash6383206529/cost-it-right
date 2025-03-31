@@ -807,10 +807,44 @@ class AddProfit extends Component {
       }
     }
     this.setState({ isVendorNameNotSelected: false })
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: ProfitID }
+    })
+    const formData = {
+      "ProfitId": isEditFlag ? ProfitID : null,
+      "VendorName": (costingTypeId === VBCTypeId ? vendorName.label : ''),
+      "IsClient": (costingTypeId === CBCTypeId ? true : false),
+      "CustomerName": (costingTypeId === CBCTypeId ? client.label : ''),
+      "ProfitApplicabilityType": profitAppli.label ,
+      "ModelType": isEditFlag ? ModelType.label : null,
+      "CostingTypeId": costingTypeId,
+      "IsCombinedEntry": !isProfitPercent ? true : false,
+      "ProfitPercentage":  values.ProfitPercentage ,
+      "ProfitMachiningCCPercentage": values.ProfitCCPercentage ,
+      "ProfitBOPPercentage": values.ProfitBOPPercentage ,
+      "ProfitRMPercentage": values.ProfitRMPercentage,
+      "Remark": remarks,
+      "VendorId": costingTypeId === VBCTypeId ? vendorName.value : '',
+      "VendorCode": costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
+      "CustomerId": costingTypeId === CBCTypeId ? client.value : '',
+      "ProfitApplicabilityId": profitAppli.value,
+      "ModelTypeId": ModelType.value,
+      "IsActive": true,
+      "CreatedDate": '',
+      "CreatedBy": loggedInUserId(),
+      "Attachements": isEditFlag ? updatedFiles : files,
+      "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      "Plants": costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      "RawMaterialChildId": RawMaterial?.value,
+      "RawMaterialName": RawMaterial?.label,
+      "RawMaterialGradeId": RMGrade?.value,
+      "RawMaterialGrade": RMGrade?.label,
+      // "IsFinancialDataChanged": IsFinancialDataChanged,
+      "IsForcefulUpdated":  isEditFlag ? true : null,
+      "TechnologyId": isEditFlag ? null : this.state.isAssemblyCheckbox ? ASSEMBLY : null
+    }
 
     if (isEditFlag) {
-
-
 
       if (values.ProfitBOPPercentage === '') {
         values.ProfitBOPPercentage = null
@@ -826,7 +860,7 @@ class AddProfit extends Component {
       }
 
       if (
-        (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitCCPercentage) === Number(values.ProfitCCPercentage)
+        (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitCCPercentage)
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
@@ -834,53 +868,19 @@ class AddProfit extends Component {
         return false
       }
       this.setState({ setDisable: true })
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: ProfitID }
-      })
-      let requestData = {
-        ProfitId: ProfitID,
-        VendorName: costingTypeId === VBCTypeId ? vendorName.label : '',
-        IsClient: costingTypeId === CBCTypeId ? true : false,
-        CustomerName: costingTypeId === CBCTypeId ? client.label : '',
-        ProfitApplicabilityType: profitAppli.label,
-        ModelType: ModelType.label,
-        CostingTypeId: costingTypeId,
-        IsCombinedEntry: !isProfitPercent ? true : false,
-        ProfitPercentage: values.ProfitPercentage,
-        ProfitMachiningCCPercentage: values.ProfitCCPercentage,
-        ProfitBOPPercentage: values.ProfitBOPPercentage,
-        ProfitRMPercentage: values.ProfitRMPercentage,
-        Remark: remarks,
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
-        VendorCode: this.state.vendorCode ? this.state.vendorCode : "",
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        ProfitApplicabilityId: profitAppli.value,
-        ModelTypeId: ModelType.value,
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Attachements: updatedFiles,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        IsForcefulUpdated: true,
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: IsFinancialDataChanged
-      }
 
-      let financialDataChanged = (Number(ModelType?.value) !== Number(DataToChange?.ModelTypeId)) || (Number(DataToChange?.ProfitApplicabilityId) !== Number(profitAppli?.value)) || (values?.ProfitRMPercentage && (Number(DataToChange?.ProfitRMPercentage) !== Number(values?.ProfitRMPercentage))) || (values?.ProfitCCPercentage && (Number(DataToChange?.ProfitCCPercentage) !== Number(values?.ProfitCCPercentage))) || (values?.ProfitBOPPercentage && (Number(DataToChange?.ProfitBOPPercentage) !== Number(values?.ProfitBOPPercentage)))
+      let financialDataChanged = (Number(ModelType?.value) !== Number(DataToChange?.ModelTypeId)) || (Number(DataToChange?.ProfitApplicabilityId) !== Number(profitAppli?.value)) || (values?.ProfitRMPercentage && (Number(DataToChange?.ProfitRMPercentage) !== Number(values?.ProfitRMPercentage))) ||
+      (values?.ProfitCCPercentage && (Number(DataToChange?.ProfitMachiningCCPercentage) !== Number(values?.ProfitCCPercentage))) || (values?.ProfitBOPPercentage && (Number(DataToChange?.ProfitBOPPercentage) !== Number(values?.ProfitBOPPercentage)))
 
-      if (financialDataChanged && checkEffectiveDate(effectiveDate, DataToChange?.EffectiveDate)) {
+      if (financialDataChanged && checkEffectiveDate(effectiveDate, DataToChange?.EffectiveDate) && this.props.IsProfitAssociated) {
         this.setState({ setDisable: false })
         Toaster.warning('Please update the Effective date.')
+        formData.IsFinancialDataChanged = true
         return false
-      } else if (!financialDataChanged) {
-        this.cancel('cancel')
-        return false
+      } else {
+        formData.IsFinancialDataChanged = false
       }
-      this.props.updateProfit(requestData, (res) => {
+      this.props.updateProfit(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
@@ -890,33 +890,6 @@ class AddProfit extends Component {
 
     } else {
       this.setState({ setDisable: true })
-      const formData = {
-        CostingTypeId: costingTypeId,
-        IsCombinedEntry: !isProfitPercent ? true : false,
-        ProfitPercentage: !isProfitPercent ? values.ProfitPercentage : '',
-        ProfitMachiningCCPercentage: !isCC ? values.ProfitCCPercentage : '',
-        ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',
-        ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
-        Remark: remarks,
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
-        VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        ProfitApplicabilityId: profitAppli.value,
-        ModelTypeId: ModelType.value,
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Attachements: files,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: IsFinancialDataChanged,
-        TechnologyId: this.state.isAssemblyCheckbox ? ASSEMBLY : null
-      }
-
       this.props.createProfit(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
