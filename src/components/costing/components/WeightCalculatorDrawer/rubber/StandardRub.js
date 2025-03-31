@@ -151,7 +151,7 @@ function StandardRub(props) {
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
             let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
-            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight }))
+            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) }))
             setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }
     }, 500)
@@ -357,7 +357,9 @@ function StandardRub(props) {
             ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.Length === 0) ? ["Length"] : []),
         ];
         const isValid = await trigger(validationFields);
-        if(!isValid || (!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))   ){
+        if(!isValid){
+            return false;
+        }else if((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0))   ){
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
@@ -525,9 +527,9 @@ function StandardRub(props) {
                                             <div className="d-inline-block "><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowDataState.RMName}>{`${rmRowDataState.RMName !== undefined ? rmRowDataState.RMName : ''}`}</span></div>
                                             <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowDataState.MaterialType !== undefined ? rmRowDataState.MaterialType : ''}`}</span></div>
                                             <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}:</span><span className="text-dark-blue">{`${rmRowDataState.Density !== undefined ? rmRowDataState.Density : ''}`}</span></div>
-                                            <div className="d-inline-block "><span className="grey-text d-block">RM Rate ({sourceCurrencyFormatter(currencySource?.label)}):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? rmRowDataState.RMRate : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">RM Rate ({sourceCurrencyFormatter(currencySource?.label)}/{rmRowDataState?.UOMSymbol ? `${rmRowDataState.UOMSymbol}` : 'UOM'}):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? rmRowDataState.RMRate : ''}`}</span></div>
                                             {props?.appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? checkForDecimalAndNull(5, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
-                                            <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate ({sourceCurrencyFormatter(currencySource?.label)}):</span><span className="text-dark-blue">{`${rmRowDataState.ScrapRate !== undefined ? rmRowDataState.ScrapRate : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate ({sourceCurrencyFormatter(currencySource?.label)}/{rmRowDataState?.UOMSymbol ? `${rmRowDataState.UOMSymbol}` : 'UOM'}):</span><span className="text-dark-blue">{`${rmRowDataState.ScrapRate !== undefined ? rmRowDataState.ScrapRate : ''}`}</span></div>
                                             <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowDataState.RawMaterialCategory !== undefined ? rmRowDataState.RawMaterialCategory : ''}`}</span></div>
 
                                         </Col>
@@ -806,7 +808,7 @@ function StandardRub(props) {
                                             type="submit"
                                             value="CANCEL"
                                             className="reset ml-2 cancel-btn mt30"
-                                            disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
+                                            disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0) || ((!Array.isArray(getValues('RawMaterial')) && Object.keys(getValues('RawMaterial') || {}).length > 0) && isDisableAdd) ? false : true}
                                         >
                                             <div className={''}></div>
                                             RESET
@@ -880,7 +882,7 @@ function StandardRub(props) {
                                 type="button"
                                 className="submit-button  save-btn"
                                 onClick={onSubmit}
-                                disabled={props.CostingViewMode || isDisable ? true : false}
+                                disabled={(props.CostingViewMode || isDisable || tableData?.length === 0) ? true : false}
                             >
                                 <div className={'save-icon'}></div>
                                 {'SAVE'}

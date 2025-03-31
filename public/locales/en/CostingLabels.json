@@ -28,5 +28,8 @@
     "totalCost": "Total cost",
     "noOfBinsPerTrolley": "No. of bins per trolley",
     "totalNoOfBins": "Total no of bins",
-    "packagingCost": "Packaging Cost"
+    "packagingCost": "Packaging Cost",
+    "totalAddedCost": "Total added cost",
+    "totalCostOfCrate": "Total cost of crate/trolley",
+    "totalCostOfCrateWithAddedCost": "Total cost of crate/trolley (with added costs)"
 }

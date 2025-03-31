@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Controller, useForm, } from 'react-hook-form';
-import { getCostingCostDetails, gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
+import { getCostingCostDetails, gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setSurfaceData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -24,6 +24,7 @@ import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import Button from '../../../../layout/Button';
 import PaintAndMasking from './PaintAndMasking';
 import ExtraCost from './ExtraCost';
+import TooltipCustom from '../../../../common/Tooltip';
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
   const previousTab = useContext(PreviousTabData) || 0;
@@ -245,10 +246,20 @@ function SurfaceTreatment(props) {
 
   // }
 
-  const setSurfaceData = (obj, errorObjectSurfaceTreatment) => {
+  const SetSurfaceData = (obj, errorObjectSurfaceTreatment) => {
     setErrorObjectSurfaceTreatment(errorObjectSurfaceTreatment)
     setSurfacTreatmenteData(obj)
     setSurfacetableData(obj.gridData)
+    let newData = [...SurfaceTabData];
+    newData.map(item => {
+      if (item?.CostingId === costData?.CostingId) {
+        let CostingPartDetails = item?.CostingPartDetails
+        CostingPartDetails.SurfaceTreatmentDetails = obj.gridData;
+        CostingPartDetails.SurfaceTreatmentCost = surfaceCost(obj.gridData);
+      }
+      return null;
+    })
+    dispatch(setSurfaceData(newData, () => { }))
   }
 
 
@@ -462,10 +473,10 @@ function SurfaceTreatment(props) {
                             IsAssemblyCalculation={props.IsAssemblyCalculation}
                             setAssemblySurfaceCost={props.setAssemblySurfaceCost}
                             setAssemblyTransportationCost={props.setAssemblyTransportationCost}
-                            setSurfaceData={setSurfaceData}
+                            setSurfaceData={SetSurfaceData}
                           />
                           {/* <hr /> */}
-                          <Hanger />
+                          <Hanger ViewMode={CostingViewMode} />
                           {/* <TransportationCost
                             index={props.index}
                             data={transportationData}
@@ -479,7 +490,7 @@ function SurfaceTreatment(props) {
                           <Row>
                             <Col md="4" className="d-flex align-items-center">
                               <TextFieldHookForm
-                                label="Paint and Masking"
+                                label="Paint and Masking Cost"
                                 name={`PaintAndMasking`}
                                 Controller={Controller}
                                 control={control}
@@ -496,8 +507,8 @@ function SurfaceTreatment(props) {
                                 id="surfaceTreatment_paintAndMasking"
                                 onClick={() => setViewPaintAndMasking(true)}
                                 className={"right mt-0 mb-2"}
-                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost === 0 ? [] : ['1'], "className", CostingViewMode)}
-                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost === 0 ? [] : ['1'], "title", CostingViewMode)}
+                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "className", CostingViewMode)}
+                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "title", CostingViewMode)}
                               />
                             </Col>
                             <Col md="4" className="d-flex align-items-center">
@@ -523,12 +534,16 @@ function SurfaceTreatment(props) {
                                   variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "className", CostingViewMode)}
                                   title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "title", CostingViewMode)}
                                 />
+                                <TooltipCustom
+                                  id={`surfaceTreatment_refresh`}
+                                  disabledIcon
+                                  tooltipText={'Refresh to update the extra cost'}
+                                />
                                 <Button
                                   id="surfaceTreatment_refresh"
                                   onClick={updateExtraCost}
                                   className={"right ml-1 mb-2"}
                                   variant={'refresh-icon'}
-                                  title={'Refresh'}
                                 />
                               </div>
                             </Col>

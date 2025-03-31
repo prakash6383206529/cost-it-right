@@ -7,7 +7,7 @@ import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookF
 import { setPlasticArray } from '../../../actions/Costing'
 import { CORRUGATEDBOX } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
-import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation } from '../../../../../helper/validation'
+import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation,disableNegativeNumber } from '../../../../../helper/validation'
 import { debounce } from 'lodash'
 import { calculatePercentageValue, calculateScrapWeight, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
@@ -40,38 +40,38 @@ function Plastic(props) {
     const dispatch = useDispatch()
     const { getPlasticData } = useSelector(state => state.costing)
     const defaultValues = {
-        netWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RunnerWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
-        rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RMCost, getConfigurationKey().NoOfDecimalForPrice) : '',
-        scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
-        materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
-        burningAllownace: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BurningValue * checkForNull(totalRM), getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        scrapReusePercent: WeightCalculatorRequest && WeightCalculatorRequest.ScrapReUsePercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapReUsePercentage, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        reUseInputWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapReUseInputWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapReUseInputWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        inputWeightWithReuse: WeightCalculatorRequest && WeightCalculatorRequest.NetInputWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetInputWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        netWeight: WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest?.RunnerWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.RunnerWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest?.NetWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.NetWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest?.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
+        rmCost: WeightCalculatorRequest && WeightCalculatorRequest?.RMCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.RMCost, getConfigurationKey().NoOfDecimalForPrice) : '',
+        scrapCost: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
+        materialCost: WeightCalculatorRequest && WeightCalculatorRequest?.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
+        burningAllownace: WeightCalculatorRequest && WeightCalculatorRequest?.BurningValue !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.BurningValue * checkForNull(totalRM), getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        scrapReusePercent: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapReUsePercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.ScrapReUsePercentage, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        reUseInputWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapReUseInputWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.ScrapReUseInputWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        inputWeightWithReuse: WeightCalculatorRequest && WeightCalculatorRequest?.NetInputWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.NetInputWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     }
 
-    const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
-    const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
+    const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest?.LossOfTypeDetails !== null ? WeightCalculatorRequest?.LossOfTypeDetails : [])
+    const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest?.NetLossWeight ? WeightCalculatorRequest?.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState({
-        finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? WeightCalculatorRequest.FinishWeight : '',
-        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
-        rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
-        scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-        materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
-        burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
-        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
-        reUseInputWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapReUseInputWeight !== undefined ? WeightCalculatorRequest.ScrapReUseInputWeight : '',
-        inputWeightWithReuse: WeightCalculatorRequest && WeightCalculatorRequest.NetInputWeight !== undefined ? WeightCalculatorRequest.NetInputWeight : '',
+        finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest?.FinishWeight !== undefined ? WeightCalculatorRequest?.FinishWeight : '',
+        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapWeight !== undefined ? WeightCalculatorRequest?.ScrapWeight : '',
+        rmCost: WeightCalculatorRequest && WeightCalculatorRequest?.RMCost !== undefined ? WeightCalculatorRequest?.RMCost : '',
+        scrapCost: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapCost !== undefined ? WeightCalculatorRequest?.ScrapCost : '',
+        materialCost: WeightCalculatorRequest && WeightCalculatorRequest?.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
+        burningValue: WeightCalculatorRequest && WeightCalculatorRequest?.BurningValue !== undefined ? WeightCalculatorRequest?.BurningValue : '',
+        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? WeightCalculatorRequest?.GrossWeight : '',
+        reUseInputWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapReUseInputWeight !== undefined ? WeightCalculatorRequest?.ScrapReUseInputWeight : '',
+        inputWeightWithReuse: WeightCalculatorRequest && WeightCalculatorRequest?.NetInputWeight !== undefined ? WeightCalculatorRequest?.NetInputWeight : '',
     })
     const [isDisable, setIsDisable] = useState(false)
     const [reRender, setRerender] = useState(false)
-    const [excludeRunnerWeight, setExcludeRunnerWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest?.IsExcludeRunnerWeight !== undefined ? WeightCalculatorRequest.IsExcludeRunnerWeight : false)
-    const [isScrapReuse, setIsScrapReuse] = useState(WeightCalculatorRequest && WeightCalculatorRequest?.IsScrapReUse !== undefined ? WeightCalculatorRequest.IsScrapReUse : false)
+    const [excludeRunnerWeight, setExcludeRunnerWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest?.IsExcludeRunnerWeight !== undefined ? WeightCalculatorRequest?.IsExcludeRunnerWeight : false)
+    const [isScrapReuse, setIsScrapReuse] = useState(WeightCalculatorRequest && WeightCalculatorRequest?.IsScrapReUse !== undefined ? WeightCalculatorRequest?.IsScrapReUse : false)
 
     const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -134,7 +134,7 @@ function Plastic(props) {
         const netWeight = Number(getValues('netWeight'))
         const runnerWeight = Number(getValues('runnerWeight'))
 
-        const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [], true))
+        const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true))
         setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
 
         let updatedValue = dataToSend
@@ -156,7 +156,7 @@ function Plastic(props) {
         let inputWeightWithReuse = 0
 
         const finishedWeight = checkForNull(getValues('finishedWeight'))
-        const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [], true)) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
+        const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true)) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
         if (finishedWeight !== 0) {
             if (isScrapReuse) {
                 scrapWeight = (runnerWeight - ((checkForNull(netWeight) + checkForNull(runnerWeight) + checkForNull(dataToSend.burningValue)) * scrapReusePercent / 100)) * scrapRecoveryPercent / 100
@@ -210,13 +210,11 @@ function Plastic(props) {
         props.toggleDrawer('')
     }
     const onSubmit = debounce(handleSubmit((values) => {
-        if (dataToSend?.materialCost < 0) return Toaster.warning("Net Landed Cost cannot be negative")
-
         !props?.fromPackaging && DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
         setIsDisable(true)
         let obj = {}
 
-        obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
+        obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest?.PlasticWeightCalculatorId ? WeightCalculatorRequest?.PlasticWeightCalculatorId : "0"
         obj.BaseCostingIdRef = item.CostingId
         obj.TechnologyId = costData.TechnologyId
         obj.RawMaterialIdRef = rmRowData.RawMaterialId
@@ -351,12 +349,12 @@ function Plastic(props) {
                                 calculation={calculateRemainingCalculation}
                                 weightValue={Number(getValues('netWeight'))}
                                 runnerWeight={Number(getValues('runnerWeight'))}
-                                netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
-                                sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
+                                netWeight={WeightCalculatorRequest && WeightCalculatorRequest?.NetLossWeight !== null ? WeightCalculatorRequest?.NetLossWeight : ''}
+                                sendTable={WeightCalculatorRequest && WeightCalculatorRequest?.LossOfTypeDetails !== null ? WeightCalculatorRequest?.LossOfTypeDetails : []}
                                 tableValue={tableData}
                                 CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                                 burningLoss={setBurningAllowance}
-                                burningValue={WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== null ? WeightCalculatorRequest.BurningValue : ''}
+                                burningValue={WeightCalculatorRequest && WeightCalculatorRequest?.BurningValue !== null ? WeightCalculatorRequest?.BurningValue : ''}
                                 isPlastic={true}
                                 isLossStandard={false}
                                 isNonFerrous={false}
@@ -524,9 +522,13 @@ function Plastic(props) {
                                         register={register}
                                         mandatory={false}
                                         handleChange={() => { }}
+                                        rules={{
+                                            required: false,
+                                            validate: { disableNegativeNumber },
+                                        }}
                                         defaultValue={WeightCalculatorRequest &&
-                                            WeightCalculatorRequest.ScrapWeight !== undefined
-                                            ? WeightCalculatorRequest.ScrapWeight
+                                            WeightCalculatorRequest?.ScrapWeight !== undefined
+                                            ? WeightCalculatorRequest?.ScrapWeight
                                             : ''}
                                         className=""
                                         customClassName={'withBorder'}
@@ -575,7 +577,7 @@ function Plastic(props) {
                                     </div>
                                 </Col>}
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={`RM Cost = ((${isScrapReuse ? 'Input Weight (with Re-use)' : 'Input Weight'} ${excludeRunnerWeight ? '- Runner Weight' : ''} * RM Rate) + Burning Allowance`} />
+                                    <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={`RM Cost = (${isScrapReuse ? 'Input Weight (with Re-use)' : 'Input Weight'} ${excludeRunnerWeight ? '- Runner Weight' : ''} * RM Rate) + Burning Allowance`} />
                                     <TextFieldHookForm
                                         label={`RM Cost`}
                                         name={'rmCost'}
@@ -584,6 +586,10 @@ function Plastic(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { disableNegativeNumber },
+                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -603,6 +609,10 @@ function Plastic(props) {
                                         register={register}
                                         id={'scrap-cost-plastic'}
                                         mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { disableNegativeNumber },
+                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -623,6 +633,10 @@ function Plastic(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { disableNegativeNumber },
+                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""

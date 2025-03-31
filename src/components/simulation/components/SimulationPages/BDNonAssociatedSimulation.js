@@ -282,33 +282,33 @@ const {vendorLabel}= useLabels()
     }
 
     const effectiveDateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
         return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
     }
 
     const costingHeadFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cell ? cell : '-';
     }
 
     const customerFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
 
     const percentageFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
         let cellValue = cell
         if (cell && cell > 100) {
             Toaster.warning("Percentage should be less than or equal to 100")
-            list[props.rowIndex].Percentage = 0
+            list[props?.rowIndex].Percentage = 0
             cellValue = 0
         }
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
 
-        const value = beforeSaveCell(cellValue, props.rowIndex, 'Percentage')
+        const value = beforeSaveCell(cellValue, props?.rowIndex, 'Percentage')
         return (
             <>
                 {
@@ -320,8 +320,8 @@ const {vendorLabel}= useLabels()
     }
 
     const oldBasicRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {<span title={cell && Number(row.BasicRate)}>{cell && Number(row.BasicRate)} </span>}
@@ -330,14 +330,14 @@ const {vendorLabel}= useLabels()
         )
     }
     const newBasicRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
-        const value = beforeSaveCell(cell, props.rowIndex, 'BasicRate', row.BasicRate)
+        const value = beforeSaveCell(cell, props?.rowIndex, 'BasicRate', row.BasicRate)
 
 
         return (
-            <>            <div id={`newBasicRate-${props.rowIndex}`} className='ag-header-cell-label'>
+            <>            <div id={`newBasicRate-${props?.rowIndex}`} className='ag-header-cell-label'>
                 {<span title={cell && value ? Number(row.NewBasicRate) : Number(row.BasicRate)}>{cell && value ? Number(row.NewBasicRate) : Number(row.BasicRate)} </span>}
             </div>
             </>
@@ -345,8 +345,8 @@ const {vendorLabel}= useLabels()
     }
 
     const vendorFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {isbulkUpload ? row[`Vendor (Code)`] : cell}
@@ -356,8 +356,8 @@ const {vendorLabel}= useLabels()
     }
 
     const plantFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
                 {isbulkUpload ? row['Plant (Code)'] : cell}
@@ -368,8 +368,8 @@ const {vendorLabel}= useLabels()
 
     const costFormatter = (props) => {
 
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
@@ -406,9 +406,9 @@ const {vendorLabel}= useLabels()
     }
 
     const NewcostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const value = beforeSaveCell(cell, props.rowIndex, 'BasicRate', row.OldNetLandedCost)
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const value = beforeSaveCell(cell, props?.rowIndex, 'BasicRate', row.OldNetLandedCost)
         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         const NewNetLandedCost = ((checkForNull(row.NewBasicRate) + checkForNull(row?.NewOtherNetCost)) / NumberOfPieces) + checkForNull(row?.NewNetConditionCost)
 
@@ -460,7 +460,7 @@ const {vendorLabel}= useLabels()
             item.NewBasicRate = undefined
             return null
         })
-        props.backToSimulation(true)
+        props?.backToSimulation(true)
     }
 
     const closeDrawer = (e = '') => {
@@ -671,9 +671,9 @@ const {vendorLabel}= useLabels()
         // setOtherCostDetailForRow([])
     }
     const existingOtherCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         const value = beforeSaveCell(cell, props, 'otherCost')
 
@@ -687,7 +687,7 @@ const {vendorLabel}= useLabels()
                 {true && <button
                     type="button"
                     className={'View small'}
-                    onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'Old')}
+                    onClick={() => otherCostDrawer(cell, row, props?.rowIndex, 'Old')}
                     title="Add"
                 >
                 </button>}
@@ -697,8 +697,8 @@ const {vendorLabel}= useLabels()
     }
 
     const existingConditionCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         const value = beforeSaveCell(cell, props, 'otherCost')
         return (
             <>
@@ -709,7 +709,7 @@ const {vendorLabel}= useLabels()
                 {true && <button
                     type="button"
                     className={'View small'}
-                    onClick={() => conditionCostDrawer(cell, row, props.rowIndex, 'Old')}
+                    onClick={() => conditionCostDrawer(cell, row, props?.rowIndex, 'Old')}
                     title="Add"
                 >
                 </button>}
@@ -719,8 +719,8 @@ const {vendorLabel}= useLabels()
     }
 
     const revisedOtherCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)
@@ -739,9 +739,9 @@ const {vendorLabel}= useLabels()
                 {true && <button
                     type="button"
                     // className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    //onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
+                    //onClick={() => otherCostDrawer(cell, row, props?.rowIndex, 'New')}
                     className={`${props?.isImpactedMaster ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
+                    onClick={() => otherCostDrawer(cell, row, props?.rowIndex, 'New')}
                     title="Add"
                 >
                 </button>}
@@ -751,8 +751,8 @@ const {vendorLabel}= useLabels()
     }
 
     const revisedConditionCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
@@ -770,9 +770,9 @@ const {vendorLabel}= useLabels()
                 {true && <button
                     type="button"
                     // className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    // onClick={() => ConditionCostDrawer(cell, row, props.rowIndex, 'New')}
+                    // onClick={() => ConditionCostDrawer(cell, row, props?.rowIndex, 'New')}
                     className={`${props?.isImpactedMaster ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
-                    onClick={() => conditionCostDrawer(cell, row, props.rowIndex, 'New')}
+                    onClick={() => conditionCostDrawer(cell, row, props?.rowIndex, 'New')}
                     title="Add"
                 >
                 </button>}
@@ -1025,7 +1025,7 @@ const {vendorLabel}= useLabels()
                                                 </AgGridColumn>
                                                 }
 
-                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                <AgGridColumn field="EffectiveDate" headerName={props?.isImpactedMaster && !props?.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 

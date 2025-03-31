@@ -506,7 +506,7 @@ function AddOtherCostDrawer(props) {
                                                 options={state.costDropdown}
 
                                                 handleChange={() => { }}
-                                                defaultValue={''}
+                                                defaultValue={'-'}
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Cost}
@@ -570,7 +570,7 @@ function AddOtherCostDrawer(props) {
                                                         // options={conditionDropdown}
                                                         options={combinations}
                                                         handleChange={applicabilityChange}
-                                                        defaultValue={''}
+                                                        defaultValue={'-'}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.Applicability}
@@ -591,7 +591,7 @@ function AddOtherCostDrawer(props) {
                                                             validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                         }}
                                                         handleChange={() => { }}
-                                                        defaultValue={''}
+                                                        defaultValue={'-'}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.ApplicabilityCostCurrency}
@@ -614,7 +614,7 @@ function AddOtherCostDrawer(props) {
                                                             validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                         }}
                                                         handleChange={() => { }}
-                                                        defaultValue={''}
+                                                        defaultValue={'-'}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.ApplicabilityBaseCost}
@@ -639,7 +639,7 @@ function AddOtherCostDrawer(props) {
                                                             },
                                                         }}
                                                         handleChange={onPercentChange}
-                                                        defaultValue={''}
+                                                        defaultValue={'-'}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.Percentage}
@@ -662,7 +662,7 @@ function AddOtherCostDrawer(props) {
                                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                 }}
                                                 handleChange={handleCostChangeCurrency}
-                                                defaultValue={''}
+                                                defaultValue={'-'}
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.CostCurrency}
@@ -685,7 +685,7 @@ function AddOtherCostDrawer(props) {
                                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                 }}
                                                 handleChange={handleCostChangeBase}
-                                                defaultValue={''}
+                                                defaultValue={'-'}
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.CostBaseCurrency}
