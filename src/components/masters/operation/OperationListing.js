@@ -956,7 +956,7 @@ const OperationListing = (props) => {
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                    <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                                    <AgGridColumn minWidth={180} field="Currency" headerName="Currency/Settlement Currency"></AgGridColumn>
                                     <AgGridColumn field="Rate" headerName={`Rate`} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper ag-grid-action-container"} width={150} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

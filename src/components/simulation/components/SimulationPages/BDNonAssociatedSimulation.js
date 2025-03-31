@@ -995,7 +995,7 @@ function BDNonAssociatedSimulation(props) {
                                                 onCellValueChanged={onCellValueChanged}
                                             >
                                                 {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                                <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth={140} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                                 {<AgGridColumn field="EntryType" minWidth={120} headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
@@ -1005,7 +1005,7 @@ function BDNonAssociatedSimulation(props) {
                                                 {<AgGridColumn field="Plants" tooltipField='Plants' editable='false' headerName="Plant (Code)" minWidth={columnWidths.Plants} cellRenderer='plantFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" tooltipField='NumberOfPieces' editable='false' headerName="Min Order Quantity" minWidth={columnWidths.NumberOfPieces} ></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                {<AgGridColumn field="Currency" minWidth={120} tooltipField='Currency' editable='false' headerName="Settlement Currency"></AgGridColumn>}
+                                                {<AgGridColumn field="Currency" minWidth={180} tooltipField='Currency' editable='false' headerName="Currency/Settlement Currency"></AgGridColumn>}
 
                                                 <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`Basic Rate (Currency)`} marryChildren={true} minWidth={240}>
