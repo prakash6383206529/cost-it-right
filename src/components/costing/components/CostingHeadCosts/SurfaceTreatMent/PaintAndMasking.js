@@ -4,7 +4,7 @@ import { Col, Container, Row, Table } from 'reactstrap'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import Button from '../../../../layout/Button'
-import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, loggedInUserId, maxLength7, number } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, loggedInUserId, maxLength7, number, percentageLimitValidation } from '../../../../../helper'
 import TooltipCustom from '../../../../common/Tooltip'
 import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../../../common/NoContentFound'
@@ -17,7 +17,7 @@ import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
 const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
-const TABLE_HEADERS = ['Paint Coat', 'Raw Material', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate', 'Paint Cost', 'Action']
+const TABLE_HEADERS = ['Paint Coat', 'Raw Material', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency/UOM)', 'Paint Cost', 'Action']
 
 const FORM_DEFAULTS = {
     mode: 'onChange',
@@ -63,6 +63,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
     } = useForm(FORM_DEFAULTS)
 
     useEffect(() => {
+        setValueTableForm(`TapeCost`, '')
         getDetails()
         if (!ViewMode) {
             dispatch(getPaintCoatList(() => { }))
@@ -156,12 +157,15 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
             Coats: prev.Coats.filter((_, i) => i !== parentIndex)
         }))
         calculateTotalCost(calculateState.Coats.filter((_, i) => i !== parentIndex))
-        item?.RawMaterials?.map((rm, index) => {
-            setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
+        calculateState.Coats.map((coat, index) => {
+            coat.RawMaterials.map((rm, childIndex) => {
+                setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${index}${childIndex}`, '')
+                setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
+                setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
+                setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
+                setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
+                return null
+            })
             return null
         })
     }
@@ -304,7 +308,11 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                     register={registerTableForm}
                     rules={{
                         required: required,
-                        validate: { number, checkWhiteSpaces, maxLength7 }
+                        validate: { number, checkWhiteSpaces, maxLength7, ...(name === 'RejectionAllowancePercentage' ? { percentageLimitValidation } : {}) },
+                        max: name === 'RejectionAllowancePercentage' ? {
+                            value: 100,
+                            message: 'Percentage cannot be greater than 100'
+                        } : {},
                     }}
                     handleChange={onHandleChange ?? (() => { })}
                     defaultValue={''}
@@ -405,7 +413,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                         childIndex,
                         required: false,
                         disabled: true,
-                        tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate'
+                        tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate (Currency/UOM)'
                     })}</td>
                     {childIndex === 0 && !ViewMode && (
                         <td width="50" rowSpan={item.RawMaterials.length}>
