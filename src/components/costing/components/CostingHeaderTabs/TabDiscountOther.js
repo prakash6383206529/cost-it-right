@@ -1008,6 +1008,12 @@ function TabDiscountOther(props) {
     setShowWarning(false)
     dispatch(isDiscountDataChange(true))
     dispatch(resetExchangeRateData());
+    
+    // Clear the error for Currency field when unchecking the checkbox
+    if (IsCurrencyChange) {
+      // We're unchecking, so clear the error
+      formController.clearErrors('Currency');
+    }
   }
 
   /**
