@@ -128,8 +128,8 @@ class SimulationUploadDrawer extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
-                    let checkForRM = fileHeads.slice(0, 7)
-                    let checkForBopOperMachine = fileHeads.slice(0, 4)
+                    let checkForRM = fileHeads.slice(0, 8)
+                    let checkForBopOperMachine = fileHeads.slice(0, 5)
                     let checkForCc = fileHeads.slice(0, 5)
                     let checkForFileHead
                     switch (String(this.props.master.value)) {

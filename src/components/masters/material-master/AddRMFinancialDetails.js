@@ -31,7 +31,7 @@ import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 import { getPlantUnitAPI } from "../actions/Plant"
 import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
-import { getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
+import { compareRateCommon, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -114,6 +114,7 @@ function AddRMFinancialDetails(props) {
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const exchangeRateDetailsRef = useRef(exchangeRateDetails);
     const rawMaterailDetailsRefFinancial = useRef(rawMaterailDetails)
+    const debounceTimerRef = useRef(null);
 
     useEffect(() => {
         exchangeRateDetailsRef.current = exchangeRateDetails;
@@ -310,6 +311,9 @@ function AddRMFinancialDetails(props) {
         }
     }, [state?.totalBasicRate])
 
+     useEffect(() => {
+        return () => clearTimeout(debounceTimerRef?.current);
+    }, []);
 
     const netCostTitle = () => {
         const isBasicRateVisible = getConfigurationKey().IsBasicRateAndCostingConditionVisible &&
@@ -830,7 +834,7 @@ function AddRMFinancialDetails(props) {
     const closeOtherCostToggle = (type, data, total, totalBase) => {
         if (type === 'Save') {
             if (Number(states.costingTypeId) === Number(ZBCTypeId) && state.NetConditionCost && Array.isArray(state?.conditionTableData) && state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
-                Toaster.warning("Please click on refresh button to update condition cost data.")
+                Toaster.warning("Please click on refresh button to update Condition Cost data.")
             }
             const netCost = checkForNull(totalBase) + checkForNull(getValues('BasicRate'))
             const netCostLocalCurrency = convertIntoBase(netCost, CurrencyExchangeRate?.plantCurrencyRate)
@@ -862,6 +866,8 @@ function AddRMFinancialDetails(props) {
     const conditionToggle = () => {
         setState(prevState => ({ ...prevState, isOpenConditionDrawer: true }))
     }
+
+
     const openAndCloseAddConditionCosting = (type, data = state.conditionTableData) => {
         if (data && data.length > 0 && type === 'save') {
             dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRefFinancial.current, netCostChanged: true }, () => { }))
@@ -1038,6 +1044,14 @@ function AddRMFinancialDetails(props) {
             dispatch(setOtherCostDetails(result.tableData));
         }
     };
+
+    const debouncedCompareRate = () => {        
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+            compareRateCommon(state?.otherCostTableData, state?.conditionTableData);
+        }, 1000);
+    };
+
     const showNetCost = () => {
         let show = false
         if (state.hidePlantCurrency) {
@@ -1373,11 +1387,10 @@ function AddRMFinancialDetails(props) {
                                         disabled={disableAll || state.isShowIndexCheckBox ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                         className=" "
                                         customClassName=" withBorder"
-                                        handleChange={() => { }}
+                                        handleChange={isEditFlag ? debouncedCompareRate : ()=>{}}
                                         errors={errors.BasicRate}
                                     />
                                 </Col></>
-
 
                             <Col className="col-md-15">
                                 <div className="mt-3">

@@ -552,3 +552,13 @@ export const updateCostValue = (isConditionCost, state, price, isSimulation = fa
 export const checkEffectiveDate = (effectiveDate,effectiveDateToChange) => {
     return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
 }
+
+export const compareRateCommon = (otherCostData, conditionCostData) => {
+    if (otherCostData?.[0]?.Applicability === "Basic Rate" && conditionCostData?.[0]?.Applicability === "Basic Price") {
+        Toaster.warning("Please click on refresh button to update Other Cost and Condition Cost data.");
+    } else if (otherCostData?.[0]?.Applicability === "Basic Rate") {
+        Toaster.warning("Please click on refresh button to update Other Cost data.");
+    } else if (conditionCostData?.[0]?.Applicability === "Basic Price") {
+        Toaster.warning("Please click on refresh button to update Condition Cost data.");
+    }
+};
