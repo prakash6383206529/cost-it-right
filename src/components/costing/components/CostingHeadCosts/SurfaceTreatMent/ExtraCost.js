@@ -132,6 +132,10 @@ function ExtraCost(props) {
 
     const handleDelete = (indexValue) => {
         let updatedData = tableData.filter((_, index) => index !== indexValue);
+        const totalCost = updatedData.reduce((sum, item) => {
+            return sum + (item?.TransportationCost ? Number(item.TransportationCost) : 0);
+        }, 0);
+        setTotalCostCurrency(totalCost);
         setTableData(updatedData);
         resetData();
     };
@@ -241,6 +245,15 @@ function ExtraCost(props) {
             }, 0);
             setTotalCostCurrency(totalCost);
             resetData();
+            return;
+        }
+        // Check if CostingConditionMasterId already exists in tableData
+        const existingCondition = tableData.find(item =>
+            item.CostingConditionMasterId === data?.Applicability?.value
+        );
+
+        if (existingCondition) {
+            Toaster.warning('Applicability already exists');
             return;
         }
         let tempData = [...tableData]

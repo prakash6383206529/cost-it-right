@@ -663,6 +663,7 @@ export const API = {
   getCarrierTypeList: `${BASE_URL}/costing/get-carrier-type`,
   getFreightCalculation: `${BASE_URL}/costing/get-costing-freight-calculation-details`,
   saveFreightCalculation: `${BASE_URL}/costing/save-costing-freight-calculation-details`,
+  getTypeOfCost: `${BASE_URL}/costing/select-list-packaging-cost-type`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
@@ -1872,6 +1873,7 @@ export const GET_CARRIER_TYPE_LIST_SUCCESS = 'GET_CARRIER_TYPE_LIST_SUCCESS';
 export const SET_PACKAGING_CALCULATOR_AVAILABLE = 'SET_PACKAGING_CALCULATOR_AVAILABLE';
 export const SET_FREIGHT_CALCULATOR_AVAILABLE = 'SET_FREIGHT_CALCULATOR_AVAILABLE';
 export const GET_PAINT_COAT_LIST = 'GET_PAINT_COAT_LIST';
+export const GET_TYPE_OF_COST_SUCCESS = 'GET_TYPE_OF_COST_SUCCESS';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -3389,7 +3391,7 @@ export const PAINTTECHNOLOGY = 31
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V4.1.13";
+export const VERSION = "V4.1.16";
 
 
 

@@ -31,7 +31,8 @@ class Department extends Component {
 			divisionId: 0,
 			divisions: [],
 			divisionSelectAll: [],
-			isApplyDivision: false
+			isApplyDivision: false,
+			isAssociated: false
 		};
 	}
 
@@ -42,6 +43,7 @@ class Department extends Component {
 	componentDidMount() {
 		const { DepartmentId, isEditFlag } = this.props;
 		this.setState({ isLoader: true });
+console.log(this.props);
 
 		this.props.getPlantSelectListByType(ZBC, "", '', (res) => {
 			if (res?.status === 204) {
@@ -79,6 +81,7 @@ class Department extends Component {
 
 			if (this.props.isDivision) {
 				this.props.getDivisionAPI(DepartmentId, (res) => {
+					console.log(res);
 					let Data = res?.data?.Data
 					if (res?.status === 204) {
 						this.setState({ DataToChange: null, selectedPlants: [] });
@@ -93,10 +96,13 @@ class Department extends Component {
 				})
 			} else {
 				this.props.getDepartmentAPI(DepartmentId, (res) => {
+					console.log(res);
+					
 					if (res?.status === 204) {
 						this.setState({ DataToChange: null, selectedPlants: [] });
 					}
 					else if (res && res?.status === 200 && res?.data?.Result) {
+						this.setState({ isAssociated: res?.data?.Data?.IsAssociated })
 						let plantArray = []
 						res?.data?.Data?.PlantList && res?.data?.Data?.PlantList?.map((item) => {
 							plantArray.push({ Text: `${item.PlantName ?? ''} (${item.PlantCode ?? ''})`, Value: (item?.PlantId ?? '')?.toString() })
@@ -392,7 +398,7 @@ class Department extends Component {
 												component={renderText}
 												required={true}
 												customClassName={'withBorder'}
-												disabled={getConfigurationKey().IsAssociated ? true : false}
+												disabled={this.state.isAssociated}
 											/>
 										</div>
 										{<div className="input-group col-md-12 input-withouticon">
@@ -405,7 +411,7 @@ class Department extends Component {
 												component={renderText}
 												required={true}
 												customClassName={'withBorder'}
-												disabled={getConfigurationKey().IsAssociated ? true : false}
+												disabled={this.state.isAssociated}
 											/>
 										</div>}
 										{getConfigurationKey().IsDivisionAllowedForDepartment && <>

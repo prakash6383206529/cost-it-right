@@ -23,13 +23,11 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
     })
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
     useEffect(() => {
-        const data = isSummary ? viewCostingDataObj?.CostingPartDetails : item?.CostingPartDetails
-
-        setValue(`HangerFactor`, checkForDecimalAndNull(data?.HangerRate, NoOfDecimalForInputOutput))
-        setValue(`NoOfPartsPerHanger`, checkForDecimalAndNull(data?.NumberOfPartsPerHanger, NoOfDecimalForInputOutput))
+        const data = isSummary ? viewCostingDataObj?.CostingPartDetails : surfaceTabData?.CostingPartDetails
+        setValue(`HangerFactor`, data?.HangerRate ? checkForDecimalAndNull(data?.HangerRate, NoOfDecimalForInputOutput) : '')
+        setValue(`NoOfPartsPerHanger`, data?.NumberOfPartsPerHanger ? checkForDecimalAndNull(data?.NumberOfPartsPerHanger, NoOfDecimalForInputOutput) : '')
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(data?.HangerCostPerPart, NoOfDecimalForPrice))
     }, [])
-
     const calculateHangerCost = debounce((hangerFactor, noOfPartsPerHanger) => {
         const hangerCost = checkForNull(hangerFactor) / checkForNull(noOfPartsPerHanger)
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(hangerCost, NoOfDecimalForPrice))
@@ -54,7 +52,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
         // 
         // sessionStorage.setItem('surfaceCostingArray', JSON.stringify(tempArray))
         // dispatch(setSurfaceData(surfaceTabData, () => { }))
-    }, 300)
+    }, 800)
     return (
         <>
             <Row>
@@ -82,7 +80,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                         register={register}
                         mandatory={false}
                         rules={{
-                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                            validate: { checkWhiteSpaces, decimalNumberLimit6 },
                             maxLength: NUMBERMAXLENGTH
                         }}
                         defaultValue={''}
@@ -105,8 +103,9 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                         register={register}
                         mandatory={false}
                         rules={{
+                            required: false,
                             validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                            maxLength: NUMBERMAXLENGTH
+                            // maxLength: NUMBERMAXLENGTH
                         }}
                         defaultValue={''}
                         className=""

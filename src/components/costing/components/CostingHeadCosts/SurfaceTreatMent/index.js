@@ -25,6 +25,7 @@ import Button from '../../../../layout/Button';
 import PaintAndMasking from './PaintAndMasking';
 import ExtraCost from './ExtraCost';
 import _ from 'lodash';
+import TooltipCustom from '../../../../common/Tooltip';
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
   const previousTab = useContext(PreviousTabData) || 0;
@@ -535,7 +536,7 @@ function SurfaceTreatment(props) {
                           <Row>
                             <Col md="4" className="d-flex align-items-center">
                               <TextFieldHookForm
-                                label="Paint and Masking"
+                                label="Paint and Masking Cost"
                                 name={`PaintAndMasking`}
                                 Controller={Controller}
                                 control={control}
@@ -552,8 +553,8 @@ function SurfaceTreatment(props) {
                                 id="surfaceTreatment_paintAndMasking"
                                 onClick={() => setViewPaintAndMasking(true)}
                                 className={"right mt-0 mb-2"}
-                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "className", CostingViewMode)}
-                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "title", CostingViewMode)}
+                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "className", CostingViewMode)}
+                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "title", CostingViewMode)}
                               />
                             </Col>
                             <Col md="4" className="d-flex align-items-center">
@@ -579,12 +580,16 @@ function SurfaceTreatment(props) {
                                   variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "className", CostingViewMode)}
                                   title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "title", CostingViewMode)}
                                 />
+                                <TooltipCustom
+                                  id={`surfaceTreatment_refresh`}
+                                  disabledIcon
+                                  tooltipText={'Refresh to update the extra cost'}
+                                />
                                 <Button
                                   id="surfaceTreatment_refresh"
                                   onClick={updateExtraCost}
                                   className={"right ml-1 mb-2"}
                                   variant={'refresh-icon'}
-                                  title={'Refresh'}
                                 />
                               </div>
                             </Col>

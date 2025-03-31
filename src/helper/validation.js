@@ -139,6 +139,11 @@ export const checkSingleSpaceInString = value => {
 export const number = value =>
     value && (isNaN(Number(value)) || Number(value) < 0 || !/^\d*\.?\d+$/.test(value))
         ? 'Please enter a positive number.' : undefined;
+        
+// This is to check negative number for disaled or autocalculated fields
+export const disableNegativeNumber   = value =>
+    value && (isNaN(Number(value)) || Number(value) < 0 || !/^\d*\.?\d+$/.test(value))
+        ? 'Negative number is not allowed, please verify your calculations.' : undefined;
 
 export const postiveNumber = value =>
     value && !/^\+?(0|[0-9]\d*)$/.test(value)

@@ -179,9 +179,8 @@ const DepartmentsListing = (props) => {
 
   const buttonFormatter = (props) => {
     const cellValue = props.data.DepartmentId;
-    const isDepartmentAssociated = getConfigurationKey().IsAssociated ? true : false
-
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const isDepartmentAssociated = rowData?.IsAssociated ? true : false && !getConfigurationKey().IsDivisionAllowedForDepartment
     const { EditAccessibility, DeleteAccessibility } = state;
     return (
       <>
