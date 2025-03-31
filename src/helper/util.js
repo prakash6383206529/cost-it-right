@@ -2017,65 +2017,36 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
 
   return result;
 };
-export const getOverheadAndProfitCostTotal = (arr = [], type) => {
-  
-  const filterAndSum = (conditionNumbers, costType) => {
-    return arr?.filter(item =>
-      conditionNumbers.includes(item?.CostingConditionNumber)
-    )?.reduce((acc, el) => {
-      // Determine if excluding applicability is selected
-      const isExcludingApplicability = [
-        APPLICABILITY_OVERHEAD_EXCL,
-        APPLICABILITY_PROFIT_EXCL,
-        APPLICABILITY_OVERHEAD_PROFIT_EXCL,
-        APPLICABILITY_OVERHEAD_EXCL_PROFIT,
-        APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
-      ].includes(el?.CostingConditionNumber);
-      // For process cost, use ProcessCostWithOutInterestAndDepreciation if conditions met
-      const processAmount = isExcludingApplicability ? (el?.IsDetailed && el?.UOMType === TIME ? checkForNull(el?.ProcessCostWithOutInterestAndDepreciation) : checkForNull(el?.ProcessCost)) : checkForNull(el?.ProcessCost);
+export const getOverheadAndProfitCostTotal = (arr = []) => {
 
-      return {
-        operationCost: acc.operationCost + checkForNull(el?.OperationCost),
-        processCost: acc.processCost + processAmount
-      };
-    }, { operationCost: 0, processCost: 0 }) ?? { operationCost: 0, processCost: 0 };
+  const totals = {
+    overheadOperationCost: 0,
+    overheadProcessCost: 0,
+    profitOperationCost: 0,
+    profitProcessCost: 0
   };
 
-  switch (type) {
-    case 'Overhead':
-      const overhead = filterAndSum([APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL]);
-      return {
-        overheadOperationCost: overhead?.operationCost ?? 0,
-        overheadProcessCost: overhead?.processCost ?? 0
-      };
+  arr.forEach(item => {
+    const { OperationCost, ProcessCost, ProcessCostWithOutInterestAndDepreciation, IsDetailed, UOMType, CostingConditionNumber: type } = item;
+    const operation = checkForNull(OperationCost);
+    const process = checkForNull(ProcessCost);
+    const processExcl = IsDetailed && UOMType === TIME ? checkForNull(ProcessCostWithOutInterestAndDepreciation) : checkForNull(process);
+    // Handle overhead calculations
+    if ([APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type)) {
+      totals.overheadOperationCost += operation;
+      // Use excluding rate for overhead when type contains "Overhead(Excluding Int. + Dep.)"
+      const useExcludingForOverhead = [APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type);
+      totals.overheadProcessCost += useExcludingForOverhead ? processExcl : process;
+    }
 
-    case 'Profit':
-      const profit = filterAndSum([APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL]);
-      return {
-        profitOperationCost: profit?.operationCost ?? 0,
-        profitProcessCost: profit?.processCost ?? 0
-      };
+    // Handle profit calculations
+    if ([APPLICABILITY_PROFIT, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type)) {
+      totals.profitOperationCost += operation;
+      // Use excluding rate for profit when type contains "Profit(Excluding Int. + Dep.)"
+      const useExcludingForProfit = [APPLICABILITY_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type);
+      totals.profitProcessCost += useExcludingForProfit ? processExcl : process;
+    }
+  });
 
-    case 'OverheadAndProfit':
-      const overheadAndProfit = filterAndSum([
-        APPLICABILITY_OVERHEAD_PROFIT,
-        APPLICABILITY_OVERHEAD_PROFIT_EXCL,
-        APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL,
-        APPLICABILITY_OVERHEAD_EXCL_PROFIT
-      ]);
-      return {
-        overheadAndProfitOperationCost: overheadAndProfit?.operationCost ?? 0,
-        overheadAndProfitProcessCost: overheadAndProfit?.processCost ?? 0
-      };
-
-    default:
-      return {
-        overheadOperationCost: 0,
-        overheadProcessCost: 0,
-        profitOperationCost: 0,
-        profitProcessCost: 0,
-        overheadAndProfitOperationCost: 0,
-        overheadAndProfitProcessCost: 0
-      };
-  }
-}
+  return totals;
+};

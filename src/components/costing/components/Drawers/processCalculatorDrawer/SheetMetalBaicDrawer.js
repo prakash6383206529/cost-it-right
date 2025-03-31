@@ -132,7 +132,7 @@ function SheetMetalBaicDrawer(props) {
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
         break;
       case TIME:
-        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Parts/Hour * Rate) / Cavity')
+        setProcessCostTooltip('Process Cost = (( MHR * Cycle Time / 3600) * ( 100 / Efficiency)) / Cavity')
         break;
       case DIMENSIONLESS:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
@@ -215,7 +215,7 @@ function SheetMetalBaicDrawer(props) {
         case MASS:
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
-          netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
+         netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
@@ -224,7 +224,7 @@ function SheetMetalBaicDrawer(props) {
         case AREA:
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
-          netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
+         netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
           
@@ -255,7 +255,7 @@ function SheetMetalBaicDrawer(props) {
         case VOLUMETYPE:
           setDisabled(true)
           cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
-          netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
+         netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
           
