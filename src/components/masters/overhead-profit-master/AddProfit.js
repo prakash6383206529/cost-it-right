@@ -1211,7 +1211,7 @@ class AddProfit extends Component {
                               }`}
                             onChange={this.onPressAssemblyCheckbox}
                           >
-                            Apply for Part Type
+                            Manage Applicabilities For Multi Technology Assembly
                             <input
                               type="checkbox"
                               checked={this.state.isAssemblyCheckbox}
