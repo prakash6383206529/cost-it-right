@@ -145,7 +145,7 @@ function ViewRM(props) {
       }
     }
     else {
-      if (viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) {
+      if ((viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) && !(viewCostingData[props.index]?.CalculatorType === 'Standard')) {
         Toaster.warning('Data is not available for calculator')
         return false
       }
@@ -204,7 +204,11 @@ function ViewRM(props) {
         case RUBBER:
           if (viewCostingData[props.index]?.CalculatorType === 'Standard') {
             dispatch(getRawMaterialCalculationForRubberStandard(tempData?.netRMCostView[index]?.CostingId, res => {
-              setCalculatorData(res, index, 'Standard')
+              if (Number(res.status) === Number(204)) {
+                Toaster.warning('Data is not available for calculator')
+              } else {
+                setCalculatorData(res, index, 'Standard')
+              }
             }))
           } else {
             dispatch(getRawMaterialCalculationForRubber(tempData?.netRMCostView[index]?.CostingId, tempData?.netRMCostView[index]?.RawMaterialId, tempData?.netRMCostView[index]?.RawMaterialCalculatorId, res => {
