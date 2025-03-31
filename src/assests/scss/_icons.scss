@@ -379,7 +379,11 @@
     @include icons("../../images/check.png", 18px, 12px);
     margin-right: 5px;
 }
-
+.return-icon {
+    @include icons("../../images/return-icon.png", 13px, 11px);
+    filter: invert(100%) brightness(100%);
+    margin: auto;
+}
 .approve-save-tick {
     @include icons("../../images/check-green.svg", 13px, 11px);
     margin: auto;
