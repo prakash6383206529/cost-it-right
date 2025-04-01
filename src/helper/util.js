@@ -2052,6 +2052,6 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
       totals.profitProcessCost += useExcludingForProfit ? processExcl : process;
     }
   });
-
+  
   return totals;
 };
