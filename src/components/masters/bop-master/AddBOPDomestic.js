@@ -1770,7 +1770,7 @@ class AddBOPDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode || !IsFinancialDataChanged}
+                                disabled={isViewMode}
                                 placeholder={isViewMode || !IsFinancialDataChanged ? '-' : 'Select Date'}
                               />
                             </div>
@@ -1900,7 +1900,7 @@ class AddBOPDomestic extends Component {
                             (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) &&
                             <>
                               <Col md="3">
-                                <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
+                                <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={`Net Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Plant Currency'})= ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
                                   label={`Net Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}  
                                   name={`${"NetCostPlantCurrency"}`}
@@ -1916,7 +1916,7 @@ class AddBOPDomestic extends Component {
                                 />
                               </Col>
                               {!hidePlantCurrency && <Col md="3">
-                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost(${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})  = Net Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Plant Currency'}) * Plant Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
                                   label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                   name={`${"NetCostBaseCurrency"}`}

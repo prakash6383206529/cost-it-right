@@ -2298,7 +2298,7 @@ class AddBOPImport extends Component {
                           {
                             this.state.showCurrency && (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" disabledIcon={true} width="350px" tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
+                                <TooltipCustom id="bop-net-cost-currency" disabledIcon={true} width="350px" tooltipText={`Net Cost (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})= ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
                                   label={`Net Cost (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}
