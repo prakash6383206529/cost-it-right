@@ -366,7 +366,7 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     const data = res && res.data && res.data.Data ? res.data.Data : {}
-    tempData = { ...tempData, CalculatorType: (Number(costData?.TechnologyId) === CORRUGATEDBOX || Number(costData?.TechnologyId) === RUBBER) ? calculatorType : {}, WeightCalculatorRequest: ferrousCalculatorReset === true ? {} : data }
+    tempData = { ...tempData, CalculatorType: (Number(costData?.TechnologyId) === CORRUGATEDBOX || Number(costData?.TechnologyId) === RUBBER) ? calculatorType : '', WeightCalculatorRequest: ferrousCalculatorReset === true ? {} : data }
     tempArr = Object.assign([...gridData], { [index]: tempData })
     setTimeout(() => {
       setGridData(tempArr)
@@ -911,7 +911,7 @@ function RawMaterialCost(props) {
         BurningLossWeight: weightData?.BurningValue,
         ScrapWeight: scrapWeight,
         IsCalculaterAvailable: true,
-        CalculatorType: weightData?.CalculatorType ?? calculatorTypeStore
+        CalculatorType: weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : ''
         // IsScrapRecoveryPercentageApplied: true
       }
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
@@ -930,7 +930,7 @@ function RawMaterialCost(props) {
       
       errors.rmGridFields = []
       if (tempArr) {
-        tempArr[0].CalculatorType = weightData?.CalculatorType ?? calculatorTypeStore
+        tempArr[0].CalculatorType = weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : ''
       }
       setGridData(tempArr)
 
@@ -955,7 +955,7 @@ function RawMaterialCost(props) {
                 ScrapRecoveryPercentage: weightData.RecoveryPercentage,
                 ScrapWeight: weightData?.ScrapWeight || 0,
                 Percentage: calculatedRM?.Percentage || 0,
-                CalculatorType: weightData.CalculatorType ?? calculatorTypeStore
+                CalculatorType: weightData.CalculatorType ?? calculatorTypeStore ? weightData.CalculatorType : ''
               };
             }
             return null;
@@ -995,7 +995,7 @@ function RawMaterialCost(props) {
               item.IsCalculaterAvailable = true;
               item.CutOffRMC = CutOffRMC;
               item.ScrapRecoveryPercentage = RecoveryPercentage;
-              item.CalculatorType= weightData?.CalculatorType ?? calculatorTypeStore
+              item.CalculatorType= weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : ''
               item.IsVolumeAutoCalculate = weightItem?.IsVolumeAutoCalculate ?? false
 
               setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightItem?.GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
