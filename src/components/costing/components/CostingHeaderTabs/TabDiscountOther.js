@@ -1557,7 +1557,103 @@ function TabDiscountOther(props) {
   const refreshAllData = () => {
     let finalListCondition = []
     let tempListCondition = [...conditionTableData]
+    const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
+    const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
+    const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
+    const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
+    const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
+    let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
+    const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
 
+    const overheadAndProfitTabDataValue = OverheadProfitTabData && OverheadProfitTabData[0]?.CostingPartDetails
+    const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+
+    const calculateCostByApplicability = (item, isDiscount = false) => {
+      if (item?.OtherCostApplicability === 'Fixed' || item?.ApplicabilityType === 'Fixed') return item;
+
+      const percent = isDiscount ? item?.PercentageDiscountCost : item?.PercentageOtherCost;
+      const applicabilityType = isDiscount ? item?.ApplicabilityType : item?.OtherCostApplicability;
+      let totalCost = 0;
+      let applicabilityCost = 0;
+
+      switch (applicabilityType) {
+        case 'RM':
+        case 'Part Cost':
+          applicabilityCost = headerCosts.NetRawMaterialsCost;
+          break;
+        case 'BOP':
+          applicabilityCost = headerCosts.NetBoughtOutPartCost;
+          break;
+        case 'RM + CC':
+        case 'Part Cost + CC':
+          applicabilityCost = RMCC;
+          break;
+        case 'BOP + CC':
+          applicabilityCost = BOPCC;
+          break;
+        case 'CC':
+          applicabilityCost = ConversionCostForCalculation;
+          break;
+        case 'RM + CC + BOP':
+        case 'Part Cost + CC + BOP':
+          applicabilityCost = RMBOPCC;
+          break;
+        case 'RM + BOP':
+        case 'Part Cost + BOP':
+          applicabilityCost = RMBOP;
+          break;
+        case 'Net Cost':
+          applicabilityCost = totalTabCost;
+          break;
+        case 'Surface Treatment Cost':
+          applicabilityCost = dataList?.NetSurfaceTreatmentCost;
+          break;
+        case 'Overhead Cost':
+          applicabilityCost = overheadAndProfitTabDataValue?.OverheadCost;
+          break;
+        case 'Profit Cost':
+          applicabilityCost = overheadAndProfitTabDataValue?.ProfitCost;
+          break;
+        case 'Rejection Cost':
+          applicabilityCost = overheadAndProfitTabDataValue?.RejectionCost;
+          break;
+        case 'ICC Cost':
+          applicabilityCost = overheadAndProfitTabDataValue?.ICCCost;
+          break;
+        case 'Payment Terms Cost':
+          applicabilityCost = UpdatePaymentTermCost?.NetCost;
+          break;
+        case 'Packaging Cost':
+          applicabilityCost = packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost;
+          break;
+        case 'Freight Cost':
+          applicabilityCost = packageAndFreightTabData?.CostingPartDetails?.FreightNetCost;
+          break;
+        case 'Tool Cost':
+          applicabilityCost = dataList?.ToolCost;
+          break;
+        default:
+          applicabilityCost = getValues('ApplicabilityCost');
+          break;
+      }
+
+      totalCost = applicabilityCost * calculatePercentage(percent);
+
+      return {
+        ...item,
+        ApplicabilityCost: applicabilityCost,
+        [isDiscount ? 'NetCost' : 'AnyOtherCost']: totalCost
+      };
+    };
+
+    let otherCostTemp = otherCostData.gridData?.length > 0 ? otherCostData.gridData.map(item => calculateCostByApplicability(item)) : [];
+    const totalOtherCostTemp = otherCostTemp.reduce((total, item) => total + item.AnyOtherCost, 0);
+
+    let discountTemp = otherDiscountData.gridData?.length > 0 ? otherDiscountData.gridData.map(item => calculateCostByApplicability(item, true)) : [];
+    const totalDiscountTemp = discountTemp.reduce((total, item) => total + item.NetCost, 0);
+
+    dispatch(setOtherCostData({ gridData: otherCostTemp, otherCostTotal: totalOtherCostTemp }));
+    dispatch(setOtherDiscountData({ gridData: discountTemp, totalCost: totalDiscountTemp }));
     tempListCondition && tempListCondition?.map((item) => {
       let finalValue = 0
       if (item?.ConditionType === "Fixed" || item?.ConditionType === "Quantity") {
