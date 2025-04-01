@@ -18,7 +18,7 @@ import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
-import { checkForNull, checkTechnologyIdAndRfq, formViewData, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
+import { checkForNull, checkTechnologyIdAndRfq, formViewData, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, showBopLabel, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
@@ -1493,7 +1493,7 @@ function RfqListing(props) {
                     headerName = "RM Name";
                     break;
                 case 'Bought Out Part':
-                    headerName = "BOP Name";
+                    headerName = `${showBopLabel()} Name (${showBopLabel()} No.)`
                     break;
                 case 'Component':
                 case 'Assembly':
