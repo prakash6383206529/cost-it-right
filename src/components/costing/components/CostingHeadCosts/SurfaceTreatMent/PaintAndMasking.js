@@ -4,7 +4,7 @@ import { Col, Container, Row, Table } from 'reactstrap'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import Button from '../../../../layout/Button'
-import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, loggedInUserId, maxLength7, number } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, loggedInUserId, maxLength7, number, percentageLimitValidation } from '../../../../../helper'
 import TooltipCustom from '../../../../common/Tooltip'
 import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../../../common/NoContentFound'
@@ -17,7 +17,7 @@ import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
 const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
-const TABLE_HEADERS = ['Paint Coat', 'Raw Material', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate', 'Paint Cost', 'Action']
+const TABLE_HEADERS = ['Paint Coat', 'Raw Material', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency/UOM)', 'Paint Cost', 'Action']
 
 const FORM_DEFAULTS = {
     mode: 'onChange',
@@ -63,6 +63,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
     } = useForm(FORM_DEFAULTS)
 
     useEffect(() => {
+        setValueTableForm(`TapeCost`, '')
         getDetails()
         if (!ViewMode) {
             dispatch(getPaintCoatList(() => { }))
@@ -151,19 +152,25 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
         }))
     }
     const deleteItem = (item, parentIndex) => {
+        // First clear form values for the row being deleted to prevent pre-filled data
+        item.RawMaterials.forEach((rm, childIndex) => {
+            setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+            setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+            setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+            setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+            setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+        })
+
+        // Update state by filtering out deleted row
+        const updatedCoats = calculateState.Coats.filter((_, i) => i !== parentIndex)
+
         setCalculateState(prev => ({
             ...prev,
-            Coats: prev.Coats.filter((_, i) => i !== parentIndex)
+            Coats: updatedCoats
         }))
-        calculateTotalCost(calculateState.Coats.filter((_, i) => i !== parentIndex))
-        item?.RawMaterials?.map((rm, index) => {
-            setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            return null
-        })
+
+        // Recalculate total cost with remaining rows
+        calculateTotalCost(updatedCoats)
     }
 
     const addData = data => {
@@ -287,29 +294,33 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
         setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
         setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
     }, 300)
-    const renderInputBox = ({ item, name, coat, parentIndex, childIndex, disabled, onHandleChange, tooltipText = '' }) => {
+    const renderInputBox = ({ item, name, coat, parentIndex, childIndex, required, disabled, onHandleChange, tooltipText = '' }) => {
         return (
             <>
                 {tooltipText && <TooltipCustom
-                    id={`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`}
+                    id={`${name}${item?.RawMaterialId}${parentIndex}${childIndex}`}
                     disabledIcon
                     tooltipText={tooltipText}
                 />}
                 <TextFieldHookForm
                     label={false}
-                    id={`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`}
+                    id={`${name}${item?.RawMaterialId}${parentIndex}${childIndex}`}
                     name={`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`}
                     Controller={Controller}
                     control={controlTableForm}
                     register={registerTableForm}
                     rules={{
-                        required: true,
-                        validate: { number, checkWhiteSpaces, maxLength7 }
+                        required: required,
+                        validate: { number, checkWhiteSpaces, maxLength7, ...(name === 'RejectionAllowancePercentage' ? { percentageLimitValidation } : {}) },
+                        max: name === 'RejectionAllowancePercentage' ? {
+                            value: 100,
+                            message: 'Percentage cannot be greater than 100'
+                        } : {},
                     }}
                     handleChange={onHandleChange ?? (() => { })}
                     defaultValue={''}
-                    customClassName={'withBorder mb-0'}
-                    errors={errorsTableForm[`${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
+                    customClassName={'withBorder mb-0 paint-and-masking'}
+                    errors={errorsTableForm[`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
                     disabled={ViewMode || CostingViewMode || disabled}
                 />
             </>
@@ -344,6 +355,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                         coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
+                        required: true,
                         onHandleChange: e => calculateValues(
                             e.target.value,
                             checkForNull(getValuesTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
@@ -359,6 +371,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                         coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
+                        required: true,
                         onHandleChange: e => calculateValues(
                             checkForNull(getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
                             e.target.value,
@@ -374,6 +387,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                         coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
+                        required: false,
                         onHandleChange: e => calculateValues(
                             checkForNull(getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
                             checkForNull(getValuesTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
@@ -389,8 +403,9 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                         coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
+                        required: false,
                         disabled: true,
-                        tooltipText: 'Rejection Allowance = (Surface Area * Consumption) * Rejection Allowance Percentage / 100'
+                        tooltipText: 'Rejection Allowance = (Part Surface Area * Consumption) * Rejection Allowance Percentage / 100'
                     })}</td>
                     <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, NoOfDecimalForInputOutput) || ''}</td>
                     <td>{renderInputBox({
@@ -399,8 +414,9 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                         coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
+                        required: false,
                         disabled: true,
-                        tooltipText: 'Net Cost = ((Surface Area * Consumption) + Rejection Allowance) * RM Rate'
+                        tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate (Currency/UOM)'
                     })}</td>
                     {childIndex === 0 && !ViewMode && (
                         <td width="50" rowSpan={item.RawMaterials.length}>
@@ -511,7 +527,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                                 {renderTableRows()}
                                 <tr className="table-footer">
                                     <td colSpan={TABLE_HEADERS.length - 2} className="text-right">
-                                        Total Cost
+                                        Total Paint Cost
                                     </td>
                                     <td colSpan={2}>
                                         {/* <TooltipCustom
@@ -526,7 +542,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                                 </tr>
                             </tbody>
                         </Table>
-                        <Row className="mb-2">
+                        <Row className="mb-4">
                             <Col md="4">
                                 <TextFieldHookForm
                                     label="Masking/ Tape"
@@ -548,10 +564,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                                 <TooltipCustom
                                     id="totalPaintCost"
                                     disabledIcon
-                                    tooltipText="Total Paint Cost = Total Cost + Masking/ Tape"
+                                    tooltipText="Total Paint & Masking Cost = Total Paint Cost + Masking/ Tape"
                                 />
                                 <TextFieldHookForm
-                                    label="Total Paint cost"
+                                    label="Total Paint & Masking Cost"
                                     name="TotalPaintCost"
                                     id="totalPaintCost"
                                     Controller={Controller}

@@ -78,7 +78,8 @@ function StandardRub(props) {
         let count = 0
         rmData && rmData.map((item) => {
             arr.push({
-                label: item.RMName, value: count
+                label: item.RMName, value: count, 
+                code: item.RawMaterialId
             })
             count++
             return null
@@ -98,7 +99,8 @@ function StandardRub(props) {
                 .map(item => {
                     return {
                         label: item.RMName,
-                        value: count++
+                        value: count++,
+                        code: item.RawMaterialId
                     };
                 });
     
@@ -151,7 +153,7 @@ function StandardRub(props) {
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
             let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
-            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight }))
+            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) }))
             setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }
     }, 500)
@@ -359,7 +361,7 @@ function StandardRub(props) {
         const isValid = await trigger(validationFields);
         if(!isValid){
             return false;
-        }else if((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0))   ){
+        }else if((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0))   ){
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
@@ -395,7 +397,7 @@ function StandardRub(props) {
 
 
         let arr2 = rmDropDownData && rmDropDownData.filter((item) => {
-            return item.label !== obj.RawMaterialName
+            return item.code !== obj.RawMaterialId
         })
         setRmDropDownData(arr2)
 
@@ -527,9 +529,9 @@ function StandardRub(props) {
                                             <div className="d-inline-block "><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowDataState.RMName}>{`${rmRowDataState.RMName !== undefined ? rmRowDataState.RMName : ''}`}</span></div>
                                             <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowDataState.MaterialType !== undefined ? rmRowDataState.MaterialType : ''}`}</span></div>
                                             <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}:</span><span className="text-dark-blue">{`${rmRowDataState.Density !== undefined ? rmRowDataState.Density : ''}`}</span></div>
-                                            <div className="d-inline-block "><span className="grey-text d-block">RM Rate ({sourceCurrencyFormatter(currencySource?.label)}):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? rmRowDataState.RMRate : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">RM Rate ({sourceCurrencyFormatter(currencySource?.label)}/{rmRowDataState?.UOMSymbol ? `${rmRowDataState.UOMSymbol}` : 'UOM'}):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? rmRowDataState.RMRate : ''}`}</span></div>
                                             {props?.appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? checkForDecimalAndNull(5, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
-                                            <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate ({sourceCurrencyFormatter(currencySource?.label)}):</span><span className="text-dark-blue">{`${rmRowDataState.ScrapRate !== undefined ? rmRowDataState.ScrapRate : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate ({sourceCurrencyFormatter(currencySource?.label)}/{rmRowDataState?.UOMSymbol ? `${rmRowDataState.UOMSymbol}` : 'UOM'}):</span><span className="text-dark-blue">{`${rmRowDataState.ScrapRate !== undefined ? rmRowDataState.ScrapRate : ''}`}</span></div>
                                             <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowDataState.RawMaterialCategory !== undefined ? rmRowDataState.RawMaterialCategory : ''}`}</span></div>
 
                                         </Col>

@@ -249,6 +249,7 @@ function RMImportListing(props) {
     suppressFilterButton: true,
     component: CostingHeadDropdownFilter,
     onFilterChange: (originalValue, value) => {
+      setWarningMessage(true);
       setDisableFilter(false);
       setFloatingFilterData(prevState => ({
         ...prevState,

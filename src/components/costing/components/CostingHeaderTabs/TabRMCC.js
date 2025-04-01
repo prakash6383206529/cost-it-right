@@ -8,7 +8,7 @@ import {
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, savePartNumber, setMessageForAssembly, saveBOMLevel, gridDataAdded, setIsBreakupBoughtOutPartCostingFromAPI, saveCostingPaymentTermDetail, getCostingCostDetails
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { checkForNull, getConfigurationKey, loggedInUserId, showBopLabel } from '../../../../helper';
+import { checkForNull, getConfigurationKey, getOverheadAndProfitCostTotal, loggedInUserId, showBopLabel } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
@@ -22,7 +22,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 import { createSaveComponentObject } from '../../CostingUtilSaveObjects';
 import { PreviousTabData } from '.';
-import { LEVEL0, LEVEL1, TOOLINGPART } from '../../../../config/constants';
+import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, LEVEL0, LEVEL1, TOOLINGPART } from '../../../../config/constants';
 
 
 
@@ -92,10 +92,8 @@ function TabRMCC(props) {
           IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false,
           NetProcessCostForOverhead: TopHeaderValues?.NetProcessCostForOverhead ? TopHeaderValues?.NetProcessCostForOverhead : 0,
           NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
-          NetProcessCostForOverheadAndProfit: TopHeaderValues?.NetProcessCostForOverheadAndProfit ? TopHeaderValues?.NetProcessCostForOverheadAndProfit : 0,
           NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
           NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
-          NetOperationCostForOverheadAndProfit: TopHeaderValues?.NetOperationCostForOverheadAndProfit ? TopHeaderValues?.NetOperationCostForOverheadAndProfit : 0,
 
         }
       } else {
@@ -112,12 +110,11 @@ function TabRMCC(props) {
           IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false,
           NetProcessCostForOverhead: TopHeaderValues?.NetProcessCostForOverhead ? TopHeaderValues?.NetProcessCostForOverhead : 0,
           NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
-          NetProcessCostForOverheadAndProfit: TopHeaderValues?.NetProcessCostForOverheadAndProfit ? TopHeaderValues?.NetProcessCostForOverheadAndProfit : 0,
           NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
           NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
-          NetOperationCostForOverheadAndProfit: TopHeaderValues?.NetOperationCostForOverheadAndProfit ? TopHeaderValues?.NetOperationCostForOverheadAndProfit : 0,
         }
       }
+      
       props.setHeaderCost(topHeaderData)
     }
     else {
@@ -478,18 +475,18 @@ function TabRMCC(props) {
 
         break;
       case 'CC':
+        
+        const overheadProcessCosts = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Overhead");
+        const profitProcessCosts = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Profit");
+        const overheadOperationCosts = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Overhead");
+        const profitOperationCosts = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Profit");
+
         partObj.CostingPartDetails.TotalConversionCost = gridData.NetConversionCost
         partObj.CostingPartDetails.TotalProcessCost = gridData.ProcessCostTotal
-        partObj.CostingPartDetails.NetProcessCostForOverhead = gridData?.NetProcessCostForOverhead
-        // partObj.CostingPartDetails.NetProcessCostForOverheadExcl = gridData?.NetProcessCostForOverheadExcl
-        partObj.CostingPartDetails.NetProcessCostForProfit = gridData?.NetProcessCostForProfit
-        // partObj.CostingPartDetails.NetProcessCostForProfitExcl = gridData?.NetProcessCostForProfitExcl
-        partObj.CostingPartDetails.NetProcessCostForOverheadAndProfit = gridData?.NetProcessCostForOverheadAndProfit
-        partObj.CostingPartDetails.NetOperationCostForOverhead = gridData?.NetOperationCostForOverhead
-        partObj.CostingPartDetails.NetOperationCostForProfit = gridData?.NetOperationCostForProfit
-        partObj.CostingPartDetails.NetOperationCostForOverheadAndProfit = gridData?.NetOperationCostForOverheadAndProfit
-        // partObj.CostingPartDetails.NetOperationCostForOverheadExcl = gridData?.NetOperationCostForOverheadExcl
-        // partObj.CostingPartDetails.NetOperationCostForProfitExcl = gridData?.NetOperationCostForProfitExcl
+        partObj.CostingPartDetails.NetProcessCostForOverhead = overheadProcessCosts?.overheadProcessCost;
+        partObj.CostingPartDetails.NetProcessCostForProfit = profitProcessCosts?.profitProcessCost;
+        partObj.CostingPartDetails.NetOperationCostForOverhead = overheadOperationCosts?.overheadOperationCost;
+        partObj.CostingPartDetails.NetOperationCostForProfit = profitOperationCosts?.profitOperationCost;
         partObj.CostingPartDetails.TotalOperationCost = gridData?.OperationCostTotal
         partObj.CostingPartDetails.TotalOtherOperationCost = gridData.OtherOperationCostTotal
         partObj.CostingPartDetails.TotalConversionCostComponent = gridData.NetConversionCost

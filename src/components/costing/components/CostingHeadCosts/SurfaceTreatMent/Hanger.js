@@ -7,6 +7,7 @@ import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLi
 import { debounce } from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSurfaceData } from '../../../actions/Costing'
+import TooltipCustom from '../../../../common/Tooltip'
 
 const Hanger = ({ ViewMode, isSummary, viewCostingDataObj }) => {
     const { register, control, formState: { errors }, setValue, getValues } = useForm({
@@ -107,6 +108,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj }) => {
                     />
                 </Col>
                 <Col md="4">
+                    <TooltipCustom disabledIcon={true} tooltipText="Hanger Cost per Part = Hanger Factor / No. of Parts per Hanger" />
                     <TextFieldHookForm
                         label="Hanger Cost per Part"
                         name={`HangerCostPerPart`}

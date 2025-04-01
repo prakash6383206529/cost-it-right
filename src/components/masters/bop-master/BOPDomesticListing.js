@@ -482,7 +482,7 @@ const BOPDomesticListing = (props) => {
     suppressFilterButton: true,
     component: CostingHeadDropdownFilter,
     onFilterChange: (originalValue, value) => {
-      setState((prevState) => ({ ...prevState, disableFilter: false }));
+      setState((prevState) => ({ ...prevState, disableFilter: false, warningMessage: true }));
       setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
 
     }

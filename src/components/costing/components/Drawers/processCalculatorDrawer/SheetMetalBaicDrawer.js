@@ -34,7 +34,7 @@ function SheetMetalBaicDrawer(props) {
     ExtrusionSpeed: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ExtrusionSpeed : '',
     PartLength: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.PartLength : '',
   }
-
+  
   const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onBlur',
@@ -44,8 +44,9 @@ function SheetMetalBaicDrawer(props) {
   const dispatch = useDispatch()
 
   const { MachineTonnage, calculateMachineTime } = props
-  
+
   const [processCost, setProcessCost] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '' : '')
+  
   const [disable, setDisabled] = useState(false)
   const [hide, setHide] = useState(false)
   const [prodHr, setProdHr] = useState('')
@@ -54,7 +55,7 @@ function SheetMetalBaicDrawer(props) {
   const [processCostTooltip, setProcessCostTooltip] = useState();
   const [netProcessCostWithOutInterestAndDepreciation, setNetProcessCostWithoutInterestAndDepreciation] = useState(1)
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
-  const processMHRWithOutInterestAndDepreciation=props?.calculatorData?.MHRWithOutInterestAndDepreciation||null
+  const processMHRWithOutInterestAndDepreciation = props?.calculatorData?.MHRWithOutInterestAndDepreciation || null
   const fieldValues = useWatch({
     control,
     name: ['Efficiency', 'Cavity', 'CycleTime', 'PartLength', 'ExtrusionSpeed'],
@@ -69,7 +70,7 @@ function SheetMetalBaicDrawer(props) {
     control,
     name: ['Quantity']
   })
-  useEffect(() => { 
+  useEffect(() => {
     handleProductionPerHour()
     calculateProcessCost()
   }, [fieldValues, quantityState])
@@ -131,7 +132,7 @@ function SheetMetalBaicDrawer(props) {
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
         break;
       case TIME:
-        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Parts/Hour * Rate) / Cavity')
+        setProcessCostTooltip('Process Cost = (( MHR * Cycle Time / 3600) * ( 100 / Efficiency)) / Cavity')
         break;
       case DIMENSIONLESS:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
@@ -201,30 +202,32 @@ function SheetMetalBaicDrawer(props) {
 
     const quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(quantityState)) : Number(checkForNull(quantityValues))
     const cavity = checkForNull(getValues('Cavity'))
-    let cost,netProcessCostWithOutInterestAndDepreciation
+    let cost, netProcessCostWithOutInterestAndDepreciation
 
     const rate = props.calculatorData.MHR
-     const processMHRWithOutInterestAndDepreciation=props?.calculatorData?.MachineRateWithOutInterestAndDepreciation||1
+    const processMHRWithOutInterestAndDepreciation = props?.calculatorData?.MachineRateWithOutInterestAndDepreciation || 1
 
 
-    
+
     if (!props.CostingViewMode) {
 
       switch (props.calculatorData.UOMType) {
         case MASS:
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
-          netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
+         netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          
           return true
         case AREA:
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
-          netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
+         netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
+          
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case TIME:
@@ -232,10 +235,11 @@ function SheetMetalBaicDrawer(props) {
           //This need to be done later
           // cost = rate / (quantity === 0 ? 1 : quantity);
 
-          cost = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity)
-          netProcessCostWithOutInterestAndDepreciation = findProcessCost(props.calculatorData.UOM, processMHRWithOutInterestAndDepreciation, quantity === 0 ? 1 : quantity)
+          ({ processCost: cost, processCostWithoutInterestAndDepreciation: netProcessCostWithOutInterestAndDepreciation } =
+            findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity, processMHRWithOutInterestAndDepreciation))
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
+          
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return;
         case DIMENSIONLESS:
@@ -245,14 +249,16 @@ function SheetMetalBaicDrawer(props) {
           netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * updatedQuantity * processMHRWithOutInterestAndDepreciation) / cavity
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
+          
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case VOLUMETYPE:
           setDisabled(true)
           cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
-          netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
+         netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
+          
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         // case SHOTS:    MAY BE USED LATER

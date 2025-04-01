@@ -239,16 +239,15 @@ function OperationCost(props) {
         CostingConditionNumber: null,
         NetOperationCostForOverhead: 0,
         NetOperationCostForProfit: 0,
-        NetOperationCostForOverheadAndProfit: 0
     };
 } else {
     // Recalculate net costs with new applicability
-    const netCosts = calculateNetCosts(tempData?.OperationCost, e?.label, 'Operation');
+    //const netCosts = calculateNetCosts(tempData?.OperationCost, e?.label, 'Operation');
     tempData = {
         ...tempData,
-        CostingConditionMasterAndTypeLinkingId: e.value,
-        CostingConditionNumber: e.label,
-        ...netCosts
+        CostingConditionMasterAndTypeLinkingId: e?.value,
+        CostingConditionNumber: e?.label,
+        //...netCosts
     };
 }
     tempArr = Object.assign([...gridData], { [index]: tempData });
@@ -349,14 +348,14 @@ function OperationCost(props) {
         checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
 
-      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
+      //const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
       tempData = {
         ...tempData,
         Quantity: Number(event.target.value),
         OperationCost,
         CostingConditionNumber: tempData?.CostingConditionNumber,
         CostingConditionMasterAndTypeLinkingId: tempData?.CostingConditionMasterAndTypeLinkingId,
-        ...netCosts
+        //...netCosts
       };
       tempArr = Object.assign([...gridData], { [index]: tempData });
       // let value = tempArr && tempArr.length > 0 && tempArr.reduce((accumulator, el) => {
@@ -377,14 +376,14 @@ function OperationCost(props) {
       const WithOutLabourCost = tempData.IsLabourRateExist ?
         checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
+      //const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
       tempData = {
         ...tempData,
         LabourQuantity: event.target.value,
         OperationCost,
-        CostingConditionNumber: tempData.CostingConditionNumber,
-        CostingConditionMasterAndTypeLinkingId: tempData.CostingConditionMasterAndTypeLinkingId,
-        ...netCosts
+        CostingConditionNumber: tempData?.CostingConditionNumber,
+        CostingConditionMasterAndTypeLinkingId: tempData?.CostingConditionMasterAndTypeLinkingId,
+        //...netCosts
       };
 
       tempArr = Object.assign([...gridData], { [index]: tempData });
@@ -392,12 +391,12 @@ function OperationCost(props) {
     } else {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
       const OperationCost = WithLaboutCost;
-      const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
+      //const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
       tempData = {
         ...tempData,
         LabourQuantity: 0,
         OperationCost,
-        ...netCosts
+        //...netCosts
       };
 
       tempArr = Object.assign([...gridData], { [index]: tempData });
@@ -433,12 +432,10 @@ function OperationCost(props) {
     return operationGrid?.reduce((acc, el) => ({
       OperationCostTotal: acc?.OperationCostTotal + checkForNull(el?.OperationCost),
       NetOperationCostForOverhead: acc?.NetOperationCostForOverhead + checkForNull(el?.NetOperationCostForOverhead),
-      NetOperationCostForOverheadAndProfit: acc?.NetOperationCostForOverheadAndProfit + checkForNull(el?.NetOperationCostForOverheadAndProfit),
       NetOperationCostForProfit: acc?.NetOperationCostForProfit + checkForNull(el?.NetOperationCostForProfit)
     }), {
       OperationCostTotal: 0,
       NetOperationCostForOverhead: 0,
-      NetOperationCostForOverheadAndProfit: 0,
       NetOperationCostForProfit: 0
     });
   };
