@@ -684,6 +684,7 @@ function OverheadListing(props) {
         maxValue: 1,
         suppressFilterButton: true,
         component: CostingHeadDropdownFilter, onFilterChange: (originalValue, value) => {
+            setWarningMessage(true);
             // setSelectedCostingHead(originalValue);
             setDisableFilter(false);
             setFloatingFilterData(prevState => ({

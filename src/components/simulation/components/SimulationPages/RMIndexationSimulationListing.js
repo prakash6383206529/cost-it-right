@@ -880,7 +880,7 @@ function RMIndexationSimulationListing(props) {
         onFilterChange: (originalValue, value) => {
             setFloatingFilterData({ ...floatingFilterData, CostingHead: value })
             setDisableFilter(false)
-
+            setWarningMessage(true);
         }
     };
     const frameworkComponents = {
