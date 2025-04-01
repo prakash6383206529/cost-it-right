@@ -152,22 +152,25 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
         }))
     }
     const deleteItem = (item, parentIndex) => {
+        // First clear form values for the row being deleted to prevent pre-filled data
+        item.RawMaterials.forEach((rm, childIndex) => {
+            setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+            setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+            setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+            setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+            setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+        })
+
+        // Update state by filtering out deleted row
+        const updatedCoats = calculateState.Coats.filter((_, i) => i !== parentIndex)
+
         setCalculateState(prev => ({
             ...prev,
-            Coats: prev.Coats.filter((_, i) => i !== parentIndex)
+            Coats: updatedCoats
         }))
-        calculateTotalCost(calculateState.Coats.filter((_, i) => i !== parentIndex))
-        calculateState.Coats.map((coat, index) => {
-            coat.RawMaterials.map((rm, childIndex) => {
-                setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${index}${childIndex}`, '')
-                setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-                setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-                setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-                setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-                return null
-            })
-            return null
-        })
+
+        // Recalculate total cost with remaining rows
+        calculateTotalCost(updatedCoats)
     }
 
     const addData = data => {

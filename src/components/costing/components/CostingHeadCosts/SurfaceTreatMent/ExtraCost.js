@@ -255,6 +255,13 @@ function ExtraCost(props) {
             Toaster.warning('Applicability already exists');
             return;
         }
+        const existingFixedDescription = tableData.find(item =>
+            item.Description.toLowerCase() === data?.CostDescription.toLowerCase()
+        );
+        if (type?.label === 'Fixed' && existingFixedDescription) {
+            Toaster.warning('Data already exists');
+            return;
+        }
         let tempData = [...tableData]
         let obj = {
             JsonStage: surfaceTabData?.JsonStage ?? null,
