@@ -73,6 +73,9 @@ export const checkRM_Process_OperationConfigurable = (excelData) => {
 
 export const checkLabourRateConfigure = (excelData) => {
     return excelData.filter((el) => {
+        if (reactLocalStorage.getObject('CostingTypePermission')?.cbc === false) {
+            if(el.value === 'CustomerCode') return false;
+        }
         if (getConfigurationKey().IsOperationLabourRateConfigure === false) {
             if (el.value === 'LabourRate') return false;
         }
@@ -239,7 +242,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempData, this.props?.modelText));
             case 'Labour':
                 const localizedLabourHeaders = this.localizeHeaders(Labour);
-                return this.returnExcelColumn(localizedLabourHeaders, LabourTempData);
+                return this.returnExcelColumn(checkLabourRateConfigure(localizedLabourHeaders), LabourTempData);
             case 'Part Component':
                 const localizedPartComponentHeaders = this.localizeHeaders(PartComponent);
                 return this.returnExcelColumn(checkSAPCodeinExcel(localizedPartComponentHeaders), checkSAPCodeinExcel(PartComponentTempData));

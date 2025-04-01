@@ -78,7 +78,8 @@ function StandardRub(props) {
         let count = 0
         rmData && rmData.map((item) => {
             arr.push({
-                label: item.RMName, value: count
+                label: item.RMName, value: count, 
+                code: item.RawMaterialId
             })
             count++
             return null
@@ -98,7 +99,8 @@ function StandardRub(props) {
                 .map(item => {
                     return {
                         label: item.RMName,
-                        value: count++
+                        value: count++,
+                        code: item.RawMaterialId
                     };
                 });
     
@@ -395,7 +397,7 @@ function StandardRub(props) {
 
 
         let arr2 = rmDropDownData && rmDropDownData.filter((item) => {
-            return item.label !== obj.RawMaterialName
+            return item.code !== obj.RawMaterialId
         })
         setRmDropDownData(arr2)
 
