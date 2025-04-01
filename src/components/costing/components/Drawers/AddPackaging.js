@@ -153,7 +153,7 @@ function AddPackaging(props) {
 
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
-        if (removeApplicability?.includes(item.Text)) return false;
+        if (!isEditFlag && removeApplicability?.includes(item.Text)) return false;
         if (item.Value === '0') return false;
 
         temp.push({ label: item.Text, value: item.Value })
