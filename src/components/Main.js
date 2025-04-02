@@ -266,7 +266,6 @@ class Main extends Component {
   render() {
 
     if (Detail && Object.keys(Detail).length > 0){
-      console.log(".......Inchecking")
     setupAxiosInterceptors();
     }
     const { location } = this.props;
