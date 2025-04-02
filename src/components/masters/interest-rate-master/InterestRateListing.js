@@ -212,7 +212,7 @@ const InterestRateListing = (props) => {
     return (
       <>
         {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true, IsAssociatedData)} title={"View"} />}
-        {EditAccessibility && <Button id={`interesetRateListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false, IsAssociatedData)} title={"Edit"} />}
+        {EditAccessibility && props?.data?.IsEditable && <Button id={`interesetRateListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false, IsAssociatedData)} title={"Edit"} />}
         {/* DeleteAccessibility && */ !IsAssociatedData && <Button id={`interesetRateListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
@@ -349,7 +349,8 @@ const InterestRateListing = (props) => {
   const ExcelFile = ReactExport.ExcelFile;
 
   if (toggleForm) {
-    return (<AddInterestRate hideForm={hideForm} data={data} />)
+    const IsAssociatedData = data?.IsAssociatedData
+    return (<AddInterestRate hideForm={hideForm} data={data} IsAssociatedData = {IsAssociatedData}/>)
   }
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();

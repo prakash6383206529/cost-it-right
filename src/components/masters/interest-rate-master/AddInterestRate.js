@@ -64,6 +64,7 @@ class AddInterestRate extends Component {
       isGradeSelected: false,
       isEitherSectionFilled: false,
       isWarningVisible: true,
+      IsFinancialDataChanged: true,
       ICCSectionFilled: {
         ICCApplicability: false,
         ICCPercent: false
@@ -559,6 +560,28 @@ class AddInterestRate extends Component {
     this.setState({ isVendorNameNotSelected: false })
 
     /** Update existing detail of supplier master **/
+    let formData = {
+      "VendorInterestRateId": this.state.isEditFlag ? InterestRateId : null,
+      "ModifiedBy": this.state.isEditFlag ? loggedInUserId() : null,
+      "VendorName": this.state.isEditFlag ? costingTypeId === VBCTypeId ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName : null,
+      "ICCApplicability": ICCApplicability.label,
+      "PaymentTermApplicability": PaymentTermsApplicability.label,
+      "CostingTypeId": costingTypeId,
+      "VendorIdRef": costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+      "ICCPercent": values.ICCPercent,
+      "PaymentTermPercent": values.PaymentTermPercent,
+      "RepaymentPeriod": values.RepaymentPeriod,
+      "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      "IsActive": true,
+      "CreatedDate": '',
+      "CreatedBy": loggedInUserId(),
+      "Plants": costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      "CustomerId": costingTypeId === CBCTypeId ? client.value : '',
+      "RawMaterialChildId": RawMaterial?.value,
+      "RawMaterialName": RawMaterial?.label,
+      "RawMaterialGradeId": RMGrade?.value,
+      "RawMaterialGrade": RMGrade?.label,
+    }
     if (this.state.isEditFlag) {
 
       if (Data.ICCApplicability === ICCApplicability.label && Data.ICCPercent === values.ICCPercent &&
@@ -570,38 +593,17 @@ class AddInterestRate extends Component {
         return false;
       }
       // this.setState({ setDisable: true })
-      let updateData = {
-        VendorInterestRateId: InterestRateId,
-        ModifiedBy: loggedInUserId(),
-        VendorName: costingTypeId === VBCTypeId ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName,
-        ICCApplicability: ICCApplicability.value,
-        PaymentTermApplicability: PaymentTermsApplicability.value,
-        CostingTypeId: costingTypeId,
-        VendorIdRef: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-        ICCPercent: values.ICCPercent,
-        PaymentTermPercent: values.PaymentTermPercent,
-        RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: data?.IsAssociatedData && !this.state.isDataChanged
-      }
-      let financialDataChanged = (Number(Data?.ICCPercent) !== Number(values?.ICCPercent)) || (Number(Data?.PaymentTermPercent) !== Number(values?.PaymentTermPercent)) || (Number(Data?.RepaymentPeriod) !== Number(values?.RepaymentPeriod) || Number(Data?.ICCApplicability) !== Number(values?.ICCApplicability.value) || Number(Data?.PaymentTermApplicability) !== Number(values?.PaymentTermsApplicability.value))
-      if (data?.IsAssociatedData) {
-        if (financialDataChanged && checkEffectiveDate(effectiveDate, Data?.EffectiveDate)) {
+      let financialDataChanged = (Number(Data?.ICCPercent) !== Number(values?.ICCPercent)) || (Number(Data?.PaymentTermPercent) !== Number(values?.PaymentTermPercent)) || (Number(Data?.RepaymentPeriod) !== Number(values?.RepaymentPeriod)) ||
+      ((Data?.ICCApplicability) !== (ICCApplicability.label)) || ((Data?.PaymentTermApplicability) !== (PaymentTermsApplicability.label))
+        if (financialDataChanged && checkEffectiveDate(effectiveDate, Data?.EffectiveDate) && this.props?.IsAssociatedData) {
+          this.setState({ setDisable: false })
           Toaster.warning('Please update the Effective date.')
           return false
         }
-      }
+        formData.IsFinancialDataChanged = financialDataChanged ? true : false
+
       if (this.state.isEditFlag) {
-        this.props.updateInterestRate(updateData, (res) => {
+        this.props.updateInterestRate(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
@@ -614,26 +616,6 @@ class AddInterestRate extends Component {
     } else {/** Add new detail for creating operation master **/
 
       this.setState({ setDisable: true })
-      let formData = {
-        CostingTypeId: costingTypeId,
-        VendorIdRef: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-        ICCApplicability: ICCApplicability.label,
-        ICCPercent: values.ICCPercent,
-        PaymentTermApplicability: PaymentTermsApplicability.label,
-        PaymentTermPercent: values.PaymentTermPercent,
-        RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-      }
-
       this.props.createInterestRate(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
@@ -661,7 +643,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, t } = this.props;
-    const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged } = this.state;
+    const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged, IsFinancialDataChanged} = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
@@ -1036,7 +1018,7 @@ class AddInterestRate extends Component {
                             <Field
                               label="Effective Date"
                               name="EffectiveDate"
-                              placeholder="Select date"
+                              placeholder={isViewMode || !IsFinancialDataChanged ? '-' : "Select Date"}
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
@@ -1048,7 +1030,7 @@ class AddInterestRate extends Component {
 
                               }}
                               component={renderDatePicker}
-                              disabled={isViewMode}
+                              disabled={isViewMode || !IsFinancialDataChanged}
                               className="form-control"
                             />
                           </div>
@@ -1102,9 +1084,7 @@ class AddInterestRate extends Component {
 function mapStateToProps(state) {
   const { interestRate, comman, client, material } = state;
 
-  const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent');
-
-
+  const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent','ICCApplicability','PaymentTermsApplicability');
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateData } = interestRate;
   const { vendorWithVendorCodeSelectList, plantSelectList } = comman;
   const { clientSelectList } = client;

@@ -875,11 +875,10 @@ class AddProfit extends Component {
       if (financialDataChanged && checkEffectiveDate(effectiveDate, DataToChange?.EffectiveDate) && this.props.IsProfitAssociated) {
         this.setState({ setDisable: false })
         Toaster.warning('Please update the Effective date.')
-        formData.IsFinancialDataChanged = true
         return false
-      } else {
-        formData.IsFinancialDataChanged = false
-      }
+      } 
+      formData.IsFinancialDataChanged = financialDataChanged ? true : false
+
       this.props.updateProfit(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
