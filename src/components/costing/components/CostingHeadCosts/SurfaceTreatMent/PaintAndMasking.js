@@ -17,7 +17,7 @@ import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
 const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
-const TABLE_HEADERS = ['Paint Coat', 'Raw Material', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency/UOM)', 'Paint Cost', 'Action']
+const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Action']
 
 const FORM_DEFAULTS = {
     mode: 'onChange',
@@ -63,7 +63,6 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
     } = useForm(FORM_DEFAULTS)
 
     useEffect(() => {
-        setValueTableForm(`TapeCost`, '')
         getDetails()
         if (!ViewMode) {
             dispatch(getPaintCoatList(() => { }))
@@ -96,6 +95,8 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                         ...prev,
                         rawMaterialList: Data
                     }))
+                    let index = TABLE_HEADERS.findIndex(el => el === 'RM Rate (Currency)')
+                    TABLE_HEADERS[index] = `RM Rate (${Data[0]?.CostingCurrency})`
                 } else if (res && res.status === 204) {
                     setState(prev => ({
                         ...prev,
@@ -142,7 +143,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                     }))
                 }, 100)
                 setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(Data?.TotalPaintCost, NoOfDecimalForPrice))
-                setValueTableForm(`TapeCost`, checkForDecimalAndNull(Data?.TapeCost, NoOfDecimalForPrice))
+                setValueTableForm(`TapeCost`, Data?.TapeCost && Data?.TapeCost !== 0 ? checkForDecimalAndNull(Data?.TapeCost, NoOfDecimalForPrice) : '')
             } else {
                 setState(prev => ({
                     ...prev,
@@ -152,22 +153,53 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
         }))
     }
     const deleteItem = (item, parentIndex) => {
-        // First clear form values for the row being deleted to prevent pre-filled data
-        item.RawMaterials.forEach((rm, childIndex) => {
-            setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
-            setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
-            setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
-            setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
-            setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, '')
+        // Clear form values for all rows since indexes will shift
+        calculateState.Coats.forEach((coat, pIndex) => {
+            coat.RawMaterials.forEach((rm, cIndex) => {
+                setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+                setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+                setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+                setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+                setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+            })
         })
 
         // Update state by filtering out deleted row
         const updatedCoats = calculateState.Coats.filter((_, i) => i !== parentIndex)
 
+        // Set the updated coats
         setCalculateState(prev => ({
             ...prev,
             Coats: updatedCoats
         }))
+
+        // Re-populate form values for remaining rows with correct new indexes
+        setTimeout(() => {
+            updatedCoats.forEach((coat, newParentIndex) => {
+                coat.RawMaterials.forEach((rm, childIndex) => {
+                    setValueTableForm(
+                        `SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.SurfaceArea ? checkForDecimalAndNull(rm?.SurfaceArea, NoOfDecimalForInputOutput) : ''
+                    )
+                    setValueTableForm(
+                        `Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.Consumption ? checkForDecimalAndNull(rm?.Consumption, NoOfDecimalForInputOutput) : ''
+                    )
+                    setValueTableForm(
+                        `RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.RejectionAllowancePercentage ? checkForDecimalAndNull(rm?.RejectionAllowancePercentage, NoOfDecimalForInputOutput) : ''
+                    )
+                    setValueTableForm(
+                        `RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.RejectionAllowance ? checkForDecimalAndNull(rm?.RejectionAllowance, NoOfDecimalForInputOutput) : ''
+                    )
+                    setValueTableForm(
+                        `NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.NetCost ? checkForDecimalAndNull(rm?.NetCost, NoOfDecimalForPrice) : ''
+                    )
+                })
+            })
+        }, 50)
 
         // Recalculate total cost with remaining rows
         calculateTotalCost(updatedCoats)
@@ -182,6 +214,14 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
         }
         let paintCoatSequence = calculateState?.Coats?.length + 1
         let rawMaterialSequence = data?.RawMaterial?.length + 1
+        data?.RawMaterial?.map((item, index) => {
+            setValueTableForm(`SurfaceArea${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`Consumption${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`RejectionAllowancePercentage${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`RejectionAllowance${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`NetCost${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            return null
+        })
         setCalculateState(prev => ({
             ...prev,
             Coats: [...prev.Coats, {
@@ -193,6 +233,8 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                 }))
             }]
         }))
+
+
 
         resetInitialForm({
             PaintCoat: null,
@@ -349,6 +391,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                         </td>
                     )}
                     <td>{rm?.RawMaterial || '-'}</td>
+                    <td>{rm?.UOM}</td>
                     <td>{renderInputBox({
                         item: rm,
                         name: 'SurfaceArea',
@@ -407,7 +450,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                         disabled: true,
                         tooltipText: 'Rejection Allowance = (Part Surface Area * Consumption) * Rejection Allowance Percentage / 100'
                     })}</td>
-                    <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, NoOfDecimalForInputOutput) || ''}</td>
+                    <td width="90">{checkForDecimalAndNull(rm?.BasicRatePerUOM, NoOfDecimalForInputOutput) || ''}</td>
                     <td>{renderInputBox({
                         item: rm,
                         name: 'NetCost',
