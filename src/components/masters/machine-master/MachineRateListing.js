@@ -704,6 +704,7 @@ const MachineRateListing = (props) => {
     let finalArr = selectedRows;
     let length = finalArr?.length;
     let uniqueArray = _.uniqBy(finalArr, "MachineProcessRateId");
+    uniqueArray = uniqueArray.map(item => ({...item,EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY'): item.EffectiveDate}));
     if (props.isSimulation && !props?.isFromVerifyPage) {
       props.apply(uniqueArray, length);
     }

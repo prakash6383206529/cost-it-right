@@ -5189,7 +5189,7 @@ export const RMDomesticSimulation = [
     { label: "Vendor (Code)", value: "VendorName" },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
-    { label: "VendorLocation", value: "VendorLocation" },
+    { label: "SourceVendorName", value: "SourceVendorName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Currency", value: "Currency" },
     { label: "UOM", value: "UnitOfMeasurementName" },
@@ -5220,7 +5220,7 @@ export const RMImportSimulation = [
     { label: "Vendor (Code)", value: "VendorName" },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
-    { label: "VendorLocation", value: "VendorLocation" },
+    { label: "SourceVendorName", value: "SourceVendorName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Currency", value: "Currency" },
     { label: "UOM", value: "UnitOfMeasurementName" },
