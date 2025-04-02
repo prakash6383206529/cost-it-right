@@ -65,10 +65,8 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "NetChildPartsCost": 0,
         "NetProcessCostForOverhead": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead,
         "NetProcessCostForProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit,
-        "NetProcessCostForOverheadAndProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit,
         "NetOperationCostForOverhead": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead,
         "NetOperationCostForProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit,
-        "NetOperationCostForOverheadAndProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit,       // ASK MR
     }
     return requestObj;
 }

@@ -50,10 +50,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalOperationCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForProfit),
           "TotalOperationCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit),
 
-          "TotalOperationCostPerAssemblyForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit),
-          "TotalOperationCostSubAssemblyForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverheadAndProfit),
-          "TotalOperationCostComponentForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForOverheadAndProfit),
-          "TotalOperationCostWithQuantityForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverheadAndProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit),
+          
 
           "TotalOtherOperationCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerAssembly),
           "TotalOtherOperationCostPerSubAssembly": checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly),
@@ -75,11 +72,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalProcessCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForProfit),
           "TotalProcessCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
 
-          "TotalProcessCostPerAssemblyForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit),
-          "TotalProcessCostSubAssemblyForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverheadAndProfit),
-          "TotalProcessCostComponentForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForOverheadAndProfit),
-          "TotalProcessCostWithQuantityForOverheadAndProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverheadAndProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit),
-
+         
 
           "SurfaceTreatmentCostPerAssembly": surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost,
           "TransportationCostPerAssembly": surfaceTabData?.CostingPartDetails?.TransportationCost,
@@ -209,10 +202,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalOperationCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForProfit),
       "TotalOperationCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForProfit),
 
-      "TotalOperationCostPerAssemblyForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit),
-      "TotalOperationCostSubAssemblyForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverheadAndProfit),
-      "TotalOperationCostComponentForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForOverheadAndProfit),
-      "TotalOperationCostWithQuantityForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverheadAndProfit) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverheadAndProfit) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForOverheadAndProfit),
+     
 
 
       "TotalOtherOperationCostPerAssembly": tabData?.CostingPartDetails?.TotalOtherOperationCostPerAssembly,
@@ -235,10 +225,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalProcessCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForProfit),
       "TotalProcessCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForProfit),
 
-      "TotalProcessCostPerAssemblyForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit),
-      "TotalProcessCostSubAssemblyForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverheadAndProfit),
-      "TotalProcessCostComponentForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForOverheadAndProfit),
-      "TotalProcessCostWithQuantityForOverheadAndProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverheadAndProfit) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverheadAndProfit) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForOverheadAndProfit),
+     
 
       "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly,
       "TotalSurfaceTreatmentCostPerSubAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly,
