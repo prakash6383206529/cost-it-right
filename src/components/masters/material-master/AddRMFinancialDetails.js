@@ -33,7 +33,7 @@ import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
 import { compareRateCommon, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
-    const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
+    const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll, onWarningChange } = props
     const { isEditFlag, isViewFlag } = data
 
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
@@ -94,7 +94,8 @@ function AddRMFinancialDetails(props) {
         NetConditionCost: 0,
         NetCostWithoutConditionCost: 0,
         hidePlantCurrency: false,
-        showPlantWarning: false
+        showPlantWarning: false,
+        showWarning: false
     }
     const [state, setState] = useState(initialState);
     const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState({
@@ -191,8 +192,10 @@ function AddRMFinancialDetails(props) {
                             if (Object.keys(res?.data?.Data).length === 0) {
 
                                 setState(prevState => ({ ...prevState, showWarning: true }));
+                                onWarningChange && onWarningChange(true);
                             } else {
                                 setState(prevState => ({ ...prevState, showWarning: false }));
+                                onWarningChange && onWarningChange(false);
                             }
                             const exchangeRate = res?.data?.Data?.CurrencyExchangeRate ?? 1;
                             const Data = res?.data?.Data

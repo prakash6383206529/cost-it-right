@@ -69,7 +69,8 @@ function AddRMMaster(props) {
         isSourceVendorApiCalled: false,
         sourceVendorRawMaterialId: null,
         isSourceVendor: false,
-        masterLevels: []
+        masterLevels: [],
+        IsWarning: false,
     }
     const [state, setState] = useState(initialState);
     const isViewFlag = data?.isViewFlag === true ? true : false
@@ -546,6 +547,10 @@ function AddRMMaster(props) {
         }
     }
 
+    const onWarningChange = (hasWarning) => {
+        setState(prevState => ({ ...prevState, IsWarning: hasWarning }));
+    }
+
     return (
         state.isLoader ? <LoaderCustom customClass="loader-center" /> :
             <Fragment>
@@ -658,6 +663,7 @@ function AddRMMaster(props) {
                             commodityDetails={state.commodityDetails}
                             disableAll={state.disableAll}
                             reset={reset}
+                            onWarningChange={onWarningChange}
                         />
                         <RemarksAndAttachments states={state}
                             Controller={Controller}
@@ -691,7 +697,7 @@ function AddRMMaster(props) {
                                         id="addRMDomestic_sendForApproval"
                                         type="button"
                                         className="approval-btn mr5"
-                                        disabled={isViewFlag || state.disableSendForApproval}
+                                        disabled={isViewFlag || state.disableSendForApproval || state.IsWarning}
                                         onClick={onSubmit}
                                         icon={(showSendForApproval() || !state.disableSendForApproval) ? "send-for-approval" : "save-icon"}
                                         buttonName={(showSendForApproval() || !state.disableSendForApproval) ? "Send For Approval" : data.isEditFlag ? "Update" : "Save1"}
@@ -701,7 +707,7 @@ function AddRMMaster(props) {
                                         id="addRMDomestic_updateSave"
                                         type="button"
                                         className="mr5"
-                                        disabled={isViewFlag || state.disableSendForApproval}
+                                        disabled={isViewFlag || state.disableSendForApproval || state.IsWarning}
                                         onClick={onSubmit}
                                         icon={"save-icon"}
                                         buttonName={data.isEditFlag ? "Update" : "Save"}
