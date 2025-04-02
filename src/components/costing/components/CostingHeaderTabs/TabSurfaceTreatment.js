@@ -241,6 +241,31 @@ function TabSurfaceTreatment(props) {
             newItem.CostingPartDetails.TotalTransportationCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.TotalTransportationCostPerSubAssembly)
             newItem.CostingPartDetails.TotalTransportationCostComponent = checkForNull(obj?.CostingPartDetails?.TotalTransportationCostComponent)
             newItem.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalTransportationCostWithQuantity)
+            newItem.CostingPartDetails.HangerCostPerPart = checkForNull(obj?.CostingPartDetails?.HangerCostPerPart)
+            newItem.CostingPartDetails.HangerRate = checkForNull(obj?.CostingPartDetails?.HangerRate)
+            newItem.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(obj?.CostingPartDetails?.NumberOfPartsPerHanger)
+            newItem.CostingPartDetails.HangerCostPerPartComponent = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartComponent)
+            newItem.CostingPartDetails.HangerCostPerPartPerAssembly = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartPerAssembly)
+            newItem.CostingPartDetails.HangerCostPerPartPerSubAssembly = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartPerSubAssembly)
+            newItem.CostingPartDetails.HangerCostPerPartWithQuantity = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartWithQuantity)
+
+            newItem.CostingPartDetails.PaintCost = checkForNull(obj?.CostingPartDetails?.PaintCost)
+            newItem.CostingPartDetails.PaintCostComponent = checkForNull(obj?.CostingPartDetails?.PaintCostComponent)
+            newItem.CostingPartDetails.PaintCostPerAssembly = checkForNull(obj?.CostingPartDetails?.PaintCostPerAssembly)
+            newItem.CostingPartDetails.PaintCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.PaintCostPerSubAssembly)
+            newItem.CostingPartDetails.PaintCostWithQuantity = checkForNull(obj?.CostingPartDetails?.PaintCostWithQuantity)
+
+            newItem.CostingPartDetails.TapeCost = checkForNull(obj?.CostingPartDetails?.TapeCost)
+            newItem.CostingPartDetails.TapeCostComponent = checkForNull(obj?.CostingPartDetails?.TapeCostComponent)
+            newItem.CostingPartDetails.TapeCostPerAssembly = checkForNull(obj?.CostingPartDetails?.TapeCostPerAssembly)
+            newItem.CostingPartDetails.TapeCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.TapeCostPerSubAssembly)
+            newItem.CostingPartDetails.TapeCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TapeCostWithQuantity)
+
+            newItem.CostingPartDetails.TotalPaintCost = checkForNull(obj?.CostingPartDetails?.TotalPaintCost)
+            newItem.CostingPartDetails.TotalPaintCostComponent = checkForNull(obj?.CostingPartDetails?.TotalPaintCostComponent)
+            newItem.CostingPartDetails.TotalPaintCostPerAssembly = checkForNull(obj?.CostingPartDetails?.TotalPaintCostPerAssembly)
+            newItem.CostingPartDetails.TotalPaintCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.TotalPaintCostPerSubAssembly)
+            newItem.CostingPartDetails.TotalPaintCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalPaintCostWithQuantity)
             newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = checkForNull(obj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
             newItem.CostingPartDetails.SurfaceTreatmentDetails = obj?.CostingPartDetails?.SurfaceTreatmentDetails
             newItem.CostingPartDetails.TransportationDetails = obj?.CostingPartDetails?.TransportationDetails
@@ -427,8 +452,11 @@ function TabSurfaceTreatment(props) {
 
           subAssemblyToUpdate.IsOpen = subAssemblyToUpdate.PartType !== "Part" ? !subAssemblyToUpdate.IsOpen : false
 
+          console.log(subAssemblyToUpdate, "subAssembly to update before function")
           let obj = totalSubAssemblyCalcuation(subAssemblyToUpdate, childArray)
+          console.log(obj, "obj after function")
           let totalObj = { ...subAssemblyToUpdate, ...obj }
+          console.log(totalObj, "Total Obj")
 
 
           tempArrForCosting = Object.assign([...tempArrForCosting], { [subbAssemblyIndex]: totalObj })
@@ -510,6 +538,34 @@ function TabSurfaceTreatment(props) {
             newItem.CostingPartDetails.TotalTransportationCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.TotalTransportationCostPerSubAssembly)
             newItem.CostingPartDetails.TotalTransportationCostComponent = checkForNull(obj?.CostingPartDetails?.TotalTransportationCostComponent)
             newItem.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalTransportationCostWithQuantity)
+            newItem.CostingPartDetails.HangerCostPerPart = checkForNull(obj?.CostingPartDetails?.HangerCostPerPart)
+            newItem.CostingPartDetails.HangerRate = checkForNull(obj?.CostingPartDetails?.HangerRate)
+            newItem.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(obj?.CostingPartDetails?.NumberOfPartsPerHanger)
+            newItem.CostingPartDetails.HangerCostPerPartComponent = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartComponent)
+            newItem.CostingPartDetails.HangerCostPerPartPerAssembly = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartPerAssembly)
+            newItem.CostingPartDetails.HangerCostPerPartPerSubAssembly = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartPerSubAssembly)
+            newItem.CostingPartDetails.HangerCostPerPartWithQuantity = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartWithQuantity)
+
+            newItem.CostingPartDetails.PaintCost = checkForNull(obj?.CostingPartDetails?.PaintCost)
+            newItem.CostingPartDetails.PaintCostComponent = checkForNull(obj?.CostingPartDetails?.PaintCostComponent)
+            newItem.CostingPartDetails.PaintCostPerAssembly = checkForNull(obj?.CostingPartDetails?.PaintCostPerAssembly)
+            newItem.CostingPartDetails.PaintCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.PaintCostPerSubAssembly)
+            newItem.CostingPartDetails.PaintCostWithQuantity = checkForNull(obj?.CostingPartDetails?.PaintCostWithQuantity)
+
+            newItem.CostingPartDetails.TapeCost = checkForNull(obj?.CostingPartDetails?.TapeCost)
+            newItem.CostingPartDetails.TapeCostComponent = checkForNull(obj?.CostingPartDetails?.TapeCostComponent)
+            newItem.CostingPartDetails.TapeCostPerAssembly = checkForNull(obj?.CostingPartDetails?.TapeCostPerAssembly)
+            newItem.CostingPartDetails.TapeCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.TapeCostPerSubAssembly)
+            newItem.CostingPartDetails.TapeCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TapeCostWithQuantity)
+
+            newItem.CostingPartDetails.TotalPaintCost = checkForNull(obj?.CostingPartDetails?.TotalPaintCost)
+            newItem.CostingPartDetails.TotalPaintCostComponent = checkForNull(obj?.CostingPartDetails?.TotalPaintCostComponent)
+            newItem.CostingPartDetails.TotalPaintCostPerAssembly = checkForNull(obj?.CostingPartDetails?.TotalPaintCostPerAssembly)
+            newItem.CostingPartDetails.TotalPaintCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.TotalPaintCostPerSubAssembly)
+            newItem.CostingPartDetails.TotalPaintCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalPaintCostWithQuantity)
+
+
+
             newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = checkForNull(obj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
             newItem.CostingPartDetails.SurfaceTreatmentDetails = obj?.CostingPartDetails?.SurfaceTreatmentDetails
             newItem.CostingPartDetails.TransportationDetails = obj?.CostingPartDetails?.TransportationDetails
