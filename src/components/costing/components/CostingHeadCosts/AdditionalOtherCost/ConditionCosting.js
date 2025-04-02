@@ -40,8 +40,8 @@ function ConditionCosting(props) {
                                 {<th>{`Applicability`}</th>}
                                 {<th>{`Applicability Cost`}</th>}
                                 {<th>{`Quantity`}</th>}
-                                {<th style={{ minWidth: '100px' }}>{`Cost (${isFromImport ? currency?.label : PlantCurrency ?? initialConfiguration?.BaseCurrency})`}</th>}
-                                {<th>{`Cost/Pc (${isFromImport ? currency?.label : PlantCurrency ?? initialConfiguration?.BaseCurrency})`}</th>}
+                                {<th style={{ minWidth: '100px' }}>{`Cost (${isFromImport ? currency?.label ?? 'Currency' : PlantCurrency ?? initialConfiguration?.BaseCurrency})`}</th>}
+                                {<th>{`Cost/Pc (${isFromImport ? currency?.label ?? 'Currency' : PlantCurrency ?? initialConfiguration?.BaseCurrency})`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>
@@ -76,8 +76,8 @@ function ConditionCosting(props) {
                             )}
                             {<tr className='table-footer'>
 
-                                <td colSpan={7} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${isFromImport ? currency?.label : PlantCurrency ?? initialConfiguration?.BaseCurrency}):`}`}</td>
-                                <td colSpan={5}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : PlantCurrency ?? initialConfiguration?.BaseCurrency})` : ''}</div></td>
+                                <td colSpan={7} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${isFromImport ? currency?.label??'Currency' : PlantCurrency ?? initialConfiguration?.BaseCurrency}):`}`}</td>
+                                <td colSpan={5}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label ?? 'Currency' : PlantCurrency ?? initialConfiguration?.BaseCurrency})` : ''}</div></td>
                             </tr>}
                         </tbody>
                     </Table>

@@ -572,7 +572,7 @@ const BOPImportListing = (props) => {
         </button>
       );
     }
-    if (permissions?.Edit) {
+    if (permissions?.Edit && rowData.IsBOPEditable) {
       isEditable = true;
     }
     if (tourStartData.showExtraData && props.rowIndex === 0) {
