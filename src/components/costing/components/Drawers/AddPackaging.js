@@ -70,6 +70,7 @@ function AddPackaging(props) {
   const [openCalculator, setOpenCalculator] = useState(false)
   const [costingPackagingCalculationDetailsId, setCostingPackagingCalculationDetailsId] = useState(rowObjData?.CostingPackagingCalculationDetailsId ?? null)
   const [totalTabCost, setTotalTabCost] = useState(checkForNull(CostingDataList.NetTotalRMBOPCC) + checkForNull(CostingDataList.NetSurfaceTreatmentCost) + checkForNull(CostingDataList.NetOverheadAndProfitCost));
+  const [originalQuantity, setOriginalQuantity] = useState(rowObjData?.Quantity ?? 0)
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -100,7 +101,11 @@ function AddPackaging(props) {
       if (applicability?.label === 'Crate/Trolley') {
         setShowCalculator(true)
       }
-      setValue("Quantity", totalFinishWeight)
+      
+      setValue("Quantity", totalFinishWeight ? checkForDecimalAndNull(totalFinishWeight, getConfigurationKey().NoOfDecimalForPrice) : '')
+      
+      setOriginalQuantity(totalFinishWeight)
+      
       setTotalRMGrossWeight(totalGrossWeight)
     }
   }, [RMCCTabData, applicability])
@@ -423,7 +428,7 @@ function AddPackaging(props) {
         Applicability: applicability ? data.Applicability?.label : '',
         PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : '',
         Rate: getValues('Rate'),
-        Quantity: getValues('Quantity'),
+        Quantity: originalQuantity,
         CostingPackagingCalculationDetailsId: costingPackagingCalculationDetailsId ?? null
       }
     }
