@@ -789,7 +789,7 @@ function AddOtherCostDrawer(props) {
                                                         </td>
                                                     }
                                                     <td colSpan={3} className="text-left">
-                                                        {checkForDecimalAndNull((isBOP || RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({(isImport ? settlementCurrency : plantCurrency) ?? initialConfiguration?.BaseCurrency})
+                                                        {checkForDecimalAndNull((isBOP || RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({CurrencyLabel})
                                                     </td>
                                                 </tr>
                                             </tbody>

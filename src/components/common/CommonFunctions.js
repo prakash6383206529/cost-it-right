@@ -4,6 +4,7 @@ import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCType
 import Toaster from "./Toaster";
 import { subDays } from "date-fns";
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from "../../helper";
+import DayTime from "./DayTimeWrapper";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -548,6 +549,9 @@ export const updateCostValue = (isConditionCost, state, price, isSimulation = fa
         tableData: table
     };
 };
+export const checkEffectiveDate = (effectiveDate,effectiveDateToChange) => {
+    return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
+}
 
 export const compareRateCommon = (otherCostData, conditionCostData) => {
     if (otherCostData?.[0]?.Applicability === "Basic Rate" && conditionCostData?.[0]?.Applicability === "Basic Price") {
