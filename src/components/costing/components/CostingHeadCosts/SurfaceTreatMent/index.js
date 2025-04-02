@@ -630,7 +630,7 @@ function SurfaceTreatment(props) {
         </div >
       </Drawer >
       {viewPaintAndMasking && <PaintAndMasking isOpen={viewPaintAndMasking} anchor={'right'} item={props.item} CostingId={item.CostingId} closeDrawer={closePaintAndMasking} setSurfaceData={SetSurfaceData} />}
-      {viewExtraCost && <ExtraCost isOpen={viewExtraCost} index={props.index} item={props.item} anchor={'right'} closeDrawer={closeExtraCost} setSurfaceData={SetSurfaceData} />}
+      {viewExtraCost && <ExtraCost isOpen={viewExtraCost} index={props.index} item={props.item} anchor={'right'} closeDrawer={closeExtraCost} setSurfaceData={SetSurfaceData} hangerCostDetails={hangerCostDetails} paintAndMaskingDetails={paintAndMaskingDetails} surfaceCost={surfaceCost(surfaceTreatmentData?.gridData)} extraCostDetails={extraCostDetails} />}
     </ >
   );
 }
