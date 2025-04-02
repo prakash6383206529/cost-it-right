@@ -69,9 +69,8 @@ function OverheadProfit(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
 
   const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData } = useSelector(state => state.costing)
-
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
-  
+
 
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
 
@@ -800,9 +799,9 @@ function OverheadProfit(props) {
   */
   const getCCCost = (type = '') => {
     if (type === 'overhead') {
-      return checkForNull(headerCosts?.NetProcessCostForOverhead) + checkForNull(headerCosts?.NetOperationCostForOverhead) +  totalToolCost;
+      return checkForNull(headerCosts?.NetProcessCostForOverhead) + checkForNull(headerCosts?.NetOperationCostForOverhead) +  checkForNull(totalToolCost);
     } else if (type === 'profit') {
-      return checkForNull(headerCosts?.NetProcessCostForProfit) +checkForNull(headerCosts?.NetOperationCostForProfit) +totalToolCost;
+      return checkForNull(headerCosts?.NetProcessCostForProfit) +checkForNull(headerCosts?.NetOperationCostForProfit) +checkForNull(totalToolCost) ;
     }
   }
   /**
@@ -876,7 +875,7 @@ function OverheadProfit(props) {
         RM_CC_BOP_Overhead = (IsCutOffApplicable && headerCosts) ? (CutOffCost + headerCosts.NetBoughtOutPartCost + ConversionCostForOverheadCalculation) + totalToolCost : RMBOPCC_Overhead + totalToolCost;
 
         RM_CC_Overhead = (IsCutOffApplicable ? CutOffRMC : headerCosts?.NetRawMaterialsCost) + ConversionCostForOverheadCalculation + totalToolCost;
-BOP_CC_Overhead = headerCosts?.NetBoughtOutPartCost + ConversionCostForOverheadCalculation + totalToolCost;
+        BOP_CC_Overhead = headerCosts?.NetBoughtOutPartCost + ConversionCostForOverheadCalculation + totalToolCost;
         RM_CC_BOP_Profit = (IsCutOffApplicable && headerCosts) ? (CutOffCost + headerCosts.NetBoughtOutPartCost + ConversionCostForProfitCalculation) + totalToolCost : RMBOPCC_Profit + totalToolCost;
         RM_CC_Profit = (IsCutOffApplicable ? CutOffRMC : headerCosts?.NetRawMaterialsCost) + ConversionCostForProfitCalculation + totalToolCost;
         BOP_CC_Profit = headerCosts?.NetBoughtOutPartCost + ConversionCostForProfitCalculation + totalToolCost;

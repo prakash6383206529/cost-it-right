@@ -65,9 +65,7 @@ function ViewConversionCost(props) {
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
   useEffect(() => {
-    // if (IsShowToolCost) {
-    //   setIsShowToolCost(IsShowToolCost)
-    // }
+
     if (IsAssemblyCosting === true && isPDFShow === false) {
       let temp = []
       let uniqueTemp = []

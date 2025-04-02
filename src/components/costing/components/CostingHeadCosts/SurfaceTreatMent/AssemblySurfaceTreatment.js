@@ -5,12 +5,12 @@ import { getSurfaceTreatmentTabData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import PartSurfaceTreatment from './PartSurfaceTreatment';
 import SurfaceTreatment from '.';
-import { ViewCostingContext } from '../../CostingDetails';
+import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
 import _ from 'lodash'
 import { EMPTY_GUID } from '../../../../../config/constants';
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 function AssemblySurfaceTreatment(props) {
+
   const { children, item, index } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
@@ -19,11 +19,13 @@ function AssemblySurfaceTreatment(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const selectedCostingDetail = useContext(SelectedCostingDetail);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
 
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const toggle = (BOMLevel, PartNumber, IsCollapse) => {
+
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     const Params = {
@@ -37,10 +39,11 @@ function AssemblySurfaceTreatment(props) {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
         AssemCostingId: item.AssemblyCostingId,
-        SubAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
+        SubAsmCostingId: (props.subAssembId !== null && props.subAssembId !== undefined) ? props.subAssembId : item?.SubAssemblyCostingId,
         isComponentCosting: costData?.PartType === "Component" ? true : false
       }
       dispatch(getSurfaceTreatmentTabData(data, false, (res) => { // TODO TO CHECK TRUE CONVERTED TO FALSE
+
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
           const ChangedLevel = parseInt(BOMLevel.substr(1, BOMLevel.length - 1)) + 1;
@@ -71,9 +74,10 @@ function AssemblySurfaceTreatment(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (item.IsOpen === false) {
-      toggle(item.BOMLevel, item.PartNumber, true)
-    }
+
+    // if (item.IsOpen === false) {
+    toggle(item.BOMLevel, item.PartNumber, true)
+    // }
 
     setDrawerOpen(true)
   }
@@ -97,7 +101,7 @@ function AssemblySurfaceTreatment(props) {
         setAssemblySurfaceCost={props.setAssemblySurfaceCost}
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
         IsAssemblyCalculation={true}
-        subAssembId={item.CostingId}
+      // subAssembId={item?.SubAssemblyCostingId}
       />
     }
     return null
@@ -116,7 +120,7 @@ function AssemblySurfaceTreatment(props) {
       setAssemblySurfaceCost={props.setAssemblySurfaceCost}
       setAssemblyTransportationCost={props.setAssemblyTransportationCost}
       IsAssemblyCalculation={true}
-      subAssembId={item.CostingId}
+    // subAssembId={item?.SubAssemblyCostingId}
     />
   })
 
@@ -153,6 +157,8 @@ function AssemblySurfaceTreatment(props) {
                 </div> : ''
             }
           </td>
+          <td>{item?.CostingPartDetails?.HangerCostPerPartWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.HangerCostPerPartWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalPaintCostWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalPaintCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
           <td>{item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}
             {
               item?.CostingPartDetails && (item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== null && item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== 0) ?

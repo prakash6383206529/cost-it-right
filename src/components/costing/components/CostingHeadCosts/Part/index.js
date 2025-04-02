@@ -178,16 +178,16 @@ function PartCompoment(props) {
       let stCostingData = findSurfaceTreatmentData(ComponentItemData)
 
       // let requestData = {
-      //   "NetRawMaterialsCost": item?.CostingPartDetails?.TotalRawMaterialsCost,
-      //   "NetBoughtOutPartCost": item?.CostingPartDetails?.TotalBoughtOutPartCost,
-      //   "NetConversionCost": item?.CostingPartDetails?.TotalConversionCost,
-      //   "NetOperationCost": item?.CostingPartDetails?.CostingConversionCost && item?.CostingPartDetails?.CostingConversionCost.OperationCostTotal !== undefined ? item?.CostingPartDetails?.CostingConversionCost.OperationCostTotal : 0,
-      //   "NetProcessCost": item?.CostingPartDetails?.CostingConversionCost && item?.CostingPartDetails?.CostingConversionCost.ProcessCostTotal !== undefined ? item?.CostingPartDetails?.CostingConversionCost.ProcessCostTotal : 0,
-      //   "NetOtherOperationCost": item?.CostingPartDetails?.CostingConversionCost && item?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal !== undefined ? item?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal : 0,
+      //   "NetRawMaterialsCost": item?.CostingPartDetails?.NetRawMaterialsCost,
+      //   "NetBoughtOutPartCost": item?.CostingPartDetails?.NetBoughtOutPartCost,
+      //   "NetConversionCost": item?.CostingPartDetails?.NetConversionCost,
+      //   "NetOperationCost": item?.CostingPartDetails?.CostingConversionCost && item?.CostingPartDetails?.CostingConversionCost.NetOperationCost !== undefined ? item?.CostingPartDetails?.CostingConversionCost.NetOperationCost : 0,
+      //   "NetProcessCost": item?.CostingPartDetails?.CostingConversionCost && item?.CostingPartDetails?.CostingConversionCost.NetProcessCost !== undefined ? item?.CostingPartDetails?.CostingConversionCost.NetProcessCost : 0,
+      //   "NetOtherOperationCost": item?.CostingPartDetails?.CostingConversionCost && item?.CostingPartDetails?.CostingConversionCost.NetOtherOperationCost !== undefined ? item?.CostingPartDetails?.CostingConversionCost.NetOtherOperationCost : 0,
       //   "NetToolsCost": item?.CostingPartDetails?.CostingConversionCost && item?.CostingPartDetails?.CostingConversionCost.ToolsCostTotal !== undefined ? item?.CostingPartDetails?.CostingConversionCost.ToolsCostTotal : 0,
-      //   "NetTotalRMBOPCC": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
-      //   //"TotalCost": costData.IsAssemblyPart ? item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : netPOPrice,   //NEED TO ADD SURFACE TREATMENT COST OF CHILD LATER
-      //   "TotalCost": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : netPOPrice,
+      //   "NetTotalRMBOPCC": item?.CostingPartDetails?.NetTotalRMBOPCC,
+      //   //"TotalCost": costData.IsAssemblyPart ? item?.CostingPartDetails?.NetTotalRMBOPCC : netPOPrice,   //NEED TO ADD SURFACE TREATMENT COST OF CHILD LATER
+      //   "TotalCost": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(item?.CostingPartDetails?.NetTotalRMBOPCC)) : item?.CostingPartDetails?.NetTotalRMBOPCC : netPOPrice,
       //   "LoggedInUserId": loggedInUserId(),
       //   "EffectiveDate": CostingEffectiveDate,
 
@@ -217,7 +217,7 @@ function PartCompoment(props) {
       //   CostingPartDetails: item?.CostingPartDetails,
 
       // }
-      let basicRateComponent = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+      let basicRateComponent = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetTotalRMBOPCC) +
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
@@ -249,8 +249,8 @@ function PartCompoment(props) {
           basicRate = basicRateComponent
           basicRate = netPOPrice
         } else if (ComponentItemData?.PartType === "Part") {// CHILD PART OF ASM : COMPONENT
-          basicRate = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost))
-          netPOPriceTemp = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost))
+          basicRate = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC))
+          netPOPriceTemp = (checkForNull(allCostingData?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC))
         }
 
         let requestData = createSaveComponentObject(item, CostingEffectiveDate, basicRate, netPOPriceTemp)
@@ -299,12 +299,12 @@ function PartCompoment(props) {
         </td>
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
-        {!isBreakupBoughtOutPartCostingFromAPI && <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalConversionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.NetRawMaterialsCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.NetRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+        {!isBreakupBoughtOutPartCostingFromAPI && <td>{item?.CostingPartDetails && item?.CostingPartDetails?.NetBoughtOutPartCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.NetConversionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.NetConversionCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.Quantity !== undefined ? checkForNull(item?.CostingPartDetails?.Quantity) : 1}</td>
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.TotalConversionCost), initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
-        {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.TotalConversionCost)) * item?.CostingPartDetails?.Quantity, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.NetTotalRMBOPCC !== null ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.NetRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.NetConversionCost), initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
+        {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item?.CostingPartDetails?.NetRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.NetConversionCost)) * item?.CostingPartDetails?.Quantity, initialConfiguration?.NoOfDecimalForPrice)}</td>}
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
         <td className="text-right"><div id="lock_icon" className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing." : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div></td>
       </tr>

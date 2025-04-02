@@ -219,7 +219,6 @@ function AssemblyPart(props) {
         setBOPCost={props.setBOPCost}
         setBOPHandlingCost={props.setBOPHandlingCost}
         setConversionCost={props.setConversionCost}
-        setToolCost={props.setToolCost}
         subAssembId={item.CostingId}
       />
     }
@@ -273,9 +272,7 @@ function AssemblyPart(props) {
       setBOPCost={props.setBOPCost}
       setBOPHandlingCost={props.setBOPHandlingCost}
       setConversionCost={props.setConversionCost}
-      setToolCost={props.setToolCost}
       setAssemblyOperationCost={props.setAssemblyOperationCost}
-      setAssemblyToolCost={props.setAssemblyToolCost}
       subAssembId={item.CostingId}
       setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
       setAssemblyProcessCost={props.setAssemblyProcessCost}
@@ -331,19 +328,19 @@ function AssemblyPart(props) {
                   <br></br>
                   {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly), initialConfiguration.NoOfDecimalForPrice)}`}
                   <br></br>
-                  {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost - item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
+                  {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.NetConversionCost - item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
                   {`Child Parts Conversion Cost:- ${checkForDecimalAndNull((checkForNull(item?.CostingPartDetails?.TotalOperationCostComponent) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponent) + checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostComponent)), initialConfiguration.NoOfDecimalForPrice)}`}
                 </span >
               </div > : ''
             }
           </td >
           <td>{(item?.PartType === 'Assembly') ? 1 : (item?.CostingPartDetails?.Quantity ? checkForNull(item?.CostingPartDetails?.Quantity) : 1)}</td>
-          {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
+          {/* <td>{item?.CostingPartDetails?.NetTotalRMBOPCC ? checkForDecimalAndNull(item?.CostingPartDetails?.NetTotalRMBOPCC, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
           <td>{'-'}</td>
           {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
           {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
           <td>{(item?.PartType === 'Assembly' && (costingApprovalStatus === 'ApprovedByAssembly' || costingApprovalStatus === 'ApprovedByASMSimulation'))
-            ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost), initialConfiguration.NoOfDecimalForPrice) :
+            ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.NetTotalRMBOPCC), initialConfiguration.NoOfDecimalForPrice) :
             checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration.NoOfDecimalForPrice)}</td>
 
         </div >
@@ -420,7 +417,6 @@ function AssemblyPart(props) {
           item={item}
           CostingViewMode={CostingViewMode}
           setAssemblyOperationCost={props.setAssemblyOperationCost}
-          setAssemblyToolCost={props.setAssemblyToolCost}
           itemInState={itemInState}
         />
       }
