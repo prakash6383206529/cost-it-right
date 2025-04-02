@@ -109,9 +109,9 @@ function ExtraCost(props) {
         setIsEditMode(true);
 
         let selectedData = tableData[indexValue];
+        setType({ label: selectedData?.UOM, value: selectedData?.UOM })
+        setValue('Type', { label: selectedData?.UOM, value: selectedData?.UOM })
         if (selectedData?.UOM === 'Percentage') {
-            setType({ label: 'Percentage', value: 'Percentage' })
-            setValue('Type', { label: 'Percentage', value: 'Percentage' })
             setValue('Applicability', { label: selectedData?.CostingConditionNumber, value: selectedData?.CostingConditionMasterId })
             setValue('ApplicabilityCost', checkForDecimalAndNull(selectedData?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('Percentage', checkForDecimalAndNull(selectedData?.Rate, initialConfiguration?.NoOfDecimalForPrice))

@@ -5,10 +5,9 @@ import { getSurfaceTreatmentTabData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import PartSurfaceTreatment from './PartSurfaceTreatment';
 import SurfaceTreatment from '.';
-import { ViewCostingContext } from '../../CostingDetails';
+import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
 import _ from 'lodash'
 import { EMPTY_GUID } from '../../../../../config/constants';
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 function AssemblySurfaceTreatment(props) {
 
@@ -20,11 +19,13 @@ function AssemblySurfaceTreatment(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const selectedCostingDetail = useContext(SelectedCostingDetail);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
 
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const toggle = (BOMLevel, PartNumber, IsCollapse) => {
+
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     const Params = {
@@ -42,6 +43,7 @@ function AssemblySurfaceTreatment(props) {
         isComponentCosting: costData?.PartType === "Component" ? true : false
       }
       dispatch(getSurfaceTreatmentTabData(data, false, (res) => { // TODO TO CHECK TRUE CONVERTED TO FALSE
+
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
           const ChangedLevel = parseInt(BOMLevel.substr(1, BOMLevel.length - 1)) + 1;
@@ -72,9 +74,10 @@ function AssemblySurfaceTreatment(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (item.IsOpen === false) {
-      toggle(item.BOMLevel, item.PartNumber, true)
-    }
+
+    // if (item.IsOpen === false) {
+    toggle(item.BOMLevel, item.PartNumber, true)
+    // }
 
     setDrawerOpen(true)
   }
@@ -98,7 +101,7 @@ function AssemblySurfaceTreatment(props) {
         setAssemblySurfaceCost={props.setAssemblySurfaceCost}
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
         IsAssemblyCalculation={true}
-        subAssembId={item.CostingId}
+        subAssembId={selectedCostingDetail.SubAssemblyCostingId ? selectedCostingDetail.SubAssemblyCostingId : item.CostingId}
       />
     }
     return null
@@ -117,7 +120,7 @@ function AssemblySurfaceTreatment(props) {
       setAssemblySurfaceCost={props.setAssemblySurfaceCost}
       setAssemblyTransportationCost={props.setAssemblyTransportationCost}
       IsAssemblyCalculation={true}
-      subAssembId={item.CostingId}
+      subAssembId={selectedCostingDetail.SubAssemblyCostingId ? selectedCostingDetail.SubAssemblyCostingId : item.CostingId}
     />
   })
 

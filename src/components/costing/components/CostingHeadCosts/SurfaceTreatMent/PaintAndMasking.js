@@ -31,7 +31,7 @@ const INITIAL_STATE = {
     TotalPaintCost: 0
 }
 
-function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, setSurfaceData }) {
+function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, setSurfaceData, item }) {
     const [state, setState] = useState({
         editMode: false,
         rawMaterialList: [],
@@ -75,7 +75,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                 TechnologyId: PAINTTECHNOLOGY,
                 VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData?.VendorPlantId : EMPTY_GUID,
                 EffectiveDate: CostingEffectiveDate,
-                CostingId: costData?.CostingId,
+                CostingId: item?.CostingId,
                 material_id: null,
                 grade_id: null,
 
@@ -109,7 +109,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
             ...prev,
             loader: true
         }))
-        dispatch(getSurfaceTreatmentRawMaterialCalculator({ BaseCostingId: ViewMode ? CostingId : costData.CostingId, LoggedInUserId: loggedInUserId() }, (res) => {
+        dispatch(getSurfaceTreatmentRawMaterialCalculator({ BaseCostingId: ViewMode ? CostingId : item?.CostingId, LoggedInUserId: loggedInUserId() }, (res) => {
             setState(prev => ({
                 ...prev,
                 loader: false
@@ -218,7 +218,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         let obj = {
             ...calculateState,
             LoggedInUserId: loggedInUserId(),
-            BaseCostingId: costData?.CostingId
+            BaseCostingId: item?.CostingId
         }
         dispatch(saveSurfaceTreatmentRawMaterialCalculator(obj, (response) => {
             if (response && response?.status === 200) {

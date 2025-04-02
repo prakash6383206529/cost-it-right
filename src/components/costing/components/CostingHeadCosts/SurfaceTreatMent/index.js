@@ -66,14 +66,16 @@ function SurfaceTreatment(props) {
   const headerCosts = useContext(netHeadCostContext);
   const isPartType = useContext(IsPartType);
 
-  useEffect(() => {
-    setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
-  }, [item?.CostingPartDetails?.TransportationDetails])
+  // useEffect(() => {
+  //   setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
+  // }, [item?.CostingPartDetails?.TransportationDetails])
 
   useEffect(() => {
     setValue(`ExtraCost`, checkForDecimalAndNull(item?.CostingPartDetails?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice))
     setValue(`PaintAndMasking`, checkForDecimalAndNull(item?.CostingPartDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice))
-    setExtraCostDetails({ TransportationCost: item?.CostingPartDetails?.TransportationCost, TransportationDetails: item?.CostingPartDetails?.TransportationDetails })
+    setTimeout(() => {
+      setExtraCostDetails({ TransportationCost: item?.CostingPartDetails?.TransportationCost, TransportationDetails: item?.CostingPartDetails?.TransportationDetails })
+    }, 1000)
   }, [])
 
   useEffect(() => {
@@ -484,9 +486,11 @@ function SurfaceTreatment(props) {
                         {
                           (item.PartType !== 'Part' && item.PartType !== 'Component') ?
                             <>
-                              <Col md="2" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="2" className="cr-costlabel">{`Transportation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(transportObj?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull((item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) + (item?.CostingPartDetails && item?.CostingPartDetails?.TotalTransportationCostPerAssembly !== null ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : 0), initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Hanger Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.HangerCostPerPartWithQuantity) : checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="3" className="cr-costlabel">{`Paint and Masking Cost : ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TotalPaintCostWithQuantity) : checkForNull(paintAndMaskingDetails?.TotalPaintCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="3" className="cr-costlabel">{`Net ST. Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost) + checkForNull(extraCostDetails?.TransportationCost) + checkForNull(paintAndMaskingDetails?.TotalPaintCost) + checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
 
                             </>
                             :
@@ -625,7 +629,7 @@ function SurfaceTreatment(props) {
 
         </div >
       </Drawer >
-      {viewPaintAndMasking && <PaintAndMasking isOpen={viewPaintAndMasking} anchor={'right'} CostingId={item.CostingId} closeDrawer={closePaintAndMasking} setSurfaceData={SetSurfaceData} />}
+      {viewPaintAndMasking && <PaintAndMasking isOpen={viewPaintAndMasking} anchor={'right'} item={props.item} CostingId={item.CostingId} closeDrawer={closePaintAndMasking} setSurfaceData={SetSurfaceData} />}
       {viewExtraCost && <ExtraCost isOpen={viewExtraCost} index={props.index} item={props.item} anchor={'right'} closeDrawer={closeExtraCost} setSurfaceData={SetSurfaceData} />}
     </ >
   );
