@@ -96,7 +96,6 @@ function AddPackaging(props) {
           return accummlator + checkForNull(el?.GrossWeight)
         }, 0)
       })
-      // setTotalFinishWeight(totalFinishWeight)
 
       if (applicability?.label === 'Crate/Trolley') {
         setShowCalculator(true)
