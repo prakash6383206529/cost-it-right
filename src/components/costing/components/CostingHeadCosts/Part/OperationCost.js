@@ -93,7 +93,7 @@ function OperationCost(props) {
 
         } else {
           gridData && gridData.map((el, index) => {
-            setValue(`${OperationGridFields}.${index}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+            setValue(`${OperationGridFields}.${index}.Applicability`, el?.CostingConditionMasterAndTypeLinkingId ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
             setValue(`${OperationGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
             return null
           })
@@ -161,7 +161,7 @@ function OperationCost(props) {
       tempArr && tempArr.map((el, index) => {
         netCostTotal = checkForNull(netCostTotal) + checkForNull(el.OperationCost)
         setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el?.Quantity, initialConfiguration?.NoOfDecimalForInputOutput))
-        setValue(`${OperationGridFields}.${index}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+        setValue(`${OperationGridFields}.${index}.Applicability`, el?.CostingConditionMasterAndTypeLinkingId ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
         setValue(`${OperationGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
         return null
       })
@@ -272,7 +272,7 @@ function OperationCost(props) {
     setValue(`${OperationGridFields}.${index}.remarkPopUp`, '')
     tempArr && tempArr.map((el, i) => {
       setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
-      setValue(`${OperationGridFields}.${i}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+      setValue(`${OperationGridFields}.${i}.Applicability`, el?.CostingConditionMasterAndTypeLinkingId ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
       setValue(`${OperationGridFields}.${i}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
     })
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
@@ -325,7 +325,7 @@ function OperationCost(props) {
     setGridData(tempArr)
     setRowObjData({})
     setValue(`${OperationGridFields}.${index}.Quantity`, tempArr?.Quantity)
-    setValue(`${OperationGridFields}.${index}.Applicability`, { label: tempArr?.CostingConditionNumber, value: tempArr?.CostingConditionMasterAndTypeLinkingId })
+    setValue(`${OperationGridFields}.${index}.Applicability`, tempArr?.CostingConditionMasterAndTypeLinkingId ? { label: tempArr?.CostingConditionNumber, value: tempArr?.CostingConditionMasterAndTypeLinkingId } : null)
     setValue(`${OperationGridFields}.${index}.ProcessCRMHead`, { label: tempArr?.ProcessCRMHead, value: tempArr?.index })
 
     errors.OperationGridFields = {}
