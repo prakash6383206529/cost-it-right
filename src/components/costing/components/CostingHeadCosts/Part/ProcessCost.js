@@ -652,6 +652,8 @@ function ProcessCost(props) {
               ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
               CurrencyExchangeRate: el.CurrencyExchangeRate,
               IsDetailed: el.IsDetailed,
+              CostingConditionNumber: el?.CostingConditionNumber,
+              CostingConditionMasterAndTypeLinkingId: el?.CostingConditionMasterAndTypeLinkingId,
             }
           })
 
@@ -698,6 +700,8 @@ function ProcessCost(props) {
             ConvertedExchangeRateId: item.ConvertedExchangeRateId === EMPTY_GUID ? null : item.ConvertedExchangeRateId,
             CurrencyExchangeRate: item.CurrencyExchangeRate,
             IsDetailed: item.IsDetailed,
+            CostingConditionNumber: item?.CostingConditionNumber,
+            CostingConditionMasterAndTypeLinkingId: item?.CostingConditionMasterAndTypeLinkingId,
           }
         })
 
@@ -751,6 +755,8 @@ function ProcessCost(props) {
             ConvertedExchangeRateId: item?.ConvertedExchangeRateId === EMPTY_GUID ? null : item?.ConvertedExchangeRateId,
             CurrencyExchangeRate: el.CurrencyExchangeRate,
             IsDetailed: el.IsDetailed,
+            CostingConditionNumber: el?.CostingConditionNumber,
+            CostingConditionMasterAndTypeLinkingId: el?.CostingConditionMasterAndTypeLinkingId,
           }
         })
         let arr = [...parentProcessList, ...rowArr]
