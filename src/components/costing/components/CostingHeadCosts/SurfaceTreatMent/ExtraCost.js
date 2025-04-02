@@ -114,6 +114,9 @@ function ExtraCost(props) {
             setValue('Applicability', { label: selectedData?.CostingConditionNumber, value: selectedData?.CostingConditionMasterId })
             setValue('ApplicabilityCost', checkForDecimalAndNull(selectedData?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('Percentage', checkForDecimalAndNull(selectedData?.Rate, initialConfiguration?.NoOfDecimalForPrice))
+        } else {
+            setType({ label: 'Fixed', value: 'Fixed' })
+            setValue('Type', { label: 'Fixed', value: 'Fixed' })
         }
         setValue('CostDescription', selectedData?.Description)
         setValue('Remark', selectedData?.Remark)
@@ -374,7 +377,7 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors?.Type}
-                                                disabled={CostingViewMode}
+                                                disabled={CostingViewMode || isEditMode}
                                             />
                                         </Col>
                                         <Col md="3" className='px-2'>
