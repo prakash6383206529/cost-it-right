@@ -1580,11 +1580,11 @@ class AddMachineRate extends Component {
       else {
         if ((!financialDataNotChanged && this.props?.isMachineAssociated)) {
           if (checkEffectiveDate(oldDate, effectiveDate)) {
-            baseRequestData.IsFinancialDataChanged = true
             Toaster.warning('Please update the effective date')
             return false
           }
         }
+        baseRequestData.IsFinancialDataChanged = financialDataNotChanged ? false : true
       }
     }
 
