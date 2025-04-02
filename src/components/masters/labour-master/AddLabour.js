@@ -73,7 +73,9 @@ class AddLabour extends Component {
         machineType: false,
         labourType: false,
         labourRate: false,
-        effectiveDate: false
+        effectiveDate: false,
+        efficiency: false,
+        workingHours: false
       },
       showErrorOnFocus: false,
       isEditMode: false,
@@ -224,10 +226,12 @@ class AddLabour extends Component {
               client: { label: Data.CustomerName, value: Data.CustomerId },
               city: Data.City !== undefined ? { label: Data?.City, value: Data?.CityId } : [],
               country: Data.Country !== undefined ? { label: Data?.Country, value: Data?.CountryId } : [],
-              currencyValue: currencyValue,
+              // currencyValue: currencyValue,
+              currencyValue: Data.CurrencyExchangeRate ? Data.CurrencyExchangeRate : 1,
               ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
               plantCurrencyID: Data?.LocalCurrencyId,
-              effectiveDate: effectiveDate
+              // effectiveDate: effectiveDate
+              effectiveDate: Data.EffectiveDate ? Data?.EffectiveDate : ""
             }, () => this.setState({ isLoader: false }))
             this.callExchangeRateAPI()
           }, 500)
@@ -573,12 +577,20 @@ class AddLabour extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, labourType: true } })
         count++;
       }
-      if (fieldsObj?.LabourRateConversion === 0 || fieldsObj?.LabourRate === 0) {
+      if (fieldsObj?.LabourRateConversion === 0 || fieldsObj?.LabourRateConversion === undefined || fieldsObj?.LabourRate === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, labourRate: true } })
         count++;
       }
       if (effectiveDate === undefined || effectiveDate === '') {
         this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
+        count++;
+      }
+      if (efficiency === undefined || efficiency === '') {
+        this.setState({ errorObj: { ...this.state.errorObj, efficiency: true } })
+        count++;
+      }
+      if (workingHours === undefined || workingHours === '') {
+        this.setState({ errorObj: { ...this.state.errorObj, workingHours: true } })
         count++;
       }
       if (count > 0) {
@@ -623,7 +635,8 @@ class AddLabour extends Component {
           labourType: [],
           effectiveDate: '',
           workingHours: '',
-          efficiency: ''
+          efficiency: '',
+          currencyValue: 1
         },
         () => this.props.change('LabourRate', ''),
         this.props.change('workingHours', ''),
@@ -976,6 +989,7 @@ class AddLabour extends Component {
   }
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      this.props.fetchCityDataAPI(0, () => { });
       this.setState({ country: newValue, state: [], city: [] }, () => {
         this.getAllCityData()
       });
@@ -1419,6 +1433,7 @@ class AddLabour extends Component {
 
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
                           {<TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
+                          <div className="form-group">
                           <Field
                             label={`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={"LabourRateConversion"}
@@ -1433,6 +1448,10 @@ class AddLabour extends Component {
                             className=" "
                             customClassName=" withBorder"
                           />
+                          {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRateConversion === 0 &&
+                              <div className='text-help'>This field is required.</div>
+                            } 
+                          </div>
                         </Col>}
                         <Col md="3">
                           <div className="form-group">
@@ -1449,6 +1468,7 @@ class AddLabour extends Component {
                               className=" "
                               customClassName="withBorder"
                             />
+                            {this.state.errorObj.workingHours && this.state.workingHours === "" && <div className='text-help'>This field is required.</div>}
                           </div>
                         </Col>
                         <Col md="3">
@@ -1466,6 +1486,7 @@ class AddLabour extends Component {
                               className=" "
                               customClassName="withBorder"
                             />
+                             {this.state.errorObj.efficiency && this.state.efficiency === "" && <div className='text-help'>This field is required.</div>}
                           </div>
                         </Col>
 

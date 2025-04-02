@@ -29,7 +29,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, compareRateCommon, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, compareRateCommon, checkEffectiveDate,convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser, getExchangeRateByCurrency } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -1010,8 +1010,8 @@ class AddBOPDomestic extends Component {
   onSubmit = debounce((values) => {
 
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
-      isClientVendorBOP, isTechnologyVisible, Technology, NetConditionCost, NetCostWithoutConditionCost, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost } = this.state;
-    const { fieldsObj } = this.props;
+      isClientVendorBOP, isTechnologyVisible, Technology, NetConditionCost, NetCostWithoutConditionCost, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost } = this.state;
+    const { fieldsObj, isBOPAssociated } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
 
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -1090,49 +1090,41 @@ class AddBOPDomestic extends Component {
     formData.BoughtOutPartConditionsDetails = conditionTableData;
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
-    if (isEditFlag) {
-      let basicPriceBaseCurrency
-      if (costingTypeId === ZBCTypeId) {
-        basicPriceBaseCurrency = checkForNull(fieldsObj?.BasicRate) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
-      }
-      const netLandedCostBaseCurrency = checkForNull(checkForNull(fieldsObj?.BasicRate) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)) + checkForNull(NetConditionCost)
-      // CHECK IF THERE IS CHANGE !!!  
-      // IF: NO CHANGE  
+    let financialDataNotChanged = checkForNull(fieldsObj?.NetCostPlantCurrency) === checkForNull(DataToCheck?.NetLandedCostLocalConversion)
 
-      if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
-        ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
-        ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
-        ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
-        checkForNull(fieldsObj?.BasicRate) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
-        checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(NetConditionCost) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged && ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
-        this.setState({ isEditBuffer: true })
-        if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
-          Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
+    let nonFinancialDataNotChanged = ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) &&
+      ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
+      ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
+      ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+      ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
+      DropdownChanged &&
+      ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))
+
+    if (isEditFlag) {
+      if (!isBOPAssociated) {
+        if (financialDataNotChanged && nonFinancialDataNotChanged) {
+          if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
+            Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
+          }
+          else {
+            Toaster.warning(`Please change data to update ${showBopLabel()}`)
+          }
+          return false
         }
-        else {
-          Toaster.warning(`Please change data to update ${showBopLabel()}`)
-        }
+        formData.IsFinancialDataChanged = false
+      }
+      else if (!financialDataNotChanged && checkEffectiveDate(oldDate, effectiveDate)) {
+        Toaster.warning('Please update the effective date')
         return false
       }
-      //  ELSE: CHANGE
-      else {
-        //  IF: NEE TO UPDATE EFFECTIVE DATE
-        if (IsFinancialDataChanged || isBOPAssociated) {
-          if (!isDateChange || (DayTime(oldDate).format("DD/MM/YYYY") === DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState({ isEditBuffer: true })
-            Toaster.warning('Please update the effective date')
-            return false
-          }
-        }
-      }
+    } else {
+      formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
     }
 
-    //  IF: APPROVAL FLOW
     if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
       formData.IsSendForApproval = true
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
-    //  ELSE: NO APPROVAL FLOW
     else {
       formData.IsSendForApproval = false;
       this.handleBOPOperation(formData, isEditFlag);
@@ -1778,7 +1770,7 @@ class AddBOPDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode || !IsFinancialDataChanged}
+                                disabled={isViewMode}
                                 placeholder={isViewMode || !IsFinancialDataChanged ? '-' : 'Select Date'}
                               />
                             </div>
@@ -1795,7 +1787,7 @@ class AddBOPDomestic extends Component {
                                 required={false}
                                 className=""
                                 customClassName=" withBorder"
-                                disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                disabled={isViewMode}
                               />
                             </Col>}
                           {(!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
@@ -1804,17 +1796,17 @@ class AddBOPDomestic extends Component {
                                 label={this.labelWithUOM(this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM')}
                                 name={"BasicRate"}
                                 type="text"
-                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                placeholder={isEditFlag ? '-' : "Enter"}
                                 validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                 component={renderTextInputField}
                                 required={true}
-                                disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                disabled={isViewMode}
                                 className=" "
                                 customClassName=" withBorder"
                                 onChange={(e) => { this.state.isEditFlag && this.debouncedCompareRate() }}
                               />
                             </Col></>}
-                          {!isTechnologyVisible &&(<Col md="3">
+                          {!isTechnologyVisible && (<Col md="3">
                             <div className='d-flex align-items-center'>
                               
                                 <div className="w-100">
@@ -1908,7 +1900,7 @@ class AddBOPDomestic extends Component {
                             (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) &&
                             <>
                               <Col md="3">
-                                <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
+                                <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={`Net Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Plant Currency'})= ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
                                   label={`Net Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}  
                                   name={`${"NetCostPlantCurrency"}`}
@@ -1924,7 +1916,7 @@ class AddBOPDomestic extends Component {
                                 />
                               </Col>
                               {!hidePlantCurrency && <Col md="3">
-                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost(${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})  = Net Cost (${this.props?.fieldsObj?.plantCurrency ?? 'Plant Currency'}) * Plant Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
                                   label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                   name={`${"NetCostBaseCurrency"}`}
@@ -2158,7 +2150,7 @@ class AddBOPDomestic extends Component {
               closeDrawer={this.openAndCloseAddConditionCosting}
               anchor={'right'}
               basicRateCurrency={NetCostWithoutConditionCost}
-              ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
+              ViewMode={(isViewMode)}
               isFromMaster={true}
               EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
               basicRateBase={this.state.NetCostWithoutConditionCost}

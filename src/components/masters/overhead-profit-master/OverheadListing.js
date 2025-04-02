@@ -333,7 +333,7 @@ function OverheadListing(props) {
             isViewMode: isViewMode,
             costingTypeId: rowData.CostingTypeId,
         }
-        props.getDetails(data,rowData?.IsAssociated);
+        props.getDetails(data, rowData?.IsAssociated);
     }
 
     /**

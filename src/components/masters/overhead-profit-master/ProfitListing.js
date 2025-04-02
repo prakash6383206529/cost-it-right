@@ -331,7 +331,7 @@ function ProfitListing(props) {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode
         }
-        props.getDetails(data,rowData?.IsAssociated);
+        props.getDetails(data, rowData?.IsAssociated);
     }
 
     /**

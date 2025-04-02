@@ -526,7 +526,7 @@ function RMImportListing(props) {
     let isDeleteButton = false
 
 
-    if (EditAccessibility) {
+    if (EditAccessibility && rowData?.IsRMEditable) {
       isEditbale = true
     } else {
       isEditbale = false
