@@ -381,7 +381,7 @@ const MachineRateListing = (props) => {
     const rowData = props?.data;
     let isEditable = false
     let isDeleteButton = false
-    if (permissions?.Edit) { isEditable = true }
+    if (permissions?.Edit && rowData?.IsEditable) { isEditable = true }
     else { isEditable = false }
 
 

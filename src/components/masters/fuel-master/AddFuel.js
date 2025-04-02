@@ -36,6 +36,7 @@ import Switch from 'react-switch'
 import WarningMessage from "../../common/WarningMessage";
 import { LabelsClass } from '../../../helper/core';
 import TooltipCustom from '../../common/Tooltip';
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddFuel');
 
@@ -465,6 +466,13 @@ class AddFuel extends Component {
       return false;
     }
     let tempData = rateGrid[rateGridEditIndex];
+    let financialDataChanged = (Number(tempData.RateConversion) !== Number(fieldsObj?.RateConversion)) || (Number(tempData.RateLocalConversion) !== Number(fieldsObj?.RateLocalConversion)) || (Number(tempData.Rate) !== Number(fieldsObj?.Rate) || Number(tempData.cityId) !== Number(city?.value) || Number(tempData.countryId) !== Number(country?.value))
+    if (tempData?.IsFuelAssociated) {
+      if (financialDataChanged && checkEffectiveDate(effectiveDate, tempData.effectiveDate)) {
+        Toaster.warning('Please update the Effective date.')
+        return false
+      }
+    }
     tempData = {
       Id: tempData.Id,
       StateLabel: StateName?.label,
@@ -1361,7 +1369,7 @@ class AddFuel extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isViewMode || isEditFlag}
+                                  disabled={isViewMode}
                                   minDate={getEffectiveDateMinDate()}
                                   valueDescription={this.state?.effectiveDate}
 
@@ -1505,7 +1513,7 @@ class AddFuel extends Component {
                                               this.editItemDetails(index)
                                             }
                                           />
-                                          <button
+                                          {!item?.IsFuelAssociated && <button
                                             className="Delete"
                                             title='Delete'
                                             type={"button"}
@@ -1513,7 +1521,7 @@ class AddFuel extends Component {
                                             onClick={() =>
                                               this.deleteItem(index)
                                             }
-                                          />
+                                          />}
                                         </td>
                                       </tr>
                                     );

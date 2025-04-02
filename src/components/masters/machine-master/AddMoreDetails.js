@@ -44,7 +44,7 @@ import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
-import { convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import { checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import WarningMessage from '../../common/WarningMessage';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
@@ -142,7 +142,7 @@ class AddMoreDetails extends Component {
       DataToChange: [],
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
-      powerIdFromAPI: EMPTY_GUID,
+      powerIdFromAPI: null,
       finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !(getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) ? false : true,
       showPopup: false,
       levelDetails: {},
@@ -366,7 +366,6 @@ class AddMoreDetails extends Component {
             }
           }, 200);
         }, 1500);
-
         this.setState({
           fieldsObj: fieldsObj,
           selectedTechnology: selectedTechnology,
@@ -548,7 +547,7 @@ class AddMoreDetails extends Component {
 
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
-                processName: el.ProcessName,
+                ProcessName: el.ProcessName,
                 ProcessId: el.ProcessId,
                 UnitOfMeasurement: el.UnitOfMeasurement,
                 UnitOfMeasurementId: el.UnitOfMeasurementId,
@@ -993,7 +992,7 @@ class AddMoreDetails extends Component {
             this.setState({
               machineFullValue: newMachineFullValue,
               UOMName: responseData?.UOMName || 'UOM',
-              FuelEntryId: responseData?.FuelEntryId || EMPTY_GUID
+              FuelEntryId: responseData?.FuelEntryId || null
             })
             this.props.change('FuelCostPerUnit', checkForDecimalAndNull(newFuelCostPerUnit, this.props.initialConfiguration?.NoOfDecimalForPrice))
           })
@@ -1886,7 +1885,7 @@ class AddMoreDetails extends Component {
       const tempArray = [];
 
       tempArray.push(...processGrid, {
-        processName: processName.label,
+        ProcessName: processName.label,
         ProcessId: processName.value,
         UnitOfMeasurement: UOM.label,
         UnitOfMeasurementId: UOM.value,
@@ -1940,6 +1939,8 @@ class AddMoreDetails extends Component {
     const { fieldsObj } = this.props
     const MachineRateConversion = checkForNull(fieldsObj?.MachineRateConversion)
     const MachineRateLocalConversion = checkForNull(fieldsObj?.MachineRateLocalConversion ?? checkForNull(fieldsObj.MachineRate))
+    const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
+    const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
     let skipEditedItem = processGrid.filter((el, i) => {
       if (i === processGridEditIndex) return false;
@@ -2001,13 +2002,15 @@ class AddMoreDetails extends Component {
 
     let tempData = processGrid[processGridEditIndex];
     tempData = {
-      processName: processName.label,
+      ProcessName: processName.label,
       ProcessId: processName.value,
       UnitOfMeasurement: UOM.label,
       UnitOfMeasurementId: UOM.value,
       MachineRate: MachineRate,
       MachineRateConversion: MachineRateConversion,
       MachineRateLocalConversion: MachineRateLocalConversion,
+      OutputPerHours: OutputPerHours,
+      OutputPerYear: OutputPerYear,
     }
 
     tempArray = Object.assign([...processGrid], { [processGridEditIndex]: tempData })
@@ -2122,11 +2125,34 @@ class AddMoreDetails extends Component {
 
   handleCalculation = (ratebaseCurrency) => {
     const { fieldsObj, initialConfiguration } = this.props
+    const { plantCurrency, settlementCurrency, processGrid ,entryType} = this.state
+     // Update process grid with new rates
+     const updatedProcessGrid = processGrid.map(process => {
+      if (entryType) {
+        const MachineRateLocalConversion = convertIntoCurrency(process.MachineRate, plantCurrency)
+        const MachineRateConversion = convertIntoCurrency(
+          checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice),
+          settlementCurrency
+        )
+        return {
+          ...process,
+          MachineRateLocalConversion: checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice),
+          MachineRateConversion: checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice)
+        }
+      } else {
+        const MachineRateConversion = convertIntoCurrency(process.MachineRate, plantCurrency)
+        return {
+          ...process,
+          MachineRateConversion: checkForDecimalAndNull(MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice)
+        }
+      }
+    })
+
+    this.setState({ processGrid: updatedProcessGrid })
     const NoOfPieces = checkForNull(fieldsObj.NumberOfPieces)
     const BasicRate = checkForNull(fieldsObj.BasicRate)
     const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
     this.props.change('NetLandedCost', NetLandedCost)
-    const { plantCurrency, settlementCurrency, entryType } = this.state
     if (entryType) {
       const MachineRateLocalConversion = convertIntoCurrency(checkForNull(fieldsObj?.MachineRate), plantCurrency)
       this.props.change('MachineRateLocalConversion', checkForDecimalAndNull(MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice));
@@ -2325,10 +2351,6 @@ class AddMoreDetails extends Component {
     });
   }
 
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
   validateProcessGrid = (processGrid) => {
     if (!processGrid?.length) {
       Toaster.warning('Please add at least one process');
@@ -2337,20 +2359,40 @@ class AddMoreDetails extends Component {
     return true;
   };
 
-  checkDataChanges = (currentData, previousData) => {
-    const { values, files, DataToChange, machineType } = currentData;
-
+  checkNonFinancialDataChanges = (values, DataToChange) => {
+    const {files}=this.state
     return {
-      filesChanged: ((files ? JSON.stringify(files) : []) !== (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])),
-      machineNameChanged: String(DataToChange.MachineName) !== String(values.MachineName),
-      specificationChanged: String(DataToChange.Specification) !== String(values.Specification),
-      descriptionChanged: String(DataToChange.Description) !== String(values.Description),
-      remarkChanged: (DataToChange.Remark ?? '') !== (values.Remark ?? ''),
-      tonnageChanged: (DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') !== (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''),
-      manufactureChanged: String(DataToChange.Manufacture) !== String(values.Manufacture),
-      machineTypeChanged: String(DataToChange.MachineType) !== String(machineType.label)
+      nonFinancialDataNotChanged:((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : []))&&
+       String(DataToChange.MachineName??'') === String(values.MachineName??'')&&
+       String(DataToChange.Specification??'') === String(values.Specification??'')&&
+       String(DataToChange.Description??'') === String(values.Description??'')&&
+       (DataToChange.Remark ?? '') === (values.Remark ?? '')&&
+       String(DataToChange.Manufacture??'') === String(values.Manufacture??''),
     };
   };
+  checksFinancialDataNotChanged = (values,DataToChange) => {
+    const {processGrid}=this.state
+    const sortObject = obj => Object.fromEntries(Object.entries(obj).sort());
+
+const sortedProcessGrid = processGrid.map(sortObject);
+const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObject);
+    return{
+      financialDataNotChanged: JSON.stringify(sortedProcessGrid) === JSON.stringify(sortedMachineProcessRates) &&
+      checkForNull(values.LoanPercentage) === checkForNull(DataToChange?.LoanPercentage) &&
+      checkForNull(values.RateOfInterestPercentage) === checkForNull(DataToChange?.RateOfInterestPercentage) &&
+      checkForNull(values.NumberOfWorkingHoursPerYear) === checkForNull(DataToChange?.NumberOfWorkingHoursPerYear) &&
+      checkForNull(values.DepreciationAmount) === checkForNull(DataToChange?.DepreciationAmount) &&
+      checkForNull(values.MachineFloorAreaPerSquareFeet) === checkForNull(DataToChange?.MachineFloorAreaPerSquareFeet)&&
+      checkForNull(values.TotalMachineCostPerAnnum) === checkForNull(DataToChange?.TotalMachineCostPerAnnum)&&
+      JSON.stringify(this.state.labourGrid) === JSON.stringify(DataToChange?.MachineLabourRates)&&
+      checkForNull(values.TotalPowerCostPerYear) === checkForNull(DataToChange?.TotalPowerCostPerYear)&&
+      checkForNull(values.TotalFuelCostPerYear) === checkForNull(DataToChange?.TotalFuelCostPerYear)&&
+      checkForNull(values.TotalPowerCostPerHour) === checkForNull(DataToChange?.TotalPowerCostPerHour)&&
+      checkForNull(values.TotalCost) === checkForNull(DataToChange?.TotalCost)&&
+      JSON.stringify(this.props.processGroupApiData??[]) === JSON.stringify(DataToChange?.MachineProcessGroup??[])&&
+      (DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''),
+} 
+  }
 
   onSubmit = (values) => {
     const {
@@ -2369,18 +2411,31 @@ class AddMoreDetails extends Component {
 
     // Handle edit mode
     if (isEditFlag) {
-      const isApprovalRequired = CheckApprovalApplicableMaster(MACHINE_MASTER_ID);
+      const isSuperAdminOrFinalApprover = isFinalApprovar || userDetails().Role === 'SuperAdmin';
+      const isApprovalRequired = CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !isSuperAdminOrFinalApprover;
 
       // Check for data changes
-      const changes = this.checkDataChanges({ values, files, DataToChange, machineType });
-      const hasChanges = Object.values(changes).some(changed => changed);
-
-      // Validate effective date for associated machines
-      if (isMachineAssociated && !isDateChange && IsFinancialDataChanged) {
-        Toaster.warning('Please update the effective date');
-        this.setState({ setDisable: false });
-        return false;
+      const nonFinancialDataNotChanged = this.checkNonFinancialDataChanges(values, DataToChange).nonFinancialDataNotChanged;
+      let financialDataNotChanged=this.checksFinancialDataNotChanged(values,DataToChange).financialDataNotChanged
+      if (financialDataNotChanged && nonFinancialDataNotChanged) {
+        this.setState({ isEditBuffer: true })
+        if (isApprovalRequired) {
+          Toaster.warning('Please change data to send machine for approval')
+        }
+        else {
+          Toaster.warning('Please change data to update machine')
+        }
+        return false
       }
+      else {
+        if ((!financialDataNotChanged && this.props?.isMachineAssociated)) {
+          if (checkEffectiveDate(editDetails?.fieldsObj?.EffectiveDate, values.EffectiveDate)) {
+            Toaster.warning('Please update the effective date')
+            return false
+          }
+        }
+      }
+    
 
       // Prepare machine data for update
       const machineData = {
@@ -2389,7 +2444,6 @@ class AddMoreDetails extends Component {
         IsFinancialDataChanged: isDateChange,
         IsForcefulUpdated: true
       };
-
       // Handle approval flow
       if (isApprovalRequired && !isFinalApprovar) {
         this.setState({
@@ -2398,7 +2452,6 @@ class AddMoreDetails extends Component {
           formDataState: requestData
         });
       } else {
-        this.props.reset();
         this.handleMachineDetailsAPI(machineData, true);
       }
 
@@ -2415,7 +2468,6 @@ class AddMoreDetails extends Component {
         });
       } else {
         this.setState({ IsSendForApproval: false });
-        this.props.reset();
         this.handleMachineDetailsAPI(requestData, false);
       }
     }
@@ -2521,7 +2573,7 @@ class AddMoreDetails extends Component {
 
       // Power and fuel details
       IsUsesFuel,
-      PowerId: powerId || "",
+      PowerId: powerIdFromAPI || null,
       UtilizationFactorPercentage: values.UtilizationFactorPercentage,
       PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
       PowerRatingPerKW: values.PowerRatingPerKW,
@@ -2584,7 +2636,7 @@ class AddMoreDetails extends Component {
       // IDs and references
       CostingTypeId,
       FuelEntryId,
-      PowerEntryId: powerIdFromAPI,
+      PowerEntryId: null,
 
       // CRM heads
       ...crmHeads
@@ -2980,14 +3032,6 @@ class AddMoreDetails extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated, t, data } = this.props;
-
-
-
-
-
-
-
-
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
       isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, CostingTypePermission, disableSendForApproval, tourContainer, entryType } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
@@ -3230,7 +3274,7 @@ class AddMoreDetails extends Component {
                                 required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={(disableMachineType || this.state.isViewFlag || this.state.labourType.length !== 0)}
+                                disabled={isEditFlag}
                               />
                             </div>
                           </div>
@@ -3448,7 +3492,7 @@ class AddMoreDetails extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged || this.state.disableEffectiveDate}
+                                disabled={this.state.isViewFlag}
                               />
                             </div>
                           </div>
@@ -4979,7 +5023,7 @@ class AddMoreDetails extends Component {
                                     this.state.processGrid.map((item, index) => {
                                       return (
                                         <tr key={index}>
-                                          <td>{item.processName}</td>
+                                          <td>{item.ProcessName}</td>
                                           <td className='UOM-label-container'>{displayUOM(item.UnitOfMeasurement)}</td>
                                           {/* <td>{item.OutputPerHours}</td>    COMMENTED FOR NOW MAY BE USED LATER
                                           <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration?.NoOfDecimalForInputOutput)}</td> */}

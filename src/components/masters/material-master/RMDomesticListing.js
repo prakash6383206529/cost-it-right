@@ -507,7 +507,7 @@ function RMDomesticListing(props) {
         let isEditbale = false
         let isDeleteButton = false
         const IsRFQRawMaterial = Boolean(rowData?.IsRFQRawMaterial);
-        if (EditAccessibility) {
+        if (EditAccessibility && rowData?.IsRMEditable) {
             isEditbale = true
         } else {
             isEditbale = false

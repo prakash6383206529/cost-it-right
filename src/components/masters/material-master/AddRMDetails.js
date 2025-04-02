@@ -126,7 +126,6 @@ function AddRMDetails(props) {
                 plantArray.push({ label: item?.PlantName, value: item?.PlantId })
                 return plantArray;
             })
-
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             setValue('Material', { label: Data?.MaterialType, value: Data?.MaterialId })
@@ -137,7 +136,7 @@ function AddRMDetails(props) {
                 setValue('clientName', { label: Data?.CustomerName, value: Data?.CustomerId })
                 setValue('Technology', { label: Data?.TechnologyName, value: Data?.TechnologyId })
                 setValue('Plants', plantArray)
-                setValue('RawMaterialName', { label: Data?.RawMaterialName, value: Data?.RawMaterialId })
+                setValue('RawMaterialName', { label: Data?.RawMaterialName, value: Data?.RawMaterial })
                 setValue('RawMaterialGrade', { label: Data?.RawMaterialGradeName, value: Data?.RMGrade })
                 setValue('RawMaterialSpecification', { label: Data?.RawMaterialSpecificationName, value: Data?.RMSpec })
                 setValue('RawMaterialCategory', { label: Data?.RawMaterialCategoryName, value: Data?.Category })

@@ -470,7 +470,7 @@ const BOPDomesticListing = (props) => {
 
     let isEditbale = false
     let isDeleteButton = false
-    if (permissions?.Edit) {
+    if (permissions?.Edit && rowData.IsBOPEditable) {
       isEditbale = true
     } else {
       isEditbale = false
