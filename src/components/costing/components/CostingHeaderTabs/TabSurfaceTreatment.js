@@ -452,11 +452,11 @@ function TabSurfaceTreatment(props) {
 
           subAssemblyToUpdate.IsOpen = subAssemblyToUpdate.PartType !== "Part" ? !subAssemblyToUpdate.IsOpen : false
 
-          console.log(subAssemblyToUpdate, "subAssembly to update before function")
+
           let obj = totalSubAssemblyCalcuation(subAssemblyToUpdate, childArray)
-          console.log(obj, "obj after function")
+
           let totalObj = { ...subAssemblyToUpdate, ...obj }
-          console.log(totalObj, "Total Obj")
+
 
 
           tempArrForCosting = Object.assign([...tempArrForCosting], { [subbAssemblyIndex]: totalObj })
