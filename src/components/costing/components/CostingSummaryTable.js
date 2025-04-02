@@ -1569,9 +1569,23 @@ const CostingSummaryTable = (props) => {
         obj.sTreatment = "Multiple Surface Treatment"
         return obj
       } else if (obj.CostingHeading !== VARIANCE) {
-
         obj.gWeight = (obj?.netRMCostView && reducer(obj?.netRMCostView))
         obj.fWeight = (obj?.netRMCostView && reducerFinish(obj?.netRMCostView))
+        if (obj.bestCost) {
+          obj.nPackagingAndFreight = obj.NetFreightPackagingCostConversion ?? "-"
+          obj.totalToolCost = obj.NetToolCostConversion ?? "-"
+          obj.netRM = obj.NetRawMaterialsCostConversion ?? "-"
+          obj.netBOP = obj.NetBoughtOutPartCostConversion ?? "-"
+          obj.nConvCost= obj.NetConversionCostConversion ??"-"
+          if ((getConfigurationKey()?.IsBasicRateAndCostingConditionVisible)) {
+            obj.BasicRate = 
+              (obj.nPackagingAndFreight === "-" ? 0 : checkForDecimalAndNull(obj.nPackagingAndFreight , initialConfiguration?.NoOfDecimalForPrice)) + 
+              (obj.totalToolCost === "-" ? 0 : checkForDecimalAndNull(obj.totalToolCost, initialConfiguration?.NoOfDecimalForPrice)) + 
+              (obj.netRM === "-" ? 0 : checkForDecimalAndNull(obj.netRM, initialConfiguration?.NoOfDecimalForPrice)) + 
+              (obj.netBOP === "-" ? 0 : checkForDecimalAndNull(obj.netBOP, initialConfiguration?.NoOfDecimalForPrice)) + 
+              (obj.nConvCost === "-" ? 0 : checkForDecimalAndNull(obj.nConvCost, initialConfiguration?.NoOfDecimalForPrice));
+          }
+        }
         return obj
       } else {
         let objNew = { ...obj }
@@ -2747,7 +2761,7 @@ const CostingSummaryTable = (props) => {
                                 </th></tr>}
 
                               <tr className={highlighter("netRM", "main-row")}>
-                                <th>Net RM Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT))}</th>                                
+                                <th>Net RM Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT))}</th>
                                 {viewCostingData &&
                                   viewCostingData?.map((data, index) => {
                                     return (
