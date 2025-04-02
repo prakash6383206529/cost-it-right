@@ -1956,7 +1956,7 @@ class AddOperation extends Component {
                         {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state?.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || ((initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) && !CostingTypePermission) ?
                           <button id="AddOperation_SendForApproval" type="submit"
                             class="user-btn approval-btn save-btn mr5"
-                            disabled={isViewMode || setDisable || disableSendForApproval}
+                            disabled={isViewMode || setDisable || disableSendForApproval || this.state?.showWarning || this.state?.showPlantWarning}
                           >
                             <div className="send-for-approval"></div>
                             {'Send For Approval'}
@@ -1966,7 +1966,7 @@ class AddOperation extends Component {
                             id="AddOperation_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
-                            disabled={isViewMode || setDisable || disableSendForApproval}
+                            disabled={isViewMode || setDisable || disableSendForApproval || this.state?.showWarning || this.state?.showPlantWarning}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}

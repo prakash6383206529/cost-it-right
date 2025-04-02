@@ -1663,7 +1663,7 @@ function AddBudget(props) {
                                                         <button type="submit"
                                                             id='AddBudget_SendForApproval'
                                                             className="user-btn approval-btn save-btn mr5"
-                                                            disabled={setDisable || disableSendForApproval || isViewMode}
+                                                            disabled={setDisable || disableSendForApproval || isViewMode || showWarning || showPlantWarning}
                                                         >
                                                             <div className="send-for-approval"></div>
                                                             {'Send For Approval'}
@@ -1673,7 +1673,7 @@ function AddBudget(props) {
                                                             type="submit"
                                                             id="AddBudget_Save"
                                                             className="user-btn mr5 save-btn"
-                                                            disabled={setDisable || disableSendForApproval || isViewMode}
+                                                            disabled={setDisable || disableSendForApproval || isViewMode || showWarning || showPlantWarning}
                                                         >
                                                             <div className={"save-icon"}></div>
                                                             {isEditFlag ? "Update" : "Save"}

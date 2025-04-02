@@ -183,6 +183,7 @@ class AddMoreDetails extends Component {
       plantCurrencyID: editDetails?.plantCurrencyID || '',
       hidePlantCurrency: editDetails?.hidePlantCurrency ? editDetails?.hidePlantCurrency : false,
       showPlantWarning: false,
+      showWarning: false,
       disableEffectiveDate: false,
       isImport: editDetails?.entryType,
       MachineRateWithOutInterestAndDepreciation: null,
@@ -5194,7 +5195,7 @@ class AddMoreDetails extends Component {
                               <button id="AddMoreDetails_SendForApproval" type="submit"
                                 class="user-btn approval-btn save-btn mr5"
 
-                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval}
+                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval || this.state.showPlantWarning ||this.state.showWarning}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -5204,7 +5205,7 @@ class AddMoreDetails extends Component {
                               <button
                                 type="submit"
                                 className="user-btn mr5 save-btn"
-                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval}
+                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval || this.state.showPlantWarning || this.state.showWarning}
                               >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? "Update" : "Save"}
