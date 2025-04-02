@@ -17,6 +17,7 @@ import { WACTypeId } from '../../../../config/constants';
 import { IsPartType } from '../CostingDetails';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { createSaveAssemblyRMCCObject } from '../../CostingUtilSaveObjects';
+import Toaster from '../../../common/Toaster';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology, itemInState } = props;
@@ -127,6 +128,11 @@ function AddAssemblyOperation(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
+    const hasMissingApplicability = operationGridData?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
+    if (operationGridData?.length > 0 && hasMissingApplicability) {
+      Toaster.warning('Please select Applicability for all operations');
+      return false;
+    }
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]

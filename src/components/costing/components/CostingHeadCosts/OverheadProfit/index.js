@@ -799,9 +799,9 @@ function OverheadProfit(props) {
   */
   const getCCCost = (type = '') => {
     if (type === 'overhead') {
-      return checkForNull(headerCosts?.NetProcessCostForOverhead) + checkForNull(headerCosts?.NetOperationCostForOverhead) +  totalToolCost;
+      return checkForNull(headerCosts?.NetProcessCostForOverhead) + checkForNull(headerCosts?.NetOperationCostForOverhead) +  checkForNull(totalToolCost);
     } else if (type === 'profit') {
-      return checkForNull(headerCosts?.NetProcessCostForProfit) +checkForNull(headerCosts?.NetOperationCostForProfit) +totalToolCost;
+      return checkForNull(headerCosts?.NetProcessCostForProfit) +checkForNull(headerCosts?.NetOperationCostForProfit) +checkForNull(totalToolCost) ;
     }
   }
   /**
