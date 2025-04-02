@@ -668,7 +668,7 @@ function TabRMCC(props) {
       newItem.CostingPartDetails.TotalOtherOperationCostComponent = obj?.CostingPartDetails?.TotalOtherOperationCostComponent
       newItem.CostingPartDetails.TotalOtherOperationCostPerSubAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly
       newItem.CostingPartDetails.TotalOtherOperationCostPerAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly
-      newItem.CalculatorType = ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType
+      newItem.CalculatorType = ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType ? ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType : ''
       newItem.CostingPartDetails.BOPHandlingChargeType = obj?.CostingPartDetails?.BOPHandlingChargeType;
       newItem.CostingPartDetails.CostingRawMaterialsCost = obj?.CostingPartDetails?.CostingRawMaterialsCost;
       newItem.CostingPartDetails.CostingBoughtOutPartCost = obj?.CostingPartDetails?.CostingBoughtOutPartCost;
@@ -1529,7 +1529,7 @@ function TabRMCC(props) {
           newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
           newItem.CostingPartDetails.IsRMCutOffApplicable = obj?.CostingPartDetails?.IsRMCutOffApplicable
           newItem.CostingPartDetails.TotalOtherProcessCostPerAssembly = obj?.CostingPartDetails?.TotalOtherProcessCostPerAssembly
-          newItem.CalculatorType = ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType
+          newItem.CalculatorType = ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType ? ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType : ''
         }
         if (item.CostingChildPartDetails.length > 0) {
           mapArray(newItem.CostingChildPartDetails)

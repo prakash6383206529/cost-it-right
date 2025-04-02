@@ -70,7 +70,7 @@ function OpenWeightCalculator(props) {
     let calculatorType = ''
     if (!isSummary) {
       if (weightData.CalculatorType) {
-        calculatorType = weightData.CalculatorType
+        calculatorType = weightData.CalculatorType ? weightData.CalculatorType : ''
       } else {
         calculatorType = (props.rmData[0] && props.rmData[0].CalculatorType && props.rmData[0].WeightCalculationId) ? props.rmData[0].CalculatorType : ''
       }

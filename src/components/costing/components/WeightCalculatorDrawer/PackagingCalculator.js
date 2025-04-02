@@ -222,7 +222,7 @@ function PackagingCalculator(props) {
     ]
 
     const packagingCalculatorSection2 = [
-        { label: t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with added costs)' }), name: 'TotalCostOfCrateWithAddedCost', mandatory: false, disabled: true, tooltip: { text: `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Total added cost' })}`, width: '250px', disabledIcon: true } },
+        { label: t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with additional costs)' }), name: 'TotalCostOfCrateWithAddedCost', mandatory: false, disabled: true, tooltip: { text: `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}`, width: '250px', disabledIcon: true } },
         { label: t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' }), name: 'AmortizedNoOfYears', validate: { maxLength3 }, mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('weightOfCover', { defaultValue: 'Weight of cover (kg)' }), name: 'WeightOfCover', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' }), name: 'CostOfCoverPerKg', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
@@ -234,7 +234,7 @@ function PackagingCalculator(props) {
         { label: t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' }), name: 'TotalCostOfSpacerPackingInsert', mandatory: false, disabled: true, tooltip: { text: `${t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' })} * ${t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' })} - ${t('spacerPackingInsertRecoveryCostPerKg', { defaultValue: 'Spacer/packing/insert recovery cost per kg' })}`, width: '250px', disabledIcon: true } },
         {
             label: t('packagingCost', { defaultValue: 'Packaging Cost' }), name: 'PackingCost', mandatory: false, disabled: true, tooltip: {
-                text: `(${t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with added costs)' })} / (${t('volumePerAnnum', { defaultValue: 'Volume per annum' })} * ${t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' })})) + 
+                text: `(${t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with additional costs)' })} / (${t('volumePerAnnum', { defaultValue: 'Volume per annum' })} * ${t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' })})) + 
             ((${t('weightOfCover', { defaultValue: 'Weight of cover (kg)' })} * ${t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' })}) / ${t('noOfPartsPerCover', { defaultValue: 'No. of parts per cover' })}) + 
             ${t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' })}`,
                 width: '250px', disabledIcon: true
@@ -493,7 +493,7 @@ function PackagingCalculator(props) {
                                             <Col md="3">
                                                 <div>
                                                     <button type="button" className="user-btn pull-left mt-5 mr-2" onClick={handleSubmitCost(addData)}>{state.isEditIndex ? 'Update' : 'Add'}</button>
-                                                    <button type="button" className="reset-btn pull-left mt-5" onClick={resetFormFields}>Cancel</button>
+                                                    <button type="button" className="reset-btn pull-left mt-5" onClick={resetFormFields}>Reset</button>
                                                 </div>
                                             </Col>
                                         </FormFieldsRenderer>
@@ -531,7 +531,7 @@ function PackagingCalculator(props) {
 
                                                     }
                                                     <tr className='table-footer'>
-                                                        <td colSpan={2} className="text-right font-weight-600 fw-bold">{'Total Added Cost:'}</td>
+                                                        <td colSpan={2} className="text-right font-weight-600 fw-bold">{'Additional Cost:'}</td>
 
                                                         <td colSpan={3} className="text-left">
                                                             {checkForDecimalAndNull(state?.totalAddedCost, NoOfDecimalForPrice)}
