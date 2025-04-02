@@ -108,10 +108,11 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj }) => {
                     />
                 </Col>
                 <Col md="4">
-                    <TooltipCustom disabledIcon={true} tooltipText="Hanger Cost per Part = Hanger Factor / No. of Parts per Hanger" />
+                    <TooltipCustom disabledIcon={true} id="HangerCostPerPart" tooltipText="Hanger Cost per Part = Hanger Factor / No. of Parts per Hanger" />
                     <TextFieldHookForm
                         label="Hanger Cost per Part"
                         name={`HangerCostPerPart`}
+                        id="HangerCostPerPart"
                         Controller={Controller}
                         control={control}
                         register={register}
