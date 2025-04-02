@@ -4,7 +4,7 @@ import { Col, Container, Row, Table } from 'reactstrap'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import Button from '../../../../layout/Button'
-import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, loggedInUserId, maxLength7, number } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, loggedInUserId, maxLength7, number, percentageLimitValidation } from '../../../../../helper'
 import TooltipCustom from '../../../../common/Tooltip'
 import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../../../common/NoContentFound'
@@ -17,7 +17,7 @@ import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
 const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
-const TABLE_HEADERS = ['Paint Coat', 'Raw Material', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate', 'Paint Cost', 'Action']
+const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Action']
 
 const FORM_DEFAULTS = {
     mode: 'onChange',
@@ -95,6 +95,8 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         ...prev,
                         rawMaterialList: Data
                     }))
+                    let index = TABLE_HEADERS.findIndex(el => el === 'RM Rate (Currency)')
+                    TABLE_HEADERS[index] = `RM Rate (${Data[0]?.CostingCurrency})`
                 } else if (res && res.status === 204) {
                     setState(prev => ({
                         ...prev,
@@ -141,7 +143,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                     }))
                 }, 100)
                 setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(Data?.TotalPaintCost, NoOfDecimalForPrice))
-                setValueTableForm(`TapeCost`, checkForDecimalAndNull(Data?.TapeCost, NoOfDecimalForPrice))
+                setValueTableForm(`TapeCost`, Data?.TapeCost && Data?.TapeCost !== 0 ? checkForDecimalAndNull(Data?.TapeCost, NoOfDecimalForPrice) : '')
             } else {
                 setState(prev => ({
                     ...prev,
@@ -151,19 +153,56 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         }))
     }
     const deleteItem = (item, parentIndex) => {
+        // Clear form values for all rows since indexes will shift
+        calculateState.Coats.forEach((coat, pIndex) => {
+            coat.RawMaterials.forEach((rm, cIndex) => {
+                setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+                setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+                setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+                setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+                setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+            })
+        })
+
+        // Update state by filtering out deleted row
+        const updatedCoats = calculateState.Coats.filter((_, i) => i !== parentIndex)
+
+        // Set the updated coats
         setCalculateState(prev => ({
             ...prev,
-            Coats: prev.Coats.filter((_, i) => i !== parentIndex)
+            Coats: updatedCoats
         }))
-        calculateTotalCost(calculateState.Coats.filter((_, i) => i !== parentIndex))
-        item?.RawMaterials?.map((rm, index) => {
-            setValueTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${index}`, '')
-            return null
-        })
+
+        // Re-populate form values for remaining rows with correct new indexes
+        setTimeout(() => {
+            updatedCoats.forEach((coat, newParentIndex) => {
+                coat.RawMaterials.forEach((rm, childIndex) => {
+                    setValueTableForm(
+                        `SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.SurfaceArea ? checkForDecimalAndNull(rm?.SurfaceArea, NoOfDecimalForInputOutput) : ''
+                    )
+                    setValueTableForm(
+                        `Consumption${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.Consumption ? checkForDecimalAndNull(rm?.Consumption, NoOfDecimalForInputOutput) : ''
+                    )
+                    setValueTableForm(
+                        `RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.RejectionAllowancePercentage ? checkForDecimalAndNull(rm?.RejectionAllowancePercentage, NoOfDecimalForInputOutput) : ''
+                    )
+                    setValueTableForm(
+                        `RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.RejectionAllowance ? checkForDecimalAndNull(rm?.RejectionAllowance, NoOfDecimalForInputOutput) : ''
+                    )
+                    setValueTableForm(
+                        `NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.NetCost ? checkForDecimalAndNull(rm?.NetCost, NoOfDecimalForPrice) : ''
+                    )
+                })
+            })
+        }, 50)
+
+        // Recalculate total cost with remaining rows
+        calculateTotalCost(updatedCoats)
     }
 
     const addData = data => {
@@ -175,6 +214,14 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         }
         let paintCoatSequence = calculateState?.Coats?.length + 1
         let rawMaterialSequence = data?.RawMaterial?.length + 1
+        data?.RawMaterial?.map((item, index) => {
+            setValueTableForm(`SurfaceArea${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`Consumption${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`RejectionAllowancePercentage${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`RejectionAllowance${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`NetCost${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            return null
+        })
         setCalculateState(prev => ({
             ...prev,
             Coats: [...prev.Coats, {
@@ -186,6 +233,8 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                 }))
             }]
         }))
+
+
 
         resetInitialForm({
             PaintCoat: null,
@@ -303,7 +352,11 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                     register={registerTableForm}
                     rules={{
                         required: required,
-                        validate: { number, checkWhiteSpaces, maxLength7 }
+                        validate: { number, checkWhiteSpaces, maxLength7, ...(name === 'RejectionAllowancePercentage' ? { percentageLimitValidation } : {}) },
+                        max: name === 'RejectionAllowancePercentage' ? {
+                            value: 100,
+                            message: 'Percentage cannot be greater than 100'
+                        } : {},
                     }}
                     handleChange={onHandleChange ?? (() => { })}
                     defaultValue={''}
@@ -337,6 +390,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         </td>
                     )}
                     <td>{rm?.RawMaterial || '-'}</td>
+                    <td>{rm?.UOM}</td>
                     <td>{renderInputBox({
                         item: rm,
                         name: 'SurfaceArea',
@@ -395,7 +449,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         disabled: true,
                         tooltipText: 'Rejection Allowance = (Part Surface Area * Consumption) * Rejection Allowance Percentage / 100'
                     })}</td>
-                    <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, NoOfDecimalForInputOutput) || ''}</td>
+                    <td width="90">{checkForDecimalAndNull(rm?.BasicRatePerUOM, NoOfDecimalForInputOutput) || ''}</td>
                     <td>{renderInputBox({
                         item: rm,
                         name: 'NetCost',
@@ -404,7 +458,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         childIndex,
                         required: false,
                         disabled: true,
-                        tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate'
+                        tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate (Currency/UOM)'
                     })}</td>
                     {childIndex === 0 && !ViewMode && (
                         <td width="50" rowSpan={item.RawMaterials.length}>

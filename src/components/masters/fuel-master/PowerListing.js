@@ -25,6 +25,7 @@ import { useRef } from 'react';
 import Button from "../../layout/Button";
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import Switch from 'react-switch'
+import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -181,6 +182,15 @@ const PowerListing = (props) => {
     const cellValue = props?.value;
     return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration?.NoOfDecimalForPrice) : "";
   };
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+     
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+    }
+  };
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
@@ -306,6 +316,7 @@ const PowerListing = (props) => {
     customNoRowsOverlay: NoContentFound,
     costFormatter: costFormatter,
     effectiveDateFormatter: effectiveDateFormatter,
+    statusFilter: CostingHeadDropdownFilter,
   };
 
   return (
@@ -395,7 +406,9 @@ const PowerListing = (props) => {
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}
               >
-                <AgGridColumn field="CostingType" headerName="Costing Head"></AgGridColumn>
+                <AgGridColumn field="CostingType" headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
+                                            floatingFilterComponent="statusFilter"
+                                            cellRenderer={"combinedCostingHeadRenderer"}></AgGridColumn>
                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>

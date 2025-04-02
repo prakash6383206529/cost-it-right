@@ -53,7 +53,7 @@ function ViewRM(props) {
     setIsScrapRecoveryApplied((_.map(viewRM, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
   }, [viewRM])
 
-  const setCalculatorData = (res, index, type=null) => {
+  const setCalculatorData = (res, index, type='') => {
     if (res && res.data && res.data.Data) {
       const data = res.data.Data
       setCalciData({ ...viewRM[index], WeightCalculatorRequest: data, ...(type && { CalculatorType: type }) })
@@ -459,7 +459,7 @@ function ViewRM(props) {
                   CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
                   fromCostingSummary={props.fromCostingSummary}
                   rmData={viewCostingData[props.index]?.technologyId === RUBBER ? (viewCostingData[props.index]?.CalculatorType === "Standard" ? calciData.WeightCalculatorRequest.RawMaterialRubberStandardWeightCalculator : calciData.WeightCalculatorRequest.CostingRubberCalculationRawMaterials) : calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
-                  calculatorType={viewCostingData[props.index]?.CalculatorType}
+                  calculatorType={viewCostingData[props.index]?.CalculatorType ? viewCostingData[props.index]?.CalculatorType : '' }
 
                 />
               )}

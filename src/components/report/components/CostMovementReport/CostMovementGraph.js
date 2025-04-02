@@ -419,7 +419,7 @@ function CostMovementGraph(props) {
             },
             y: {
                 beginAtZero: true,
-                grace: '5%',
+                grace: '10%',
                 ticks: {
                     padding: 5,
                 }
@@ -500,7 +500,7 @@ function CostMovementGraph(props) {
             },
             y: {
                 beginAtZero: true,
-                grace: '5%',
+                grace: '10%',
                 ticks: {
                     padding: 5,
                 }

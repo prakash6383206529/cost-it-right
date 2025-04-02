@@ -570,7 +570,7 @@ function ProcessCost(props) {
         // el.CostingConditionNumber = processApplicabilitySelect?.find(type => type?.value === el?.Applicability?.value)?.label || null
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el?.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue(`${ProcessGridFields}.${index}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+        setValue(`${ProcessGridFields}.${index}.Applicability`, el?.CostingConditionNumber ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
         setValue(`${ProcessGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
         return null
       })
@@ -841,7 +841,7 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${ProcessGridFields}.${i}.remarkPopUp`, el.Remark)
-        setValue(`${ProcessGridFields}.${i}.Applicability`, { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId })
+        setValue(`${ProcessGridFields}.${i}.Applicability`, el?.CostingConditionNumber ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
         setValue(`${ProcessGridFields}.${i}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
 
         return null
@@ -1112,10 +1112,10 @@ function ProcessCost(props) {
         ...tempData,
         CostingConditionMasterAndTypeLinkingId: e?.value,
         CostingConditionNumber: e?.label,
-        Applicability: {
+        Applicability: e?.value ? {
           value: e.value,
           label: e.label
-        },
+        } : null,
         // ...netCosts
       }
     }
@@ -1129,10 +1129,10 @@ function ProcessCost(props) {
           ...childProcess,
           CostingConditionMasterAndTypeLinkingId: e?.value,
           CostingConditionNumber: e?.label,
-          Applicability: {  // Store complete applicability object for child processes
+          Applicability: e?.value ? {  // Store complete applicability object for child processes
             value: e?.value,
             label: e?.label
-          },
+          } : null,
           // ...childNetCosts
         };
       });
@@ -1187,7 +1187,7 @@ function ProcessCost(props) {
           ({ processCost, ProcessCostWithOutInterestAndDepreciation } = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour, tempData?.MHRWithOutInterestAndDepreciation))
 
       }
-      const parentApplicability = processTempData.Applicability?.label;
+      const parentApplicability = processTempData.Applicability?.label || null;
 
       //const netCosts = calculateNetCosts(processCost, parentApplicability, "Process", ProcessCostWithOutInterestAndDepreciation, tempData?.IsDetailed, tempData?.UOMType);
       tempData = {
@@ -1857,7 +1857,7 @@ function ProcessCost(props) {
                                 defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
                                   label: item?.CostingConditionNumber,
                                   value: item?.CostingConditionMasterAndTypeLinkingId
-                                } : ''}
+                                } : null}
                                 options={processApplicabilitySelect}
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}

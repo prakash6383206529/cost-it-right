@@ -10,7 +10,7 @@ function CostingHeadDropdownFilter(props) {
     
     const [currentValue, setCurrentValue] = useState(null);
     const CostingHeadOptions = reactLocalStorage.getObject('CostingHeadOptions');
-    const getGridHeight = useSelector(state => state.comman.getGridHeight)
+    const getGridHeight = useSelector(state => state?.comman?.getGridHeight)
     const isResetCostingHead = useSelector((state) => state?.comman?.isResetCostingHead);
     const { costingHeadFilter } = useSelector((state) => state?.comman);
 

@@ -107,7 +107,6 @@ function ExtraCost(props) {
     const handleEdit = (indexValue) => {
         setEditIndex(indexValue);
         setIsEditMode(true);
-
         let selectedData = tableData[indexValue];
         setType({ label: selectedData?.UOM, value: selectedData?.UOM })
         setValue('Type', { label: selectedData?.UOM, value: selectedData?.UOM })
@@ -254,6 +253,13 @@ function ExtraCost(props) {
 
         if (existingCondition) {
             Toaster.warning('Applicability already exists');
+            return;
+        }
+        const existingFixedDescription = tableData.find(item =>
+            item.Description.toLowerCase() === data?.CostDescription.toLowerCase()
+        );
+        if (type?.label === 'Fixed' && existingFixedDescription) {
+            Toaster.warning('Data already exists');
             return;
         }
         let tempData = [...tableData]

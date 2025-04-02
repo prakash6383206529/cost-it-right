@@ -73,38 +73,23 @@ function StandardRub(props) {
 
 
     useEffect(() => {
-
-        let arr = []
-        let count = 0
-        rmData && rmData.map((item) => {
-            arr.push({
-                label: item.RMName, value: count
-            })
-            count++
-            return null
-        })
-        setRmDropDownData(arr)
-    }, [])
-
-    useEffect(() => {
-        let arr = [];
-        let count = 1;
-    
-        if ((tableData && tableData.length > 0) && (rmData && rmData.length > 0)) {
-            arr = rmData
-                .filter(item => {
-                    return !tableData.some(tableItem => tableItem.RawMaterialId === item.RawMaterialId);
-                })
-                .map(item => {
-                    return {
-                        label: item.RMName,
-                        value: count++
-                    };
-                });
-    
+        try {
+            if (!Array.isArray(rmData)) return;
+            
+            const arr = rmData.map(item => ({
+                // Only show RMName and Grade in label, but keep ID in value/code
+                label: `${item.RMName || ''}${item.Grade ? ` (${item.Grade})` : ''}`,
+                value: item.RawMaterialId,
+                code: item.RawMaterialId,
+                originalData: item
+            })).filter(item => item.code);
+            
             setRmDropDownData(arr);
+        } catch (error) {
+            console.error('Error populating RM dropdown:', error);
+            setRmDropDownData([]);
         }
-    }, [tableData]);
+    }, [rmData])
 
     useEffect(() => {
         if (Number(getValues('FinishWeight') < dataToSend.GrossWeight)) {
@@ -171,26 +156,38 @@ function StandardRub(props) {
 
 
     const handleRMDropDownChange = (e) => {
-        rmData && rmData.map((item, index) => {
-            if (item.RMName === e.label) {
-                let data = rmData[index]
-                if(data?.Density === 0){
-                    setRmRowDataState({})
-                    setIsDisableAdd(true)
-                    Toaster.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
-                }else{
-                    setIsDisableAdd(false)
-                    setRmRowDataState(rmData[index])
+        try {
+            if (!e || !e.code || !Array.isArray(rmData)) return;
+
+            const selectedRMId = e.code;
+            const selectedMaterial = rmData.find(item => item.RawMaterialId === selectedRMId);
+
+            if (!selectedMaterial) {
+                console.warn('Selected material not found');
+                return;
+            }
+
+            if (selectedMaterial.Density === 0) {
+                setRmRowDataState({});
+                setIsDisableAdd(true);
+                Toaster.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.");
+            } else {
+                setIsDisableAdd(false);
+                setRmRowDataState(selectedMaterial);
+            }
+
+            // Set previous values if available
+            if (tableData.length > 0) {
+                const lastRow = tableData[tableData.length - 1];
+                if (lastRow) {
+                    setValue('InnerDiameter', lastRow.OuterDiameter || '');
+                    setValue('Length', lastRow.Length || '');
+                    setValue('CuttingAllowance', lastRow.CuttingAllowance || '');
                 }
             }
-            return false
-        })
-
-        if (tableData.length > 0) {
-            let obj = tableData[tableData.length - 1]
-            setValue('InnerDiameter', obj.OuterDiameter)
-            setValue('Length', obj.Length)
-            setValue('CuttingAllowance', obj.CuttingAllowance)           
+        } catch (error) {
+            setRmRowDataState({});
+            setIsDisableAdd(true);
         }
     }
 
@@ -214,53 +211,45 @@ function StandardRub(props) {
 
 
     const deleteItem = (gridData) => {
+        try {
+            setAgGridTable(false);
 
-        let arr = []
-        let count = 0
-        rmData && rmData.map((item) => {
-            arr.push({
-                label: item.RMName, value: count
-            })
-            count++
-            return null
-        })
-        setAgGridTable(false)
-        gridData.pop()
-        // grid.applyTransaction({ remove: [rowData] })
-        setTableData([...gridData])
-        // setAgGridTable(true)
-        let tableDataArray = [...gridData]
-        // let totalRMCost = tableDataArray && tableDataArray.reduce((accummlator, el) => {
-        //     return accummlator + el.NetRMCost
-        // }, 0)
-        // setTotalRMCost(totalRMCost)
-        // calculateTotalRmCost(tableDataArray);
-
-
-        /////
-
-        let dropDown = []
-        arr && arr.map((item) => {
-            let count = 0
-            gridData && gridData.map((ele) => {
-                if (item.label === ele.RawMaterialName) {
-                    count++
-                }
-                return null
-            })
-
-            if (count > 0) {
-                return false
-            } else {
-                dropDown.push(item)
+            if (!Array.isArray(gridData)) {
+                console.error('Invalid grid data');
+                return;
             }
-            return null
-        })
-        setRmDropDownData(dropDown)
-        /////
-        setTimeout(() => {
-            setAgGridTable(true)
-        }, 300);
+
+            // Remove last item
+            const newGridData = [...gridData];
+            const removedItem = newGridData.pop();
+            setTableData(newGridData);
+
+            // Update dropdown options
+            if (Array.isArray(rmData)) {
+                const availableRMs = rmData
+                    .filter(item => {
+                        if (!item.RawMaterialId) return false;
+                        return !newGridData.some(gridItem => 
+                            gridItem.RawMaterialId === item.RawMaterialId
+                        );
+                    })
+                    .map(item => ({
+                        label: `${item.RMName || ''}${item.Grade ? ` (${item.Grade})` : ''}`,
+                        value: item.RawMaterialId,
+                        code: item.RawMaterialId,
+                        originalData: item
+                    }));
+
+                setRmDropDownData(availableRMs);
+            }
+
+            setTimeout(() => {
+                setAgGridTable(true);
+            }, 300);
+        } catch (error) {
+            console.error('Error in deleteItem:', error);
+            setAgGridTable(true);
+        }
     }
     const editItem = (gridData) => {
         setDisableCondition(false)
@@ -395,7 +384,7 @@ function StandardRub(props) {
 
 
         let arr2 = rmDropDownData && rmDropDownData.filter((item) => {
-            return item.label !== obj.RawMaterialName
+            return item.code !== obj.RawMaterialId
         })
         setRmDropDownData(arr2)
 
@@ -409,6 +398,16 @@ function StandardRub(props) {
         // calculateTotalRmCost(tableDataArray);
         setDisableCondition(true)
 
+        try {
+            if (obj && obj.RawMaterialId) {
+                const updatedDropdown = rmDropDownData.filter(item => 
+                    item.code !== obj.RawMaterialId
+                );
+                setRmDropDownData(updatedDropdown);
+            }
+        } catch (error) {
+            console.error('Error updating dropdown after row addition:', error);
+        }
 
     }
 
@@ -550,7 +549,8 @@ function StandardRub(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.RawMaterial}
-                                            disabled={props.CostingViewMode || !disableCondition ? true : false}
+                                            disabled={props.CostingViewMode || !disableCondition}
+                                            key={rmDropDownData.length}
                                         />
                                     </Col>
                                     <Row className={'mt15'}>

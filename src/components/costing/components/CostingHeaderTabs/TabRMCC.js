@@ -175,7 +175,7 @@ function TabRMCC(props) {
             }
             return accumulator;
           }, 0);
-          
+
           return netCost;
         }
 
@@ -527,7 +527,7 @@ function TabRMCC(props) {
         partObj.CostingPartDetails.NetOperationCost = gridData?.NetOperationCost
         partObj.CostingPartDetails.NetOtherOperationCost = gridData.NetOtherOperationCost
         partObj.CostingPartDetails.TotalConversionCostComponent = gridData.NetConversionCost
-        
+
         let data = gridData && gridData.CostingProcessCostResponse && gridData.CostingProcessCostResponse.map(el => {
           return el;
         })
@@ -764,9 +764,7 @@ function TabRMCC(props) {
       newItem.CostingPartDetails.TotalOtherOperationCostComponent = obj?.CostingPartDetails?.TotalOtherOperationCostComponent
       newItem.CostingPartDetails.TotalOtherOperationCostPerSubAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly
       newItem.CostingPartDetails.TotalOtherOperationCostPerAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly
-
-      newItem.CalculatorType = ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType
-
+      newItem.CalculatorType = ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType ? ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType : ''
       newItem.CostingPartDetails.BOPHandlingChargeType = obj?.CostingPartDetails?.BOPHandlingChargeType;
       newItem.CostingPartDetails.CostingRawMaterialsCost = obj?.CostingPartDetails?.CostingRawMaterialsCost;
       newItem.CostingPartDetails.CostingBoughtOutPartCost = obj?.CostingPartDetails?.CostingBoughtOutPartCost;
@@ -1885,7 +1883,7 @@ function TabRMCC(props) {
 
                 if (checkIsAssemblyOpen.length !== 0) {
                   let subAssemblyArray = tempArrForCosting?.filter((x) => x.AssemblyPartNumber === params.PartNumber && x.PartType === 'Sub Assembly');
-                  
+
                   // Calculating and Assigning Costs
                   subAssembObj.CostingPartDetails.TotalOperationCostComponent = getOperationTotalCostForAssembly(tempArr);
                   subAssembObj.CostingPartDetails.TotalOperationCostComponentForOverhead = getOverheadAndProfitTotalCostForAssembly(tempArr, 'Overhead', 'Operation')

@@ -898,7 +898,7 @@ function SimulationApprovalListing(props) {
         suppressFilterButton: true,
         component: CostingHeadDropdownFilter,
         onFilterChange: (originalValue, value) => {
-
+            setWarningMessage(true);
             setSelectedCostingHead(originalValue);
             setDisableFilter(false);
             setFloatingFilterData(prevState => ({

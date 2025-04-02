@@ -16,7 +16,8 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
         "SubAssemblyCostingId": rmccData?.SubAssemblyCostingId,
         "BasicRate": basicRate,
         "NetPOPrice": netPOPrice,
-        "CalculatorType": rmccData?.CalculatorType ? rmccData?.CalculatorType : rmccData?.CostingPartDetails?.CalculatorType,
+        "CalculatorType": rmccData?.CalculatorType ? rmccData?.CalculatorType : rmccData?.CostingPartDetails?.CalculatorType ?? null,
+
         // NOT USED AT THIS POINT
         "NetLabourCost": 0,
         "IndirectLaborCost": 0,
