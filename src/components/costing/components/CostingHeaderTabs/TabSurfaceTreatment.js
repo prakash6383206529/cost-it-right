@@ -1292,9 +1292,10 @@ function TabSurfaceTreatment(props) {
           assemblyObj.CostingPartDetails.HangerCostPerPartPerSubAssembly = checkForNull(hangerCostSubAssembly(subAssemblyArray))
           assemblyObj.CostingPartDetails.HangerCostPerPartWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.HangerCostPerPartComponent) + checkForNull(assemblyObj?.CostingPartDetails?.HangerCostPerPartPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.HangerCostPerPartPerSubAssembly)
 
-          assemblyObj.CostingPartDetails.TotalTransportationCost = params.PartNumber === assemblyObj.PartNumber ? extraCostDetails?.TotalTransportationCost : checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCost)
+          assemblyObj.CostingPartDetails.TransportationCost = params.PartNumber === assemblyObj.PartNumber ? extraCostDetails?.TransportationCost : checkForNull(assemblyObj?.CostingPartDetails?.TransportationCost)
+          assemblyObj.CostingPartDetails.TransportationDetails = params.PartNumber === assemblyObj.PartNumber ? extraCostDetails?.TransportationDetails : checkForNull(assemblyObj?.CostingPartDetails?.TransportationDetails)
           assemblyObj.CostingPartDetails.TotalTransportationCostComponent = checkForNull(transportCostPart(subAssemblyArray))
-          assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? extraCostDetails?.TotalTransportationCost : checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
+          assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? extraCostDetails?.TransportationCost : checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
           assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly = checkForNull(transportCostSubAssembly(subAssemblyArray))
           assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostPerSubAssembly)
 
