@@ -135,13 +135,13 @@ function MachiningStockTable(props) {
     }
     switch (value.label) {
       case 'Circular':
-        setTooltipMessageForVolume(<div>(Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length)</div>)
+        setTooltipMessageForVolume(<div>(Volume = (π/4) * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length)</div>)
         break;
       case 'Semi Circular':
-        setTooltipMessageForVolume(<div>(Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length) / 2</div>)
+        setTooltipMessageForVolume(<div>(Volume = (π/4)  * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length) / 2</div>)
         break;
       case 'Quarter Circular':
-        setTooltipMessageForVolume(<div>(Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length) / 4</div>)
+        setTooltipMessageForVolume(<div>(Volume = (π/4) * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length) / 4</div>)
         break;
       case 'Square':
         setTooltipMessageForVolume(<div>(Length * Length * Height)</div>)
@@ -170,17 +170,17 @@ function MachiningStockTable(props) {
 
     switch (MachiningStock?.label) {
       case 'Circular':
-        Volume = (0.7857 * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length)
+        Volume = ((Math.PI / 4) * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length)
         GrossWeight = ((Volume * rmRowData.Density) / 1000000)
         break;
 
       case 'Semi Circular':
-        Volume = (0.7857 * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length / 2)
+        Volume = ((Math.PI / 4) * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length / 2)
         GrossWeight = (Volume * rmRowData.Density) / 1000000
         break;
 
       case 'Quarter Circular':
-        Volume = (0.7857 * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length / 4)
+        Volume = ((Math.PI / 4) * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length / 4)
         GrossWeight = (Volume * rmRowData.Density) / 1000000
         break;
       case 'Square':
