@@ -2490,7 +2490,7 @@ class AddBOPImport extends Component {
                                 id="addBOPIMport_sendForApproval"
                                 type="submit"
                                 className="mr5"
-                                disabled={isViewMode || setDisable || disableSendForApproval}
+                                disabled={isViewMode || setDisable || disableSendForApproval || this?.state?.showWarning || this.state?.showPlantWarning }
                                 icon="send-for-approval"
                                 buttonName="Send For Approval"
                               />
@@ -2499,7 +2499,7 @@ class AddBOPImport extends Component {
                                 id="addBOPIMport_save"
                                 type="submit"
                                 className="mr5"
-                                disabled={isViewMode || setDisable}
+                                disabled={isViewMode || setDisable || this?.state?.showWarning || this.state?.showPlantWarning }
                                 icon="save-icon"
                                 buttonName={isEditFlag ? "Update" : "Save"}
                               />

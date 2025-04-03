@@ -811,7 +811,6 @@ const BOPDomesticListing = (props) => {
     headerCheckboxSelection: (props.isSimulation || props.benchMark) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
-
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
@@ -848,6 +847,7 @@ const BOPDomesticListing = (props) => {
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
+    uniqueArray = uniqueArray.map(item => ({...item,EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY'): item.EffectiveDate}));
     if (props.isSimulation) {
       props.apply(uniqueArray, length)
     }

@@ -35,6 +35,7 @@ import Button from "../../layout/Button";
 import { debounce } from "lodash";
 import Switch from 'react-switch'
 import { getPlantUnitAPI } from "../actions/Plant";
+import WarningMessage from "../../common/WarningMessage";
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
@@ -106,6 +107,7 @@ function AddMoreOperation(props) {
         isDateChanged: false,
         disableAll: false,
         showWarning: false,
+        showPlantWarning: false,
         plantCurrency: addMoreDetailObj.plantCurrencyState ?? 1,
         settlementCurrency: addMoreDetailObj.settlementCurrency ?? 1,
         plantExchangeRateId: null,
@@ -162,12 +164,13 @@ function AddMoreOperation(props) {
     const callExchangeRateAPI = (obj) => {
         const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
         const toCurrency = reactLocalStorage.getObject("baseCurrency");
-        const hasCurrencyAndDate = Boolean(localCurrencyLabel?.current && getValues('effectiveDate'));
+        const hasCurrencyAndDate = Boolean(localCurrencyLabel?.current && (getValues('effectiveDate') ?? props?.addMoreDetailObj?.effectiveDate));
 
         if (hasCurrencyAndDate) {
-            if (IsFetchExchangeRateVendorWiseForParts() && (vendor?.length === 0 && client?.length === 0)) {
-                return;
-            }
+
+            // if (IsFetchExchangeRateVendorWiseForParts() && (vendor?.length === 0 && client?.length === 0)) {
+            //     return;
+            // }
 
             const callAPI = (from, to, costingType, vendorValue, clientValue) => {
                 return new Promise((resolve) => {
@@ -196,23 +199,25 @@ function AddMoreOperation(props) {
             };
 
             if (state.isImport) {
-                if (this.props?.fieldsObj?.plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
-                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: this?.props?.fieldsObj?.plantCurrency, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
-                    callAPI(fromCurrency, this?.props?.fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
+                if (props?.fieldsObj?.plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
+                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: props?.fieldsObj?.plantCurrency, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: state.vendorName?.value, clientValue: client?.value, plantCurrency: props?.fieldsObj?.plantCurrency });
+                    callAPI(fromCurrency, props?.fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
                         .then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-                            this.setState({
+
+                            setState(prevState => ({
+                                ...prevState,
                                 plantCurrency: rate1,
                                 plantExchangeRateId: exchangeRateId1,
                                 settlementCurrency: 1,
                                 settlementExchangeRateId: null,
-                            });
+                            }));
                         });
                 }
                 else {
-                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: localCurrencyLabel?.current, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: localCurrencyLabel?.current, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: props?.fieldsObj?.plantCurrency });
 
                     callAPI(fromCurrency, localCurrencyLabel?.current, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-                        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+                        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: props?.fieldsObj?.plantCurrency });
 
                         callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
                             setState(prevState => ({
@@ -241,7 +246,7 @@ function AddMoreOperation(props) {
                 }
             } else if (localCurrencyLabel.current !== reactLocalStorage?.getObject("baseCurrency")) {
                 // Original single API call for non-import case
-                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
+                const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: toCurrency, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: props?.fieldsObj?.plantCurrency });
                 callAPI(fromCurrency, toCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate, exchangeRateId }) => {
                     setState(prevState => ({
                         ...prevState,
@@ -898,6 +903,7 @@ function AddMoreOperation(props) {
         if (newValue && newValue !== '') {
             fromCurrencyRef.current = newValue
             setState(prevState => ({ ...prevState, currency: newValue }))
+            setValue('currency', newValue)
             callExchangeRateAPI()
         }
     }
@@ -1359,6 +1365,7 @@ function AddMoreOperation(props) {
                                             handleChange={() => { }}
                                             errors={errors.plantCurrency}
                                         />
+                                        {state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${getValues('plantCurrency')} rate is not present in the Exchange Master`} />}
                                     </Col>
 
                                     {addMoreDetailObj.costingTypeId === VBCTypeId && <div className="input-group col-md-3 input-withouticon" >
@@ -1445,6 +1452,7 @@ function AddMoreOperation(props) {
                                             handleChange={handleCurrency}
                                             disabled={isEditFlag || isViewMode}
                                         />
+                                        {state.showWarning && <WarningMessage dClass="mt-1" message={`${state?.currency?.label} rate is not present in the Exchange Master`} />}
                                     </Col>}
                                     <div className="col-md-3 mb-5">
                                         <div className="inputbox date-section">
@@ -3248,7 +3256,7 @@ function AddMoreOperation(props) {
                                                 id="addRMDomestic_sendForApproval"
                                                 type="button"
                                                 className="approval-btn mr5"
-                                                disabled={isViewMode || state.disableSendForApproval}
+                                                disabled={isViewMode || state.disableSendForApproval || state.showWarning || state.showPlantWarning}
                                                 onClick={onSubmit}
                                                 icon={(!state.disableSendForApproval) ? "send-for-approval" : "save-icon"}
                                                 buttonName={(!state.disableSendForApproval) ? "Send For Approval" : isEditFlag ? "Update" : "Save"}
@@ -3258,7 +3266,7 @@ function AddMoreOperation(props) {
                                                 id="addRMDomestic_updateSave"
                                                 type="button"
                                                 className="mr5"
-                                                disabled={isViewMode || state.disableSendForApproval}
+                                                disabled={isViewMode || state.disableSendForApproval || state.showWarning || state.showPlantWarning}
                                                 onClick={onSubmit}
                                                 icon={"save-icon"}
                                                 buttonName={isEditFlag ? "Update" : "Save"}

@@ -880,7 +880,7 @@ function RMImportListing(props) {
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
-
+    uniqueArray = uniqueArray.map(item => ({...item,EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY'): item.EffectiveDate}));
     if (isSimulation && !isFromVerifyPage) {
       apply(uniqueArray, length)
     }

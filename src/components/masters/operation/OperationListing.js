@@ -763,6 +763,7 @@ const OperationListing = (props) => {
         let finalArr = selectedRows
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "OperationId")
+        uniqueArray = uniqueArray.map(item => ({...item,EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY'): item.EffectiveDate}));
         if (props.isSimulation && !props?.isFromVerifyPage) {
 
             props.apply(uniqueArray, length)
@@ -944,7 +945,7 @@ const OperationListing = (props) => {
                                     enableBrowserTooltips={true}
                                 >
 
-                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" minWidth={190} headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
                                     {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                     {getConfigurationKey().IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
