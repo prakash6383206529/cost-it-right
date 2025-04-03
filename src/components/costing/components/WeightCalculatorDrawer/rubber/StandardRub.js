@@ -132,7 +132,7 @@ function StandardRub(props) {
             const CuttingAllowance = Number(getValues('CuttingAllowance'))
             let Volume = Number(getValues('Volume'));
             if(isVolumeAutoCalculate){
-                Volume = 0.7857 * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
+                Volume = (Math.PI/4 )* (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
             let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
@@ -503,7 +503,7 @@ function StandardRub(props) {
         clearErrors();
     }
 
-    let volumeFormula = <div>Volume = 0.7857 * (Outer Diameter<sup>2</sup> - Inner Diameter <sup>2</sup>) * Total Length</div>
+    let volumeFormula = <div>Volume = (π/4) * (Outer Diameter<sup>2</sup> - Inner Diameter <sup>2</sup>) * Total Length</div>
     return (
         <Fragment>
             <Row>

@@ -61,6 +61,7 @@ function PackagingCalculator(props) {
         control: controlCost,
         setValue: setValueCost,
         getValues: getValuesCost,
+        reset,
         formState: { errors: errorsCost },
     } = useForm({
         mode: 'onChange',
@@ -110,10 +111,16 @@ function PackagingCalculator(props) {
         dispatch(getTypeOfCost(res => {}))
     }, [])
     useEffect(() => {
-        if (state.totalCostOfCrate > 0) {
-            setState((prevState) => ({ ...prevState, disableCost: false }))
+        const noOfComponentsPerCrate = getValuesPackaging('NoOfComponentsPerCrate');
+        const stockNormDays = getValuesPackaging('StockNormDays');
+        const costOfCrate = getValuesPackaging('CostOfCrate');
+        
+        if (noOfComponentsPerCrate && stockNormDays && costOfCrate) {
+            setState((prevState) => ({ ...prevState, disableCost: false }));
+        } else {
+            setState((prevState) => ({ ...prevState, disableCost: true }));
         }
-    }, [state.totalCostOfCrate])
+    }, [calclulationFieldValues]);
     useEffect(() => {
         const totalAddedCost = state.gridTable?.reduce((sum, item) => {
             return sum + Number(item.NetCost || 0);
@@ -200,8 +207,12 @@ function PackagingCalculator(props) {
 
     }
     const handleCostPercentageChange = (value) => {
-        let cost = state.totalCostOfCrate * (value / 100)
-        setValueCost('cost', checkForDecimalAndNull(cost, NoOfDecimalForPrice))
+        if (value && !isNaN(value)) {
+            let cost = state.totalCostOfCrate * (parseFloat(value) / 100);
+            setValueCost('cost', checkForDecimalAndNull(cost, NoOfDecimalForPrice));
+        } else {
+            setValueCost('cost', '');
+        }
     }
     const packagingCalculatorSection1 = [
         { label: t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' }), name: 'NoOfComponentsPerCrate', mandatory: true, searchable: false, validate: { maxLength5 }, disabled: CostingViewMode ? CostingViewMode : false },
@@ -214,11 +225,40 @@ function PackagingCalculator(props) {
     ]
 
     const tableFields = [
-        { label: t('typeOfCost', { defaultValue: 'Type of cost' }), name: 'typeOfCost', handleChange: handleTypeOfCostChange, options: renderListing('typeOfCost'), searchable: true, mandatory: true, disabled: state.disableCost || CostingViewMode },
+        { 
+            label: t('typeOfCost', { defaultValue: 'Type of cost' }), 
+            name: 'typeOfCost', 
+            handleChange: handleTypeOfCostChange, 
+            options: renderListing('typeOfCost').filter(option => 
+                !state.gridTable.some(item => 
+                    item.TypeOfCost === option.label && 
+                    state.editIndex !== state.gridTable.findIndex(tableItem => tableItem.TypeOfCost === option.label)
+                )
+            ), 
+            searchable: true, 
+            mandatory: true, 
+            disabled: (state.disableCost || CostingViewMode || state.isEditIndex) 
+        },
         ...(state.typeOfCost?.label !== 'Fixed' ? [
-            { label: t('costPercentage', { defaultValue: 'Cost (%)' }), name: 'costPercentage', handleChange: (e) => { handleCostPercentageChange(e?.target?.value) }, mandatory: false, percentageLimit: true, disabled: state.disableCost || CostingViewMode }
+            { 
+                label: t('costPercentage', { defaultValue: 'Cost (%)' }), 
+                name: 'costPercentage', 
+                handleChange: (e) => { handleCostPercentageChange(e?.target?.value) }, 
+                mandatory: true, 
+                percentageLimit: true, 
+                validate: { maxLength3 },
+                disabled: state.disableCost || CostingViewMode 
+            }
         ] : []),
-        { label: t('cost', { defaultValue: 'Cost' }), name: 'cost', mandatory: false, disabled: state.typeOfCost?.label !== 'Fixed' || CostingViewMode, tooltip: state.typeOfCost?.label !== 'Fixed' ? { text: `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} * (${t('costPercentage', { defaultValue: 'Cost (%)' })} / 100)`, width: '250px', disabledIcon: true } : false },
+        { 
+            label: t('cost', { defaultValue: 'Cost' }), 
+            name: 'cost', 
+            validate: { maxLength7 },
+            disabled: state.typeOfCost?.label !== 'Fixed' || CostingViewMode, 
+            tooltip: state.typeOfCost?.label !== 'Fixed' ? 
+                { text: `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} * (${t('costPercentage', { defaultValue: 'Cost (%)' })} / 100)`, width: '250px', disabledIcon: true } 
+                : false 
+        },
     ]
 
     const packagingCalculatorSection2 = [
@@ -376,11 +416,40 @@ function PackagingCalculator(props) {
             cost: '',
             editIndex: ''
         }));
-        setValueCost('typeOfCost', '')
-        setValueCost('costPercentage', '')
-        setValueCost('cost', '')
+        
+        // Use the standard reset method instead of accessing internal _reset
+        const defaultValues = {
+            typeOfCost: '',
+            costPercentage: '',
+            cost: ''
+        };
+        
+        // Clear form values using the proper reset method
+        reset(defaultValues);
     }
     const addData = () => {
+        // Validate required fields
+        let hasError = false;
+        
+        if (!state.typeOfCost?.label) {
+            hasError = true;
+        }
+        
+        if (state.typeOfCost?.label === 'Fixed') {
+            if (!getValuesCost('cost')) {
+                hasError = true;
+            }
+        } else {
+            if (!getValuesCost('costPercentage')) {
+                hasError = true;
+            }
+            // Don't validate cost field since it's auto-calculated
+        }
+        
+        if (hasError) {
+            Toaster.warning('Please fill all mandatory fields.');
+            return false;
+        }
 
         const newData = {
             TypeOfCost: state.typeOfCost?.label,
@@ -388,14 +457,14 @@ function PackagingCalculator(props) {
             NetCost: getValuesCost('cost')
         };
 
-        let isDuplicate = false
+        let isDuplicate = false;
         state?.gridTable?.map((item, index) => {
             if (index !== state.editIndex) {
                 if ((item?.TypeOfCost) === (state.typeOfCost?.label)) {
-                    isDuplicate = true
+                    isDuplicate = true;
                 }
             }
-            return null
+            return null;
         });
 
         if (isDuplicate) {
@@ -405,10 +474,12 @@ function PackagingCalculator(props) {
 
         if (state.isEditIndex) {
             const updatedTableData = [...state.gridTable];
-            updatedTableData[state.isEditIndex] = newData;
+            updatedTableData[state.editIndex] = newData;
             setState(prev => ({
                 ...prev,
-                gridTable: updatedTableData
+                gridTable: updatedTableData,
+                isEditIndex: false,
+                editIndex: ''
             }));
         } else {
             setState(prev => ({
@@ -418,7 +489,6 @@ function PackagingCalculator(props) {
         }
 
         resetFormFields();
-
     };
 
     return (
@@ -474,7 +544,13 @@ function PackagingCalculator(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errorsPackaging[name]}
-                                            disabled={item.disabled} />
+                                            disabled={
+                                                item.disabled || 
+                                                (state.gridTable.length > 0 && 
+                                                    (name === 'NoOfComponentsPerCrate' || 
+                                                     name === 'StockNormDays' || 
+                                                     name === 'CostOfCrate'))
+                                            } />
                                     </Col>
                                 })}
                             </Row>
@@ -492,8 +568,8 @@ function PackagingCalculator(props) {
                                         >
                                             <Col md="3">
                                                 <div>
-                                                    <button type="button" className="user-btn pull-left mt-5 mr-2" onClick={handleSubmitCost(addData)}>{state.isEditIndex ? 'Update' : 'Add'}</button>
-                                                    <button type="button" className="reset-btn pull-left mt-5" onClick={resetFormFields}>Reset</button>
+                                                    <button type="button" className="user-btn pull-left mt-5 mr-2" disabled={CostingViewMode} onClick={handleSubmitCost(addData)}>{state.isEditIndex ? 'Update' : 'Add'}</button>
+                                                    <button type="button" className="reset-btn pull-left mt-5" disabled={CostingViewMode} onClick={resetFormFields}>Reset</button>
                                                 </div>
                                             </Col>
                                         </FormFieldsRenderer>
@@ -576,7 +652,13 @@ function PackagingCalculator(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errorsPackaging[name]}
-                                            disabled={item.disabled} />
+                                            disabled={
+                                                item.disabled || 
+                                                (state.gridTable.length > 0 && 
+                                                    (name === 'NoOfComponentsPerCrate' || 
+                                                     name === 'StockNormDays' || 
+                                                     name === 'CostOfCrate'))
+                                            } />
                                     </Col>
                                 })}
                             </Row>
