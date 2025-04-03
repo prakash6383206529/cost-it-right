@@ -718,7 +718,7 @@ class AddFuel extends Component {
         VendorId: vendorName.value ? vendorName.value : null,
         CustomerId: client.value ? client.value : null,
         CostingHeadId: Number(costingTypeId),
-        IsAssociated: item?.IsAssociated,
+        IsAssociated: item?.IsAssociated ?? false,
         IsFinancialDataChanged: item?.IsFinancialDataChanged ?? false
       }
     })
