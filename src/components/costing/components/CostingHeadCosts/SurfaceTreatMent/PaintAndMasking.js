@@ -11,7 +11,7 @@ import NoContentFound from '../../../../common/NoContentFound'
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, NFRTypeId, PAINTTECHNOLOGY, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
-import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator, setSurfaceData } from '../../../actions/Costing'
+import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator } from '../../../actions/Costing'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -31,7 +31,7 @@ const INITIAL_STATE = {
     TotalPaintCost: 0
 }
 
-function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
+function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, setSurfaceData, item }) {
     const [state, setState] = useState({
         editMode: false,
         rawMaterialList: [],
@@ -75,7 +75,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
                 TechnologyId: PAINTTECHNOLOGY,
                 VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData?.VendorPlantId : EMPTY_GUID,
                 EffectiveDate: CostingEffectiveDate,
-                CostingId: costData?.CostingId,
+                CostingId: item?.CostingId,
                 material_id: null,
                 grade_id: null,
 
@@ -111,7 +111,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
             ...prev,
             loader: true
         }))
-        dispatch(getSurfaceTreatmentRawMaterialCalculator({ BaseCostingId: ViewMode ? CostingId : costData.CostingId, LoggedInUserId: loggedInUserId() }, (res) => {
+        dispatch(getSurfaceTreatmentRawMaterialCalculator({ BaseCostingId: ViewMode ? CostingId : item?.CostingId, LoggedInUserId: loggedInUserId() }, (res) => {
             setState(prev => ({
                 ...prev,
                 loader: false
@@ -267,24 +267,23 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId }) {
         let obj = {
             ...calculateState,
             LoggedInUserId: loggedInUserId(),
-            BaseCostingId: costData?.CostingId
+            BaseCostingId: item?.CostingId
         }
         dispatch(saveSurfaceTreatmentRawMaterialCalculator(obj, (response) => {
             if (response && response?.status === 200) {
                 Toaster.success("Data saved successfully")
                 closeDrawer(checkForNull(calculateState?.TotalPaintCost))
-                let newData = [...SurfaceTabData];
-                newData.map(item => {
-                    if (item?.CostingId === costData?.CostingId) {
-                        let CostingPartDetails = item?.CostingPartDetails
-                        CostingPartDetails.TotalPaintCost = checkForNull(calculateState?.TotalPaintCost)
-                        CostingPartDetails.PaintCost = checkForNull(calculateState?.PaintCost)
-                        CostingPartDetails.TapeCost = checkForNull(calculateState?.TapeCost)
-                        return null
-                    }
-                    return null
-                })
-                dispatch(setSurfaceData(newData, () => { }))
+                // let newData = [...SurfaceTabData];
+                // newData.map(item => {
+                //     if (item?.CostingId === costData?.CostingId) {
+                //         let CostingPartDetails = item?.CostingPartDetails
+                //         CostingPartDetails.TotalPaintCost = checkForNull(calculateState?.TotalPaintCost)
+                //         CostingPartDetails.PaintCost = checkForNull(calculateState?.PaintCost)
+                //         CostingPartDetails.TapeCost = checkForNull(calculateState?.TapeCost)
+                //     }
+                // })
+                // dispatch(setSurfaceData(newData, () => { }))
+                setSurfaceData({ paintAndMaskingObj: { TotalPaintCost: calculateState?.TotalPaintCost, PaintCost: calculateState?.PaintCost, TapeCost: calculateState?.TapeCost }, type: 'PaintAndMasking' })
             }
         }))
     }

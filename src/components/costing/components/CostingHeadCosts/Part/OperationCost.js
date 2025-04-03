@@ -52,7 +52,7 @@ function OperationCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost)
+  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.NetOperationCost)
   const [showQuantity, setShowQuantity] = useState(true)
   const [operationRemark, setOperationRemark] = useState(true)
   const [headerPinned, setHeaderPinned] = useState(true)
@@ -282,7 +282,7 @@ function OperationCost(props) {
     // }, 0)
     const totals = calculateOperationTotals(tempArr);
     if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId)) {
-      props.getOperationGrid(tempArr, totals?.OperationCostTotal, true)
+      props.getOperationGrid(tempArr, totals?.NetOperationCost, true)
     }
   }
 
@@ -363,7 +363,7 @@ function OperationCost(props) {
       // }, 0);
       const totals = calculateOperationTotals(tempArr);
 
-      setOperationCostAssemblyTechnology(totals?.OperationCostTotal);
+      setOperationCostAssemblyTechnology(totals?.NetOperationCost);
       setGridData(tempArr);
     }
   };
@@ -430,11 +430,11 @@ function OperationCost(props) {
   }
   const calculateOperationTotals = (operationGrid) => {
     return operationGrid?.reduce((acc, el) => ({
-      OperationCostTotal: acc?.OperationCostTotal + checkForNull(el?.OperationCost),
+      NetOperationCost: acc?.NetOperationCost + checkForNull(el?.OperationCost),
       NetOperationCostForOverhead: acc?.NetOperationCostForOverhead + checkForNull(el?.NetOperationCostForOverhead),
       NetOperationCostForProfit: acc?.NetOperationCostForProfit + checkForNull(el?.NetOperationCostForProfit)
     }), {
-      OperationCostTotal: 0,
+      NetOperationCost: 0,
       NetOperationCostForOverhead: 0,
       NetOperationCostForProfit: 0
     });

@@ -11,29 +11,30 @@ import NoContentFound from '../../../../common/NoContentFound'
 import { COSTINGSURFACETREATMENTEXTRACOST, EMPTY_DATA, HANGER, PAINT, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT } from '../../../../../config/constants'
 import { generateCombinations, getCostingConditionTypes } from '../../../../common/CommonFunctions'
 import { getCostingCondition } from '../../../../../actions/Common'
-import { setSurfaceData } from '../../../actions/Costing'
+// import { setSurfaceData } from '../../../actions/Costing'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { ViewCostingContext } from '../../CostingDetails'
 
 function ExtraCost(props) {
+    const { setSurfaceData, item, extraCostDetails } = props
     const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
     const conditionTypeId = getCostingConditionTypes(COSTINGSURFACETREATMENTEXTRACOST)
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
     const dispatch = useDispatch();
-    const { SurfaceTabData } = useSelector(state => state?.costing)
-    let surfaceTabData = SurfaceTabData[0]
-    let surfaceCostingPartDetails = surfaceTabData?.CostingPartDetails
-    const { rmBasicRate, RowData, RowIndex } = props
 
-    const [tableData, setTableData] = useState(surfaceCostingPartDetails?.TransportationDetails ?? []);
+
+    let surfaceCostingPartDetails = item?.CostingPartDetails
+    const { rmBasicRate, RowData, RowIndex, hangerCostDetails, paintAndMaskingDetails, surfaceCost } = props
+
+    const [tableData, setTableData] = useState(extraCostDetails?.TransportationDetails ?? []);
 
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [disableAllFields, setDisableAllFields] = useState(true)
     const [editIndex, setEditIndex] = useState('')
     const [isEditMode, setIsEditMode] = useState(false)
     const [type, setType] = useState('')
-    const [totalCostCurrency, setTotalCostCurrency] = useState(surfaceCostingPartDetails?.TransportationCost ?? 0)
+    const [totalCostCurrency, setTotalCostCurrency] = useState(extraCostDetails?.TransportationCost ?? 0)
     const [totalCostBase, setTotalCostBase] = useState('')
     const [disableCurrency, setDisableCurrency] = useState(false)
 
@@ -54,20 +55,20 @@ function ExtraCost(props) {
         tempData.map(item => {
             if (item?.CostingConditionMasterId) {
                 if (item.CostingConditionNumber === TAPEANDPAINT) {
-                    item.ApplicabiltyCost = surfaceCostingPartDetails?.TotalPaintCost
-                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.TotalPaintCost, item?.Rate)
+                    item.ApplicabiltyCost = paintAndMaskingDetails?.TotalPaintCost
+                    item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TotalPaintCost, item?.Rate)
                 } else if (item.CostingConditionNumber === HANGER) {
-                    item.ApplicabiltyCost = surfaceCostingPartDetails?.HangerCostPerPart
-                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.HangerCostPerPart, item?.Rate)
+                    item.ApplicabiltyCost = hangerCostDetails?.HangerCostPerPart
+                    item.TransportationCost = calculatePercentageValue(hangerCostDetails?.HangerCostPerPart, item?.Rate)
                 } else if (item.CostingConditionNumber === SURFACETREATMENTLABEL) {
-                    item.ApplicabiltyCost = surfaceCostingPartDetails?.SurfaceTreatmentCost
-                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.SurfaceTreatmentCost, item?.Rate)
+                    item.ApplicabiltyCost = surfaceCost
+                    item.TransportationCost = calculatePercentageValue(surfaceCost, item?.Rate)
                 } else if (item.CostingConditionNumber === TAPE) {
-                    item.ApplicabiltyCost = surfaceCostingPartDetails?.TapeCost
-                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.TapeCost, item?.Rate)
+                    item.ApplicabiltyCost = paintAndMaskingDetails?.TapeCost
+                    item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TapeCost, item?.Rate)
                 } else if (item.CostingConditionNumber === PAINT) {
-                    item.ApplicabiltyCost = surfaceCostingPartDetails?.PaintCost
-                    item.TransportationCost = calculatePercentageValue(surfaceCostingPartDetails?.PaintCost, item?.Rate)
+                    item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
+                    item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
                 }
             }
         })
@@ -113,6 +114,9 @@ function ExtraCost(props) {
             setValue('Applicability', { label: selectedData?.CostingConditionNumber, value: selectedData?.CostingConditionMasterId })
             setValue('ApplicabilityCost', checkForDecimalAndNull(selectedData?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('Percentage', checkForDecimalAndNull(selectedData?.Rate, initialConfiguration?.NoOfDecimalForPrice))
+        } else {
+            setType({ label: 'Fixed', value: 'Fixed' })
+            setValue('Type', { label: 'Fixed', value: 'Fixed' })
         }
         setValue('CostDescription', selectedData?.Description)
         setValue('Remark', selectedData?.Remark)
@@ -161,24 +165,24 @@ function ExtraCost(props) {
         setState(prevState => ({ ...prevState, Applicability: e?.label }));
         // Handle Basic Rate separately
         if (e?.label === TAPE) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.TapeCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.TapeCost }));
+            setValue('ApplicabilityCost', checkForDecimalAndNull(paintAndMaskingDetails?.TapeCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: paintAndMaskingDetails?.TapeCost }));
             return;
         } else if (e?.label === SURFACETREATMENTLABEL) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.SurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.SurfaceTreatmentCost }));
+            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCost }));
             return;
         } else if (e?.label === PAINT) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.PaintCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.PaintCost }));
+            setValue('ApplicabilityCost', checkForDecimalAndNull(paintAndMaskingDetails?.PaintCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: paintAndMaskingDetails?.PaintCost }));
             return;
         } else if (e?.label === TAPEANDPAINT) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.TotalPaintCost }));
+            setValue('ApplicabilityCost', checkForDecimalAndNull(paintAndMaskingDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: paintAndMaskingDetails?.TotalPaintCost }));
             return;
         } else if (e?.label === HANGER) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCostingPartDetails?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCostingPartDetails?.HangerCostPerPart }));
+            setValue('ApplicabilityCost', checkForDecimalAndNull(hangerCostDetails?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: hangerCostDetails?.HangerCostPerPart }));
             return;
         }
     }
@@ -221,9 +225,9 @@ function ExtraCost(props) {
         if (isEditMode) {
             let tempData = [...tableData];
             let obj = {
-                JsonStage: surfaceTabData?.JsonStage ?? null,
-                PartNumber: surfaceTabData?.PartNumber ?? null,
-                PartName: surfaceTabData?.PartName ?? null,
+                JsonStage: item?.JsonStage ?? null,
+                PartNumber: item?.PartNumber ?? null,
+                PartName: item?.PartName ?? null,
                 TransportationDetailId: null,
                 UOM: type?.label ?? null,
                 Rate: data?.Percentage ?? null,
@@ -263,9 +267,9 @@ function ExtraCost(props) {
         }
         let tempData = [...tableData]
         let obj = {
-            JsonStage: surfaceTabData?.JsonStage ?? null,
-            PartNumber: surfaceTabData?.PartNumber ?? null,
-            PartName: surfaceTabData?.PartName ?? null,
+            JsonStage: item?.JsonStage ?? null,
+            PartNumber: item?.PartNumber ?? null,
+            PartName: item?.PartName ?? null,
             TransportationDetailId: null,
             UOM: type?.label ?? null,
             Rate: data?.Percentage ?? null,
@@ -305,17 +309,19 @@ function ExtraCost(props) {
     };
 
     const saveExtraCost = () => {
-        let newData = [...SurfaceTabData];
-        newData.map(item => {
-            if (item?.CostingId === costData?.CostingId) {
-                let CostingPartDetails = item?.CostingPartDetails
-                CostingPartDetails.TransportationDetails = tableData;
-                CostingPartDetails.TransportationCost = totalCostCurrency;
-            }
-            return null;
-        })
-        dispatch(setSurfaceData(SurfaceTabData, () => { }))
+        // let newData = [...SurfaceTabData];
+        // newData.map(item => {
+        //     if (item?.CostingId === costData?.CostingId) {
+        //         let CostingPartDetails = item?.CostingPartDetails
+        //         CostingPartDetails.TransportationDetails = tableData;
+        //         CostingPartDetails.TransportationCost = totalCostCurrency;
+        //     }
+        //     return null;
+        // })
+        // console.log(SurfaceTabData, "Coming here in saveExtraCost", newData)
+        // dispatch(setSurfaceData(SurfaceTabData, () => { }))
         props.closeDrawer('Save', totalCostCurrency)
+        setSurfaceData({ Params: { index: props.index }, extraCostObj: { TransportationDetails: tableData, TransportationCost: totalCostCurrency }, type: 'ExtraCost' }, errors)
     }
 
     const handleType = (type) => {
@@ -373,7 +379,7 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors?.Type}
-                                                disabled={CostingViewMode}
+                                                disabled={CostingViewMode || isEditMode}
                                             />
                                         </Col>
                                         <Col md="3" className='px-2'>

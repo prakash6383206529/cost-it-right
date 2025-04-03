@@ -1466,15 +1466,18 @@ export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalF
   let text = ""
 
   if (id.includes("RM")) {
+
     text = <>{arr && arr[0]?.IsRMCutOffApplicable && <p>{`RM cut-off price ${applyValue} applied`}</p>}</>;
     return (arr && arr[0]?.IsRMCutOffApplicable) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
 
   } else if (id.includes("BOP")) {
+
     text = conditon && <p>{showBopLabel()} cost is not included for {showBopLabel()} part type</p>;
     return conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
   } else if (id.includes("Combined")) {
     text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>{showBopLabel()} cost is not included for {showBopLabel()} part type</p>}</>;
-    return (arr[0]?.IsRMCutOffApplicable === true && id.includes("RM")) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
+
+    return (arr[0]?.IsRMCutOffApplicable === true && (object?.OverheadApplicability?.includes("RM")) || object?.ProfitApplicability?.includes("RM")) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
   }
 }
 
@@ -2049,6 +2052,6 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
       totals.profitProcessCost += useExcludingForProfit ? processExcl : process;
     }
   });
-
+  
   return totals;
 };

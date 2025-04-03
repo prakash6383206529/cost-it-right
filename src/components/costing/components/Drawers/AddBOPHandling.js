@@ -63,7 +63,7 @@ function AddBOPHandling(props) {
       let BOPSum = 0
       childPartDetail && childPartDetail.map((el) => {
         if (el.PartType === 'BOP' && el.AssemblyPartNumber === item?.PartNumber) {
-          BOPSum = BOPSum + (checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCost) * checkForNull(el?.CostingPartDetails?.Quantity))
+          BOPSum = BOPSum + (checkForNull(el?.CostingPartDetails?.NetBoughtOutPartCost) * checkForNull(el?.CostingPartDetails?.Quantity))
         }
         return BOPSum
       })
@@ -319,7 +319,7 @@ function AddBOPHandling(props) {
                     onClick={props.closeDrawer} >
                     <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
-                  
+
                   <button
                     id="AddBopHandlingCharge_Save"
                     type={'button'}

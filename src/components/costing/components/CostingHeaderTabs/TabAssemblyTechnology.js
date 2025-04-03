@@ -19,7 +19,7 @@ function TabAssemblyTechnology(props) {
 
   const dispatch = useDispatch()
 
-  const { CostingEffectiveDate, checkIsDataChange, currencySource,exchangeRateData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, checkIsDataChange, currencySource, exchangeRateData } = useSelector(state => state.costing)
 
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
 
@@ -66,13 +66,13 @@ function TabAssemblyTechnology(props) {
       let TotalLabourCost = checkForNull(TopHeaderValues?.NetLabourCost) + checkForNull(TopHeaderValues?.IndirectLaborCost) + checkForNull(TopHeaderValues?.StaffCost)
       topHeaderData = {
         NetRawMaterialsCost: TopHeaderValues?.NetChildPartsCost ? TopHeaderValues.NetChildPartsCost : 0,
-        NetBoughtOutPartCost: TopHeaderValues?.TotalBoughtOutPartCost ? TopHeaderValues.TotalBoughtOutPartCost : 0,
-        NetConversionCost: (TopHeaderValues?.TotalOperationCost || TopHeaderValues?.TotalProcessCost || TotalLabourCost) ? (checkForNull(TopHeaderValues?.TotalProcessCost) + checkForNull(TopHeaderValues?.TotalOperationCost) + checkForNull(TotalLabourCost)) : 0,
+        NetBoughtOutPartCost: TopHeaderValues?.NetBoughtOutPartCost ? TopHeaderValues.NetBoughtOutPartCost : 0,
+        NetConversionCost: (TopHeaderValues?.NetOperationCost || TopHeaderValues?.NetProcessCost || TotalLabourCost) ? (checkForNull(TopHeaderValues?.NetProcessCost) + checkForNull(TopHeaderValues?.NetOperationCost) + checkForNull(TotalLabourCost)) : 0,
         NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
-        NetTotalRMBOPCC: (TopHeaderValues?.TotalCalculatedRMBOPCCCost) ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
-        OtherOperationCost: TopHeaderValues?.CostingConversionCost?.OtherOperationCostTotal ? TopHeaderValues.CostingConversionCost.OtherOperationCostTotal : 0,   //HELP
-        ProcessCostTotal: TopHeaderValues?.TotalProcessCost ? TopHeaderValues?.TotalProcessCost : 0,
-        OperationCostTotal: TopHeaderValues?.TotalOperationCost ? TopHeaderValues?.TotalOperationCost : 0,
+        NetTotalRMBOPCC: (TopHeaderValues?.NetTotalRMBOPCC) ? TopHeaderValues.NetTotalRMBOPCC : 0,
+        OtherOperationCost: TopHeaderValues?.CostingConversionCost?.NetOtherOperationCost ? TopHeaderValues.CostingConversionCost.NetOtherOperationCost : 0,   //HELP
+        NetProcessCost: TopHeaderValues?.NetProcessCost ? TopHeaderValues?.NetProcessCost : 0,
+        NetOperationCost: TopHeaderValues?.NetOperationCost ? TopHeaderValues?.NetOperationCost : 0,
         TotalOperationCostPerAssembly: TopHeaderValues?.TotalOperationCostPerAssembly ? TopHeaderValues.TotalOperationCostPerAssembly : 0,
         TotalOperationCostSubAssembly: TopHeaderValues?.TotalOperationCostSubAssembly ? TopHeaderValues.TotalOperationCostSubAssembly : 0,
         TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0
@@ -86,9 +86,9 @@ function TabAssemblyTechnology(props) {
 
     // let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
     // // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
-    // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost = value
+    // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost = value
     // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.AssemblyCostingOperationCostRequest = gridData
-    // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetPOPrice = checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetPOPrice) + (checkForNull(tempsubAssemblyTechnologyArray[0]??.CostingPartDetails?.TotalBoughtOutPartCost)) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost))
+    // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetPOPrice = checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetPOPrice) + (checkForNull(tempsubAssemblyTechnologyArray[0]??.CostingPartDetails?.NetBoughtOutPartCost)) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
     // dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
   }
 
@@ -103,15 +103,15 @@ function TabAssemblyTechnology(props) {
     // MAY BE USED LATER
     // if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && checkIsDataChange === true) {
     //   let requestData = {
-    //     "NetRawMaterialsCost": ComponentItemData?.CostingPartDetails?.TotalRawMaterialsCost,
-    //     "NetBoughtOutPartCost": ComponentItemData?.CostingPartDetails?.TotalBoughtOutPartCost,
-    //     "NetConversionCost": ComponentItemData?.CostingPartDetails?.TotalConversionCost,
-    //     "NetOperationCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.OperationCostTotal : 0,
-    //     "NetProcessCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.ProcessCostTotal : 0,
-    //     "NetOtherOperationCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.OtherOperationCostTotal : 0,
+    //     "NetRawMaterialsCost": ComponentItemData?.CostingPartDetails?.NetRawMaterialsCost,
+    //     "NetBoughtOutPartCost": ComponentItemData?.CostingPartDetails?.NetBoughtOutPartCost,
+    //     "NetConversionCost": ComponentItemData?.CostingPartDetails?.NetConversionCost,
+    //     "NetOperationCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.NetOperationCost !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.NetOperationCost : 0,
+    //     "NetProcessCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.NetProcessCost !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.NetProcessCost : 0,
+    //     "NetOtherOperationCost": ComponentItemData?.CostingPartDetails?.CostingConversionCost && ComponentItemData?.CostingPartDetails?.CostingConversionCost.NetOtherOperationCost !== undefined ? ComponentItemData?.CostingPartDetails?.CostingConversionCost.NetOtherOperationCost : 0,
     //     "NetToolCost": ComponentItemData?.CostingPartDetails?.TotalToolCost,
-    //     "NetTotalRMBOPCC": ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
-    //     "TotalCost": costData.IsAssemblyPart ? ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : netPOPrice,
+    //     "NetTotalRMBOPCC": ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC,
+    //     "TotalCost": costData.IsAssemblyPart ? ComponentItemData?.CostingPartDetails?.NetTotalRMBOPCC : netPOPrice,
     //     "LoggedInUserId": loggedInUserId(),
     //     "EffectiveDate": CostingEffectiveDate,
 
@@ -151,10 +151,10 @@ function TabAssemblyTechnology(props) {
     //           "CostingId": item.CostingId,
     //           "SubAssemblyCostingId": item.SubAssemblyCostingId,
     //           "CostingNumber": "", // Need to find out how to get it.
-    //           "TotalRawMaterialsCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.TotalRawMaterialsCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-    //           "TotalBoughtOutPartCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.TotalBoughtOutPartCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-    //           "TotalConversionCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.TotalConversionCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalConversionCostWithQuantity,
-    //           "TotalCalculatedRMBOPCCCostPerPC": item?.CostingPartDetails?.TotalRawMaterialsCost + item?.CostingPartDetails?.TotalBoughtOutPartCost + item?.CostingPartDetails?.TotalConversionCost,
+    //           "TotalRawMaterialsCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.NetRawMaterialsCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+    //           "TotalBoughtOutPartCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.NetBoughtOutPartCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+    //           "TotalConversionCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.NetConversionCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalConversionCostWithQuantity,
+    //           "TotalCalculatedRMBOPCCCostPerPC": item?.CostingPartDetails?.NetRawMaterialsCost + item?.CostingPartDetails?.NetBoughtOutPartCost + item?.CostingPartDetails?.NetConversionCost,
     //           "TotalCalculatedRMBOPCCCostPerAssembly": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
     //           "TotalOperationCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly),
     //           "TotalOperationCostSubAssembly": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly),
@@ -162,7 +162,7 @@ function TabAssemblyTechnology(props) {
     //           "SurfaceTreatmentCostPerAssembly": 0,
     //           "TransportationCostPerAssembly": 0,
     //           "TotalSurfaceTreatmentCostPerAssembly": 0,
-    //           "TotalCostINR": netPOPrice
+    //           "NetPOPrice": netPOPrice
     //         }
     //         assemblyWorkingRow.push(subAssemblyObj)
     //         return assemblyWorkingRow
@@ -178,10 +178,10 @@ function TabAssemblyTechnology(props) {
     //         "TotalConversionCostWithQuantity": tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
     //         "TotalCalculatedRMBOPCCCostPerPC": tabData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
     //         "TotalCalculatedRMBOPCCCostPerAssembly": tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-    //         "NetRMCostPerAssembly": tabData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-    //         "NetBOPCostAssembly": tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-    //         "NetConversionCostPerAssembly": tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
-    //         "NetRMBOPCCCost": tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+    //         "NetRawMaterialsCost": tabData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+    //         "NetBoughtOutPartCost": tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+    //         "NetConversionCost": tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
+    //         "NetTotalRMBOPCC": tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
     //         "TotalOperationCostPerAssembly": tabData?.CostingPartDetails?.TotalOperationCostPerAssembly,
     //         "TotalOperationCostSubAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssembly),
     //         "TotalOperationCostComponent": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponent),
@@ -193,8 +193,8 @@ function TabAssemblyTechnology(props) {
     //         "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]??.CostingPartDetails?.NetFreightPackagingCost,
     //         "NetToolCost": ToolTabData[0]??.CostingPartDetails?.TotalToolCost,
     //         "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
-    //         "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
-    //         "TotalCostINR": netPOPrice,
+    //         "NetDiscountsCost": discountAndOtherTabData?.HundiOrDiscountValue,
+    //         "NetPOPrice": netPOPrice,
     //         "TabId": 1
     //       },
     //       "WorkingRows": assemblyWorkingRow,
@@ -230,7 +230,7 @@ function TabAssemblyTechnology(props) {
   }
 
   const bopHandlingDrawer = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setIsOpenBOPDrawer(true)
   }
 
@@ -241,8 +241,8 @@ function TabAssemblyTechnology(props) {
   const setBOPCostWithAsssembly = (obj, item) => {
     let totalBOPCost = checkForNull(obj?.BOPHandlingChargeApplicability) + checkForNull(obj?.BOPHandlingCharges)
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetPOPrice) + checkForNull(totalBOPCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost))
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCost = checkForNull(totalBOPCost)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetPOPrice) + checkForNull(totalBOPCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost = checkForNull(totalBOPCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges = checkForNull(obj?.BOPHandlingCharges)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingPercentage = checkForNull(obj?.BOPHandlingPercentage)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.IsApplyBOPHandlingCharges = obj.IsApplyBOPHandlingCharges
@@ -282,11 +282,11 @@ function TabAssemblyTechnology(props) {
       return null
     })
 
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost =
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
       checkForNull(costPerPieceTotal) +
-      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
-      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
-      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
       checkForNull(data.NetLabourCost) + checkForNull(data.IndirectLaborCost) + checkForNull(data.StaffCost)
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
   }

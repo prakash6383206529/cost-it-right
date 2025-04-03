@@ -58,7 +58,7 @@ function BOPCost(props) {
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
   const { t } = useTranslation("Costing")
-  const { currencySource,exchangeRateData } = useSelector((state) => state?.costing);
+  const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
 
   // useEffect(() => {
   //   setValue('BOPHandlingCharges', item?.CostingPartDetails?.BOPHandlingCharges)
@@ -148,7 +148,7 @@ function BOPCost(props) {
   //   if (IsApplyBOPHandlingCharges) {
   //     handleBOPPercentageChange(getValues('BOPHandlingPercentage'))
   //   }
-  // }, [item?.CostingPartDetails?.TotalBoughtOutPartCost])
+  // }, [item?.CostingPartDetails?.NetBoughtOutPartCost])
 
   /**
    * @method netBOPCost
@@ -167,7 +167,7 @@ function BOPCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 

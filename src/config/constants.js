@@ -553,7 +553,7 @@ export const API = {
   getOperationDrawerDataList: `${BASE_URL}/costing/get-costing-cc-operation-detail`,
   getProcessDrawerDataList: `${BASE_URL}/costing/get-costing-cc-machine-detail`,
   saveCostingRMCCTab: `${BASE_URL}/costing/save-costing-detail-for-rm-bop-cc`,
-  saveComponentCostingRMCCTab: `${BASE_URL}/costing/save-componenet-costing-detail-for-rm-bop-cc`,
+  saveComponentCostingRMCCTab: `${BASE_URL}/costing/save-component-costing-detail-for-rm-bop-cc`,
   saveAssemblyCostingRMCCTab: `${BASE_URL}/costing/save-assembly-costing-detail-for-rm-bop-cc`,
   getBOPData: `${BASE_URL}/costing/get-costing-detail-for-assembly-part-bop`,
   getToolCategoryList: `${BASE_URL}/costing/select-list-tool-category`,
@@ -3391,7 +3391,7 @@ export const PAINTTECHNOLOGY = 31
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V4.1.17";
+export const VERSION = "V4.2.1";
 
 
 
