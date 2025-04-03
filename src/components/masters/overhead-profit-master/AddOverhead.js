@@ -1320,7 +1320,7 @@ class AddOverhead extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isViewMode || !IsFinancialDataChanged}
+                              disabled={isViewMode}
                               placeholder={isViewMode || !IsFinancialDataChanged ? '-' : "Select Date"}
                             />
                           </div>

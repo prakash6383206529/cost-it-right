@@ -1018,7 +1018,7 @@ class AddInterestRate extends Component {
                             <Field
                               label="Effective Date"
                               name="EffectiveDate"
-                              placeholder={isViewMode || !IsFinancialDataChanged ? '-' : "Select Date"}
+                              placeholder={isViewMode ? '-' : "Select Date"}
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
@@ -1030,7 +1030,7 @@ class AddInterestRate extends Component {
 
                               }}
                               component={renderDatePicker}
-                              disabled={isViewMode || !IsFinancialDataChanged}
+                              disabled={isViewMode}
                               className="form-control"
                             />
                           </div>
