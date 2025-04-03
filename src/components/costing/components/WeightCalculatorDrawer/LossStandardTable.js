@@ -128,7 +128,7 @@ function LossStandardTable(props) {
       setBarCuttingAllowanceLossType(true)
       setIsDisable(false)
       setFlashLossType(false)
-      setLossWeightTooltip(<div>Loss {isFerrous ? "Wt" : "Weight"} = (0.7857 Bar Diameter<sup>2</sup> * Blade Thickness * Density / 1000000)</div>)
+      setLossWeightTooltip(<div>Loss {isFerrous ? "Wt" : "Weight"} = (π/4 * Bar Diameter<sup>2</sup> * Blade Thickness * Density / 1000000)</div>)
     }
     else if ((value.label === "Flash Loss")) {
 
@@ -269,7 +269,7 @@ function LossStandardTable(props) {
         }
         break;
       case 'Bar Cutting Allowance':
-        LossWeight = (((0.7857 * (Math.pow(BarDiameter, 2)) * BladeThickness * rmRowData.Density) / 1000000))
+        LossWeight = ((((Math.PI / 4) * (Math.pow(BarDiameter, 2)) * BladeThickness * rmRowData.Density) / 1000000))
         break;
       default:
         return "none";

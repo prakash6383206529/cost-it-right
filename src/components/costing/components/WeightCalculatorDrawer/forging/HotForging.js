@@ -118,7 +118,7 @@ function HotForging(props) {
 
     const BilletDiameter = checkForNull(getValues('BilletDiameter'))
     const forgedWeight = checkForNull(forgeWeightValue)
-    const InputLength = (checkForNull(forgedWeight) + checkForNull(lostWeight)) / (0.7857 * Math.pow(BilletDiameter, 2) * rmRowData.Density / 1000000)
+    const InputLength = (checkForNull(forgedWeight) + checkForNull(lostWeight)) / ((Math.PI / 4) * Math.pow(BilletDiameter, 2) * rmRowData.Density / 1000000)
 
     let obj = dataSend
     obj.InputLength = InputLength
@@ -169,7 +169,7 @@ function HotForging(props) {
     const BilletDiameter = checkForNull(getValues('BilletDiameter'))
     const EndBitLength = checkForNull(dataSend.EndBitLength)
     const NoOfPartsPerLength = checkForNull(dataSend.NoOfPartsPerLength)
-    const EndBitLoss = (0.7857 * checkForNull(BilletDiameter) * checkForNull(BilletDiameter) * checkForNull(EndBitLength) * (rmRowData.Density / 1000000) / checkForNull(NoOfPartsPerLength))
+    const EndBitLoss = ((Math.PI / 4) * checkForNull(BilletDiameter) * checkForNull(BilletDiameter) * checkForNull(EndBitLength) * (rmRowData.Density / 1000000) / checkForNull(NoOfPartsPerLength))
     let obj = dataSend
     obj.EndBitLoss = EndBitLoss
     setDataSend(obj)
@@ -407,8 +407,8 @@ function HotForging(props) {
     }
   };
 
-  const inputLengthTooltipMessage = <div>Input Length = (Forged Weight + Loss Weight / 0.7857 * Billet Diameter<sup>2</sup>) * Density / 1000000</div>
-  const endBitLossTooltipMessage = <div>End Bit Loss = (0.7857 * Billet Diameter<sup>2</sup> * End Bit Length * (Density / 1000000) / No. of Part per Length)</div>
+  const inputLengthTooltipMessage = <div>Input Length = (Forged Weight + Loss Weight / (π/4) * Billet Diameter<sup>2</sup>) * Density / 1000000</div>
+  const endBitLossTooltipMessage = <div>End Bit Loss = ((π/4) * Billet Diameter<sup>2</sup> * End Bit Length * (Density / 1000000) / No. of Part per Length)</div>
   return (
     <Fragment>
       <Row>
