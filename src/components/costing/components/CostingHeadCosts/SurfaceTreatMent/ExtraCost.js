@@ -37,7 +37,7 @@ function ExtraCost(props) {
     const [totalCostCurrency, setTotalCostCurrency] = useState(extraCostDetails?.TransportationCost ?? 0)
     const [totalCostBase, setTotalCostBase] = useState('')
     const [disableCurrency, setDisableCurrency] = useState(false)
-
+    const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
     const ExchangeRate = RowData?.ExchangeRate
     const [state, setState] = useState({
         Applicability: false,
@@ -120,7 +120,7 @@ function ExtraCost(props) {
         }
         setValue('CostDescription', selectedData?.Description)
         setValue('Remark', selectedData?.Remark)
-        setValue('NetCost', selectedData?.TransportationCost)
+        setValue('NetCost', checkForDecimalAndNull(selectedData?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice))
 
         // Update UI state based on the type
         if (selectedData?.Type === 'Fixed') {
@@ -251,7 +251,7 @@ function ExtraCost(props) {
         }
         // Check if CostingConditionMasterId already exists in tableData
         const existingCondition = tableData.find(item =>
-            item.CostingConditionMasterId === data?.Applicability?.value
+            item.CostingConditionMasterId === data?.Applicability?.value && item.Description.toLowerCase() === data?.CostDescription.toLowerCase()
         );
 
         if (existingCondition) {
@@ -259,7 +259,7 @@ function ExtraCost(props) {
             return;
         }
         const existingFixedDescription = tableData.find(item =>
-            item.Description.toLowerCase() === data?.CostDescription.toLowerCase()
+            (item.Description.toLowerCase() === data?.CostDescription.toLowerCase() && item.UOM === type?.label)
         );
         if (type?.label === 'Fixed' && existingFixedDescription) {
             Toaster.warning('Data already exists');
@@ -362,7 +362,7 @@ function ExtraCost(props) {
                             </Row>
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className='hidepage-size'>
-                                    <Row>
+                                    {!IsLocked && <Row>
                                         <Col md={3} className='px-2'>
                                             <SearchableSelectHookForm
                                                 label={`Type`}
@@ -531,7 +531,7 @@ function ExtraCost(props) {
                                                 {isEditMode ? "CANCEL" : 'RESET'}
                                             </button>
                                         </Col>
-                                    </Row>
+                                    </Row>}
                                     <Col md={props?.hideAction ? 12 : 12}>
                                         <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
                                             <tbody>
@@ -543,7 +543,7 @@ function ExtraCost(props) {
                                                     <th>{`Percentage (%)`}</th>
                                                     <th>{`Cost`}</th>
                                                     <th>{`Remark`}</th>
-                                                    {!props?.hideAction && <th className='text-right'>{`Action`}</th>}
+                                                    {!props?.hideAction && !IsLocked && <th className='text-right'>{`Action`}</th>}
                                                 </tr>
 
                                                 {tableData && tableData.map((item, index) => (
@@ -557,7 +557,7 @@ function ExtraCost(props) {
                                                             <td>{item?.TransportationCost !== '-' ? checkForDecimalAndNull(item?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             <td>{item?.Remark ? item?.Remark : '-'}</td>
                                                             {
-                                                                !props?.hideAction && (
+                                                                !props?.hideAction && !IsLocked && (
                                                                     <td>
                                                                         <div className='text-right'>
                                                                             <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={CostingViewMode} />
@@ -588,7 +588,7 @@ function ExtraCost(props) {
                                         </Table>
                                     </Col>
                                 </div>
-                                <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                                {!IsLocked && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                     <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                         <button
                                             type={'button'}
@@ -606,7 +606,7 @@ function ExtraCost(props) {
                                             {'Save'}
                                         </button>
                                     </div>
-                                </Row>
+                                </Row>}
                             </form>
                         </div>
                     </Container>
