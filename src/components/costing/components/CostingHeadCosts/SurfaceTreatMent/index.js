@@ -341,7 +341,7 @@ function SurfaceTreatment(props) {
       setTimeout(() => {
         setCallAPI(true)
       }, 200);
-      props.setSurfaceTreatmentCostAssemblyTechnology(surfaceTreatmentData?.gridData, transportObj, surfaceTreatmentData.Params)
+      props.setSurfaceTreatmentCostAssemblyTechnology(surfaceTreatmentData?.gridData, surfaceTreatmentData.Params, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
     }
     // if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
     //   return false
@@ -581,8 +581,8 @@ function SurfaceTreatment(props) {
                                   id="surfaceTreatment_extraCost"
                                   onClick={() => setViewExtraCost(true)}
                                   className={"right mt-0 mb-2"}
-                                  variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "className", (CostingViewMode || IsLocked))}
-                                  title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "title", (CostingViewMode || IsLocked))}
+                                  variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TransportationDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "className", (CostingViewMode || IsLocked))}
+                                  title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TransportationDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "title", (CostingViewMode || IsLocked))}
                                 />
                                 <TooltipCustom
                                   id={`surfaceTreatment_refresh`}
