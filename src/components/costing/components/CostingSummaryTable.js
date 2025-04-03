@@ -1572,18 +1572,20 @@ const CostingSummaryTable = (props) => {
         obj.gWeight = (obj?.netRMCostView && reducer(obj?.netRMCostView))
         obj.fWeight = (obj?.netRMCostView && reducerFinish(obj?.netRMCostView))
         if (obj.bestCost) {
-          obj.nPackagingAndFreight = obj.NetFreightPackagingCostConversion ?? "-"
-          obj.totalToolCost = obj.NetToolCostConversion ?? "-"
-          obj.netRM = obj.NetRawMaterialsCostConversion ?? "-"
-          obj.netBOP = obj.NetBoughtOutPartCostConversion ?? "-"
-          obj.nConvCost= obj.NetConversionCostConversion ??"-"
-          if ((getConfigurationKey()?.IsBasicRateAndCostingConditionVisible)) {
-            obj.BasicRate = 
-              (obj.nPackagingAndFreight === "-" ? 0 : checkForDecimalAndNull(obj.nPackagingAndFreight , initialConfiguration?.NoOfDecimalForPrice)) + 
-              (obj.totalToolCost === "-" ? 0 : checkForDecimalAndNull(obj.totalToolCost, initialConfiguration?.NoOfDecimalForPrice)) + 
-              (obj.netRM === "-" ? 0 : checkForDecimalAndNull(obj.netRM, initialConfiguration?.NoOfDecimalForPrice)) + 
-              (obj.netBOP === "-" ? 0 : checkForDecimalAndNull(obj.netBOP, initialConfiguration?.NoOfDecimalForPrice)) + 
-              (obj.nConvCost === "-" ? 0 : checkForDecimalAndNull(obj.nConvCost, initialConfiguration?.NoOfDecimalForPrice));
+          obj.nPackagingAndFreight = checkForNull(obj.NetFreightPackagingCostConversion) ?? "-"
+          obj.totalToolCost = checkForNull(obj.NetToolCostConversion) ?? "-"
+          obj.netRM = checkForNull(obj.NetRawMaterialsCostConversion) ?? "-"
+          obj.netBOP = checkForNull(obj.NetBoughtOutPartCostConversion) ?? "-"
+          obj.nConvCost= checkForNull(obj.NetConversionCostConversion) ?? "-"
+          if (getConfigurationKey()?.IsBasicRateAndCostingConditionVisible) {
+            obj.BasicRate = checkForDecimalAndNull((
+                checkForNull(obj.nPackagingAndFreight) + 
+                checkForNull(obj.totalToolCost) + 
+                checkForNull(obj.netRM) + 
+                checkForNull(obj.netBOP) + 
+                checkForNull(obj.nConvCost)),
+                initialConfiguration?.NoOfDecimalForPrice
+            );
           }
         }
         return obj
