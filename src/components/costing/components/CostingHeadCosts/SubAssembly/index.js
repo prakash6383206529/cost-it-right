@@ -32,6 +32,7 @@ function AssemblyPart(props) {
   const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
   const [isProcessDrawerOpen, setIsProcessDrawerOpen] = useState(false)
   const [itemInState, setItemInState] = useState({})
+  const [counter, setCounter] = useState(0)
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -84,13 +85,14 @@ function AssemblyPart(props) {
           // let tempArr = setArrayForCosting
           let array = [];
           let obj = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element => element.PartType === 'Assembly' && PartNumber === element?.PartNumber)
-
-          if (obj?.length > 0) {
+          
+          if (/* obj?.length === 0 && */ PartNumber === costData?.PartNumber && counter === 0) {
             array = [Data]
             Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
               array.push(item)
               return null
             })
+            setCounter(counter + 1)
             sessionStorage.setItem('costingArray', JSON.stringify(array))
           } else {
             array = JSON.parse(sessionStorage.getItem('costingArray'))
