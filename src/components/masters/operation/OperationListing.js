@@ -432,13 +432,12 @@ const OperationListing = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditable = false
         let isDeleteButton = false
-        if (permissionData?.Edit) {
+        if (permissionData?.Edit && rowData?.IsEditable) {
             isEditable = true
         } else {
             isEditable = false
         }
         isDeleteButton = (tourStartData.showExtraData && props.rowIndex === 0) || (permissionData?.Delete && !rowData.IsOperationAssociated);
-
 
         return (
             <>
