@@ -223,7 +223,7 @@ function BDSimulation(props) {
         obj.SimulationHeadId = list[0]?.CostingTypeId
 
         obj.SimulationBoughtOutPart = tempArr;
-        obj.SimulationIds = tokenForMultiSimulation.map(id => ({ SimulationId: id }));
+        obj.SimulationIds = tokenForMultiSimulation;
 
         if (check) {
             obj.SimulationExchangeRates = tempList;
