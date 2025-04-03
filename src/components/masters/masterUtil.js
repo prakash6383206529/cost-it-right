@@ -9,6 +9,7 @@ import { setGroupProcessList, setProcessList } from './actions/MachineMaster';
 import NoContentFound from '../common/NoContentFound';
 import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, EXTERNAL_REJECT, RECEIVED, SENT, UNDER_REVISION, EMPTY_GUID } from '../../config/constants';
 import { encodeQueryParamsAndLog, hashValidation } from '../../helper';
+import DayTime from '../common/DayTimeWrapper';
 export const ProcessGroup = (props) => {
     const { isEditFlag, isViewFlag } = props
 
@@ -344,7 +345,7 @@ export const ProcessGroup = (props) => {
 
 
 export const rmQueryParms = (isPagination, skip, take, obj) => {
-    
+
     let queryParamsSecond = `VendorId=${obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID}&PlantId=${obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID}&RMChildId=${obj.RMChildId !== undefined ? obj.RMChildId : EMPTY_GUID}&GradeId=${obj.GradeId !== undefined ? obj.GradeId : EMPTY_GUID}&CustomerId=${obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID}&RawMaterialEntryType=${obj?.RawMaterialEntryType}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&StatusId=${obj.StatusId !== undefined ? obj.StatusId : ""}&RMName=${obj.RawMaterialName !== undefined ? obj.RawMaterialName : ""}&RMGrade=${obj.RawMaterialGradeName !== undefined ? obj.RawMaterialGradeName : ""}&RMSpecs=${obj.RawMaterialSpecificationName !== undefined ? obj.RawMaterialSpecificationName : ""}&RMCode=${obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&Plant=${obj.DestinationPlantName !== undefined ? obj.DestinationPlantName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&UOM=${obj.UnitOfMeasurementName !== undefined ? obj.UnitOfMeasurementName : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&BasicRate=${obj.BasicRatePerUOM !== undefined ? obj.BasicRatePerUOM : ""}&ScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&FreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&ShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&MaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&NetCostWithoutConditionCost=${obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&ExchangeRateSourceName=${obj.ExchangeRateSourceName !== undefined ? obj?.ExchangeRateSourceName : ""}&OtherNetCost=${obj.OtherNetCost !== undefined ? obj?.OtherNetCost : ""}`
     return queryParamsSecond
 
@@ -431,4 +432,8 @@ export const StatusTooltip = (APIData) => {
         return null
     })
     return temp;
+}
+
+export const checkEffectiveDate = (effectiveDate, effectiveDateToChange) => {
+    return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
 }

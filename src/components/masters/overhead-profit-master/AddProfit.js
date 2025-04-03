@@ -32,6 +32,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddProfit');
 
@@ -868,12 +869,16 @@ class AddProfit extends Component {
         RawMaterialGrade: RMGrade?.label,
         IsFinancialDataChanged: IsFinancialDataChanged
       }
-      if (isEditFlag && IsFinancialDataChanged) {
-        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-          Toaster.warning('Please update the effective date')
-          this.setState({ setDisable: false })
-          return false
-        }
+
+      let financialDataChanged = (Number(ModelType?.value) !== Number(DataToChange?.ModelTypeId)) || (Number(DataToChange?.ProfitApplicabilityId) !== Number(profitAppli?.value)) || (values?.ProfitRMPercentage && (Number(DataToChange?.ProfitRMPercentage) !== Number(values?.ProfitRMPercentage))) || (values?.ProfitCCPercentage && (Number(DataToChange?.ProfitCCPercentage) !== Number(values?.ProfitCCPercentage))) || (values?.ProfitBOPPercentage && (Number(DataToChange?.ProfitBOPPercentage) !== Number(values?.ProfitBOPPercentage)))
+
+      if (financialDataChanged && checkEffectiveDate(effectiveDate, DataToChange?.EffectiveDate)) {
+        this.setState({ setDisable: false })
+        Toaster.warning('Please update the Effective date.')
+        return false
+      } else if (!financialDataChanged) {
+        this.cancel('cancel')
+        return false
       }
       this.props.updateProfit(requestData, (res) => {
         this.setState({ setDisable: false })
@@ -942,7 +947,7 @@ class AddProfit extends Component {
     const { handleSubmit, t } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
       isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged } = this.state;
-      const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -1211,7 +1216,7 @@ class AddProfit extends Component {
                               }`}
                             onChange={this.onPressAssemblyCheckbox}
                           >
-                            Apply for Part Type
+                            Manage Applicabilities For Multi Technology Assembly
                             <input
                               type="checkbox"
                               checked={this.state.isAssemblyCheckbox}
