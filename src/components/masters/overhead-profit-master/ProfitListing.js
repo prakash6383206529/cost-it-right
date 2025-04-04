@@ -391,6 +391,7 @@ function ProfitListing(props) {
         }
     }
 
+    
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -398,7 +399,7 @@ function ProfitListing(props) {
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        ;
         return (
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}

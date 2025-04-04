@@ -1948,7 +1948,6 @@ export function getTaxCodeSelectList(callback) {
 
 const rmAPICalling = (params, dispatch) => {
   const { tabs } = params;
-  console.log("tabs333", tabs?.trim())
   switch (tabs?.trim()) {
     case "Domestic":
     case "Import":

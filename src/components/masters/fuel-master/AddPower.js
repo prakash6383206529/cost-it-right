@@ -122,6 +122,7 @@ class AddPower extends Component {
       city: [],
       isDisabled: false,
       showPlantWarning: false,
+      showWarning: false,
       dataToChange: {}
 
     }
@@ -2724,7 +2725,7 @@ class AddPower extends Component {
                         </button>
                         {!isViewMode && <button id="AddPower_Save"
                           type="submit"
-                          disabled={isViewMode || setDisable || this?.state?.isDisabled}
+                          disabled={isViewMode || setDisable || this?.state?.isDisabled || this.state?.showWarning || this.state?.showPlantWarning}
                           className="user-btn mr5 save-btn" >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}
