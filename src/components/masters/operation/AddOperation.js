@@ -1012,27 +1012,11 @@ class AddOperation extends Component {
     const { selectedPlants, vendorName, files,
       UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag, isImport } = this.state;
     const { WeldingRate, Consumption, LabourRatePerUOM, Rate, RateConversion, RateLocalConversion, Remark, Description, EffectiveDate } = this.props?.fieldsObj
+   
     const { Rate: oldRate, RateLocalConversion: oldRateLocal, RateConversion: oldRateConversion,
       OperationBasicRate: oldWeldingRate, OperationConsumption: oldConsumption,
       LabourRatePerUOM: oldLabourRate, Remark: oldRemark, Description: oldDescription, EffectiveDate: oldEffectiveDate } = DataToChange;
-    const financialDataChanged =
-      (Rate && Number(Rate) !== Number(oldRate)) ||
-      (RateLocalConversion && Number(RateLocalConversion) !== Number(oldRateLocal)) ||
-      (RateConversion && Number(RateConversion) !== Number(oldRateConversion)) ||
-      (WeldingRate && Number(WeldingRate) !== Number(oldWeldingRate)) ||
-      (Consumption && Number(Consumption) !== Number(oldConsumption)) ||
-      (LabourRatePerUOM && Number(LabourRatePerUOM) !== Number(oldLabourRate));
-    const nonFinancialDataChanged = (Remark && Remark !== oldRemark) || (Description && Description !== oldDescription)
-    if (!financialDataChanged && !nonFinancialDataChanged) {
-      Toaster.warning('Please update the data.')
-      return false
-    }
-    if (this.props?.isOperationAssociated) {
-      if (financialDataChanged && checkEffectiveDate(EffectiveDate, oldEffectiveDate)) {
-        Toaster.warning('Please update the Effective date.')
-        return false
-      }
-    }
+
     const { initialConfiguration } = this.props;
     const userDetailsOperation = JSON.parse(localStorage.getItem('userDetail'))
     const userDetail = userDetails()
@@ -1052,24 +1036,7 @@ class AddOperation extends Component {
     //const plantArray = []
     let plantArray = Array?.isArray(destinationPlant) ? destinationPlant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
       destinationPlant ? [{ PlantId: destinationPlant?.value, PlantName: destinationPlant?.label, PlantCode: '' }] : [];
-    // if (costingTypeId === VBCTypeId || (costingTypeId === ZBCTypeId && initialConfiguration?.IsMultipleUserAllowForApproval)) {
-    //   plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    // } else {
-    //   selectedPlants && selectedPlants.map((item) => {
-    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-    //     return plantArray
-    //   })
-    // }
-    // let cbcPlantArray = []
-    // if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
-    //   cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    // }
-    // else {
-    //   userDetailsOperation?.Plants.map((item) => {
-    //     cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-    //     return cbcPlantArray
-    //   })
-    // }
+    
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
     let updatedFiles = files.map((file) => {
@@ -1077,7 +1044,6 @@ class AddOperation extends Component {
     })
 
     let formData = {
-      IsFinancialDataChanged: isDateChange ? true : false,
       IsSendForApproval: this.state.IsSendForApproval,
       OperationId: OperationId,
       CostingTypeId: costingTypeId,
@@ -1116,87 +1082,44 @@ class AddOperation extends Component {
       CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
       Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
     }
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
-
-      // if (this.state.isEditFlag) {
-      // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
-      //   this.cancel()
-      //   return false
-      // }
-
-      if (IsFinancialDataChanged) {
-
-        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.handleOperationAPI(formData, true)
-          return false
-
-        } else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
-          return false
-        }
-      }
-      else {
-
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-          && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
-          this.cancel('submit')
-          return false
-        }
-        else {
-          this.handleOperationAPI(formData, true)
-        }
-      }
-    } else {/** Add new detail for creating operation master **/
-
-      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-          && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
-          Toaster.warning('Please change data to send operation for approval')
-          return false
-        }
-        this.setState({ IsSendForApproval: true })
-        formData.IsSendForApproval = true;
-
-      } else {
-        this.setState({ IsSendForApproval: false })
-        formData.IsSendForApproval = false;
-      }
-
-      this.setState({ setDisable: true })
-
-
-      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
-
-        if (IsFinancialDataChanged) {
-
-          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState((prev) => ({
-              ...prev, approveDrawer: true, approvalObj: formData
-            }))
-            this.setState({ setDisable: true })
-            return false
-
-          } else {
-
-            this.setState({ setDisable: false })
-            Toaster.warning('Please update the effective date')
-            return false
+    const financialDataChanged =
+    (Rate && Number(Rate) !== Number(oldRate)) ||
+    (RateLocalConversion && Number(RateLocalConversion) !== Number(oldRateLocal)) ||
+    (RateConversion && Number(RateConversion) !== Number(oldRateConversion)) ||
+    (WeldingRate && Number(WeldingRate) !== Number(oldWeldingRate)) ||
+    (Consumption && Number(Consumption) !== Number(oldConsumption)) ||
+    (LabourRatePerUOM && Number(LabourRatePerUOM) !== Number(oldLabourRate));
+  const nonFinancialDataChanged = (Remark && Remark !== oldRemark) || (Description && Description !== oldDescription) || (files && JSON.stringify(files) !== JSON.stringify(DataToChange.Attachements))
+    if (isEditFlag) {
+      if (!this.props?.isOperationAssociated) {
+        if (!financialDataChanged && !nonFinancialDataChanged) {
+          if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+            Toaster.warning(`Please change data to send operation for approval`)
           }
-        }
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
-          this.cancel('submit')
+          else {
+            Toaster.warning(`Please change data to update operation`)
+          }
           return false
-        } else {
-          this.setState((prev) => ({
-            ...prev, approveDrawer: true, approvalObj: formData
-          }))
         }
-      } else {
-        this.handleOperationAPI(formData, false)
       }
+      else if (financialDataChanged && checkEffectiveDate(oldDate, effectiveDate)) {
+        Toaster.warning('Please update the effective date')
+        return false
+      }
+      formData.IsFinancialDataChanged = financialDataChanged ? true : false
+    } else {
+      formData.IsFinancialDataChanged = financialDataChanged ? true : false
     }
 
+    if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+      formData.IsSendForApproval = true
+      this.setState({ approveDrawer: true, approvalObj: formData })
+    }
+    else {
+      console.log("formData", formData)
+      formData.IsSendForApproval = false;
+      this.handleOperationAPI(formData, isEditFlag);
+    }
   }, 500)
 
   handleKeyDown = function (e) {
@@ -1710,7 +1633,7 @@ class AddOperation extends Component {
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={isViewMode || isDetailEntry}
+                          disabled={isEditFlag || isDetailEntry}
                         />
                       </Col>
                       {this.state.isWelding &&
@@ -1978,6 +1901,7 @@ class AddOperation extends Component {
             isEditFlag={this.state.isEditFlag}
             isViewMode={this.state.isViewMode}
             callExchangeRateAPI={this.callExchangeRateAPI}
+            isOperationAssociated={this.props.isOperationAssociated}
           />
         }
         {
