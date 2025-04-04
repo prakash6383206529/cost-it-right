@@ -90,7 +90,8 @@ class AddFreight extends Component {
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
-      showPlantWarning: false
+      showPlantWarning: false,
+      showWarning: false
     };
     this.state = { ...this.initialState };
 
@@ -1709,7 +1710,7 @@ class AddFreight extends Component {
                           </button>
                           {!isViewMode && <button
                             type="submit"
-                            disabled={isViewMode || setDisable}
+                            disabled={isViewMode || setDisable || this.state?.showWarning || this.state?.showPlantWarning}
                             className="user-btn mr5 save-btn"
                           >
                             <div className={"save-icon"}></div>

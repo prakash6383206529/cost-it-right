@@ -250,6 +250,7 @@ const isFirstColumn = (params) => {
                         onFilterModified={onFloatingFilterChanged}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
+                        <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>
                         <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                         <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
                         <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
