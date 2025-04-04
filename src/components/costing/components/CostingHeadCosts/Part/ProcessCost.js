@@ -348,6 +348,7 @@ function ProcessCost(props) {
         setGridData(tempArray)
         dispatch(setProcessGroupGrid(formatReducerArray(tempArray)))
         setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity)
+        setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '')
         setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
       }, 100)
     } else {
@@ -1754,7 +1755,7 @@ function ProcessCost(props) {
                             <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                             <td>{item.MHR}</td>
                             <td>{item.UOM}</td>
-                            <td>  <div className='w-fit' id={`part-hour${index}`}>    <TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />    {(item?.UOMType !== TIME || !item?.Quantity) ? '-' : calculateProductionPerHour(item?.Quantity)}  </div></td>                            <td >
+                            <td>  <div className='w-fit' id={`part-hour${index}`}>    <TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />    {(item?.UOMType !== TIME || !item?.Quantity) ? '-' : item?.IsCalculatedEntry ? item?.ProductionPerHour : calculateProductionPerHour(item?.Quantity)}  </div></td>                            <td >
                               {
 
                                 < div className='d-flex align-items-center'>
