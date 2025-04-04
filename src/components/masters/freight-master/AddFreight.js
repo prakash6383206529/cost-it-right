@@ -1588,7 +1588,7 @@ class AddFreight extends Component {
                               className=" "
                               customClassName="withBorder"
                             >
-                              {this.state.errorObj.rate && (!this.props.fieldsObj.RateLocalConversion) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                              {this.state.errorObj.rate && !this.state.isImport && (!this.props.fieldsObj.RateLocalConversion) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                             </Field>
                             {/* {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>} */}
                           </Col>
