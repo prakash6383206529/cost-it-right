@@ -353,7 +353,7 @@ function Machining(props) {
                                                 <Col md="3">
                                                     <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness)" />
                                                     <TextFieldHookForm
-                                                        label={`Inner Diameter(mm)`}
+                                                        label={`Inner Diameter (mm)`}
                                                         name={'InnerDiameter'}
                                                         Controller={Controller}
                                                         control={control}
@@ -486,7 +486,7 @@ function Machining(props) {
                                                 <Col md="3">
                                                     <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={tooltipMessageForSheetWeight('Gross', 'Gross')} />
                                                     <TextFieldHookForm
-                                                        label={`Gross Weight(Kg)`}
+                                                        label={`Gross Weight (Kg)`}
                                                         name={'GrossWeight'}
                                                         Controller={Controller}
                                                         control={control}
@@ -507,7 +507,7 @@ function Machining(props) {
                                                 <Col md="3">
                                                     <TooltipCustom disabledIcon={true} id={'finish-weight'} tooltipText={tooltipMessageForSheetWeight('Finish', 'Net')} />
                                                     <TextFieldHookForm
-                                                        label={`Finish Weight(Kg)`}
+                                                        label={`Finish Weight (Kg)`}
                                                         name={'FinishWeight'}
                                                         Controller={Controller}
                                                         control={control}
@@ -528,7 +528,7 @@ function Machining(props) {
                                                 <Col md="3">
                                                     <TooltipCustom disabledIcon={true} id={'Scrap-weight'} tooltipText={"Scrap Weight =  Gross Weight - Finish Weight"} />
                                                     <TextFieldHookForm
-                                                        label={`Scrap Weight(Kg)`}
+                                                        label={`Scrap Weight (Kg)`}
                                                         name={'ScrapWeight'}
                                                         Controller={Controller}
                                                         control={control}
