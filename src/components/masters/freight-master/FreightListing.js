@@ -88,7 +88,7 @@ const FreightListing = (props) => {
   */
   const viewOrEditItemDetails = (Id, rowData, isViewMode, isEditMode) => {
     let data = { isEditFlag: true, Id: Id, IsVendor: rowData.CostingHead, isViewMode: isViewMode, isEditMode: isEditMode }
-    props.getDetails(data);
+    props.getDetails(data,rowData?.IsFreightAssociated);
   }
 
   /**
@@ -141,7 +141,7 @@ const FreightListing = (props) => {
     return (
       <>
         {permissions.View && <Button id={`freightListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true, false)} title={"View"} />}
-        {permissions.Edit && <Button id={`freightListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false, true)} title={"Edit"} />}
+        {permissions.Edit && rowData?.IsEditable && <Button id={`freightListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false, true)} title={"Edit"} />}
         {permissions.Delete && !rowData?.IsFreightAssociated && <Button id={`freightListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
@@ -181,16 +181,16 @@ const FreightListing = (props) => {
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
     temp = TempData && TempData.map((item) => {
-      if (item.VendorName === '-') {
-        item.VendorName = ' '
-      }
+      // if (item.VendorName === '-') {
+      //   item.VendorName = ' '
+      // }
       for (const key in item) {
         if (item[key] === null || item[key] === undefined || item[key] === "") {
           item[key] = "-"; // Set to hyphen if data is not available
         }
       }
 
-      return item;
+            return item;
 
     })
 

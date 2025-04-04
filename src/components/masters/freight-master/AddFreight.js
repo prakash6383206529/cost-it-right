@@ -324,7 +324,7 @@ class AddFreight extends Component {
       });
 
       this.props.getFreightData(data.Id, (res) => {
-        if (res && res.data && res.data.Result) {
+        if (res && res.data && res.data.Result) { 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
           setTimeout(() => {
@@ -910,6 +910,34 @@ class AddFreight extends Component {
     }
 
     // For edit mode, check for changes and handle different scenarios
+    const userDetail = userDetails();
+    let formData = {
+      "FreightId": isEditFlag ? FreightID : null,
+      "IsLoadingUnloadingApplicable": IsLoadingUnloadingApplicable,
+      "LoadingUnloadingCharges": values.LoadingUnloadingCharges,
+      "PartTruckLoadRatePerKilogram": values.PartTruckLoadRatePerKilogram,
+      "PartTruckLoadRatePerCubicFeet": values.PartTruckLoadRatePerCubicFeet,
+      "FullTruckLoadDetails": gridTable,
+      "LoggedInUserId": loggedInUserId(),
+      "PlantId": this.state.Plant?.value,
+      "CostingTypeId": costingTypeId,
+      "Mode": "Road",
+      "VendorId": costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+      "SourceCityId": isEditFlag ? null : sourceLocation.value,
+      "DestinationCityId": isEditFlag ? null : destinationLocation.value,
+      "CustomerId": costingTypeId === CBCTypeId ? client.value : '',
+      "EffectiveDate": DayTime(this?.state?.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      "FreightEntryType": isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+      "ExchangeRateSourceName": this.state.ExchangeSource?.label || null,
+      "LocalCurrencyId": isImport ? this.state?.plantCurrencyID : null,
+      "LocalCurrency": isImport ? this.props?.fieldsObj?.plantCurrency : null,
+      "ExchangeRate": isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+      "LocalCurrencyExchangeRate": isImport ? this.state?.plantCurrency : null,
+      "CurrencyId": isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+      "Currency": isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+      "ExchangeRateId": isImport ? this.state.settlementExchangeRateId : this.state?.plantExchangeRateId,
+      "LocalExchangeRateId": isImport ? this.state?.plantExchangeRateId : null,
+    }
     if (isEditFlag) {
 
       const hasFinancialChanges = gridTable.some(item => {
@@ -950,39 +978,14 @@ class AddFreight extends Component {
         Toaster.warning("Please change the effective date.");
         return false;
       }
+      formData.IsFinancialDataChanged = hasFinancialChanges ? true : false
     }
     this.setState({ isVendorNameNotSelected: false })
 
-    const userDetail = userDetails();
     if (isEditFlag) {
       this.setState({ setDisable: true })
-      let requestData = {
-        FreightId: FreightID,
-        IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
-        LoadingUnloadingCharges: values.LoadingUnloadingCharges,
-        PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
-        PartTruckLoadRatePerCubicFeet: values.PartTruckLoadRatePerCubicFeet,
-        FullTruckLoadDetails: gridTable,
-        LoggedInUserId: loggedInUserId(),
-        PlantId: this.state.Plant?.value,
-        CostingTypeId: costingTypeId,
-        Mode: "Road",
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        EffectiveDate: DayTime(this?.state?.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        FreightEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-        LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
-        LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
-        ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
-        LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
-        CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
-        Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
-        ExchangeRateId: isImport ? this.state.settlementExchangeRateId : this.state?.plantExchangeRateId,
-        LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
-      };
 
-      this.props.updateFright(requestData, (res) => {
+      this.props.updateFright(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
@@ -992,32 +995,6 @@ class AddFreight extends Component {
       this.setState({ HandleChanged: true, AddUpdate: true, DeleteChanged: true })
     } else {
       this.setState({ setDisable: true })
-      const formData = {
-        CostingTypeId: costingTypeId,
-        Mode: "Road",
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-        SourceCityId: sourceLocation.value,
-        DestinationCityId: destinationLocation.value,
-        IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
-        LoadingUnloadingCharges: values.LoadingUnloadingCharges,
-        PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
-        PartTruckLoadRatePerCubicFeet: values.PartTruckLoadRatePerCubicFeet,
-        FullTruckLoadDetails: gridTable,
-        LoggedInUserId: loggedInUserId(),
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        EffectiveDate: DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        PlantId: this.state.Plant?.value,
-        FreightEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-        LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
-        LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
-        ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
-        LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
-        CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
-        Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
-        ExchangeRateId: isImport ? this.state.settlementExchangeRateId : this.state?.plantExchangeRateId,
-        LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
-      };
 
       this.props.createFreight(formData, (res) => {
         this.setState({ setDisable: false })
@@ -1703,7 +1680,7 @@ class AddFreight extends Component {
                                         {!this.state?.hidePlantCurrency && <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                                         <td>
                                           <button className="Edit mr-2" type={"button"} disabled={isViewMode} onClick={() => this.editGridItemDetails(index)} />
-                                          <button className="Delete" type={"button"} disabled={isViewMode} onClick={() => this.deleteGridItem(index)} />
+                                          {!item?.IsFreightAssociated && <button className="Delete" type={"button"} disabled={isViewMode} onClick={() => this.deleteGridItem(index)} />}
                                         </td>
                                       </tr>
                                     );
