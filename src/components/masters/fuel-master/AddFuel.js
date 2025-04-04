@@ -1122,7 +1122,7 @@ class AddFuel extends Component {
                                   valueDescription={this.state.singlePlantSelected}
                                   mendatory={true}
                                   className="multiselect-with-border"
-                                  disabled={isEditFlag}
+                                  disabled={isEditFlag || this?.state?.rateGrid?.length > 0}
                                 />
                               </div>
                             </div>

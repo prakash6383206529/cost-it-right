@@ -1889,7 +1889,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.countryHandler}
                               valueDescription={this.state.country}
-                              disabled={isViewMode || isEditFlag}
+                              disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
                             />
                           </div>
                         </Col>
@@ -1908,7 +1908,7 @@ class AddPower extends Component {
                                 required={true}
                                 handleChangeDescription={this.stateHandler}
                                 valueDescription={this.state.StateName}
-                                disabled={isViewMode || isEditFlag}
+                                disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
                               />
                             </div>
                           </Col>}
@@ -1926,7 +1926,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.cityHandler}
                               valueDescription={this.state.city}
-                              disabled={isViewMode || isEditFlag}
+                              disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
                             />
                           </div>
                         </Col>
@@ -1945,7 +1945,7 @@ class AddPower extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                isDisabled={isEditFlag ? true : false}
+                                isDisabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                 }}
@@ -1982,7 +1982,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.handleClient}
                               valueDescription={this.state.client}
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                             />
                           </Col>
                         )}
@@ -2008,7 +2008,7 @@ class AddPower extends Component {
                                 mendatory={true}
                                 required={true}
                                 className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
+                                disabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                               />
                             </div>
                           </div>
