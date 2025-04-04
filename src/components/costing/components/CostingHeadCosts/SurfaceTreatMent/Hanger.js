@@ -17,7 +17,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
     });
     const { SurfaceTabData } = useSelector(state => state.costing)
     let surfaceTabData = SurfaceTabData && SurfaceTabData[0]
-
+    const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
     const dispatch = useDispatch()
     const [state, setState] = useState({
         showHanger: false
@@ -92,7 +92,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                             calculateHangerCost(e.target.value, getValues(`NoOfPartsPerHanger`))
                         }}
                         errors={errors && errors.HangerFactor}
-                        disabled={ViewMode}
+                        disabled={ViewMode || IsLocked}
                     />
                 </Col>
                 <Col md="4">
@@ -116,7 +116,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                             calculateHangerCost(getValues(`HangerFactor`), e.target.value)
                         }}
                         errors={errors && errors.NoOfPartsPerHanger}
-                        disabled={ViewMode}
+                        disabled={ViewMode || IsLocked}
                     />
                 </Col>
                 <Col md="4">
@@ -134,7 +134,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                             // maxLength: NUMBERMAXLENGTH
                         }}
                         defaultValue={''}
-                        className=""
+                        className="" x
                         customClassName={'withBorder'}
                         handleChange={(e) => {
                             e.preventDefault()

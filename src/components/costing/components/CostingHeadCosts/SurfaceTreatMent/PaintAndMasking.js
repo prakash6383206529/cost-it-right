@@ -37,6 +37,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         rawMaterialList: [],
         loader: false
     })
+    const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
     const dispatch = useDispatch()
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
@@ -362,7 +363,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                     defaultValue={''}
                     customClassName={'withBorder mb-0 paint-and-masking'}
                     errors={errorsTableForm[`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
-                    disabled={ViewMode || CostingViewMode || disabled}
+                    disabled={ViewMode || CostingViewMode || disabled || IsLocked}
                 />
             </>
         )
@@ -460,7 +461,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         disabled: true,
                         tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate (Currency/UOM)'
                     })}</td>
-                    {childIndex === 0 && !ViewMode && (
+                    {childIndex === 0 && !ViewMode && !IsLocked && (
                         <td width="50" rowSpan={item.RawMaterials.length}>
                             <Button
                                 id={`PaintAndMasking_delete${parentIndex}-${childIndex}`}
@@ -501,7 +502,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         </Row>
 
                         <form onSubmit={handleSubmitInitialForm(addData)}>
-                            {!ViewMode && <Row>
+                            {!ViewMode && !IsLocked && <Row>
                                 <Col md="4">
                                     <SearchableSelectHookForm
                                         label="Paint Coat"
@@ -547,7 +548,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                             className="mr5 mb-2"
                                             icon="plus"
                                             buttonName="Add"
-                                            disabled={CostingViewMode}
+                                            disabled={CostingViewMode || IsLocked}
                                         />
                                     </div>
                                 </Col>
@@ -560,7 +561,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                             <thead>
                                 <tr>
                                     {TABLE_HEADERS.map((item, index) => {
-                                        if (item === 'Action' && ViewMode) return false
+                                        if (item === 'Action' && (ViewMode || IsLocked)) return false
                                         return <th key={index}>{item}</th>
                                     })}
                                 </tr>
@@ -599,7 +600,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                     defaultValue=""
                                     customClassName="withBorder mb-0"
                                     errors={errorsTableForm.TapeCost}
-                                    disabled={ViewMode || CostingViewMode}
+                                    disabled={ViewMode || CostingViewMode || IsLocked}
                                 />
                             </Col>
                             <Col md="4">
@@ -624,7 +625,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                             </Col>
                         </Row>
 
-                        {!ViewMode && (
+                        {!ViewMode && !IsLocked && (
                             <Row className="sticky-footer pr-0">
                                 <Col md="12" className="text-right bluefooter-butn d-flex align-items-center justify-content-end">
                                     <Button

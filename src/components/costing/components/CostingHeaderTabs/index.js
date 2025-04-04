@@ -100,7 +100,9 @@ function CostingHeaderTabs(props) {
     setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
     setExchangeRateSource({ label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
     dispatch(setExchangeRateSourceValue({ label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName }))
-    setCurrency({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
+    setTimeout(() => {
+      setCurrency({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
+    }, 500)
     dispatch(setCurrencySource({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId }))
     dispatch(exchangeRateReducer({
       plantExchangeRate: costData?.LocalCurrencyExchangeRate,
@@ -129,7 +131,8 @@ function CostingHeaderTabs(props) {
   }
 
   useEffect(() => {
-    if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && (costData?.TechnologyId === ASSEMBLY ? true : !costData?.CostingCurrencyId)) {
+
+    if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && ((costData?.TechnologyId === ASSEMBLY || costData?.PartType === 'Assembly') ? true : !costData?.CostingCurrencyId)) {
       let arr = [];
       let exchangeData = {
         plantExchangeRate: null,

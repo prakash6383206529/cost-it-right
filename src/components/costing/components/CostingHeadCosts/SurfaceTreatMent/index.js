@@ -276,7 +276,7 @@ function SurfaceTreatment(props) {
       // objectToUpdate.CostingPartDetails.TapeCost = obj.paintAndMaskingObj.TapeCost
       // objectToUpdate.CostingPartDetails.TotalPaintCostWithQuantity = obj.paintAndMaskingObj.TotalPaintCost
     } else if (obj.type === 'ExtraCost') {
-
+      console.log("obj", obj)
       setExtraCostDetails({ TransportationCost: obj.extraCostObj.TransportationCost, TransportationDetails: obj.extraCostObj.TransportationDetails })
       setValue(`ExtraCost`, checkForDecimalAndNull(obj?.extraCostObj?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice))
       // objectToUpdate.CostingPartDetails.TransportationDetails = obj.extraCostObj.TransportationDetails
@@ -341,7 +341,7 @@ function SurfaceTreatment(props) {
       setTimeout(() => {
         setCallAPI(true)
       }, 200);
-      props.setSurfaceTreatmentCostAssemblyTechnology(surfaceTreatmentData?.gridData, transportObj, surfaceTreatmentData.Params)
+      props.setSurfaceTreatmentCostAssemblyTechnology(surfaceTreatmentData?.gridData, surfaceTreatmentData.Params, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
     }
     // if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
     //   return false
@@ -557,8 +557,8 @@ function SurfaceTreatment(props) {
                                 id="surfaceTreatment_paintAndMasking"
                                 onClick={() => setViewPaintAndMasking(true)}
                                 className={"right mt-0 mb-2"}
-                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "className", CostingViewMode)}
-                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "title", CostingViewMode)}
+                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "className", (CostingViewMode || IsLocked))}
+                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "title", (CostingViewMode || IsLocked))}
                               />
                             </Col>
                             <Col md="4" className="d-flex align-items-center">
@@ -581,8 +581,8 @@ function SurfaceTreatment(props) {
                                   id="surfaceTreatment_extraCost"
                                   onClick={() => setViewExtraCost(true)}
                                   className={"right mt-0 mb-2"}
-                                  variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "className", CostingViewMode)}
-                                  title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "title", CostingViewMode)}
+                                  variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TransportationDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "className", (CostingViewMode || IsLocked))}
+                                  title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TransportationDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "title", (CostingViewMode || IsLocked))}
                                 />
                                 <TooltipCustom
                                   id={`surfaceTreatment_refresh`}
