@@ -1853,7 +1853,7 @@ function ProcessCost(props) {
                               <SearchableSelectHookForm
                                 name={`${ProcessGridFields}.${index}.Applicability`}
                                 type="text"
-                                label="Applicability"
+                                label={false}
                                 errors={`${ProcessGridFields}.${index}.Applicability`}
                                 Controller={Controller}
                                 control={control}
