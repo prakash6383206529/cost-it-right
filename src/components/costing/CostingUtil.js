@@ -1,4 +1,3 @@
-
 import { useDispatch } from "react-redux";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { HOUR, MACHINING, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
@@ -50,7 +49,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalOperationCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForProfit),
           "TotalOperationCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit),
 
-          
+
 
           "TotalOtherOperationCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerAssembly),
           "TotalOtherOperationCostPerSubAssembly": checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly),
@@ -72,7 +71,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalProcessCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForProfit),
           "TotalProcessCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
 
-         
+
 
           "SurfaceTreatmentCostPerAssembly": surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost,
           "TransportationCostPerAssembly": surfaceTabData?.CostingPartDetails?.TransportationCost,
@@ -148,7 +147,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
     })
   }
   let basicRate = 0
-  if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+  const partTypeValue = isPartType?.value || 0
+  if (Number(partTypeValue) === PART_TYPE_ASSEMBLY) {
     basicRate = checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
       checkForNull(surfaceTabData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
       checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(discountAndOtherTabData?.AnyOtherCost) + (IsAddPaymentTermInNetCost ? checkForNull(discountAndOtherTabData?.paymentTermCost) : 0) - checkForNull(discountAndOtherTabData?.HundiOrDiscountValue)
@@ -202,7 +202,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalOperationCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForProfit),
       "TotalOperationCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForProfit),
 
-     
+
 
 
       "TotalOtherOperationCostPerAssembly": tabData?.CostingPartDetails?.TotalOtherOperationCostPerAssembly,
@@ -225,7 +225,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalProcessCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForProfit),
       "TotalProcessCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForProfit),
 
-     
+
 
       "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly,
       "TotalSurfaceTreatmentCostPerSubAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly,

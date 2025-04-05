@@ -3391,7 +3391,7 @@ export const PAINTTECHNOLOGY = 31
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V4.2.3";
+export const VERSION = "V4.2.4";
 
 
 

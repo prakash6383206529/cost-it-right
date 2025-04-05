@@ -612,8 +612,8 @@ function OperationCost(props) {
                               <SearchableSelectHookForm
                                 name={`${OperationGridFields}.${index}.Applicability`}
                                 type="text"
-                                label="Applicability"
-                                errors={`${errors.OperationGridFields}?.${index}?.Applicability`}
+                                label={false}
+                                errors={`${errors.OperationGridFields}.${index}.Applicability`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -678,7 +678,7 @@ function OperationCost(props) {
                               <SearchableSelectHookForm
                                 name={`${OperationGridFields}.${index}.Applicability`}
                                 type="text"
-                                label="Applicability"
+                                label={false}
                                 errors={`${errors.OperationGridFields}.${index}.Applicability`}
                                 Controller={Controller}
                                 control={control}
