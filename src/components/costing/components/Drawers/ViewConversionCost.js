@@ -37,9 +37,11 @@ function ViewConversionCost(props) {
   const { isPDFShow, stCostShow } = props
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { viewConversionCostData } = props
-  const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting, viewCostingDataObj } = viewConversionCostData
+  const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting, viewCostingDataObj, HangerCostDetails, PaintAndTapeDetails } = viewConversionCostData
   const { CostingOperationCostResponse, CostingProcessCostResponse, CostingOtherOperationCostResponse } = conversionData
   const [costingProcessCost, setCostingProcessCost] = useState([])
+  const [hangerCostDetails, setHangerCostDetails] = useState([])
+  const [paintAndTapeDetails, setPaintAndTapeDetails] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
   const [othercostingOperationCost, setOtherCostingOperationCostResponse] = useState([])
   const [surfaceTreatmentCost, setSurfaceTreatmentCost] = useState([])
@@ -95,13 +97,16 @@ function ViewConversionCost(props) {
       let processCost = CostingProcessCostResponse && CostingProcessCostResponse.filter(item => item.PartNumber === partNo)
       let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
       let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber === partNo)
-      let transportCost = netTransportationCostView && netTransportationCostView.filter(item => item.PartNumber === partNo)
-      let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter(item => item.PartNumber === partNo)
+      let transportCost = netTransportationCostView && netTransportationCostView.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
+      let HangerCostDetailsTemp = HangerCostDetails && HangerCostDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
+      let PaintAndTapeDetailsTemp = PaintAndTapeDetails && PaintAndTapeDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
+      let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
       setCostingProcessCost(processCost)
-
+      setHangerCostDetails(HangerCostDetailsTemp[0])
+      setPaintAndTapeDetails(PaintAndTapeDetailsTemp[0])
       setCostingOperationCostResponse(operationCost)
       setOtherCostingOperationCostResponse(otherOperationCost)
-      setTransportCost(transportCost)
+      setTransportCost(transportCost[0])
       setSurfaceTreatmentCost(surfaceCost)
     }
     else if (IsAssemblyCosting === true && isPDFShow === true) {
@@ -110,15 +115,21 @@ function ViewConversionCost(props) {
       // setcostingToolsCost(CostingToolsCostResponse)
       setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse ? CostingOtherOperationCostResponse : [])
       setTransportCost(netTransportationCostView ? netTransportationCostView : [])
+      setHangerCostDetails(HangerCostDetails ? HangerCostDetails : [])
+      setPaintAndTapeDetails(PaintAndTapeDetails ? PaintAndTapeDetails : [])
       setSurfaceTreatmentCost(surfaceTreatmentDetails ? surfaceTreatmentDetails : [])
     }
 
     else {
+      console.log("HangerCostDetails", HangerCostDetails)
+      console.log("PaintAndTapeDetails", PaintAndTapeDetails)
+      setHangerCostDetails(HangerCostDetails ? HangerCostDetails[0] : [])
+      setPaintAndTapeDetails(PaintAndTapeDetails ? PaintAndTapeDetails[0] : [])
       setCostingProcessCost(CostingProcessCostResponse ? CostingProcessCostResponse : [])
       setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
       // setcostingToolsCost(CostingToolsCostResponse)
       setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse ? CostingOtherOperationCostResponse : [])
-      setTransportCost(netTransportationCostView ? netTransportationCostView : [])
+      setTransportCost(netTransportationCostView ? netTransportationCostView[0] : [])
       setSurfaceTreatmentCost(surfaceTreatmentDetails ? surfaceTreatmentDetails : [])
     }
 
@@ -231,12 +242,22 @@ function ViewConversionCost(props) {
     let processCost = CostingProcessCostResponse && CostingProcessCostResponse.filter(item => item.PartNumber === partNo)
     let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
     let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber === partNo)
-    let transportCost = netTransportationCostView && netTransportationCostView.filter(item => item.PartNumber === partNo)
-    let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter(item => item.PartNumber === partNo)
+
+    let transportCost = netTransportationCostView && netTransportationCostView.filter((item, index, self) =>
+      item.PartNumber === partNo &&
+      index === self.findIndex(t => t.PartNumber === item.PartNumber)
+    )
+    console.log("transportCost", transportCost)
+    let HangerCostDetailsTemp = HangerCostDetails && HangerCostDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
+    let PaintAndTapeDetailsTemp = PaintAndTapeDetails && PaintAndTapeDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
+    let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
+
     setCostingProcessCost(processCost)
     setCostingOperationCostResponse(operationCost)
     setOtherCostingOperationCostResponse(otherOperationCost)
-    setTransportCost(transportCost)
+    setTransportCost(transportCost[0])
+    setHangerCostDetails(HangerCostDetailsTemp[0])
+    setPaintAndTapeDetails(PaintAndTapeDetailsTemp[0])
     setSurfaceTreatmentCost(surfaceCost)
   }
 
@@ -649,7 +670,7 @@ function ViewConversionCost(props) {
                 <th>{`Remark`}</th>
               </tr>
 
-              {transportCost && transportCost.map((item, index) => (
+              {transportCost && transportCost?.TransportationDetails && transportCost?.TransportationDetails?.map((item, index) => (
                 <Fragment key={index}>
                   <tr>
                     <td>{item?.UOM ?? '-'}</td>
@@ -664,7 +685,7 @@ function ViewConversionCost(props) {
               ))}
 
               {
-                transportCost && transportCost.length === 0 && (
+                transportCost && transportCost?.TransportationDetails && transportCost?.TransportationDetails?.length === 0 && (
                   <tr>
                     <td colSpan="12">
                       <NoContentFound title={EMPTY_DATA} />
@@ -675,7 +696,7 @@ function ViewConversionCost(props) {
 
               <tr className='table-footer'>
                 <td colSpan={5} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
-                <td colSpan={5}>{checkForDecimalAndNull(viewCostingDataObj?.TransportationCostConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                <td colSpan={5}>{checkForDecimalAndNull(transportCost && transportCost?.TotalTransportationCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
               </tr>
             </tbody>
           </Table>
@@ -761,12 +782,12 @@ function ViewConversionCost(props) {
 
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                     <>
-                      <Hanger ViewMode={true} isSummary={true} viewCostingDataObj={viewCostingDataObj} />
+                      <Hanger ViewMode={true} isSummary={true} viewCostingDataObj={hangerCostDetails} item={viewCostingDataObj} />
                       <Row>
                         <Col md="4">
                           <label>Paint and Masking</label>
                           <div className='d-flex align-items-center'>
-                            <input className='form-control w-100' type="text" disabled value={viewCostingDataObj ? checkForDecimalAndNull(viewCostingDataObj?.CostingPartDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice) : '-'} />
+                            <input className='form-control w-100' type="text" disabled value={paintAndTapeDetails ? checkForDecimalAndNull(paintAndTapeDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice) : '-'} />
                             <Button
                               id="viewConversion_extraCost"
                               onClick={() => setShowPaintCost(true)}
@@ -801,7 +822,7 @@ function ViewConversionCost(props) {
               />
             )}
           </div>
-          {showPaintCost && <PaintAndMasking isOpen={showPaintCost} ViewMode={true} anchor={'right'} CostingId={viewCostingDataObj?.costingId} closeDrawer={closePaintAndMasking} />}
+          {showPaintCost && <PaintAndMasking isOpen={showPaintCost} ViewMode={true} anchor={'right'} CostingId={paintAndTapeDetails?.CostingId} item={paintAndTapeDetails} closeDrawer={closePaintAndMasking} />}
         </Container>
       </Drawer> : <>
         {!stCostShow && costingProcessCost.length !== 0 && !props?.processShow && !props?.operationShow && processTableData()}
