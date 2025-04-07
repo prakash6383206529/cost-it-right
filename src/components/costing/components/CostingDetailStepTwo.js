@@ -63,7 +63,7 @@ function CostingDetailStepTwo(props) {
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
-    PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, breakupBOP, UpdatePaymentTermCost } = useSelector(state => state.costing)
+    PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, breakupBOP, UpdatePaymentTermCost, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, checkIsDiscountChange, checkIsDataChange } = useSelector(state => state.costing)
 
   const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId))
   const isNFR = useContext(IsNFR);
@@ -480,16 +480,21 @@ function CostingDetailStepTwo(props) {
         const surfaceTabData = SurfaceTabData[0]
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
         const discountAndOtherTabData = DiscountCostData
-        if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
-          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-        }
+
         let surfaceArrForCosting = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
         const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
         const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
-        if (surfaceData !== undefined || surfaceLockedData !== undefined) {
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
-          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+
+        // Check if any of the conditions are true
+        const shouldSaveAssemblyPart = data !== undefined || bopData !== undefined || lockedData !== undefined
+        const shouldSaveSurfacePart = surfaceData !== undefined || surfaceLockedData !== undefined
+        if (shouldSaveAssemblyPart || shouldSaveSurfacePart) {
+          if (!CostingViewMode && (checkIsOverheadProfitChange || checkIsFreightPackageChange || checkIsToolTabChange || checkIsDiscountChange || checkIsDataChange)) {
+            // Determine which type of calculation to use based on conditions
+            const calculationType = shouldSaveAssemblyPart ? 1 : 2
+            let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, calculationType, CostingEffectiveDate, false, '', isPartType || {}, initialConfiguration?.IsAddPaymentTermInNetCost)
+            dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+          }
         }
       }
       dispatch(savePartNumber(''))
