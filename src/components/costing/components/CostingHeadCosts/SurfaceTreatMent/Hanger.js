@@ -24,11 +24,11 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
     })
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
     useEffect(() => {
-        const data = isSummary ? viewCostingDataObj?.CostingPartDetails : item?.CostingPartDetails
+        const data = isSummary ? viewCostingDataObj : item?.CostingPartDetails
         setValue(`HangerFactor`, data?.HangerRate ? checkForDecimalAndNull(data?.HangerRate, NoOfDecimalForInputOutput) : '')
         setValue(`NoOfPartsPerHanger`, data?.NumberOfPartsPerHanger ? checkForDecimalAndNull(data?.NumberOfPartsPerHanger, NoOfDecimalForInputOutput) : '')
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(data?.HangerCostPerPart, NoOfDecimalForPrice))
-    }, [])
+    }, [viewCostingDataObj])
     const calculateHangerCost = debounce((hangerFactor, noOfPartsPerHanger) => {
         const hangerCost = checkForNull(hangerFactor) / checkForNull(noOfPartsPerHanger)
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(hangerCost, NoOfDecimalForPrice))

@@ -306,7 +306,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(totalPaintCost, NoOfDecimalForPrice))
     }
     const calculateValues = debounce((surfaceArea, consumption, rejectionAllowancePercentage, parentIndex, childIndex, rm) => {
-        const surfaceAreaAndConsumption = surfaceArea * consumption
+        const surfaceAreaAndConsumption = surfaceArea * (consumption === 0 ? 1 : consumption)
         //Rejection Allowance = (Surface Area * Consumption) * Rejection Allowance Percentage / 100
         const rejectionAllowance = surfaceAreaAndConsumption * rejectionAllowancePercentage / 100
         //Net Cost = ((Surface Area * Consumption) + Rejection Allowance) * RM Rate
@@ -320,7 +320,8 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                 SurfaceArea: checkForNull(surfaceArea),
                 Consumption: checkForNull(consumption),
                 RejectionAllowancePercentage: checkForNull(rejectionAllowancePercentage),
-                id: rm?.RawMaterialId
+                id: rm?.RawMaterialId,
+                UOM: rm?.UOM
             }
 
             // Calculate total NetCost across all items
@@ -414,7 +415,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         coat: rm?.RawMaterial,
                         parentIndex,
                         childIndex,
-                        required: true,
+                        required: false,
                         onHandleChange: e => calculateValues(
                             checkForNull(getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
                             e.target.value,
@@ -562,7 +563,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                 <tr>
                                     {TABLE_HEADERS.map((item, index) => {
                                         if (item === 'Action' && (ViewMode || IsLocked)) return false
-                                        return <th key={index}>{item}</th>
+                                        return <th key={index}>{item}{index === 3 && <span className="asterisk-required">*</span>}</th>
                                     })}
                                 </tr>
                             </thead>
