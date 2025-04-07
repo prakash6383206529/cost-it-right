@@ -175,8 +175,8 @@ function LabourListing(props) {
     return (
       <>
         {ViewAccessibility && (<Button id={`labourListing_View${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />)}
-        {EditAccessibility && (<Button id={`labourListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />)}
-        {DeleteAccessibility && (<Button id={`labourListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(labourDetailsId)} title={"Delete"} />
+        {(EditAccessibility && props?.data?.IsEditable) && (<Button id={`labourListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />)}
+        {(DeleteAccessibility && !(props?.data?.IsLabourAssociated)) && (<Button id={`labourListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(labourDetailsId)} title={"Delete"} />
         )}
       </>
     );

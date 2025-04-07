@@ -658,10 +658,12 @@ class AddLabour extends Component {
     const LabourRateConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRateConversion) : checkForNull(fieldsObj?.LabourRate)
     let tempData = gridTable[gridEditIndex]
     let financialDataChanged = (Number(tempData.LabourRateConversion) !== Number(fieldsObj?.LabourRateConversion)) || (fieldsObj?.Efficiency && Number(tempData.Efficiency) !== Number(fieldsObj?.Efficiency)) || Number(tempData.WorkingTime) !== Number(fieldsObj?.workingHours)
-    if (tempData.IsAssociatedlabour) {
+    if (tempData.IsAssociated) {
       if (financialDataChanged && checkEffectiveDate(effectiveDate, tempData.EffectiveDate)) {
         Toaster.warning('Please update the Effective date.')
         return false
+      }else if(financialDataChanged){
+        tempData.IsFinancialDataChanged = financialDataChanged 
       }
     }
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
@@ -677,7 +679,7 @@ class AddLabour extends Component {
     const isExist = skipEditedItem.findIndex(
       (el) =>
         el.MachineTypeId === machineType.value &&
-        el.LabourTypeId === labourType.value,
+        el.LabourTypeId === labourType.value && checkEffectiveDate(effectiveDate, el.EffectiveDate) ,
     )
     if (isExist !== -1) {
       Toaster.warning('Already added, Please check the values.')
@@ -700,7 +702,9 @@ class AddLabour extends Component {
       LabourRateConversion: LabourRateConversion,
       CurrencyExchangeRate: this.state.currencyValue,
       ExchangeRateId: this.state.ExchangeRateId,
-
+      ...(tempData.IsAssociated !== undefined && { IsAssociated: tempData.IsAssociated }),
+      ...(tempData.LabourDetailId !== undefined && { LabourDetailId: tempData.LabourDetailId }), 
+      ...(financialDataChanged && { IsFinancialDataChanged: true }) 
     }
 
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData })
@@ -1566,7 +1570,7 @@ class AddLabour extends Component {
                                         <button
                                           className="Edit mr-2"
                                           type={"button"}
-                                          disabled={isViewMode || item.IsAssociated}
+                                          disabled={isViewMode}  
                                           onClick={() =>
                                             this.editGridItemDetails(index)
                                           }
