@@ -3,7 +3,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../src/
 import { Container, Row, Col, Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA, TIME } from '../../../../config/constants'
+import { EMPTY_DATA, HANGEROVERHEAD, TIME } from '../../../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
 import classnames from 'classnames';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -102,11 +102,11 @@ function ViewConversionCost(props) {
       let PaintAndTapeDetailsTemp = PaintAndTapeDetails && PaintAndTapeDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
       let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
       setCostingProcessCost(processCost)
-      setHangerCostDetails(HangerCostDetailsTemp[0])
-      setPaintAndTapeDetails(PaintAndTapeDetailsTemp[0])
+      setHangerCostDetails(HangerCostDetailsTemp ? HangerCostDetailsTemp[0] : [])
+      setPaintAndTapeDetails(PaintAndTapeDetailsTemp ? PaintAndTapeDetailsTemp[0] : [])
       setCostingOperationCostResponse(operationCost)
       setOtherCostingOperationCostResponse(otherOperationCost)
-      setTransportCost(transportCost[0])
+      setTransportCost(transportCost ? transportCost[0] : [])
       setSurfaceTreatmentCost(surfaceCost)
     }
     else if (IsAssemblyCosting === true && isPDFShow === true) {
@@ -652,7 +652,7 @@ function ViewConversionCost(props) {
     return <>
       <Row>
         <Col md="12" className='mt-3'>
-          <div className="left-border">{'Extra Cost:'}</div>
+          <div className="left-border">{'Other Cost:'}</div>
         </Col>
       </Row>
       <Row>
@@ -666,6 +666,8 @@ function ViewConversionCost(props) {
                 <th>{`Applicability`}</th>
                 <th>{`Applicability Cost`}</th>
                 <th>{`Percentage (%)`}</th>
+                <th>{'Rate'}</th>
+                <th>{'Quantity'}</th>
                 <th>{`Cost`}</th>
                 <th>{`Remark`}</th>
               </tr>
@@ -677,7 +679,9 @@ function ViewConversionCost(props) {
                     <td>{item?.Description ?? '-'}</td>
                     <td>{item?.CostingConditionNumber ?? '-'}</td>
                     <td>{item?.ApplicabiltyCost ? checkForDecimalAndNull(item?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{(item?.UOM === 'Percentage' && item?.Rate) ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{(item?.UOM === HANGEROVERHEAD && item?.Rate) ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{item?.Quantity ? checkForDecimalAndNull(item?.Quantity, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                     <td>{item?.TransportationCost !== '-' ? checkForDecimalAndNull(item?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                     <td>{item?.Remark ? item?.Remark : '-'}</td>
                   </tr>
