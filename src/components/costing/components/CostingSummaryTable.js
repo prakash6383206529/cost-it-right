@@ -1569,9 +1569,25 @@ const CostingSummaryTable = (props) => {
         obj.sTreatment = "Multiple Surface Treatment"
         return obj
       } else if (obj.CostingHeading !== VARIANCE) {
-
         obj.gWeight = (obj?.netRMCostView && reducer(obj?.netRMCostView))
         obj.fWeight = (obj?.netRMCostView && reducerFinish(obj?.netRMCostView))
+        if (obj.bestCost) {
+          obj.nPackagingAndFreight = checkForNull(obj.NetFreightPackagingCostConversion) ?? "-"
+          obj.totalToolCost = checkForNull(obj.NetToolCostConversion) ?? "-"
+          obj.netRM = checkForNull(obj.NetRawMaterialsCostConversion) ?? "-"
+          obj.netBOP = checkForNull(obj.NetBoughtOutPartCostConversion) ?? "-"
+          obj.nConvCost= checkForNull(obj.NetConversionCostConversion) ?? "-"
+          if (getConfigurationKey()?.IsBasicRateAndCostingConditionVisible) {
+            obj.BasicRate = checkForDecimalAndNull((
+                checkForNull(obj.nPackagingAndFreight) + 
+                checkForNull(obj.totalToolCost) + 
+                checkForNull(obj.netRM) + 
+                checkForNull(obj.netBOP) + 
+                checkForNull(obj.nConvCost)),
+                initialConfiguration?.NoOfDecimalForPrice
+            );
+          }
+        }
         return obj
       } else {
         let objNew = { ...obj }
@@ -2747,7 +2763,7 @@ const CostingSummaryTable = (props) => {
                                 </th></tr>}
 
                               <tr className={highlighter("netRM", "main-row")}>
-                                <th>Net RM Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT))}</th>                                
+                                <th>Net RM Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT))}</th>
                                 {viewCostingData &&
                                   viewCostingData?.map((data, index) => {
                                     return (

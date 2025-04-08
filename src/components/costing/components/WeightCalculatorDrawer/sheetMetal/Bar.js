@@ -526,7 +526,7 @@ function Pipe(props) {
     }
 
     const UnitFormat = () => {
-        return <>Net Surface Area(mm<sup>2</sup>)</>
+        return <>Net Surface Area (mm<sup>2</sup>)</>
     }
 
     const handleKeyDown = function (e) {
@@ -554,11 +554,11 @@ function Pipe(props) {
      */
     const tooltipMessageForSheetWeight = (value) => {
         return (
-            <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}) * Length of {value} {value === 'Part' ? 'including allowance' : ''})/1000</div>
+            <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}) * Length of {value} {value === 'Part' ? 'Including Allowance' : ''})/1000</div>
         );
     }
-    const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part including allowance) +  {isOneSide && !isSolidBar ? '(π * Inner Diameter * Length of Part including allowance) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}))</div>
-    const lengthOfScrapTooltipMessage = <div>Length of Scrap = Remainder of no. of parts/Sheet <br /> (No. of Parts/Sheet = {checkForDecimalAndNull(dataToSend.NumberOfPartsPerSheetWithDecimal, localStorage.NoOfDecimalForInputOutput)})</div>
+    const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part Including Allowance) +  {isOneSide && !isSolidBar ? '(π * Inner Diameter * Length of Part Including Allowance) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}))</div>
+    const lengthOfScrapTooltipMessage = <div>Length of Scrap = Remainder of No. of Parts/Sheet <br /> (No. of Parts/Sheet = {checkForDecimalAndNull(dataToSend.NumberOfPartsPerSheetWithDecimal, localStorage.NoOfDecimalForInputOutput)})</div>
     return (
         <>
             <div className="user-page p-0">
@@ -601,7 +601,7 @@ function Pipe(props) {
                             <Row className={''}>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Outer Diameter(mm)`}
+                                        label={`Outer Diameter (mm)`}
                                         name={'OuterDiameter'}
                                         Controller={Controller}
                                         control={control}
@@ -622,7 +622,7 @@ function Pipe(props) {
                                 {!isSolidBar && <>
                                     <Col md="3">
                                         <TextFieldHookForm
-                                            label={`Thickness(mm)`}
+                                            label={`Thickness (mm)`}
                                             name={'Thickness'}
                                             Controller={Controller}
                                             control={control}
@@ -643,7 +643,7 @@ function Pipe(props) {
                                     <Col md="3">
                                         <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness)" />
                                         <TextFieldHookForm
-                                            label={`Inner Diameter(mm)`}
+                                            label={`Inner Diameter (mm)`}
                                             name={'InnerDiameter'}
                                             Controller={Controller}
                                             control={control}
@@ -664,7 +664,7 @@ function Pipe(props) {
                                 </>}
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Length of Sheet(mm)`}
+                                        label={`Length of Sheet (mm)`}
                                         name={'SheetLength'}
                                         Controller={Controller}
                                         control={control}
@@ -684,7 +684,7 @@ function Pipe(props) {
                                 </Col >
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Length of Part(mm)`}
+                                        label={`Length of Part (mm)`}
                                         name={'PartLength'}
                                         Controller={Controller}
                                         control={control}
@@ -723,9 +723,9 @@ function Pipe(props) {
                                     />
                                 </Col >
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part-with-allowance'} tooltipText="Length of Part including  allowance = (Length of Part + Cutting Allowance)" />
+                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part-with-allowance'} tooltipText="Length of Part Including Allowance = (Length of Part + Cutting Allowance)" />
                                     <TextFieldHookForm
-                                        label={`Length of Part including allowance(mm)`}
+                                        label={`Length of Part Including Allowance (mm)`}
                                         name={'partLengthWithAllowance'}
                                         Controller={Controller}
                                         control={control}
@@ -761,7 +761,7 @@ function Pipe(props) {
                                     />
                                 </Col >
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = ((Length(Sheet)-End Piece Allowance) / Length of Part including allowance)" />
+                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = ((Length(Sheet)-End Piece Allowance) / Length of Part Including Allowance)" />
                                     <TextFieldHookForm
                                         label="No. of Parts/Sheet"
                                         name={'NumberOfPartsPerSheet'}
@@ -781,7 +781,7 @@ function Pipe(props) {
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText={lengthOfScrapTooltipMessage} />
                                     <TextFieldHookForm
-                                        label={`Length of Scrap(mm)`}
+                                        label={`Length of Scrap (mm)`}
                                         name={'ScrapLength'}
                                         Controller={Controller}
                                         control={control}
@@ -799,7 +799,7 @@ function Pipe(props) {
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-sheet'} tooltipText={tooltipMessageForSheetWeight('Sheet')} />
                                     <TextFieldHookForm
-                                        label={`Weight of Sheet(g)`}
+                                        label={`Weight of Sheet (g)`}
                                         name={'WeightofSheet'}
                                         Controller={Controller}
                                         control={control}
@@ -817,7 +817,7 @@ function Pipe(props) {
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-part'} tooltipText={tooltipMessageForSheetWeight('Part')} />
                                     <TextFieldHookForm
-                                        label={`Weight of Part(g)`}
+                                        label={`Weight of Part (g)`}
                                         name={'WeightofPart'}
                                         Controller={Controller}
                                         control={control}
@@ -835,7 +835,7 @@ function Pipe(props) {
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-scrap'} tooltipText={tooltipMessageForSheetWeight('Scrap')} />
                                     <TextFieldHookForm
-                                        label={`Weight of Scrap(g)`}
+                                        label={`Weight of Scrap (g)`}
                                         name={'WeightofScrap'}
                                         Controller={Controller}
                                         control={control}
@@ -929,7 +929,7 @@ function Pipe(props) {
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={`${rmRowData?.RawMaterialCategory !== STD ? "Gross Weight = Weight of sheet / No. of Parts" : "Gross Weight = Weight of part + (Weight of scrap / No. of Parts)" }`} />
                                     <TextFieldHookForm
-                                        label={`Gross Weight(${UOMDimension.label})`}
+                                        label={`Gross Weight (${UOMDimension.label})`}
                                         name={'GrossWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -950,7 +950,7 @@ function Pipe(props) {
 
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Finish Weight(${UOMDimension.label})`}
+                                        label={`Finish Weight (${UOMDimension.label})`}
                                         name={'FinishWeightOfSheet'}
                                         Controller={Controller}
                                         control={control}
@@ -999,7 +999,7 @@ function Pipe(props) {
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
                                     <TextFieldHookForm
-                                        label={`Scrap Weight(${UOMDimension.label})`}
+                                        label={`Scrap Weight (${UOMDimension.label})`}
                                         name={'scrapWeight'}
                                         Controller={Controller}
                                         control={control}

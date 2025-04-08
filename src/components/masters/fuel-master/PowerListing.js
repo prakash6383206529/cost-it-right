@@ -158,8 +158,8 @@ const PowerListing = (props) => {
     return (
       <>
         {permissions.View && (<Button id={`powerListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(obj, true)} title={"View"} />)}
-        {[permissions.Edit] && (<Button id={`powerListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(obj, false)} title={"Edit"} />)}
-        {permissions.Delete && (<Button id={`powerListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(obj)} title={"Delete"} />)}
+        {([permissions.Edit] && rowData?.IsEditable) && (<Button id={`powerListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(obj, false)} title={"Edit"} />)}
+        {(permissions.Delete && !rowData?.IsAssociated) && (<Button id={`powerListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(obj)} title={"Delete"} />)}
       </>
     );
   };
