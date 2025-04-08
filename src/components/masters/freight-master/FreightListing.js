@@ -190,9 +190,9 @@ const FreightListing = (props) => {
         }
       }
 
-      if (item?.EffectiveDate?.includes('T')) {
-        item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-      }
+      // if (item?.EffectiveDate?.includes('T')) {
+      //   item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+      // }
       return item;
 
     })

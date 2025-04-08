@@ -370,7 +370,8 @@ class AddFreight extends Component {
               destinationLocation: Data.DestinationCityName !== undefined ? { label: Data.DestinationCityName, value: Data.DestinationCityId } : [],
               gridTable: GridArray,
               Plant: { label: Data.PlantName, value: Data.PlantId },
-              effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+              // effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+              effectiveDate: Data?.EffectiveDate && DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate).toDate() : '',
               ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
               plantCurrency: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
               plantExchangeRateId: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
@@ -912,7 +913,7 @@ class AddFreight extends Component {
 
     // For edit mode, check for changes and handle different scenarios
     const userDetail = userDetails();
-    let formData = {
+    let form_Data = {
       "FreightId": isEditFlag ? FreightID : null,
       "IsLoadingUnloadingApplicable": IsLoadingUnloadingApplicable,
       "LoadingUnloadingCharges": values.LoadingUnloadingCharges,
@@ -975,18 +976,18 @@ class AddFreight extends Component {
       const isEffectiveDateChanged = DayTime(this.state.effectiveDate).format('YYYY-MM-DD') !== DayTime(DataToChange.EffectiveDate).format('YYYY-MM-DD');
 
       // Require date change only for financial changes in associated freight
-      if (hasFinancialChanges && gridTable.some(item => item.IsFreightAssociated) && !isEffectiveDateChanged) {
+      if (hasFinancialChanges && (!isEffectiveDateChanged) && gridTable.some(item => item.IsFreightAssociated)) {
         Toaster.warning("Please change the effective date.");
         return false;
       }
-      formData.IsFinancialDataChanged = hasFinancialChanges ? true : false
+      form_Data.IsFinancialDataChanged = hasFinancialChanges ? true : false
     }
     this.setState({ isVendorNameNotSelected: false })
 
     if (isEditFlag) {
       this.setState({ setDisable: true })
 
-      this.props.updateFright(formData, (res) => {
+      this.props.updateFright(form_Data, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
@@ -997,7 +998,7 @@ class AddFreight extends Component {
     } else {
       this.setState({ setDisable: true })
 
-      this.props.createFreight(formData, (res) => {
+      this.props.createFreight(form_Data, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
