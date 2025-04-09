@@ -3011,7 +3011,7 @@ const CostingSummaryTable = (props) => {
                                   Surface Treatment
                                 </span>
                                 <span className={highlighter("tCost")}>
-                                  Extra Surface Treatment Cost
+                                  Other Surface Treatment Cost
                                 </span>
                                 <span className={highlighter("HangerCostPerPart")}>
                                   Hanger Cost
