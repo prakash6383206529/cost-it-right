@@ -90,10 +90,10 @@ function TabRMCC(props) {
           TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0, //TODO: Rename this
           RawMaterialCostWithCutOff: TopHeaderValues?.RawMaterialCostWithCutOff ? checkForNull(TopHeaderValues?.RawMaterialCostWithCutOff) : 0,
           IsRMCutOffApplicable: TopHeaderValues?.IsRMCutOffApplicable ? TopHeaderValues?.IsRMCutOffApplicable : false,
-          NetProcessCostForOverhead: TopHeaderValues?.NetProcessCostForOverhead ? TopHeaderValues?.NetProcessCostForOverhead : 0,
-          NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
-          NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
-          NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
+          NetProcessCostForOverhead: TopHeaderValues?checkForNull(TopHeaderValues?.TotalProcessCostPerAssemblyForOverhead) + checkForNull(TopHeaderValues?.TotalProcessCostSubAssemblyForOverhead) + checkForNull(TopHeaderValues?.TotalProcessCostComponentForOverhead) : 0,
+          NetProcessCostForProfit: TopHeaderValues?checkForNull(TopHeaderValues?.TotalProcessCostPerAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalProcessCostSubAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalProcessCostComponentForProfit) : 0,
+          NetOperationCostForOverhead: TopHeaderValues?checkForNull(TopHeaderValues?.TotalOperationCostPerAssemblyForOverhead) + checkForNull(TopHeaderValues?.TotalOperationCostSubAssemblyForOverhead) + checkForNull(TopHeaderValues?.TotalOperationCostComponentForOverhead) : 0,
+          NetOperationCostForProfit: TopHeaderValues?checkForNull(TopHeaderValues?.TotalOperationCostPerAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalOperationCostSubAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalOperationCostComponentForProfit) : 0,
 
         }
       } else {
@@ -1856,7 +1856,7 @@ function TabRMCC(props) {
                   subAssembObj.CostingPartDetails.TotalOperationCostPerAssembly = GetOperationCostTotal(gridData);
                   subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, 'Overhead')?.overheadOperationCost) ?? 0
                   subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, 'Profit')?.profitOperationCost) ?? 0
-                } else {
+                                  } else {
                   subAssembObj.CostingPartDetails.CostingProcessCostResponse = gridData;
                   subAssembObj.CostingPartDetails.TotalProcessCostPerAssembly = GetProcessCostTotal(gridData);
                   subAssembObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(tempArr, 'Overhead')?.overheadProcessCost) ?? 0

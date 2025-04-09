@@ -164,11 +164,11 @@ function AssemblySurfaceTreatment(props) {
               item?.CostingPartDetails && (item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== null && item?.CostingPartDetails?.TotalTransportationCostWithQuantity !== 0) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext max225">
-                    {`Assembly's Extra Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostPerAssembly, initialConfiguration?.NoOfDecimalForPrice)}`}
+                    {`Assembly's Other Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostPerAssembly, initialConfiguration?.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {`Sub Assembly's Extra Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostPerSubAssembly, initialConfiguration?.NoOfDecimalForPrice)}`}
+                    {`Sub Assembly's Other Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostPerSubAssembly, initialConfiguration?.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {`Child Parts Extra Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostComponent, initialConfiguration?.NoOfDecimalForPrice)}`}
+                    {`Child Parts Other Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalTransportationCostComponent, initialConfiguration?.NoOfDecimalForPrice)}`}
                   </span>
                 </div> : ''
             }

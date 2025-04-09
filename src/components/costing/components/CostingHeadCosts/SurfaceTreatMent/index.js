@@ -43,7 +43,6 @@ function SurfaceTreatment(props) {
   const costData = useContext(costingInfoContext);
   let surfaceTabData = SurfaceTabData && SurfaceTabData[0]
   const CostingViewMode = useContext(ViewCostingContext);
-  const [transportationObject, setTransportationObject] = useState({})
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [callDiscountApi, setCallDiscountApi] = useState(false)
   const [viewPaintAndMasking, setViewPaintAndMasking] = useState(false)
@@ -276,7 +275,6 @@ function SurfaceTreatment(props) {
       // objectToUpdate.CostingPartDetails.TapeCost = obj.paintAndMaskingObj.TapeCost
       // objectToUpdate.CostingPartDetails.TotalPaintCostWithQuantity = obj.paintAndMaskingObj.TotalPaintCost
     } else if (obj.type === 'ExtraCost') {
-      console.log("obj", obj)
       setExtraCostDetails({ TransportationCost: obj.extraCostObj.TransportationCost, TransportationDetails: obj.extraCostObj.TransportationDetails })
       setValue(`ExtraCost`, checkForDecimalAndNull(obj?.extraCostObj?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice))
       // objectToUpdate.CostingPartDetails.TransportationDetails = obj.extraCostObj.TransportationDetails
@@ -404,24 +402,24 @@ function SurfaceTreatment(props) {
     // }
   }
   const updateExtraCost = () => {
-    let tempData = [...surfaceTabData?.CostingPartDetails?.TransportationDetails]
+    let tempData = extraCostDetails?.TransportationDetails ? [...extraCostDetails?.TransportationDetails] : []
     tempData.map(item => {
       if (item?.CostingConditionMasterId) {
         if (item.CostingConditionNumber === TAPEANDPAINT) {
-          item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.TotalPaintCost
-          item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.TotalPaintCost, item?.Rate)
+          item.ApplicabiltyCost = paintAndMaskingDetails?.TotalPaintCost
+          item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TotalPaintCost, item?.Rate)
         } else if (item.CostingConditionNumber === HANGER) {
-          item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.HangerCostPerPart
-          item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.HangerCostPerPart, item?.Rate)
+          item.ApplicabiltyCost = hangerCostDetails?.HangerCostPerPart
+          item.TransportationCost = calculatePercentageValue(hangerCostDetails?.HangerCostPerPart, item?.Rate)
         } else if (item.CostingConditionNumber === SURFACETREATMENTLABEL) {
-          item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost
-          item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost, item?.Rate)
+          item.ApplicabiltyCost = surfaceCost(surfaceTreatmentData?.gridData)
+          item.TransportationCost = calculatePercentageValue(surfaceCost(surfaceTreatmentData?.gridData), item?.Rate)
         } else if (item.CostingConditionNumber === TAPE) {
-          item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.TapeCost
-          item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.TapeCost, item?.Rate)
+          item.ApplicabiltyCost = paintAndMaskingDetails?.TapeCost
+          item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TapeCost, item?.Rate)
         } else if (item.CostingConditionNumber === PAINT) {
-          item.ApplicabiltyCost = surfaceTabData?.CostingPartDetails?.PaintCost
-          item.TransportationCost = calculatePercentageValue(surfaceTabData?.CostingPartDetails?.PaintCost, item?.Rate)
+          item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
+          item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
         }
       }
     })
@@ -487,7 +485,7 @@ function SurfaceTreatment(props) {
                           (item.PartType !== 'Part' && item.PartType !== 'Component') ?
                             <>
                               <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="2" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Other Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="2" className="cr-costlabel">{`Hanger Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.HangerCostPerPartWithQuantity) : checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="3" className="cr-costlabel">{`Paint and Masking Cost : ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TotalPaintCostWithQuantity) : checkForNull(paintAndMaskingDetails?.TotalPaintCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="3" className="cr-costlabel">{`Net ST. Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost) + checkForNull(extraCostDetails?.TransportationCost) + checkForNull(paintAndMaskingDetails?.TotalPaintCost) + checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
@@ -496,7 +494,7 @@ function SurfaceTreatment(props) {
                             :
                             <>
                               <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="2" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TransportationCost) : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Other Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TransportationCost) : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="2" className="cr-costlabel">{`Hanger Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.HangerCostPerPart) : checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="3" className="cr-costlabel">{`Paint and Masking Cost : ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TotalPaintCost) : checkForNull(paintAndMaskingDetails?.TotalPaintCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="3" className="cr-costlabel">{`Net ST. Cost: ${(CostingViewMode || IsLocked) ?
@@ -563,7 +561,7 @@ function SurfaceTreatment(props) {
                             </Col>
                             <Col md="4" className="d-flex align-items-center">
                               <TextFieldHookForm
-                                label="Extra Cost"
+                                label="Other Cost"
                                 name={`ExtraCost`}
                                 Controller={Controller}
                                 control={control}
