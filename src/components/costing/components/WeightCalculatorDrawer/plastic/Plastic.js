@@ -35,8 +35,8 @@ function Plastic(props) {
         totalRM = Number(rmRowData.RMRate)
     }
     const { IsShowFinishedWeightInPlasticTechCostingCalculator } = getConfigurationKey()
-    const LocalizedGrossWeight = IsShowFinishedWeightInPlasticTechCostingCalculator ? 'Net Weight' : 'Gross Weight'
-    const LocalizedInputWeight = IsShowFinishedWeightInPlasticTechCostingCalculator ? 'Gross Weight' : 'Input Weight'
+    const LocalizedGrossWeight = !IsShowFinishedWeightInPlasticTechCostingCalculator ? 'Net Weight' : 'Gross Weight'
+    const LocalizedInputWeight = !IsShowFinishedWeightInPlasticTechCostingCalculator ? 'Gross Weight' : 'Input Weight'
 
         const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext)
@@ -158,7 +158,7 @@ function Plastic(props) {
         let reUseInputWeight = 0
         let inputWeightWithReuse = 0
 
-        const finishedWeight = checkForNull(getValues('finishedWeight'))
+        const finishedWeight = !IsShowFinishedWeightInPlasticTechCostingCalculator ? checkForNull(getValues('netWeight')) : checkForNull(getValues('finishedWeight'))
         const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true)) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
         if (finishedWeight !== 0) {
             if (isScrapReuse) {
@@ -466,7 +466,7 @@ function Plastic(props) {
                                         />
                                     </Col>
                                 </>}
-                             {  !IsShowFinishedWeightInPlasticTechCostingCalculator && <Col md="3" >
+                             {  IsShowFinishedWeightInPlasticTechCostingCalculator && <Col md="3" >
                                     <NumberFieldHookForm
                                         label={`Finished Weight(Kg)`}
                                         name={'finishedWeight'}
@@ -515,7 +515,7 @@ function Plastic(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={`${isScrapReuse ? `Scrap Weight = (Runner Weight - ((${LocalizedInputWeight} + Runner Weight + Burning Allowance) * Scrap Re-use (%)/100))* Scrap Recovery (%)/100` : `Scrap Weight = (${LocalizedInputWeight} - ${IsShowFinishedWeightInPlasticTechCostingCalculator?  LocalizedGrossWeight : 'Finish Weight'}) * Scrap Recovery (%)/100`}`} />
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={`${isScrapReuse ? `Scrap Weight = (Runner Weight - ((${LocalizedInputWeight} + Runner Weight + Burning Allowance) * Scrap Re-use (%)/100))* Scrap Recovery (%)/100` : `Scrap Weight = (${LocalizedInputWeight} - ${!IsShowFinishedWeightInPlasticTechCostingCalculator?  LocalizedGrossWeight : 'Finish Weight'}) * Scrap Recovery (%)/100`}`} />
                                     <TextFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}
