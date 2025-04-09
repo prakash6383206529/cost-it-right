@@ -28,7 +28,6 @@ function ExtraCost(props) {
 
     let surfaceCostingPartDetails = item?.CostingPartDetails
     const { rmBasicRate, RowData, RowIndex, hangerCostDetails, paintAndMaskingDetails, surfaceCost } = props
-    console.log(hangerCostDetails, "hangerCostDetails")
     const [tableData, setTableData] = useState(extraCostDetails?.TransportationDetails ?? []);
 
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -311,7 +310,7 @@ function ExtraCost(props) {
     }
     const handleRateChange = (e) => {
         const storeValue = checkForNull(e?.target?.value)
-        const calculateValue = hangerCostDetails?.NumberOfPartsPerHanger / storeValue
+        const calculateValue = storeValue / hangerCostDetails?.NumberOfPartsPerHanger
         setValue('NetCost', checkForDecimalAndNull(calculateValue, initialConfiguration?.NoOfDecimalForPrice))
     }
     const resetData = (type = '') => {
