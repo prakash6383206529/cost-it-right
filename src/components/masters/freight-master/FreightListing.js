@@ -189,10 +189,6 @@ const FreightListing = (props) => {
           item[key] = "-"; // Set to hyphen if data is not available
         }
       }
-
-      // if (item?.EffectiveDate?.includes('T')) {
-      //   item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-      // }
       return item;
 
     })
@@ -221,7 +217,9 @@ const FreightListing = (props) => {
   const onBtExport = () => {
     let tempArr = []
     tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (freightDetail ? freightDetail : [])
+    tempArr = tempArr?.map(item => ({...item,EffectiveDate: item.EffectiveDate? DayTime(item.EffectiveDate).format("DD/MM/YYYY"): "-"}));
+    const freightData = freightDetail?.map(item => ({...item,EffectiveDate: item.EffectiveDate? DayTime(item.EffectiveDate).format("DD/MM/YYYY"): "-"}));
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (freightData ? freightData : [])
     const filteredLabels = FREIGHT_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
       if (column.value === "ExchangeRateSourceName") {
         return getConfigurationKey().IsSourceExchangeRateNameVisible
