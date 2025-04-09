@@ -379,7 +379,7 @@ function ViewRM(props) {
       }
 
       {
-        isAssemblyCosting && masterBatchList?.length > 0 && (!isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false)) &&
+        isAssemblyCosting && masterBatchList?.length > 0 && !simulationMode/* (!isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false)) */ &&
         <>
           < Col md="12">
             <div className="left-border mt-4 mb-3">Master Batch</div>

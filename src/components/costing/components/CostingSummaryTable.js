@@ -601,15 +601,16 @@ const CostingSummaryTable = (props) => {
    */
   const viewRM = (index) => {
     let data = viewCostingData[index]?.netRMCostView
+    const masterBatchData = (viewCostingData[index] && viewCostingData[index]?.CostingMasterBatchRawMaterialCostResponse[0]) ?? []
     setIsAssemblyCosting(viewCostingData[index]?.IsAssemblyCosting)
     setIsViewRM(true)
     setIndex(index)
     setViewRMData(data)
     setrmMBDetail({
-      MasterBatchTotal: viewCostingData[index]?.masterBatchTotal,
-      MasterBatchRMPrice: viewCostingData[index]?.masterBatchRMPrice,
-      MasterBatchPercentage: viewCostingData[index]?.masterBatchPercentage,
-      IsApplyMasterBatch: viewCostingData[index]?.isApplyMasterBatch
+      MasterBatchTotal: masterBatchData?.MasterBatchTotal,
+      MasterBatchRMPrice: masterBatchData?.MasterBatchRMPrice,
+      MasterBatchPercentage: masterBatchData?.MasterBatchPercentage,
+      IsApplyMasterBatch: masterBatchData?.IsApplyMasterBatch
     })
   }
   /**

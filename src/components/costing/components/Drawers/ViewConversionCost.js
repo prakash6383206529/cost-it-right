@@ -303,7 +303,7 @@ function ViewConversionCost(props) {
   }
 
   const processTableData = () => {
-    const tooltipText = <div><div>If UOM is in hours/minutes/seconds, quantity is in seconds.</div> <div>For all others UOMs, quantity is actual.</div></div>;
+    const tooltipText = <div><div>If UOM is in hours/minutes/seconds, quantity/cycle time is in seconds.</div> <div>For all others UOMs, quantity/cycle time is actual.</div></div>;
     return <>
       <Row>
         <Col md="12" className='mt-1'>
@@ -327,7 +327,7 @@ function ViewConversionCost(props) {
                 <th>{`Parts/Hour`}</th>
                 <th>{`MHR`}</th>
                 {!isPDFShow && <th>{`Calculator`}</th>}
-                <th><span className='d-flex'>Quantity  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div>}</span></th>
+                <th><span className='d-flex'>Quantity/Cycle time  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div>}</span></th>
                 <th>{`Net Cost`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Applicability`}</th>
@@ -436,7 +436,7 @@ function ViewConversionCost(props) {
                       <tr key={index}>
                         {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                         <td>
-                          <span onClick={() => setOpenOperationForm({ isOpen: true, id: item.OperationId })} className='link'>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""} {item.OperationName ? item.OperationName : '-'}</span>
+                          <span onClick={() => setOpenOperationForm({ isOpen: true, id: item.OperationId })} className='link'>{/* {item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""} */} {item.OperationName ? item.OperationName : '-'}</span>
                         </td>
                         <td>
                           {item.OperationCode ? item.OperationCode : '-'}
