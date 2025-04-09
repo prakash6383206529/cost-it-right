@@ -487,7 +487,7 @@ function SurfaceTreatment(props) {
                           (item.PartType !== 'Part' && item.PartType !== 'Component') ?
                             <>
                               <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="2" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Other Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="2" className="cr-costlabel">{`Hanger Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.HangerCostPerPartWithQuantity) : checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="3" className="cr-costlabel">{`Paint and Masking Cost : ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TotalPaintCostWithQuantity) : checkForNull(paintAndMaskingDetails?.TotalPaintCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="3" className="cr-costlabel">{`Net ST. Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost) + checkForNull(extraCostDetails?.TransportationCost) + checkForNull(paintAndMaskingDetails?.TotalPaintCost) + checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
@@ -496,7 +496,7 @@ function SurfaceTreatment(props) {
                             :
                             <>
                               <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="2" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TransportationCost) : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Other Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TransportationCost) : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="2" className="cr-costlabel">{`Hanger Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.HangerCostPerPart) : checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="3" className="cr-costlabel">{`Paint and Masking Cost : ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.TotalPaintCost) : checkForNull(paintAndMaskingDetails?.TotalPaintCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="3" className="cr-costlabel">{`Net ST. Cost: ${(CostingViewMode || IsLocked) ?
@@ -563,7 +563,7 @@ function SurfaceTreatment(props) {
                             </Col>
                             <Col md="4" className="d-flex align-items-center">
                               <TextFieldHookForm
-                                label="Extra Cost"
+                                label="Other Cost"
                                 name={`ExtraCost`}
                                 Controller={Controller}
                                 control={control}

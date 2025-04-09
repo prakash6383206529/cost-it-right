@@ -868,8 +868,8 @@ function OverheadProfit(props) {
         const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
         const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
         const CutOffRMC = CutOffCost;
-        const ConversionCostForOverheadCalculation = costData?.IsAssemblyPart ? (checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly)) : getCCCost('overhead')
-        const ConversionCostForProfitCalculation = costData?.IsAssemblyPart ? (checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly)) : getCCCost('profit')
+        const ConversionCostForOverheadCalculation = /* costData?.IsAssemblyPart ? (checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly)) */  getCCCost('overhead')
+        const ConversionCostForProfitCalculation = /* costData?.IsAssemblyPart ? (checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly)) : */ getCCCost('profit')
         const RMBOPCC_Overhead = headerCosts?.NetRawMaterialsCost + headerCosts?.NetBoughtOutPartCost + ConversionCostForOverheadCalculation
         const RMBOPCC_Profit = headerCosts?.NetRawMaterialsCost + headerCosts?.NetBoughtOutPartCost + ConversionCostForProfitCalculation
         RM_CC_BOP_Overhead = (IsCutOffApplicable && headerCosts) ? (CutOffCost + headerCosts.NetBoughtOutPartCost + ConversionCostForOverheadCalculation) + totalToolCost : RMBOPCC_Overhead + totalToolCost;
