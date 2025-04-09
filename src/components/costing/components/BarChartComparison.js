@@ -5,6 +5,7 @@ import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '
 import { Bar } from 'react-chartjs-2';
 import { colorArray } from '../../dashboard/ChartsDashboard';
 import { useSelector } from 'react-redux';
+import { useLabels } from '../../../helper/core';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
@@ -12,6 +13,7 @@ export function BarChartComparison({ costingData, currency }) {
   const [graphData, setGraphData] = useState(null);
   const { NoOfDecimalForPrice } = useSelector(state => state.auth?.initialConfiguration)
   const [graphHeight, setGraphHeight] = useState(240)
+  const { vendorLabel} = useLabels();
 
   useEffect(() => {
     const prepareGraphData = () => {
@@ -157,7 +159,7 @@ export function BarChartComparison({ costingData, currency }) {
           fontSize: '12px',
           fontWeight: 'bold'
         }}>
-          Plant (Code) - Vendor (Code) / Customer (Code)
+          Plant (Code) - {vendorLabel} (Code) / Customer (Code)
         </div>
         <div className="graph-container d-flex align-items-center" style={{ height: `${graphHeight}px` }}>
           {graphData && <Bar data={graphData} options={options} />}
