@@ -34,8 +34,11 @@ function Plastic(props) {
     } else {
         totalRM = Number(rmRowData.RMRate)
     }
+    const { IsShowFinishedWeightInPlasticTechCostingCalculator } = getConfigurationKey()
+    const LocalizedGrossWeight = IsShowFinishedWeightInPlasticTechCostingCalculator ? 'Net Weight' : 'Gross Weight'
+    const LocalizedInputWeight = IsShowFinishedWeightInPlasticTechCostingCalculator ? 'Gross Weight' : 'Input Weight'
 
-    const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
+        const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
     const { getPlasticData } = useSelector(state => state.costing)
@@ -94,7 +97,7 @@ function Plastic(props) {
             value: 2
         },
         {
-            label: 'Burning Loss (Gross Weight + Runner Weight)',
+            label: `Burning Loss (${LocalizedGrossWeight} + Runner Weight)`,
             value: 3
         }
     ]
@@ -294,7 +297,7 @@ function Plastic(props) {
                             <Row>
                                 <Col md="12" className={'mt25'}>
                                     <div className="header-title">
-                                        <h5>{'Input Weight Calculator:'}</h5>
+                                        <h5>{`${LocalizedGrossWeight} Calculator:`}</h5>
                                     </div>
                                 </Col>
                             </Row>
@@ -302,7 +305,7 @@ function Plastic(props) {
                             <Row className={''}>
                                 <Col md="3" >
                                     <NumberFieldHookForm
-                                        label={`Gross Weight(Kg)`}
+                                        label={`${LocalizedGrossWeight} (Kg)`}
                                         name={'netWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -362,9 +365,9 @@ function Plastic(props) {
 
                             <Row className={'mt25'}>
                                 <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Input Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
+                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={`${LocalizedInputWeight} = (${LocalizedGrossWeight} + Runner Weight + Other Loss Weight)`} />
                                     <TextFieldHookForm
-                                        label={`Input Weight(Kg)`}
+                                        label={`${LocalizedInputWeight} (Kg)`}
                                         name={'grossWeight'}
                                         id={'gross-weight-plastic'}
                                         Controller={Controller}
@@ -427,9 +430,9 @@ function Plastic(props) {
                                         />
                                     </Col>
                                     <Col md="3" >
-                                        <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'re-use-input-weight-plastic'} tooltipText={'Re-use input weight = ((Gross Weight + Runner Weight) * Scrap Re-use (%)/100)'} />
+                                        <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'re-use-input-weight-plastic'} tooltipText={`Re-use ${LocalizedInputWeight} = ((${LocalizedGrossWeight} + Runner Weight) * Scrap Re-use (%)/100)`} />
                                         <TextFieldHookForm
-                                            label={`Re-use input weight(Kg)`}
+                                            label={`Re-use ${LocalizedInputWeight}`}
                                             name={'reUseInputWeight'}
                                             id={'re-use-input-weight-plastic'}
                                             Controller={Controller}
@@ -445,9 +448,9 @@ function Plastic(props) {
                                         />
                                     </Col>
                                     <Col md="3" >
-                                        <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'input-weight-with-reuse-plastic'} tooltipText={'Input weight (with Re-use) = (Input Weight + Re-use input weight)'} />
+                                        <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'input-weight-with-reuse-plastic'} tooltipText={`${LocalizedInputWeight} (with Re-use) = (${LocalizedInputWeight} + Re-use ${LocalizedInputWeight})`} />
                                         <TextFieldHookForm
-                                            label={`Input weight (with Re-use)(Kg)`}
+                                            label={`${LocalizedInputWeight} (with Re-use)(Kg)`}
                                             name={'inputWeightWithReuse'}
                                             id={'input-weight-with-reuse-plastic'}
                                             Controller={Controller}
@@ -463,7 +466,7 @@ function Plastic(props) {
                                         />
                                     </Col>
                                 </>}
-                                <Col md="3" >
+                             {  !IsShowFinishedWeightInPlasticTechCostingCalculator && <Col md="3" >
                                     <NumberFieldHookForm
                                         label={`Finished Weight(Kg)`}
                                         name={'finishedWeight'}
@@ -476,7 +479,7 @@ function Plastic(props) {
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                             max: {
                                                 value: getValues('grossWeight'),
-                                                message: 'Finish weight should not be greater than gross weight.'
+                                                message: `Finish weight should not be greater than ${LocalizedGrossWeight}.`
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -486,7 +489,7 @@ function Plastic(props) {
                                         errors={errors.finishedWeight}
                                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
-                                </Col>
+                                </Col>}
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Scrap Recovery (%)`}
@@ -512,7 +515,7 @@ function Plastic(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={`${isScrapReuse ? 'Scrap Weight = (Runner Weight - ((Gross Weight + Runner Weight + Burning Allowance) * Scrap Re-use (%)/100))* Scrap Recovery (%)/100' : 'Scrap Weight = (Input Weight - Finish Weight )* Scrap Recovery (%)/100'}`} />
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={`${isScrapReuse ? `Scrap Weight = (Runner Weight - ((${LocalizedInputWeight} + Runner Weight + Burning Allowance) * Scrap Re-use (%)/100))* Scrap Recovery (%)/100` : `Scrap Weight = (${LocalizedInputWeight} - ${IsShowFinishedWeightInPlasticTechCostingCalculator?  LocalizedGrossWeight : 'Finish Weight'}) * Scrap Recovery (%)/100`}`} />
                                     <TextFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}
@@ -577,7 +580,7 @@ function Plastic(props) {
                                     </div>
                                 </Col>}
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={`RM Cost = (${isScrapReuse ? 'Input Weight (with Re-use)' : 'Input Weight'} ${excludeRunnerWeight ? '- Runner Weight' : ''} * RM Rate) + Burning Allowance`} />
+                                    <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={`RM Cost = (${isScrapReuse ? `I${LocalizedInputWeight} (with Re-use)` : LocalizedInputWeight} ${excludeRunnerWeight ? '- Runner Weight' : ''} * RM Rate) + Burning Allowance`} />
                                     <TextFieldHookForm
                                         label={`RM Cost`}
                                         name={'rmCost'}
