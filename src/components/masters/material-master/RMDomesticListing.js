@@ -895,7 +895,7 @@ function RMDomesticListing(props) {
         setAnalyticsDrawer(false)
     }
 
-console.log(warningMessage);
+    console.log(vendorLabel);
 
     const floatingFilterStatus = {
         maxValue: 1,
