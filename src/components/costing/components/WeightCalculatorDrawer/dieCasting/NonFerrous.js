@@ -10,6 +10,7 @@ import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalAndNumberValidation } from "../../../../../helper/validation";
+import { useLabels } from '../../../../../helper/core'
 
 
 function NonFerrous(props) {
@@ -39,7 +40,7 @@ function NonFerrous(props) {
     const [isDisable, setIsDisable] = useState(false)
     const [reRender, setRerender] = useState(false)
     const { rmRowData, activeTab, isHpdc, CostingViewMode, item } = props
-
+    const { finishedWeightLabel, finishWeightLabel } = useLabels()
     const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -383,7 +384,7 @@ function NonFerrous(props) {
                                 </Col>
                                 <Col md="3" >
                                     <TextFieldHookForm
-                                        label={`Finished Weight(Kg)`}
+                                        label={`${finishedWeightLabel} Weight(Kg)`}
                                         name={'finishedWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -394,7 +395,7 @@ function NonFerrous(props) {
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                             max: {
                                                 value: getValues('castingWeight'),
-                                                message: 'Finish weight should not be greater than casting weight.'
+                                                message: `${finishWeightLabel} weight should not be greater than casting weight.`
                                             },
 
                                         }}
@@ -408,7 +409,7 @@ function NonFerrous(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-nonferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-nonferrous'} tooltipText={`Scrap Weight = (Casting Weight - ${finishedWeightLabel} Weight)`} />
                                     <TextFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}

@@ -13,6 +13,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import classnames from 'classnames'
 import Bar from './sheetMetal/Bar'
 import { sourceCurrencyFormatter } from '../Drawers/processCalculatorDrawer/CommonFormula'
+import { useLabels } from '../../../../helper/core'
 
 function Machining(props) {
     const { item, rmRowData, CostingViewMode } = props
@@ -38,6 +39,8 @@ function Machining(props) {
     const [grossLength, setGrossLength] = useState(0)
     const [piecePerMeter, setPiecePerMeter] = useState(0)
     const [rmPerPiece, setRmPerPiece] = useState(0)
+    const { finishWeightLabel } = useLabels()
+
     const [dataToSend, setDataToSend] = useState({
         GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
         FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : ''
@@ -507,7 +510,7 @@ function Machining(props) {
                                                 <Col md="3">
                                                     <TooltipCustom disabledIcon={true} id={'finish-weight'} tooltipText={tooltipMessageForSheetWeight('Finish', 'Net')} />
                                                     <TextFieldHookForm
-                                                        label={`Finish Weight(Kg)`}
+                                                        label={`${finishWeightLabel} Weight(Kg)`}
                                                         name={'FinishWeight'}
                                                         Controller={Controller}
                                                         control={control}
@@ -526,7 +529,7 @@ function Machining(props) {
                                                     />
                                                 </Col>
                                                 <Col md="3">
-                                                    <TooltipCustom disabledIcon={true} id={'Scrap-weight'} tooltipText={"Scrap Weight =  Gross Weight - Finish Weight"} />
+                                                    <TooltipCustom disabledIcon={true} id={'Scrap-weight'} tooltipText={`Scrap Weight =  Gross Weight - ${finishWeightLabel} Weight`} />
                                                     <TextFieldHookForm
                                                         label={`Scrap Weight(Kg)`}
                                                         name={'ScrapWeight'}
