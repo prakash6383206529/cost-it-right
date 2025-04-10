@@ -77,11 +77,23 @@ function AddNpvCost(props) {
         setDisableAllFields(false)
         setDisableTotalCost(false)
         setDisableNpvPercentage(false)
-
         if (value.label === 'Tool Investment') {
             if (!IsEnterToolCostManually) {
                 setDisableQuantity(true)
-                setValue('Quantity', checkForNull(ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.Life))
+                // Sum up all tool life values from ToolTabData
+                let totalToolLife = 0;
+                if (ToolTabData && ToolTabData?.length > 0) {
+                    ToolTabData.forEach(item => {
+                        if (item?.CostingPartDetails && item?.CostingPartDetails?.CostingToolCostResponse) {
+                            item?.CostingPartDetails?.CostingToolCostResponse?.forEach(tool => {
+                                if (tool?.Life) {
+                                    totalToolLife += checkForNull(tool?.Life);
+                                }
+                            });
+                        }
+                    });
+                }
+                setValue('Quantity', checkForNull(totalToolLife))
             }
         } else {
             setDisableQuantity(false)
@@ -243,7 +255,7 @@ function AddNpvCost(props) {
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
     const editData = (indexValue, operation) => {
-
+        
         // If the operation is 'delete', remove the data at the specified index from the tableData array.
         if (operation === 'delete') {
             let temp = [] // Create an empty array to hold the updated data
@@ -260,7 +272,12 @@ function AddNpvCost(props) {
         if (operation === 'edit') {
             setEditIndex(indexValue)
             setIsEditMode(true)
-
+            if (tableData[indexValue]?.NpvType === 'Tool Investment') {
+                
+                setDisableQuantity(true)
+            } else {
+                setDisableQuantity(false)
+            }
             // Retrieve the data at the specified index from the tableData array, and set the values of various form fields based on the data.
             let Data = tableData[indexValue]
             setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
@@ -271,7 +288,7 @@ function AddNpvCost(props) {
             setDisableTotalCost(false)
             setDisableAllFields(false)
             setDisableNpvPercentage(false)
-            setDisableQuantity(false)
+            //setDisableQuantity(false)
         }
     }
 

@@ -2771,7 +2771,7 @@ const CostingSummaryTable = (props) => {
                                     <span className={highlighter("scrapRate")}>{showRMScrapKeys(viewCostingData && Number(viewCostingData[0]?.technologyId))?.name}</span>
                                     {isScrapRecoveryPercentageApplied && <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>}
                                     <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
-                                    <span className={highlighter("", "finish-reducer")}>${finishWeightLabel} Weight</span>
+                                    <span className={highlighter("", "finish-reducer")}>{`${finishWeightLabel} Weight`}</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
