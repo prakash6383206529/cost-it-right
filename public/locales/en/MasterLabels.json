@@ -3,9 +3,9 @@
     "RMCategoryLabel": "RM Category",
     "BOPCategoryLabel": "BOP Category",
     "TechnologyLabel": "Technology",
-    "VendorLabel": "Vendor",
-    "RMVendorLabel": "Vendor",
-    "BOPVendorLabel": "Vendor",
+    "VendorLabel": "Supplier",
+    "RMVendorLabel": "Supplier",
+    "BOPVendorLabel": "Supplier",
     "LengthLabel": "Length (mm)",
     "BreadthLabel": "Breadth (mm)",
     "HeightLabel": "Height (mm)"
