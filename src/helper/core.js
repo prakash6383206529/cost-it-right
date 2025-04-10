@@ -35,7 +35,10 @@ export const useLabels = () => {
     RMVendorLabel: tMasterLabels('RMVendorLabel', { defaultValue: 'RM Vendor' }),
     vendorBasedLabel: tCommon('VendorBasedLabel', { defaultValue: 'Vendor Based' }),
     zeroBasedLabel: tCommon('ZeroBasedLabel', { defaultValue: 'Zero Based' }),
-    customerBasedLabel: tCommon('CustomerBasedLabel', { defaultValue: 'Customer Based' })
+    customerBasedLabel: tCommon('CustomerBasedLabel', { defaultValue: 'Customer Based' }),
+    finishWeightLabel: tMasterLabels('FinishWeightLabel', { defaultValue: 'Finish' }),
+    finishedWeightLabel: tMasterLabels('FinishedWeightLabel', { defaultValue: 'Finished' })
+
   };
 };
 

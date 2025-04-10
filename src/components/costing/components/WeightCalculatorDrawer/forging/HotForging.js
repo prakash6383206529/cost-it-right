@@ -13,11 +13,13 @@ import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { sourceCurrencyFormatter } from '../../Drawers/processCalculatorDrawer/CommonFormula'
+import { useLabels } from '../../../../../helper/core'
 
 function HotForging(props) {
   const { rmRowData, CostingViewMode, item } = props
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const { finishedWeightLabel } = useLabels()
   const defaultValues = {
     finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
     forgedWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgedWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
@@ -423,7 +425,7 @@ function HotForging(props) {
                     <Row>
                       <Col md="3">
                         <TextFieldHookForm
-                          label={`Finished Weight(kg)`}
+                          label={`${finishedWeightLabel} Weight(kg)`}
                           name={'finishedWeight'}
                           Controller={Controller}
                           control={control}
@@ -459,7 +461,7 @@ function HotForging(props) {
                 </Row>
 
                 <Col md="3" className='mt10 px-0'>
-                  <TooltipCustom disabledIcon={true} id={'forged-weight'} tooltipText={'Forged Weight = (Total Machining Stock + Finished Weight)'} />
+                  <TooltipCustom disabledIcon={true} id={'forged-weight'} tooltipText={`Forged Weight = (Total Machining Stock + ${finishedWeightLabel} Weight)`} />
                   <TextFieldHookForm
                     label={`Forged Weight(Kg)`}
                     name={'forgedWeight'}
@@ -736,7 +738,7 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'machining-scrap'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Weight = (Forged Weight - Finished Weight) * Machining Scrap Recovery (%)/100'} />
+                <TooltipCustom disabledIcon={true} id={'machining-scrap'} tooltipClass={'weight-of-sheet'} tooltipText={` Machining Scrap Weight = (Forged Weight - ${finishedWeightLabel} Weight) * Machining Scrap Recovery (%)/100`} />
                 <TextFieldHookForm
                   label={`Machining Scrap Weight(Kg)`}
                   name={'machiningScrapWeight'}
