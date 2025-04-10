@@ -728,6 +728,8 @@ function CostingSummary(props) {
         technology={technology}
         partTypeValue={partType}
         showAddToComparison={true}
+        simulationMode={false}
+
 
       />}
 
