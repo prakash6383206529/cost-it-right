@@ -151,10 +151,10 @@ function LossStandardTable(props) {
       }
       else {
         if (props?.isPlastic && value.label === `Burning Loss (${LocalizedGrossWeight} + Runner Weight)`) {
-          setLossWeightTooltip(`Loss Weight = (Loss (%) * (Gross Weight + Runner Weight) / 100)`)
+          setLossWeightTooltip(`Loss Weight = (Loss (%) * (${LocalizedGrossWeight} + Runner Weight) / 100)`)
         }
         else {
-          setLossWeightTooltip(`Loss Weight = (Loss (%) * Gross Weight / 100)`)
+          setLossWeightTooltip(`Loss Weight = (Loss (%) * ${LocalizedGrossWeight} / 100)`)
         }
       }
     }
