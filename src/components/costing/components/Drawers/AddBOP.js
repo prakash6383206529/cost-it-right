@@ -18,6 +18,7 @@ import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import WarningMessage from '../../../common/WarningMessage';
 import { sourceCurrencyFormatter } from './processCalculatorDrawer/CommonFormula';
+import DayTime from '../../../common/DayTimeWrapper';
 const gridOptions = {};
 
 function AddBOP(props) {
@@ -174,19 +175,22 @@ function AddBOP(props) {
     gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
-  const onFilterTextBoxChanged = (e) => {
+  const onFilterTextBoxChanged = (e) => {   
     gridApi.setQuickFilter(e.target.value);
   }
 
+  const effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+  }
+    
   const frameworkComponents = {
-    // totalValueRenderer: this.buttonFormatter,
-    // effectiveDateRenderer: this.effectiveDateFormatter,
-    // costingHeadRenderer: this.costingHeadFormatter,
     netLandedFormat: netLandedFormat,
     currencyFormatter: currencyFormatter,
     specificationFormat: specificationFormat,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
+    effectiveDateFormatter: effectiveDateFormatter
   };
 
   useEffect(() => {
@@ -276,6 +280,7 @@ function AddBOP(props) {
                         <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field='UOM' ></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCombine" headerName={`Net Cost ${sourceCurrencyFormatter(currencySource?.label)}/UOM`} cellRenderer={'netLandedFormat'}></AgGridColumn>
+                        <AgGridColumn field="EffectiveDate" headerName={`Effective Date`} cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
 
                       </AgGridReact >
                       {< PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}

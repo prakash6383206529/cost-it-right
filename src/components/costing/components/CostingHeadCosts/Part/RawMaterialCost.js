@@ -299,7 +299,8 @@ function RawMaterialCost(props) {
             Currency: el.Currency,
             UOMSymbol: el.UOMSymbol,
             ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
-            CurrencyExchangeRate: el.CurrencyExchangeRate
+            CurrencyExchangeRate: el.CurrencyExchangeRate,
+            EffectiveDate:el.EffectiveDate
           }
         })
 
@@ -333,7 +334,8 @@ function RawMaterialCost(props) {
           UOMSymbol: rowData.UOMSymbol,
           ScrapRecoveryPercentage: 100,
           ConvertedExchangeRateId: rowData.ConvertedExchangeRateId === EMPTY_GUID ? null : rowData.ConvertedExchangeRateId,
-          CurrencyExchangeRate: rowData.CurrencyExchangeRate
+          CurrencyExchangeRate: rowData.CurrencyExchangeRate,
+          EffectiveDate:rowData.EffectiveDate
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
