@@ -111,8 +111,7 @@ function AddFreight(props) {
   }, [RMCCTabData, applicability])
 
   useEffect(() => {
-    let request = partType ? 'multiple technology assembly' : ''
-    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    dispatch(fetchCostingHeadsAPI('freight', false, false, (res) => { }))
     if (isEditFlag) {
       showFieldsFunction(rowObjData.EFreightLoadType)
     }

@@ -67,8 +67,13 @@ function Tool(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
+  const [state, setState] = useState({
+    ToolInterestCost: 0,
+    ToolInterestCostPerPc: 0,
+    ToolMaintenanceCostPerPc: 0
+  })
   const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
-  const { toolMaintenanceCostLabel } = useLabels();
+  const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel } = useLabels();
 
 
   useEffect(() => {
@@ -82,7 +87,8 @@ function Tool(props) {
 
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : 'toolcost'
-    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    let isRequestForMultiTechnology = partType ? true : false
+    dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
   }, [])
 
   useEffect(() => {
@@ -154,10 +160,12 @@ function Tool(props) {
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(getValues('Life'))
       const ToolAmortizationCost = checkForNull(ToolCost / Life)
-
+      setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(ToolMaintenanceCost / Life, initialConfiguration?.NoOfDecimalForPrice))
       setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration?.NoOfDecimalForPrice))
-
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost), initialConfiguration?.NoOfDecimalForPrice))
+      setState(prevState => ({
+        ...prevState,ToolMaintenanceCostPerPc: ToolMaintenanceCost / Life
+      }))
       const zeroIndex = 0;
       let rowArray = {
         "ToolOperationId": null,
@@ -167,7 +175,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life))),
+        "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost)),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "ToolCostType": toolObj.ToolApplicability,
@@ -176,7 +184,11 @@ function Tool(props) {
         "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
         "IsCostForPerAssembly": null,
-        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : '',
+        "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
+        "ToolInterestCost": state.ToolInterestCost,
+        "ToolInterestCostPerPiece": state.ToolInterestCostPerPc,
+        "ToolMaintenanceCostPerPiece": ToolMaintenanceCost / Life
       }
 
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
@@ -217,7 +229,7 @@ function Tool(props) {
       const ToolAmortizationCost = checkForNull(ToolCost / Life)
 
       setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration?.NoOfDecimalForPrice))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost), initialConfiguration?.NoOfDecimalForPrice))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -228,7 +240,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life))),
+        "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost)),
         "TotalToolCost": null,
         "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
         "ToolCostType": toolObj.ToolApplicability,
@@ -237,7 +249,11 @@ function Tool(props) {
         "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
         "IsCostForPerAssembly": null,
-        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : '',
+        "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
+        "ToolInterestCost": state.ToolInterestCost,
+        "ToolInterestCostPerPiece": state.ToolInterestCostPerPc,
+        "ToolMaintenanceCostPerPiece": ToolMaintenanceCost / Life
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
@@ -262,7 +278,7 @@ function Tool(props) {
       const ToolAmortizationCost = ToolCost / Life
 
       setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration?.NoOfDecimalForPrice))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost), initialConfiguration?.NoOfDecimalForPrice))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -273,7 +289,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life))),
+        "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost)),
         "TotalToolCost": null,
         "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
         "ToolCostType": toolObj.ToolApplicability,
@@ -282,7 +298,11 @@ function Tool(props) {
         "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
         "IsCostForPerAssembly": null,
-        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : '',
+        "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
+        "ToolInterestCost": state.ToolInterestCost,
+        "ToolInterestCostPerPiece": state.ToolInterestCostPerPc,
+        "ToolMaintenanceCostPerPiece": ToolMaintenanceCost / Life
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
@@ -295,6 +315,7 @@ function Tool(props) {
   * @description Used to Submit the form
   */
   const onSubmit = debounce(handleSubmit((values) => {
+    console.log(values)
 
     if (errorCheckObject(ErrorObjTools)) return false;
 
@@ -367,6 +388,14 @@ function Tool(props) {
     control,
     name: ['maintanencePercentage', 'maintanenceToolCost'],
   });
+  const interestFieldValue=useWatch({
+    control,
+    name: ['ToolInterestRatePercent','Life'],
+  });
+
+  useEffect(() => {
+    calculateInterestCost()
+  }, [interestFieldValue])
 
   useEffect(() => {
     setValueOfToolCost(applicability.label)
@@ -393,6 +422,7 @@ function Tool(props) {
       const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
       const maintanencePercentage = getValues('maintanencePercentage')
       const maintanenceToolCost = getValues('maintanenceToolCost')
+      const toolRate=getValues('ToolCost')
 
       let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
       const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight)
@@ -522,6 +552,18 @@ function Tool(props) {
             ToolMaintenanceCost: checkForNull((totalTabCost * calculatePercentage(maintanencePercentage)))
           })
           break;
+          case 'Tool Rate':
+            setValue('MaintananceCostApplicability', checkForDecimalAndNull(toolRate, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('ToolMaintenanceCost', checkForDecimalAndNull(toolRate * calculatePercentage(maintanencePercentage), initialConfiguration?.NoOfDecimalForPrice))
+            setToolObj({
+              ...toolObj,
+              ToolApplicabilityId: applicability.value,
+              ToolApplicability: applicability.label,
+              MaintanencePercentage: maintanencePercentage,
+              ToolApplicabilityCost: toolRate,
+              ToolMaintenanceCost: checkForNull(toolRate * calculatePercentage(maintanencePercentage))
+            })
+          break;
         default:
           break;
       }
@@ -548,7 +590,7 @@ function Tool(props) {
     const maintanencePercentage = getValues('maintanencePercentage')
     //  const applicabilityCost =  getValues('MaintananceCostApplicability')
     const applicabilityCost = toolObj?.ToolApplicabilityCost
-    const netToolValue = checkForNull(ToolMaintenanceCost) + checkForNull(ToolAmortizationCost)
+    const netToolValue = checkForNull(ToolMaintenanceCost) + checkForNull(ToolAmortizationCost) + checkForNull(state.ToolInterestCostPerPc)
 
     if (netToolValue) {
       setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
@@ -571,17 +613,31 @@ function Tool(props) {
         "ToolApplicabilityCost": applicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
         "IsCostForPerAssembly": null,
-        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : '',
+        "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
+        "ToolInterestCost": state.ToolInterestCost,
+        "ToolInterestCostPerPiece": state.ToolInterestCostPerPc,
+        "ToolMaintenanceCostPerPiece": ToolMaintenanceCost / Life
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       // dispatch(isToolDataChange(true))
       setTimeout(() => {
         setGridData(tempArr)
       }, 200)
-    }
-
-
-
+    } 
+  }
+  const calculateInterestCost = () => {
+    const toolInterestRatePercent = checkForNull(getValues('ToolInterestRatePercent'))
+    const toolRate = checkForNull(getValues('ToolCost'))  
+    const toolInterestCost= toolRate * toolInterestRatePercent / 100
+    const toolInterestCostPerPc = toolInterestCost / checkForNull(getValues('Life'))
+    setValue('ToolInterestCost', checkForDecimalAndNull(toolInterestCost, initialConfiguration?.NoOfDecimalForPrice))
+    setValue('ToolInterestCostPerPc', checkForDecimalAndNull(toolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice))
+    setState(prevState => ({
+      ...prevState,
+      ToolInterestCost: toolInterestCost,
+      ToolInterestCostPerPc: toolInterestCostPerPc
+    }))
   }
 
   const resetData = () => {
@@ -674,6 +730,70 @@ function Tool(props) {
               {/* BELOW CONDITION RENDER WHEN APPLICABILITY IS OVERALL */}
               {!IsApplicableProcessWise &&
                 <>
+                  <Col md="3">
+                    <TextFieldHookForm
+                      label="Tool Rate"
+                      name={`ToolCost`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
+                      }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      handleChange={(e) => {
+                        e.preventDefault()
+                        handleToolCostChange(e)
+                      }}
+                      errors={errors && errors.ToolCost}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                  </Col>
+                  <Col md="3">
+                    <TextFieldHookForm
+                      label="Amortization Quantity (Tool Life)"
+                      name={`Life`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
+                      }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      handleChange={(e) => {
+                        e.preventDefault()
+                        handleToolLifeChange(e)
+                      }}
+                      errors={errors && errors.Life}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                  </Col>
+                  <Col md="3">
+                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = (Tool Cost / Amortization Quantity)"} />
+                    <TextFieldHookForm
+                      label="Tool Amortization Cost"
+                      name={`ToolAmortizationCost`}
+                      id={"tool-amortization"}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      handleChange={(e) => { }}
+                      errors={errors && errors.ToolAmortizationCost}
+                      disabled={true}
+                    />
+                  </Col>
                   <Col md="3">
                     <SearchableSelectHookForm
                       label={"Tool Maintenance Applicability"}
@@ -800,58 +920,79 @@ function Tool(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="3">
+                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence-per-pc"} tooltipText={`${toolMaintenanceCostPerPcLabel}= (${toolMaintenanceCostLabel} / Amortization Quantity (Tool Life) `} />}
                     <TextFieldHookForm
-                      label="Tool Cost"
-                      name={`ToolCost`}
+                      label={toolMaintenanceCostPerPcLabel}
+                      name={`ToolMaintenanceCostPerPc`}
+                      id={"tool-maintanence-per-pc"}
                       Controller={Controller}
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
-                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
                       handleChange={(e) => {
                         e.preventDefault()
-                        handleToolCostChange(e)
+                        handleToolMaintanenceChange(e)
                       }}
-                      errors={errors && errors.ToolCost}
-                      disabled={CostingViewMode ? true : false}
+                      errors={errors && errors.ToolMaintenanceCostPerPc}
+                      disabled={true}
                     />
                   </Col>
                   <Col md="3">
-                    <TextFieldHookForm
-                      label="Amortization Quantity (Tool Life)"
-                      name={`Life`}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
-                      }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      handleChange={(e) => {
-                        e.preventDefault()
-                        handleToolLifeChange(e)
-                      }}
-                      errors={errors && errors.Life}
-                      disabled={CostingViewMode ? true : false}
-                    />
+                  <TextFieldHookForm
+                          label={toolInterestRatePercentLabel}
+                          name={'ToolInterestRatePercent'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={(e) => {
+                            e.preventDefault()
+                            dispatch(isToolDataChange(true))
+                            setValueByAPI(false)
+                          }}
+                          rules={{
+                            required: true,
+                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                            max: {
+                              value: 100,
+                              message: 'Percentage cannot be greater than 100'
+                            },
+                          }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.maintanencePercentage}
+                          disabled={!getValues('ToolCost')|| CostingViewMode ? true : false}
+                        />
                   </Col>
                   <Col md="3">
-                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = (Tool Cost / Amortization Quantity)"} />
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-interest-cost"} tooltipText={`${toolInterestCostLabel}= (Tool Rate * ${toolInterestRatePercentLabel} / 100)`} />
+                  <TextFieldHookForm
+                          label={toolInterestCostLabel}
+                          name={'ToolInterestCost'}
+                          Controller={Controller}
+                          id={"tool-interest-cost"}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{required: false}}
+                          handleChange={(e) => {}}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ToolInterestCost}
+                          disabled={ true }
+
+                        />
+                  </Col>
+                  <Col md="3">{ <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-interest-cost-per-pc"} tooltipText={`${toolInterestCostPerPcLabel}= (${toolInterestCostLabel} / Amortization Quantity (Tool Life) `} />}
                     <TextFieldHookForm
-                      label="Tool Amortization Cost"
-                      name={`ToolAmortizationCost`}
-                      id={"tool-amortization"}
+                      label={toolInterestCostPerPcLabel}
+                      name={`ToolInterestCostPerPc`}
+                      id={"tool-interest-cost-per-pc"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -860,11 +1001,10 @@ function Tool(props) {
                       className=""
                       customClassName={'withBorder'}
                       handleChange={(e) => { }}
-                      errors={errors && errors.ToolAmortizationCost}
+                      errors={errors && errors.ToolInterestCostPerPc}
                       disabled={true}
                     />
                   </Col>
-
                   <Col md="3">
                     <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={`Net Tool Cost = (${toolMaintenanceCostLabel}+ Tool Amortization)`} />
                     <TextFieldHookForm
@@ -939,6 +1079,7 @@ function Tool(props) {
         editIndex={editIndex}
         rowObjData={rowObjData}
         anchor={'right'}
+        partType={partType}
       />}
 
     </ >

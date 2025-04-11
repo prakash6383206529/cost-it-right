@@ -12,7 +12,7 @@ function ViewToolCost(props) {
 
   const { viewToolCost, isPDFShow, isToolCostProcessWise } = props
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { toolMaintenanceCostLabel } = useLabels();
+  const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel } = useLabels();
 
   const tableData = () => {
 
@@ -75,13 +75,17 @@ function ViewToolCost(props) {
           <Table className="table cr-brdr-main mt-3 mb-0" size="sm" >
             <thead>
               <tr>
+                <th>{`Tool Rate`}</th>
+                <th>{`Amortization Quantity (Tool Life)`}</th>
+                <th>{`Tool Amortization Cost`}</th>
                 <th>{`Tool Maintenance Applicability`}</th>
                 <th>{`Maintenance Tool Cost (%)`}</th>
                 <th>{`Cost (Applicability)`}</th>
                 <th>{toolMaintenanceCostLabel}</th>
-                <th>{`Tool Cost`}</th>
-                <th>{`Amortization Quantity (Tool Life)`}</th>
-                <th>{`Tool Amortization Cost`}</th>
+                <th>{toolMaintenanceCostPerPcLabel}</th>
+                <th>{toolInterestRatePercentLabel}</th>
+                <th>{toolInterestCostLabel}</th>
+                <th>{toolInterestCostPerPcLabel}</th>
                 <th>{`Net Tool Cost`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
               </tr>
@@ -92,13 +96,17 @@ function ViewToolCost(props) {
                 viewToolCost.map((item, index) => {
                   return (
                     <tr key={index}>
+                      <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.Life ? item.Life : "-"}</td>
+                      <td>{checkForDecimalAndNull(item.ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       <td>{item?.ToolCostType ? item?.ToolCostType : '-'}</td>
                       <td>{checkForDecimalAndNull(item.ToolMaintenancePercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(item.ToolApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       <td>{item.ToolMaintenanceCost ? checkForDecimalAndNull(item.ToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.Life ? item.Life : "-"}</td>
-                      <td>{checkForDecimalAndNull(item.ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                      <td>{item.ToolMaintenanceCostPerPc ? checkForDecimalAndNull(item.ToolMaintenanceCostPerPc, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.ToolInterestRatePercent ? checkForDecimalAndNull(item.ToolInterestRatePercent, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.ToolInterestCost ? checkForDecimalAndNull(item.ToolInterestCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.ToolInterestCostPerPc ? checkForDecimalAndNull(item.ToolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       {initialConfiguration?.IsShowCRMHead && <td>{item.ToolCRMHead ? item.ToolCRMHead : '-'}</td>}
                     </tr>
@@ -107,7 +115,7 @@ function ViewToolCost(props) {
               }
               {viewToolCost?.length === 0 && (
                 <tr>
-                  <td colSpan={7}>
+                  <td colSpan={12}>
                     <NoContentFound title={EMPTY_DATA} />
                   </td>
                 </tr>

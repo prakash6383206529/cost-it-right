@@ -467,7 +467,7 @@ function TabToolCost(props) {
             <div className="shadow-lgg login-formg">
 
               <Row className="m-0 py-3 costing-border border-bottom-0 align-items-center ">
-                <Col md="9" className="px-3 border-section">
+                <Col md={IsApplicableProcessWise ? "4" : "9"} className="px-3 border-section">
                   <span className="d-inline-block pr-2 text-dark-blue">Applicability: </span>
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
@@ -496,7 +496,19 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md="3" className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
+                <Col md={IsApplicableProcessWise ? "8" : "3"} className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
+                  {IsApplicableProcessWise && <><div>
+                    {"Net Tool Maintenance Cost:"}
+                    <span className="d-inline-block pl-1 font-weight-500">{IsApplicableProcessWise ? checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice) : (ToolTabData && ToolTabData.map((item) => checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice)))}</span>
+                  </div>
+                    <div>
+                      {"Net Tool Interest Cost:"}
+                      <span className="d-inline-block pl-1 font-weight-500">{IsApplicableProcessWise ? checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice) : (ToolTabData && ToolTabData.map((item) => checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice)))}</span>
+                    </div>
+                    <div>
+                      {"Net Tool Amortization Cost :"}
+                      <span className="d-inline-block pl-1 font-weight-500">{IsApplicableProcessWise ? checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice) : (ToolTabData && ToolTabData.map((item) => checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice)))}</span>
+                    </div> </>}
                   <div>
                     {"Net Tool Cost:"}
                     <span className="d-inline-block pl-1 font-weight-500">{IsApplicableProcessWise ? checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice) : (ToolTabData && ToolTabData.map((item) => checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice)))}</span>

@@ -30,12 +30,16 @@ export const useLabels = () => {
     partTypeLabel: tMasterLabels('commonFields.partType', { defaultValue: 'Part Type' }),
     RMCategoryLabel: tMasterLabels('RMCategoryLabel', { defaultValue: 'Category' }),
     discountLabel: tCosting('discount', { defaultValue: 'Hundi/Discount' }),
-    toolMaintenanceCostLabel: tCosting('toolMaintenanceCost', { defaultValue: 'Tool Maintenance Cost (per pcs)' }),
+    toolMaintenanceCostLabel: tCosting('toolMaintenanceCost', { defaultValue: 'Tool Maintenance Cost' }),
     vendorLabel: tMasterLabels('VendorLabel', { defaultValue: 'Vendor' }),
     RMVendorLabel: tMasterLabels('RMVendorLabel', { defaultValue: 'RM Vendor' }),
     vendorBasedLabel: tCommon('VendorBasedLabel', { defaultValue: 'Vendor Based' }),
     zeroBasedLabel: tCommon('ZeroBasedLabel', { defaultValue: 'Zero Based' }),
-    customerBasedLabel: tCommon('CustomerBasedLabel', { defaultValue: 'Customer Based' })
+    customerBasedLabel: tCommon('CustomerBasedLabel', { defaultValue: 'Customer Based' }),
+    toolMaintenanceCostPerPcLabel: tCosting('toolMaintenanceCostPerPc', { defaultValue: 'Tool Maintenance Cost (per pcs)' }),
+    toolInterestRatePercentLabel: tCosting('toolInterestRatePercent', { defaultValue: 'Interest on Tool Cost (%)' }),
+    toolInterestCostLabel: tCosting('toolInterestCost', { defaultValue: 'Tool Interest Cost' }),
+    toolInterestCostPerPcLabel: tCosting('toolInterestCostPerPc', { defaultValue: 'Tool Interest Cost (per pcs)' }),
   };
 };
 

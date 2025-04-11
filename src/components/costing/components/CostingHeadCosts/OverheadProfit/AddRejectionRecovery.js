@@ -12,6 +12,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { ASSEMBLYNAME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
+import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 
 function AddRejectionRecovery(props) {
 
@@ -43,7 +44,9 @@ function AddRejectionRecovery(props) {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const dispatch = useDispatch()
     const costingHead = useSelector(state => state.comman.costingHead)
-
+    useEffect(() => {
+        dispatch(fetchCostingHeadsAPI('rejection recovery', false, false, (res) => { }))
+    }, [])
     const toggleDrawer = (event, formData = {}) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
