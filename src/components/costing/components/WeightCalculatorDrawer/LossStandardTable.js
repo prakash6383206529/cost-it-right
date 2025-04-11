@@ -21,6 +21,7 @@ function LossStandardTable(props) {
   const [disableLossType, setDisableLossType] = useState(false)
   const [disableFlashType, setDisableFlashType] = useState(false)
   const [lossWeightTooltip, setLossWeightTooltip] = useState()
+  const LocalizedGrossWeight = !getConfigurationKey().IsShowFinishedWeightInPlasticTechCostingCalculator ? 'Net Weight' : 'Gross Weight'
   const dispatch = useDispatch()
   const { register, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
@@ -149,11 +150,11 @@ function LossStandardTable(props) {
         setLossWeightTooltip(`Loss ${isFerrous ? "Wt" : "Weight"} = (Loss (%) * Casting ${isFerrous ? "Wt" : "Weight"} / 100)`)
       }
       else {
-        if (props?.isPlastic && value.label === "Burning Loss (Gross Weight + Runner Weight)") {
-          setLossWeightTooltip(`Loss Weight = (Loss (%) * (Gross Weight + Runner Weight) / 100)`)
+        if (props?.isPlastic && value.label === `Burning Loss (${LocalizedGrossWeight} + Runner Weight)`) {
+          setLossWeightTooltip(`Loss Weight = (Loss (%) * (${LocalizedGrossWeight} + Runner Weight) / 100)`)
         }
         else {
-          setLossWeightTooltip(`Loss Weight = (Loss (%) * Gross Weight / 100)`)
+          setLossWeightTooltip(`Loss Weight = (Loss (%) * ${LocalizedGrossWeight} / 100)`)
         }
       }
     }
@@ -189,7 +190,7 @@ function LossStandardTable(props) {
     const LossPercentage = checkForNull(getValues('LossPercentage'))
     const inputWeight = props.weightValue
     const LossOfType = getValues('LossOfType')
-    const runnerWeight = props?.isPlastic && LossOfType?.label === "Burning Loss (Gross Weight + Runner Weight)" ? props?.runnerWeight : 0
+    const runnerWeight = props?.isPlastic && LossOfType?.label ===`Burning Loss (${LocalizedGrossWeight} + Runner Weight)`? props?.runnerWeight : 0
     const LossWeight = ((inputWeight + runnerWeight) * LossPercentage) / 100
 
     setValue('LossWeight', checkForDecimalAndNull(LossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
