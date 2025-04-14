@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { Redirect } from "react-router-dom";
-import { checkForDecimalAndNull, getConfigurationKey, showBopLabel } from '../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey, getLocalizedCostingHeadValue, showBopLabel } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import { useSelector } from 'react-redux';
@@ -12,7 +12,7 @@ import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMEST
 import LoaderCustom from '../../common/LoaderCustom';
 import RejectedCostingSummaryTable from '../../costing/components/RejectedCostingSummaryTable';
 import { reactLocalStorage } from 'reactjs-localstorage';
-
+import { useLabels } from "../../../helper/core";
 
 
 function CostingDetailSimulationDrawer(props) {
@@ -32,6 +32,7 @@ function CostingDetailSimulationDrawer(props) {
     const [masterID, setMasterID] = useState('')
     const [showExchangeRate, setShowExchangeRate] = useState(false)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
     useEffect(() => {
         let masterIDTemp = master
@@ -98,7 +99,7 @@ function CostingDetailSimulationDrawer(props) {
                                 {!isReport &&
                                     <Row className="ml-0 pb-3">
                                         <Col md="12">
-                                            <h6 class="left-border d-inline-block mr-4">{pricesDetail?.CostingHead}</h6>
+                                            <h6 class="left-border d-inline-block mr-4">{pricesDetail?.CostingHead ? getLocalizedCostingHeadValue(pricesDetail?.CostingHead, vendorBasedLabel, zeroBasedLabel, customerBasedLabel  ): pricesDetail?.CostingHead}</h6>
                                             <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Plant Code:</span> <span>{pricesDetail?.PlantCode}</span></div>
                                             <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Costing Id:</span> <span>{pricesDetail?.CostingNumber}</span></div>
                                         </Col>
