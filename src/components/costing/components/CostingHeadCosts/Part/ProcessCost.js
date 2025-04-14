@@ -1672,7 +1672,7 @@ function ProcessCost(props) {
    * @method render
    * @description Renders the component
    */
-  const tooltipText = <div><div>If UOM is in hours/minutes/seconds, please enter the quantity in seconds.</div> <div>For all others UOMs, please enter the actual quantity.</div></div>;
+  const tooltipText = <div><div>If UOM is in hours/minutes/seconds, please enter the quantity/cycle time in seconds.</div> <div>For all others UOMs, please enter the actual quantity/cycle time.</div></div>;
   return (
     <>
       <div className="user-page p-0">
@@ -1726,7 +1726,7 @@ function ProcessCost(props) {
                     <th style={{ width: "150px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "160px" }}>{`UOM`}</th>
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
-                    <th style={{ width: "180px" }}><span>Quantity <TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`quantity-info`} tooltipText={tooltipText} /></span></th>
+                    <th style={{ width: "180px" }}><span>Quantity/Cycle time <TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`quantity-info`} tooltipText={tooltipText} /></span></th>
                     <th style={{ width: "110px" }} >{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
                     <th style={{ width: "110px" }} >{`Applicability`}</th>
@@ -1860,7 +1860,7 @@ function ProcessCost(props) {
                                 register={register}
                                 mandatory={false}
                                 placeholder={'Select'}
-                                customClassName="costing-selectable-dropdown"
+                                customClassName="costing-selectable-dropdown process-drawer-dropdown"
                                 defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
                                   label: item?.CostingConditionNumber,
                                   value: item?.CostingConditionMasterAndTypeLinkingId
@@ -1868,7 +1868,7 @@ function ProcessCost(props) {
                                 options={processApplicabilitySelect}
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
-                                disabled={CostingViewMode}
+                                disabled={(CostingViewMode || IsLocked) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
                               />
                             </td>

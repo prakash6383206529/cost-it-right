@@ -21,6 +21,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { useLabels } from '../../../../helper/core';
 import WarningMessage from '../../../common/WarningMessage';
 import { sourceCurrencyFormatter } from './processCalculatorDrawer/CommonFormula';
+import DayTime from '../../../common/DayTimeWrapper';
 const gridOptions = {};
 
 function AddRM(props) {
@@ -217,17 +218,18 @@ function AddRM(props) {
     gridApi.setQuickFilter(e.target.value);
   }
 
+  const effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+}
   const frameworkComponents = {
-    // totalValueRenderer: this.buttonFormatter,
-    // effectiveDateRenderer: this.effectiveDateFormatter,
-    // costingHeadRenderer: this.costingHeadFormatter,
     netLandedFormat: netLandedFormat,
     currencyFormatter: currencyFormatter,
-    //  specificationFormat: specificationFormat,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
     priceFormatter: priceFormatter,
-    sourceVendorFormatter: sourceVendorFormatter
+    sourceVendorFormatter: sourceVendorFormatter,
+    effectiveDateFormatter: effectiveDateFormatter
   };
 
   const isRowSelectable = (rowNode) => {
@@ -366,7 +368,7 @@ function AddRM(props) {
                         <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'priceFormatter'}></AgGridColumn>
                         <AgGridColumn field="ScrapRate" headerName={showRMScrapKeys(costData?.TechnologyId)?.name} cellRenderer={'priceFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCombine" headerName={`Net Cost ${sourceCurrencyFormatter(currencySource?.label)}/UOM`} cellRenderer={'netLandedFormat'}></AgGridColumn>
-
+                        <AgGridColumn field="EffectiveDate" headerName={`Effective Date`} cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                       </AgGridReact >
                       {< PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div >

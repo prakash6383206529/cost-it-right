@@ -214,7 +214,7 @@ const CostingSummaryTable = (props) => {
   const [showRightButton, setShowRightButton] = useState(true);
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
-  const { discountLabel, toolMaintenanceCostLabel } = useLabels();
+  const { discountLabel, toolMaintenanceCostLabel,finishWeightLabel } = useLabels();
   const { isNetPoPrice, setIsNetPoPrice } = useState(false)
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
@@ -230,7 +230,6 @@ const CostingSummaryTable = (props) => {
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)
   const tableContainerRef = useRef(null);
-
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
       setViewCostingData(viewCostingDetailData)
@@ -570,7 +569,9 @@ const CostingSummaryTable = (props) => {
       let surfaceTreatmentDetails = viewCostingData[index]?.CostingPartDetails?.CostingPartDetailssurfaceTreatmentDetails
       let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
       let viewCostingDataObj = viewCostingData[index]
-      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, viewCostingDataObj: viewCostingDataObj })
+      let HangerCostDetails = viewCostingData[index]?.HangerCostDetails
+      let PaintAndTapeDetails = viewCostingData[index]?.PaintAndTapeDetails
+      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, viewCostingDataObj: viewCostingDataObj, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
     }
   }
   /**
@@ -587,7 +588,9 @@ const CostingSummaryTable = (props) => {
       let surfaceTreatmentDetails = viewCostingData[index]?.surfaceTreatmentDetails
       let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
       let viewCostingDataObj = viewCostingData[index]
-      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: true, viewCostingDataObj: viewCostingDataObj })
+      let HangerCostDetails = viewCostingData[index]?.HangerCostDetails
+      let PaintAndTapeDetails = viewCostingData[index]?.PaintAndTapeDetails
+      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: true, viewCostingDataObj: viewCostingDataObj, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
     }
   }
 
@@ -597,15 +600,16 @@ const CostingSummaryTable = (props) => {
    */
   const viewRM = (index) => {
     let data = viewCostingData[index]?.netRMCostView
+    const masterBatchData = (viewCostingData[index] && viewCostingData[index]?.CostingMasterBatchRawMaterialCostResponse[0]) ?? []
     setIsAssemblyCosting(viewCostingData[index]?.IsAssemblyCosting)
     setIsViewRM(true)
     setIndex(index)
     setViewRMData(data)
     setrmMBDetail({
-      MasterBatchTotal: viewCostingData[index]?.masterBatchTotal,
-      MasterBatchRMPrice: viewCostingData[index]?.masterBatchRMPrice,
-      MasterBatchPercentage: viewCostingData[index]?.masterBatchPercentage,
-      IsApplyMasterBatch: viewCostingData[index]?.isApplyMasterBatch
+      MasterBatchTotal: masterBatchData?.MasterBatchTotal,
+      MasterBatchRMPrice: masterBatchData?.MasterBatchRMPrice,
+      MasterBatchPercentage: masterBatchData?.MasterBatchPercentage,
+      IsApplyMasterBatch: masterBatchData?.IsApplyMasterBatch
     })
   }
   /**
@@ -1520,7 +1524,7 @@ const CostingSummaryTable = (props) => {
   }
 
   const getOverheadPercentage = (data) => {
-    
+
     if (!data) return ' ';
 
     if (data.bestCost === true) {
@@ -1840,7 +1844,9 @@ const CostingSummaryTable = (props) => {
           let netTransportationCostView = viewCostingData[index]?.netTransportationCostView
           let surfaceTreatmentDetails = viewCostingData[index]?.surfaceTreatmentDetails
           let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
-          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, operationHide: true, })
+          let HangerCostDetails = viewCostingData[index]?.HangerCostDetails
+          let PaintAndTapeDetails = viewCostingData[index]?.PaintAndTapeDetails
+          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, operationHide: true, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
         }
 
         break;
@@ -1853,7 +1859,9 @@ const CostingSummaryTable = (props) => {
           let surfaceTreatmentDetails = viewCostingData[index]?.surfaceTreatmentDetails
           let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
           let viewCostingDataObj = viewCostingData[index]
-          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, processHide: true, viewCostingDataObj: viewCostingDataObj })
+          let HangerCostDetails = viewCostingData[index]?.HangerCostDetails
+          let PaintAndTapeDetails = viewCostingData[index]?.PaintAndTapeDetails
+          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, processHide: true, viewCostingDataObj: viewCostingDataObj, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
         }
         break;
 
@@ -2763,7 +2771,7 @@ const CostingSummaryTable = (props) => {
                                     <span className={highlighter("scrapRate")}>{showRMScrapKeys(viewCostingData && Number(viewCostingData[0]?.technologyId))?.name}</span>
                                     {isScrapRecoveryPercentageApplied && <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>}
                                     <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
-                                    <span className={highlighter("", "finish-reducer")}>Finish Weight</span>
+                                    <span className={highlighter("", "finish-reducer")}>{`${finishWeightLabel} Weight`}</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
@@ -3003,7 +3011,7 @@ const CostingSummaryTable = (props) => {
                                   Surface Treatment
                                 </span>
                                 <span className={highlighter("tCost")}>
-                                  Extra Surface Treatment Cost
+                                  Other Surface Treatment Cost
                                 </span>
                                 <span className={highlighter("HangerCostPerPart")}>
                                   Hanger Cost
@@ -3122,7 +3130,7 @@ const CostingSummaryTable = (props) => {
                                       <div style={pdfHead ? { marginTop: '-4px' } : {}} className={`d-flex ${highlighter(["overheadOn", "overheadValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn?.overheadTitle : '')}
-                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText && data?.CostingHeading !== VARIANCE && data?.overheadOn?.overheadValue)  && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
+                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText && data?.CostingHeading !== VARIANCE && data?.overheadOn?.overheadValue) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
 
                                         </span>
                                         <span className="d-inline-block w-50 small-grey-text">
@@ -3165,12 +3173,12 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)}>
                                             {checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)}
-                                            {!pdfHead && !drawerDetailPDF && RejectionRecoveryNetCost && data?.rejectionOn?.rejectionValue && 
-                                              <TooltipCustom 
-                                                customClass="mt-1 ml-1 p-absolute" 
-                                                id="rejection-recovery" 
-                                                width="280px" 
-                                                tooltipText={"Rejection Cost = Net Rejection Cost - Rejection Recovery Cost"} 
+                                            {!pdfHead && !drawerDetailPDF && RejectionRecoveryNetCost && data?.rejectionOn?.rejectionValue &&
+                                              <TooltipCustom
+                                                customClass="mt-1 ml-1 p-absolute"
+                                                id="rejection-recovery"
+                                                width="280px"
+                                                tooltipText={"Rejection Cost = Net Rejection Cost - Rejection Recovery Cost"}
                                               />
                                             }
                                           </span> : '')}
@@ -3180,7 +3188,7 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           <span>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle : '')}
-                                            {(!pdfHead && !drawerDetailPDF && iccToolTipText && data?.CostingHeading !== VARIANCE && data?.iccOn?.iccValue)  && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="icc-toolcost-include" tooltipText={iccToolTipText} />}
+                                            {(!pdfHead && !drawerDetailPDF && iccToolTipText && data?.CostingHeading !== VARIANCE && data?.iccOn?.iccValue) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="icc-toolcost-include" tooltipText={iccToolTipText} />}
                                           </span></span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle === 'Fixed' ? '-' : data?.iccOn.iccPercentage : '')}
@@ -3649,14 +3657,14 @@ const CostingSummaryTable = (props) => {
                                   <>
                                     {`${initialConfiguration?.BaseCurrency}: `}
                                     {showConvertedCurrency ? displayValueWithSign(data, "nPOPrice") : ''}
-                                  </> 
+                                  </>
                                 ) : (
                                   // For regular columns
                                   <>
                                     {`${viewCostingData?.[0]?.CostingCurrency || initialConfiguration?.BaseCurrency}: `}
                                     {displayValueWithSign(data, "nPOPrice")}
                                   </>
-                                )}   
+                                )}
                                 {(data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     id="view_otherToolCost"

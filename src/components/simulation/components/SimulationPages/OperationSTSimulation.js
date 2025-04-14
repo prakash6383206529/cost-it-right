@@ -251,7 +251,7 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         return (
             <>
-                {isbulkUpload ? row[`Vendor (Code)`] : cell}
+                {isbulkUpload ? row[`${vendorLabel} (Code)`] : cell}
 
             </>
         )

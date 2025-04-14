@@ -1575,7 +1575,7 @@ function TabSurfaceTreatment(props) {
                           <th className="py-3 align-middle word-nowrap" style={{ width: "120px" }}>{`ST. Cost`}</th>
                           <th className="py-3 align-middle word-nowrap" style={{ width: "120px" }}>{`Hanger Cost`}</th>
                           <th className="py-3 align-middle word-nowrap" style={{ width: "120px" }}>{`Paint And Masking Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Extra Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Other Cost`}</th>
                           <th className="py-align-middle" style={{ width: "100px" }}>{`Quantity`}</th>
                           <th className="py-3 align-middle word-nowrap" style={{ width: "150px" }}>{`Total ST. Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>

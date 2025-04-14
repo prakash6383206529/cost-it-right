@@ -769,6 +769,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   // //COnversion Cost
   obj.netConversionCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingConversionCost : '-'
   obj.netTransportationCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.ChildPartTransportationDetails ?? [] : []
+  obj.HangerCostDetails = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.ChildPartHangerDetails : dataFromAPI?.CostingPartDetails?.HangerDetails ?? []
+  obj.PaintAndTapeDetails = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.ChildPartPaintAndTapeDetails : dataFromAPI?.CostingPartDetails?.PaintAndTapeDetails ?? []
   obj.surfaceTreatmentDetails = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentDetails : []
   // //OverheadCost and Profit
   obj.netOverheadCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail : '-'
@@ -2052,6 +2054,6 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
       totals.profitProcessCost += useExcludingForProfit ? processExcl : process;
     }
   });
-  
+
   return totals;
 };

@@ -915,3 +915,17 @@
     position: absolute;
   }
 }
+.process-drawer-dropdown {
+ 
+ 
+  .multi-select-container__menu {
+    z-index: 13 !important;
+    max-height: 220px !important;
+ 
+    .multi-select-container__menu-list {
+      max-height: 220px !important;
+      z-index: 13 !important;
+    }
+  }
+ 
+}

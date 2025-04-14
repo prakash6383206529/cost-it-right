@@ -14,6 +14,7 @@ import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
 import { nonZero } from '../../../../../helper/validation'
 import TooltipCustom from '../../../../common/Tooltip'
+import { useLabels } from '../../../../../helper/core'
 
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
@@ -21,6 +22,7 @@ function Sheet(props) {
     const [rightEndAcc, setRightEndAcc] = useState(true)
     const [bottomEndAcc, setBottomEndAcc] = useState(true)
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+    const { finishWeightLabel } = useLabels()
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -210,7 +212,7 @@ function Sheet(props) {
                 setValue('FinishWeightOfSheet', '')
             }, 200);
 
-            Toaster.warning('Finish Weight should not be greater than gross weight')
+            Toaster.warning(`${finishWeightLabel} weight should not be greater than gross weight`)
             return false
         }
         switch (UOMDimension.label) {
@@ -1349,7 +1351,7 @@ function Sheet(props) {
                                         disabled={true}
                                     /></Col>
                                 <Col md="3"> <TextFieldHookForm
-                                    label={`Finish Weight(${UOMDimension.label})`}
+                                    label={`${finishWeightLabel} Weight(${UOMDimension.label})`}
                                     name={'FinishWeightOfSheet'}
                                     Controller={Controller}
                                     control={control}
@@ -1360,7 +1362,7 @@ function Sheet(props) {
                                         validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         max: {
                                             value: getValues('GrossWeight'),
-                                            message: 'Finish weight should not be greater than gross weight.'
+                                            message: `${finishWeightLabel} weight should not be greater than gross weight.`
                                         },
                                     }}
                                     handleChange={setFinishWeight}
@@ -1392,7 +1394,7 @@ function Sheet(props) {
                                     errors={errors.ScrapRecoveryPercentByWidth}
                                     disabled={props.CostingViewMode ? true : false}
                                 /></Col>
-                                <Col md="3"><TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
+                                <Col md="3"><TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={`Scrap Weight = (Gross Weight - ${finishWeightLabel} Weight )* Scrap Recovery (%)/100`} />
                                     <TextFieldHookForm
                                         label={`Scrap Weight(${UOMDimension.label})`}
                                         name={'ScrapWeight'}

@@ -8,16 +8,18 @@ import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWh
 import Toaster from '../../../../common/Toaster'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import NoContentFound from '../../../../common/NoContentFound'
-import { COSTINGSURFACETREATMENTEXTRACOST, EMPTY_DATA, HANGER, PAINT, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT } from '../../../../../config/constants'
+import { COSTINGSURFACETREATMENTEXTRACOST, EMPTY_DATA, HANGER, HANGEROVERHEAD, PAINT, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT } from '../../../../../config/constants'
 import { generateCombinations, getCostingConditionTypes } from '../../../../common/CommonFunctions'
 import { getCostingCondition } from '../../../../../actions/Common'
 // import { setSurfaceData } from '../../../actions/Costing'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { ViewCostingContext } from '../../CostingDetails'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function ExtraCost(props) {
     const { setSurfaceData, item, extraCostDetails } = props
     const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
+    const { RMCCTabData } = useSelector(state => state.costing)
     const conditionTypeId = getCostingConditionTypes(COSTINGSURFACETREATMENTEXTRACOST)
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
@@ -26,7 +28,6 @@ function ExtraCost(props) {
 
     let surfaceCostingPartDetails = item?.CostingPartDetails
     const { rmBasicRate, RowData, RowIndex, hangerCostDetails, paintAndMaskingDetails, surfaceCost } = props
-
     const [tableData, setTableData] = useState(extraCostDetails?.TransportationDetails ?? []);
 
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -153,7 +154,7 @@ function ExtraCost(props) {
 
     const toggleCondition = () => {
         let cssClass = '';
-        if (type?.label === "Percentage") {
+        if (type?.label === "Percentage" || type?.label === HANGEROVERHEAD) {
             cssClass = 'mt-4 pt-1';
         } else {
             cssClass = 'mb-3 mt-n3';
@@ -183,6 +184,19 @@ function ExtraCost(props) {
         } else if (e?.label === HANGER) {
             setValue('ApplicabilityCost', checkForDecimalAndNull(hangerCostDetails?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, ApplicabilityCost: hangerCostDetails?.HangerCostPerPart }));
+            return;
+        } else if (e?.label === 'RM') {
+            setValue('ApplicabilityCost', checkForDecimalAndNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost }));
+            return;
+        } else if (e?.label === 'CC') {
+            setValue('ApplicabilityCost', checkForDecimalAndNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: RMCCTabData[0]?.CostingPartDetails?.NetConversionCost }));
+            return;
+        } else if (e?.label === 'RM + CC') {
+            let conversionCost = RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost + RMCCTabData[0]?.CostingPartDetails?.NetConversionCost
+            setValue('ApplicabilityCost', checkForDecimalAndNull(conversionCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: conversionCost }));
             return;
         }
     }
@@ -215,13 +229,15 @@ function ExtraCost(props) {
         if (label === 'Type') {
             return [
                 { label: "Percentage", value: "Percentage" },
-                { label: "Fixed", value: 'Fixed' }
+                { label: "Fixed", value: 'Fixed' },
+                { label: HANGEROVERHEAD, value: HANGEROVERHEAD }
             ]
         }
         return [];
     }
 
     const onSubmit = data => {
+        console.log(data, "data")
         if (isEditMode) {
             let tempData = [...tableData];
             let obj = {
@@ -230,9 +246,10 @@ function ExtraCost(props) {
                 PartName: item?.PartName ?? null,
                 TransportationDetailId: null,
                 UOM: type?.label ?? null,
-                Rate: data?.Percentage ?? null,
+                Rate: type?.label === 'Percentage' ? data?.Percentage : data?.Rate ?? null,
                 TransportationCost: data?.NetCost ?? null,
                 TransportationCRMHead: "",
+                Quantity: data?.Quantity ?? null,
                 Description: data?.CostDescription ?? null,
                 ApplicabiltyCost: data?.ApplicabilityCost ?? null,
                 Remark: data?.Remark ?? null,
@@ -261,7 +278,7 @@ function ExtraCost(props) {
         const existingFixedDescription = tableData.find(item =>
             (item.Description.toLowerCase() === data?.CostDescription.toLowerCase() && item.UOM === type?.label)
         );
-        if (type?.label === 'Fixed' && existingFixedDescription) {
+        if ((type?.label === 'Fixed' || type?.label === HANGEROVERHEAD) && existingFixedDescription) {
             Toaster.warning('Data already exists');
             return;
         }
@@ -272,7 +289,8 @@ function ExtraCost(props) {
             PartName: item?.PartName ?? null,
             TransportationDetailId: null,
             UOM: type?.label ?? null,
-            Rate: data?.Percentage ?? null,
+            Rate: type?.label === 'Percentage' ? data?.Percentage : data?.Rate ?? null,
+            Quantity: data?.Quantity ?? null,
             TransportationCost: data?.NetCost ?? null,
             TransportationCRMHead: "",
             Description: data?.CostDescription ?? null,
@@ -290,7 +308,11 @@ function ExtraCost(props) {
         setTotalCostCurrency(totalCost);
         resetData();
     }
-
+    const handleRateChange = (e) => {
+        const storeValue = checkForNull(e?.target?.value)
+        const calculateValue = storeValue / hangerCostDetails?.NumberOfPartsPerHanger
+        setValue('NetCost', checkForDecimalAndNull(calculateValue, initialConfiguration?.NoOfDecimalForPrice))
+    }
     const resetData = (type = '') => {
         setDisableAllFields(true);
         setDisableTotalCost(true);
@@ -298,13 +320,13 @@ function ExtraCost(props) {
         setEditIndex('');
         setIsEditMode(false)
         reset({
-            Cost: '',
             Type: '',
             Percentage: '',
             NetCost: '',
-            CostBaseCurrency: '',
             CostDescription: '',
-            Remark: ''
+            Remark: '',
+            ApplicabilityCost: '',
+            Applicability: '',
         });
     };
 
@@ -327,16 +349,21 @@ function ExtraCost(props) {
     const handleType = (type) => {
         if (type && type !== '') {
             setType(type);
-            setValue('CostCurrency', '')
-            setValue('CostBaseCurrency', '')
+            setValue('CostDescription', '')
+            setValue('NetCost', '')
             setValue('Percentage', '')
             setValue('Applicability', '')
-            setValue('ApplicabilityCostCurrency', '')
-            setValue('ApplicabilityBaseCost', '')
+            setValue('ApplicabilityCost', '')
+            setValue('Remark', '')
             if (type?.label === "Percentage") {
                 setState(prevState => ({ ...prevState, disableApplicability: false }));
+                setValue('Quantity', '')
+            } else if (type?.label === HANGEROVERHEAD) {
+                setValue('Quantity', hangerCostDetails?.NumberOfPartsPerHanger)
+                setValue('Rate', '')
             } else {
                 setState(prevState => ({ ...prevState, disableApplicability: true }));
+                setValue('Quantity', '')
             }
         } else {
             setType('');
@@ -352,7 +379,7 @@ function ExtraCost(props) {
                             <Row className="drawer-heading">
                                 <Col className="pl-0">
                                     <div className={'header-wrapper left'}>
-                                        <h3>{'Extra Cost:'}</h3>
+                                        <h3>{'Other Cost:'}</h3>
                                     </div>
                                     <div
                                         onClick={cancel}
@@ -472,7 +499,52 @@ function ExtraCost(props) {
                                                 </Col>
                                             </>
                                         }
-
+                                        {type?.label === HANGEROVERHEAD && <>
+                                            <TooltipCustom
+                                                id={`Quantity`}
+                                                disabledIcon
+                                                tooltipText={'Quantity is equavalent to the No. of Parts per Hanger'}
+                                            />
+                                            <Col md={3} className={'px-2'}>
+                                                <TextFieldHookForm
+                                                    label={`Quantity`}
+                                                    name={'Quantity'}
+                                                    id={'Quantity'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors?.Quantity}
+                                                    disabled={true}
+                                                />
+                                            </Col>
+                                            <Col md={3} className={'px-2'}>
+                                                <TextFieldHookForm
+                                                    label={`Rate`}
+                                                    name={'Rate'}
+                                                    id={'Rate'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    rules={{
+                                                        required: true,
+                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                    }}
+                                                    handleChange={handleRateChange}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors?.Rate}
+                                                    disabled={CostingViewMode}
+                                                />
+                                            </Col>
+                                        </>
+                                        }
                                         <Col md={3} className={'px-2'}>
                                             <TextFieldHookForm
                                                 label={`Cost`}
@@ -481,17 +553,17 @@ function ExtraCost(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={type?.label !== 'Percentage'}
+                                                mandatory={!(type?.label === 'Percentage' || type?.label === HANGEROVERHEAD)}
                                                 rules={{
-                                                    required: type?.label !== 'Percentage',
-                                                    validate: type?.label === 'Percentage' ? {} : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                    required: !(type?.label === 'Percentage' || type?.label === HANGEROVERHEAD),
+                                                    validate: !(type?.label === 'Percentage' || type?.label === HANGEROVERHEAD) ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {},
                                                 }}
                                                 handleChange={handleCostChangeBase}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors?.NetCost}
-                                                disabled={type?.label === 'Percentage' ? true : false || state?.disableCostBaseCurrency || CostingViewMode}
+                                                disabled={(type?.label === 'Percentage' || type?.label === HANGEROVERHEAD) ? true : false || state?.disableCostBaseCurrency || CostingViewMode}
                                             />
                                         </Col>
                                         <Col md="3" className='px-2'>
@@ -540,7 +612,9 @@ function ExtraCost(props) {
                                                     <th>{`Cost Description`}</th>
                                                     <th>{`Applicability`}</th>
                                                     <th>{`Applicability Cost`}</th>
+                                                    <th>{`Quantity`}</th>
                                                     <th>{`Percentage (%)`}</th>
+                                                    <th>{`Rate`}</th>
                                                     <th>{`Cost`}</th>
                                                     <th>{`Remark`}</th>
                                                     {!props?.hideAction && !IsLocked && <th className='text-right'>{`Action`}</th>}
@@ -553,7 +627,9 @@ function ExtraCost(props) {
                                                             <td>{item?.Description ?? '-'}</td>
                                                             <td>{item?.CostingConditionNumber ?? '-'}</td>
                                                             <td>{item?.ApplicabiltyCost ? checkForDecimalAndNull(item?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                                                            <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                                            <td>{item?.Quantity ? item?.Quantity : '-'}</td>
+                                                            <td>{item?.UOM === 'Percentage' && item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                                            <td>{item?.UOM === HANGEROVERHEAD && item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             <td>{item?.TransportationCost !== '-' ? checkForDecimalAndNull(item?.TransportationCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             <td>{item?.Remark ? item?.Remark : '-'}</td>
                                                             {
@@ -581,7 +657,7 @@ function ExtraCost(props) {
                                                 }
 
                                                 <tr className='table-footer'>
-                                                    <td colSpan={5} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                                                    <td colSpan={7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
                                                     <td colSpan={5}>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                                 </tr>
                                             </tbody>

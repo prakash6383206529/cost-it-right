@@ -12,6 +12,7 @@ import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationFor
 import { Row, Col, Table } from 'reactstrap'
 import TooltipCustom from '../../../common/Tooltip';
 import _ from 'lodash';
+import { useLabels } from '../../../../helper/core';
 
 function ViewRM(props) {
 
@@ -19,6 +20,7 @@ function ViewRM(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { finishWeightLabel } = useLabels()
 
   const [viewCostingData, setViewCostingData] = useState([])
 
@@ -278,7 +280,7 @@ function ViewRM(props) {
               <th>{showRMScrapKeys(viewCostingData && Number(viewCostingData[props.index]?.technologyId))?.name}</th>
               {isScrapRecoveryApplied && <th>{`Scrap Recovery (%)`}</th>}
               <th>{`Gross Weight (Kg)`}</th>
-              <th>{`Finish Weight (Kg)`}</th>
+              <th>{`${finishWeightLabel} Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
               {!isPDFShow && viewCostingData[props.index]?.technologyId !== Ferrous_Casting && viewCostingData[props.index]?.technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index]?.technologyId)) && < th > {`Calculator`}</th>}
               {IsShowFreightAndShearingCostFields() && <th>{`Freight Cost`}</th>}
@@ -379,7 +381,7 @@ function ViewRM(props) {
       }
 
       {
-        isAssemblyCosting && masterBatchList?.length > 0 && (!isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false)) &&
+        isAssemblyCosting && masterBatchList?.length > 0 && !simulationMode/* (!isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false)) */ &&
         <>
           < Col md="12">
             <div className="left-border mt-4 mb-3">Master Batch</div>

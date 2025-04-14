@@ -627,7 +627,7 @@ function OperationCost(props) {
                                 options={operationApplicabilitySelect}
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
-                                disabled={CostingViewMode}
+                                disabled={(CostingViewMode || IsLocked) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
                                 />
                             </td>
@@ -693,7 +693,7 @@ function OperationCost(props) {
                                 options={operationApplicabilitySelect}
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
-                                disabled={CostingViewMode}
+                                disabled={(CostingViewMode || IsLocked) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
                                 />
                             </td>

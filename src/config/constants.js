@@ -3380,6 +3380,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const COSTINGOVERHEADANDPROFTFORPROCESS = "Costing Overhead Profit For Process"
 export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Operation"
 export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra Cost"
+export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
@@ -3391,7 +3392,7 @@ export const PAINTTECHNOLOGY = 31
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V4.2.4";
+export const VERSION = "V4.2.11";
 
 
 
