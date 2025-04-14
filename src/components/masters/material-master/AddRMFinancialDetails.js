@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, DOMESTIC, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, RAWMATERIAL, INR, ENTRY_TYPE_IMPORT, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, INR, RAWMATERIAL, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, getExchangeRateParams, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys } from "../../../helper"
@@ -31,7 +31,7 @@ import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 import { getPlantUnitAPI } from "../actions/Plant"
 import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
-import { getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
+import { compareRateCommon, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -114,6 +114,7 @@ function AddRMFinancialDetails(props) {
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const exchangeRateDetailsRef = useRef(exchangeRateDetails);
     const rawMaterailDetailsRefFinancial = useRef(rawMaterailDetails)
+    const debounceTimerRef = useRef(null);
 
     useEffect(() => {
         exchangeRateDetailsRef.current = exchangeRateDetails;
@@ -311,6 +312,9 @@ function AddRMFinancialDetails(props) {
         }
     }, [state?.totalBasicRate])
 
+    useEffect(() => {
+        return () => clearTimeout(debounceTimerRef?.current);
+    }, []);
 
     const netCostTitle = () => {
         const isBasicRateVisible = getConfigurationKey().IsBasicRateAndCostingConditionVisible &&
@@ -501,28 +505,31 @@ function AddRMFinancialDetails(props) {
         }
 
         const basicPriceCurrencyTemp = checkForNull(getValues('BasicRate')) + checkForNull(state?.totalOtherCost)
-        let basicPriceBaseCurrency = costingTypeId === ZBCTypeId ? basicPriceCurrencyTemp : 0;
-        let conditionList = recalculateConditions('', basicPriceBaseCurrency);
+        let basicPriceBaseCurrency
+        if (costingTypeId === ZBCTypeId) {
+            basicPriceBaseCurrency = basicPriceCurrencyTemp
+        }
+        let conditionList = recalculateConditions(basicPriceBaseCurrency, state)
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
         let NetLandedCostConversion
         let NetLandedCostLocalConversion
-        NetLandedCostLocalConversion = checkForDecimalAndNull(NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
+        NetLandedCostLocalConversion = (checkForNull(NetLandedCost) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1)
 
         if (states.isImport) {
             if (getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency")) {
-                NetLandedCostConversion = checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
+                NetLandedCostConversion = checkForNull(NetLandedCostLocalConversion) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
             } else {
-                NetLandedCostConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
+                NetLandedCostConversion = checkForNull(NetLandedCost) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
             }
             setValue('NetLandedCost', checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', checkForDecimalAndNull(NetLandedCostConversion, getConfigurationKey().NoOfDecimalForPrice))
         } else {
-            NetLandedCostLocalConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
-            NetLandedCostConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
+            NetLandedCostLocalConversion = checkForNull(NetLandedCost) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
+            NetLandedCostConversion = checkForNull(NetLandedCost) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
 
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
@@ -831,7 +838,7 @@ function AddRMFinancialDetails(props) {
 
         if (type === 'Save') {
             if (Number(states.costingTypeId) === Number(ZBCTypeId) && state.NetConditionCost && Array.isArray(state?.conditionTableData) && state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
-                Toaster.warning("Please click on refresh button to update condition cost data.")
+                Toaster.warning("Please click on refresh button to update Condition Cost data.")
             }
             const netCost = checkForNull(totalBase) + checkForNull(getValues('BasicRate'))
             const netCostLocalCurrency = convertIntoBase(netCost, CurrencyExchangeRate?.plantCurrencyRate)
@@ -886,7 +893,7 @@ function AddRMFinancialDetails(props) {
 
             setValue('NetLandedCost', checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(netLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
-            setValue('NetLandedCostConversion', netLandedCostConversion)
+            setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCostConversion))
         } else {
             setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull((netLandedCost), getConfigurationKey().NoOfDecimalForPrice))
@@ -1041,6 +1048,14 @@ function AddRMFinancialDetails(props) {
             dispatch(setOtherCostDetails(result.tableData));
         }
     };
+
+    const debouncedCompareRate = () => {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+            compareRateCommon(state?.otherCostTableData, state?.conditionTableData);
+        }, 1000);
+    };
+
     const showNetCost = () => {
         let show = false
         if (state.hidePlantCurrency) {
@@ -1376,7 +1391,7 @@ function AddRMFinancialDetails(props) {
                                         disabled={disableAll || state.isShowIndexCheckBox ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                         className=" "
                                         customClassName=" withBorder"
-                                        handleChange={() => { }}
+                                        handleChange={isEditFlag ? debouncedCompareRate : () => { }}
                                         errors={errors.BasicRate}
                                     />
                                 </Col></>
@@ -1495,17 +1510,17 @@ function AddRMFinancialDetails(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            rules={{
+                                            rules={!state.IsApplyHasDifferentUOM ? {
                                                 required: true,
                                                 validate: { positiveAndDecimalNumber, decimalLengthsix, number },
-                                            }}
+                                            } : {}}
                                             mandatory={true}
                                             className=""
                                             maxLength="15"
                                             customClassName=" withBorder"
                                             handleChange={() => { }}
                                             disabled={isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
-                                            errors={errors.ScrapRate}
+                                            errors={!state.IsApplyHasDifferentUOM ? errors.ScrapRate : ""}
                                         />
                                     </Col></>}
                             {showScrapKeys?.showForging &&
@@ -1520,10 +1535,10 @@ function AddRMFinancialDetails(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            rules={{
+                                            rules={!state.IsApplyHasDifferentUOM ? {
                                                 required: true,
                                                 validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                            }}
+                                            } : {}}
                                             mandatory={true}
                                             className=""
                                             customClassName=" withBorder"
@@ -1570,15 +1585,15 @@ function AddRMFinancialDetails(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            rules={{
+                                            rules={!state.IsApplyHasDifferentUOM ? {
                                                 required: true,
                                                 validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                            }}
+                                            } : {}}
                                             disabled={isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                             className=" "
                                             handleChange={() => { }}
                                             customClassName=" withBorder"
-                                            errors={errors.JaliScrapCost}
+                                            errors={!state.IsApplyHasDifferentUOM ? errors.JaliScrapCost :""}
                                             mandatory={true}
                                         />
                                     </Col>
@@ -1623,13 +1638,13 @@ function AddRMFinancialDetails(props) {
                                         />
                                     </div>
                                     <div className="d-flex align-items-center mt-1">
-                                        <button type="button" id="other-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(false)} disabled={isViewFlag}>
+                                        <button type="button" id="other-cost-refresh" className={'refresh-icon mt-1 ml-2'} onClick={() => updateTableCost(false)} disabled={isViewFlag}>
                                             <TooltipCustom disabledIcon={true} width="350px" id="other-cost-refresh" tooltipText="Refresh to update other cost" />
                                         </button>
                                         {<Button
                                             id="addRMDomestic_otherToggle"
                                             onClick={otherCostToggle}
-                                            className={"right mt-1 ml-1"}
+                                            className={"right mt-1 ml-3"}
                                             variant={isViewFlag ? "view-icon-primary" : `${!getValues('BasicRate') ? 'blurPlus-icon-square' : 'plus-icon-square'}`}
                                             title={isViewFlag ? "View" : "Add"}
                                             disabled={!getValues('BasicRate')}
@@ -1675,13 +1690,13 @@ function AddRMFinancialDetails(props) {
                                             />
                                         </div>
                                         <div className="d-flex align-items-center mt-1">
-                                            <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(true)} disabled={isViewFlag}>
+                                            <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-2'} onClick={() => updateTableCost(true)} disabled={isViewFlag}>
                                                 <TooltipCustom disabledIcon={true} width="350px" id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                             </button>
                                             <Button
                                                 id="addRMDomestic_conditionToggl"
                                                 onClick={conditionToggle}
-                                                className={"right  mt-3 mb-2"}
+                                                className={"right mt-1 ml-2"}
                                                 variant={isViewFlag ? "view-icon-primary" : `${!getValues('BasicRate') ? 'blurPlus-icon-square' : 'plus-icon-square'}`}
                                                 title={isViewFlag ? "View" : "Add"}
                                                 disabled={!getValues('BasicRate')}
@@ -1772,7 +1787,7 @@ function AddRMFinancialDetails(props) {
                     closeDrawer={closeOtherCostToggle}
                     anchor={'right'}
                     rawMaterial={true}
-                    rmBasicRate={states.isImport ? getValues('BasicRateSelectedCurrency') : state.totalBasicRate}
+                    rmBasicRate={states.isImport ? getValues('BasicRate') : state.totalBasicRate}
                     ViewMode={isViewFlag}
                     uom={state.UOM}
                     isImport={states.isImport}
