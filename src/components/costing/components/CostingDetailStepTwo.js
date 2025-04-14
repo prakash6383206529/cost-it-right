@@ -75,6 +75,12 @@ function CostingDetailStepTwo(props) {
     }
   }, [partNo.isChanged])
 
+  useEffect(() => {
+    return () => {
+      dispatch(savePartNumber(''))
+      dispatch(saveBOMLevel(''))
+    }
+  }, [])
 
   function calculateCostAndRate(data, tempData, tabName) {
 
