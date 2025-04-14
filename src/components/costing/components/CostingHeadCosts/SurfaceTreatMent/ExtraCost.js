@@ -109,15 +109,25 @@ function ExtraCost(props) {
         setEditIndex(indexValue);
         setIsEditMode(true);
         let selectedData = tableData[indexValue];
-        setType({ label: selectedData?.UOM, value: selectedData?.UOM })
-        setValue('Type', { label: selectedData?.UOM, value: selectedData?.UOM })
+        const typeValue = { label: selectedData?.UOM, value: selectedData?.UOM };
+        setType(typeValue);
+        setValue('Type', typeValue);
         if (selectedData?.UOM === 'Percentage') {
             setValue('Applicability', { label: selectedData?.CostingConditionNumber, value: selectedData?.CostingConditionMasterId })
             setValue('ApplicabilityCost', checkForDecimalAndNull(selectedData?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('Percentage', checkForDecimalAndNull(selectedData?.Rate, initialConfiguration?.NoOfDecimalForPrice))
-        } else {
-            setType({ label: 'Fixed', value: 'Fixed' })
-            setValue('Type', { label: 'Fixed', value: 'Fixed' })
+        } else if (selectedData?.UOM === "Hanger Overhead") {
+            const hangerType = { label: "Hanger Overhead", value: "Hanger Overhead" };
+            setType(hangerType);
+            setValue('Type', hangerType);
+            setValue('Quantity', selectedData?.Quantity)
+            setValue('Rate', selectedData?.Rate)
+            setValue('NetCost', selectedData?.TransportationCost)
+        }
+        else {
+            const fixedType = { label: 'Fixed', value: 'Fixed' };
+            setType(fixedType);
+            setValue('Type', fixedType);
         }
         setValue('CostDescription', selectedData?.Description)
         setValue('Remark', selectedData?.Remark)
@@ -237,7 +247,7 @@ function ExtraCost(props) {
     }
 
     const onSubmit = data => {
-        console.log(data, "data")
+
         if (isEditMode) {
             let tempData = [...tableData];
             let obj = {
@@ -546,6 +556,17 @@ function ExtraCost(props) {
                                         </>
                                         }
                                         <Col md={3} className={'px-2'}>
+                                            <TooltipCustom
+                                                id="cost-field-container"
+                                                disabledIcon
+                                                tooltipText={
+                                                    <div style={{ width: "280px" }}>
+                                                        <strong>Cost is calculated based on the selected type:</strong><br />
+                                                        • For Percentage: (Applicability Cost × Percentage ÷ 100)<br />
+                                                        • For Hanger Overhead: (Rate ÷ Quantity)
+                                                    </div>
+                                                }
+                                            />
                                             <TextFieldHookForm
                                                 label={`Cost`}
                                                 name={'NetCost'}

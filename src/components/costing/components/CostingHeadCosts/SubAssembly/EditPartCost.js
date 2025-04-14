@@ -505,7 +505,7 @@ function EditPartCost(props) {
 
                         <form>
                             <Col md="12">
-                                <Table className='table cr-brdr-main mb-0 rmcc-main-headings'>
+                                <Table className='table cr-brdr-main mb-0'>
                                     <thead>
                                         <tr className="cr-bg-tbl" width='100%'>
                                             <th>{props?.costingSummary ? 'Parent Assembly Costing Number' : 'Parent Assembly Number'}: {`${props?.costingSummary ? props?.tabAssemblyIndividualPartDetail?.CostingNumber : props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
@@ -538,7 +538,7 @@ function EditPartCost(props) {
                                         <div className={"plus "}></div>Add
                                     </button>
                                 </div>}
-                                <Table className={`table cr-brdr-main mb-0 rmcc-main-headings ${props?.costingSummary ? 'mt-2' : ''}`}>
+                                <Table className={`table cr-brdr-main mb-0 ${props?.costingSummary ? 'mt-2' : ''}`}>
                                     <thead>
                                         <tr >
                                             {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
