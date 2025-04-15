@@ -820,7 +820,7 @@ const VendorListing = (props) => {
         </div>
       )}
 
-      {state.isBulkUpload && (<BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} isZBCVBCTemplate={false} fileName={"Vendor"} messageLabel={"Vendor"} anchor={"right"} />
+      {state.isBulkUpload && (<BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} isZBCVBCTemplate={false} fileName={"Vendor"} messageLabel={vendorLabel} anchor={"right"} />
       )}
       {isOpenVendor && (<AddVendorDrawer isOpen={isOpenVendor} closeDrawer={closeVendorDrawer} isEditFlag={state.isEditFlag} isRM={false} isViewMode={state.isViewMode} ID={state.ID} anchor={"right"} />
       )}

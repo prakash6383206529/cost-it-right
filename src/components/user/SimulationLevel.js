@@ -12,7 +12,9 @@ import { PaginationWrapper } from '../common/commonPagination';
 import { ApplyPermission } from './LevelsListing';
 import { useContext } from 'react';
 import Button from '../layout/Button';
-import { searchNocontentFilter } from '../../helper';
+import { searchNocontentFilter, getLocalizedCostingHeadValue} from '../../helper';
+import { useLabels } from "../../helper/core";
+
 const gridOptions = {};
 const defaultPageSize = 5;
 const SimulationLevelListing = (props) => {
@@ -38,6 +40,7 @@ const SimulationLevelListing = (props) => {
     const permissions = useContext(ApplyPermission);
     const dispatch = useDispatch();
     const { simulationLevelDataList, isCallApi } = useSelector((state) => state.auth)
+    const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
     useEffect(() => {
         getSimulationDataList();
@@ -60,6 +63,19 @@ const SimulationLevelListing = (props) => {
             } else if (res && res.data && res.data.DataList) {
                 dispatch(manageLevelTabApi(false))
                 let Data = res.data.DataList;
+                // Replace "Vendor Based" with "Supplier Based" in the API response
+                Data = Data.map(item => {
+                    const localizedApprovalType = getLocalizedCostingHeadValue(item.ApprovalType, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+                    // Only create a new object if the approval type changed
+                    if (localizedApprovalType !== item.ApprovalType) {
+                        return {
+                            ...item,
+                            ApprovalType: localizedApprovalType
+                        };
+                    }
+                   return item;
+                   });
+
                 setState((prevState) => ({
                     ...prevState, tableData: Data,
                 }))
