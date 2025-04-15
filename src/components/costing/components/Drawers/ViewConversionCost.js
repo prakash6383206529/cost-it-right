@@ -732,9 +732,9 @@ function ViewConversionCost(props) {
           <div className="left-border">{'Paint and Masking:'}</div>
         </Col>
         <Col md="12">
-
-          <Table className={`table cr-brdr-main conversion-cost ${isPDFShow ? 'mt-2' : ""}`} size="sm">
-            <thead>
+ 
+        <Table className="table cr-brdr-main" size="sm">          
+           <tbody>
               <tr class="thead">
                 <th>Paint Coat</th>
                 <th>Raw Material</th>
@@ -746,9 +746,6 @@ function ViewConversionCost(props) {
                 <th>RM Rate (Currency)</th>
                 <th>Paint Cost</th>
               </tr>
-
-            </thead>
-            <tbody>
               {coats?.map((coat, parentIndex) => (
                 coat?.RawMaterials?.map((rm, childIndex) => (
                   <tr key={`${parentIndex}-${childIndex}`}>
@@ -783,7 +780,7 @@ function ViewConversionCost(props) {
                   {checkForDecimalAndNull(paintAndTapeDetails?.PaintCost, getConfigurationKey().NoOfDecimalForInputOutput)}
                 </td>
               </tr>
-            </tbody>
+              </tbody>
           </Table>
           <Row className="mb-4">
             <Col md="4">
@@ -805,7 +802,7 @@ function ViewConversionCost(props) {
               />
             </Col>
           </Row>
-
+ 
         </Col>
       </Row>
     </>
