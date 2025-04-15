@@ -3268,3 +3268,19 @@ export function getPaintCoatList(callback) {
     })
   }
 }
+export function getCostingBopAndBopHandlingDetails(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.get(`${API.getCostingBopAndBopHandlingDetails}?costingId=${data?.costingId}&subAssemblyCostingId=${data?.subAssemblyCostingId}&assemblyCostingId=${data?.assemblyCostingId}&loggedInUserId=${data?.loggedInUserId}`, config())
+    request.then((response) => {
+      if (response.data.Result || response?.status === 204) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
+
+  }
+}

@@ -560,8 +560,8 @@ function ExtraCost(props) {
                                                 id="NetCost"
                                                 disabledIcon
                                                 tooltipText={
-                                                    <div style={{ width: "280px" }}>
-                                                        <strong>Cost is calculated based on the selected type:</strong><br />
+                                                    <div>
+                                                       Cost is calculated based on the selected type:<br />
                                                         • For Percentage: (Applicability Cost × Percentage ÷ 100)<br />
                                                         • For Hanger Overhead: (Rate ÷ Quantity)
                                                     </div>

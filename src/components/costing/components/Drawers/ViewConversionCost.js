@@ -727,86 +727,82 @@ function ViewConversionCost(props) {
 
   const paintAndMaskingTableData = () => {
     return <>
-      <Row>
+      <Row className='firefox-spaces'>
         <Col md="12">
           <div className="left-border">{'Paint and Masking:'}</div>
         </Col>
         <Col md="12">
-          <div className='d-flex align-items-center'>
-            <div className="w-100">
-              <Table responsive bordered className="table-with-input-data">
-                <thead>
-                  <tr>
-                    <th>`Paint Coat`</th>
-                    <th>`Raw Material`</th>
-                    <th>`UOM`</th>
-                    <th>{PartSurfaceAreaWithUOM}</th>
-                    <th>{ConsumptionWithUOM}</th>
-                    <th>Rejection Allowance (%)</th>
-                    <th>Rejection Allowance</th>
-                    <th>RM Rate (Currency)</th>
-                    <th>Paint Cost</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {coats?.map((coat, parentIndex) => (
-                    coat?.RawMaterials?.map((rm, childIndex) => (
-                      <tr key={`${parentIndex}-${childIndex}`}>
-                        {childIndex === 0 && (
-                          <td rowSpan={coat?.RawMaterials?.length}>
-                            {coat?.PaintCoat || '-'}
-                          </td>
-                        )}
-                        <td>{rm?.RawMaterial || '-'}</td>
-                        <td>{rm?.UOM}</td>
-                        <td>{checkForDecimalAndNull(rm?.SurfaceArea, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                        <td>{checkForDecimalAndNull(rm?.Consumption, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                        <td>{checkForDecimalAndNull(rm?.RejectionAllowancePercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                        <td>{checkForDecimalAndNull(rm?.RejectionAllowance, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                        <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                        <td>{checkForDecimalAndNull(rm?.NetCost, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                      </tr>
-                    ))
-                  ))}
-                  {coats && coats?.length === 0 && (
-                    <tr>
-                      <td colSpan="12">
-                        <NoContentFound title={EMPTY_DATA} />
+ 
+        <Table className="table cr-brdr-main" size="sm">          
+           <tbody>
+              <tr class="thead">
+                <th>Paint Coat</th>
+                <th>Raw Material</th>
+                <th>UOM</th>
+                <th>{PartSurfaceAreaWithUOM}</th>
+                <th>{ConsumptionWithUOM}</th>
+                <th>Rejection Allowance (%)</th>
+                <th>Rejection Allowance</th>
+                <th>RM Rate (Currency)</th>
+                <th>Paint Cost</th>
+              </tr>
+              {coats?.map((coat, parentIndex) => (
+                coat?.RawMaterials?.map((rm, childIndex) => (
+                  <tr key={`${parentIndex}-${childIndex}`}>
+                    {childIndex === 0 && (
+                      <td rowSpan={coat?.RawMaterials?.length}>
+                        {coat?.PaintCoat || '-'}
                       </td>
-                    </tr>
-                  )}
-                  <tr className="table-footer">
-                    <td colSpan={8} className="text-right">
-                      Total Paint Cost
-                    </td>
-                    <td>
-                      {checkForDecimalAndNull(paintAndTapeDetails?.PaintCost, getConfigurationKey().NoOfDecimalForInputOutput)}
-                    </td>
+                    )}
+                    <td>{rm?.RawMaterial || '-'}</td>
+                    <td>{rm?.UOM}</td>
+                    <td>{checkForDecimalAndNull(rm?.SurfaceArea, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                    <td>{checkForDecimalAndNull(rm?.Consumption, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                    <td>{checkForDecimalAndNull(rm?.RejectionAllowancePercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                    <td>{checkForDecimalAndNull(rm?.RejectionAllowance, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                    <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                    <td>{checkForDecimalAndNull(rm?.NetCost, getConfigurationKey().NoOfDecimalForPrice)}</td>
                   </tr>
-                </tbody>
-              </Table>
-              <Row className="mb-4">
-                <Col md="4">
-                  <label>Masking/Tape Cost</label>
-                  <input 
-                    type="text"
-                    className="form-control"
-                    value={checkForDecimalAndNull(paintAndTapeDetails?.TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
-                    disabled
-                  />
-                </Col>
-                <Col md="4">
-                  <label>Total Paint & Masking Cost</label>
-                  <input
-                    type="text" 
-                    className="form-control"
-                    value={checkForDecimalAndNull(paintAndTapeDetails?.TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
-                    disabled
-                  />
-                </Col>
-              </Row>
-            </div>
-          </div>
+                ))
+              ))}
+              {coats && coats?.length === 0 && (
+                <tr>
+                  <td colSpan="12">
+                    <NoContentFound title={EMPTY_DATA} />
+                  </td>
+                </tr>
+              )}
+              <tr className="table-footer">
+                <td colSpan={8} className="text-right">
+                  Total Paint Cost
+                </td>
+                <td>
+                  {checkForDecimalAndNull(paintAndTapeDetails?.PaintCost, getConfigurationKey().NoOfDecimalForInputOutput)}
+                </td>
+              </tr>
+              </tbody>
+          </Table>
+          <Row className="mb-4">
+            <Col md="4">
+              <label>Masking/Tape Cost</label>
+              <input
+                type="text"
+                className="form-control"
+                value={checkForDecimalAndNull(paintAndTapeDetails?.TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
+                disabled
+              />
+            </Col>
+            <Col md="4">
+              <label>Total Paint & Masking Cost</label>
+              <input
+                type="text"
+                className="form-control"
+                value={checkForDecimalAndNull(paintAndTapeDetails?.TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
+                disabled
+              />
+            </Col>
+          </Row>
+ 
         </Col>
       </Row>
     </>
