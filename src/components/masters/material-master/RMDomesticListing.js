@@ -296,16 +296,7 @@ function RMDomesticListing(props) {
                 }
 
                 if (res) {
-                    let isReset = true
                     setTimeout(() => {
-                        for (var prop in floatingFilterData) {
-
-                            if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
-                                isReset = false
-                            }
-
-                        }
-                        // Sets the filter model via the grid API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                     }, 300);
 
@@ -894,8 +885,6 @@ function RMDomesticListing(props) {
     const closeAnalyticsDrawer = () => {
         setAnalyticsDrawer(false)
     }
-
-console.log(warningMessage);
 
     const floatingFilterStatus = {
         maxValue: 1,
