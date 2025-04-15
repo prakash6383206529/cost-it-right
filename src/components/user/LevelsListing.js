@@ -7,7 +7,7 @@ import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey } from '../../helper/auth';
-import { checkPermission, searchNocontentFilter } from '../../helper/util';
+import { checkPermission, searchNocontentFilter,getLocalizedCostingHeadValue } from '../../helper/util';
 import { LEVELS } from '../../config/constants';
 import ImpactDrawer from './ImpactDrawer';
 import LoaderCustom from '../common/LoaderCustom';
@@ -19,6 +19,7 @@ import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
 import Button from '../layout/Button';
 import ManageLevelTabs from './LevelListingIndex';
+import { useLabels } from '../../helper/core';
 
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
@@ -63,6 +64,16 @@ const LevelsListing = (props) => {
 	const { usersListByTechnologyAndLevel, topAndLeftMenuData } = useSelector(state => state.auth)
 	const child = useRef();
 	const searchRef = useRef(null);
+	const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+
+	const combinedCostingHeadRenderer = (props) => {
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
 
 	useEffect(() => {
 		setState(prevState => ({ ...prevState, isLoader: true }));
@@ -90,7 +101,7 @@ const LevelsListing = (props) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-
+    
 	const getLevelsListData = () => {
 		setState(prevState => ({ ...prevState, isLoader: true }));
 		dispatch(getAllLevelAPI(res => {
@@ -236,7 +247,8 @@ const LevelsListing = (props) => {
 
 	const frameworkComponents = {
 		totalValueRenderer: buttonFormatter,
-		customNoRowsOverlay: NoContentFound
+		customNoRowsOverlay: NoContentFound,
+		combinedCostingHeadRenderer: combinedCostingHeadRenderer
 	};
 	return (
 		<div className={"levellisting-page-main"} id={'level-go-to-top'}>
@@ -295,7 +307,7 @@ const LevelsListing = (props) => {
 													enableBrowserTooltips={true}
 												>
 													{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-													<AgGridColumn width="40" field="ApprovalType" headerName="Approval Type"></AgGridColumn>
+													<AgGridColumn width="40" field="ApprovalType" headerName="Approval Type" cellRenderer={combinedCostingHeadRenderer}></AgGridColumn>
 													<AgGridColumn width="35" field="Module" headerName="Module"></AgGridColumn>
 													<AgGridColumn width="65" field="Technology" headerName={`Technology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
 													<AgGridColumn width="35" field="Level" headerName="Level"></AgGridColumn>
