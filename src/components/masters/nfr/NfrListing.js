@@ -21,12 +21,22 @@ import { StatusTooltip, hyphenFormatter } from '../masterUtil';
 import Toaster from '../../common/Toaster';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { useRef } from 'react';
-import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
+import { agGridStatus, disabledClass, getGridHeight, isResetClick } from '../../../actions/Common';
 import Button from '../../layout/Button';
 import CreateManualNFR from './CreateManualNFR';
 import { useTranslation } from 'react-i18next';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
+import { updateCurrentRowIndex, updatePageNumber } from '../../common/Pagination/paginationAction';
+import ReactExport from "react-export-excel";
+import { reactLocalStorage } from 'reactjs-localstorage';
+import _ from 'lodash';
+import { NFR_LISTING_DOWNLOAD_EXCEL } from '../../../config/masterData';
+// import { ExcelFile } from 'react-excel';
+const ExcelFile = ReactExport.ExcelFile;
+
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 
@@ -61,6 +71,12 @@ function NfrListing(props) {
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
     const [showNfrPartListing, setShowNfrPartListing] = useState(false)
+    const [disableFilter, setDisableFilter] = useState(false)
+    const [disableDownload, setDisableDownload] = useState(false)
+    const [dataCount, setDataCount] = useState(0)
+    const [totalRecordCount, setTotalRecordCount] = useState(0)
+    const [isViewMode, setIsViewMode] = useState(false)
+    const [selectedRowData, setSelectedRowData] = useState([])
     const agGridRef = useRef(null);
 
     const floatingFilterNfr = {
@@ -83,6 +99,8 @@ function NfrListing(props) {
         getDataList()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
+        // Clear selectedRow from localStorage when component renders
+        reactLocalStorage.remove('selectedRow');
     }, [])
 
     /**
@@ -106,26 +124,39 @@ function NfrListing(props) {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const getDataList = () => {
+    const getDataList = (skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
         dispatch(getAllNfrList((res) => {
             if (res?.data?.DataList?.length > 0) {
-                setRowData(StatusTooltip(res?.data?.DataList))
+                setRowData(StatusTooltip(res?.data?.DataList));
+                setTotalRecordCount(res?.data?.DataList?.length);
             } else {
-                setRowData([])
+                setRowData([]);
+                setTotalRecordCount(0);
             }
-            setloader(false)
+            if (res && isPagination === false) {
+                setDisableDownload(false)
+                setTimeout(() => {
+                    dispatch(disabledClass(false))
+                    let button = document.getElementById('NfrListing_excel_download')
+                    button && button.click()
+                }, 500);
+            }
+            setloader(false);
         }))
     }
 
     const resetState = () => {
-
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
         window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
-        gridApi.deselectAll()
-        dispatch(agGridStatus("", ""))
-        dispatch(isResetClick(true, "status"))
-        setNoData(false)
+        gridApi.deselectAll();
+        dispatch(agGridStatus("", ""));
+        dispatch(isResetClick(true, "status"));
+        setNoData(false);
+        setDataCount(0);
+        setSelectedRowData([]);
+        // Clear selectedRow from localStorage
+        reactLocalStorage.remove('selectedRow');
     }
 
 
@@ -141,14 +172,16 @@ function NfrListing(props) {
             rowData: rowData,
             Id: Id
         }
-        setShowNfrPartListing(true)
+        // setShowNfrPartListing(true)
+        setIsViewMode(true)
+        setShowAddNFRDrawer(true)
         setSelectedPartData(rowData)
         setNfrId(rowData?.NfrNumber)
         let obj = { ...nfrDetailsForDiscount, rowData: rowData }
         dispatch(nfrDetailsForDiscountAction(obj))
         setIsEdit(true)
         setAddRfqData(data)
-        setAddRfq(true)
+        // setAddRfq(true)
     }
 
     /**
@@ -323,12 +356,21 @@ function NfrListing(props) {
         setViewRfq(true)
 
     }
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+        return thisIsFirstColumn;
+    };
 
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: false,
+        headerCheckboxSelectionFilteredOnly: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
+
 
 
     const frameworkComponents = {
@@ -361,8 +403,112 @@ function NfrListing(props) {
             }
         }))
     }
+    const onSearch = () => {
+        setDisableFilter(true)
+        dispatch(updateCurrentRowIndex(0));
+        dispatch(updatePageNumber(1));
+        // getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
+    };
+
+
+    const onRowSelect = (event) => {
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow')?.selectedRow || [];
+        var selectedRows = gridApi.getSelectedRows();
+
+        if (selectedRows === undefined || selectedRows === null) {  
+            selectedRows = selectedRowForPagination;
+        } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {   
+            let finalData = [];
+            if (event.node.isSelected() === false) {    
+                for (let i = 0; i < selectedRowForPagination.length; i++) {
+                    if (selectedRowForPagination[i].NfrId === event.data.NfrId) {     
+                        continue;
+                    }
+                    finalData.push(selectedRowForPagination[i]);
+                }
+            } else {
+                finalData = selectedRowForPagination;
+            }
+            selectedRows = [...selectedRows, ...finalData];
+        }
+
+        let uniqeArray = _.uniqBy(selectedRows, "NfrId");          
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }); 
+
+        const newDataCount = uniqeArray.length;
+        setDataCount(newDataCount);
+        setSelectedRowData(uniqeArray);
+    };
+
+    const onExcelDownload = () => {
+        setDisableDownload(true);
+        dispatch(disabledClass(true));
+
+        let tempArr = selectedRowData;
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false);
+                dispatch(disabledClass(false));
+                // Make sure this ID matches the element in the ExcelFile component
+                document.getElementById("nfr-excel-download")?.click();
+            }, 400);
+        } else {
+            getDataList(0, 10, false, {}, true)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    };
+
+    const bulkToggle = () => {
+        // if (checkMasterCreateByCostingPermission(true)) {
+        //   setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+        // }
+    };
+
+    const onBtExport = () => {
+        let tempArr = [];
+        tempArr = selectedRowData && selectedRowData.length > 0 ? selectedRowData : rowData;
+        const filteredLabels = NFR_LISTING_DOWNLOAD_EXCEL;
+        // = NFR_LISTING_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+        //   if (column.value === "ExchangeRateSourceName") {
+        //     return getConfigurationKey().IsSourceExchangeRateNameVisible
+        //   }
+        //   return true;
+        // })
+        return returnExcelColumn(filteredLabels, tempArr);
+    };
+
+
+    const returnExcelColumn = (data = [], TempData) => {
+        let temp = [];
+        temp = TempData.map(item => {
+            const newItem = { ...item };
+            data.forEach(column => {
+                if (newItem[column.value] == null || newItem[column.value] === "") {
+                    newItem[column.value] = "-";
+                }
+            });
+            ["SopDate", "LastSubmissionDate", "CreatedDate"].forEach(dateField => {
+                if (newItem[dateField] && newItem[dateField] !== "-") {
+                    try {
+                        newItem[dateField] = DayTime(newItem[dateField]).format("DD/MM/YYYY");
+                    } catch (e) {
+                        newItem[dateField] = "-";
+                    }
+                }
+            });
+
+            return newItem;
+        });
+        return (
+            <ExcelSheet data={temp} name={`NFR Listing`}>
+                {data && data.map((ele, index) => (
+                    <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style || {}} />
+                ))}
+            </ExcelSheet>
+        );
+    }
 
     const addNFRFunction = () => {
+        setIsViewMode(false)
         setShowAddNFRDrawer(true)
     }
 
@@ -373,6 +519,7 @@ function NfrListing(props) {
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
                             {sapLoader && <LoaderCustom message="Fetching data from SAP" />}
+                            {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                                 <Col md="3" lg="3" className='mb-2'>
@@ -385,21 +532,36 @@ function NfrListing(props) {
                                 </Col>
 
                                 <Col md="9" className="mb-3 d-flex justify-content-end">
+                                    {
+                                        <Button id="bopImportListing_filterData" disabled={disableFilter} title={"Filtered data"} type="button" className={"user-btn mr5 Tour_List_Filter"} icon={"filter mr-0"} onClick={() => onSearch()} />
+                                    }
                                     {true && (<Button id="nfr_add" className={"mr5"} onClick={addNFRFunction} title={"Add"} icon={"plus"} />)}
-                                    <button type="button" className="user-btn " id="resetNFR_listing" title="Reset Grid" onClick={() => resetState()}>
+
+                                    {/* <Button id="bopImportListing_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} /> */}
+
+
+                                    <>
+                                        <Button className={"user-btn mr5 Tour_List_Download"} id={"NfrListing_excel_download"} disabled={rowData.length === 0} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
+
+                                        <ExcelFile filename={`NFR Listing`} fileExtension={".xls"} element={<Button id={"nfr-excel-download"} className="p-absolute" />}>
+                                            {onBtExport()}
+                                        </ExcelFile>
+                                    </>
+                                    <button type="button" className="user-btn mr-2" id="resetNFR_listing" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
-                                    <button
+
+                                    {/* <button
                                         id="fetchNFR_btn"
                                         type="button"
-                                        className={'secondary-btn ml-1'}
+                                        className={'secondary-btn ml-1 mr-2'}
                                         title="Fetch"
                                         onClick={openFetchDrawer}
                                         onMouseOver={handleMouse}
                                         onMouseOut={handleMouseOut}
                                     >
                                         <div className={`${isHover ? "swap-hover" : "swap"} mr-0`}></div>
-                                    </button>
+                                    </button> */}
                                 </Col>
 
                             </Row>
@@ -429,17 +591,28 @@ function NfrListing(props) {
                                                 enableBrowserTooltips={true}
                                                 ref={agGridRef}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                onRowSelected={onRowSelect}
                                             >
-                                                {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
-                                                <AgGridColumn field="NfrNumber" headerName="NFR Id" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="ProductCode" headerName='Product Code' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NfrRefNumber" headerName='Nfr Ref. Number' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NfrVersion" headerName='Version/Revision' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="PlantName" headerName='Plant Name' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NumberOfParts" headerName='No. of Parts' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="ApprovedOn" headerName='Approved On' cellRenderer={dateFormater}></AgGridColumn>
+                                                {/* <AgGridColumn field="NfrRefNumber" headerName='Nfr Ref. Number' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
+                                                {/* <AgGridColumn field="CustomerRfqId" headerName="Customer RFQ ID" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
+                                                <AgGridColumn field="CustomerRfqNo" headerName="Customer RFQ No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="CustomerName" headerName="Customer Name" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="CustomerPartNo" headerName="Customer Part No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="ProductCode" headerName='Product Code' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="PlantNameDescription" headerName="Part Description" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="UOM" headerName='UOM' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="Segment" headerName="Segment" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="PlantName" headerName='Plant Name' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="SopDate" headerName="SOP Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn>
+                                                <AgGridColumn field="LastSubmissionDate" headerName="Last Submission Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn>
+                                                <AgGridColumn field="AttachmentPresent" headerName="Attachment Present" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="CreatedBy" headerName="Created By" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="CreatedDate" headerName="Created Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" cellClass="text-center" headerName="Status" headerClass="justify-content-center" minWidth={170} cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
-                                                {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                {<AgGridColumn field="Status" minWidth={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+
+                                                {/* <AgGridColumn field="NumberOfParts" headerName='No. of Parts' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="ApprovedOn" headerName='Approved On' minWidth={150} cellRenderer={dateFormater}></AgGridColumn> */}
                                             </AgGridReact >
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div >
@@ -480,6 +653,7 @@ function NfrListing(props) {
                 anchor={"right"}
                 isEditFlag={isEdit}
                 nfrId={nfrId}
+                isViewFlag={isViewMode}
                 closeDrawer={closeNFRDrawer}
                 nfrDataFromAdd={props?.location?.state}
                 isFromDiscount={props?.isFromDiscount}
