@@ -557,7 +557,7 @@ function ExtraCost(props) {
                                         }
                                         <Col md={3} className={'px-2'}>
                                             <TooltipCustom
-                                                id="cost-field-container"
+                                                id="cost-by-percent"
                                                 disabledIcon
                                                 tooltipText={
                                                     <div style={{ width: "280px" }}>
