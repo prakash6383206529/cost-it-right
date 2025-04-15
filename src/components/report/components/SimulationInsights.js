@@ -52,7 +52,7 @@ function SimulationInsights(props) {
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [dataCount, setDataCount] = useState(0)
   const { costingHeadFilter } = useSelector((state) => state?.comman);
-  const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, vendorLabel } = useLabels();
   useEffect(() => {
    
     if (costingHeadFilter && costingHeadFilter?.data) {
@@ -258,6 +258,28 @@ function SimulationInsights(props) {
             arr.push(obj)
             simulationInsightExcel.push(obj1)
 
+          }else if(ele.field === "VendorName"){
+            let obj ={
+              field: "VendorName",
+              headerName: vendorLabel +" Name"
+            }
+            let obj1 = {
+              label: vendorLabel +" Name",
+              value: ele.field
+            }
+            arr.push(obj)
+            simulationInsightExcel.push(obj1)
+          }else if(ele.field === "VendorCode"){
+            let obj ={
+              field: "VendorCode",
+              headerName: vendorLabel +" Code"
+            }
+            let obj1 = {
+              label: vendorLabel +" Code",
+              value: ele.field
+            }
+            arr.push(obj)
+            simulationInsightExcel.push(obj1)
           }
           else {
             let obj1 = {
