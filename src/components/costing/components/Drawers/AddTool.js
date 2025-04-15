@@ -14,6 +14,7 @@ import { CRMHeads } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { fetchCostingHeadsAPI } from '../../../../actions/Common';
 import { useLabels } from '../../../../helper/core';
+import HeaderTitle from '../../../common/HeaderTitle';
 
 function AddTool(props) {
 
@@ -89,7 +90,7 @@ function AddTool(props) {
 
   useEffect(() => {
     calculateAllCosts()
-  }, [fieldValues,state.toolMaintenanceApplicability]);
+  }, [fieldValues,state.toolMaintenanceApplicability,getValues('MaintananceCostApplicability')]);
 
 
   const toggleDrawer = (event, formData = []) => {
@@ -104,21 +105,23 @@ function AddTool(props) {
     const toolCost = checkForNull(getValues('ToolCost'))
     const life = checkForNull(getValues('Life'))
     const maintenancePercentage=checkForNull(getValues('MaintenancePercentage'))
-    const quantity=checkForNull(getValues('Quantity'))
+    const processRunCount=checkForNull(getValues('Quantity'))
+    const partQuantity=checkForNull(getValues('partQuantity'))
+    const costApplicability=checkForNull(getValues('MaintananceCostApplicability'))
     const toolAmortizationCost = toolCost/life
-    const toolInterestCost = (toolCost * interestRatePercent) / 100
+    const toolInterestCost = (toolCost * interestRatePercent * processRunCount * partQuantity) / 100
     const toolInterestCostPerPc = toolInterestCost / life
     let toolMaintenanceCost = 0
     let toolMaintenanceCostPerPc = 0
     if(state.toolMaintenanceApplicability?.label==="Fixed"){
-      toolMaintenanceCost = checkForNull(getValues('ToolMaintenanceCost'))
+      toolMaintenanceCost = costApplicability * processRunCount * maintenancePercentage
       toolMaintenanceCostPerPc = toolMaintenanceCost / life
     }
     else{
-      toolMaintenanceCost = (toolCost * maintenancePercentage) / 100
+      toolMaintenanceCost = (toolCost * maintenancePercentage * processRunCount * partQuantity) / 100
       toolMaintenanceCostPerPc = toolMaintenanceCost / life
     }
-    const totalToolCost = toolAmortizationCost + toolInterestCostPerPc + toolMaintenanceCostPerPc * quantity
+    const totalToolCost = toolAmortizationCost + toolInterestCostPerPc + toolMaintenanceCostPerPc
     setState(prevState => ({ ...prevState, toolAmortizationCost: toolAmortizationCost, toolInterestCost: toolInterestCost, toolInterestCostPerPc: toolInterestCostPerPc, toolMaintenanceCost: toolMaintenanceCost, toolMaintenanceCostPerPc: toolMaintenanceCostPerPc, }))
     setDataToSend(prevState => ({ ...prevState, netToolCost: totalToolCost }))
     setValue('ToolInterestCost', checkForDecimalAndNull(toolInterestCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -470,6 +473,10 @@ function AddTool(props) {
             <form noValidate className="form" onSubmit={handleSubmit(addRow)}>
               <>
                 <Row className="pl-3">
+                <HeaderTitle className="border-bottom"
+                                            title={'Process Details'}
+                                            customClass={'underLine-title'}
+                                        />
                   {
                     getConfigurationKey().IsShowCRMHead && <Col md="4">
                       <SearchableSelectHookForm
@@ -602,6 +609,26 @@ function AddTool(props) {
                       disabled={true}
                     />
                   </Col>
+                  <Col md="4">
+                    <TextFieldHookForm
+                      label="Process Run Count"
+                      name={'Quantity'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.Quantity}
+                      disabled={CostingViewMode}
+                    />
+                  </Col>
                   {/* <Col md="4">
                     <TextFieldHookForm
                       label="Process/Operation Quantity"
@@ -621,6 +648,10 @@ function AddTool(props) {
                       disabled={true}
                     />
                   </Col> */}
+                  <HeaderTitle className="border-bottom"
+                                            title={'Tool Details'}
+                                            customClass={'underLine-title'}
+                                        />
                   <Col md="4">
                     <SearchableSelectHookForm
                       label={'Tool Category'}
@@ -661,26 +692,7 @@ function AddTool(props) {
                     />
                   </Col>
 
-                  <Col md="4">
-                    <TextFieldHookForm
-                      label="Quantity"
-                      name={'Quantity'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.Quantity}
-                      disabled={CostingViewMode}
-                    />
-                  </Col>
+                  
 
                   <Col md="4">
                     <TextFieldHookForm
@@ -784,7 +796,8 @@ function AddTool(props) {
                           errors={errors.MaintenancePercentage}
                           disabled={CostingViewMode ? true : false}
                         /></Col>
-                          <Col md="4">
+                    </>}
+                    <Col md="4">
                       <TextFieldHookForm
                         label="Cost (Applicability)"
                         name={'MaintananceCostApplicability'}
@@ -798,10 +811,9 @@ function AddTool(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.MaintananceCostApplicability}
-                        disabled={true}
+                        disabled={state.toolMaintenanceApplicability?.label === "Tool Rate" ? true : CostingViewMode}
                       />
                     </Col>
-                    </>}
                     <Col md="4">{state.toolMaintenanceApplicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel}= (Maintenance Cost (%) * Cost(Applicability) / 100)`} />}
                     <TextFieldHookForm
                       label={toolMaintenanceCostLabel}
@@ -816,7 +828,7 @@ function AddTool(props) {
                       customClassName={'withBorder'}
                       handleChange={(e) => {}}
                       errors={errors && errors.ToolMaintenanceCost}
-                      disabled={state.toolMaintenanceApplicability?.label === "Tool Rate" ? true : CostingViewMode}
+                      disabled={true}
                     />
                   </Col>
                   <Col md="4">{state.toolMaintenanceApplicability !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence-per-pc"} tooltipText={`${toolMaintenanceCostPerPcLabel}= (${toolMaintenanceCostLabel} / Amortization Quantity (Tool Life) `} />}
