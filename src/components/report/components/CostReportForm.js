@@ -842,7 +842,7 @@ function CostReportForm(props) {
                             {customerPoamSummary && <AgGridColumn field="productCategory" headerName="Product Category"></AgGridColumn>}
                             {<AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>}
                             {!customerPoamSummary && <AgGridColumn field="ShowRevisionNumber" headerName="Revision No."></AgGridColumn>}
-                            {(!customerPoamSummary && showVendor) && <AgGridColumn field="Vendor" headerName="Vendor (Code)"></AgGridColumn>}
+                            {(!customerPoamSummary && showVendor) && <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
                             {<AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>}
                             {(!showVendor || customerPoamSummary) && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                             {<AgGridColumn field="action" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>}

@@ -22,7 +22,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { allEqual, applyEditCondSimulation, checkForNull, checkPermission, getConfigurationKey, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
+import { allEqual, applyEditCondSimulation, checkForNull, checkPermission, getConfigurationKey, getFilteredData, getLocalizedCostingHeadValue, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
@@ -123,7 +123,7 @@ function Simulation(props) {
     const [plant, setPlant] = useState('')
     const [type, setType] = useState('')
     const [rawMaterialIds, setRawMaterialIds] = useState([])
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     const dispatch = useDispatch()
     const [applicabilityMasterId, setApplicabilityMasterId] = useState(findApplicabilityMasterId(masterList, simulationApplicability?.value) ?? null)
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -979,8 +979,10 @@ function Simulation(props) {
 
         if (label === 'CostingHead') {
             selectListCostingHead && selectListCostingHead?.map((item) => {
-                if (item?.CostingHeadId === VBCTypeId || item?.CostingHeadId === ZBCTypeId ||
-                    item?.CostingHeadId === CBCTypeId) temp.push({ label: item.CostingHead, value: item.CostingHeadId })
+                if (item?.CostingHeadId === VBCTypeId || item?.CostingHeadId === ZBCTypeId || item?.CostingHeadId === CBCTypeId) {
+                        const localizedLabel =  getLocalizedCostingHeadValue(item.CostingHead, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+                        temp.push({ label: localizedLabel || item.CostingHead, value: item.CostingHeadId }) 
+                    }
                 return null
             })
 

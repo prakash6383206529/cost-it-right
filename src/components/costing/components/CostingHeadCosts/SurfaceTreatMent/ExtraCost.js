@@ -570,7 +570,7 @@ function ExtraCost(props) {
                                             <TextFieldHookForm
                                                 label={`Cost`}
                                                 name={'NetCost'}
-                                                id={'cost-by-percent'}
+                                                id="cost-field-container"
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
