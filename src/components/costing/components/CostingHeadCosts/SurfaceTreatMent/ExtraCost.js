@@ -557,7 +557,7 @@ function ExtraCost(props) {
                                         }
                                         <Col md={3} className={'px-2'}>
                                             <TooltipCustom
-                                                id="cost-by-percent"
+                                                id="NetCost"
                                                 disabledIcon
                                                 tooltipText={
                                                     <div style={{ width: "280px" }}>
@@ -570,7 +570,7 @@ function ExtraCost(props) {
                                             <TextFieldHookForm
                                                 label={`Cost`}
                                                 name={'NetCost'}
-                                                id={'cost-by-percent'}
+                                                id={'NetCost'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
