@@ -9,14 +9,16 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 
 function ViewBOP(props) {
   const { viewBOPData, isPDFShow } = props
-  const { BOPData, bopPHandlingCharges, bopHandlingPercentage, bopHandlingChargeType, childPartBOPHandlingCharges, IsAssemblyCosting, partType } = viewBOPData
+ const { BOPData, bopPHandlingCharges, bopHandlingPercentage, bopHandlingChargeType, childPartBOPHandlingCharges, IsAssemblyCosting, partType } = viewBOPData || {}
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
   useEffect(() => {
-    setviewBOPCost(BOPData)
-  }, [])
+    if (BOPData) {
+      setviewBOPCost(BOPData)
+    }
+  }, [BOPData])
   /**
    * @method toggleDrawer
    * @description closing drawer
