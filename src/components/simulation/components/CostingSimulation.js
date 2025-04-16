@@ -1350,8 +1350,42 @@ function CostingSimulation(props) {
                 tempData = hideMultipleColumnFromExcel(tempData, ['CustomerName', 'VendorName'])
             }
         }
+        // Process labels to replace "Vendor" with "Supplier"
+        tempData = tempData.map(item => {
+            if (item.label && typeof item.label === 'string' && item.label.includes('Vendor')) {
+                let updatedLabel = getLocalizedCostingHeadValue(
+                    item.label,
+                    vendorBasedLabel,
+                    zeroBasedLabel,
+                    customerBasedLabel
+                );
+                if (updatedLabel === item.label) {
+                    updatedLabel = item.label.replace(/Vendor/g, vendorLabel);
+                }
+
+                item.label = updatedLabel;
+            }
+            return item;
+        });
+
         let temp = []
         temp = SimulationUtils(TempData)    // common function 
+        temp.forEach(row => {
+            for (const key in row) {
+                if (typeof row[key] === 'string' && row[key].includes('Vendor')) {
+                    // Use common function to get the localized value
+                    row[key] = getLocalizedCostingHeadValue(
+                        row[key],
+                        vendorBasedLabel,
+                        zeroBasedLabel,
+                        customerBasedLabel
+                    );
+                    if (row[key].includes('Vendor')) {
+                        row[key] = row[key].replace(/Vendor/g, vendorLabel);
+                    }
+                }
+            }
+        });
         return (
             <ExcelSheet data={temp} name={'Costing'}>
                 {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}

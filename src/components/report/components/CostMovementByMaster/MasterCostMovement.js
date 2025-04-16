@@ -519,7 +519,7 @@ function MasterCostMovement() {
                             let displayText = getLocalizedCostingHeadValue(item.Text, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
                             // If the common function didn't change the text (meaning it wasn't an exact match) and the text contains "Vendor", perform a manual replacement
                             if (displayText === item.Text && typeof item.Text === 'string' && item.Text.includes('Vendor')) {
-                                displayText = item.Text.replace(/Vendor/g, 'Supplier');
+                                displayText = item.Text.replace(/Vendor/g, vendorLabel);
                             }
                             temp.push({ label: displayText, value: item.Value });
                         }
