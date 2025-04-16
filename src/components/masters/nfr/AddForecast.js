@@ -3,13 +3,15 @@ import { Row, Col, Container } from 'reactstrap';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { Controller } from 'react-hook-form';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
-import { number } from '../../../helper';
+import { checkForNull, number } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
 import { Drawer } from '@material-ui/core'
 import DatePicker from 'react-datepicker'
 import HeaderTitle from '../../common/HeaderTitle'
 import DayTime from '../../common/DayTimeWrapper';
+import _ from 'lodash';
+import Toaster from '../../common/Toaster';
 
 function AddForecast(props) {
     const {
@@ -28,30 +30,11 @@ function AddForecast(props) {
         fiveyearList,
         setFiveyearList,
         AssemblyPartNumber,
+        isEditFlag,
         sopQuantityList,
         setSopQuantityList
     } = props;
 
-    const [gridApi, setGridApi] = useState(null);
-    const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [list, setList] = useState([])
-    // Update part numbers when AssemblyPartNumber changes
-    useEffect(() => {
-        updatePartNumbers();
-    }, [AssemblyPartNumber, sopQuantityList.length]);
-
-    // Helper function to update part numbers
-    const updatePartNumbers = () => {
-        if (AssemblyPartNumber && sopQuantityList.length > 0) {
-            const updatedList = sopQuantityList.map(item => ({
-                ...item,
-                PartNumber: AssemblyPartNumber.label || AssemblyPartNumber
-            }));
-            // Don't update the sopQuantityList state here
-            // This will now only be updated when the save button is clicked
-            setList(updatedList);
-        }
-    };
 
     // Grid configuration
     const defaultColDef = {
@@ -74,17 +57,40 @@ function AddForecast(props) {
         return params.value || '-';
     };
 
-    const afcFormatter = (params) => {
+    const beforeSaveCell = (props) => {
+        let cellValue = props
+        if (cellValue === undefined || cellValue === '') {
+            return 0
+        }
+        const numValue = Number(cellValue)
+        if (isNaN(numValue) || numValue < 0) {
+            Toaster.warning('Please enter a valid positive number.');
+            return 0
+        }
+        return numValue
+    }
+
+    const afcFormatter = (props) => {
+        let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
+        const cell = props?.value;
+        
+        const validatedValue = beforeSaveCell(cell)
+        
+        if (props?.node?.data) {
+            props.node.data.Quantity = validatedValue
+            setSopQuantityList(final)
+        }
+
+        let isEnable = isEditFlag ? true : isViewFlag ? false : true
+
         return (
-            <input
-                type="text"
-                value={params.value || ''}
-                onChange={(e) => handleQuantityChange(e, params.rowIndex)}
-                disabled={isViewFlag}
-                className="form-control"
-            />
-        );
-    };
+            <>
+                {<span className={`form-control custom-max-width-110px ${isEnable ? '' : 'disabled'}`}>
+                    {validatedValue}
+                </span>}
+            </>
+        )
+    }
 
     // Grid components
     const frameworkComponents = {
@@ -95,30 +101,13 @@ function AddForecast(props) {
     };
 
     // Event handlers
-    const handleQuantityChange = (event, index) => {
-        const newValue = event.target.value;
-        if (number(newValue)) {
-            const updatedList = [...sopQuantityList];
-            updatedList[index] = {
-                ...updatedList[index],
-                Quantity: newValue
-            };
-            setList(updatedList);
-        }
-    };
-
-    const handleSave = () => {
-        if (sopDate && AssemblyPartNumber) {
-            closeDrawer(true, list);
+    const handleSave = (isSave) => {
+        if (isSave) {
+            closeDrawer(true, sopQuantityList);
         } else {
-            closeDrawer(false);
+            closeDrawer(false, sopQuantityList);
         }
     };
-
-    const handleCancel = () => {
-        closeDrawer(false);
-    };
-
 
     return (
         <div>
@@ -195,7 +184,6 @@ function AddForecast(props) {
                                                                     width={"230px"}
                                                                     field="Quantity"
                                                                     headerName="Annual Forecast Quantity"
-                                                                    onCellEditingStarted={handleQuantityChange}
                                                                     cellRenderer={'afcFormatter'}
                                                                     editable={EditableCallback}
                                                                     colId="Quantity"
@@ -216,14 +204,14 @@ function AddForecast(props) {
                         <button
                             type={'button'}
                             className="reset cancel-btn mr15"
-                            onClick={handleCancel}
+                            onClick={() => handleSave(false)}
                         >
                             <div className={'cancel-icon'}></div> {'Cancel'}
                         </button>
                         <button
                             type={'button'}
                             className="submit-button save-btn"
-                            onClick={handleSave}
+                            onClick={() => handleSave(true)}
                             disabled={props.ViewMode || props?.disabled}
                         >
                             <div className={"save-icon"}></div>

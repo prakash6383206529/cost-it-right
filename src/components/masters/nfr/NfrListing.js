@@ -32,6 +32,7 @@ import ReactExport from "react-export-excel";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash';
 import { NFR_LISTING_DOWNLOAD_EXCEL } from '../../../config/masterData';
+import { filterParams } from '../../common/DateFilter';
 // import { ExcelFile } from 'react-excel';
 const ExcelFile = ReactExport.ExcelFile;
 
@@ -189,17 +190,18 @@ function NfrListing(props) {
     * @description delete Item Details
     */
     const deleteItemDetails = (rowData = {}) => {
-        dispatch(deleteNFRDetailAPI(rowData?.NfrId, loggedInUserId(), (res) => {
-            if (res?.data?.Result) {
-                getDataList()
-                Toaster.success("NFR deleted successfully.")
-            }
-        }))
+        setConfirmPopup(true)
+        setSelectedRowData(rowData)
     }
 
-
     const onPopupConfirm = () => {
-
+        dispatch(deleteNFRDetailAPI(selectedRowData?.NfrId, loggedInUserId(), (res) => {
+            if (res?.data?.Result) {
+                getDataList()
+                Toaster.success("Customer RFQ deleted successfully.")
+                setConfirmPopup(false)
+            }
+        }))
     }
 
     const closePopUp = () => {
@@ -216,7 +218,9 @@ function NfrListing(props) {
 
         return (
             <>
+                <button className="Add-file mr-1" id="nfr_AddCosting" type={"button"} title={`Add Costing`} />
                 {<button title='View' className="View mr-1" id="viewNfr_list" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                <button className="Edit mr-1" id="nfr_EditCosting" type={"button"} title={"Edit Details"}  />
                 {<button title='Delete' className="Delete mr-1" id="deleteNfr_list" type={'button'} onClick={() => deleteItemDetails(rowData)} />}
             </>
         )
@@ -362,6 +366,15 @@ function NfrListing(props) {
         return thisIsFirstColumn;
     };
 
+    const effectiveDateFormatter = (props) => {
+        if (showExtraData) {
+            return "Lorem Ipsum";
+        } else {
+            const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+            return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+        }
+    }
+
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -379,6 +392,7 @@ function NfrListing(props) {
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
         dateFormater: dateFormater,
+        effectiveDateRenderer: effectiveDateFormatter,
         valuesFloatingFilter: SingleDropdownFloationFilter,
         customNoRowsOverlay: NoContentFound,
     }
@@ -415,13 +429,13 @@ function NfrListing(props) {
         let selectedRowForPagination = reactLocalStorage.getObject('selectedRow')?.selectedRow || [];
         var selectedRows = gridApi.getSelectedRows();
 
-        if (selectedRows === undefined || selectedRows === null) {  
+        if (selectedRows === undefined || selectedRows === null) {
             selectedRows = selectedRowForPagination;
-        } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {   
+        } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {
             let finalData = [];
-            if (event.node.isSelected() === false) {    
+            if (event.node.isSelected() === false) {
                 for (let i = 0; i < selectedRowForPagination.length; i++) {
-                    if (selectedRowForPagination[i].NfrId === event.data.NfrId) {     
+                    if (selectedRowForPagination[i].NfrId === event.data.NfrId) {
                         continue;
                     }
                     finalData.push(selectedRowForPagination[i]);
@@ -432,8 +446,8 @@ function NfrListing(props) {
             selectedRows = [...selectedRows, ...finalData];
         }
 
-        let uniqeArray = _.uniqBy(selectedRows, "NfrId");          
-        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }); 
+        let uniqeArray = _.uniqBy(selectedRows, "NfrId");
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray });
 
         const newDataCount = uniqeArray.length;
         setDataCount(newDataCount);
@@ -603,11 +617,13 @@ function NfrListing(props) {
                                                 <AgGridColumn field="UOM" headerName='UOM' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="Segment" headerName="Segment" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant Name' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="SopDate" headerName="SOP Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn>
-                                                <AgGridColumn field="LastSubmissionDate" headerName="Last Submission Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn>
-                                                <AgGridColumn field="AttachmentPresent" headerName="Attachment Present" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="ZBCSubmissionDate" headerName="ZBC Submission Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridColumn field="QuotationSubmissionDate" headerName="Quotation Submission Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridColumn field="SopDate" headerName="SOP Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                {/* <AgGridColumn field="LastSubmissionDate" headerName="Last Submission Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn> */}
+                                                {/* <AgGridColumn field="AttachmentPresent" headerName="Attachment Present" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
                                                 <AgGridColumn field="CreatedBy" headerName="Created By" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="CreatedDate" headerName="Created Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn>
+                                                <AgGridColumn field="CreatedDate" headerName="Created Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" cellClass="text-center" headerName="Status" headerClass="justify-content-center" minWidth={170} cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
                                                 {<AgGridColumn field="Status" minWidth={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 

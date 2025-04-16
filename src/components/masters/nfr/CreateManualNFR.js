@@ -424,12 +424,10 @@ function CreateManualNFR(props) {
     }
 
     const handlePartChange = (newValue) => {
-        console.log("newValue", newValue)
         setSelectedPart(newValue)
         if (newValue && newValue !== '') {
             dispatch(getPartInfo(newValue.value, (res) => {
                 let Data = res.data.Data
-                console.log("Data", Data)
                 setValue('PartName', Data?.PartName ? Data.PartName : '')
                 setValue('Description', Data?.Description ? Data.Description : '')
                 setValue('UnitOfMeasurement', Data?.UnitOfMeasurement ? Data.UnitOfMeasurement : '')
@@ -687,12 +685,10 @@ function CreateManualNFR(props) {
 
     const addDetails = (dataItem, indexInside, indexOuter) => {
         // Implement add details functionality
-        console.log('Add details clicked', { dataItem, indexInside, indexOuter });
     };
 
     const deleteRowItem = (index) => {
         // Implement delete row item functionality
-        console.log('Delete row item clicked', index);
     };
 
     const addRMDetails = (index) => {
@@ -702,10 +698,8 @@ function CreateManualNFR(props) {
 
     const openAndCloseDrawer = (isSave, dataList = []) => {
         setOpenAddRMDetails(false)
-        if (isSave === true) {
-            if (dataList && dataList.length > 0) {
-                setSopQuantityList(dataList);
-            }
+        if (isSave === true && dataList && dataList.length > 0) {
+            setSopQuantityList([...dataList]);
         }
         setOpenAddForecast(false)
     }
@@ -745,7 +739,6 @@ function CreateManualNFR(props) {
     }
 
     const onSubmit = (values) => {
-        console.log("values", values)
 
         let requestObj = {
             "CustomerRFQNo": values?.CustomerRFQNo,
@@ -762,24 +755,15 @@ function CreateManualNFR(props) {
             "SOPQuantity": values?.fiveyearList,
             "Files": files
         }
-        console.log("requestObj", requestObj)
-        if (!files || files.length === 0) {
-            Toaster.warning("Please upload at least one attachment file.");
-            return;
-        }
         dispatch(createNFRBOMDetails(requestObj, (res) => {
             if (res?.data?.Result) {
-                Toaster.success("NFR created successfully.")
+                Toaster.success("Customer RFQ created successfully.")
             }
             cancel(true)
         }))
     }
 
-    const EditableCallback = (props) => {
-        let value
-        value = isViewFlag ? false : true
-        return value
-    }
+
 
     return (
         <>
@@ -985,10 +969,10 @@ function CreateManualNFR(props) {
                                             <Col md="3">
                                                 <div className="form-group">
 
-                                                    <label>ZBC Submission Date <span className="asterisk-required">*</span></label>
+                                                    <label>ZBC Submission Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
-                                                            name="ZBCDate"
+                                                            name="ZBC Submission Date"
                                                             id="AddNFR_ZBC_Date"
                                                             selected={DayTime(zbcDate).isValid() ? new Date(zbcDate) : ''}
                                                             onChange={handleZBCDateChange}
@@ -1012,10 +996,10 @@ function CreateManualNFR(props) {
                                             <Col md="3">
                                                 <div className="form-group">
 
-                                                    <label>CBC Submission Date <span className="asterisk-required">*</span></label>
+                                                    <label>CBC Submission Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
-                                                            name="CBCDate"
+                                                            name="Quotation Submission Date"
                                                             id="AddNFR_CBC_Date"
                                                             selected={DayTime(cbcDate).isValid() ? new Date(cbcDate) : ''}
                                                             onChange={handleCBCDateChange}
@@ -1038,7 +1022,7 @@ function CreateManualNFR(props) {
                                             </Col>
                                             <Col md="3">
                                                 <div className="form-group">
-                                                    <label>SOP Date <span className="asterisk-required">*</span></label>
+                                                    <label>SOP Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="sopDate"
@@ -1066,18 +1050,22 @@ function CreateManualNFR(props) {
                                             <button 
                                                 id="AddNFR_AddForecast" 
                                                 className="user-btn mt-30 ml-3" 
-                                                onClick={() => setOpenAddForecast(true)} 
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setOpenAddForecast(true);
+                                                }} 
+                                                type="button"
                                                 disabled={!sopDate || !selectedPart}
                                             >
-                                                {sopQuantityList?.some(item => item?.Quantity !== 0) ? <div className="view mr-2"></div> : <div className="plus"></div>}
-                                                {sopQuantityList?.some(item => item?.Quantity !== 0) ? "View Forecast" : "ADD Forecast"}
+                                                {sopQuantityList?.some(item => parseInt(item?.Quantity) !== 0) ? <div className="view mr-2"></div> : <div className="plus"></div>}
+                                                {sopQuantityList?.some(item => parseInt(item?.Quantity) !== 0) ? "View Forecast" : "ADD Forecast"}
                                             </button>
                                         </Row>
                                         <Row>
                                             <HeaderTitle title={'Attachment:'} customClass="mt-3" />
                                             <Col md="6" className="height152-label">
                                                 {/* <TooltipCustom id="uploadFile" tooltipText="Upload upto 4 file, size of each file upto 20MB" /> */}
-                                                <label>Upload Attachment (upload up to 4 files) <span className="asterisk-required"> *</span>  <AttachmentValidationInfo /> </label>
+                                                <label>Upload Attachment (upload up to 4 files) <AttachmentValidationInfo /> </label>
                                                 <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                                     Maximum file upload limit has been reached.
                                                 </div>
@@ -1147,7 +1135,7 @@ function CreateManualNFR(props) {
                                         </Row>
 
                                         {/* Add the table here */}
-                                        {data?.NfrId && (
+                                        {data?.NfrId && isViewFlag && (
                                             <>
                                                 <HeaderTitle title={'Quotation Details:'} customClass="mt-3" />
                                                 <div className="table-responsive">
@@ -1190,7 +1178,7 @@ function CreateManualNFR(props) {
                                                                                         } : ''}
                                                                                         options={[
                                                                                             { label: "Zero Based", value: "Zero Based" },
-                                                                                            { label: "Vendor Based", value: "Vendor Based" }
+                                                                                            { label: "Customer Based", value: "Customer Based" }
                                                                                         ]}
                                                                                         handleChange={(newValue) => handleCostingHeadChange(newValue, indexOuter, indexInside)}
                                                                                     />
@@ -1217,11 +1205,11 @@ function CreateManualNFR(props) {
 
                                                                                 <td> <div className=''>
                                                                                     {/* {item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)} */}
-                                                                                    <button className="Add-file ml-2" id="nfr_AddCosting" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexInside, indexOuter)} />
+                                                                                    {/* <button className="Add-file ml-2" id="nfr_AddCosting" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexInside, indexOuter)} /> */}
                                                                                     <button className="View ml-2" type={"button"} id="nfr_ViewCosting" title={"View Costing"} onClick={() => viewDetails(indexInside)} />
-                                                                                    <button className="Edit ml-2" id="nfr_EditCosting" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />
+                                                                                    {/* <button className="Edit ml-2" id="nfr_EditCosting" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} /> */}
                                                                                     <button className="Copy All ml-2" id="nfr_CopyCosting" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />
-                                                                                    <button className="Delete All ml-2" title={"Delete Costing"} id="nfr_DeleteCosting" type={"button"} onClick={() => deleteTableItem(dataItem, indexInside, indexOuter)} />
+                                                                                    {/* <button className="Delete All ml-2" title={"Delete Costing"} id="nfr_DeleteCosting" type={"button"} onClick={() => deleteTableItem(dataItem, indexInside, indexOuter)} /> */}
                                                                                     {/* <button title='Discard' id="nfr_DiscardCosting" className="CancelIcon ml-2" type={'button'} onClick={() => deleteRowItem(indexInside)} /> */}
                                                                                     {/* {(item?.isShowCreateCostingButton === true && dataItem?.SelectedCostingVersion && dataItem?.SelectedCostingVersion?.StatusId === DRAFTID) &&
                                                                                         <>
@@ -1301,7 +1289,7 @@ function CreateManualNFR(props) {
                     errors={errors}
                     gridOptionsPart={gridOptionsPart}
                     onGridReady={onGridReady}
-                    EditableCallback={EditableCallback}
+                    EditableCallback={!isViewFlag}
                     fiveyearList={fiveyearList}
                     setFiveyearList={setFiveyearList}
                     AssemblyPartNumber={selectedPart}
