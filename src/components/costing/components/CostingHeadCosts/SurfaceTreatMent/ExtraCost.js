@@ -557,11 +557,11 @@ function ExtraCost(props) {
                                         }
                                         <Col md={3} className={'px-2'}>
                                             <TooltipCustom
-                                                id="cost-field-container"
+                                                id="NetCost"
                                                 disabledIcon
                                                 tooltipText={
-                                                    <div style={{ width: "280px" }}>
-                                                        <strong>Cost is calculated based on the selected type:</strong><br />
+                                                    <div>
+                                                       Cost is calculated based on the selected type:<br />
                                                         • For Percentage: (Applicability Cost × Percentage ÷ 100)<br />
                                                         • For Hanger Overhead: (Rate ÷ Quantity)
                                                     </div>
@@ -570,7 +570,7 @@ function ExtraCost(props) {
                                             <TextFieldHookForm
                                                 label={`Cost`}
                                                 name={'NetCost'}
-                                                id="cost-field-container"
+                                                id="NetCost"
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}

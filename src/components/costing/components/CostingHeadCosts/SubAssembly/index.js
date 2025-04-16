@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getCostingLabourDetails, getRMCCTabData, openCloseStatus, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData } from '../../../actions/Costing';
+import { getCostingBopAndBopHandlingDetails, getCostingLabourDetails, getRMCCTabData, openCloseStatus, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId, showBopLabel, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { CostingStatusContext, IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
@@ -16,10 +16,10 @@ import { useEffect } from 'react';
 import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
 import { createToprowObjAndSave } from '../../../CostingUtil';
 import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
+import ViewBOP from '../../Drawers/ViewBOP';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
-
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
@@ -32,13 +32,15 @@ function AssemblyPart(props) {
   const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
   const [isProcessDrawerOpen, setIsProcessDrawerOpen] = useState(false)
   const [itemInState, setItemInState] = useState({})
+  const[viewBopDrawer, setViewBopDrawer] = useState(false)
   const [counter, setCounter] = useState(0)
+  const [bopAndBopHandlingDetails, setBopAndBopHandlingDetails] = useState([])
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const isPartType = useContext(IsPartType);
-
+  
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
   const { DiscountCostData, CostingEffectiveDate, bomLevel, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, getAssemBOPCharge, openAllTabs, currencySource, exchangeRateData } = useSelector(state => state.costing)
@@ -298,6 +300,37 @@ function AssemblyPart(props) {
     IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   }
 
+  const handleViewBopClick = () => {
+    if (item.PartType !== 'Assembly' || item.BOMLevel !== 'L0') {
+      return;
+    }
+    
+    const apiParams = {
+      costingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
+      subAssemblyCostingId: item.SubAssemblyCostingId ? item.SubAssemblyCostingId : (item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000"),
+      assemblyCostingId: item.AssemblyCostingId !== null ? item.AssemblyCostingId : "00000000-0000-0000-0000-000000000000",
+      loggedInUserId: loggedInUserId()
+    };
+    
+    dispatch(getCostingBopAndBopHandlingDetails(apiParams, (res) => {
+      
+      if (res?.data?.Data) {
+        // Process the data to match the expected format for ViewBOP component
+        const processedData = {
+          BOPData: res?.data?.Data?.CostingBoughtOutPartCost || [],
+          bopPHandlingCharges: res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.[0]?.BOPHandlingCharges || 0,
+          bopHandlingPercentage: res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.[0]?.BOPHandlingPercentage || 0,
+          bopHandlingChargeType: res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.[0]?.BOPHandlingChargeType || '',
+          childPartBOPHandlingCharges: res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.filter(item => item.IsChildPart) || [],
+          IsAssemblyCosting: true,
+          
+        };
+        setBopAndBopHandlingDetails(processedData);
+        setViewBopDrawer(true);
+      }
+    }))
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -317,7 +350,17 @@ function AssemblyPart(props) {
           <td>{item && item?.BOMLevel}</td>
           <td>{item && item?.PartType}</td>
           <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-          <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>
+            {item?.PartType === 'Assembly' && item?.BOMLevel === 'L0' ? (
+              <span className='link' onClick={handleViewBopClick} title={`View ${showBopLabel()} Cost`}>
+                {item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}
+              </span>
+            ) : (
+              <span>
+                {item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}
+              </span>
+            )}
+          </td>
           <td>
             {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
             {(item?.CostingPartDetails?.TotalOperationCostPerAssembly || item?.CostingPartDetails?.TotalProcessCostPerAssembly ||
@@ -461,6 +504,14 @@ function AssemblyPart(props) {
             itemInState={itemInState}
           />
         )
+      }
+      {
+        viewBopDrawer && <ViewBOP
+          isOpen={viewBopDrawer}
+          viewBOPData={bopAndBopHandlingDetails}
+          closeDrawer={() => setViewBopDrawer(false)}
+          anchor={'right'}
+        />
       }
     </ >
   );

@@ -622,6 +622,7 @@ export const API = {
   getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
   saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
   getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
+  getCostingBopAndBopHandlingDetails: `${BASE_URL}/costing/get-costing-bop-and-bop-handling-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -3392,7 +3393,7 @@ export const PAINTTECHNOLOGY = 31
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V4.2.11";
+export const VERSION = "V4.2.12";
 
 
 
