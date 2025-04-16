@@ -173,7 +173,7 @@ function FreightCalculator(props) {
         const costingId = props.simulationMode ? rowObjData?.CostingId : tempData?.costingId
         let calculatorId = FreightCalculationId
         let freightDetailId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.FreightDetailId : null
-
+        
         if (props.simulationMode && String(tempData?.CostingHeading) === String("New Costing") && (Number(tempData?.SimulationStatusId) === Number(REJECTEDID) || Number(tempData?.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData?.SimulationStatusId) === Number(AWAITING_APPROVAL_ID)) && FreightCalculationId === null) {
             setState(prevState => ({
                 ...prevState,
@@ -213,16 +213,18 @@ function FreightCalculator(props) {
         defaultValue: []
     })
     useEffect(() => {
-        if (!CostingViewMode) {
-            calculateTotalCost()
-            if (state?.binAlignment) {
-                calculateBinsAndTrolleys('bin', state?.binAlignment)
+        setTimeout(() => {
+            if (!CostingViewMode) {
+                calculateTotalCost()
+                if (state?.binAlignment) {
+                    calculateBinsAndTrolleys('bin', state?.binAlignment)
+                }
+                if (state?.trolleyAlignment) {
+                    calculateBinsAndTrolleys('trolley', state?.trolleyAlignment)
+                }
             }
-            if (state?.trolleyAlignment) {
-                calculateBinsAndTrolleys('trolley', state?.trolleyAlignment)
-            }
-        }
-    }, [state.noOfBins, state.totalNoOfBins, calclulationFieldValues, state.noOfTrolleys, state.binAlignment, state.trolleyAlignment])
+        }, 100);
+    }, [state.noOfBins, state.totalNoOfBins, state.noOfTrolleys, state.binAlignment, state.trolleyAlignment]);
 
     const setFormValues = (data) => {
         setValue('CarrierType', data?.CarrierType ? { label: data?.CarrierType, value: data?.CarrierTypeId } : [])
@@ -375,7 +377,7 @@ function FreightCalculator(props) {
                     noOfBins = parseInt(truckLength / binLength) * parseInt(truckBreadth / binBreadth) * parseInt(truckHeight / binHeight)
                 }
                 // Calculate total bins based on trolleys and bins per trolley
-                totalNoOfBins = state.noOfTrolleys * noOfBinsPerTrolley
+                totalNoOfBins = checkForNull(state.noOfTrolleys) * checkForNull(noOfBinsPerTrolley)
                 setValue('NoOfBins', checkForDecimalAndNull(noOfBins, NoOfDecimalForInputOutput))
                 setValue('NoOfBinsPerTrolley', checkForDecimalAndNull(noOfBinsPerTrolley, NoOfDecimalForInputOutput))
                 setValue('TotalNoOfBins', checkForDecimalAndNull(totalNoOfBins, NoOfDecimalForInputOutput))
@@ -400,7 +402,7 @@ function FreightCalculator(props) {
                 }
 
                 // Calculate total bins based on trolleys and bins per trolley
-                totalNoOfBins = noOfTrolleys * noOfBinsPerTrolley
+                totalNoOfBins = checkForNull(noOfTrolleys) * checkForNull(noOfBinsPerTrolley)
                 setValue('NoOfTrolleys', checkForDecimalAndNull(noOfTrolleys, NoOfDecimalForInputOutput))
                 setValue('NoOfBinsPerTrolley', checkForDecimalAndNull(noOfBinsPerTrolley, NoOfDecimalForInputOutput))
                 setValue('TotalNoOfBins', checkForDecimalAndNull(totalNoOfBins, NoOfDecimalForInputOutput))
@@ -422,7 +424,13 @@ function FreightCalculator(props) {
         const noOfComponentsPerBinOrTrolley = checkForNull(noOfComponentsPerCrate)
         const totalNoOfBins = state?.carrierType?.label === 'Bin And Trolley' ? checkForNull(state.totalNoOfBins) : state?.carrierType?.label === 'Bin' ? checkForNull(state.noOfBins) : checkForNull(state.noOfTrolleys)
         const noOfbinOrTrolleypertruck = checkForNull(totalNoOfBins * utilization) / 100
-        const totalCost = rate / (noOfComponentsPerBinOrTrolley * noOfbinOrTrolleypertruck)
+        // Calculate the denominator
+        const denominator = checkForNull(noOfComponentsPerBinOrTrolley * noOfbinOrTrolleypertruck)
+        // Check if denominator is zero to avoid division by zero
+        let totalCost = 0
+        if (denominator > 0) {
+            totalCost = rate / denominator
+        }
         setValue('NoOfBinsRequiredPerVehicle', checkForDecimalAndNull(noOfbinOrTrolleypertruck, NoOfDecimalForInputOutput))
         setValue('TotalCost', checkForDecimalAndNull(totalCost, NoOfDecimalForPrice))
         setState(prevState => ({

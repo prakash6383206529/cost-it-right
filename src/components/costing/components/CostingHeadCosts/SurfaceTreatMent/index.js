@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
-import { ASSEMBLY, ASSEMBLYNAME, HANGER, LEVEL0, PAINT, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT, WACTypeId } from '../../../../../config/constants';
+import { ASSEMBLY, ASSEMBLYNAME, CC, HANGER, LEVEL0, PAINT, RM, RMCC, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { PreviousTabData } from '../../CostingHeaderTabs';
 import Hanger from './Hanger';
@@ -420,6 +420,18 @@ function SurfaceTreatment(props) {
         } else if (item.CostingConditionNumber === PAINT) {
           item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
           item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
+        } else if (item.CostingConditionNumber === RMCC) {
+          const rmcc = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost)+checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
+          item.ApplicabiltyCost = checkForNull(rmcc)
+          item.TransportationCost = calculatePercentageValue(checkForNull(rmcc), item?.Rate)
+        }else if(item.CostingConditionNumber === RM){
+          
+          item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost          )
+          item.TransportationCost = calculatePercentageValue(checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost), item?.Rate)
+        }else if(item.CostingConditionNumber === CC){
+          
+          item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
+          item.TransportationCost = calculatePercentageValue(checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost), item?.Rate)
         }
       }
     })
