@@ -17,7 +17,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, RAWMATERIALINDEX, RAWMATERIALAPPROVALTYPEID, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, handleDepartmentHeader, showSaLineNumber, showBopLabel, getLocalizedCostingHeadValue } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { checkFinalUser, resetExchangeRateData, setCostingViewData, storePartNumber } from '../../costing/actions/Costing';
@@ -56,7 +56,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
     const { isbulkUpload } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId, simulationId, receiverId, SimulationHeadId, fromDashboard } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
@@ -196,6 +196,26 @@ function SimulationApprovalSummary(props) {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
                     SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId, DivisionId, DepartmentName } = res.data.Data
+                    let localizedData = {...res.data.Data};
+                    if (localizedData.AmendmentDetails) {
+                        if (localizedData.AmendmentDetails.CostingHead) {
+                            localizedData.AmendmentDetails.CostingHead = getLocalizedCostingHeadValue(
+                                localizedData.AmendmentDetails.CostingHead,
+                                vendorBasedLabel,
+                                zeroBasedLabel,
+                                customerBasedLabel
+                            );
+                        }
+                        
+                        if (localizedData.AmendmentDetails.SimulationHead) {
+                            localizedData.AmendmentDetails.SimulationHead = getLocalizedCostingHeadValue(
+                                localizedData.AmendmentDetails.SimulationHead,
+                                vendorBasedLabel,
+                                zeroBasedLabel,
+                                customerBasedLabel
+                            );
+                        }
+                    }
                 setApprovalTypeId(ApprovalTypeId)
                 let uniqueArr
                 setSimulationData(res?.data?.Data)

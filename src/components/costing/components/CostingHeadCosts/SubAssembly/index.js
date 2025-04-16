@@ -313,17 +313,23 @@ function AssemblyPart(props) {
     };
     
     dispatch(getCostingBopAndBopHandlingDetails(apiParams, (res) => {
-      
       if (res?.data?.Data) {
+        // Separate assembly and child parts BOP handling charges
+        const assemblyBOPHandling = res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.find(item => !item?.IsChildPart) || {};
+        const childPartsBOPHandling = res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.filter(item => item?.IsChildPart) || [];
+
         // Process the data to match the expected format for ViewBOP component
         const processedData = {
           BOPData: res?.data?.Data?.CostingBoughtOutPartCost || [],
-          bopPHandlingCharges: res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.[0]?.BOPHandlingCharges || 0,
-          bopHandlingPercentage: res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.[0]?.BOPHandlingPercentage || 0,
-          bopHandlingChargeType: res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.[0]?.BOPHandlingChargeType || '',
-          childPartBOPHandlingCharges: res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.filter(item => item.IsChildPart) || [],
-          IsAssemblyCosting: true,
           
+          // Assembly BOP handling charges
+          bopPHandlingCharges: assemblyBOPHandling?.BOPHandlingCharges || 0,
+          bopHandlingPercentage: assemblyBOPHandling?.BOPHandlingPercentage || 0,
+          bopHandlingChargeType: assemblyBOPHandling?.BOPHandlingChargeType || '',
+          
+          // Child parts BOP handling charges
+          childPartBOPHandlingCharges: childPartsBOPHandling,
+          IsAssemblyCosting: true,
         };
         setBopAndBopHandlingDetails(processedData);
         setViewBopDrawer(true);
