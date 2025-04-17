@@ -72,13 +72,32 @@ function NfrListing(props) {
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
     const [showNfrPartListing, setShowNfrPartListing] = useState(false)
-    const [disableFilter, setDisableFilter] = useState(false)
+    const [disableFilter, setDisableFilter] = useState(true)
     const [disableDownload, setDisableDownload] = useState(false)
     const [dataCount, setDataCount] = useState(0)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [isViewMode, setIsViewMode] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([])
     const agGridRef = useRef(null);
+    const [floatingFilterData, setFloatingFilterData] = useState({
+        CustomerRfqNo: "",
+        CustomerName: "",
+        CustomerPartNo: "",
+        ProductCode: "",
+        PlantNameDescription: "",
+        UOM: "",
+        Segment: "",
+        PlantName: "",
+        ZBCSubmissionDate: "",
+        QuotationSubmissionDate: "",
+        SopDate: "",
+        CreatedBy: "",
+        CreatedDate: "",
+        Status: ""
+    });
+    const [filterModel, setFilterModel] = useState({});
+    const [warningMessage, setWarningMessage] = useState(false);
+    const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
 
     const floatingFilterNfr = {
         maxValue: 12,
@@ -134,6 +153,7 @@ function NfrListing(props) {
             } else {
                 setRowData([]);
                 setTotalRecordCount(0);
+                setNoData(true);
             }
             if (res && isPagination === false) {
                 setDisableDownload(false)
@@ -144,10 +164,24 @@ function NfrListing(props) {
                 }, 500);
             }
             setloader(false);
+            if (res) {
+                setTimeout(() => {
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                }, 300);
+
+                setTimeout(() => {
+                    setWarningMessage(false)
+                }, 330);
+
+                setTimeout(() => {
+                    setIsFilterButtonClicked(false)
+                }, 600);
+            }
         }))
     }
 
     const resetState = () => {
+        setDisableFilter(true);
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
         window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
@@ -323,8 +357,47 @@ function NfrListing(props) {
     }
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
-            rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+            if (rowData.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
+            }
         }, 500);
+        setDisableFilter(false)
+        const model = gridOptions?.api?.getFilterModel();
+        setFilterModel(model)
+        
+        if (!isFilterButtonClicked) {
+            setWarningMessage(true)
+        }
+
+        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+            let isFilterEmpty = true
+            if (model !== undefined && model !== null) {
+                if (Object.keys(model).length > 0) {
+                    isFilterEmpty = false
+
+                    for (var property in floatingFilterData) {
+                        if (property === value.column.colId) {
+                            floatingFilterData[property] = ""
+                        }
+                    }
+                    setFloatingFilterData(floatingFilterData)
+                }
+
+                if (isFilterEmpty) {
+                    setWarningMessage(false)
+                    for (var prop in floatingFilterData) {
+                        floatingFilterData[prop] = ""
+                    }
+                    setFloatingFilterData(floatingFilterData)
+                }
+            }
+        } else {
+            if (value.column.colId === "ZBCSubmissionDate" || value.column.colId === "QuotationSubmissionDate" || value.column.colId === "SopDate" || value.column.colId === "CreatedDate") {
+                return false
+            }
+            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+        }
     }
 
     const attachmentFormatter = (props) => {
@@ -419,11 +492,14 @@ function NfrListing(props) {
         }))
     }
     const onSearch = () => {
-        setDisableFilter(true)
-        dispatch(updateCurrentRowIndex(0));
-        dispatch(updatePageNumber(1));
-        // getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
-    };
+        setNoData(false)
+        setWarningMessage(false)
+        setIsFilterButtonClicked(true)
+        gridApi.setQuickFilter(null)
+        dispatch(updatePageNumber(1))
+        dispatch(updateCurrentRowIndex(0))
+        getDataList(0, 10, true, floatingFilterData)
+    }
 
 
     const onRowSelect = (event) => {
@@ -548,9 +624,9 @@ function NfrListing(props) {
 
                                 <Col md="9" className="mb-3 d-flex justify-content-end">
                                     {
-                                        <Button id="bopImportListing_filterData" disabled={disableFilter} title={"Filtered data"} type="button" className={"user-btn mr5 Tour_List_Filter"} icon={"filter mr-0"} onClick={() => onSearch()} />
+                                        <Button id="NFRListing_filterData" disabled={disableFilter} title={"Filtered data"} type="button" className={"user-btn mr5 Tour_List_Filter"} icon={"filter mr-0"} onClick={() => onSearch()} />
                                     }
-                                    {true && (<Button id="nfr_add" className={"mr5"} onClick={addNFRFunction} title={"Add"} icon={"plus"} />)}
+                                    {true && (<Button id="NFRListing_add" className={"mr5"} onClick={addNFRFunction} title={"Add"} icon={"plus"} />)}
 
                                     {/* <Button id="bopImportListing_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} /> */}
 

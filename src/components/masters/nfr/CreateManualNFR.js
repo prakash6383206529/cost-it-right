@@ -463,6 +463,7 @@ function CreateManualNFR(props) {
     }
 
     const handleChangePlant = (newValue) => {
+        console.log("newValue,setSelectedPlant", newValue)
         setSelectedPlant(newValue)
     }
 
@@ -743,7 +744,11 @@ function CreateManualNFR(props) {
         let requestObj = {
             "CustomerRFQNo": values?.CustomerRFQNo,
             "ProductCode": values?.ProductCode,
-            "PlantCode": selectedPlant?.plantCode,
+            "Plant": [{
+                "PlantName": selectedPlant?.label,
+                "PlantId": selectedPlant?.value,
+                "PlantCode": selectedPlant?.plantCode
+            }],
             "CustomerName": customer,
             "PartNumber": selectedPart,
             "PartName": values?.CustomerPartName,
@@ -831,24 +836,25 @@ function CreateManualNFR(props) {
                                             {
                                                 // selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID && 
                                                 <Col md="3" className="input-container">
-                                                    <AsyncSearchableSelectHookForm
-                                                        label={"Customer Part No."}
-                                                        name={"Part"}
-                                                        id="AddNFR_Customer_Part_No"
-                                                        placeholder={"Select"}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: true }}
-                                                        register={register}
-                                                        defaultValue={selectedPart?.length !== 0 ? selectedPart : ""}
-                                                        asyncOptions={filterList}
-                                                        mandatory={true}
-                                                        isLoading={loaderObj}
-                                                        handleChange={handlePartChange}
-                                                        errors={errors?.Part}
-                                                        disabled={isViewFlag}
-                                                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
-                                                    />
+                                                    <div id="AddNFR_Customer_Part_No">
+                                                        <AsyncSearchableSelectHookForm
+                                                            label={"Customer Part No."}
+                                                            name={"Part"}
+                                                            placeholder={"Select"}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            rules={{ required: true }}
+                                                            register={register}
+                                                            defaultValue={selectedPart?.length !== 0 ? selectedPart : ""}
+                                                            asyncOptions={filterList}
+                                                            mandatory={true}
+                                                            isLoading={loaderObj}
+                                                            handleChange={handlePartChange}
+                                                            errors={errors?.Part}
+                                                            disabled={isViewFlag}
+                                                            NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                        />
+                                                    </div>
                                                 </Col>}
                                             <Col md="3" className="input-container">
                                                 <TextFieldHookForm
@@ -1047,13 +1053,13 @@ function CreateManualNFR(props) {
                                                     </div>
                                                 </div>
                                             </Col>
-                                            <button 
-                                                id="AddNFR_AddForecast" 
-                                                className="user-btn mt-30 ml-3" 
+                                            <button
+                                                id="AddNFR_AddForecast"
+                                                className="user-btn mt-30 ml-3"
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     setOpenAddForecast(true);
-                                                }} 
+                                                }}
                                                 type="button"
                                                 disabled={!sopDate || !selectedPart}
                                             >
