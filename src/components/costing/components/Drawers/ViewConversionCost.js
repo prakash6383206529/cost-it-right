@@ -780,40 +780,56 @@ function ViewConversionCost(props) {
     </>
   }
   const hangerTableforPDF = () => {
-    return <>
-      <Row>
-        <Col md="12">
-          <div className="left-border">{'Hanger Cost:'}</div>
-        </Col>
-        <Col md="12" className='mb-3'>
-          <Table className="table cr-brdr-main" size="sm">
-            <tbody>
-              <tr className='thead'>
-                {IsAssemblyCosting && <th>{`Part No`}</th>}
-                <th>{`Hanger Factor (Rate)`}</th>
-                <th>{`No. of Parts per Hanger`}</th>
-                <th>{'Hanger Cost per Part'}</th>
-              </tr>
-              {hangerCostDetails?.filter(item => 
-                item?.HangerRate != null && 
-                item?.NumberOfPartsPerHanger != null && 
-                item?.HangerCostPerPart != null
-              ).map((item, index) => (
-                <Fragment key={index}>
-                  <tr>
+    // Normalize input: always treat as an array
+    const hangerData = Array.isArray(hangerCostDetails)
+      ? hangerCostDetails
+      : hangerCostDetails && typeof hangerCostDetails === 'object'
+        ? [hangerCostDetails]
+        : [];
+  
+    const filteredData = hangerData.filter(item =>
+      item?.HangerRate != null &&
+      item?.NumberOfPartsPerHanger != null &&
+      item?.HangerCostPerPart != null
+    );
+  
+    if (filteredData.length === 0) return null;
+  
+    return (
+      <>
+        <Row>
+          <Col md="12">
+            <div className="left-border">{'Hanger Cost:'}</div>
+          </Col>
+          <Col md="12" className='mb-3'>
+            <Table className="table cr-brdr-main" size="sm">
+              <tbody>
+                <tr className='thead'>
+                  {IsAssemblyCosting && <th>Part No</th>}
+                  <th>Hanger Factor (Rate)</th>
+                  <th>No. of Parts per Hanger</th>
+                  <th>Hanger Cost per Part</th>
+                </tr>
+  
+                {filteredData.map((item, index) => (
+                  <tr key={index}>
                     {IsAssemblyCosting && <td>{item?.PartNumber ?? '-'}</td>}
                     <td>{item?.HangerRate ?? '-'}</td>
                     <td>{item?.NumberOfPartsPerHanger ?? '-'}</td>
-                    <td>{item?.HangerCostPerPart ? checkForDecimalAndNull(item?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                    <td>
+                      {item?.HangerCostPerPart != null
+                        ? checkForDecimalAndNull(item?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)
+                        : '-'}
+                    </td>
                   </tr>
-                </Fragment>
-              ))}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
-    </>
-  }
+                ))}
+              </tbody>
+            </Table>
+          </Col>
+        </Row>
+      </>
+    );
+  };
   const paintAndMaskingTableData = () => {
     const renderPaintTable = (details) => {
       const {
