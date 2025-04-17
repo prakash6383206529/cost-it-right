@@ -20,6 +20,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
 import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8, decimalNumberLimit13 } from "../../../../../helper/validation";
 import { useLabels } from '../../../../../helper/core';
+import _ from 'lodash';
 
 let counter = 0;
 function Tool(props) {
@@ -72,8 +73,36 @@ function Tool(props) {
 
 
   useEffect(() => {
-    props.setToolCost(gridData, JSON.stringify(gridData) !== JSON.stringify(data && data?.CostingPartDetails?.CostingToolCostResponse?.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : []) ? true : false)
-
+    let isDataChanged = false;
+    if (IsApplicableProcessWise) {
+      // Use the original approach for process-wise applicability
+      isDataChanged = JSON.stringify(gridData) !== JSON.stringify(
+        data && data?.CostingPartDetails?.CostingToolCostResponse?.length > 0 
+          ? data?.CostingPartDetails?.CostingToolCostResponse 
+          : []
+        );
+        
+    } else {
+      // Define the keys we want to compare for overall applicability
+      const keysToCompare = [
+         'ProcessOrOperation', 'ToolCategory', 'ToolName', 
+        'Quantity', 'ToolCost', 'Life', 'NetToolCost', 
+        'ToolMaintenanceCost', 'ToolCostType', 'ToolApplicabilityTypeId', 
+        'ToolMaintenancePercentage', 'ToolApplicabilityCost', 'ToolAmortizationCost', 
+        'IsCostForPerAssembly', 'ToolCRMHead'
+      ];
+      
+      // Use Lodash to pick only the specified keys from each array
+      const filteredGridData = gridData.map(item => _.pick(item, keysToCompare));
+      const filteredResponseData = data?.CostingPartDetails?.CostingToolCostResponse?.length > 0 
+        ? data.CostingPartDetails.CostingToolCostResponse.map(item => _.pick(item, keysToCompare)) 
+        : [];
+     // Compare the filtered arrays using _.isEqual
+      isDataChanged = !_.isEqual(filteredGridData, filteredResponseData);
+      
+    }
+    
+    props.setToolCost(gridData, isDataChanged);
   }, [gridData, getValues('maintanenceToolCost'), getValues('maintanencePercentage')]);
 
   useEffect(() => {
