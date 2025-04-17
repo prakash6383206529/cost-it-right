@@ -1765,7 +1765,7 @@ class AddOperation extends Component {
                       {this.state.isImport && <Col md="3">
                         {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
                         <Field
-                          label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
+                          label={`Rate ABCD (${this.state.currency?.label ?? 'Currency'})`}
                           name={"Rate"}
                           type="text"
                           id="rate"
@@ -1784,7 +1784,7 @@ class AddOperation extends Component {
                         {/* {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate-local" tooltipText={'Welding Material Rate/Kg * Consumption'} />}*/}
                         {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />}
                         <Field
-                          label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                          label={`Rate XYZ(${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                           name={"RateLocalConversion"}
                           type="text"
                           id={this?.state?.isWelding ? "rate" : "rate-local"}
