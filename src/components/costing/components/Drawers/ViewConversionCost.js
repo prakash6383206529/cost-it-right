@@ -715,6 +715,8 @@ const setPartDetail = (index, partNumber) => {
       </Row>
     </>
   }
+  console.log(isPDFShow,'isPDFShow')
+  console.log(IsAssemblyCosting,'IsAssemblyCosting')
 const hangerTableforPDF=()=>{
   return <>
   <Row>
@@ -746,13 +748,13 @@ const hangerTableforPDF=()=>{
 }
   const paintAndMaskingTableData = () => {
     return <>
-      <Row className='firefox-spaces'>
+      <Row className='firefox-spaces mt-4'>
         <Col md="12">
           <div className="left-border">{'Paint and Masking:'}</div>
         </Col>
         <Col md="12">
  
-        <Table className="table cr-brdr-main" size="sm">          
+        <Table className="table cr-brdr-main table-bordered" size="sm">          
            <tbody>
               <tr class="thead">
               {IsAssemblyCosting &&isPDFShow&&<th>{`Part No`}</th>}
@@ -800,7 +802,7 @@ const hangerTableforPDF=()=>{
               )}
             {(!IsAssemblyCosting &&!isPDFShow)||(IsAssemblyCosting&&!isPDFShow)&&<tr className="table-footer">
                 <td colSpan={!isPDFShow?8:10} className="text-right">
-                  Total Paint Cost
+                 <strong> Total Paint Cost:</strong>
                 </td>
                 <td>
                   {checkForDecimalAndNull(paintAndTapeDetails?.PaintCost, getConfigurationKey().NoOfDecimalForInputOutput)}
@@ -808,7 +810,7 @@ const hangerTableforPDF=()=>{
               </tr>}
               </tbody>
           </Table>
-        {(!IsAssemblyCosting &&!isPDFShow)||(IsAssemblyCosting&&!isPDFShow)&&<Row className="mb-4">
+        {!isPDFShow&&<Row className="mb-4">
             <Col md="4">
               <label>Masking/Tape Cost</label>
               <input
