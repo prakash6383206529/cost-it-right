@@ -622,6 +622,7 @@ export const API = {
   getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
   saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
   getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
+  getCostingBopAndBopHandlingDetails: `${BASE_URL}/costing/get-costing-bop-and-bop-handling-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -3380,19 +3381,23 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const COSTINGOVERHEADANDPROFTFORPROCESS = "Costing Overhead Profit For Process"
 export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Operation"
 export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra Cost"
-export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
 export const PAINT = "Paint"
 export const HANGER = "Hanger"
 export const SURFACETREATMENTLABEL = "Surface Treatment"
+export const RM = "RM"
+export const CC = "CC"
+export const RMCC = "RM + CC"
+
 export const PAINTTECHNOLOGY = 31
+export const HANGEROVERHEAD = "Hanger OverHead"
 
 export const IsSelectSinglePlant = true
-
 //VERSION 
-export const VERSION = "V4.2.11";
+export const VERSION = "V4.2.16";
+
 
 
 
