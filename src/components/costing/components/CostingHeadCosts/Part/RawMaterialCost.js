@@ -301,7 +301,8 @@ function RawMaterialCost(props) {
             Currency: el.Currency,
             UOMSymbol: el.UOMSymbol,
             ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
-            CurrencyExchangeRate: el.CurrencyExchangeRate
+            CurrencyExchangeRate: el.CurrencyExchangeRate,
+            EffectiveDate: el.EffectiveDate
           }
         })
 

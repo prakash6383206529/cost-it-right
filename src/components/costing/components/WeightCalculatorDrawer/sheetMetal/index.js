@@ -7,6 +7,7 @@ import SectionC from './SectionC'
 import SectionZ from './SectionZ'
 import Coil from './Coil'
 import Sheet from './Sheet'
+import SheetDetails from './SheetDetails'
 import Bar from './Bar'
 
 function WeightCalculator(props) {
@@ -21,10 +22,12 @@ function WeightCalculator(props) {
         return '1'
       case 'Coil':
         return '2'
-      case 'Sheet':
+      case 'SheetDetailed':
         return '3'
       case 'Bar':
         return '4'
+      case 'Sheet':
+        return '5'
       default:
         break;
     }
@@ -98,6 +101,17 @@ function WeightCalculator(props) {
                 }}
                 disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '3' ? true : false}
               >
+                Sheet (Detailed)
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === '5' })}
+                onClick={() => {
+                  toggle('5')
+                }}
+                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '5' ? true : false}
+              >
                 Sheet
               </NavLink>
             </NavItem>
@@ -127,12 +141,17 @@ function WeightCalculator(props) {
             {/* THIS IS FOR SHEET  */}
             {activeTab === '3' && (
               <TabPane tabId="3">
-                <Sheet rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
+                <SheetDetails rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
               </TabPane>
             )}
             {activeTab === '4' && (
               <TabPane tabId="4">
                 <Bar rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
+              </TabPane>
+            )}
+            {activeTab === '5' && (
+              <TabPane tabId="5">
+                <Sheet rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
               </TabPane>
             )}
             {/* {activeTab === '4' && (
