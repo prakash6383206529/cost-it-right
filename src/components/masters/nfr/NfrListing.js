@@ -126,7 +126,8 @@ function NfrListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = (skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
-        dispatch(getAllNfrList((res) => {
+        const requestOBj = { skip, take, isPagination, dataObj, isReset }
+        dispatch(getAllNfrList(requestOBj, (res) => {
             if (res?.data?.DataList?.length > 0) {
                 setRowData(StatusTooltip(res?.data?.DataList));
                 setTotalRecordCount(res?.data?.DataList?.length);
@@ -138,8 +139,8 @@ function NfrListing(props) {
                 setDisableDownload(false)
                 setTimeout(() => {
                     dispatch(disabledClass(false))
-                    let button = document.getElementById('NfrListing_excel_download')
-                    button && button.click()
+                    const excelDownloadBtn = document.getElementById('nfr-excel-download')
+                    excelDownloadBtn && excelDownloadBtn.click()
                 }, 500);
             }
             setloader(false);
@@ -220,7 +221,7 @@ function NfrListing(props) {
             <>
                 <button className="Add-file mr-1" id="nfr_AddCosting" type={"button"} title={`Add Costing`} />
                 {<button title='View' className="View mr-1" id="viewNfr_list" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                <button className="Edit mr-1" id="nfr_EditCosting" type={"button"} title={"Edit Details"}  />
+                <button className="Edit mr-1" id="nfr_EditCosting" type={"button"} title={"Edit Details"} />
                 {<button title='Delete' className="Delete mr-1" id="deleteNfr_list" type={'button'} onClick={() => deleteItemDetails(rowData)} />}
             </>
         )
@@ -463,8 +464,8 @@ function NfrListing(props) {
             setTimeout(() => {
                 setDisableDownload(false);
                 dispatch(disabledClass(false));
-                // Make sure this ID matches the element in the ExcelFile component
-                document.getElementById("nfr-excel-download")?.click();
+                const downloadButton = document.getElementById("nfr-excel-download");
+                downloadButton?.click();
             }, 400);
         } else {
             getDataList(0, 10, false, {}, true)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
