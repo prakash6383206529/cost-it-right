@@ -1358,6 +1358,7 @@ const CostingSummaryTable = (props) => {
     setDrawerDetailPDF(true)
     return new Promise((resolve) => {
       onBeforeContentResolveDetail.current = resolve;
+      console.log(  componentRef.current.innerHTML,' componentRef.current')
       setTimeout(() => {
         resolve();
       }, 1500);
