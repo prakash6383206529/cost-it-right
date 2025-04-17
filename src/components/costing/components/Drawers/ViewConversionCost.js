@@ -68,84 +68,72 @@ function ViewConversionCost(props) {
   const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
+
   useEffect(() => {
-
     if (IsAssemblyCosting === true && isPDFShow === false) {
-      let temp = []
-      let uniqueTemp = []
-      CostingProcessCostResponse && CostingProcessCostResponse.map(item => {
-        temp.push(item.PartNumber)
-        return null
-      })
-      CostingOperationCostResponse && CostingOperationCostResponse.map(item => {
-        temp.push(item.PartNumber)
-        return null
-      })
-      CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.map(item => {
-        temp.push(item.PartNumber)
-        return null
-      })
-      netTransportationCostView && netTransportationCostView.map(item => {
-        temp.push(item.PartNumber)
-        return null
-      })
-      surfaceTreatmentDetails && surfaceTreatmentDetails.map(item => {
-        temp.push(item.PartNumber)
-        return null
-      })
-      uniqueTemp = Array.from(new Set(temp))
-      setPartNumberList(uniqueTemp)
-      let partNo = uniqueTemp[index]
-      let processCost = CostingProcessCostResponse && CostingProcessCostResponse.filter(item => item.PartNumber === partNo)
-      let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
-      let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber === partNo)
-      let transportCost = netTransportationCostView && netTransportationCostView.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
-      let HangerCostDetailsTemp = HangerCostDetails && HangerCostDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
-      let PaintAndTapeDetailsTemp = PaintAndTapeDetails && PaintAndTapeDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
-      let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
-      setCostingProcessCost(processCost)
-      setHangerCostDetails(HangerCostDetailsTemp ? HangerCostDetailsTemp[0] : [])
-      setPaintAndTapeDetails(PaintAndTapeDetailsTemp ? PaintAndTapeDetailsTemp[0] : [])
-      setCostingOperationCostResponse(operationCost)
-      setOtherCostingOperationCostResponse(otherOperationCost)
-      setTransportCost(transportCost ? transportCost[0] : [])
-      setSurfaceTreatmentCost(surfaceCost)
+      let temp = [];
+  
+      CostingProcessCostResponse?.forEach(item => temp.push(item.PartNumber));
+      CostingOperationCostResponse?.forEach(item => temp.push(item.PartNumber));
+      CostingOtherOperationCostResponse?.forEach(item => temp.push(item.PartNumber));
+      netTransportationCostView?.forEach(item => temp.push(item.PartNumber));
+      surfaceTreatmentDetails?.forEach(item => temp.push(item.PartNumber));
+  
+      const uniqueTemp = Array.from(new Set(temp));
+      setPartNumberList(uniqueTemp);
+  
+      const partNo = uniqueTemp[index];
+  
+      const processCost = CostingProcessCostResponse?.filter(item => item.PartNumber === partNo);
+      const operationCost = CostingOperationCostResponse?.filter(item => item.PartNumber === partNo);
+      const otherOperationCost = CostingOtherOperationCostResponse?.filter(item => item.PartNumber === partNo);
+      console.log(netTransportationCostView,'netTransportationCostView')
+      const transportCost = netTransportationCostView?.filter(item => item.PartNumber === partNo);
+      const HangerCostDetailsTemp = HangerCostDetails?.filter(item => item.PartNumber === partNo);
+      const PaintAndTapeDetailsTemp = PaintAndTapeDetails?.filter(item => item.PartNumber === partNo);
+      const surfaceCost = surfaceTreatmentDetails?.filter(item => item.PartNumber === partNo);
+  
+      setCostingProcessCost(processCost);
+      setHangerCostDetails(HangerCostDetailsTemp?.[0] || []);
+      setPaintAndTapeDetails(PaintAndTapeDetailsTemp?.[0] || []);
+      setCostingOperationCostResponse(operationCost);
+      setOtherCostingOperationCostResponse(otherOperationCost);
+      setTransportCost(transportCost?.[0] || []);
+      setSurfaceTreatmentCost(surfaceCost); // ✅ Full list, not just first item
     }
+  
     else if (IsAssemblyCosting === true && isPDFShow === true) {
-      setCostingProcessCost(CostingProcessCostResponse ? CostingProcessCostResponse : [])
-      setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
-      // setcostingToolsCost(CostingToolsCostResponse)
-      setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse ? CostingOtherOperationCostResponse : [])
-      setTransportCost(netTransportationCostView ? netTransportationCostView : [])
-      setHangerCostDetails(HangerCostDetails ? HangerCostDetails : [])
-      setPaintAndTapeDetails(PaintAndTapeDetails ? PaintAndTapeDetails : [])
-      setSurfaceTreatmentCost(surfaceTreatmentDetails ? surfaceTreatmentDetails : [])
+      setCostingProcessCost(CostingProcessCostResponse || []);
+      setCostingOperationCostResponse(CostingOperationCostResponse || []);
+      setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse || []);
+      setTransportCost(netTransportationCostView || []);
+      setHangerCostDetails(HangerCostDetails || []);
+      setPaintAndTapeDetails(PaintAndTapeDetails || []);
+      setSurfaceTreatmentCost(surfaceTreatmentDetails || []);
     }
-
+  
     else {
-      setHangerCostDetails(HangerCostDetails ? HangerCostDetails[0] : [])
-      setPaintAndTapeDetails(PaintAndTapeDetails ? PaintAndTapeDetails[0] : [])
-      setCostingProcessCost(CostingProcessCostResponse ? CostingProcessCostResponse : [])
-      setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
-      // setcostingToolsCost(CostingToolsCostResponse)
-      setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse ? CostingOtherOperationCostResponse : [])
-      setTransportCost(netTransportationCostView ? netTransportationCostView[0] : [])
-      setSurfaceTreatmentCost(surfaceTreatmentDetails ? surfaceTreatmentDetails : [])
+      setHangerCostDetails(HangerCostDetails?.[0] || []);
+      setPaintAndTapeDetails(PaintAndTapeDetails?.[0] || []);
+      setCostingProcessCost(CostingProcessCostResponse || []);
+      setCostingOperationCostResponse(CostingOperationCostResponse || []);
+      setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse || []);
+      setTransportCost(netTransportationCostView?.[0] || []);
+      setSurfaceTreatmentCost(surfaceTreatmentDetails || []);
     }
-
+  
     if (showLabourData) {
-      dispatch(getCostingLabourDetails(viewCostingData[0].costingId !== null ? viewCostingData[0].costingId : "00000000-0000-0000-0000-000000000000", (res) => {
-        if (res) {
-          let Data = res?.data?.Data
-          setLabourTable(Data.CostingLabourDetailList)
+      dispatch(getCostingLabourDetails(
+        viewCostingData[0]?.costingId || "00000000-0000-0000-0000-000000000000",
+        (res) => {
+          if (res) {
+            const Data = res?.data?.Data;
+            setLabourTable(Data?.CostingLabourDetailList);
+          }
         }
-      }))
+      ));
     }
-    dispatch(getSurfaceTreatmentRawMaterialCalculator({ BaseCostingId: viewCostingData[0].costingId !== null ? viewCostingData[0].costingId : null, LoggedInUserId: loggedInUserId() }, (res) => {
-      let data=res?.data?.Data?.Coats
-      setCoats(data)
-    }))
-  }, [])
+  }, []);
 
   const setCalculatorData = (data, list, id, parentId) => {
     if (parentId === '') {
@@ -239,31 +227,31 @@ function ViewConversionCost(props) {
   }
 
 
-  const setPartDetail = (index, partNumber) => {
-    setActiveTab(index)
-    setIndex(index)
-    let partNo = partNumberList[index]
-    let processCost = CostingProcessCostResponse && CostingProcessCostResponse.filter(item => item.PartNumber === partNo)
-    let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
-    let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber === partNo)
+const setPartDetail = (index, partNumber) => {
+  setActiveTab(index);
+  setIndex(index);
 
-    let transportCost = netTransportationCostView && netTransportationCostView.filter((item, index, self) =>
-      item.PartNumber === partNo &&
-      index === self.findIndex(t => t.PartNumber === item.PartNumber)
-    )
-    let HangerCostDetailsTemp = HangerCostDetails && HangerCostDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
-    let PaintAndTapeDetailsTemp = PaintAndTapeDetails && PaintAndTapeDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
-    let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter((item, index, self) => item.PartNumber === partNo && index === self.findIndex(t => t.PartNumber === item.PartNumber))
+  let partNo = partNumberList[index];
 
-    setCostingProcessCost(processCost)
-    setCostingOperationCostResponse(operationCost)
-    setOtherCostingOperationCostResponse(otherOperationCost)
-    setTransportCost(transportCost[0])
-    setHangerCostDetails(HangerCostDetailsTemp[0])
-    setPaintAndTapeDetails(PaintAndTapeDetailsTemp[0])
-    setSurfaceTreatmentCost(surfaceCost)
-  }
+  const processCost = CostingProcessCostResponse?.filter(item => item.PartNumber === partNo);
+  const operationCost = CostingOperationCostResponse?.filter(item => item.PartNumber === partNo);
+  const otherOperationCost = CostingOtherOperationCostResponse?.filter(item => item.PartNumber === partNo);
 
+  const transportCost = netTransportationCostView?.filter(item => item.PartNumber === partNo);
+  const HangerCostDetailsTemp = HangerCostDetails?.filter(item => item.PartNumber === partNo);
+  const PaintAndTapeDetailsTemp = PaintAndTapeDetails?.filter(item => item.PartNumber === partNo);
+
+  // ✅ FIX: return all matching surfaceCost entries (not just the first one)
+  const surfaceCost = surfaceTreatmentDetails?.filter(item => item.PartNumber === partNo);
+
+  setCostingProcessCost(processCost);
+  setCostingOperationCostResponse(operationCost);
+  setOtherCostingOperationCostResponse(otherOperationCost);
+  setTransportCost(transportCost?.[0] || []);
+  setHangerCostDetails(HangerCostDetailsTemp?.[0] || []);
+  setPaintAndTapeDetails(PaintAndTapeDetailsTemp?.[0] || []);
+  setSurfaceTreatmentCost(surfaceCost);
+};
   useEffect(() => {
     setLoader(false)
   }, [costingProcessCost, costingOperationCost, othercostingOperationCost])
@@ -652,6 +640,7 @@ function ViewConversionCost(props) {
     </>
   }
   const extraCostTableData = () => {
+    console.log(transportCost,'transportCost')
     return <>
       <Row>
         <Col md="12" className='mt-3'>
@@ -664,6 +653,7 @@ function ViewConversionCost(props) {
           <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
             <tbody>
               <tr className='thead'>
+              {IsAssemblyCosting &&isPDFShow&&<th>{`Part No`}</th>}
                 <th>{`Type`}</th>
                 <th>{`Cost Description`}</th>
                 <th>{`Applicability`}</th>
@@ -678,6 +668,7 @@ function ViewConversionCost(props) {
               {transportCost && transportCost?.TransportationDetails && transportCost?.TransportationDetails?.map((item, index) => (
                 <Fragment key={index}>
                   <tr>
+                  {IsAssemblyCosting &&isPDFShow&& <td>{item?.PartNumber ?? '-'}</td>}
                     <td>{item?.UOM ?? '-'}</td>
                     <td>{item?.Description ?? '-'}</td>
                     <td>{item?.CostingConditionNumber ?? '-'}</td>
@@ -701,10 +692,10 @@ function ViewConversionCost(props) {
                 )
               }
 
-              <tr className='table-footer'>
-                <td colSpan={5} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
-                <td colSpan={5}>{checkForDecimalAndNull(transportCost && transportCost?.TotalTransportationCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
-              </tr>
+             {(!IsAssemblyCosting &&!isPDFShow)||(IsAssemblyCosting&&!isPDFShow)&&<tr className='table-footer'>
+                <td colSpan={7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                <td colSpan={7}>{checkForDecimalAndNull(transportCost && transportCost?.TotalTransportationCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
+              </tr>}
             </tbody>
           </Table>
         </Col>
@@ -724,7 +715,35 @@ function ViewConversionCost(props) {
       </Row>
     </>
   }
-
+const hangerTableforPDF=()=>{
+  return <>
+  <Row>
+     <Col md="12">
+          <div className="left-border">{'Hanger Cost:'}</div>
+        </Col>
+        <Col md="12" className='mb-3'>
+          <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
+            <tbody>
+              <tr className='thead'>
+              {IsAssemblyCosting &&<th>{`Part No`}</th>}
+                <th>{`Hanger Factor (Rate)`}</th>
+                <th>{`No. of Parts per Hanger`}</th>
+                <th>{'Hanger Cost per Part'}</th>
+              </tr>
+                <Fragment key={index}>
+                  <tr>
+                    {IsAssemblyCosting && <td>{hangerCostDetails?.PartNumber ?? '-'}</td>}
+                    <td>{hangerCostDetails?.HangerRate ?? '-'}</td>
+                    <td>{hangerCostDetails?.NumberOfPartsPerHanger ?? '-'}</td>
+                    <td>{hangerCostDetails?.HangerCostPerPart ? checkForDecimalAndNull(hangerCostDetails?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                  </tr>
+                </Fragment>
+            </tbody>
+          </Table>
+        </Col>
+  </Row>
+  </>
+}
   const paintAndMaskingTableData = () => {
     return <>
       <Row className='firefox-spaces'>
@@ -736,6 +755,7 @@ function ViewConversionCost(props) {
         <Table className="table cr-brdr-main" size="sm">          
            <tbody>
               <tr class="thead">
+              {IsAssemblyCosting &&isPDFShow&&<th>{`Part No`}</th>}
                 <th>Paint Coat</th>
                 <th>Raw Material</th>
                 <th>UOM</th>
@@ -745,10 +765,13 @@ function ViewConversionCost(props) {
                 <th>Rejection Allowance</th>
                 <th>RM Rate (Currency)</th>
                 <th>Paint Cost</th>
+                {IsAssemblyCosting &&isPDFShow&& <th>Masking/Tape Cost</th>}
+                {IsAssemblyCosting &&isPDFShow&& <th>Total Paint & Masking Cost</th>}
               </tr>
-              {coats?.map((coat, parentIndex) => (
+              {paintAndTapeDetails?.Coats?.map((coat, parentIndex) => (
                 coat?.RawMaterials?.map((rm, childIndex) => (
                   <tr key={`${parentIndex}-${childIndex}`}>
+                     {IsAssemblyCosting &&isPDFShow&& <td>{paintAndTapeDetails?.PartNumber ?? '-'}</td>}
                     {childIndex === 0 && (
                       <td rowSpan={coat?.RawMaterials?.length}>
                         {coat?.PaintCoat || '-'}
@@ -762,27 +785,30 @@ function ViewConversionCost(props) {
                     <td>{checkForDecimalAndNull(rm?.RejectionAllowance, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                     <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)}</td>
                     <td>{checkForDecimalAndNull(rm?.NetCost, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                  { IsAssemblyCosting &&isPDFShow&& <td>{checkForDecimalAndNull(paintAndTapeDetails?.TapeCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                   { IsAssemblyCosting &&isPDFShow&&<td>{checkForDecimalAndNull(paintAndTapeDetails?.TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+
                   </tr>
                 ))
               ))}
-              {coats && coats?.length === 0 && (
+              {paintAndTapeDetails?.Coats && paintAndTapeDetails?.Coats?.length === 0 && (
                 <tr>
                   <td colSpan="12">
                     <NoContentFound title={EMPTY_DATA} />
                   </td>
                 </tr>
               )}
-              <tr className="table-footer">
-                <td colSpan={8} className="text-right">
+            {(!IsAssemblyCosting &&!isPDFShow)||(IsAssemblyCosting&&!isPDFShow)&&<tr className="table-footer">
+                <td colSpan={!isPDFShow?8:10} className="text-right">
                   Total Paint Cost
                 </td>
                 <td>
                   {checkForDecimalAndNull(paintAndTapeDetails?.PaintCost, getConfigurationKey().NoOfDecimalForInputOutput)}
                 </td>
-              </tr>
+              </tr>}
               </tbody>
           </Table>
-          <Row className="mb-4">
+        {(!IsAssemblyCosting &&!isPDFShow)||(IsAssemblyCosting&&!isPDFShow)&&<Row className="mb-4">
             <Col md="4">
               <label>Masking/Tape Cost</label>
               <input
@@ -801,7 +827,7 @@ function ViewConversionCost(props) {
                 disabled
               />
             </Col>
-          </Row>
+          </Row>}
  
         </Col>
       </Row>
@@ -916,7 +942,7 @@ function ViewConversionCost(props) {
         {!stCostShow && showLabourData && labourTable.length !== 0 && labourTableData()}
         {/* {costingToolsCost.length != 0 && toolCostTableData()} */}
         {stCostShow && surfaceTreatmentCost.length !== 0 && !props?.processShow && !props?.operationShow && stTableData()}
-        {stCostShow && HangerCostDetails.length !== 0 && !props?.processShow && !props?.operationShow && hangerTableData()}
+        {stCostShow && HangerCostDetails.length !== 0 && !props?.processShow && !props?.operationShow && hangerTableforPDF()}
         {stCostShow && paintAndTapeDetails.length !== 0 && !props?.processShow && !props?.operationShow && paintAndMaskingTableData()}
         {stCostShow && transportCost.length !== 0 && !props?.processShow && !props?.operationShow && extraCostTableData()}
         {props?.processShow && costingProcessCost.length !== 0 && processTableData()}
