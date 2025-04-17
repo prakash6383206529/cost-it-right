@@ -126,6 +126,7 @@ function ExtraCost(props) {
             setValue('Applicability', { label: selectedData?.CostingConditionNumber, value: selectedData?.CostingConditionMasterId })
             setValue('ApplicabilityCost', checkForDecimalAndNull(selectedData?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('Percentage', checkForDecimalAndNull(selectedData?.Rate, initialConfiguration?.NoOfDecimalForPrice))
+            setState(prevState => ({ ...prevState, ApplicabilityCost: selectedData?.ApplicabiltyCost}))
         } else if (selectedData?.UOM === "Hanger Overhead") {
             const hangerType = { label: "Hanger Overhead", value: "Hanger Overhead" };
             setType(hangerType);
@@ -133,11 +134,13 @@ function ExtraCost(props) {
             setValue('Quantity', selectedData?.Quantity)
             setValue('Rate', selectedData?.Rate)
             setValue('NetCost', selectedData?.TransportationCost)
+            setState(prevState => ({ ...prevState, ApplicabilityCost: selectedData?.TransportationCost}))
         }
         else {
             const fixedType = { label: 'Fixed', value: 'Fixed' };
             setType(fixedType);
             setValue('Type', fixedType);
+           setState(prevState => ({ ...prevState, ApplicabilityCost: selectedData?.TransportationCost}))
         }
         setValue('CostDescription', selectedData?.Description)
         setValue('Remark', selectedData?.Remark)

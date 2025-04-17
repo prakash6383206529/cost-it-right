@@ -456,8 +456,8 @@ class AddInterestRate extends Component {
           setTimeout(() => {
             const { costingHead, iccApplicabilitySelectList, } = this.props;
             const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
-            const paymentObj = costingHead && costingHead.find(item => item.Value === Data.PaymentTermApplicability)
-            this.setState({
+            const paymentObj = costingHead && costingHead.find(item => item.Text === Data.PaymentTermApplicability)
+           this.setState({
               isEditFlag: true,
               costingTypeId: Data.CostingTypeId,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
