@@ -2633,7 +2633,7 @@ function CostingDetails(props) {
                                       onClick={vendorDrawerToggle}
                                       id='VBC_Costing_Add_Vendor'
                                     >
-                                      <div className={"plus"}></div>VENDOR
+                                      <div className={"plus"}></div>{vendorLabel}
                                     </button>
                                   ) : (
                                     ""
