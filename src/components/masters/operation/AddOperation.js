@@ -246,7 +246,7 @@ class AddOperation extends Component {
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID,null, (res) => {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
         }, 100);
@@ -949,9 +949,9 @@ class AddOperation extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue } , () => {
-            this.callExchangeRateAPI()
-        }
+      this.setState({ client: newValue }, () => {
+        this.callExchangeRateAPI()
+      }
       );
     }
     else {
@@ -1735,9 +1735,10 @@ class AddOperation extends Component {
                               name={"WeldingRate"}
                               type="text"
                               placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              validate={[this.state.isWelding ? required : "", positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
-                              required={false}
+                              required={this.state.isWelding ? true : false}
+                              mendatory={this.state.isWelding ? true : false}
                               disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'WeldingRate') }}
                               className=" "
@@ -1750,9 +1751,10 @@ class AddOperation extends Component {
                               name={"Consumption"}
                               type="text"
                               placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              validate={[this.state.isWelding ? required : "", positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
-                              required={false}
+                              required={this.state.isWelding ? true : false}
+                              mendatory={this.state.isWelding ? true : false}
                               disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'Consumption') }}
                               className=" "
@@ -1763,14 +1765,15 @@ class AddOperation extends Component {
                       {this.state.isImport && <Col md="3">
                         {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
                         <Field
-                          label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
+                          label={`Rate ABCD (${this.state.currency?.label ?? 'Currency'})`}
                           name={"Rate"}
                           type="text"
                           id="rate"
                           placeholder={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding ? '-' : "Enter"}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
-                          required={true}
+                          required={this.state.isWelding ? false : true}
+                          mendatory={this.state.isWelding ? false : true}
                           disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
@@ -1781,14 +1784,15 @@ class AddOperation extends Component {
                         {/* {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate-local" tooltipText={'Welding Material Rate/Kg * Consumption'} />}*/}
                         {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />}
                         <Field
-                          label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                          label={`Rate XYZ(${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                           name={"RateLocalConversion"}
                           type="text"
                           id={this?.state?.isWelding ? "rate" : "rate-local"}
                           placeholder={this.state.isImport ? '' : 'Enter'}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
-                          required={true}
+                          required={this.state.isWelding ? false : true}
+                          mendatory={this.state.isWelding ? false : true}
                           disabled={this.state.isImport ? true : false || isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
