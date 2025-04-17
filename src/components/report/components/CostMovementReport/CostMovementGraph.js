@@ -359,7 +359,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | Part No. | Vendor Code | Plant Code ',
+                text: `  Format: Color | Part No. | ${vendorLabel} Code | Plant Code `,
                 fontSize: 10,
                 align: 'start',
                 color: '#000',
@@ -469,7 +469,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | Part No. | Vendor Code | Plant Code ',
+                text: `  Format: Color | Part No. | ${vendorLabel} Code | Plant Code `,
                 fontSize: 10,
                 align: 'start',
                 color: '#000',

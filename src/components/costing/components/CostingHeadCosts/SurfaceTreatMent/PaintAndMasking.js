@@ -306,7 +306,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(totalPaintCost, NoOfDecimalForPrice))
     }
     const calculateValues = debounce((surfaceArea, consumption, rejectionAllowancePercentage, parentIndex, childIndex, rm) => {
-        const surfaceAreaAndConsumption = surfaceArea * (consumption === 0 ? 1 : consumption)
+        // Default consumption to 1 if null/undefined/0 to avoid multiplication by 0
+        const safeConsumption = consumption ? checkForNull(consumption) : 1;
+        const safeSurfaceArea = checkForNull(surfaceArea);
+        const surfaceAreaAndConsumption = safeSurfaceArea * safeConsumption;
         //Rejection Allowance = (Surface Area * Consumption) * Rejection Allowance Percentage / 100
         const rejectionAllowance = surfaceAreaAndConsumption * rejectionAllowancePercentage / 100
         //Net Cost = ((Surface Area * Consumption) + Rejection Allowance) * RM Rate

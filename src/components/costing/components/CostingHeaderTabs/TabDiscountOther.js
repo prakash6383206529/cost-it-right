@@ -1557,11 +1557,12 @@ function TabDiscountOther(props) {
   const refreshAllData = () => {
     let finalListCondition = []
     let tempListCondition = [...conditionTableData]
-    const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
-    const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
-    const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-    const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
-    const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
+    
+    const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost)
+    const RMBOPCC = checkForNull(headerCosts.NetBoughtOutPartCost) + checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(ConversionCostForCalculation)
+    const RMBOP = checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(headerCosts.NetBoughtOutPartCost);
+    const RMCC = checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(ConversionCostForCalculation);
+    const BOPCC = checkForNull(headerCosts.NetBoughtOutPartCost) + checkForNull(ConversionCostForCalculation);
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
     const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
 
@@ -1579,10 +1580,10 @@ function TabDiscountOther(props) {
       switch (applicabilityType) {
         case 'RM':
         case 'Part Cost':
-          applicabilityCost = headerCosts.NetRawMaterialsCost;
+          applicabilityCost = checkForNull(headerCosts.NetRawMaterialsCost);
           break;
         case 'BOP':
-          applicabilityCost = headerCosts.NetBoughtOutPartCost;
+          applicabilityCost = checkForNull(headerCosts.NetBoughtOutPartCost);
           break;
         case 'RM + CC':
         case 'Part Cost + CC':
@@ -1638,7 +1639,8 @@ function TabDiscountOther(props) {
       }
 
       totalCost = applicabilityCost * calculatePercentage(percent);
-
+      
+      
       return {
         ...item,
         ApplicabilityCost: applicabilityCost,
@@ -1650,8 +1652,9 @@ function TabDiscountOther(props) {
     const totalOtherCostTemp = otherCostTemp.reduce((total, item) => total + item.AnyOtherCost, 0);
 
     let discountTemp = otherDiscountData.gridData?.length > 0 ? otherDiscountData.gridData.map(item => calculateCostByApplicability(item, true)) : [];
+    
     const totalDiscountTemp = discountTemp.reduce((total, item) => total + item.NetCost, 0);
-
+    
     dispatch(setOtherCostData({ gridData: otherCostTemp, otherCostTotal: totalOtherCostTemp }));
     dispatch(setOtherDiscountData({ gridData: discountTemp, totalCost: totalDiscountTemp }));
     setOtherCostArray(otherCostTemp)

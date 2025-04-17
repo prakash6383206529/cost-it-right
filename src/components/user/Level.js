@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { Controller, useForm } from "react-hook-form";
 import { SearchableSelectHookForm } from "../layout/HookFormInputs";
 import { useLabels } from "../../helper/core";
+import { getLocalizedCostingHeadValue } from "../../helper";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 const Level = (props) => {
@@ -53,7 +54,7 @@ const Level = (props) => {
   * @method componentDidMount
   * @description used to called after mounting component
   */
-  const { technologyLabel } = useLabels();
+  const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel  } = useLabels();
   useEffect(() => {
     dispatch(getApprovalModuleSelectList((res) => {
       if (res && res.data && res.data.Result) {
@@ -223,7 +224,11 @@ const Level = (props) => {
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        const localizedText = getLocalizedCostingHeadValue(item.Text, vendorBasedLabel, zeroBasedLabel, customerBasedLabel)
+        temp.push({ 
+          label: localizedText || item.Text, // Use localized text or original if not transformed
+          value: item.Value 
+        });
         return null
       });
       return temp;
