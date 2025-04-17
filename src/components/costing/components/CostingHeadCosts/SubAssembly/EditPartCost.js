@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { checkForDecimalAndNull, checkForNull, formViewData, percentageOfNumber } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId, percentageOfNumber } from '../../../../../helper';
 import { ListForPartCost, optionsForDelta } from '../../../../../config/masterData';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
@@ -450,7 +450,8 @@ function EditPartCost(props) {
                 "BaseWeightedAverageCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
                 "NetPOPrice": weightedCost,
                 "BasicRate": weightedCost,
-                "CostingSettledDetails": tempArray
+                "CostingSettledDetails": tempArray,
+                "LoggedInUserId":loggedInUserId()
             }
             dispatch(saveSettledCostingDetails(obj, res => { }))
             let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
