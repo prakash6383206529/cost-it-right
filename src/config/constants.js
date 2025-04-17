@@ -3395,7 +3395,6 @@ export const PAINTTECHNOLOGY = 31
 export const HANGEROVERHEAD = "Hanger OverHead"
 
 export const IsSelectSinglePlant = true
-
 //VERSION 
 export const VERSION = "V4.2.15";
 
