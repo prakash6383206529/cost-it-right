@@ -3387,13 +3387,17 @@ export const TAPE = "Tape"
 export const PAINT = "Paint"
 export const HANGER = "Hanger"
 export const SURFACETREATMENTLABEL = "Surface Treatment"
+export const RM = "RM"
+export const CC = "CC"
+export const RMCC = "RM + CC"
+
 export const PAINTTECHNOLOGY = 31
 export const HANGEROVERHEAD = "Hanger OverHead"
 
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V4.2.12";
+export const VERSION = "V4.2.15";
 
 
 
