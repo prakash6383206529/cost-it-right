@@ -24,7 +24,6 @@ const gridOptions = {};
 function AnalyticsDrawer(props) {
 
     const { ModeId, rowData, importEntry } = props
-
     const toggleDrawer = (event, mode = false) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -56,7 +55,7 @@ function AnalyticsDrawer(props) {
                 case 2:
                     return rowData?.NetLandedCost || 0;
                 case 3:
-                    return rowData?.Rate || 0;
+                    return rowData?.Rate  || 0;
                 case 4:
                     return rowData?.MachineRate || 0;
                 default:
@@ -235,7 +234,7 @@ function AnalyticsDrawer(props) {
                 color: '#000',
                 anchor: 'end',
                 align: 'top',
-                formatter: function (value) {
+                formatter: function(value) {
                     const formattedValue = checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice);
                     return formattedValue;
                 }
@@ -426,7 +425,7 @@ function AnalyticsDrawer(props) {
                                                             anchor: 'end',
                                                             align: 'top',
                                                             offset: 5,
-                                                            formatter: function (value) {
+                                                            formatter: function(value) {
                                                                 const formattedValue = checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice);
                                                                 return formattedValue;
                                                             }

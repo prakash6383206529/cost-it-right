@@ -32,6 +32,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -796,6 +797,7 @@ class AddOverhead extends Component {
         return plantArray
       })
     }
+
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
       cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
@@ -814,6 +816,43 @@ class AddOverhead extends Component {
       }
     }
     this.setState({ isVendorNameNotSelected: false })
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: OverheadID }
+    })
+    let formData =
+    {
+      "OverheadId": isEditFlag ? OverheadID : null,
+      "EAttachementEntityName": isEditFlag ? null : 0,
+      "CostingTypeId": costingTypeId,
+      "VendorName":(costingTypeId === VBCTypeId ? vendorName.label : '') ,
+      "IsClient": (costingTypeId === CBCTypeId ? true : false),
+      "CustomerName":(costingTypeId === CBCTypeId ? client.label : '') ,
+      "OverheadApplicabilityType":  overheadAppli.label ,
+      "ModelType": isEditFlag ? ModelType.label : null,
+      "IsCombinedEntry": !isOverheadPercent ? true : false,
+      "OverheadPercentage": values.OverheadPercentage,
+      "OverheadMachiningCCPercentage": values.OverheadCCPercentage ,
+      "OverheadBOPPercentage": values.OverheadBOPPercentage,
+      "OverheadRMPercentage": values.OverheadRMPercentage,
+      "Remark": remarks,
+      "VendorId": costingTypeId === VBCTypeId ? vendorName.value : '',
+      "VendorCode": costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
+      "CustomerId": costingTypeId === CBCTypeId ? client.value : '',
+      "OverheadApplicabilityId": overheadAppli.value,
+      "ModelTypeId": ModelType.value,
+      "IsActive": true,
+      "CreatedDate": '',
+      "CreatedBy": loggedInUserId(),
+      "Attachements": isEditFlag ? updatedFiles : files,
+      "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      "RawMaterialChildId": RawMaterial?.value,
+      "RawMaterialName": RawMaterial?.label,
+      "RawMaterialGradeId": RMGrade?.value,
+      "RawMaterialGrade": RMGrade?.label,
+      "TechnologyId": this.state.isAssemblyCheckbox ? ASSEMBLY : null,
+      "IsForcefulUpdated": isEditFlag ? true : null,
+      "Plants": costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+    }
 
     if (isEditFlag) {
 
@@ -832,55 +871,24 @@ class AddOverhead extends Component {
 
       if (
         (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
-        && Number(DataToChange.OverheadCCPercentage) === Number(values.OverheadCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
+        && Number(DataToChange.OverheadMachiningCCPercentage) === Number(values.OverheadCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
         Toaster.warning('Please change the data to save Overhead Details')
         return false
       }
       this.setState({ setDisable: true })
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: OverheadID }
-      })
-      let requestData = {
-        OverheadId: OverheadID,
-        CostingTypeId: costingTypeId,
-        VendorName: costingTypeId === VBCTypeId ? vendorName.label : '',
-        IsClient: costingTypeId === CBCTypeId ? true : false,
-        CustomerName: costingTypeId === CBCTypeId ? client.label : '',
-        OverheadApplicabilityType: overheadAppli.label,
-        ModelType: ModelType.label,
-        IsCombinedEntry: !isOverheadPercent ? true : false,
-        OverheadPercentage: values.OverheadPercentage,
-        OverheadMachiningCCPercentage: values.OverheadCCPercentage,
-        OverheadBOPPercentage: values.OverheadBOPPercentage,
-        OverheadRMPercentage: values.OverheadRMPercentage,
-        Remark: remarks,
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
-        VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        OverheadApplicabilityId: overheadAppli.value,
-        ModelTypeId: ModelType.value,
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Attachements: updatedFiles,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        IsForcefulUpdated: true,
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: IsFinancialDataChanged
+
+      let financialDataChanged = (Number(ModelType?.value) !== Number(DataToChange?.ModelTypeId)) || (Number(DataToChange?.OverheadApplicabilityId) !== Number(overheadAppli?.value)) || (values?.OverheadRMPercentage && (Number(DataToChange?.OverheadRMPercentage) !== Number(values?.OverheadRMPercentage))) || 
+      (values?.OverheadCCPercentage && (Number(DataToChange?.OverheadMachiningCCPercentage) !== Number(values?.OverheadCCPercentage))) || (values?.OverheadBOPPercentage && (Number(DataToChange?.OverheadBOPPercentage) !== Number(values?.OverheadBOPPercentage)))
+      // let nonFinancialDataChanged=String(DataToChange.Remark) !== String(values.Remark) && JSON.stringify(updatedFiles) !== JSON.stringify(DataToChange.Attachements)
+      if (financialDataChanged && checkEffectiveDate(effectiveDate, DataToChange?.EffectiveDate) && this.props.IsOverheadAssociated) {
+        this.setState({ setDisable: false })
+        Toaster.warning('Please update the Effective date.')   
+        return false
       }
-      if (isEditFlag && IsFinancialDataChanged) {
-        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-          Toaster.warning('Please update the effective date')
-          this.setState({ setDisable: false })
-          return false
-        }
-      }
-      this.props.updateOverhead(requestData, (res) => {
+      formData.IsFinancialDataChanged = financialDataChanged ? true : false
+ 
+      this.props.updateOverhead(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
@@ -889,34 +897,7 @@ class AddOverhead extends Component {
       });
     } else {
       this.setState({ setDisable: true })
-      const formData = {
-        EAttachementEntityName: 0,
-        CostingTypeId: costingTypeId,
-        IsCombinedEntry: !isOverheadPercent ? true : false,
-        OverheadPercentage: !isOverheadPercent ? values.OverheadPercentage : '',
-        OverheadMachiningCCPercentage: !isCC ? values.OverheadCCPercentage : '',
-        OverheadBOPPercentage: !isBOP ? values.OverheadBOPPercentage : '',
-        OverheadRMPercentage: !isRM ? values.OverheadRMPercentage : '',
-        Remark: remarks,
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
-        VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        OverheadApplicabilityId: overheadAppli.value,
-        ModelTypeId: ModelType.value,
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Attachements: files,
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: IsFinancialDataChanged,
-        TechnologyId: this.state.isAssemblyCheckbox ? ASSEMBLY : null
-      }
-
+     
       this.props.createOverhead(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
@@ -1225,7 +1206,7 @@ class AddOverhead extends Component {
                               }`}
                             onChange={this.onPressAssemblyCheckbox}
                           >
-                            Apply for Part Type
+                            Manage Applicabilities For Multi Technology Assembly
                             <input
                               type="checkbox"
                               checked={this.state.isAssemblyCheckbox}
@@ -1353,7 +1334,7 @@ class AddOverhead extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isViewMode || !IsFinancialDataChanged}
+                              disabled={isViewMode}
                               placeholder={isViewMode || !IsFinancialDataChanged ? '-' : "Select Date"}
                             />
                           </div>

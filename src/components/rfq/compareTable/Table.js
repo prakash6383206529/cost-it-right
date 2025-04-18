@@ -34,7 +34,9 @@ const Table = (props) => {
                             <div className="d-flex align-items-center justify-content-between mr-0">
                                 <span>{item[item.length - 1] ?? '-'}</span>
                                 {/* Add view icon for Other Net Cost column */}
-                                {header[header?.length - 1]?.includes('Other Net Cost') && headerData[index]?.bestCost !== "" && (
+                                {header[header?.length - 1]?.includes('Other Net Cost') && 
+                                 headerData[index]?.bestCost !== "" && 
+                                 item[9] && item[9] !== "" && (
                                     <button
                                         id="view_conversion_cost"
                                         type="button"
@@ -67,8 +69,6 @@ const Table = (props) => {
     }
 
     return (
-
-
         <table className='table table-bordered costing-summary-table'>
             <thead>
                 <tr>
@@ -130,8 +130,6 @@ const Table = (props) => {
                 {children}
             </tbody>
         </table>
-
-
     );
 };
 

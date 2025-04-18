@@ -140,7 +140,7 @@ function MRSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.NewMachineRate :
-                        <span id={`newRateMachineRate-${props?.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} netCost_revised`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
+                        <span id={`newRateMachineRate-${props.rowIndex}`} className={`form-control netCost_revised`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
                 }
 
             </>
@@ -439,10 +439,26 @@ function MRSimulation(props) {
 
         let temp = []
         TempData && TempData.map((item) => {
-            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-            temp.push(item)
-        })
+            let newItem = { ...item }
+            newItem.EffectiveDate = (newItem.EffectiveDate)?.slice(0, 10)
+            newItem.NewMachineRate = newItem?.NewMachineRate ? newItem?.NewMachineRate : newItem?.MachineRate
+            newItem.MachineRate = isImpactedMaster ? newItem?.OldMachineRate : newItem?.MachineRate
 
+            Object.keys(newItem).forEach(key => {
+                if (newItem[key] === null || newItem[key] === undefined || newItem[key] === '') {
+                    newItem[key] = "-"
+                }
+            })
+            
+            temp.push(newItem)
+        })
+        
+        if(isImpactedMaster){
+            data = data.filter(column => !['CostingHead', 'Technology', 'Plant','VendorName'].includes(column.value));
+        } else {
+            data = data.filter(column => !['LocalCurrency', 'PreviousMinimum', 'PreviousMaximum', 'PreviousAverage',
+                'Minimum', 'Maximum', 'Average','NewMachineRateLocalConversion','OldMachineRateLocalConversion'].includes(column.value));
+        }
         return (
             <ExcelSheet data={temp} name={'Machine Data'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -556,7 +572,7 @@ function MRSimulation(props) {
                                                 {!isImpactedMaster && <AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName={technologyLabel} minWidth={columnWidths.Technology}></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
-                                                    <AgGridColumn minWidth={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                                    <AgGridColumn minWidth={columnWidths.CostingNumber} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                                 }
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNo" tooltipField='PartNo' editable='false' headerName="Part No" minWidth={columnWidths.PartNo}></AgGridColumn>}
@@ -574,7 +590,7 @@ function MRSimulation(props) {
                                                     </>
                                                 }
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn minWidth={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                <AgGridColumn field="Currency" minWidth={120} headerName="Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="Currency" minWidth={180} headerName="Currency/Settlement Currency" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 {(isImpactedMaster || props?.lastRevision) && <AgGridColumn field="LocalCurrency" minWidth={120} headerName={"Plant Currency"} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
 
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Cost (Currency)" marryChildren={true} >
