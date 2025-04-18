@@ -314,7 +314,6 @@ class BulkUpload extends Component {
      * @description called for profile pic change
      */
     fileHandler = event => {
-
         this.setState({ bulkUploadLoader: true })
         let fileObj = event.target.files[0];
         let masterDataArray = []
@@ -365,6 +364,7 @@ class BulkUpload extends Component {
                                 if (this.state.costingTypeId === ZBCTypeId) {
                                     const localizedRMImportZBC = this.localizeHeaders(RMImportZBC);
                                     masterDataArray = localizedRMImportZBC
+                                    
                                     checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedRMImportZBC, ZBCTypeId), fileHeads, true)
                                 }
                                 else if (this.state.costingTypeId === VBCTypeId) {
@@ -698,7 +698,6 @@ class BulkUpload extends Component {
 
                             let obj = {}
                             val.map((el, i) => {
-
                                 if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'Indexed On') && typeof el === 'string' && el !== '') {
                                     if (isDateFormatter(el)) {
                                         el = el.replaceAll('/', '-')
@@ -743,6 +742,19 @@ class BulkUpload extends Component {
                                 } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
+                                if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'ApplyScrap(%)'){
+                                    fileHeads[i] = 'IsCalculateScrapRate'
+                                }
+                                if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'Scrap(%)'){
+                                    fileHeads[i] = 'ScrapRatePercentageOfRMRate'
+                                }
+                                if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'ApplyMachiningScrap(%)'){
+                                    fileHeads[i] = 'IsCalculateMachineScrapRate'
+                                }
+                                if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'MachiningScrap(%)'){
+                                    fileHeads[i] = 'MachineScrapRatePercentageOfRMRate'
+                                }
+
                                 if (fileHeads[i] === `${showBopLabel()}PartNumber` || fileHeads[i] === 'BOPNumber' || fileHeads[i] === `${showBopLabel()}Number`) {
                                     fileHeads[i] = 'BoughtOutPartNumber'
                                 }
