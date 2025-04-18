@@ -50,7 +50,7 @@ const FuelListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    isImport: false,
+    isImport: props?.isImport ? true : false,
     totalRecordCount: 0,
     globalTake: defaultPageSize,
   });
@@ -60,7 +60,7 @@ const FuelListing = (props) => {
   const { fuelDataList } = useSelector((state) => state.fuel);
   useEffect(() => {
     if (permissions) {
-      getDataList(null, null);
+      getDataList(null, null, state.isImport);
     }
   }, [permissions]);
 
@@ -150,7 +150,7 @@ const FuelListing = (props) => {
 
   const closeBulkUploadDrawer = () => {
     setState((prevState) => ({ ...prevState, isBulkUpload: false, isLoader: true }));
-    getDataList(0, 0);
+    getDataList(0, 0, state.isImport);
   };
 
 
@@ -330,7 +330,7 @@ const floatingFilterStatus = {
                 </label>
               </Col>
             </Row>
-            <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+            <div className={`ag-theme-material grid-parent-wrapper ${state.isLoader && "max-loader-height"}`}>
               {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
               {!state.isLoader &&
                 <AgGridReact

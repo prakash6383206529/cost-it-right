@@ -1420,7 +1420,7 @@ class AddPower extends Component {
       IsVendor: false,
     })
     // this.getDetails();
-    this.props.hideForm(type)
+    this.props.hideForm(type, this.state.isImport)
   }
   cancelHandler = () => {
     if (this.state.isViewMode) {

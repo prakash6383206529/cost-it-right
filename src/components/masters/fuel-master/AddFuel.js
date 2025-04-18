@@ -673,7 +673,7 @@ class AddFuel extends Component {
     if (type === 'submit') {
       this.props.getFuelDetailData('', res => { })
     }
-    this.props.hideForm(type)
+    this.props.hideForm(type, this.state.isImport)
   }
   cancelHandler = () => {
     if (this.state.isViewMode) {
