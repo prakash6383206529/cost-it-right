@@ -52,6 +52,7 @@ function RMDomesticListing(props) {
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
     const dispatch = useDispatch();
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const allRmDataList = useSelector((state) => state.material.allRmDataList);
@@ -223,6 +224,7 @@ function RMDomesticListing(props) {
     const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
         const { isSimulation } = props
         setPageRecord(skip)
+
         if (filterModel?.EffectiveDate && !isReset) {
 
             if (filterModel.EffectiveDate.dateTo) {
@@ -296,16 +298,7 @@ function RMDomesticListing(props) {
                 }
 
                 if (res) {
-                    let isReset = true
                     setTimeout(() => {
-                        for (var prop in floatingFilterData) {
-
-                            if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
-                                isReset = false
-                            }
-
-                        }
-                        // Sets the filter model via the grid API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                     }, 300);
 
@@ -537,7 +530,7 @@ function RMDomesticListing(props) {
         let isEditbale = false
         let isDeleteButton = false
         const IsRFQRawMaterial = Boolean(rowData?.IsRFQRawMaterial);
-        if (EditAccessibility) {
+        if (EditAccessibility && rowData?.IsRMEditable) {
             isEditbale = true
         } else {
             isEditbale = false
@@ -838,7 +831,7 @@ function RMDomesticListing(props) {
         let finalArr = selectedRows
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
-
+        uniqueArray = uniqueArray.map(item => ({...item,EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY'): item.EffectiveDate}));
         if (isSimulation) {
             apply(uniqueArray, length)
         }
@@ -979,10 +972,6 @@ console.log(warningMessage);
 
 
     }
-
-
-
-
 
 
     return (
@@ -1128,14 +1117,8 @@ console.log(warningMessage);
                                         suppressRowClickSelection={true}
                                         enableBrowserTooltips={true}
                                     >
-                                        <AgGridColumn
-                                            cellClass="has-checkbox"
-                                            field="CostingHead"
-                                            headerName='Costing Head'
-                                            floatingFilterComponentParams={floatingFilterStatus}
-                                            floatingFilterComponent="statusFilter"
-                                            cellRenderer={combinedCostingHeadRenderer}
-                                        />
+                                        <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                        {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>}
                                         <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>
@@ -1150,7 +1133,7 @@ console.log(warningMessage);
                                         {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
                                         {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                        <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                                        <AgGridColumn field="Currency" headerName="Currency/Settlement Currency"></AgGridColumn>
                                         <AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>

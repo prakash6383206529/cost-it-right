@@ -34,10 +34,10 @@ export default function AuthMiddleware(ComposedComponent, PAGENAME) {
                 this.props.checkPageAuthorization(reqData, res => {
                     if (res && res.status === 401 && res.statusText === 'Unauthorized') {
                         //NEW ADDED FOR (DISABLED THIS IF ANY ERROR)
-                        reactLocalStorage.setObject("isUserLoggedIn", false);
-                        reactLocalStorage.setObject("userDetail", {});
-                        reactLocalStorage.set('ModuleId', '');
-                        this.setState({ redirectToLogin: true })
+                        // reactLocalStorage.setObject("isUserLoggedIn", false);
+                        // reactLocalStorage.setObject("userDetail", {});
+                        // reactLocalStorage.set('ModuleId', '');
+                        // this.setState({ redirectToLogin: true })
                     }
                 })
             }

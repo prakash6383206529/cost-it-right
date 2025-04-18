@@ -25,9 +25,11 @@ import { useLabels, useWithLocalization } from '../../../helper/core';
 import Switch from 'react-switch'
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 import { setResetCostingHead } from '../../../actions/Common';
+import { setListToggle } from '../../../actions/Common';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
+  const { listToggle } = useSelector((state) => state.comman)
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -44,8 +46,8 @@ const FreightListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    isImport: false,
     totalRecordCount: 0,
+    isImport: listToggle.Freight,
     globalTake: defaultPageSize,
   })
   const permissions = useContext(ApplyPermission);
@@ -104,7 +106,7 @@ const FreightListing = (props) => {
   */
   const viewOrEditItemDetails = (Id, rowData, isViewMode, isEditMode) => {
     let data = { isEditFlag: true, Id: Id, IsVendor: rowData.CostingHead, isViewMode: isViewMode, isEditMode: isEditMode }
-    props.getDetails(data);
+    props.getDetails(data,rowData?.IsFreightAssociated);
   }
 
   /**
@@ -157,7 +159,7 @@ const FreightListing = (props) => {
     return (
       <>
         {permissions.View && <Button id={`freightListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true, false)} title={"View"} />}
-        {permissions.Edit && <Button id={`freightListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false, true)} title={"Edit"} />}
+        {permissions.Edit && rowData?.IsEditable && <Button id={`freightListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false, true)} title={"Edit"} />}
         {permissions.Delete && !rowData?.IsFreightAssociated && <Button id={`freightListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
@@ -219,18 +221,17 @@ const FreightListing = (props) => {
     // Map TempData to replace "NA" with "-"
     let temp = [];
     temp = TempData && TempData.map((item) => {
-      const newItem = { ...item }; // Create a copy of the object to avoid mutating original data
-      if (newItem.VendorName === '-') {
-        newItem.VendorName = ' '
-      }
-      for (let key in newItem) {
-        if (newItem[key] === 'NA' || newItem[key] === ' ' || newItem[key] === null || newItem[key] === undefined) {
-          newItem[key] = '-';
+      // if (item.VendorName === '-') {
+      //   item.VendorName = ' '
+      // }
+      for (const key in item) {
+        if (item[key] === null || item[key] === undefined || item[key] === "") {
+          item[key] = "-"; // Set to hyphen if data is not available
         }
       }
-      return newItem;
-    });
+      return item;
 
+    })
 
     return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
       {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -258,7 +259,9 @@ const FreightListing = (props) => {
   const onBtExport = () => {
     let tempArr = []
     tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (freightDetail ? freightDetail : [])
+    tempArr = tempArr?.map(item => ({...item,EffectiveDate: item.EffectiveDate? DayTime(item.EffectiveDate).format("DD/MM/YYYY"): "-"}));
+    const freightData = freightDetail?.map(item => ({...item,EffectiveDate: item.EffectiveDate? DayTime(item.EffectiveDate).format("DD/MM/YYYY"): "-"}));
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (freightData ? freightData : [])
     const filteredLabels = FREIGHT_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
       if (column.value === "ExchangeRateSourceName") {
         return getConfigurationKey().IsSourceExchangeRateNameVisible
@@ -315,6 +318,7 @@ const FreightListing = (props) => {
   };
   const importToggle = () => {
     setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
+    dispatch(setListToggle({ Freight: !state.isImport }));
     getDataList(null, null, null, null, !state.isImport)
 
   }
@@ -418,54 +422,32 @@ const FreightListing = (props) => {
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   floatingFilter={true}
-                  domLayout="autoHeight"
+                  domLayout='autoHeight'
                   rowData={freightDetail}
                   pagination={true}
-                  paginationPageSize={10}
+                  paginationPageSize={defaultPageSize}
                   onGridReady={onGridReady}
                   gridOptions={gridOptions}
-                  noRowsOverlayComponent={"customNoRowsOverlay"}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
                   onFilterModified={onFloatingFilterChanged}
-                  noRowsOverlayComponentParams={{
-                    title: EMPTY_DATA,
-                    imagClass: "imagClass",
-                  }}
-                  rowSelection={"multiple"}
+                  noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
+                  rowSelection={'multiple'}
                   onSelectionChanged={onRowSelect}
                   frameworkComponents={frameworkComponents}
                   suppressRowClickSelection={true}
                 >
-                  <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
-                    floatingFilterComponent="statusFilter"></AgGridColumn>
+                  <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                   <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
-                  <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                  <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                  {reactLocalStorage.getObject("CostingTypePermission").cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
+                  <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                  <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                  {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                  {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                  {/* New Columns */}
-                  <AgGridColumn
-                    field="Load"
-                    headerName="Load"
-                    valueGetter={(params) => params.data?.FreightLoadType || "-"}
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="DimensionsName"
-                    headerName="Truck Dimensions (mm)"
-                    valueGetter={(params) => params.data?.DimensionsName || "-"}
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="Capacity"
-                    headerName="Capacity"
-                    valueGetter={(params) => params.data?.Capacity || "-"}
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="Criteria"
-                    headerName="Criteria"
-                    valueGetter={(params) => params.data?.RateCriteria || "-"}
-                  ></AgGridColumn>
-                  <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
-                  <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"}></AgGridColumn>
-                  <AgGridColumn width="220px" field="FreightId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+                  <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                  {/* <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
+                <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn> */}
+
+                  <AgGridColumn width='220px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
                 </AgGridReact>
               }
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}

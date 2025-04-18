@@ -621,6 +621,7 @@ class AddExchangeRate extends Component {
                           handleChangeDescription={this.handleCurrency}
                           valueDescription={this.state.currency}
                           disabled={isEditFlag ? true : false}
+                          isClearable={true}
                         />
                       </Col>
                       <Col md="3">
@@ -643,6 +644,7 @@ class AddExchangeRate extends Component {
                           handleChangeDescription={this.handleToCurrency}
                           valueDescription={this.state.toCurrency}
                           disabled={isEditFlag ? true : false}
+                          isClearable={true}
                         />
                       </Col>
                       {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col md="3">
@@ -663,7 +665,7 @@ class AddExchangeRate extends Component {
                       </Col>}
                       <Col md="3">
                         <Field
-                          label={`Currency Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          label={`Currency Exchange Rate (${this.state.currency?.label ? this.state.currency?.label : "From Currency"})`}
                           name={"CurrencyExchangeRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
@@ -678,7 +680,7 @@ class AddExchangeRate extends Component {
                       </Col>
                       <Col md="3">
                         <Field
-                          label={`Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          label={`Bank Rate (${this.state.currency?.label ? this.state.currency?.label : "From Currency"})`}
                           name={"BankRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
@@ -708,7 +710,7 @@ class AddExchangeRate extends Component {
 
                       <Col md="3">
                         <Field
-                          label={`Custom Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          label={`Custom Rate (${this.state.currency?.label ? this.state.currency?.label : "From Currency"})`}
                           name={"CustomRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}

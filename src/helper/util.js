@@ -87,10 +87,10 @@ const handleHTTPStatus = (response) => {
       return toast.error(errMsg400)
     case 401:
       toast.error('Authentication error. Please contact your IT Team.')
-      reactLocalStorage.setObject("isUserLoggedIn", false);
-      reactLocalStorage.setObject("userDetail", {});
-      reactLocalStorage.set('ModuleId', '');
-      window.location.assign('/login');
+      // reactLocalStorage.setObject("isUserLoggedIn", false);
+      // reactLocalStorage.setObject("userDetail", {});
+      // reactLocalStorage.set('ModuleId', '');
+      // window.location.assign('/login');
       return false
     case 403:
       const errMsg403 = response?.data?.Message ? response.data.Message : 'You are not allowed to access this resource. Please contact your IT Team.'
@@ -665,8 +665,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   }
 
   obj.profitOn = {
-    profitTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '',
-    profitValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-',
+    profitTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '',    profitValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-',
     profitPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitPercentage : '-',
     profitRMPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage : '-',
     profitBOPPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage : '-',
@@ -684,8 +683,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   }
 
   obj.iccOn = {
-    iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '',
-    iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
+    iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '',    iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
     iccPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate : '-',
     ICCCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead : '-',
     ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
@@ -695,7 +693,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
 
   obj.paymentTerms = {
-    paymentTitle: paymentTermDetail?.PaymentTermApplicability || '',
+    paymentTitle: paymentTermDetail?.PaymentTermApplicability || '',   
     paymentValue: paymentTermDetail?.NetCost || 0,
     paymentPercentage: paymentTermDetail?.InterestRate || '-',
     PaymentTermCRMHead: paymentTermDetail?.PaymentTermCRMHead || '-',
@@ -1097,7 +1095,7 @@ export function getTechnologyPermission(technology) {
 }
 
 export function isRMDivisorApplicable(technology) {
-  const allowedTechnologyForRMDivisor = [SPRINGS, HARDWARE, FASTNERS, RIVETS];
+  const allowedTechnologyForRMDivisor = [SPRINGS, FASTNERS, RIVETS];
   return allowedTechnologyForRMDivisor.includes(technology);
 }
 

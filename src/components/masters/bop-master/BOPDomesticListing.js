@@ -45,7 +45,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPDomesticListing = (props) => {
-
   const permissions = useContext(ApplyPermission);
   const dispatch = useDispatch();
   const searchRef = useRef(null);
@@ -511,7 +510,7 @@ const BOPDomesticListing = (props) => {
 
     let isEditbale = false
     let isDeleteButton = false
-    if (permissions?.Edit) {
+    if (permissions?.Edit && rowData.IsBOPEditable) {
       isEditbale = true
     } else {
       isEditbale = false
@@ -864,7 +863,6 @@ const BOPDomesticListing = (props) => {
     headerCheckboxSelection: (props.isSimulation || props.benchMark) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
-
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
@@ -904,6 +902,7 @@ const BOPDomesticListing = (props) => {
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
+    uniqueArray = uniqueArray.map(item => ({ ...item, EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : item.EffectiveDate }));
     if (props.isSimulation) {
       props.apply(uniqueArray, length)
     }
@@ -998,6 +997,7 @@ const BOPDomesticListing = (props) => {
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}
                   floatingFilterComponentParams={floatingFilterStatus}
                   floatingFilterComponent="statusFilter"></AgGridColumn>
+                {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>}
                 <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
@@ -1013,7 +1013,7 @@ const BOPDomesticListing = (props) => {
                 {props?.isMasterSummaryDrawer && getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>}
                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                <AgGridColumn minWidth={180} field="Currency" headerName="Currency/Settlement Currency"></AgGridColumn>
                 <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                 <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
 
