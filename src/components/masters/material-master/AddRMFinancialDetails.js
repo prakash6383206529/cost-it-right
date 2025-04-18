@@ -33,7 +33,7 @@ import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
 import { compareRateCommon, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
-    const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
+    const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll, onWarningChange } = props
     const { isEditFlag, isViewFlag } = data
 
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
@@ -94,7 +94,8 @@ function AddRMFinancialDetails(props) {
         NetConditionCost: 0,
         NetCostWithoutConditionCost: 0,
         hidePlantCurrency: false,
-        showPlantWarning: false
+        showPlantWarning: false,
+        showWarning: false
     }
     const [state, setState] = useState(initialState);
     const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState({
@@ -191,8 +192,10 @@ function AddRMFinancialDetails(props) {
                             if (Object.keys(res?.data?.Data).length === 0) {
 
                                 setState(prevState => ({ ...prevState, showWarning: true }));
+                                onWarningChange && onWarningChange(true);
                             } else {
                                 setState(prevState => ({ ...prevState, showWarning: false }));
+                                onWarningChange && onWarningChange(false);
                             }
                             const exchangeRate = res?.data?.Data?.CurrencyExchangeRate ?? 1;
                             const Data = res?.data?.Data
@@ -469,7 +472,7 @@ function AddRMFinancialDetails(props) {
 
     const allFieldsInfoIcon = (scrapLabel) => {
         let obj = {
-            toolTipBasicPrice: `Basic Price = Basic Rate + Other Cost`,
+            toolTipBasicPrice: `Basic Rate + Other Cost`,
             toolTipTextCalculatedFactor: <>{labelWithUOMAndUOM("Calculated Factor", state.UOM?.label, state.ScrapRateUOM?.label)} = 1 / {labelWithUOMAndUOM("Calculated Ratio", state.ScrapRateUOM?.label, state.UOM?.label)}</>,
             toolTipTextScrapCostPerOldUOM: <>{labelWithUOMAndCurrency(scrapLabel, state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = {labelForScrapRate()?.labelBaseCurrency} * Calculated Factor</>
         }
@@ -1716,7 +1719,7 @@ function AddRMFinancialDetails(props) {
                             </>}
 
                             {states.isImport && <Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost" tooltipText={`${labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}= ${netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost" tooltipText={`${netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                     name={'NetLandedCost'}
@@ -1732,7 +1735,7 @@ function AddRMFinancialDetails(props) {
                                 />
                             </Col>}
                             {showNetCost() && <Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-currency" tooltipText={`${labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, `${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')}`)}= ${states.isImport ? netCostTitle()?.tooltipTextPlantCurrency : netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-currency" tooltipText={`${states.isImport ? netCostTitle()?.tooltipTextPlantCurrency : netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
                                 <TextFieldHookForm
                                     // label={`Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`}
                                     label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, `${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')}`)}
@@ -1749,7 +1752,7 @@ function AddRMFinancialDetails(props) {
                                 />
                             </Col>}
                             {<Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost-currency" tooltipText={`${labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency")))}= ${states.isImport ? netCostTitle()?.toolTipTextNetCostBaseCurrency : netCostTitle()?.tooltipTextPlantCurrency}`} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost-currency" tooltipText={`${states.isImport ? netCostTitle()?.toolTipTextNetCostBaseCurrency : netCostTitle()?.tooltipTextPlantCurrency}`} />
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Net Cost", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency")))}
                                     name={'NetLandedCostConversion'}

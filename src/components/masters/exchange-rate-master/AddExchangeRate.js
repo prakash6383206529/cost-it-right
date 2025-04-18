@@ -605,6 +605,7 @@ class AddExchangeRate extends Component {
                           handleChangeDescription={this.handleCurrency}
                           valueDescription={this.state.currency}
                           disabled={isEditFlag ? true : false}
+                          isClearable={true}
                         />
                       </Col>
                       <Col md="3">
@@ -627,6 +628,7 @@ class AddExchangeRate extends Component {
                           handleChangeDescription={this.handleToCurrency}
                           valueDescription={this.state.toCurrency}
                           disabled={isEditFlag ? true : false}
+                          isClearable={true}
                         />
                       </Col>
                       {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col md="3">

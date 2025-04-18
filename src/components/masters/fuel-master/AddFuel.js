@@ -90,7 +90,8 @@ class AddFuel extends Component {
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
-      showPlantWarning: false
+      showPlantWarning: false,
+      showWarning: false
 
     }
     this.state = { ...this.initialState };
@@ -246,6 +247,7 @@ class AddFuel extends Component {
                 countryId: item.CountryId,
                 city: item.CityName,
                 cityId: item.CityId,
+                isAssociated: item.IsAssociated
               }
             })
             const effectiveDate = rateGridArray[0]?.effectiveDate;
@@ -272,7 +274,8 @@ class AddFuel extends Component {
               settlementExchangeRateId: Data?.ExchangeRateId,
               isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
-              effectiveDate: effectiveDate
+              // effectiveDate: effectiveDate
+              effectiveDate: Data.EffectiveDate ? Data?.EffectiveDate : ""
 
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -405,7 +408,8 @@ class AddFuel extends Component {
         StateLabel: StateName ? StateName?.label : '',
         StateId: StateName ? StateName?.value : '',
         //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
-        effectiveDate: effectiveDate,
+        // effectiveDate: effectiveDate,
+        effectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
         Rate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
         RateLocalConversion: fieldsObj?.RateLocalConversion,
         RateConversion: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.RateConversion : fieldsObj?.RateLocalConversion,
@@ -466,12 +470,12 @@ class AddFuel extends Component {
     }
     let tempData = rateGrid[rateGridEditIndex];
     let financialDataChanged = (Number(tempData.RateConversion) !== Number(fieldsObj?.RateConversion)) || (Number(tempData.RateLocalConversion) !== Number(fieldsObj?.RateLocalConversion)) || (Number(tempData.Rate) !== Number(fieldsObj?.Rate) || Number(tempData.cityId) !== Number(city?.value) || Number(tempData.countryId) !== Number(country?.value))
-    if (tempData?.IsFuelAssociated) {
+    if (tempData?.isAssociated) {
       if (financialDataChanged && checkEffectiveDate(effectiveDate, tempData.effectiveDate)) {
         Toaster.warning('Please update the Effective date.')
         return false
       }
-    }
+    } 
     tempData = {
       Id: tempData.Id,
       StateLabel: StateName?.label,
@@ -481,10 +485,13 @@ class AddFuel extends Component {
       country: country?.label ? country?.label : '',
       city: city?.label ? city?.label : "",
       //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
+      effectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
       effectiveDateRate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
       RateLocalConversion: fieldsObj?.RateLocalConversion,
       RateConversion: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.RateConversion : fieldsObj?.RateLocalConversion,
-      Rate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion
+      Rate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
+      ...(tempData.isAssociated !== undefined && { IsAssociated: tempData.isAssociated }),
+      ...(financialDataChanged && { IsFinancialDataChanged: true }) 
     }
     tempArray = Object.assign([...rateGrid], { [rateGridEditIndex]: tempData })
     this.setState({
@@ -520,13 +527,11 @@ class AddFuel extends Component {
   editItemDetails = (index) => {
     const { rateGrid } = this.state;
     const tempData = rateGrid[index];
-
-
-
     this.setState({
       rateGridEditIndex: index,
       isEditIndex: true,
-      effectiveDate: new Date(DayTime(tempData.effectiveDate).format("MM/DD/YYYY")),
+      // effectiveDate: new Date(DayTime(tempData.effectiveDate).format("MM/DD/YYYY")),
+      effectiveDate: tempData.effectiveDate, // Due to UPPER Line, when you update, then checkEffectiveDate() function always returned false
       country: { label: tempData.country, value: tempData.countryId },
       city: { label: tempData.city, value: tempData.cityId },
       StateName: { label: tempData.StateLabel, value: tempData.StateId },
@@ -704,7 +709,8 @@ class AddFuel extends Component {
         Rate: isImport ? Number(item?.Rate) : Number(item?.RateLocalConversion),
         RateConversion: Number(item?.RateConversion),
         RateLocalConversion: Number(item?.RateLocalConversion),
-        EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        // EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm'),
         // StateId: item.StateId,
         PlantId: singlePlantSelected?.value,
         CountryId: item.countryId ? Number(item.countryId) : '',
@@ -713,6 +719,8 @@ class AddFuel extends Component {
         VendorId: vendorName.value ? vendorName.value : null,
         CustomerId: client.value ? client.value : null,
         CostingHeadId: Number(costingTypeId),
+        IsAssociated: item?.IsAssociated ?? false,
+        IsFinancialDataChanged: item?.IsFinancialDataChanged ?? false
       }
     })
 
@@ -1114,7 +1122,7 @@ class AddFuel extends Component {
                                   valueDescription={this.state.singlePlantSelected}
                                   mendatory={true}
                                   className="multiselect-with-border"
-                                  disabled={isEditFlag}
+                                  disabled={isEditFlag || this?.state?.rateGrid?.length > 0}
                                 />
                               </div>
                             </div>
@@ -1507,7 +1515,8 @@ class AddFuel extends Component {
                                             className="Edit mr-2"
                                             title='Edit'
                                             type={"button"}
-                                            disabled={isViewMode || item?.IsAssociated}
+                                            // disabled={isViewMode || item?.IsAssociated}
+                                            disabled={isViewMode}
                                             onClick={() =>
                                               this.editItemDetails(index)
                                             }
@@ -1516,7 +1525,7 @@ class AddFuel extends Component {
                                             className="Delete"
                                             title='Delete'
                                             type={"button"}
-                                            disabled={isViewMode || item?.IsAssociated || isGridEdit}
+                                            disabled={isViewMode || item?.isAssociated || isGridEdit}
                                             onClick={() =>
                                               this.deleteItem(index)
                                             }
@@ -1553,7 +1562,7 @@ class AddFuel extends Component {
                           {!isViewMode && <button id="AddFuel_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
-                            disabled={isViewMode || setDisable}
+                            disabled={isViewMode || setDisable || this.state?.showWarning || this.state?.showPlantWarning}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}

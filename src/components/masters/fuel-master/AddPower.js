@@ -122,6 +122,7 @@ class AddPower extends Component {
       city: [],
       isDisabled: false,
       showPlantWarning: false,
+      showWarning: false,
       dataToChange: {}
 
     }
@@ -1548,7 +1549,8 @@ class AddPower extends Component {
           IsActive: true,
           NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.state.isImport /* || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) */ ? this.props.fieldsObj.NetPowerCostPerUnit : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion),
           VendorPlant: [],
-          EffectiveDate: effectiveDate,
+          // EffectiveDate: effectiveDate,
+          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           CountryId: country?.value,
           CityId: city?.value,
           SEBChargesDetails: [
@@ -1582,6 +1584,8 @@ class AddPower extends Component {
           ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
           CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
           Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+          IsAssociated: (costingTypeId === VBCTypeId) ? DataToChangeVendor?.IsAssociated : DataToChangeZ?.IsAssociated,
+          ...(financialDataChanged && { IsFinancialDataChanged: true })
         }
 
         this.props.updatePowerDetail(requestData, (res) => {
@@ -1885,7 +1889,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.countryHandler}
                               valueDescription={this.state.country}
-                              disabled={isViewMode || isEditFlag}
+                              disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
                             />
                           </div>
                         </Col>
@@ -1904,7 +1908,7 @@ class AddPower extends Component {
                                 required={true}
                                 handleChangeDescription={this.stateHandler}
                                 valueDescription={this.state.StateName}
-                                disabled={isViewMode || isEditFlag}
+                                disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
                               />
                             </div>
                           </Col>}
@@ -1922,7 +1926,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.cityHandler}
                               valueDescription={this.state.city}
-                              disabled={isViewMode || isEditFlag}
+                              disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
                             />
                           </div>
                         </Col>
@@ -1941,7 +1945,7 @@ class AddPower extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                isDisabled={isEditFlag ? true : false}
+                                isDisabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                 }}
@@ -1978,7 +1982,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.handleClient}
                               valueDescription={this.state.client}
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                             />
                           </Col>
                         )}
@@ -2004,7 +2008,7 @@ class AddPower extends Component {
                                 mendatory={true}
                                 required={true}
                                 className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
+                                disabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                               />
                             </div>
                           </div>
@@ -2721,7 +2725,7 @@ class AddPower extends Component {
                         </button>
                         {!isViewMode && <button id="AddPower_Save"
                           type="submit"
-                          disabled={isViewMode || setDisable || this?.state?.isDisabled}
+                          disabled={isViewMode || setDisable || this?.state?.isDisabled || this.state?.showWarning || this.state?.showPlantWarning}
                           className="user-btn mr5 save-btn" >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}
