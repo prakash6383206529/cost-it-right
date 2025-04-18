@@ -237,13 +237,14 @@ export function getQuotationDetailsList(id, callback) {
  * @description Used to fetch costing details by costingId
  */
 export function getMultipleCostingDetails(selectedRows, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
 
         let temp = []
         selectedRows && selectedRows.map((item) => {
             if (item.CostingId !== null) {
-                let request = axios.get(`${API.getCostingDetailsByCostingId}/${item.CostingId}`, config(),)
+                let request = axios.get(`${API.getCostingDetailsByCostingId}/${item.CostingId}/${loggedInUser?.loggedInUserId}`, config(),)
                 temp.push(request)
             }
         })

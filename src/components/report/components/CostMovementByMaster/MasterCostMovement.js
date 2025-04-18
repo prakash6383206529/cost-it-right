@@ -7,7 +7,7 @@ import { Col, Row } from 'reactstrap';
 import { fetchPlantDataAPI, fetchSpecificationDataAPI, getApprovalTypeSelectList, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList } from '../../../../actions/Common';
 import { RAWMATERIALINDEX, searchCount, VBC_VENDOR_TYPE, VBCTypeId, ZBC } from '../../../../config/constants';
 import { MESSAGES } from '../../../../config/message';
-import { getConfigurationKey, loggedInUserId, showBopLabel } from '../../../../helper';
+import { getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, showBopLabel } from '../../../../helper';
 import { autoCompleteDropdown } from '../../../common/CommonFunctions';
 import DayTime from '../../../common/DayTimeWrapper';
 import { getCostingSpecificTechnology } from '../../../costing/actions/Costing';
@@ -66,7 +66,7 @@ function MasterCostMovement() {
     const processSelectList = useSelector(state => state.machine.processSelectList)
 
 
-    const { technologyLabel, vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
     const dispatch = useDispatch()
 
@@ -515,7 +515,13 @@ function MasterCostMovement() {
                             return false
                         }
                         else {
-                            temp.push({ label: item.Text, value: item.Value });
+                            // Check if the Text contains "Vendor" and replace it with "Supplier"
+                            let displayText = getLocalizedCostingHeadValue(item.Text, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+                            // If the common function didn't change the text (meaning it wasn't an exact match) and the text contains "Vendor", perform a manual replacement
+                            if (displayText === item.Text && typeof item.Text === 'string' && item.Text.includes('Vendor')) {
+                                displayText = item.Text.replace(/Vendor/g, vendorLabel);
+                            }
+                            temp.push({ label: displayText, value: item.Value });
                         }
                     }
                     else {
