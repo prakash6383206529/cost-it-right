@@ -160,8 +160,8 @@ const PowerListing = (props) => {
     return (
       <>
         {permissions.View && (<Button id={`powerListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(obj, true)} title={"View"} />)}
-        {[permissions.Edit] && (<Button id={`powerListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(obj, false)} title={"Edit"} />)}
-        {permissions.Delete && (<Button id={`powerListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(obj)} title={"Delete"} />)}
+        {([permissions.Edit] && rowData?.IsEditable) && (<Button id={`powerListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(obj, false)} title={"Edit"} />)}
+        {(permissions.Delete && !rowData?.IsAssociated) && (<Button id={`powerListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(obj)} title={"Delete"} />)}
       </>
     );
   };
@@ -413,7 +413,7 @@ const PowerListing = (props) => {
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" tooltipField="PlantWithCode"></AgGridColumn>
-                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
+                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} tooltipField="VendorWithCode"></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)"></AgGridColumn>}
                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
