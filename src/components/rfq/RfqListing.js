@@ -130,7 +130,7 @@
             // Only set filter if coming from status column and not from ViewRfq close
             if (statusColumnData?.data && !closeViewRfq && !viewRfq) {
                 setDisableFilter(false);
-                setWarningMessage(true);
+                // setWarningMessage(true);
                 setFloatingFilterData(prevState => ({
                     ...prevState,
                     Status: removeSpaces(statusColumnData.data)
@@ -262,11 +262,14 @@
             }));
         };
 
-        const getDataList = useCallback((skip = 0, take = 10, isPagination = true,isReset = false) => {
+        const getDataList = useCallback((skip = 0, take = 10, isPagination = true, isReset = false) => {
             if (isPagination) {
                 setloader(true)
             }
-
+            
+            // Clear existing data before making new API call
+            setRowData([]);
+            setTotalRecordCount(0);
 
             // Construct query parameters
             const queryParams = {
@@ -322,14 +325,17 @@
                                 gridOptions?.api?.setFilterModel({}) :
                                 gridOptions?.api?.setFilterModel(filterModel);
                         }, 300);
-                        setWarningMessage(false);
-                        setIsFilterButtonClicked(false);
+                        
+                        // Only set warningMessage to false if filter button was clicked or it's a reset
+                        if (isFilterButtonClicked || isReset) {
+                            setWarningMessage(false);
+                        }
                     }
                 } else {
                     setloader(false);
                     setTotalRecordCount(0);
                 }
-            }));
+            }))
         }, [floatingFilterData, filterModel, dispatch]);
 
         const getTooltipText = useMemo(() => (status) => {
@@ -417,7 +423,7 @@
             setWarningMessage(false)
             dispatch(updatePageNumber(1))
             dispatch(updateCurrentRowIndex(10))
-            getDataList(0, 10, true)
+            getDataList(0, 10, true, true)
             dispatch(setSelectedRowForPagination([]))
             dispatch(updateGlobalTake(10))
             dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))

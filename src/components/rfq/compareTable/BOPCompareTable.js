@@ -135,7 +135,13 @@ const BOPCompareTable = (props) => {
                         item.bestCost === "" ?
                             item?.BasicRateConversion :
                             `${item?.BasicRate} (${item?.BasicRateConversion})` :
-                        item?.BasicRate || ''
+                        item?.BasicRate || '',
+                    // Add OtherNetCost value here
+                    showConvertedCurrency ?
+                        item.bestCost === "" ?
+                            item?.OtherNetCostConversion :
+                            `${item?.OtherNetCost} (${item?.OtherNetCostConversion})` :
+                        item?.OtherNetCost || ''
                 ];
                 sectionOne?.push(formattedDataOne);
 
