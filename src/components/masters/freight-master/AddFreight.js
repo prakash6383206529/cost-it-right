@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
@@ -38,8 +38,6 @@ import { getPlantUnitAPI } from "../actions/Plant";
 import WarningMessage from "../../common/WarningMessage";
 
 const AddFreight = (props) => {
-  console.log("props.AddFreight", props.stopApiCallOnCancel)
-
   const {
     register: registerMainForm,
     handleSubmit: handleSubmitMainForm,
@@ -936,7 +934,7 @@ const AddFreight = (props) => {
       sourceLocation: [],
       destinationLocation: []
     }));
-    props.hideForm(type);
+    props.hideForm(type,state.isImport);
   };
 
   const cancelHandler = () => {
