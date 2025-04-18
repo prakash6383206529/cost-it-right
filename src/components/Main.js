@@ -158,6 +158,7 @@ import Indexation from "./masters/indexation";
 import AuctionIndex from "./rfqAuction/AuctionIndex";
 import AddAuction from "./rfqAuction/AddAuction";
 import CostVariance from "./report/components/CostVariance/CostVariance";
+import setupAxiosInterceptors from "../axiosInterceptor";
 
 const CustomHeader = {
   "Content-Type": "application/x-www-form-urlencoded",
@@ -170,31 +171,6 @@ const CustomHeader = {
 
 const Detail = userDetails();
 
-if (Detail && Object.keys(Detail).length > 0) {
-  window.setInterval(() => {
-    let reqParams = {
-      IsRefreshToken: true,
-      refresh_token: JSON.parse(localStorage.getItem("userDetail"))
-        .RefreshToken,
-      ClientId: "self",
-      grant_type: "refresh_token",
-    };
-
-    let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
-        //already password encryped that's why didnt use axiosInstance here
-
-    axios
-      .post(API.login, queryParams, CustomHeader)
-      .then((response) => {
-        if (response && response.status === 200) {
-          let userDetail = formatLoginResult(response.data);
-
-          localStorage.setItem("userDetail", JSON.stringify(userDetail));
-        }
-      })
-      .catch((error) => { });
-  }, (Detail.expires_in - 60) * 1000);
-}
 
 class Main extends Component {
   constructor(props) {
@@ -289,6 +265,10 @@ class Main extends Component {
   };
 
   render() {
+
+    if (Detail && Object.keys(Detail).length > 0){
+    setupAxiosInterceptors();
+    }
     const { location } = this.props;
     let isLogin = false;
     let checkLogin = reactLocalStorage.getObject("isUserLoggedIn");

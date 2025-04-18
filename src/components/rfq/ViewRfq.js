@@ -18,7 +18,7 @@ import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
-import { checkForNull, checkTechnologyIdAndRfq, formViewData, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
+import { checkForNull, checkTechnologyIdAndRfq, formViewData, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, showBopLabel, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
@@ -445,7 +445,7 @@ function RfqListing(props) {
 
             // if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
             //     dispatch(checkFinalUser(obj, (res) => {
-
+                    
             //         if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
             //             setState(prevState => ({
             //                 ...prevState,
@@ -526,7 +526,7 @@ function RfqListing(props) {
     */
     const approveDetails = (Id, rowData = {}) => {
         if (customHavellsChanges && (partType !== "Bought Out Part" && partType !== "Raw Material")) {
-            const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item.costingId));
+            const filteredData = viewCostingData?.filter(item => selectedCostingList?.includes(item?.costingId));
             if (!checkTechnologyIdAndRfq(filteredData)) {
                 const totalShareOfBusiness = filteredData
                     .map(item => item?.shareOfBusinessPercent)
@@ -1486,7 +1486,7 @@ function RfqListing(props) {
                     headerName = "RM Name";
                     break;
                 case 'Bought Out Part':
-                    headerName = "BOP Name";
+                    headerName = `${showBopLabel()} Name (${showBopLabel()} No.)`
                     break;
                 case 'Component':
                 case 'Assembly':
@@ -1756,8 +1756,8 @@ function RfqListing(props) {
                                 checkCostingSelected={checkCostingSelected}
                                 disableApproveRejectButton={disableApproveRejectButton}
                                 compareButtonPressed={compareButtonPressed}
-                                showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
-                                selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
+                                showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData?.length > 0}
+                                selectedTechnology={viewCostingData && viewCostingData?.length > 0 && viewCostingData[0]?.technology}
                                 costingsDifferentStatus={costingsDifferentStatus}
                                 showAddToComparison={false}
                             />
@@ -1822,9 +1822,9 @@ function RfqListing(props) {
                         {"Initiate Reverse Auction"}
                     </button>)}
                     {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
-                        <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
+                        <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-return-btn" onClick={() => returnDetailsClick("", selectedRows)} >
                             {/* <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} > */}
-                            <div className={'cancel-icon-white mr5'}></div>
+                            <div className={'return-icon mr5'}></div>
                             {t('return', { ns: 'CostingLabels', defaultValue: 'Return' })}
 
                         </button>)}
