@@ -22,7 +22,8 @@ const FreightMaster = () => {
         DeleteAccessibility: false,
         BulkUploadAccessibility: false,
         DownloadAccessibility: false,
-        stopApiCallOnCancel: false
+        stopApiCallOnCancel: false,
+        IsFreightAssociated: false
     })
     const [permissionData, setPermissionData] = useState({});
     const { topAndLeftMenuData } = useSelector(state => state.auth);
@@ -83,8 +84,8 @@ const FreightMaster = () => {
     * @method getDetails
     * @description GET DETAILS FOR FREIGHT FORM
     */
-    const getDetails = (data) => {
-        setState((prevState) => ({ ...prevState, isFreightForm: true, data: data }))
+    const getDetails = (data, IsFreightAssociated) => {
+        setState((prevState) => ({ ...prevState, isFreightForm: true, data: data, IsFreightAssociated: IsFreightAssociated}))
     }
 
     /**
@@ -100,10 +101,10 @@ const FreightMaster = () => {
     * @description Renders the component
     */
 
-    const { isFreightForm, isPackageForm, data, } = state;
+    const { isFreightForm, isPackageForm, data, IsFreightAssociated } = state;
 
     if (isFreightForm === true) {
-        return <AddFreight data={data} hideForm={hideForm} />
+        return <AddFreight data={data} hideForm={hideForm}  IsFreightAssociated={IsFreightAssociated}/>
     }
 
     if (isPackageForm === true) {

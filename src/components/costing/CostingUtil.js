@@ -685,3 +685,5 @@ export const viewAddButtonIcon = (data, type, CostingViewMode) => {
     return title
   }
 }
+
+

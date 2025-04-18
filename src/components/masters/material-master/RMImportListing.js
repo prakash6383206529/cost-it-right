@@ -546,7 +546,7 @@ function RMImportListing(props) {
     let isDeleteButton = false
 
 
-    if (EditAccessibility) {
+    if (EditAccessibility && rowData?.IsRMEditable) {
       isEditbale = true
     } else {
       isEditbale = false
@@ -912,7 +912,7 @@ function RMImportListing(props) {
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
-
+    uniqueArray = uniqueArray.map(item => ({...item,EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY'): item.EffectiveDate}));
     if (isSimulation && !isFromVerifyPage) {
       apply(uniqueArray, length)
     }
@@ -1152,6 +1152,7 @@ function RMImportListing(props) {
                       floatingFilterComponent="statusFilter"></AgGridColumn>
                     <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                     {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                    <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                     <AgGridColumn field="RawMaterialName" headerName='Raw Material' ></AgGridColumn>
                     <AgGridColumn field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>
                     <AgGridColumn field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>
@@ -1164,10 +1165,8 @@ function RMImportListing(props) {
                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
                     {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
-
-                    <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                    {/* <AgGridColumn field="BasicRatePerUOMConversion" headerName={headerNames?.BasicRate} cellRenderer='commonCostFormatter'></AgGridColumn> */}
+                    <AgGridColumn field="Currency" headerName="Currency/Settlement Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
+                    <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                     <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>

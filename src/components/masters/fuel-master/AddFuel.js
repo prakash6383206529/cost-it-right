@@ -37,6 +37,7 @@ import Switch from 'react-switch'
 import WarningMessage from "../../common/WarningMessage";
 import { LabelsClass } from '../../../helper/core';
 import TooltipCustom from '../../common/Tooltip';
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddFuel');
 
@@ -75,7 +76,9 @@ class AddFuel extends Component {
       errorObj: {
         state: false,
         rate: false,
-        effectiveDate: false
+        effectiveDate: false,
+        CountryId: false,
+        CityId: false
       },
       isGridEdit: false,
       showPopup: false,
@@ -88,7 +91,8 @@ class AddFuel extends Component {
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
-      showPlantWarning: false
+      showPlantWarning: false,
+      showWarning: false
 
     }
     this.state = { ...this.initialState };
@@ -244,6 +248,7 @@ class AddFuel extends Component {
                 countryId: item.CountryId,
                 city: item.CityName,
                 cityId: item.CityId,
+                isAssociated: item.IsAssociated
               }
             })
             const effectiveDate = rateGridArray[0]?.effectiveDate;
@@ -270,7 +275,8 @@ class AddFuel extends Component {
               settlementExchangeRateId: Data?.ExchangeRateId,
               isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
-              effectiveDate: effectiveDate
+              // effectiveDate: effectiveDate
+              effectiveDate: Data.EffectiveDate ? Data?.EffectiveDate : ""
 
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -360,32 +366,22 @@ class AddFuel extends Component {
 
     let count = 0;
     setTimeout(() => {
-
-      if (!country || Object.keys(country).length === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, country: true } })
-        count++;
+      if (country.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, CountryId: true } })
+        count++
       }
-
-      if (!city || Object.keys(city).length === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, city: true } })
-        count++;
+      if (city.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, CityId: true } })
+        count++
       }
-
-      if (country?.label) {
-        const isIndia = country.label === 'India';
-        const hasStateName = StateName && Object.keys(StateName).length > 0;
-
-        this.setState({
-          errorObj: { ...this.state.errorObj, state: isIndia && !hasStateName },
-        });
-
-        if (isIndia && !hasStateName) count++;
-      } else {
-        this.setState({ errorObj: { ...this.state.errorObj, state: true } });
-        count++;
+      if ((this.state?.country?.length === 0 || this.state?.country?.label === 'India') && StateName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, StateId: true } })
+        count++
       }
-
-
+      // if (country.length === 0 || city.length === 0 || StateName.length === 0) {
+      //   this.setState({ errorObj: { ...this.state.errorObj, state: true } })
+      //   count++
+      // }
       if (fieldsObj?.RateLocalConversion === undefined || Number(fieldsObj?.RateLocalConversion) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
         count++
@@ -413,7 +409,8 @@ class AddFuel extends Component {
         StateLabel: StateName ? StateName?.label : '',
         StateId: StateName ? StateName?.value : '',
         //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
-        effectiveDate: effectiveDate,
+        // effectiveDate: effectiveDate,
+        effectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
         Rate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
         RateLocalConversion: fieldsObj?.RateLocalConversion,
         RateConversion: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.RateConversion : fieldsObj?.RateLocalConversion,
@@ -475,6 +472,13 @@ class AddFuel extends Component {
       return false;
     }
     let tempData = rateGrid[rateGridEditIndex];
+    let financialDataChanged = (Number(tempData.RateConversion) !== Number(fieldsObj?.RateConversion)) || (Number(tempData.RateLocalConversion) !== Number(fieldsObj?.RateLocalConversion)) || (Number(tempData.Rate) !== Number(fieldsObj?.Rate) || Number(tempData.cityId) !== Number(city?.value) || Number(tempData.countryId) !== Number(country?.value))
+    if (tempData?.isAssociated) {
+      if (financialDataChanged && checkEffectiveDate(effectiveDate, tempData.effectiveDate)) {
+        Toaster.warning('Please update the Effective date.')
+        return false
+      }
+    } 
     tempData = {
       Id: tempData.Id,
       StateLabel: StateName?.label,
@@ -484,10 +488,13 @@ class AddFuel extends Component {
       country: country?.label ? country?.label : '',
       city: city?.label ? city?.label : "",
       //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
+      effectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
       effectiveDateRate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
       RateLocalConversion: fieldsObj?.RateLocalConversion,
       RateConversion: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.RateConversion : fieldsObj?.RateLocalConversion,
-      Rate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion
+      Rate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
+      ...(tempData.isAssociated !== undefined && { IsAssociated: tempData.isAssociated }),
+      ...(financialDataChanged && { IsFinancialDataChanged: true }) 
     }
     tempArray = Object.assign([...rateGrid], { [rateGridEditIndex]: tempData })
     this.setState({
@@ -523,13 +530,11 @@ class AddFuel extends Component {
   editItemDetails = (index) => {
     const { rateGrid } = this.state;
     const tempData = rateGrid[index];
-
-
-
     this.setState({
       rateGridEditIndex: index,
       isEditIndex: true,
-      effectiveDate: new Date(DayTime(tempData.effectiveDate).format("MM/DD/YYYY")),
+      // effectiveDate: new Date(DayTime(tempData.effectiveDate).format("MM/DD/YYYY")),
+      effectiveDate: tempData.effectiveDate, // Due to UPPER Line, when you update, then checkEffectiveDate() function always returned false
       country: { label: tempData.country, value: tempData.countryId },
       city: { label: tempData.city, value: tempData.cityId },
       StateName: { label: tempData.StateLabel, value: tempData.StateId },
@@ -707,7 +712,8 @@ class AddFuel extends Component {
         Rate: isImport ? Number(item?.Rate) : Number(item?.RateLocalConversion),
         RateConversion: Number(item?.RateConversion),
         RateLocalConversion: Number(item?.RateLocalConversion),
-        EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        // EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm'),
         // StateId: item.StateId,
         PlantId: singlePlantSelected?.value,
         CountryId: item.countryId ? Number(item.countryId) : '',
@@ -716,6 +722,8 @@ class AddFuel extends Component {
         VendorId: vendorName.value ? vendorName.value : null,
         CustomerId: client.value ? client.value : null,
         CostingHeadId: Number(costingTypeId),
+        IsAssociated: item?.IsAssociated ?? false,
+        IsFinancialDataChanged: item?.IsFinancialDataChanged ?? false
       }
     })
 
@@ -875,11 +883,11 @@ class AddFuel extends Component {
 
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ country: newValue, state: [], city: [], StateName: [] }, () => {
+      this.setState({ country: newValue, state: [], city: [], errorObj: { ...this.state.errorObj, CountryId: false }, StateName: [] }, () => {
         this.getAllCityData()
       });
     } else {
-      this.setState({ country: [], state: [], city: [] })
+      this.setState({ country: [], state: [], city: [], errorObj: { ...this.state.errorObj, CountryId: true } })
     }
     this.setState({ DropdownChanged: false })
   };
@@ -890,17 +898,12 @@ class AddFuel extends Component {
   */
   stateHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({
-        StateName: newValue, city: [], errorObj: {
-          ...this.state.errorObj,
-          state: false
-        }
-      }, () => {
+      this.setState({ StateName: newValue, city: [], errorObj: { ...this.state.errorObj, StateId: false } }, () => {
         const { StateName } = this.state;
         this.props.fetchCityDataAPI(StateName.value, () => { })
       });
     } else {
-      this.setState({ StateName: [], city: [] });
+      this.setState({ StateName: [], city: [], errorObj: { ...this.state.errorObj, StateId: true } });
     }
 
   };
@@ -917,14 +920,9 @@ class AddFuel extends Component {
 
   cityHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({
-        city: newValue, errorObj: {
-          ...this.state.errorObj,
-          city: false
-        }
-      });
+      this.setState({ city: newValue, errorObj: { ...this.state.errorObj, CityId: false } });
     } else {
-      this.setState({ city: [] });
+      this.setState({ city: [], errorObj: { ...this.state.errorObj, CityId: true } });
     }
     this.setState({ DropdownChanged: false })
   };
@@ -948,10 +946,10 @@ class AddFuel extends Component {
   fuelRateTitle = () => {
     const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
-      tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate1 (${this.state?.plantCurrency ?? ''})`,
+      tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
       toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency
-        ? `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.plantCurrency ?? ''})`
-        : `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+        ? `Rate (${this.state.currency?.label ?? 'Currency'}) * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'}) * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {
@@ -1127,7 +1125,7 @@ class AddFuel extends Component {
                                   valueDescription={this.state.singlePlantSelected}
                                   mendatory={true}
                                   className="multiselect-with-border"
-                                  disabled={isEditFlag}
+                                  disabled={isEditFlag || this?.state?.rateGrid?.length > 0}
                                 />
                               </div>
                             </div>
@@ -1305,7 +1303,6 @@ class AddFuel extends Component {
                               <h5>{"Rate:"}</h5>
                             </div>
                           </Col>
-
                           <Col md="3">
                             <div className="form-group inputbox withBorder ">
                               <Field
@@ -1320,7 +1317,7 @@ class AddFuel extends Component {
                                 valueDescription={this.state.country}
                                 disabled={isViewMode}
                               />
-                              {this.state.errorObj?.country && <div className='text-help p-absolute'>This field is required.</div>}
+                              {this.state.errorObj.CountryId && this.state.country.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
 
@@ -1339,7 +1336,7 @@ class AddFuel extends Component {
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
                                 />
-                                {this.state.errorObj?.state && <div className='text-help p-absolute'>This field is required.</div>}
+                                {this.state.errorObj.StateId && this.state.StateName.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
                             </Col>}
 
@@ -1357,7 +1354,7 @@ class AddFuel extends Component {
                                 valueDescription={this.state.city}
                                 disabled={isViewMode}
                               />
-                              {this.state.errorObj?.city && <div className='text-help p-absolute'>This field is required.</div>}
+                              {this.state.errorObj.CityId && this.state.city.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
                           <Col md="3">
@@ -1379,7 +1376,7 @@ class AddFuel extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isViewMode || isEditFlag}
+                                  disabled={isViewMode}
                                   minDate={getEffectiveDateMinDate()}
                                   valueDescription={this.state?.effectiveDate}
                                   maxDate={getEffectiveDateMaxDate()}
@@ -1519,20 +1516,21 @@ class AddFuel extends Component {
                                             className="Edit mr-2"
                                             title='Edit'
                                             type={"button"}
-                                            disabled={isViewMode || item?.IsAssociated}
+                                            // disabled={isViewMode || item?.IsAssociated}
+                                            disabled={isViewMode}
                                             onClick={() =>
                                               this.editItemDetails(index)
                                             }
                                           />
-                                          <button
+                                          {!item?.IsFuelAssociated && <button
                                             className="Delete"
                                             title='Delete'
                                             type={"button"}
-                                            disabled={isViewMode || item?.IsAssociated || isGridEdit}
+                                            disabled={isViewMode || item?.isAssociated || isGridEdit}
                                             onClick={() =>
                                               this.deleteItem(index)
                                             }
-                                          />
+                                          />}
                                         </td>
                                       </tr>
                                     );
@@ -1565,7 +1563,7 @@ class AddFuel extends Component {
                           {!isViewMode && <button id="AddFuel_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
-                            disabled={isViewMode || setDisable}
+                            disabled={isViewMode || setDisable || this.state?.showWarning || this.state?.showPlantWarning}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
@@ -1604,7 +1602,7 @@ class AddFuel extends Component {
 */
 function mapStateToProps(state) {
   const { fuel, auth, comman, client } = state;
-  const fieldsObj = selector(state, "Rate", "RateLocalConversion", "Currency", "ExchangeSource", "plantCurrency", "RateConversion");
+  const fieldsObj = selector(state, "Rate", "RateLocalConversion", "Currency", "ExchangeSource", "plantCurrency", "RateConversion", "CountryId", "StateId", "CityId");
   let initialValues = {};
 
   const { UOMSelectList, stateList, plantSelectList, countryList, cityList, exchangeRateSourceList, currencySelectList } = comman;

@@ -92,6 +92,7 @@ const OperationListing = (props) => {
 
     })
     const [pageRecord, setPageRecord] = useState(0)
+    const [skip, setSkip] = useState(0)
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const { t } = useTranslation("common")
     const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
@@ -175,7 +176,7 @@ const OperationListing = (props) => {
     const getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 10, isPagination = true, dataObj, OperationEntryType = false) => {
         setPageRecord(skip)
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
-
+        setSkip(skip)
         if (state.filterModel?.EffectiveDate) {
             if (state.filterModel.EffectiveDate.dateTo) {
                 let temp = []
@@ -449,13 +450,12 @@ const OperationListing = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditable = false
         let isDeleteButton = false
-        if (permissionData?.Edit) {
+        if (permissionData?.Edit && rowData?.IsEditable) {
             isEditable = true
         } else {
             isEditable = false
         }
         isDeleteButton = (tourStartData.showExtraData && props.rowIndex === 0) || (permissionData?.Delete && !rowData.IsOperationAssociated);
-
 
         return (
             <>
@@ -792,6 +792,7 @@ const OperationListing = (props) => {
         let finalArr = selectedRows
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "OperationId")
+        uniqueArray = uniqueArray.map(item => ({...item,EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY'): item.EffectiveDate}));
         if (props.isSimulation && !props?.isFromVerifyPage) {
 
             props.apply(uniqueArray, length)
@@ -827,7 +828,7 @@ const OperationListing = (props) => {
 
     const importToggle = () => {
         setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
-        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData, !state.isImport)
+        getTableListData(null, null, null, null, skip, globalTakes, true, state.floatingFilterData, !state.isImport)
 
     }
 
@@ -969,18 +970,11 @@ const OperationListing = (props) => {
                                     floatingFilter={true}
                                     domLayout='autoHeight'
                                     rowData={state.showExtraData ? [...setLoremIpsum(state.tableData[0]), ...state.tableData] : state.tableData}
-
-
                                     pagination={true}
-
                                     paginationPageSize={globalTakes}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: 'imagClass'
-                                    }}
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
                                     //onSelectionChanged={onRowSelect}
@@ -989,11 +983,8 @@ const OperationListing = (props) => {
                                     onFilterModified={onFloatingFilterChanged}
                                     enableBrowserTooltips={true}
                                 >
-                                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 
-                                    <AgGridColumn field="CostingHead" headerName="Costing Head"  floatingFilterComponentParams={floatingFilterStatus}
-                                            floatingFilterComponent="statusFilter"
-                                            cellRenderer={combinedCostingHeadRenderer}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" minWidth={190} headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
                                     {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                     {getConfigurationKey().IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
@@ -1005,7 +996,7 @@ const OperationListing = (props) => {
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                    <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                                    <AgGridColumn minWidth={180} field="Currency" headerName="Currency/Settlement Currency"></AgGridColumn>
                                     <AgGridColumn field="Rate" headerName={`Rate`} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper ag-grid-action-container"} width={150} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -1014,10 +1005,10 @@ const OperationListing = (props) => {
                                 </AgGridReact>}
                                 <div className='button-wrapper'>
                                     {!state.isLoader &&
-                                        <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
+                                        <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" isImport={state.isImport} />
                                     }
                                     {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                        <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
+                                        <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" isImport={state.isImport} />
 
                                     }
                                 </div>

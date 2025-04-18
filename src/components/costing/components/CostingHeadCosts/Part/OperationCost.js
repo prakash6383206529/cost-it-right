@@ -347,6 +347,13 @@ function OperationCost(props) {
       const WithOutLabourCost = tempData.IsLabourRateExist ?
         checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
+      tempData = { ...tempData, Quantity: Number(event.target.value), OperationCost: OperationCost }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      let value = tempArr && tempArr.length > 0 && tempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el?.OperationCost)
+      }, 0)
+      setOperationCostAssemblyTechnology(value)
+      setGridData(tempArr)
 
       //const netCosts = calculateNetCosts(OperationCost, tempData?.Applicability?.label, "Operation");
       tempData = {

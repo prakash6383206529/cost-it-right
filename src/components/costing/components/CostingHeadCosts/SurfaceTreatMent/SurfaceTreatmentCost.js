@@ -118,6 +118,7 @@ function SurfaceTreatmentCost(props) {
         return {
           OperationId: el.OperationId,
           OperationName: el.OperationName,
+          EntryType: el.EntryType,
           SurfaceArea: finalQuantity,
           UOM: el.UnitOfMeasurement,
           RatePerUOM: el.Rate,
@@ -307,6 +308,7 @@ function SurfaceTreatmentCost(props) {
               <Table className="cr-brdr-main costing-surface-section" size="sm" onDragOver={onMouseLeave} onDragEnd={onDragComplete} >
                 <thead>
                   <tr>
+                    {initialConfiguration?.IsShowDetailedOperationBreakup && <th>{`Entry Type`}</th>}
                     <th>{`Operation Name`}</th>
                     <th>{`Quantity`}</th>
                     <th>{`UOM`}</th>
@@ -326,6 +328,7 @@ function SurfaceTreatmentCost(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
+                            {initialConfiguration?.IsShowDetailedOperationBreakup && <td>{item.EntryType}</td>}
                             <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true}>{item.OperationName}</span> </td>
                             <td style={{ width: 200 }}>
                               {
@@ -416,6 +419,7 @@ function SurfaceTreatmentCost(props) {
                           </tr>
                           :
                           <tr key={index}>
+                            {initialConfiguration?.IsShowDetailedOperationBreakup && <td>{item.EntryType}</td>}
                             <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true}>{item.OperationName}</span></td>
                             <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
