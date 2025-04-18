@@ -51,30 +51,13 @@ function Sheet(props) {
         SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.SheetLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.SheetLength, localStorage.NoOfDecimalForInputOutput) : '',
         SheetThickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
         SheetWeight: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheet !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfSheet, localStorage.NoOfDecimalForInputOutput) : '',
-        // Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, localStorage.NoOfDecimalForInputOutput) : 1,
         BlankWidth: WeightCalculatorRequest && WeightCalculatorRequest.BlankWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlankWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStrips !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfStrips, localStorage.NoOfDecimalForInputOutput) : '',
-        ComponentPerStrip: WeightCalculatorRequest && WeightCalculatorRequest.ComponentsPerStrip !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ComponentsPerStrip, localStorage.NoOfDecimalForInputOutput) : '',
         NoOfComponent: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfPartsPerSheet, localStorage.NoOfDecimalForInputOutput) : '', // TOTAL COMPONENT PER SHEET
         BlankLength: WeightCalculatorRequest && WeightCalculatorRequest.BlankLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlankLength, localStorage.NoOfDecimalForInputOutput) : '',
-
         CuttingAllowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowance !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowance, localStorage.NoOfDecimalForInputOutput) : '',
         TotalComponentByWidth: WeightCalculatorRequest && WeightCalculatorRequest.TotalComponentByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalComponentByWidth, localStorage.NoOfDecimalForInputOutput) : '',
         GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
-        
-        NumberOfStripsByWidth: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStripsByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfStripsByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        NumberOfStripsByLength: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStripsByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfStripsByLength, localStorage.NoOfDecimalForInputOutput) : '',
-        BlanksPerStripByWidth: WeightCalculatorRequest && WeightCalculatorRequest.BlanksPerStripByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlanksPerStripByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        BlanksPerStripByLength: WeightCalculatorRequest && WeightCalculatorRequest.BlanksPerStripByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlanksPerStripByLength, localStorage.NoOfDecimalForInputOutput) : '',
-        NoOfComponentByWidth: WeightCalculatorRequest && WeightCalculatorRequest.NoOfComponentByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfComponentByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        NoOfComponentByLength: WeightCalculatorRequest && WeightCalculatorRequest.NoOfComponentByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfComponentByLength, localStorage.NoOfDecimalForInputOutput) : '',
-        SheetWidthBottom: WeightCalculatorRequest && WeightCalculatorRequest.SheetWidthBottom !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.SheetWidthBottom, localStorage.NoOfDecimalForInputOutput) : '',
-        RemainingSLBottomByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthBottomByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthBottomByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        RemainingSWPerBWBottomByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthPerBlankWidthBottomByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthPerBlankWidthBottomByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        RemainingSLPerBLBottomByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthBottomByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthBottomByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        NoOfBlanksBottomEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksBottomEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksBottomEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        RemainingSLRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        RemainingSLPerBLRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
     }
 
     const remainingDefaultValues = {
@@ -83,7 +66,6 @@ function Sheet(props) {
         NoOfBlanksRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
         TotalNoOfBlanksByWidth: WeightCalculatorRequest && WeightCalculatorRequest.TotalNoOfBlanksByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalNoOfBlanksByWidth, localStorage.NoOfDecimalForInputOutput) : '',
         AdditionalComponentsByWidth: WeightCalculatorRequest && WeightCalculatorRequest.AdditionalComponentsByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.AdditionalComponentsByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        // TotalComponentByWidth: WeightCalculatorRequest && WeightCalculatorRequest.TotalComponentByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalComponentByWidth, localStorage.NoOfDecimalForInputOutput) : 1,
         RemainingSLBottomByLength: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthBottomByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthBottomByLength, localStorage.NoOfDecimalForInputOutput) : '',
         RemainingSWPerBLBottomByLength: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthBottomByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthBottomByLength, localStorage.NoOfDecimalForInputOutput) : '',
     }
@@ -96,8 +78,6 @@ function Sheet(props) {
             defaultValues: { ...defaultValues, ...remainingDefaultValues },
         })
 
-
-
     const [UOMDimension, setUOMDimension] = useState(
         WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
             ? {
@@ -108,13 +88,12 @@ function Sheet(props) {
     )
     const [dataToSend, setDataToSend] = useState({
         GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '',
-        ComponentsPerStrip: WeightCalculatorRequest && WeightCalculatorRequest.ComponentsPerStrip !== null ? WeightCalculatorRequest.ComponentsPerStrip : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
     })
     const [isChangeApplies, setIsChangeApplied] = useState(true)
     const tempOldObj = WeightCalculatorRequest
     const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
-    const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
+    const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     const [isDisable, setIsDisable] = useState(false)
     const [reRender, setRerender] = useState(false)
@@ -146,7 +125,7 @@ function Sheet(props) {
 
     useEffect(() => {
         setGrossWeight();
-    }, [grossWeightValue])
+    }, [grossWeightValue, UOMDimension])
 
     useEffect(() => {
         calculateyieldPercentage();
@@ -294,7 +273,7 @@ function Sheet(props) {
         updatedValue.RawMaterialCost = rMCost
         setTimeout(() => {
             setDataToSend(updatedValue)
-            setValue('RawMaterialCost', checkForDecimalAndNull(rMCost, localStorage.NoOfDecimalForInputOutput))
+            setValue('RawMaterialCost', checkForDecimalAndNull(rMCost, localStorage.NoOfDecimalForPrice))
         }, 200);
     }
 

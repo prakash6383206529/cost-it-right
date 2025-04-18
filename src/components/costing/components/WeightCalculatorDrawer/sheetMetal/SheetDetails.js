@@ -428,7 +428,7 @@ function SheetDetails(props) {
         }
 
         let data = {
-            LayoutType: 'Sheet',
+            LayoutType: 'SheetDetailed',
             SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
             IsChangeApplied: isChangeApplies, //NEED TO MAKE IT DYNAMIC how to do,
             BaseCostingIdRef: item.CostingId,
