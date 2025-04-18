@@ -88,7 +88,8 @@ class AddFuel extends Component {
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
-      showPlantWarning: false
+      showPlantWarning: false,
+      showWarning: false
 
     }
     this.state = { ...this.initialState };
@@ -1565,7 +1566,7 @@ class AddFuel extends Component {
                           {!isViewMode && <button id="AddFuel_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
-                            disabled={isViewMode || setDisable}
+                            disabled={isViewMode || setDisable || this.state?.showWarning || this.state?.showPlantWarning}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}

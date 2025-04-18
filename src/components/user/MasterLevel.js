@@ -16,7 +16,8 @@ import { PaginationWrapper } from '../common/commonPagination';
 import { ApplyPermission } from './LevelsListing';
 import { useContext } from 'react';
 import Button from '../layout/Button';
-import { searchNocontentFilter } from '../../helper';
+import { getLocalizedCostingHeadValue, searchNocontentFilter } from '../../helper';
+import { useLabels } from "../../helper/core";
 const gridOptions = {};
 const defaultPageSize = 5;
 const MasterLevelListing = (props) => {
@@ -42,6 +43,8 @@ const MasterLevelListing = (props) => {
     const permissions = useContext(ApplyPermission);
     const dispatch = useDispatch();
     const { masterLevelDataList, isCallApi } = useSelector((state) => state.auth)
+    const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+
     useEffect(() => {
         getMasterDataList()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,6 +66,18 @@ const MasterLevelListing = (props) => {
                 setState((prevState) => ({ ...prevState, tableData: [], }))
             } else {
                 let Data = res.data.DataList;
+                Data = Data.map(item => {
+                    const localizedApprovalType = getLocalizedCostingHeadValue(item.ApprovalType, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+                    // Only create a new object if the approval type changed
+                    if (localizedApprovalType !== item.ApprovalType) {
+                        return {
+                            ...item,
+                            ApprovalType: localizedApprovalType
+                        };
+                    }
+                    // Otherwise return the original item
+                    return item;
+                   });
                 dispatch(manageLevelTabApi(false))
                 setState((prevState) => ({
                     ...prevState, tableData: Data,

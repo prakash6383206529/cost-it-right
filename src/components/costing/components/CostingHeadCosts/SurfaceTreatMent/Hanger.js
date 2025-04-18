@@ -60,7 +60,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                 <Col md="8"><div className="left-border">
                     {'Hanger Cost:'}
                 </div></Col>
-                <Col md="4" className="text-right">
+               {!isSummary && <Col md="4" className="text-right">
                     <button id="Dashboard_Costing_Accordian" className="btn btn-small-primary-circle ml-1 " type="button" onClick={() => { setState({ ...state, showHanger: !state.showHanger }) }}>
                         {state.showHanger ? (
                             <i className="fa fa-minus" ></i>
@@ -69,9 +69,9 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                         )}
 
                     </button>
-                </Col>
+                </Col>}
             </Row>
-            {state.showHanger && <Row>
+            {(state.showHanger || isSummary) && <Row>
                 <Col md="4">
                     <TextFieldHookForm
                         label="Hanger Factor (Rate)"

@@ -331,7 +331,7 @@ const PowerListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 <>
-                  {permissions.Add && (<Button id="powerListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
+                  {permissions.Add && !state.isImport && (<Button id="powerListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
                   )}
                   {permissions.Download && (
                     <>

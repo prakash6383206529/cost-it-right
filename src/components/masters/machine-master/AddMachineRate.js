@@ -274,7 +274,7 @@ class AddMachineRate extends Component {
             ExchangeSource?.label ?? null,
             res => {
               resolveAPI({
-                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                rate: res.data && res.data.Data && res.data.Data.CurrencyExchangeRate ? checkForNull(res.data.Data.CurrencyExchangeRate): 1,
                 exchangeRateId: res?.data?.Data?.ExchangeRateId,
                 showWarning: Object.keys(res.data.Data).length === 0,
                 showPlantWarning: Object.keys(res.data.Data).length === 0
@@ -2616,7 +2616,7 @@ class AddMachineRate extends Component {
                                 {!(userDetails().Role === 'SuperAdmin') && ((!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !CostingTypePermission)) ?
                                   <button id="AddMachineRate_SendForApproval" type="submit"
                                     class="user-btn approval-btn save-btn mr5"
-                                    disabled={isViewMode || setDisable || disableSendForApproval || (isEditFlag && IsDetailedEntry)}
+                                    disabled={isViewMode || setDisable || disableSendForApproval || (isEditFlag && IsDetailedEntry) || this.state?.showWarning || this.state.showPlantWarning}
                                   >
                                     <div className="send-for-approval"></div>
                                     {'Send For Approval'}
@@ -2627,7 +2627,7 @@ class AddMachineRate extends Component {
                                     id="AddMachineRate_Save"
                                     type="submit"
                                     className="user-btn mr5 save-btn"
-                                    disabled={isViewMode || setDisable || disableSendForApproval}
+                                    disabled={isViewMode || setDisable || disableSendForApproval || this.state?.showWarning || this.state.showPlantWarning}
                                   >
                                     <div className={"save-icon"}></div>
                                     {isEditFlag ? "Update" : "Save"}

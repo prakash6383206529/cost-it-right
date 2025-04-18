@@ -281,7 +281,7 @@ const floatingFilterStatus = {
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
-                {permissions.Add && (<Button id="fuelListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
+                {permissions.Add && !state.isImport && (<Button id="fuelListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
                 {permissions.BulkUpload && (<Button id="fuelListing_bulkUpload" className={"user-btn mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
                 {permissions.Download && (
                   <>

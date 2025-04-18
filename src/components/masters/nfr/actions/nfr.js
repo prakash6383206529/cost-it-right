@@ -14,10 +14,10 @@ import { loggedInUserId, userDepartmetList } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import axiosInstance from '../../../../utils/axiosInstance';
 
-export function getAllNfrList(callback) {
+export function getAllNfrList(requestObj, callback) {
     return (dispatch) => {
         const loggedInUser = { loggedInUserId: loggedInUserId() }
-        const request = axios.get(`${API.getAllNfrList}?loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
+        const request = axios.get(`${API.getAllNfrList}?loggedInUserId=${loggedInUser?.loggedInUserId}&skip=${requestObj?.skip}&take=${requestObj?.take}&isPagination=${requestObj?.isPagination}&isReset=${requestObj?.isReset}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);

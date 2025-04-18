@@ -2137,7 +2137,7 @@ function TabRMCC(props) {
                 <Row id='go-top-top'>
                   <Col md="12">
                     <ScrollToTop pointProp={"go-top-top"} />
-                    <Table className="table cr-brdr-main mb-0 rmcc-main-headings" size="sm">
+                    <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Part Number`}</th>

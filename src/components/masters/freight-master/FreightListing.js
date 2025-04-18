@@ -348,7 +348,7 @@ const FreightListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 {/* Add button */}
-                {permissions.Add && (
+                {permissions.Add && !state.isImport && (
                   <Button
                     id="freightListing_add"
                     className={"user-btn mr5"}

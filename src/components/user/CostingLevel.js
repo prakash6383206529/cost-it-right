@@ -12,7 +12,7 @@ import { PaginationWrapper } from '../common/commonPagination';
 import { ApplyPermission } from './LevelsListing';
 import { useContext } from 'react';
 import Button from '../layout/Button';
-import { searchNocontentFilter } from '../../helper';
+import { getLocalizedCostingHeadValue, searchNocontentFilter } from '../../helper';
 import { useLabels } from '../../helper/core';
 const gridOptions = {};
 const defaultPageSize = 5;
@@ -38,7 +38,7 @@ const CostingLevelListing = (props) => {
     const permissions = useContext(ApplyPermission);
     const { isCallApi } = useSelector((state) => state?.auth)
     const dispatch = useDispatch();
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels();
     useEffect(() => {
         getLevelsListData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,6 +63,18 @@ const CostingLevelListing = (props) => {
             } else {
                 dispatch(manageLevelTabApi(false));
                 let Data = res.data.DataList;
+                  // Replace "Vendor Based" with "Supplier Based" in the API response
+                Data = Data.map(item => {
+                    const localizedApprovalType = getLocalizedCostingHeadValue(item.ApprovalType, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+                    // Only create a new object if the approval type changed
+                    if (localizedApprovalType !== item.ApprovalType) {
+                        return {
+                            ...item,
+                            ApprovalType: localizedApprovalType
+                        };
+                    }
+                     return item;
+                    });
                 setState((prevState) => ({
                     ...prevState, 
                     tableData: Data,
