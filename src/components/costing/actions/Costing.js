@@ -2680,7 +2680,7 @@ export function setYOYCostGrid(grid) {
 export function getYOYCostList(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const query = `quotationId=${data?.quotationId ? data?.quotationId : ''}&partId=${data?.partId ? data?.partId : ''}&vendorId=${data?.vendorId ? data?.vendorId : ''}`
+    const query = `loggedInUserId=${loggedInUserId()}&quotationId=${data?.quotationId ? data?.quotationId : ''}&partId=${data?.partId ? data?.partId : ''}&vendorId=${data?.vendorId ? data?.vendorId : ''}`
     const request = axios.get(`${API.getYOYCostList}?${query}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -3068,6 +3068,7 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
   return (dispatch) => {
     const url = `${API.getSpecificationDetailTco}`;
     const requestData = {
+      loggedInUserId: loggedInUserId(),
       QuotationId: quotationId,
       BaseCostingIdList: baseCostingIds
     };
