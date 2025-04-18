@@ -862,8 +862,8 @@ function ViewConversionCost(props) {
                     <th>Rejection Allowance</th>
                     <th>RM Rate (Currency)</th>
                     <th>Paint Cost</th>
-                    {IsAssemblyCosting && isPDFShow && <th>Masking/Tape Cost</th>}
-                    {IsAssemblyCosting && isPDFShow && <th>Total Paint & Masking Cost</th>}
+                    { isPDFShow && <th>Masking/Tape Cost</th>}
+                    { isPDFShow && <th>Total Paint & Masking Cost</th>}
                   </tr>
   
                   {Coats.map((coat, parentIndex) =>
@@ -885,12 +885,12 @@ function ViewConversionCost(props) {
                         <td>{checkForDecimalAndNull(rm?.RejectionAllowance, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                         <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(rm?.NetCost, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                        {IsAssemblyCosting && isPDFShow && childIndex === 0 && (
+                        {isPDFShow && childIndex === 0 && (
                           <td rowSpan={coat?.RawMaterials?.length}>
                             {checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
                           </td>
                         )}
-                        {IsAssemblyCosting && isPDFShow && childIndex === 0 && (
+                        {isPDFShow && childIndex === 0 && (
                           <td rowSpan={coat?.RawMaterials?.length}>
                             {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                           </td>
