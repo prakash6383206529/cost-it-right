@@ -365,8 +365,12 @@ export function setQuotationIdForRFQ(data) {
 };
 
 export function rfqSaveBestCosting(data, callback) {
+    const requestData = {
+        loggedInUserId: loggedInUserId(),
+        ...data
+    }
     return (dispatch) => {
-        const request = axiosInstance.post(API.rfqSaveBestCosting, data, config());
+        const request = axiosInstance.post(API.rfqSaveBestCosting, requestData, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
