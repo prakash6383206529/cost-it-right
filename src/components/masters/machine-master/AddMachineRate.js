@@ -36,7 +36,7 @@ import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown, checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
@@ -51,7 +51,6 @@ import { labels, LabelsClass } from '../../../helper/core';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
 import TooltipCustom from '../../common/Tooltip';
-import { getEffectiveDateMaxDate } from '../../../common/CommonFunctions'
 const selector = formValueSelector('AddMachineRate');
 
 

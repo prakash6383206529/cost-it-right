@@ -30,7 +30,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, compareRateCommon, checkEffectiveDate,convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, compareRateCommon, checkEffectiveDate,convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue, getEffectiveDateMaxDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser, getExchangeRateByCurrency } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -46,7 +46,6 @@ import { LabelsClass } from '../../../helper/core';
 import { subDays } from 'date-fns';
 import { getPlantUnitAPI } from '../actions/Plant';
 import AddOtherCostDrawer from '../material-master/AddOtherCostDrawer';
-import { getEffectiveDateMaxDate } from '../../../common/CommonFunctions'
 
 
 const selector = formValueSelector('AddBOPDomestic');
