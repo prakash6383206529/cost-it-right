@@ -54,7 +54,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
-    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, finishWeightLabel } = useLabels()
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
@@ -1350,8 +1350,42 @@ function CostingSimulation(props) {
                 tempData = hideMultipleColumnFromExcel(tempData, ['CustomerName', 'VendorName'])
             }
         }
+        // Process labels to replace "Vendor" with "Supplier"
+        tempData = tempData.map(item => {
+            if (item.label && typeof item.label === 'string' && item.label.includes('Vendor')) {
+                let updatedLabel = getLocalizedCostingHeadValue(
+                    item.label,
+                    vendorBasedLabel,
+                    zeroBasedLabel,
+                    customerBasedLabel
+                );
+                if (updatedLabel === item.label) {
+                    updatedLabel = item.label.replace(/Vendor/g, vendorLabel);
+                }
+
+                item.label = updatedLabel;
+            }
+            return item;
+        });
+
         let temp = []
         temp = SimulationUtils(TempData)    // common function 
+        temp.forEach(row => {
+            for (const key in row) {
+                if (typeof row[key] === 'string' && row[key].includes('Vendor')) {
+                    // Use common function to get the localized value
+                    row[key] = getLocalizedCostingHeadValue(
+                        row[key],
+                        vendorBasedLabel,
+                        zeroBasedLabel,
+                        customerBasedLabel
+                    );
+                    if (row[key].includes('Vendor')) {
+                        row[key] = row[key].replace(/Vendor/g, vendorLabel);
+                    }
+                }
+            }
+        });
         return (
             <ExcelSheet data={temp} name={'Costing'}>
                 {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -1831,7 +1865,7 @@ function CostingSimulation(props) {
 
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>}
-                                                    {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>}
+                                                    {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialFinishWeight" hide headerName={`${finishWeightLabel} Weight`}></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn || isSurfaceTreatment) && getConfigurationKey().IsSourceExchangeRateNameVisible && isSimulationWithCosting && <AgGridColumn width={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn || isSurfaceTreatment) && isSimulationWithCosting && <AgGridColumn field={"CostingCurrency"} headerName='Costing Currency' headerComponent={'currencyHeader'} />}

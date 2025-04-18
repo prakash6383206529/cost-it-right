@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { checkForDecimalAndNull, checkForNull, formViewData, percentageOfNumber } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId, percentageOfNumber } from '../../../../../helper';
 import { ListForPartCost, optionsForDelta } from '../../../../../config/masterData';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
@@ -450,7 +450,8 @@ function EditPartCost(props) {
                 "BaseWeightedAverageCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
                 "NetPOPrice": weightedCost,
                 "BasicRate": weightedCost,
-                "CostingSettledDetails": tempArray
+                "CostingSettledDetails": tempArray,
+                "LoggedInUserId":loggedInUserId()
             }
             dispatch(saveSettledCostingDetails(obj, res => { }))
             let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
@@ -505,7 +506,7 @@ function EditPartCost(props) {
 
                         <form>
                             <Col md="12">
-                                <Table className='table cr-brdr-main mb-0 rmcc-main-headings'>
+                                <Table className='table cr-brdr-main mb-0'>
                                     <thead>
                                         <tr className="cr-bg-tbl" width='100%'>
                                             <th>{props?.costingSummary ? 'Parent Assembly Costing Number' : 'Parent Assembly Number'}: {`${props?.costingSummary ? props?.tabAssemblyIndividualPartDetail?.CostingNumber : props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
@@ -538,7 +539,7 @@ function EditPartCost(props) {
                                         <div className={"plus "}></div>Add
                                     </button>
                                 </div>}
-                                <Table className={`table cr-brdr-main mb-0 rmcc-main-headings ${props?.costingSummary ? 'mt-2' : ''}`}>
+                                <Table className={`table cr-brdr-main mb-0 ${props?.costingSummary ? 'mt-2' : ''}`}>
                                     <thead>
                                         <tr >
                                             {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&

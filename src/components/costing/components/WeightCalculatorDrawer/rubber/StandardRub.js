@@ -17,12 +17,14 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { useSelector } from 'react-redux'
 import { sourceCurrencyFormatter } from '../../Drawers/processCalculatorDrawer/CommonFormula'
 import { saveRawMaterialCalculationForRubberStandard } from '../../../actions/CostWorking'
+import { useLabels } from '../../../../../helper/core'
 
 
 
 
 const gridOptions = {};
 function StandardRub(props) {
+    const { finishedWeightLabel,finishWeightLabel } = useLabels()
 
     const dispatch = useDispatch();
     const { rmRowData, rmData, CostingViewMode } = props
@@ -317,7 +319,7 @@ function StandardRub(props) {
             return false
         }
         if (Number(getValues('FinishWeight')) > dataToSend.GrossWeight) {
-            Toaster.warning('Finish weight cannot be greater than gross weight')
+            Toaster.warning(`${finishWeightLabel} weight cannot be greater than gross weight`)
             return false
         }
 
@@ -733,7 +735,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Finish Weight(Kg)`}
+                                                label={`${finishWeightLabel} Weight(Kg)`}
                                                 name={'FinishWeight'}
                                                 Controller={Controller}
                                                 control={control}
@@ -744,7 +746,7 @@ function StandardRub(props) {
                                                     validate: { number, decimalAndNumberValidation, positiveAndDecimalNumber },
                                                     max: {
                                                         value: getValues('GrossWeight'),
-                                                        message: 'Finish weight should not be greater than gross weight.'
+                                                        message: `${finishWeightLabel} weight should not be greater than gross weight.`
                                                     },
                                                 }}
                                                 handleChange={() => { }}
@@ -757,7 +759,7 @@ function StandardRub(props) {
                                         </Col>
 
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'rubber-scrap-weight'} tooltipText={"Scrap Weight = Gross Weight - Finished Weight"} />
+                                            <TooltipCustom disabledIcon={true} id={'rubber-scrap-weight'} tooltipText={`Scrap Weight = Gross Weight - ${finishedWeightLabel} Weight`} />
                                             <TextFieldHookForm
                                                 label={`Scrap Weight(Kg)`}
                                                 name={'ScrapWeight'}
@@ -848,7 +850,7 @@ function StandardRub(props) {
                                                 <AgGridColumn minWidth="150" field="TotalLength" headerName="Total Length" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="Volume" headerName="Volume" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="150" field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth="150" field="FinishWeight" headerName={`${finishWeightLabel} Weight`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="ScrapWeight" headerName="Scrap Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 {/* <AgGridColumn minWidth="150" field="NetRMCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                                                 <AgGridColumn minWidth="150" field="NetRMCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatterForPrice'}></AgGridColumn>

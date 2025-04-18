@@ -8,7 +8,7 @@ import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWh
 import Toaster from '../../../../common/Toaster'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import NoContentFound from '../../../../common/NoContentFound'
-import { COSTINGSURFACETREATMENTEXTRACOST, EMPTY_DATA, HANGER, HANGEROVERHEAD, PAINT, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT } from '../../../../../config/constants'
+import { CC, COSTINGSURFACETREATMENTEXTRACOST, EMPTY_DATA, HANGER, HANGEROVERHEAD, PAINT, RM, RMCC, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT } from '../../../../../config/constants'
 import { generateCombinations, getCostingConditionTypes } from '../../../../common/CommonFunctions'
 import { getCostingCondition } from '../../../../../actions/Common'
 // import { setSurfaceData } from '../../../actions/Costing'
@@ -70,6 +70,16 @@ function ExtraCost(props) {
                 } else if (item.CostingConditionNumber === PAINT) {
                     item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
                     item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
+                } else if (item.CostingConditionNumber === RMCC) {
+                    item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
+                    item.TransportationCost = calculatePercentageValue(checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost), item?.Rate)
+                }else if(item.CostingConditionNumber === RM){
+                    
+                    item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost)
+                    item.TransportationCost = calculatePercentageValue(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost, item?.Rate)
+                }else if(item.CostingConditionNumber === CC){
+                    item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
+                    item.TransportationCost = calculatePercentageValue(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost, item?.Rate)
                 }
             }
         })
@@ -109,15 +119,25 @@ function ExtraCost(props) {
         setEditIndex(indexValue);
         setIsEditMode(true);
         let selectedData = tableData[indexValue];
-        setType({ label: selectedData?.UOM, value: selectedData?.UOM })
-        setValue('Type', { label: selectedData?.UOM, value: selectedData?.UOM })
+        const typeValue = { label: selectedData?.UOM, value: selectedData?.UOM };
+        setType(typeValue);
+        setValue('Type', typeValue);
         if (selectedData?.UOM === 'Percentage') {
             setValue('Applicability', { label: selectedData?.CostingConditionNumber, value: selectedData?.CostingConditionMasterId })
             setValue('ApplicabilityCost', checkForDecimalAndNull(selectedData?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('Percentage', checkForDecimalAndNull(selectedData?.Rate, initialConfiguration?.NoOfDecimalForPrice))
-        } else {
-            setType({ label: 'Fixed', value: 'Fixed' })
-            setValue('Type', { label: 'Fixed', value: 'Fixed' })
+        } else if (selectedData?.UOM === "Hanger Overhead") {
+            const hangerType = { label: "Hanger Overhead", value: "Hanger Overhead" };
+            setType(hangerType);
+            setValue('Type', hangerType);
+            setValue('Quantity', selectedData?.Quantity)
+            setValue('Rate', selectedData?.Rate)
+            setValue('NetCost', selectedData?.TransportationCost)
+        }
+        else {
+            const fixedType = { label: 'Fixed', value: 'Fixed' };
+            setType(fixedType);
+            setValue('Type', fixedType);
         }
         setValue('CostDescription', selectedData?.Description)
         setValue('Remark', selectedData?.Remark)
@@ -185,15 +205,15 @@ function ExtraCost(props) {
             setValue('ApplicabilityCost', checkForDecimalAndNull(hangerCostDetails?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, ApplicabilityCost: hangerCostDetails?.HangerCostPerPart }));
             return;
-        } else if (e?.label === 'RM') {
+        } else if (e?.label === RM) {
             setValue('ApplicabilityCost', checkForDecimalAndNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, ApplicabilityCost: RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost }));
             return;
-        } else if (e?.label === 'CC') {
+        } else if (e?.label === CC) {
             setValue('ApplicabilityCost', checkForDecimalAndNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, ApplicabilityCost: RMCCTabData[0]?.CostingPartDetails?.NetConversionCost }));
             return;
-        } else if (e?.label === 'RM + CC') {
+        } else if (e?.label === RMCC) {
             let conversionCost = RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost + RMCCTabData[0]?.CostingPartDetails?.NetConversionCost
             setValue('ApplicabilityCost', checkForDecimalAndNull(conversionCost, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, ApplicabilityCost: conversionCost }));
@@ -237,7 +257,7 @@ function ExtraCost(props) {
     }
 
     const onSubmit = data => {
-        console.log(data, "data")
+
         if (isEditMode) {
             let tempData = [...tableData];
             let obj = {
@@ -546,10 +566,21 @@ function ExtraCost(props) {
                                         </>
                                         }
                                         <Col md={3} className={'px-2'}>
+                                            <TooltipCustom
+                                                id="NetCost"
+                                                disabledIcon
+                                                tooltipText={
+                                                    <div>
+                                                        Cost is calculated based on the selected type:<br />
+                                                        • For Percentage: (Applicability Cost × Percentage ÷ 100)<br />
+                                                        • For Hanger Overhead: (Rate ÷ Quantity)
+                                                    </div>
+                                                }
+                                            />
                                             <TextFieldHookForm
                                                 label={`Cost`}
                                                 name={'NetCost'}
-                                                id={'cost-by-percent'}
+                                                id="NetCost"
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}

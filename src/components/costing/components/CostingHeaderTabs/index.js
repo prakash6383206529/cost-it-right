@@ -824,23 +824,22 @@ function CostingHeaderTabs(props) {
                     }} />}
                 </div>
               </div ></Col>
-          </Row>
-          {
-            costData.IsAssemblyPart &&
-            <Col md="auto">
-              <button
-                type="button"
-                onClick={() => setIsOpenViewHirarchy(true)}
-                class="btn-primary btn btn-lg mt-2 float-right">
-                <div className="hirarchy-icon"></div>
-                <span>View BOM</span>
-              </button>
-              {/* THIS WARNING MESSAGE WILL COME WHEN CHILD PART COSTING IS UNDER APPROVAL  */}
-              {messageForAssembly !== '' && <div className={'mb-n2'}>
-                <WarningMessage message={warningMessage} />
-              </div>}
+            <Col>
+              {costData.IsAssemblyPart && <>
+                <button
+                  type="button"
+                  onClick={() => setIsOpenViewHirarchy(true)}
+                  class="btn-primary btn btn-lg mt-4 float-right">
+                  <div className="hirarchy-icon"></div>
+                  <span>View BOM</span>
+                </button>
+                {/* THIS WARNING MESSAGE WILL COME WHEN CHILD PART COSTING IS UNDER APPROVAL  */}
+                {messageForAssembly !== '' && <div className={'mb-n2'}>
+                  <WarningMessage message={warningMessage} />
+                </div>}
+              </>}
             </Col>
-          }
+          </Row>
           {
             warningMessageObj.messageShow && costingApprovalStatus === "ApprovedByAssembly" && <Col md="12"> <div className='asm-message'>
               <WarningMessage message={`${warningMessageObj.tabName} values are entered for assembly only`} />

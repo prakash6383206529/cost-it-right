@@ -205,7 +205,7 @@ function SheetMetalBaicDrawer(props) {
     let cost, netProcessCostWithOutInterestAndDepreciation
 
     const rate = props.calculatorData.MHR
-    const processMHRWithOutInterestAndDepreciation = props?.calculatorData?.MachineRateWithOutInterestAndDepreciation || 1
+   
 
 
 
@@ -235,8 +235,7 @@ function SheetMetalBaicDrawer(props) {
           //This need to be done later
           // cost = rate / (quantity === 0 ? 1 : quantity);
 
-          ({ processCost: cost, processCostWithoutInterestAndDepreciation: netProcessCostWithOutInterestAndDepreciation } =
-            findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity, processMHRWithOutInterestAndDepreciation))
+          ({ processCost: cost, processCostWithoutInterestAndDepreciation: netProcessCostWithOutInterestAndDepreciation } = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity, processMHRWithOutInterestAndDepreciation))
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
           

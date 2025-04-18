@@ -14,11 +14,13 @@ import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
 import { nonZero } from '../../../../../helper/validation'
 import TooltipCustom from '../../../../common/Tooltip'
+import { useLabels } from '../../../../../helper/core'
 
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const { rmRowData, item, CostingViewMode } = props
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+    const { finishWeightLabel } = useLabels()
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -451,7 +453,7 @@ function Coil(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Finish Weight(${UOMDimension.label})`}
+                                        label={`${finishWeightLabel} Weight(${UOMDimension.label})`}
                                         name={'FinishWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -462,7 +464,7 @@ function Coil(props) {
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                             max: {
                                                 value: getValues('GrossWeight'),
-                                                message: 'Finish weight should not be greater than gross weight.'
+                                                message: `${finishWeightLabel} weight should not be greater than gross weight.`
                                             },
                                         }}
                                         handleChange={setFinishWeight}
@@ -498,7 +500,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={`Scrap Weight = (Gross Weight - ${finishWeightLabel} Weight )* Scrap Recovery (%)/100`} />
                                     <TextFieldHookForm
                                         label={`Scrap Weight(${UOMDimension.label})`}
                                         name={'scrapWeight'}

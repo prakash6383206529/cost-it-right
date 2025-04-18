@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel, checkTechnologyIdAndRfq, showRMScrapKeys } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel, checkTechnologyIdAndRfq, showRMScrapKeys, getLocalizedCostingHeadValue } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showDynamicKeys, } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -58,7 +58,7 @@ import { fetchDivisionId } from '../CostingUtil'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { vendorLabel } = useLabels()
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -214,7 +214,7 @@ const CostingSummaryTable = (props) => {
   const [showRightButton, setShowRightButton] = useState(true);
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
-  const { discountLabel, toolMaintenanceCostLabel } = useLabels();
+  const { discountLabel, toolMaintenanceCostLabel,finishWeightLabel } = useLabels();
   const { isNetPoPrice, setIsNetPoPrice } = useState(false)
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
@@ -230,7 +230,6 @@ const CostingSummaryTable = (props) => {
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)
   const tableContainerRef = useRef(null);
-
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
       setViewCostingData(viewCostingDetailData)
@@ -1358,6 +1357,7 @@ const CostingSummaryTable = (props) => {
     setDrawerDetailPDF(true)
     return new Promise((resolve) => {
       onBeforeContentResolveDetail.current = resolve;
+      console.log(  componentRef.current.innerHTML,' componentRef.current')
       setTimeout(() => {
         resolve();
       }, 1500);
@@ -1646,6 +1646,22 @@ const CostingSummaryTable = (props) => {
 
     let costingSummary = []
     let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? { ...VIEW_COSTING_DATA_LOGISTICS } : { ...VIEW_COSTING_DATA }
+    // Create a variable to store the updated vendorExcel label
+    let updatedVendorLabel = null;
+
+    // Check if vendorExcel property exists and contains "Vendor"
+    if (templateObj.vendorExcel && templateObj.vendorExcel.includes("Vendor")) {
+      updatedVendorLabel = getLocalizedCostingHeadValue(
+        templateObj.vendorExcel,
+        vendorBasedLabel,
+        zeroBasedLabel,
+        customerBasedLabel
+      );
+      if (updatedVendorLabel === templateObj.vendorExcel) {
+        updatedVendorLabel = templateObj.vendorExcel.replace(/Vendor/g, vendorLabel);
+      }
+    }
+
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
@@ -1677,6 +1693,9 @@ const CostingSummaryTable = (props) => {
       delete templateObj.meltingLossExcel
     }
     for (var prop in templateObj) {
+      if (prop === "vendorExcel") {
+        costingSummary.push({ label: updatedVendorLabel, value: prop, })
+      }
       if (viewCostingData[0]?.technologyId === LOGISTICS) {
         costingSummary.push({ label: VIEW_COSTING_DATA_LOGISTICS[prop], value: prop, })
       } else {
@@ -1695,6 +1714,9 @@ const CostingSummaryTable = (props) => {
         }
       }
     }
+    const updatedCostingSummary = costingSummary.filter(
+      item => item.label !== "Vendor (Code)"
+    );
 
     viewCostingData && viewCostingData.map((item) => {
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
@@ -1742,7 +1764,7 @@ const CostingSummaryTable = (props) => {
 
       if (indexOutside === 0) {
 
-        costingSummary.map((item, index) => {
+        updatedCostingSummary.map((item, index) => {
 
           value = (item.value)
           let obj = {}
@@ -1758,7 +1780,7 @@ const CostingSummaryTable = (props) => {
 
       } else {
         let newArr = []
-        costingSummary.map((item, index) => {
+        updatedCostingSummary.map((item, index) => {
           value = (item.value)
           let obj = {}
           let key1 = `columnA${indexOutside}`
@@ -2772,7 +2794,7 @@ const CostingSummaryTable = (props) => {
                                     <span className={highlighter("scrapRate")}>{showRMScrapKeys(viewCostingData && Number(viewCostingData[0]?.technologyId))?.name}</span>
                                     {isScrapRecoveryPercentageApplied && <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>}
                                     <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
-                                    <span className={highlighter("", "finish-reducer")}>Finish Weight</span>
+                                    <span className={highlighter("", "finish-reducer")}>{`${finishWeightLabel} Weight`}</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}

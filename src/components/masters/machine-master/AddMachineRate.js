@@ -2211,9 +2211,9 @@ class AddMachineRate extends Component {
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={isViewMode ? '-' : 'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, checkSpacesInString, hashValidation]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, checkSpacesInString, hashValidation, required]}
                             component={renderText}
-                            required={false}
+                            required={true}
                             disabled={(isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                             className=" "
                             customClassName="withBorder"

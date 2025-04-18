@@ -624,6 +624,8 @@ function AddFreight(props) {
       setCostingFreightCalculationDetailsId(formData?.CalculationId)
     }
     setValue('FreightCost', checkForDecimalAndNull(freightCost, getConfigurationKey().NoOfDecimalForPrice))
+    const quantity = checkForNull(formData?.NumberOfPartsPerBinOrTrolley) * checkForNull(formData?.NumberOfPartsPerBinOrTrolleyPerVehicle);
+    setValue('Quantity', checkForDecimalAndNull(quantity, getConfigurationKey().NoOfDecimalForInputOutput));
     setFreightCost(freightCost)
     setState({
       ...state,

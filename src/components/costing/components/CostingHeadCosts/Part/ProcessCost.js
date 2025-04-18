@@ -1860,7 +1860,7 @@ function ProcessCost(props) {
                                 register={register}
                                 mandatory={false}
                                 placeholder={'Select'}
-                                customClassName="costing-selectable-dropdown"
+                                customClassName="costing-selectable-dropdown process-drawer-dropdown"
                                 defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
                                   label: item?.CostingConditionNumber,
                                   value: item?.CostingConditionMasterAndTypeLinkingId
