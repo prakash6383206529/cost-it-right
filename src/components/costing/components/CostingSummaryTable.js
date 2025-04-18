@@ -214,7 +214,7 @@ const CostingSummaryTable = (props) => {
   const [showRightButton, setShowRightButton] = useState(true);
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
-  const { discountLabel, toolMaintenanceCostLabel } = useLabels();
+  const { discountLabel, toolMaintenanceCostLabel,finishWeightLabel } = useLabels();
   const { isNetPoPrice, setIsNetPoPrice } = useState(false)
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
@@ -230,7 +230,6 @@ const CostingSummaryTable = (props) => {
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)
   const tableContainerRef = useRef(null);
-
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
       setViewCostingData(viewCostingDetailData)
@@ -2772,7 +2771,7 @@ const CostingSummaryTable = (props) => {
                                     <span className={highlighter("scrapRate")}>{showRMScrapKeys(viewCostingData && Number(viewCostingData[0]?.technologyId))?.name}</span>
                                     {isScrapRecoveryPercentageApplied && <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>}
                                     <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
-                                    <span className={highlighter("", "finish-reducer")}>Finish Weight</span>
+                                    <span className={highlighter("", "finish-reducer")}>{`${finishWeightLabel} Weight`}</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}

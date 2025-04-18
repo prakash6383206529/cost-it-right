@@ -12,6 +12,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { ASSEMBLYNAME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
+import { useLabels } from '../../../../../helper/core';
 
 function AddRejectionRecovery(props) {
 
@@ -20,6 +21,7 @@ function AddRejectionRecovery(props) {
     const defaultValues = {
 
     }
+    const { finishWeightLabel } = useLabels()
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
         mode: 'onChange',
@@ -175,9 +177,9 @@ function AddRejectionRecovery(props) {
         if (rmData?.length === 0) {
             return { tooltipText: false, width: '0' };
         } else if (rmData?.length === 1) {
-            return { tooltipText: `Cost Applicability = RM Scrap Rate (${rmData && rmData[0]?.ScrapRate}) * RM Finish Weight (${rmData && rmData[0]?.FinishWeight}${rmData && rmData[0]?.UOMSymbol})`, width: '280px' };
+            return { tooltipText: `Cost Applicability = RM Scrap Rate (${rmData && rmData[0]?.ScrapRate}) * RM ${finishWeightLabel} Weight (${rmData && rmData[0]?.FinishWeight}${rmData && rmData[0]?.UOMSymbol})`, width: '280px' };
         } else {
-            return { tooltipText: `Cost Applicability = (RM Scrap Rate (${rmData && rmData[0]?.ScrapRate}) * RM Finish Weight (${rmData && rmData[0]?.FinishWeight}${rmData && rmData[0]?.UOMSymbol})) + (RM Scrap Rate (${rmData && rmData[1]?.ScrapRate}) * RM Finish Weight (${rmData && rmData[1]?.FinishWeight}${rmData && rmData[1]?.UOMSymbol}))...`, width: '380px' };
+            return { tooltipText: `Cost Applicability = (RM Scrap Rate (${rmData && rmData[0]?.ScrapRate}) * RM ${finishWeightLabel} Weight (${rmData && rmData[0]?.FinishWeight}${rmData && rmData[0]?.UOMSymbol})) + (RM Scrap Rate (${rmData && rmData[1]?.ScrapRate}) * RM ${finishWeightLabel} Weight (${rmData && rmData[1]?.FinishWeight}${rmData && rmData[1]?.UOMSymbol}))...`, width: '380px' };
         }
     }
     return (

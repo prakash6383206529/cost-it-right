@@ -21,6 +21,7 @@ import { useSelector } from 'react-redux'
 import { sourceCurrencyFormatter } from '../Drawers/processCalculatorDrawer/CommonFormula'
 import MonoCartoon from './corrugatedBox/monoCartoon'
 import PlasticCalculator from './plastic/index'
+import DayTime from '../../../common/DayTimeWrapper'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox, calculatorType } = props
@@ -285,6 +286,7 @@ function OpenWeightCalculator(props) {
                   <div className="d-inline-block "><span className="grey-text d-block">{Number(technology) === Number(FORGING) ? 'Forging Scrap' : 'Scrap'} Rate({sourceCurrencyFormatter(currencySource?.label)}/{rmRowData?.UOMSymbol}):</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? checkForDecimalAndNull(rmRowData.ScrapRate, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>
                   {Number(technology) === Number(FORGING) && <div className="d-inline-block "><span className="grey-text d-block">Machining Scrap Rate({sourceCurrencyFormatter(currencySource?.label)}/{rmRowData.UOMSymbol}):</span><span className="text-dark-blue">{`${rmRowData.MachiningScrapRate ? checkForDecimalAndNull(rmRowData.MachiningScrapRate, getConfigurationKey().NoOfDecimalForPrice) : 0}`}</span></div>}
                   <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowData.RawMaterialCategory !== undefined ? rmRowData.RawMaterialCategory : ''}`}</span></div>
+                  {(Number(technology) === Number(SHEETMETAL)) && <div className="d-inline-block"><span className="grey-text d-block">RM Base (Effective Date)</span><span className="text-dark-blue">{`${rmRowData.EffectiveDate !== undefined ? DayTime(rmRowData.EffectiveDate).format('MM/DD/YYYY') : ''}`}</span></div>}
 
                 </Col>
               </Row>

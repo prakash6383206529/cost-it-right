@@ -3370,11 +3370,12 @@ class AddMoreDetails extends Component {
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, hashValidation]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, hashValidation, required]}
                             component={renderText}
                             disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
+                            required={true}
                           />
                         </Col>
 
