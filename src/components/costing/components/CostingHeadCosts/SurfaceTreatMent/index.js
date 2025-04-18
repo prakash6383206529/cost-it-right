@@ -401,6 +401,22 @@ function SurfaceTreatment(props) {
     }))
     // }
   }
+  const getCostValues = () => {
+    const isAssembly = RMCCTabData[0]?.CostingPartDetails?.PartType
+    if (isAssembly) {
+
+        return {
+            rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
+            conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalConversionCostWithQuantity)
+        };
+    } else {
+      
+        return {
+            rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost),
+            conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
+        };
+    }
+};
   const updateExtraCost = () => {
     let tempData = extraCostDetails?.TransportationDetails ? [...extraCostDetails?.TransportationDetails] : []
     tempData.map(item => {
@@ -421,17 +437,17 @@ function SurfaceTreatment(props) {
           item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
           item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
         } else if (item.CostingConditionNumber === RMCC) {
-          const rmcc = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost)+checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
-          item.ApplicabiltyCost = checkForNull(rmcc)
-          item.TransportationCost = calculatePercentageValue(checkForNull(rmcc), item?.Rate)
+          const { rawMaterialsCost, conversionCost } = getCostValues();       
+          item.ApplicabiltyCost = checkForNull(rawMaterialsCost)+checkForNull(conversionCost)
+          item.TransportationCost = calculatePercentageValue(checkForNull(rawMaterialsCost)+checkForNull(conversionCost), item?.Rate)
         }else if(item.CostingConditionNumber === RM){
           
-          item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost          )
-          item.TransportationCost = calculatePercentageValue(checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost), item?.Rate)
+          item.ApplicabiltyCost = getCostValues()?.rawMaterialsCost
+          item.TransportationCost = calculatePercentageValue(getCostValues()?.rawMaterialsCost, item?.Rate)
         }else if(item.CostingConditionNumber === CC){
           
-          item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
-          item.TransportationCost = calculatePercentageValue(checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost), item?.Rate)
+          item.ApplicabiltyCost = getCostValues()?.conversionCost
+          item.TransportationCost = calculatePercentageValue(getCostValues()?.conversionCost, item?.Rate)
         }
       }
     })
