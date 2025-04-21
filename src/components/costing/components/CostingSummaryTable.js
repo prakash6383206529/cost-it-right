@@ -27,7 +27,7 @@ import BOMViewer from '../../masters/part-master/BOMViewer';
 import _, { debounce } from 'lodash'
 import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
-import { DIE_CASTING, IdForMultiTechnology, PLASTIC, TOOLING_ID } from '../../../config/masterData'
+import { DIE_CASTING, IdForMultiTechnology, PLASTIC, SHEETMETAL, TOOLING_ID } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
 import TooltipCustom from '../../common/Tooltip'
 import { Costratiograph } from '../../dashboard/CostRatioGraph'
@@ -2801,6 +2801,8 @@ const CostingSummaryTable = (props) => {
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && <span className={highlighter("BurningLossWeight")}>Burning Loss Weight </span>}
                                     <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
+                                    {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("BurningLossWeight")}>Yield % </span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("BurningLossWeight")}>RM Base (Effective Date) </span>}
                                   </td>
                                   {viewCostingData &&
                                     viewCostingData?.map((data) => {
@@ -2848,6 +2850,12 @@ const CostingSummaryTable = (props) => {
                                           <span className={highlighter("ScrapWeight")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</span> : '')}
                                           </span>
+                                          {data?.technologyId === SHEETMETAL && <span className={highlighter("YieldPercentage")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.YieldPercentage)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.YieldPercentage, initialConfiguration?.NoOfDecimalForInputOutput)}</span> : '-')}
+                                          </span>}
+                                          {data?.technologyId === SHEETMETAL && <span className={highlighter("EffectiveDate")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.EffectiveDate)}>{DayTime(data?.netRMCostView[0]?.EffectiveDate).isValid() ? DayTime(data?.netRMCostView[0]?.EffectiveDate) : ''}</span> : '-')}
+                                          </span>}
                                         </td>
                                       )
                                     })}
