@@ -13,10 +13,12 @@ import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA, hideDetailOfRubbercalci } from '../../../../../config/constants'
 import { toast } from 'react-toastify'
 import { calculateTotalPercentage } from '../../../CostingUtil'
+import { useLabels } from '../../../../../helper/core'
 
 function RubberWeightCalculator(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const dispatch = useDispatch()
+    const { finishedWeightLabel,finishWeightLabel } = useLabels()
 
     const defaultValues = {
         grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialGrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialGrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
@@ -674,7 +676,7 @@ function RubberWeightCalculator(props) {
                                                     validate: { number, decimalAndNumberValidation },
                                                     min: {
                                                         value: getValues('finishedWeight'),
-                                                        message: 'Gross weight should not be lesser than finish weight.'
+                                                        message: `Gross weight should not be lesser than ${finishWeightLabel} weight.`
                                                     },
                                                 }}
                                                 handleChange={handleGrossWeight}
@@ -688,7 +690,7 @@ function RubberWeightCalculator(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Finished Weight (Kg)`}
+                                                label={`${finishedWeightLabel} Weight (Kg)`}
                                                 name={'finishedWeight'}
                                                 Controller={Controller}
                                                 control={control}
@@ -699,7 +701,7 @@ function RubberWeightCalculator(props) {
                                                     validate: { number, decimalAndNumberValidation },
                                                     max: {
                                                         value: getValues('grossWeight'),
-                                                        message: 'Finish weight should not be greater than gross weight.'
+                                                        message: `${finishWeightLabel} weight should not be greater than gross weight.`
                                                     },
                                                 }}
                                                 handleChange={handleFinishWeight}
@@ -711,7 +713,7 @@ function RubberWeightCalculator(props) {
                                         </Col>
 
                                         <Col md="3">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap weight = (Gross weight - Finish weight)'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-weight'} tooltipText={`Scrap weight = (Gross weight - ${finishWeightLabel} weight)`} />
                                             <TextFieldHookForm
                                                 label={`Scrap Weight (Kg)`}
                                                 name={'scrapWeight'}

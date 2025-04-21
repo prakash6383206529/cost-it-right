@@ -88,15 +88,18 @@ export const RMDomesticZBC = [
     { label: "QuantityForCostingCondition", value: "QuantityForCostingCondition" },
     { label: "ApplicabilityForCostingCondition", value: "ApplicabilityForCostingCondition" },
     { label: "PercentageOrCostForCostingCondition", value: "PercentageOrCostForCostingCondition" },
-    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
+    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", }, 
     { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ApplyScrap(%)", value: "IsCalculateScrapRate" },
+    { label: "Scrap(%)", value: "ScrapRatePercentageOfRMRate" },
     { label: "ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
-    { label: "ScrapRate/JaliScrapRate/ForgingScrapRate", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*    // KEEP COMMENTED ON RE						//RE
+    { label: "ScrapRate/JaliScrapRate/ForgingScrapRate", value: "ScrapRate" }, //*{ label: "CutOffPrice", value: "CutOffPrice" }, //*    // KEEP COMMENTED ON RE						//RE
     { label: "FreightCost", value: "FreightCost" }, //*    // KEEP COMMENTED ON RE						//RE
     { label: "ShearingCost", value: "ShearingCost" }, //*    // KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapRate", value: "CircleScrapRate" }, //*
+    { label: "ApplyMachiningScrap(%)", value: "IsCalculateMachineScrapRate" },
+    { label: "MachiningScrap(%)", value: "MachineScrapRatePercentageOfRMRate" },
     { label: "MachiningScrapRate", value: "MachiningScrapRate" },
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -134,12 +137,16 @@ export const RMDomesticZBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
+        "IsCalculateScrapRate": false,
+        "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",    // KEEP COMMENTED ON RE						//RE
         "FreightCost": "10",    // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",    // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
+        "IsCalculateMachineScrapRate": false,
+        "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -296,12 +303,16 @@ export const RMDomesticVBC = [
     { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
     { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ApplyScrap(%)", value: "IsCalculateScrapRate" },
+    { label: "Scrap(%)", value: "ScrapRatePercentageOfRMRate" },
     { label: "ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapRate/ForgingScrapRate", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*// KEEP COMMENTED ON RE						//RE
     { label: "FreightCost", value: "FreightCost" }, //*// KEEP COMMENTED ON RE						//RE
     { label: "ShearingCost", value: "ShearingCost" }, //*// KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapRate", value: "CircleScrapRate" }, //*
+    { label: "ApplyMachiningScrap(%)", value: "IsCalculateMachineScrapRate" },
+    { label: "MachiningScrap(%)", value: "MachineScrapRatePercentageOfRMRate" },
     { label: "MachiningScrapRate", value: "MachiningScrapRate" },
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -338,12 +349,16 @@ export const RMDomesticVBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
+        "IsCalculateScrapRate": false,
+        "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",// KEEP COMMENTED ON RE						//RE
         "FreightCost": "10",// KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",// KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
+        "IsCalculateMachineScrapRate": false,
+        "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -499,12 +514,16 @@ export const RMImportZBC = [
     { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
     { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ApplyScrap(%)", value: "IsCalculateScrapRate" },
+    { label: "Scrap(%)", value: "ScrapRatePercentageOfRMRate" },
     { label: "ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapRate/ForgingScrapRate", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "FreightCost", value: "FreightCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "ShearingCost", value: "ShearingCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapRate", value: "CircleScrapRate" }, //*
+    { label: "ApplyMachiningScrap(%)", value: "IsCalculateMachineScrapRate" },
+    { label: "MachiningScrap(%)", value: "MachineScrapRatePercentageOfRMRate" },
     { label: "MachiningScrapRate", value: "MachiningScrapRate" },
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -542,12 +561,16 @@ export const RMImportZBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
+        "IsCalculateScrapRate": false,
+        "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
+        "IsCalculateMachineScrapRate": false,
+        "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -698,12 +721,16 @@ export const RMDomesticCBC = [
     { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
     { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ApplyScrap(%)", value: "IsCalculateScrapRate" },
+    { label: "Scrap(%)", value: "ScrapRatePercentageOfRMRate" },
     { label: "ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapRate/ForgingScrapRate", value: "ScrapRate" }, //*s
     { label: "CutOffPrice", value: "CutOffPrice" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "FreightCost", value: "FreightCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "ShearingCost", value: "ShearingCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapRate", value: "CircleScrapRate" }, //*
+    { label: "ApplyMachiningScrap(%)", value: "IsCalculateMachineScrapRate" },
+    { label: "MachiningScrap(%)", value: "MachineScrapRatePercentageOfRMRate" },
     { label: "MachiningScrapRate", value: "MachiningScrapRate" }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
@@ -736,12 +763,16 @@ export const RMDomesticCBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
+        "IsCalculateScrapRate": false,
+        "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
+        "IsCalculateMachineScrapRate": false,
+        "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "1032",
         "ExchangeRateSourceName": "SBI",
@@ -889,12 +920,16 @@ export const RMImportVBC = [
     { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
     { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ApplyScrap(%)", value: "IsCalculateScrapRate" },
+    { label: "Scrap(%)", value: "ScrapRatePercentageOfRMRate" },
     { label: "ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapRate/ForgingScrapRate", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "FreightCost", value: "FreightCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "ShearingCost", value: "ShearingCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapRate", value: "CircleScrapRate" }, //*
+    { label: "ApplyMachiningScrap(%)", value: "IsCalculateMachineScrapRate" },
+    { label: "MachiningScrap(%)", value: "MachineScrapRatePercentageOfRMRate" },
     { label: "MachiningScrapRate", value: "MachiningScrapRate" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -932,12 +967,16 @@ export const RMImportVBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
+        "IsCalculateScrapRate": false,
+        "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
+        "IsCalculateMachineScrapRate": false,
+        "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -1087,12 +1126,16 @@ export const RMImportCBC = [
     { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
     { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ApplyScrap(%)", value: "IsCalculateScrapRate" },
+    { label: "Scrap(%)", value: "ScrapRatePercentageOfRMRate" },
     { label: "ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapRate/ForgingScrapRate", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "FreightCost", value: "FreightCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "ShearingCost", value: "ShearingCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapRate", value: "CircleScrapRate" }, //*
+    { label: "ApplyMachiningScrap(%)", value: "IsCalculateMachineScrapRate" },
+    { label: "MachiningScrap(%)", value: "MachineScrapRatePercentageOfRMRate" },
     { label: "MachiningScrapRate", value: "MachiningScrapRate" }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
@@ -1127,12 +1170,16 @@ export const RMImportCBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
+        "IsCalculateScrapRate": false,
+        "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
+        "IsCalculateMachineScrapRate": false,
+        "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
         "ExchangeRateSourceName": "SBI",

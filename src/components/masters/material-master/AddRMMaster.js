@@ -445,6 +445,10 @@ function AddRMMaster(props) {
             "IsIndexationDetails": rawMaterailDetails?.states?.isShowIndexCheckBox === true ? true : false,
             "IsCutOffApplicable": (values?.cutOffPriceBaseCurrency < values?.NetLandedCostBaseCurrency && checkForNull(values.cutOffPriceBaseCurrency) !== 0 && values.cutOffPriceBaseCurrency !== '') ? true : false,
             "IsScrapUOMApply": rawMaterailDetails?.states?.IsApplyHasDifferentUOM,
+            "IsCalculateScrapRate": rawMaterailDetails?.states?.IsCalculateScrapRate,
+            "IsCalculateMachineScrapRate": rawMaterailDetails?.states?.IsCalculateMachineScrapRate,
+            "ScrapRatePercentageOfRMRate": rawMaterailDetails?.states?.scrapRatePercentageOfRMRate,
+            "MachineScrapRatePercentageOfRMRate": rawMaterailDetails?.states?.machineScrapRatePercentageOfRMRate,
             "IsSendForApproval": false,
             "JaliScrapCost": values?.CircleScrapCost,
             "JaliScrapCostLocalConversion": state?.isImport ? convertIntoCurrency(values?.CircleScrapCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.CircleScrapCost,
@@ -507,11 +511,11 @@ function AddRMMaster(props) {
             "VendorName": state?.costingTypeId === VBCTypeId ? !state?.isEditFlag ? getNameBySplitting(rawMaterailDetails?.Vendor?.label) : getNameBySplitting(values?.Vendor?.label) : '',
             "VendorPlant": []
         }
-        let financialDataNotChanged = (checkForNull(values.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
-            && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) 
-            && (checkForNull(values.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)) && (checkForNull(values.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate)) 
-            && checkForNull(values?.NetLandedCostConversion) === checkForNull(DataToChange?.NetLandedCostConversion)&&
-            checkForNull(values?.ScrapRate) === checkForNull(DataToChange?.ScrapRate)
+        let financialDataNotChanged = (checkForNull(values.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice)) && (checkForNull(values.BasicRate) === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
+            && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (checkForNull(values.OtherCost) === checkForNull(DataToChange?.OtherNetCost))
+            && (checkForNull(values.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)) && (checkForNull(values.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate)
+            && checkForNull(values?.ScrapRate) === checkForNull(DataToChange?.ScrapRate) && checkForNull(rawMaterailDetails?.states?.scrapRatePercentageOfRMRate) === checkForNull(DataToChange?.ScrapRatePercentageOfRMRate)
+            && checkForNull(rawMaterailDetails?.states?.IsCalculateScrapRate) === checkForNull(DataToChange?.IsCalculateScrapRate) && checkForNull(rawMaterailDetails?.states?.IsCalculateMachineScrapRate) === checkForNull(DataToChange?.IsCalculateMachineScrapRate))
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
         if (state?.isEditFlag) {
             if (!isRMAssociated) {
