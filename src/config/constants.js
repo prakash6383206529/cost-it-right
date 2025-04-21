@@ -3402,7 +3402,7 @@ export const CC = "CC"
 export const RMCC = "RM + CC"
 
 export const PAINTTECHNOLOGY = 31
-export const HANGEROVERHEAD = "Hanger OverHead"
+export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
