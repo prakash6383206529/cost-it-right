@@ -302,7 +302,7 @@ function RawMaterialCost(props) {
             UOMSymbol: el.UOMSymbol,
             ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
             CurrencyExchangeRate: el.CurrencyExchangeRate,
-            EffectiveDate:el.EffectiveDate
+            EffectiveDate: el.EffectiveDate
           }
         })
 
