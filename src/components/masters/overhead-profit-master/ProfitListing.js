@@ -111,7 +111,7 @@ function ProfitListing(props) {
     var floatingFilterProfit = {
         maxValue: 2,
         suppressFilterButton: true,
-        component: 'profit'
+        component: 'profits'
     }
 
     useEffect(() => {

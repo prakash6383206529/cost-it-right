@@ -796,7 +796,12 @@ label for[normal-switch] {
     }
   }
 }
-
+.table-scroller{
+  overflow-x: auto;
+  .table-width{
+    width: 150px;
+  }
+}
 .level-table {
   .react-bs-table-container {
     .react-bs-table {

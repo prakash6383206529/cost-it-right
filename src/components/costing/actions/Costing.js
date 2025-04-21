@@ -78,7 +78,8 @@ import {
   GET_COSTING_COST_DETAILS,
   SET_OPERATION_APPLICABILITY_SELECT,
   SET_PROCESS_APPLICABILITY_SELECT,
-  GET_PAINT_COAT_LIST
+  GET_PAINT_COAT_LIST,
+  GET_TOOL_TAB_DATA
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1173,6 +1174,10 @@ export function getToolTabData(data, IsUseReducer, callback) {
           let TabData = response.data.DataList;
           dispatch({
             type: SET_TOOL_TAB_DATA,
+            payload: TabData,
+          });
+          dispatch({
+            type: GET_TOOL_TAB_DATA,
             payload: TabData,
           });
           //callback(response);

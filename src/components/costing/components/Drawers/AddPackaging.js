@@ -120,7 +120,8 @@ function AddPackaging(props) {
 
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : 'packaging'
-    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    let isRequestForMultiTechnology = partType ? true : false
+    dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
     const removeApplicabilityList = _.map(gridData, 'Applicability')
     setRemoveApplicability(removeApplicabilityList)
     if (applicability?.label === 'Crate/Trolley') {
