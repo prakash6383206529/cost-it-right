@@ -86,10 +86,10 @@ function RunSimulationDrawer(props) {
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
         // dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
-        dispatch(fetchCostingHeadsAPI('', true, (res) => {
+        dispatch(fetchCostingHeadsAPI('', true, false, (res) => {
             setOtherCostApplicabilityListing(res?.data?.SelectList)
         }))
-        dispatch(fetchCostingHeadsAPI('', false, (res) => {
+        dispatch(fetchCostingHeadsAPI('', false, false, (res) => {
             setRemainingApplicabilityListing(res?.data?.SelectList)
         }))
 

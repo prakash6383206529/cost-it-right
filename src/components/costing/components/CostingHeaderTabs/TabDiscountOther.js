@@ -195,8 +195,9 @@ function TabDiscountOther(props) {
     setOpenCloseOtherDiscount(!openCloseOtherDiscount)
   }
   useEffect(() => {
-    let request = partType ? 'multiple technology assembly' : ''
-    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    let request = partType ? 'multiple technology assembly' : 'discount cost'
+    let isRequestForMultiTechnology = partType ? true : false
+    dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
     if (getConfigurationKey().IsSAPConfigured && isShowValuationType) {
 
       let data = {
@@ -1749,8 +1750,9 @@ function TabDiscountOther(props) {
     } else {
       setOpenCloseOtherCost(false)
     }
-    let request = partType ? 'multiple technology assembly' : ''
-    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    let request = partType ? 'multiple technology assembly' : 'discount cost'
+    let isRequestForMultiTechnology = partType ? true : false
+    dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
   }
   const closeOtherDiscountDrawer = (type, discountTotal, discountTableData) => {
     if (type === 'cancel') {

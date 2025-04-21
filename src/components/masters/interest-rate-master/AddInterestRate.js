@@ -29,6 +29,7 @@ import TooltipCustom from '../../common/Tooltip';
 import { subDays } from 'date-fns';
 import { labels, LabelsClass } from '../../../helper/core';
 import { checkEffectiveDate } from '../masterUtil';
+import { ASSEMBLY } from '../../../config/masterData';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -73,7 +74,10 @@ class AddInterestRate extends Component {
         PaymentTermsApplicability: false,
         RepaymentPeriod: false,
         // PaymentTermPercent: false,
-      }
+      },
+      isAssemblyCheckboxIcc: false,
+      iccApplicability: [],
+      paymentTermsApplicability: [],
     }
   }
   /**
@@ -98,7 +102,24 @@ class AddInterestRate extends Component {
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     this.getDetail()
     this.props.getICCAppliSelectList(() => { })
-    this.props.fetchCostingHeadsAPI('paymentterms', false, res => { });
+    this.props.fetchCostingHeadsAPI('payment terms', false, false, res => {
+      const temp = [];
+      res?.data?.SelectList?.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      this.setState({ paymentTermsApplicability: temp })
+      this.props.fetchCostingHeadsAPI('ICC', false, false, res => {
+        const temp = [];
+        res?.data?.SelectList?.map((item) => {
+          if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+        this.setState({ iccApplicability: temp })
+      });
+    });
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
     }
@@ -149,7 +170,7 @@ class AddInterestRate extends Component {
       // Iterate over the modifiedArray
       modifiedArray?.map((item) => {
         // Check conditions to exclude certain items
-        if (item.Value !== '0' && item.Text !== 'Net Cost') {
+        if (item.Value !== '0' && item.Text !== 'Net Cost' && item.Text !== 'Total Cost + Other Cost - Discount') {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
@@ -471,6 +492,7 @@ class AddInterestRate extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
               RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
+              isAssemblyCheckboxIcc: Data?.TechnologyId === ASSEMBLY ? true : false
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -628,6 +650,24 @@ class AddInterestRate extends Component {
     }
 
   }, 500)
+  /**
+  * @method onPressAssemblyCheckbox
+  * @description Used for Surface Treatment
+  */
+  onPressAssemblyCheckboxIcc = () => {
+    let isRequestForMultiTechnology = !this.state.isAssemblyCheckboxIcc ? true : false
+    this.props.fetchCostingHeadsAPI('payment terms', false, isRequestForMultiTechnology, res => {
+      this.props.fetchCostingHeadsAPI('ICC', false, isRequestForMultiTechnology, res => { });
+    });
+    this.setState({
+      isAssemblyCheckboxIcc: !this.state.isAssemblyCheckboxIcc,
+      ICCApplicability: [],
+      isHideRM: false
+    });
+
+    this.props.change('ICCApplicability', '');
+    this.props.change('PaymentTermApplicability', '');
+  };
 
   /**
   * @method render
@@ -892,12 +932,31 @@ class AddInterestRate extends Component {
                           />
                         </Col>
                       }
+                       <Col md="2" className="st-operation mt-4 pt-2">
+                          <label id="AddInterestRate_ApplyPartCheckbox"
+                            className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
+                              }`}
+                            onChange={this.onPressAssemblyCheckboxIcc}
+                          >
+                            Apply for Part Type
+                            <input
+                              type="checkbox"
+                              checked={this.state.isAssemblyCheckboxIcc}
+                              disabled={isEditFlag ? true : false}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={this.state.isAssemblyCheckboxIcc}
+                              onChange={this.onPressAssemblyCheckboxIcc}
+                            />
+                          </label>
+                        </Col>
                     </Row >
-
                     <Row>
                       <Col md="12">
                         <div className="left-border">{"ICC:"}</div>
                       </Col>
+                     
                       <Col md="3">
                         <Field
                           name="ICCApplicability"
@@ -906,13 +965,6 @@ class AddInterestRate extends Component {
                           component={searchableSelect}
                           placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("ICC")}
-                          // validate={
-                          //   this.state.ICCApplicability == null ||
-                          //     this.state.ICCApplicability.length === 0
-                          //     ? [required]
-                          //     : []
-                          // }
-
                           handleChangeDescription={
                             this.handleICCApplicability
                           }
