@@ -46,7 +46,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const OperationListing = (props) => {
-
+    console.log("props", props)
     const dispatch = useDispatch();
     const [state, setState] = useState({
         tableData: [],
@@ -86,7 +86,7 @@ const OperationListing = (props) => {
         showExtraData: false,
         render: false,
         permissionData: {},
-        isImport: false,
+        isImport: props?.isImport ? true : false,
         editSelectedList: false,
 
 
@@ -135,7 +135,8 @@ const OperationListing = (props) => {
         if (!props.stopAPICall && props.isSimulation && props.selectionForListingMasterAPI === 'Combined') {
             fetchData();
         } else if (!props.stopAPICall) {
-            getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData);
+            console.log("state.isImportAPI Call..", state.isImport)
+            getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData, state.isImport);
         } else if (props.stopAPICall === true) {
             setState(prevState => ({ ...prevState, tableData: props.operationDataHold }));
         }
@@ -865,7 +866,7 @@ const OperationListing = (props) => {
             {!state?.editSelectedList && (
                 <div className={`${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                    <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
+                    <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                         <form>
                             {!props?.isSimulation && <Row>
                                 <Col md="4" className="switch mt-3 mb-1">
@@ -923,7 +924,7 @@ const OperationListing = (props) => {
                                                 ""
                                             }
 
-                                            {permissionData?.Add && !props?.isMasterSummaryDrawer && (
+                                            {permissionData?.Add && !props?.isMasterSummaryDrawer &&  !state.isImport && (
                                                 <Button id="operationListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 
                                             )}
