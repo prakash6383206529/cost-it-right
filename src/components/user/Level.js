@@ -676,7 +676,7 @@ const Level = (props) => {
                       </div>
                       :
                       <div className={'header-wrapper left'}>
-                        <h3>{isEditFlag ? 'Update High12est Level of Approvals' : 'Set Highest Level of Approvals'}
+                        <h3>{isEditFlag ? 'Update Highest Level of Approvals' : 'Set Highest Level of Approvals'}
                           <TourWrapper
                             buttonSpecificProp={{ id: "Add_Hightest_Level_Form" }}
                             stepsSpecificProp={{
