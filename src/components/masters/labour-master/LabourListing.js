@@ -178,8 +178,8 @@ function LabourListing(props) {
     return (
       <>
         {ViewAccessibility && (<Button id={`labourListing_View${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />)}
-        {EditAccessibility && (<Button id={`labourListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />)}
-        {DeleteAccessibility && (<Button id={`labourListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(labourDetailsId)} title={"Delete"} />
+        {(EditAccessibility && props?.data?.IsEditable) && (<Button id={`labourListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />)}
+        {(DeleteAccessibility && !(props?.data?.IsLabourAssociated)) && (<Button id={`labourListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(labourDetailsId)} title={"Delete"} />
         )}
       </>
     );
@@ -465,7 +465,6 @@ const combinedCostingHeadRenderer = (props) => {
               <AgGridColumn field="CostingHead" minWidth={170} headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
                                             floatingFilterComponent="statusFilter"
                                             cellRenderer={"combinedCostingHeadRenderer"}></AgGridColumn>
-
               <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
               <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>

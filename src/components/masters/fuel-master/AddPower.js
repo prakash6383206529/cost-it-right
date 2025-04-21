@@ -39,6 +39,7 @@ import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
 import WarningMessage from '../../common/WarningMessage';
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddPower');
 
@@ -120,7 +121,9 @@ class AddPower extends Component {
       country: [],
       city: [],
       isDisabled: false,
-      showPlantWarning: false
+      showPlantWarning: false,
+      showWarning: false,
+      dataToChange: {}
 
     }
     this.state = { ...this.initialState };
@@ -223,7 +226,7 @@ class AddPower extends Component {
                 showWarning: showWarning1
 
               }, () => {
-                this.handleCalculation(fieldsObj?.Rate)
+                this.handleCalculation(fieldsObj?.NetPowerCostPerUnit)
               });
             });
         } else {
@@ -260,7 +263,6 @@ class AddPower extends Component {
   }
   handleCalculation = (powerRate) => {
 
-    const { fieldsObj } = this.props
     const { plantCurrency, settlementCurrency, isImport, netContributionValue, isDetailEntry } = this.state
     const rate = isDetailEntry ? netContributionValue : powerRate
 
@@ -536,6 +538,7 @@ class AddPower extends Component {
             this.props.change('City', Data.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : {})
 
             this.setState({
+              dataToChange: Data,
               isEditFlag: true,
               isLoader: false,
               IsVendor: Data.IsVendor,
@@ -781,7 +784,7 @@ class AddPower extends Component {
       this.setState({ UOM: newValue, }, () => {
         const { StateName, UOM, effectiveDate, client, selectedPlants, vendorName } = this.state;
 
-        let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY'), fuelId: this.props.fuelId, cityId: this.props.cityId }
+        let data = { StateID: StateName?.value, UOMID: UOM?.value, plantId: selectedPlants[0]?.Value, vendorId: vendorName?.value, customerId: client?.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY'), fuelId: this.props?.fuelId, cityId: this.props?.cityId }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res?.data?.DynamicData;
           this.props.change('CostPerUnitOfMeasurement', DynamicData?.FuelRate)
@@ -926,11 +929,11 @@ class AddPower extends Component {
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
-        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+        powerTotalT =  Number(item.PowerContributionPercentage)
         return null
       })
 
-      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
+      powerTotalT =  Number(fieldsObj.SEBPowerContributaion)
 
     }
 
@@ -1081,9 +1084,9 @@ class AddPower extends Component {
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
         if (index === powerGridEditIndex) {
-          powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
+          powerTotalT =  Number(fieldsObj.SelfPowerContribution)
         } else {
-          powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+          powerTotalT =  Number(item.PowerContributionPercentage)
         }
         return null
       })
@@ -1442,12 +1445,18 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country, isImport, netContributionConvertedInLocalCurrency, netContributionConvertedInBaseCurrency, netContributionValue } = this.state;
+      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country, isImport, netContributionConvertedInLocalCurrency, netContributionConvertedInBaseCurrency, netContributionValue, dataToChange } = this.state;
     const NetContributionConvertedInBaseCurrency = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? netContributionConvertedInBaseCurrency : netContributionValue
     const NetContributionConvertedInLocalCurrency = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? netContributionConvertedInLocalCurrency : netContributionValue
     const NetPowerCostPerUnitConversion = (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? this.props.fieldsObj?.NetPowerCostPerUnitConversion : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion
     const NetPowerCostPerUnitLocalConversion = isDetailEntry ? NetContributionConvertedInLocalCurrency : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion
     const { fieldsObj } = this.props
+    let financialDataChanged = (Number(fieldsObj?.NetPowerCostPerUnitConversion && fieldsObj?.NetPowerCostPerUnitConversion) !== Number(dataToChange?.NetPowerCostPerUnitLocalConversion)) || (fieldsObj?.NetPowerCostPerUnit && Number(fieldsObj?.NetPowerCostPerUnit) !== Number(dataToChange?.NetPowerCostPerUnitLocalConversion))
+
+    if (financialDataChanged && checkEffectiveDate(effectiveDate, dataToChange?.effectiveDate)) {
+      Toaster.warning('Please update the Effective date.')
+      return false
+    }
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -1540,7 +1549,8 @@ class AddPower extends Component {
           IsActive: true,
           NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.state.isImport /* || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) */ ? this.props.fieldsObj.NetPowerCostPerUnit : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion),
           VendorPlant: [],
-          EffectiveDate: effectiveDate,
+          // EffectiveDate: effectiveDate,
+          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           CountryId: country?.value,
           CityId: city?.value,
           SEBChargesDetails: [
@@ -1574,6 +1584,8 @@ class AddPower extends Component {
           ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
           CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
           Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+          IsAssociated: (costingTypeId === VBCTypeId) ? DataToChangeVendor?.IsAssociated : DataToChangeZ?.IsAssociated,
+          ...(financialDataChanged && { IsFinancialDataChanged: true })
         }
 
         this.props.updatePowerDetail(requestData, (res) => {
@@ -1712,8 +1724,8 @@ class AddPower extends Component {
     const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.plantCurrency ?? ''})`
-        : `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Net Cost/Unit (${this.state.currency?.label ?? 'Currency'}) * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'}) * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   /**
@@ -1877,7 +1889,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.countryHandler}
                               valueDescription={this.state.country}
-                              disabled={isViewMode || isEditFlag}
+                              disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
                             />
                           </div>
                         </Col>
@@ -1896,7 +1908,7 @@ class AddPower extends Component {
                                 required={true}
                                 handleChangeDescription={this.stateHandler}
                                 valueDescription={this.state.StateName}
-                                disabled={isViewMode || isEditFlag}
+                                disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
                               />
                             </div>
                           </Col>}
@@ -1914,7 +1926,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.cityHandler}
                               valueDescription={this.state.city}
-                              disabled={isViewMode || isEditFlag}
+                              disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
                             />
                           </div>
                         </Col>
@@ -1933,7 +1945,7 @@ class AddPower extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                isDisabled={isEditFlag ? true : false}
+                                isDisabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                 }}
@@ -1970,7 +1982,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.handleClient}
                               valueDescription={this.state.client}
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                             />
                           </Col>
                         )}
@@ -1996,7 +2008,7 @@ class AddPower extends Component {
                                 mendatory={true}
                                 required={true}
                                 className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
+                                disabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                               />
                             </div>
                           </div>
@@ -2073,7 +2085,7 @@ class AddPower extends Component {
                                     changeHandler={(e) => { }}
                                     component={renderDatePicker}
                                     className="form-control"
-                                    disabled={(isEditFlag || isViewMode) ? true : false}
+                                    disabled={(isViewMode) ? true : false}
                                     placeholder={isViewMode ? '-' : "Select Date"}
                                     onFocus={() => onFocus(this, true)}
                                     minDate={getEffectiveDateMinDate()}
@@ -2113,7 +2125,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                                    label={`Net Cost/Unit g(${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                                     name={"NetPowerCostPerUnitLocalConversion"}
                                     type="text"
                                     id="cost-local"
@@ -2135,7 +2147,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
+                                    label={`Net Cost/Unit t(${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"NetPowerCostPerUnitConversion"}
                                     id="fuel-rate"
                                     type="text"
@@ -2715,7 +2727,7 @@ class AddPower extends Component {
                         </button>
                         {!isViewMode && <button id="AddPower_Save"
                           type="submit"
-                          disabled={isViewMode || setDisable || this?.state?.isDisabled}
+                          disabled={isViewMode || setDisable || this?.state?.isDisabled || this.state?.showWarning || this.state?.showPlantWarning}
                           className="user-btn mr5 save-btn" >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}

@@ -498,6 +498,7 @@ a:hover {
 }
 
 .approve-button,
+.approve-return-btn,
 .approve-reject-btn {
   background-color: #4dc771;
   color: #fff;
@@ -548,6 +549,28 @@ a:hover {
     img,
     .cancel-icon-white {
       filter: invert(41%) sepia(66%) saturate(1100%) hue-rotate(314deg) brightness(105%) contrast(98%);
+    }
+  }
+}
+
+.approve-return-btn {
+  background-color: #f8a000 !important;
+  border: 1px solid #f8a000;
+
+  img {
+    width: 13px;
+    height: auto;
+    object-fit: contain;
+    filter: brightness(100);
+  }
+
+  &:hover {
+    background-color: #fff !important;
+    color: #f8a000;
+
+    img,
+    .return-icon {
+      filter: invert(58%) sepia(98%) saturate(500%) hue-rotate(2deg) brightness(102%) contrast(101%);
     }
   }
 }
@@ -3440,6 +3463,10 @@ input:focus,
 
 .approve-reject-btn:focus {
   @include focusMixin(#fc5774, #fc5774);
+}
+
+.approve-return-btn:focus {
+  @include focusMixin(#f8a000, #f8a000);
 }
 
 .approve-button:focus {

@@ -130,7 +130,7 @@ function RfqListing(props) {
         // Only set filter if coming from status column and not from ViewRfq close
         if (statusColumnData?.data && !closeViewRfq && !viewRfq) {
             setDisableFilter(false);
-            setWarningMessage(true);
+            // setWarningMessage(true);
             setFloatingFilterData(prevState => ({
                 ...prevState,
                 Status: removeSpaces(statusColumnData.data)
@@ -266,7 +266,10 @@ function RfqListing(props) {
         if (isPagination) {
             setloader(true)
         }
-
+        
+        // Clear existing data before making new API call
+        setRowData([]);
+        setTotalRecordCount(0);
 
         // Construct query parameters
         const queryParams = {
@@ -322,14 +325,17 @@ function RfqListing(props) {
                             gridOptions?.api?.setFilterModel({}) :
                             gridOptions?.api?.setFilterModel(filterModel);
                     }, 300);
-                    setWarningMessage(false);
-                    setIsFilterButtonClicked(false);
+                    
+                    // Only set warningMessage to false if filter button was clicked or it's a reset
+                    if (isFilterButtonClicked || isReset) {
+                        setWarningMessage(false);
+                    }
                 }
             } else {
                 setloader(false);
                 setTotalRecordCount(0);
             }
-        }));
+        }))
     }, [floatingFilterData, filterModel, dispatch]);
 
     const getTooltipText = useMemo(() => (status) => {
@@ -417,7 +423,7 @@ function RfqListing(props) {
         setWarningMessage(false)
         dispatch(updatePageNumber(1))
         dispatch(updateCurrentRowIndex(10))
-        getDataList(0, 10, true)
+        getDataList(0, 10, true, true)
         dispatch(setSelectedRowForPagination([]))
         dispatch(updateGlobalTake(10))
         dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
@@ -526,98 +532,98 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
-        let status = rowData?.Status;
+    const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
+    let status = rowData?.Status;
 
+    
 
-
-        // Helper function to check if quotation is complete
-        const isQuotationComplete = () => {
-            return rowData?.CostingReceived === rowData?.TotalCostingCount &&
-                rowData?.TotalCostingCount > 0;
-        };
-
-        // Helper function to check if status allows editing
-        const isEditableStatus = () => {
-            // Non-editable statuses
-            const nonEditableStatuses = [
-                APPROVED,
-                REJECTED,
-                AWARDED,
-                NON_AWARDED,
-                CANCELLED
-            ];
-
-            // If status is in non-editable list, return false
-            if (nonEditableStatuses.includes(status)) {
-                return false;
-            }
-
-            // For RECEIVED status
-            if (status === RECEIVED) {
-                // Allow edit if submission date is valid AND quotation is not complete
-                return !isQuotationComplete();
-            }
-
-            // For UNDER_REVISION status
-            if (status === UNDER_REVISION) {
-                // Don't allow edit if quotation is complete
-                return !isQuotationComplete();
-            }
-
-            // Only allow edit for DRAFT, PREDRAFT, and SENT statuses
-            return [DRAFT, PREDRAFT, SENT].includes(status);
-        };
-
-        return (
-            <>
-                {/* View button */}
-                {(viewAccessibility || permissionData?.permissionDataVendor?.View) &&
-                    <button
-                        title='View'
-                        className="View mr-1 Tour_List_View"
-                        type={'button'}
-                        onClick={() => viewOrEditItemDetails(cellValue, rowData, true, false)}
-                    />
-                }
-
-                {/* Edit button */}
-                {isEditableStatus() && (editAccessibility || permissionData?.permissionDataVendor?.Edit) &&
-                    <button
-                        title='Edit'
-                        className="Edit mr-1 Tour_List_Edit"
-                        type={'button'}
-                        onClick={() => viewOrEditItemDetails(cellValue, rowData, false, true)}
-                    />
-                }
-
-                {/* Cancel button */}
-                {(status === DRAFT || status === PREDRAFT || status === SENT) &&
-                    rowData?.IsShowCancelIcon &&
-                    <button
-                        title='Cancel'
-                        className="CancelIcon mr-1 Tour_List_Cancel"
-                        type={'button'}
-                        onClick={() => cancelItem(cellValue)}
-                    />
-                }
-
-                {/* Remark History button */}
-                {hideRemarkHistoryIcon &&
-                    <button
-                        title='Remark History'
-                        id='ViewRfq_remarkHistory'
-                        className="btn-history-remark mr-1"
-                        type={'button'}
-                        onClick={() => getRemarkHistory(cellValue, rowData)}
-                    >
-                        <div className='history-remark'></div>
-                    </button>
-                }
-            </>
-        );
+    // Helper function to check if quotation is complete
+    const isQuotationComplete = () => {
+        return rowData?.CostingReceived === rowData?.TotalCostingCount && 
+            rowData?.TotalCostingCount > 0;
     };
+
+    // Helper function to check if status allows editing
+    const isEditableStatus = () => {
+        // Non-editable statuses
+        const nonEditableStatuses = [
+            APPROVED, 
+            REJECTED, 
+            AWARDED, 
+            NON_AWARDED,
+            CANCELLED
+        ];
+        
+        // If status is in non-editable list, return false
+        if (nonEditableStatuses.includes(status)) {
+            return false;
+        }
+
+        // For RECEIVED status
+        if (status === RECEIVED) {
+            // Allow edit if submission date is valid AND quotation is not complete
+            return !isQuotationComplete();
+        }
+
+        // For UNDER_REVISION status
+        if (status === UNDER_REVISION) {
+            // Don't allow edit if quotation is complete
+            return !isQuotationComplete();
+        }
+
+        // Only allow edit for DRAFT, PREDRAFT, and SENT statuses
+        return [DRAFT, PREDRAFT, SENT].includes(status);
+    };
+
+    return (
+        <>
+            {/* View button */}
+            {(viewAccessibility || permissionData?.permissionDataVendor?.View) && 
+                <button 
+                    title='View' 
+                    className="View mr-1 Tour_List_View" 
+                    type={'button'} 
+                    onClick={() => viewOrEditItemDetails(cellValue, rowData, true, false)} 
+                />
+            }
+
+            {/* Edit button */}
+            {isEditableStatus() && (editAccessibility || permissionData?.permissionDataVendor?.Edit) && 
+                <button 
+                    title='Edit' 
+                    className="Edit mr-1 Tour_List_Edit" 
+                    type={'button'} 
+                    onClick={() => viewOrEditItemDetails(cellValue, rowData, false, true)} 
+                />
+            }
+
+            {/* Cancel button */}
+            {(status === DRAFT || status === PREDRAFT || status === SENT) && 
+            rowData?.IsShowCancelIcon && 
+                <button 
+                    title='Cancel' 
+                    className="CancelIcon mr-1 Tour_List_Cancel" 
+                    type={'button'} 
+                    onClick={() => cancelItem(cellValue)} 
+                />
+            }
+
+            {/* Remark History button */}
+            {hideRemarkHistoryIcon && 
+                <button 
+                    title='Remark History' 
+                    id='ViewRfq_remarkHistory' 
+                    className="btn-history-remark mr-1" 
+                    type={'button'} 
+                    onClick={() => getRemarkHistory(cellValue, rowData)}
+                >
+                    <div className='history-remark'></div>
+                </button>
+            }
+        </>
+    );
+};
     const formToggle = () => {
         setShowAddFrom(true)
         let data = {
@@ -777,7 +783,7 @@ function RfqListing(props) {
         setViewRfqData(rowData)
         setViewRfq(true)
         resetState()
-
+       
     }
 
 
@@ -915,7 +921,7 @@ function RfqListing(props) {
                                                     <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRendererFramework={CustomCellRenderer} />
                                                     {RFQ_KEYS?.SHOW_RM && <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material Name-Grade-Specification" width={230} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
                                                     {RFQ_KEYS?.SHOW_BOP && <AgGridColumn field="BoughtOutPart" headerName={`${showBopLabel()} Name (${showBopLabel()} No.)`} width={200} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
-                                                    {initialConfiguration?.RFQManditField?.IsShowPRNumber && (RFQ_KEYS?.SHOW_BOP || RFQ_KEYS?.SHOW_TOOLING) && <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                                                    {initialConfiguration?.RFQManditField?.IsShowPRNumber && (RFQ_KEYS?.SHOW_BOP||RFQ_KEYS?.SHOW_TOOLING) && <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
 
                                                     <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                     <AgGridColumn field="VendorName" tooltipField="VendorName" headerName={vendorLabel + " (Code)"} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
