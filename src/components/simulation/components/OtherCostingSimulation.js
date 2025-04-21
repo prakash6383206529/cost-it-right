@@ -33,7 +33,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, finishWeightLabel } = useLabels()
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
@@ -732,7 +732,7 @@ function OtherCostingSimulation(props) {
                                                     }
 
                                                     {(showRMColumn) && <>
-                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName={`${finishWeightLabel} Weight`}></AgGridColumn>
                                                         <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     </>}
 

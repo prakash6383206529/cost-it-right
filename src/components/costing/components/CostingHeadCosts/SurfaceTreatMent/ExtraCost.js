@@ -617,7 +617,7 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
                                             <TextFieldHookForm
                                                 label={`Cost`}
                                                 name={'NetCost'}
-                                                id="NetCost"
+                                                id={'NetCost'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}

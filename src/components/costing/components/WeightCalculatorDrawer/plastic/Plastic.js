@@ -13,9 +13,11 @@ import { calculatePercentageValue, calculateScrapWeight, checkForDecimalAndNull,
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForPlastic } from '../../../actions/CostWorking'
 import LossStandardTable from '../LossStandardTable'
+import { useLabels } from '../../../../../helper/core'
 
 function Plastic(props) {
     const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox, activeTab } = props
+    const { finishedWeightLabel, finishWeightLabel } = useLabels()
 
     let totalRM
     if (!isSummary) {
@@ -468,7 +470,7 @@ function Plastic(props) {
                                 </>}
                              {  IsShowFinishedWeightInPlasticTechCostingCalculator && <Col md="3" >
                                     <NumberFieldHookForm
-                                        label={`Finished Weight(Kg)`}
+                                        label={`${finishedWeightLabel} Weight(Kg)`}
                                         name={'finishedWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -479,7 +481,7 @@ function Plastic(props) {
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                             max: {
                                                 value: getValues('grossWeight'),
-                                                message: `Finish weight should not be greater than ${LocalizedGrossWeight}.`
+                                                message: `${finishWeightLabel} weight should not be greater than ${LocalizedGrossWeight}.`
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -515,7 +517,7 @@ function Plastic(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={`${isScrapReuse ? `Scrap Weight = (Runner Weight - ((${LocalizedInputWeight} + Runner Weight + Burning Allowance) * Scrap Re-use (%)/100))* Scrap Recovery (%)/100` : `Scrap Weight = (${LocalizedInputWeight} - ${!IsShowFinishedWeightInPlasticTechCostingCalculator?  LocalizedGrossWeight : 'Finish Weight'}) * Scrap Recovery (%)/100`}`} />
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={`${isScrapReuse ? `Scrap Weight = (Runner Weight - ((${LocalizedInputWeight} + Runner Weight + Burning Allowance) * Scrap Re-use (%)/100))* Scrap Recovery (%)/100` : `Scrap Weight = (${LocalizedInputWeight} - ${!IsShowFinishedWeightInPlasticTechCostingCalculator?  LocalizedGrossWeight : `${finishWeightLabel} Weight`}) * Scrap Recovery (%)/100`}`} />
                                     <TextFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}

@@ -54,7 +54,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
-    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, finishWeightLabel } = useLabels()
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
@@ -1869,7 +1869,7 @@ function CostingSimulation(props) {
 
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>}
-                                                    {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>}
+                                                    {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialFinishWeight" hide headerName={`${finishWeightLabel} Weight`}></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn || isSurfaceTreatment) && getConfigurationKey().IsSourceExchangeRateNameVisible && isSimulationWithCosting && <AgGridColumn width={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn || isSurfaceTreatment) && isSimulationWithCosting && <AgGridColumn field={"CostingCurrency"} headerName='Costing Currency' headerComponent={'currencyHeader'} />}
