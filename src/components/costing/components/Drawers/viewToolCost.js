@@ -29,12 +29,20 @@ function ViewToolCost(props) {
                 <th>{`Part Type`}</th>
                 <th>{`Process/Operation`}</th>
                 <th>{`Process/Operation Type`}</th>
-                {/* <th>{`Process/Operation Quantity`}</th> */}
+                <th>{`Process Run Count`}</th>
                 <th>{`Category`}</th>
                 <th>{`Tool Name`}</th>
-                <th>{`Tool Cost`}</th>
-                <th>{`Quantity`}</th>
+                <th>{`Tool Rate`}</th>
                 <th>{`Life/Amortization`}</th>
+                <th>{`Tool Amortization Cost`}</th>
+                <th>{`Tool Maintenance Applicability`}</th>
+                <th>{`Maintenance Tool Cost (%)`}</th>
+                <th>{`Cost (Applicability)`}</th>
+                <th>{`${toolMaintenanceCostLabel}`}</th>
+                <th>{`${toolMaintenanceCostPerPcLabel}`}</th>
+                <th>{`${toolInterestRatePercentLabel}`}</th>
+                <th>{`${toolInterestCostLabel}`}</th>
+                <th>{`${toolInterestCostPerPcLabel}`}</th>
                 <th>{`Net Tool Cost`}</th>
               </tr>
             </thead>
@@ -51,11 +59,20 @@ function ViewToolCost(props) {
                       <td>{item?.PartType ?? '-'}</td>
                       <td>{item?.ProcessOrOperation ?? '-'}</td>
                       <td>{item?.ProcessOrOperationType ?? "-"}</td>
+                      <td>{item?.Quantity ?? '-'}</td>
                       <td>{item?.ToolCategory ?? '-'}</td>
                       <td>{item?.ToolName ?? '-'}</td>
                       <td>{checkForDecimalAndNull(item?.ToolCost, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
-                      <td>{item?.Quantity ?? '-'}</td>
                       <td>{item?.Life ?? '-'}</td>
+                      <td>{checkForDecimalAndNull(item?.ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
+                      <td>{item?.ToolCostType ?? '-'}</td>
+                      <td>{checkForDecimalAndNull(item?.ToolMaintenancePercentage, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
+                      <td>{checkForDecimalAndNull(item?.ToolApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
+                      <td>{item?.ToolMaintenanceCost ?? '-'}</td>
+                      <td>{item?.ToolMaintenanceCostPerPiece ?? '-'}</td>
+                      <td>{item?.ToolInterestRatePercent ?? '-'}</td>
+                      <td>{item?.ToolInterestCost ?? '-'}</td>
+                      <td>{item?.ToolInterestCostPerPiece ?? '-'}</td>
                       <td>{checkForDecimalAndNull(item?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
 
                     </tr>
@@ -103,10 +120,10 @@ function ViewToolCost(props) {
                       <td>{checkForDecimalAndNull(item.ToolMaintenancePercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(item.ToolApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       <td>{item.ToolMaintenanceCost ? checkForDecimalAndNull(item.ToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.ToolMaintenanceCostPerPc ? checkForDecimalAndNull(item.ToolMaintenanceCostPerPc, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.ToolMaintenanceCostPerPiece ? checkForDecimalAndNull(item.ToolMaintenanceCostPerPiece, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.ToolInterestRatePercent ? checkForDecimalAndNull(item.ToolInterestRatePercent, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.ToolInterestCost ? checkForDecimalAndNull(item.ToolInterestCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.ToolInterestCostPerPc ? checkForDecimalAndNull(item.ToolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.ToolInterestCostPerPiece ? checkForDecimalAndNull(item.ToolInterestCostPerPiece, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       {initialConfiguration?.IsShowCRMHead && <td>{item.ToolCRMHead ? item.ToolCRMHead : '-'}</td>}
                     </tr>
@@ -159,7 +176,7 @@ function ViewToolCost(props) {
               </Col>
             </Row>
             <Row className="px-3">
-              <Col md="12">
+              <Col md="12" className="table-scroller">
                 {tableData()}
               </Col>
             </Row>

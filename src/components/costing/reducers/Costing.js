@@ -31,6 +31,7 @@ import {
   SET_OPERATION_APPLICABILITY_SELECT,
   SET_PROCESS_APPLICABILITY_SELECT,
   GET_PAINT_COAT_LIST,
+  GET_TOOL_TAB_DATA
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -89,7 +90,8 @@ const initialState = {
   plantToCurrency: '',
   baseFromCurrency: '',
   baseToCurrency: '',
-  paintCoatList: []
+  paintCoatList: [],
+  getToolTabData: []
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -941,6 +943,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         processApplicabilitySelect: action.payload,
+      }
+    case GET_TOOL_TAB_DATA:
+      return {
+        ...state,
+        loading: false,
+        getToolTabData: action.payload,
       }
     default:
       return state

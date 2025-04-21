@@ -6,7 +6,7 @@ import { getAssemblyChildPartbyAsmCostingId, getProcessAndOperationbyAsmAndChild
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
-import { checkWhiteSpaces, number, decimalNumberLimit6, alphaNumericValidation, percentageLimitValidation } from "../../../../helper/validation";
+import { checkWhiteSpaces, number, decimalNumberLimit6, alphaNumericValidation, percentageLimitValidation, decimalIntegerNumberLimit } from "../../../../helper/validation";
 import { STRINGMAXLENGTH } from '../../../../config/masterData';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import TooltipCustom from '../../../common/Tooltip';
@@ -19,6 +19,7 @@ import HeaderTitle from '../../../common/HeaderTitle';
 function AddTool(props) {
 
   const { rowObjData, isEditFlag, gridData, CostingViewMode } = props;
+
   const costData = useContext(costingInfoContext)
   const { RMCCTabData } = useSelector(state => state.costing)
   const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel } = useLabels();
@@ -37,7 +38,16 @@ function AddTool(props) {
     partType: rowObjData?.PartType ? rowObjData?.PartType : '',
     partQuantity: rowObjData?.PartQuantity ? rowObjData?.PartQuantity : '',
     type: rowObjData?.ProcessOrOperationType ? rowObjData?.ProcessOrOperationType : '',
-    // processOrOperationQuantity: 1,
+    ToolAmortizationCost: rowObjData?.ToolAmortizationCost ? rowObjData?.ToolAmortizationCost : '',
+    ToolMaintenanceApplicability: rowObjData?.ToolMaintenanceApplicability ? { label: rowObjData?.ToolCostType, value: rowObjData?.ToolApplicabilityTypeId } : '',
+    ToolMaintenancePercentage: rowObjData?.ToolMaintenancePercentage ? rowObjData?.ToolMaintenancePercentage : '',
+    MaintananceCostApplicability: rowObjData?.ToolApplicabilityCost ? rowObjData?.ToolApplicabilityCost : '',
+    ToolMaintenanceCost: rowObjData?.ToolMaintenanceCost ? rowObjData?.ToolMaintenanceCost : '',
+    ToolMaintenanceCostPerPiece: rowObjData?.ToolMaintenanceCostPerPiece ? rowObjData?.ToolMaintenanceCostPerPiece : '',
+    ToolInterestRatePercent: rowObjData?.ToolInterestRatePercent ? rowObjData?.ToolInterestRatePercent : '',
+    ToolInterestCost: rowObjData?.ToolInterestCost ? rowObjData?.ToolInterestCost : '',
+    ToolInterestCostPerPiece: rowObjData?.ToolInterestCostPerPiece ? rowObjData?.ToolInterestCostPerPiece : '',
+
   }
 
 
@@ -61,19 +71,18 @@ function AddTool(props) {
   const [bomLevelList, setBOMLevelList] = useState([])
   const [multipleBOMLevelCheck, setMultipleBOMLevelCheck] = useState(false)
   const [state, setState] = useState({
-    toolMaintenanceApplicability: [],
+    toolMaintenanceApplicability:isEditFlag ? { label: rowObjData?.ToolCostType, value: rowObjData?.ToolApplicabilityTypeId } : [],
     toolInterestCost: 0,
     toolInterestCostPerPc: 0,
     toolAmortizationCost: 0,
     toolMaintenanceCost: 0,
     toolMaintenanceCostPerPc: 0,
-    
   })
   const costingHead = useSelector(state => state.comman.costingHead)
 
   const fieldValues = useWatch({
     control,
-    name: ['Quantity', 'ToolCost', 'Life','ToolInterestRatePercent','MaintenancePercentage'],
+    name: ['Quantity', 'ToolCost', 'Life','ToolInterestRatePercent','MaintenancePercentage','MaintananceCostApplicability'],
   });
   
   useEffect(() => {
@@ -91,6 +100,11 @@ function AddTool(props) {
   useEffect(() => {
     calculateAllCosts()
   }, [fieldValues,state.toolMaintenanceApplicability,getValues('MaintananceCostApplicability')]);
+
+  useEffect(()=>{
+    setValue('ToolMaintenanceApplicability', isEditFlag ? { label: rowObjData?.ToolCostType, value: rowObjData?.ToolApplicabilityTypeId } : [])
+  },[isEditFlag])
+
 
 
   const toggleDrawer = (event, formData = []) => {
@@ -113,8 +127,9 @@ function AddTool(props) {
     const toolInterestCostPerPc = toolInterestCost / life
     let toolMaintenanceCost = 0
     let toolMaintenanceCostPerPc = 0
+
     if(state.toolMaintenanceApplicability?.label==="Fixed"){
-      toolMaintenanceCost = costApplicability * processRunCount * maintenancePercentage
+      toolMaintenanceCost = costApplicability * processRunCount * partQuantity
       toolMaintenanceCostPerPc = toolMaintenanceCost / life
     }
     else{
@@ -235,43 +250,6 @@ function AddTool(props) {
     if (Object.keys(errors).length > 0) return false;
     const processOrOperation = ToolForProcessOperation.value;
     const partNumber = partNumberDetail.label;
-    let formData = {
-      IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
-      ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
-      // ToolOperationId: getValues('type') === 'Operation'?ToolForProcessOperation?.value:EMPTY_GUID,
-      ProcessOrOperation: ToolForProcessOperation.label,
-      ToolCategory: tool.label,
-      ToolName: getValues('ToolName'),
-      Quantity: getValues('Quantity'),
-      ToolCost: getValues('ToolCost'),
-      Life: getValues('Life'),
-      NetToolCost: dataToSend.netToolCost,
-      PartType: getValues('partType'),
-      PartQuantity: getValues('partQuantity'),
-      ProcessOrOperationType: getValues('type'),
-      ProcessOrOperationQuantity: 1,
-      BOMLevel: partNumberDetail?.bomLevel,
-      PartNumber: costData?.PartNumber,
-      PartId: costData?.PartId,
-      OperationChildIdRef: getValues('type') === 'Operation' ? ToolForProcessOperation?.value : null,
-      ProcessIdRef: getValues('type') === 'Process' ? ToolForProcessOperation?.value : null,
-      MachineIdRef: getValues('type') === 'Process' ? ToolForProcessOperation?.machineId : null,
-      ParentPartCostingIdRef: partNumberDetail?.parentPartCostingId,
-      ChildPartCostingIdRef: partNumberDetail?.childPartCostingId,
-      ToolCRMHead: getValues('crmHead')?.label,
-      ToolQuantity:getValues('Quantity'),
-      ToolLife:getValues('Life'),
-      ToolAmortizationCost:state.toolAmortizationCost,
-      ToolApplicabilityTypeIdRef:state.toolMaintenanceApplicability?.value,
-      ToolMaintenancePercentage:getValues('MaintenancePercentage'),
-      ToolApplicabilityCost:state.toolMaintenanceCost,
-      ToolMaintenanceCost:state.toolMaintenanceCost,
-      ToolMaintenanceCostPerPiece:state.toolMaintenanceCostPerPc,
-      ToolInterestRatePercent:getValues('ToolInterestRatePercent'),
-      ToolInterestCost:state.toolInterestCost,
-      ToolInterestCostPerPiece:state.toolInterestCostPerPc
-    }
-
     let tempArr = []
     let finalList = []
     if (isEditFlag) {
@@ -389,7 +367,19 @@ function AddTool(props) {
         ToolCRMHead: getValues('crmHead')?.label,
         TotalToolCost: totalToolCost,
         ChildPartNumber: item?.PartNumber,
-        ParentPartNumber: item?.ParentPartNumber
+        ParentPartNumber: item?.ParentPartNumber,
+        ToolQuantity:getValues('Quantity'),
+        ToolLife:getValues('Life'),
+        ToolAmortizationCost:state.toolAmortizationCost,
+        ToolApplicabilityTypeId:state.toolMaintenanceApplicability?.value,
+        ToolCostType:state.toolMaintenanceApplicability?.label,
+        ToolMaintenancePercentage:getValues('MaintenancePercentage'),
+        ToolApplicabilityCost:getValues('MaintananceCostApplicability'),
+        ToolMaintenanceCost:state.toolMaintenanceCost,
+        ToolMaintenanceCostPerPiece:state.toolMaintenanceCostPerPc,
+        ToolInterestRatePercent:getValues('ToolInterestRatePercent'),
+        ToolInterestCost:state.toolInterestCost,
+        ToolInterestCostPerPiece:state.toolInterestCostPerPc
       };
     });
 
@@ -704,7 +694,7 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                        validate: { number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -725,7 +715,7 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                        validate: { number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -767,7 +757,7 @@ function AddTool(props) {
                       options={renderListing("Applicability")}
                       mandatory={false}
                       handleChange={handleToolApplicabilityChange}
-                      errors={errors.toolCostType}
+                      errors={errors.ToolMaintenanceApplicability}
                       disabled={CostingViewMode ? true : false}
                     />
                   </Col>
@@ -807,14 +797,14 @@ function AddTool(props) {
                         mandatory={false}
                         rules={{required: false}}
                         handleChange={() => { }}
-                        defaultValue={getValues('ToolCost')}
+                        defaultValue={state.toolMaintenanceApplicability?.label === "Tool Rate" ? getValues('ToolCost') : ''}
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.MaintananceCostApplicability}
                         disabled={state.toolMaintenanceApplicability?.label === "Tool Rate" ? true : CostingViewMode}
                       />
                     </Col>
-                    <Col md="4">{state.toolMaintenanceApplicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel}= (Maintenance Cost (%) * Cost(Applicability) / 100)`} />}
+                    <Col md="4">{ <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel} = ${state.toolMaintenanceApplicability?.label==='Fixed'? 'Cost (Applicability) * Process Run Count * Part Quantity':'(Maintenance Cost (%) * Cost(Applicability) / 100)'} `} />}
                     <TextFieldHookForm
                       label={toolMaintenanceCostLabel}
                       name={`ToolMaintenanceCost`}
