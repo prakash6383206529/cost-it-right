@@ -46,7 +46,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const OperationListing = (props) => {
-    console.log("props", props)
+
     const dispatch = useDispatch();
     const [state, setState] = useState({
         tableData: [],
@@ -135,8 +135,7 @@ const OperationListing = (props) => {
         if (!props.stopAPICall && props.isSimulation && props.selectionForListingMasterAPI === 'Combined') {
             fetchData();
         } else if (!props.stopAPICall) {
-            console.log("state.isImportAPI Call..", state.isImport)
-            getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData, state.isImport);
+            getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData);
         } else if (props.stopAPICall === true) {
             setState(prevState => ({ ...prevState, tableData: props.operationDataHold }));
         }

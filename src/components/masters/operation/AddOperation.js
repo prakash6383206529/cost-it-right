@@ -105,7 +105,7 @@ class AddOperation extends Component {
       CostingTypePermission: false,
       disableSendForApproval: false,
       isWelding: false,
-      isImport: false,
+      isImport: props?.isImport ? true : false,
       hidePlantCurrency: false,
       settlementCurrency: 1,
       plantCurrency: 1,
@@ -979,7 +979,8 @@ class AddOperation extends Component {
     if (type === 'submit') {
       this.props.getOperationDataAPI('', () => { })
     }
-    this.props.hideForm(type)
+    // Pass the current isImport state back to parent
+    this.props.hideForm(type, this.state.isImport);
   }
   cancelHandler = () => {
     if (this.state.isViewMode) {
