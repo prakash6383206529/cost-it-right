@@ -49,7 +49,7 @@ const PowerListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    isImport: false,
+    isImport: props?.isImport ? true : false,
     totalRecordCount: 0,
     globalTake: defaultPageSize
   });
@@ -60,7 +60,7 @@ const PowerListing = (props) => {
   const { vendorLabel } = useLabels()
   useEffect(() => {
     if (permissions) {
-      getDataList(null, null);
+      getDataList(state.isImport);
     }
   }, [permissions]);
 
@@ -380,7 +380,7 @@ const PowerListing = (props) => {
               </Col>
             </Row>
             <div
-              className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}
+              className={`ag-theme-material grid-parent-wrapper ${state.isLoader && "max-loader-height"}`}
             >
               {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
               )}
@@ -406,7 +406,7 @@ const PowerListing = (props) => {
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}
               >
-                <AgGridColumn field="CostingType" headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
+                <AgGridColumn field="CostingType" minWidth={200} headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
                                             floatingFilterComponent="statusFilter"
                                             cellRenderer={"combinedCostingHeadRenderer"}></AgGridColumn>
                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>

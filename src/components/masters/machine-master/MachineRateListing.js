@@ -845,7 +845,7 @@ const MachineRateListing = (props) => {
           <Row>
             <Col>
 
-              <div id="machine-master-grid" className={`ag-grid-wrapper  machine-master-grid height-width-wrapper ${(machineDatalist && machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+              <div id="machine-master-grid" className={`ag-grid-wrapper grid-parent-wrapper machine-master-grid height-width-wrapper ${(machineDatalist && machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material ${state?.isLoader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   {state?.render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact

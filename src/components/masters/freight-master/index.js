@@ -22,7 +22,8 @@ const FreightMaster = () => {
         DeleteAccessibility: false,
         BulkUploadAccessibility: false,
         DownloadAccessibility: false,
-        stopApiCallOnCancel: false
+        stopApiCallOnCancel: false,
+        isImport: false
     })
     const [permissionData, setPermissionData] = useState({});
     const { topAndLeftMenuData } = useSelector(state => state.auth);
@@ -71,10 +72,10 @@ const FreightMaster = () => {
     * @method hideForm
     * @description HIDE FREIGHT AND PACKAGING FORMS
     */
-    const hideForm = (type) => {
-        setState((prevState) => ({ ...prevState, isFreightForm: false, isPackageForm: false, data: {}, stopApiCallOnCancel: false }))
+    const hideForm = (type, isImport) => {
+        setState((prevState) => ({ ...prevState, isFreightForm: false, isPackageForm: false, data: {}, stopApiCallOnCancel: false,isImport: isImport  }))
         if (type === 'cancel') {
-            setState((prevState) => ({ ...prevState, stopApiCallOnCancel: true }))
+            setState((prevState) => ({ ...prevState, stopApiCallOnCancel: true, isImport: isImport }))
 
         }
     }
@@ -136,7 +137,7 @@ const FreightMaster = () => {
 
                                 {state.activeTab === '1' &&
                                     <TabPane tabId="1">
-                                        <FreightListing displayForm={displayFreightForm} getDetails={getDetails} stopApiCallOnCancel={state.stopApiCallOnCancel} />
+                                        <FreightListing displayForm={displayFreightForm} getDetails={getDetails} stopApiCallOnCancel={state.stopApiCallOnCancel} isImport={state.isImport} />
                                     </TabPane>}
 
                                 {state.activeTab === '2' &&
