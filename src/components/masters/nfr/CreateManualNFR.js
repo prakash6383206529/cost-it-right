@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { debounce } from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import DatePicker from "react-datepicker";
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import Dropzone from 'react-dropzone-uploader';
 import { dummyData } from './DummyData';
 // Components
@@ -15,31 +14,29 @@ import Toaster from '../../common/Toaster';
 import LoaderCustom from '../../common/LoaderCustom';
 import HeaderTitle from '../../common/HeaderTitle';
 import DayTime from '../../common/DayTimeWrapper';
-import NoContentFound from '../../common/NoContentFound';
 import TourWrapper from "../../common/Tour/TourWrapper";
 import AddRMDetails from './AddRMDetails';
 import AddForecast from './AddForecast';
 
 // Actions
 import { getPlantSelectListByType, getUOMSelectList } from '../../../actions/Common';
-import { getBoughtOutPartSelectList } from '../actions/Part';
-import { getPartInfo, getPartSelectListByTechnology } from '../../costing/actions/Costing';
-import { getRMSpecificationDataList, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI } from '../../masters/actions/Material';
+import { getBoughtOutPartSelectList, getSelectListPartType } from '../actions/Part';
+import { getPartInfo } from '../../costing/actions/Costing';
+import { getRMSpecificationDataList, getRawMaterialNameChild} from '../../masters/actions/Material';
 import { getClientSelectList } from '../actions/Client';
 import { fileUploadQuotation } from '../../rfq/actions/rfq';
 import { createNFRBOMDetails, getNFRPartWiseGroupDetail } from './actions/nfr';
-import { getFilteredDropdownOptions } from '../../../helper';
-import { fetchSpecificationDataAPI } from '../../../actions/Common';
+import { getPartSelectListWtihRevNo } from '../actions/Volume';
 
 // Constants and Config
-import { EMPTY_DATA, FILE_URL, PartTypeIDFromAPI, ZBC, searchCount, DRAFTID } from '../../../config/constants';
-import { AcceptableRMUOM, NFR_BOP_STANDARD_ID, NFR_BOP_STANDARD_LABEL, NFR_BOP_STANDARD_NAME, NFR_COMPONENT_CUSTOMIZED_ID, NFR_COMPONENT_CUSTOMIZED_LABEL, NFR_COMPONENT_CUSTOMIZED_NAME, NFR_RAW_MATERIAL_ID, NFR_RAW_MATERIAL_LABEL, NFR_RAW_MATERIAL_NAME, PART_TYPE_LIST_FOR_NFR } from '../../../config/masterData';
+import {  FILE_URL, ZBC, searchCount, PRODUCT_ID } from '../../../config/constants';
+import { AcceptableRMUOM, NFR_BOP_STANDARD_ID, NFR_BOP_STANDARD_LABEL, NFR_COMPONENT_CUSTOMIZED_ID, NFR_COMPONENT_CUSTOMIZED_LABEL, NFR_RAW_MATERIAL_ID, NFR_RAW_MATERIAL_LABEL, NFR_RAW_MATERIAL_NAME, PART_TYPE_LIST_FOR_NFR } from '../../../config/masterData';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { Steps } from './TourMessages';
 
 // Helpers
-import { autoCompleteDropdown, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
-import { acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, positiveAndDecimalNumber, maxLength15, number, decimalNumberLimit3, maxLength20, decimalLengthsix, checkForNull, checkForDecimalAndNull, integerOnly, validateFileName, minLength3 } from "../../../helper/validation";
+import { autoCompleteDropdownPart} from '../../common/CommonFunctions';
+import {  maxLength20,  checkForDecimalAndNull,  validateFileName, minLength3 } from "../../../helper/validation";
 
 // Assets
 import redcrossImg from '../../../assests/images/red-cross.png';
@@ -65,7 +62,6 @@ function CreateManualNFR(props) {
     // Form data state
     const [sopQuantityList, setSopQuantityList] = useState([])
     const [partName, setpartName] = useState('')
-    const [technology, setTechnology] = useState([]);
     const [selectedPart, setSelectedPart] = useState('');
     const [selectedUOM, setSelectedUOM] = useState('');
     const [selectedPlant, setSelectedPlant] = useState('');
@@ -73,12 +69,12 @@ function CreateManualNFR(props) {
     const [selectedRawMaterial, setSelectedRawMaterial] = useState('');
     const [selectedBOPNumber, setSelectedBOPNumber] = useState('');
     const [selectedPartType, setSelectedPartType] = useState('');
+    const [previousPartType, setPreviousPartType] = useState('');
     const [customer, setCustomer] = useState([]);
     const [zbcDate, setZbcDate] = useState('')
     const [cbcDate, setCbcDate] = useState('')
 
     const [sopDate, setSOPDate] = useState('')
-    const [maxDate, setMaxDate] = useState('');
     const [fiveyearList, setFiveyearList] = useState([])
 
     // Table and grid state
@@ -92,16 +88,16 @@ function CreateManualNFR(props) {
     const gridOptionsPart = {}
 
     // UI state
-    const [showPopup, setShowPopup] = useState(false);
     const [tableLoader, setTableLoader] = useState(false);
     const [inputLoader, setInputLoader] = useState(false)
+    const [loader, setLoader] = useState(false)
     const [VendorInputLoader, setVendorInputLoader] = useState(false)
 
     // Drawer state
     const [openAddRMDetails, setOpenAddRMDetails] = useState(false);
     const [rmDetailsGridIndex, setRMDetailsGridIndex] = useState('');
     const [openAddForecast, setOpenAddForecast] = useState(false)
-    const [rmDetails, setRMDetails] = useState([]);
+    const [rmDetails, setRMDetails] = useState([]); 
 
     // Selection lists
     const [selectedPartList, setSelectedPartList] = useState([]);
@@ -113,20 +109,14 @@ function CreateManualNFR(props) {
     const [files, setFiles] = useState([])
     const [apiCallCounter, setApiCallCounter] = useState(0)
 
-    const [rmName, setRMName] = useState('');
-    const [rmgrade, setRMGrade] = useState('');
-    const [rmspecification, setRMSpecification] = useState('');
-    const [disabled, setDisabled] = useState(false);
-    const [tableData, setTableData] = useState([]);
-    const [getChildParts, setGetChildParts] = useState([]);
-    const [rawMaterialNameSelectList, setRawMaterialNameSelectList] = useState([]);
-    const [gradeSelectList, setGradeSelectList] = useState([]);
-    const [rmSpecification, setRmSpecification] = useState([]);
-
+    const [partTypeList, setPartTypeList] = useState([]);
     useEffect(() => {
         if (!isViewFlag) {
             dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
             dispatch(getUOMSelectList(() => { }))
+            dispatch(getSelectListPartType((res) => {
+                setPartTypeList(res?.data?.SelectList)
+            }))
             dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
             dispatch(getBoughtOutPartSelectList(null, () => { }))
             dispatch(getRawMaterialNameChild(() => { }))
@@ -182,9 +172,9 @@ function CreateManualNFR(props) {
             return temp;
         }
         if (value === 'PartType') {
-            PART_TYPE_LIST_FOR_NFR && PART_TYPE_LIST_FOR_NFR?.map(item => {
-                if (item?.value === '0') return false;
-                temp.push({ label: item?.label, value: item?.value })
+            partTypeList && partTypeList?.map(item => {
+                if (item?.Value === '0' || item?.Value === PRODUCT_ID || item?.Value === '3' || item?.Value === '5') return false;
+                temp.push({ label: item?.Text, value: item?.Value });
                 return null
             });
             return temp;
@@ -223,15 +213,15 @@ function CreateManualNFR(props) {
             inputValue = inputValue.trim();
         }
         const resultInput = inputValue.slice(0, searchCount)
-        if (inputValue?.length >= searchCount && partName !== resultInput) {
+        if ((inputValue?.length >= searchCount && partName !== resultInput) || 
+            (selectedPartType?.value !== previousPartType && inputValue?.length >= searchCount)) {
             setInputLoader(true)
-            const res = await getPartSelectListByTechnology(technology.value, resultInput, PartTypeIDFromAPI);
+            const res = await getPartSelectListWtihRevNo(resultInput, null, null, selectedPartType?.value);
             setInputLoader(false)
             setpartName(resultInput)
-            let partDataAPI = res?.data?.SelectList
+            let partDataAPI = res?.data?.DataList
             if (inputValue) {
-                return autoCompleteDropdown(inputValue, partDataAPI, false, [], true)
-
+                return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)
             } else {
                 return partDataAPI
             }
@@ -239,9 +229,9 @@ function CreateManualNFR(props) {
         else {
             if (inputValue?.length < searchCount) return false
             else {
-                let partData = reactLocalStorage.getObject('Data')
+                let partData = reactLocalStorage.getObject('PartData')
                 if (inputValue) {
-                    return autoCompleteDropdown(inputValue, partData, false, [], false)
+                    return autoCompleteDropdownPart(inputValue, partData, false, [], false)
                 } else {
                     return partData
                 }
@@ -259,93 +249,28 @@ function CreateManualNFR(props) {
         }, 100);
     };
 
-    const updateRateGrid = () => {
-        let tempData = gridData[editIndex];
-        switch (selectedPartType?.value) {
-            case NFR_COMPONENT_CUSTOMIZED_ID:
-                if (gridData?.findIndex(item => item?.PartId === selectedPart?.value) !== editIndex) {
-                    if (selectedPartList?.includes(selectedPart?.value)) {
-                        Toaster.warning("Data already added.")
-                        return false
-                    }
-                }
-                break;
-            case NFR_BOP_STANDARD_ID:
-                if (gridData?.findIndex(item => item?.BoughtOutPartChildId === selectedBOPNumber?.value) !== editIndex) {
-                    if (selectedBOPList?.includes(selectedBOPNumber?.value)) {
-                        Toaster.warning("Data already added.")
-                        return false
-                    }
-                }
-                break;
-            case NFR_RAW_MATERIAL_ID:
-                if (gridData?.findIndex(item => item?.RawMaterialCode === selectedRawMaterial?.label) !== editIndex) {
-                    if (selectedRMList?.includes(selectedRawMaterial?.value)) {
-                        Toaster.warning("Data already added.")
-                        return false
-                    }
-                }
-                break;
-            default:
-                break;
-        }
 
-        tempData = {
-            ...tempData,
-            HeaderMaterial: getValues("HeaderMaterial"),
-            PartType: selectedPartType?.label,
-            PartTypeId: selectedPartType?.value,
-            Uom: selectedUOM?.label,
-            Quantity: getValues("Quantity"),
-            PartId: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? selectedPart?.value : '',
-            PartNumber: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? selectedPart?.label : '',
-            BoughtOutPartChildId: selectedPartType?.value === NFR_BOP_STANDARD_ID ? selectedBOPNumber?.value : '',
-            BoughtOutPartNumber: selectedPartType?.value === NFR_BOP_STANDARD_ID ? selectedBOPNumber?.label : '',
-            RawMaterialCode: selectedPartType?.value === NFR_RAW_MATERIAL_ID ? selectedRawMaterial?.label : '',
-            // NFRPartRawMaterialDetails: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? tempData?.NFRPartRawMaterialDetails : []
-        }
-        let tempArray = Object.assign([...gridData], { [editIndex]: tempData })
-
-        const boughtOutPartChildIdArray = [];
-        const partIdArray = [];
-        const rawMaterialCodeArray = [];
-
-        tempArray?.forEach(item => {
-            boughtOutPartChildIdArray?.push(item?.BoughtOutPartChildId);
-            partIdArray?.push(item?.PartId);
-            rawMaterialCodeArray?.push(item?.RawMaterialCode);
-        });
-
-        switch (selectedPartType?.value) {
-            case NFR_COMPONENT_CUSTOMIZED_ID:
-                setSelectedPartList(partIdArray)
-                break;
-            case NFR_BOP_STANDARD_ID:
-                setSelectedBOPList(boughtOutPartChildIdArray)
-                break;
-            case NFR_RAW_MATERIAL_ID:
-                setSelectedRMList(rawMaterialCodeArray)
-                break;
-            default:
-                break;
-        }
-        setGridData(tempArray)
-        resetData()
-    }
 
     const resetData = () => {
-        errors.Quantity = {}
-        setValue("HeaderMaterial", '')
-        setValue("Quantity", '')
-        setValue("PartType", '')
-        setValue("Part", '')
-        setValue("BOPNumber", '')
-        setValue("RawMaterial", '')
-        setValue("UOM", '')
-        setSelectedPartType('')
-        setSelectedUOM('')
-        setSelectedPart('')
-        setEditIndex('')
+        // Clear form errors
+        errors.Quantity = {};
+        
+        // Reset form values
+        setValue("HeaderMaterial", '');
+        setValue("Quantity", '');
+        setValue("PartType", '');
+        setValue("Part", '');
+        setValue("BOPNumber", '');
+        setValue("RawMaterial", '');
+        setValue("UOM", '');
+        
+        // Reset state variables
+        setSelectedPartType('');
+        setSelectedUOM('');
+        setSelectedPart('');
+        setSelectedBOPNumber('');
+        setSelectedRawMaterial('');
+        setEditIndex('');
     }
 
     const checkIsDataFilled = () => {
@@ -370,65 +295,9 @@ function CreateManualNFR(props) {
         return check
     }
 
-    const cancelEdit = () => {
-        setEditIndex('')
-        resetData()
-    }
-
-    const filterRMFromList = (rmSpecificationList, RawMaterialCode) => {
-        return rmSpecificationList && rmSpecificationList?.filter(item => item?.RawMaterialCode === RawMaterialCode)
-    }
-
-    const editItemDetails = (index) => {
-        let tempObj = gridData[index]
-
-        setEditIndex(index)
-
-        errors.Quantity = {}
-
-        setValue('HeaderMaterial', tempObj?.HeaderMaterial)
-        setValue('Quantity', tempObj?.Quantity)
-
-        setValue('PartType', { label: tempObj?.PartType, value: tempObj?.PartTypeId })
-        setSelectedPartType({ label: tempObj?.PartType, value: tempObj?.PartTypeId })
-
-        setValue('UOM', { label: tempObj?.Uom, value: tempObj?.Uom })
-        setSelectedUOM({ label: tempObj?.Uom, value: tempObj?.Uom })
-
-        setValue('Part', { label: tempObj?.PartNumber, value: tempObj?.PartId })
-        setSelectedPart({ label: tempObj?.PartNumber, value: tempObj?.PartId })
-
-        setValue('BOPNumber', { label: tempObj?.BoughtOutPartNumber, value: tempObj?.BoughtOutPartChildId })
-        setSelectedBOPNumber({ label: tempObj?.BoughtOutPartNumber, value: tempObj?.BoughtOutPartChildId })
-
-        const rmId = filterRMFromList(rmSpecificationList, tempObj?.RawMaterialCode)[0]?.SpecificationId
-
-        setValue('RawMaterial', { label: tempObj?.RawMaterialCode, value: rmId })
-        setSelectedRawMaterial({ label: tempObj?.RawMaterialCode, value: rmId })
-
-        switch (tempObj?.PartTypeId) {
-            case NFR_COMPONENT_CUSTOMIZED_ID:
-                setValue('Part', { label: tempObj?.PartNumber, value: tempObj?.PartId })
-
-                break;
-            case NFR_BOP_STANDARD_ID:
-                setValue('BOPNumber', { label: tempObj?.BoughtOutPartNumber, value: tempObj?.BoughtOutPartChildId })
-
-                break;
-            case NFR_RAW_MATERIAL_ID:
-                setValue('RawMaterial', { label: tempObj?.RawMaterialCode, value: rmId })
-
-                break;
-            default:
-                break;
-        }
-    }
-
-    const deleteTableItem = (dataItem, indexInside, indexOuter) => {
-        setShowPopup(true);
-    };
-
+ 
     const handleChangePartType = (value) => {
+        setPreviousPartType(selectedPartType?.value);
         setSelectedPartType(value)
         setSelectedBOPNumber('')
         setSelectedRawMaterial('')
@@ -439,43 +308,40 @@ function CreateManualNFR(props) {
     }
 
     const handlePartChange = (newValue) => {
-        setSelectedPart(newValue)
+        // Update the selected part state
+        setSelectedPart(newValue);
+        
         if (newValue && newValue !== '') {
+            // Fetch part information from the API
             dispatch(getPartInfo(newValue.value, (res) => {
-                let Data = res.data.Data
-                setValue('PartName', Data?.PartName ? Data.PartName : '')
-                setValue('Description', Data?.Description ? Data.Description : '')
-                setValue('UnitOfMeasurement', Data?.UnitOfMeasurement ? Data.UnitOfMeasurement : '')
+                let Data = res.data.Data;
+                
+                // Update form values with part information
+                setValue('PartName', Data?.PartName ? Data.PartName : '');
+                setValue('Description', Data?.Description ? Data.Description : '');
+                setValue('UnitOfMeasurement', Data?.UnitOfMeasurement ? Data.UnitOfMeasurement : '');
 
                 // If there's already a valid SOP date, update the sopQuantityList with the new part
                 if (sopDate) {
+                    // Create a new SOP quantity list with the updated part number
                     const newSopQuantityList = fiveyearList.map(yearItem => ({
                         PartNumber: newValue?.label || '',
                         YearName: yearItem.toString(),
                         Quantity: '0'
                     }));
 
+                    // Update the SOP quantity list state
                     setSopQuantityList(newSopQuantityList);
                 }
-            }),
-            )
-            setValue('PartName', '')
-            setValue('Description', '')
-            setValue('UnitOfMeasurement', '')
+            }));
+        } else {
+            // Reset form values when no part is selected
+            setValue('PartName', '');
+            setValue('Description', '');
+            setValue('UnitOfMeasurement', '');
         }
     }
 
-    const handleChangeRawMaterial = (newValue) => {
-        setSelectedRawMaterial(newValue)
-    }
-
-    const handleChangeBOPNumber = (newValue) => {
-        setSelectedBOPNumber(newValue)
-    }
-
-    const handleChangeUOM = (newValue) => {
-        setSelectedUOM(newValue)
-    }
 
     const handleChangePlant = (newValue) => {
         setSelectedPlant(newValue)
@@ -626,22 +492,38 @@ function CreateManualNFR(props) {
     };
 
     const handleSOPDateChange = (date) => {
-        setSOPDate(DayTime(date).isValid() ? DayTime(date) : '')
-        let year = new Date(date).getFullYear()
+        const newDate = DayTime(date).isValid() ? DayTime(date) : '';
+        
+        // Validate that SOP date is not before ZBC date
+        if (zbcDate && newDate && new Date(newDate) < new Date(zbcDate)) {
+            Toaster.warning("SOP Date cannot be before ZBC Last Submission Date");
+            return;
+        }
+        
+        // Update SOP date state
+        setSOPDate(newDate);
+        
+        // Generate the 5-year list based on the selected date
+        let year = new Date(date).getFullYear();
         const years = [];
         for (let i = 0; i < 5; i++) {
             years.push(year + i);
         }
-        setFiveyearList(years)
+        setFiveyearList(years);
 
-        // Only initialize the sopQuantityList when both SOP date and selectedPart are available
-        if (date && selectedPart) {
+        // Initialize or update the sopQuantityList when SOP date is set
+        if (date) {
+            // If we have a selected part, use its label for the PartNumber
+            const partNumber = selectedPart?.label || '';
+            
+            // Create a new SOP quantity list with the current part number
             const newSopQuantityList = years.map(yearItem => ({
-                PartNumber: selectedPart?.label || '',
+                PartNumber: partNumber,
                 YearName: yearItem.toString(),
                 Quantity: '0'
             }));
 
+            // Update the SOP quantity list state
             setSopQuantityList(newSopQuantityList);
         }
     };
@@ -682,46 +564,30 @@ function CreateManualNFR(props) {
         // Implement copy costing functionality
     };
 
-    const editRow = (item, index) => {
-        // Implement edit row functionality
-    };
-
-    const onPopupConfirm = () => {
-        // Implement popup confirm functionality
-    };
-
-    const closePopUp = () => {
-        setShowPopup(false);
-    };
-
-    const formToggle = (data, indexOuter, indexInside) => {
-        // Implement form toggle functionality
-    };
-
-    const addDetails = (dataItem, indexInside, indexOuter) => {
-        // Implement add details functionality
-    };
-
-    const deleteRowItem = (index) => {
-        // Implement delete row item functionality
-    };
-
     const addRMDetails = (index) => {
-        setOpenAddRMDetails(true)
-        setRMDetailsGridIndex(index)
-        // Set the current RM details for the selected index
-        if (gridData[index] && gridData[index].NFRPartRawMaterialDetails) {
-            setRMDetails(gridData[index].NFRPartRawMaterialDetails);
-        } else {
-            setRMDetails([]);
-        }
+        // Store the current index for updating the correct grid item
+        setRMDetailsGridIndex(index);
+        
+        // Get the current RM details for this grid item if they exist
+        const currentRMDetails = gridData[index]?.NFRPartRawMaterialDetails || [];
+        
+        // Set the RM details state with the current values
+        setRMDetails(currentRMDetails);
+        
+        // Open the drawer
+        // setOpenAddRMDetails(true);
     }
 
+    
     const openAndCloseDrawer = (isSave, dataList = [], rmDetails = []) => {
-        setOpenAddRMDetails(false)
+        // Close the RM details drawer
+        setOpenAddRMDetails(false);
+        
         if (isSave === true && ((dataList && dataList.length > 0) || (rmDetails && rmDetails.length > 0))) {
-            // Also update the rmDetails state
+            // Update the RM details state
             setRMDetails(rmDetails);
+            
+            // Update the SOP quantity list
             setSopQuantityList([...dataList]);
 
             // Update the gridData with the new RM details
@@ -737,7 +603,9 @@ function CreateManualNFR(props) {
             // Show success message
             Toaster.success("RM details saved successfully");
         }
-        setOpenAddForecast(false)
+        
+        // Close the forecast drawer
+        setOpenAddForecast(false);
     }
 
     const cancel = (isSaveAPICalled = false) => {
@@ -779,7 +647,7 @@ function CreateManualNFR(props) {
     }
 
     const onSubmit = (values) => {
-
+        // Prepare the request object with all the necessary data
         let requestObj = {
             "CustomerRFQNo": values?.CustomerRFQNo,
             "ProductCode": values?.ProductCode,
@@ -796,146 +664,20 @@ function CreateManualNFR(props) {
             "NfrBOMDetails": changePartType([...gridData]),
             "SOPDate": sopDate,
             "LastSubmissionDate": zbcDate,
-            "SOPQuantity": values?.fiveyearList,
+            "SOPQuantity": sopQuantityList,
             "Files": files
         }
+        
+        setLoader(true);
         dispatch(createNFRBOMDetails(requestObj, (res) => {
             if (res?.data?.Result) {
-                Toaster.success("Customer RFQ created successfully.")
+                Toaster.success("Customer RFQ created successfully.");
             }
-            cancel(true)
-        }))
+            setLoader(false);
+            cancel(true);
+        }));
     }
 
-    const renderListingRM = (label) => {
-        let opts1 = []
-        if (label === 'childPartName') {
-            const opts1 = [];
-
-            getChildParts && getChildParts?.map(item => {
-                opts1.push({ label: item.Text, value: item.Value })
-            });
-            const selectedValues = tableData.map(data => data?.PartId);
-
-            return getFilteredDropdownOptions(opts1, selectedValues);
-        }
-        if (label === 'rmname') {
-            if (rawMaterialNameSelectList?.length > 0) {
-                let opts = [...rawMaterialNameSelectList]
-                opts && opts?.map(item => {
-                    if (item.Value === '0') return false
-                    item.label = item.Text
-                    item.value = item.Value
-                    opts1.push(item)
-                    return null
-                })
-            }
-            return opts1
-        }
-        if (label === 'rmgrade') {
-            if (gradeSelectList?.length > 0) {
-                let opts = [...gradeSelectList]
-                opts && opts?.map(item => {
-                    if (item.Value === '0') return false
-                    item.label = item.Text
-                    item.value = item.Value
-                    opts1.push(item)
-                    return null
-                })
-            }
-            return opts1
-        }
-
-        if (label === 'rmspecification') {
-            if (rmSpecification?.length > 0) {
-                let opts = [...rmSpecification]
-                opts && opts?.map(item => {
-                    if (item.Value === '0') return false
-                    item.label = item.Text
-                    item.value = item.Value
-                    opts1.push(item)
-                    return null
-                })
-            }
-            return opts1
-        }
-        if (label === 'rmcode') {
-            if (rmSpecificationList?.length > 0) {
-                let opts = [...rmSpecificationList]
-                opts && opts?.map(item => {
-                    if (item.Value === '0') return false
-                    item.label = item.RawMaterialCode
-                    item.value = item.SpecificationId
-                    opts1.push(item)
-                    return null
-                })
-            }
-            return opts1
-        }
-    }
-
-    const handleRMName = (newValue) => {
-        setRMName({ label: newValue?.label, value: newValue?.value })
-        setValue('RMGrade', '')
-        setValue('RMSpecification', '')
-        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }))
-    }
-
-    const handleRMGrade = (newValue) => {
-        setRMGrade({ label: newValue?.label, value: newValue?.value })
-        setValue('RMSpecification', '')
-        dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
-    }
-
-    const handleRMSpecification = (newValue) => {
-        setRMSpecification({ label: newValue?.label, value: newValue?.value })
-
-        // If we have all three fields (Name, Grade, and Specification), find and set the matching RM Code
-        if (rmName?.value && rmgrade?.value && newValue?.value) {
-            const matchingCode = rmSpecificationList?.find(item =>
-                item.RawMaterialId === rmName.value &&
-                item.GradeId === rmgrade.value &&
-                item.SpecificationId === newValue.value
-            );
-
-            if (matchingCode) {
-                setValue('rmcode', {
-                    label: matchingCode.RawMaterialCode,
-                    value: matchingCode.SpecificationId
-                });
-            }
-        }
-    }
-
-    const handleCode = (newValue) => {
-        if (newValue && newValue !== '') {
-            delete errors?.RawMaterialSpecification
-            delete errors?.RawMaterialGrade
-            delete errors.RawMaterialName
-            dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
-                if (res.status === 204) {
-                    setRMGrade({ label: '', value: '', })
-                    setRMSpecification({ label: '', value: '', })
-                    setRMName({ label: '', value: '', })
-                    Toaster.warning("The Raw Material Grade and Specification has set as unspecified. First update the Grade and Specification against this Raw Material Code from Manage Specification tab.")
-                    return false
-                }
-                let Data = res?.data?.Data
-
-                setRMGrade({ label: Data?.GradeName, value: Data?.GradeId })
-                setRMSpecification({ label: Data?.Specification, value: Data?.SpecificationId })
-                setRMName({ label: Data?.RawMaterialName, value: Data?.RawMaterialId, })
-                setValue('RMName', { label: Data?.RawMaterialName, value: Data?.RawMaterialId, })
-                setValue('RMGrade', { label: Data?.GradeName, value: Data?.GradeId })
-                setValue('RMSpecification', { label: Data?.Specification, value: Data?.SpecificationId })
-            }))
-        } else {
-            setValue('RMName', '')
-            setValue('RMGrade', '')
-            setValue('RMSpecification', '')
-            setDisabled(false)
-        }
-    }
 
     return (
         <>
@@ -1172,7 +914,6 @@ function CreateManualNFR(props) {
                                             </Col>
                                             <Col md="3">
                                                 <div className="form-group">
-
                                                     <label>ZBC Last Submission Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
@@ -1185,7 +926,7 @@ function CreateManualNFR(props) {
                                                             dropdownMode='select'
                                                             dateFormat="dd/MM/yyyy"
                                                             minDate={new Date()}
-                                                            maxDate={sopDate}
+                                                            maxDate={sopDate ? new Date(sopDate) : null}
                                                             placeholderText="Select Date"
                                                             className="withBorder"
                                                             mandatory={true}
@@ -1213,6 +954,7 @@ function CreateManualNFR(props) {
                                                             dropdownMode='select'
                                                             dateFormat="dd/MM/yyyy"
                                                             minDate={new Date(zbcDate)}
+                                                            maxDate={sopDate ? new Date(sopDate) : null}
                                                             placeholderText="Select Date"
                                                             className="withBorder"
                                                             mandatory={true}
@@ -1472,7 +1214,7 @@ function CreateManualNFR(props) {
                                                     className="submit-button save-btn"
                                                     value="send"
                                                 >
-                                                    <div className="send-for-approval mr-1"></div>Send
+                                                    <div className="send-for-approval mr-1"></div>Submit
                                                 </button>
                                             </div>
                                         </Row>
@@ -1483,6 +1225,7 @@ function CreateManualNFR(props) {
                     </div>
                 </div >
             </div >
+            {loader && <LoaderCustom customClass="Rfq-Loader" />}
             {openAddRMDetails &&
                 <AddRMDetails
                     isOpen={openAddRMDetails}
@@ -1508,11 +1251,10 @@ function CreateManualNFR(props) {
                     onGridReady={onGridReady}
                     EditableCallback={!isViewFlag}
                     partType={selectedPartType}
-                    fiveyearList={fiveyearList}
-                    setFiveyearList={setFiveyearList}
                     AssemblyPartNumber={selectedPart}
                     sopQuantityList={sopQuantityList}
                     setSopQuantityList={setSopQuantityList}
+                    addrmdetails={addRMDetails}
                 />
             }
 

@@ -23,33 +23,10 @@ import classnames from 'classnames';
 
 function AddForecast(props) {
     const dispatch = useDispatch();
-    const {
-        isOpen,
-        closeDrawer,
-        anchor,
-        isViewFlag,
-        partListData,
-        sopDate,
-        handleSOPDateChange,
-        gridOptionsPart,
-        onGridReady,
-        EditableCallback,
-        fiveyearList,
-        setFiveyearList,
-        AssemblyPartNumber,
-        isEditFlag,
-        sopQuantityList,
-        setSopQuantityList,
-        partType,
-        type,
-        partTypeInPartList,
-        n100Date,
-        setSopDate,
-        rmDetails,
-        setN100Date
-    } = props;
+    const { isOpen, closeDrawer, anchor, isViewFlag, sopDate, handleSOPDateChange,addrmdetails, gridOptionsPart, onGridReady, EditableCallback, AssemblyPartNumber, isEditFlag, sopQuantityList, setSopQuantityList, partType, type,
+        partTypeInPartList, n100Date, rmDetails } = props;
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
+    const { register, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -63,6 +40,7 @@ function AddForecast(props) {
     const [tableData, setTableData] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
     const [childPart, setChildPart] = useState(null);
+    
     const [activeTab, setActiveTab] = useState("1");
 
     // Redux selectors
@@ -108,11 +86,7 @@ function AddForecast(props) {
 
     // Formatter functions
     const partNumberFormatter = (params) => {
-        const partNumber =
-            AssemblyPartNumber?.label ||
-            (typeof AssemblyPartNumber === 'string' ? AssemblyPartNumber : '') ||
-            params.value ||
-            '-';
+        const partNumber = AssemblyPartNumber?.label || (typeof AssemblyPartNumber === 'string' ? AssemblyPartNumber : '') || params.value || '-';
         return partNumber;
     };
 
@@ -173,7 +147,7 @@ function AddForecast(props) {
     };
 
     // Add row to table
-    const addRow = () => {
+    const addRow = (index) => {
         if (!rmName || !rmgrade || !rmspecification) {
             Toaster.warning("Please fill all required fields");
             return;
@@ -219,6 +193,7 @@ function AddForecast(props) {
         };
 
         setTableData([...tableData, newRow]);
+        addrmdetails(index)
         // resetForm();
         resetFormAndDropdowns();
     };
@@ -404,16 +379,16 @@ function AddForecast(props) {
 
     const handleRMSpecification = (newValue) => {
         setRMSpecification({ label: newValue?.label, value: newValue?.value })
-        
+
         // If we have all three fields (Name, Grade, and Specification), find and set the matching RM Code
         if (rmName?.value && rmgrade?.value && newValue?.value) {
-            const matchingCode = rmSpecificationList?.find(item => 
+            const matchingCode = rmSpecificationList?.find(item =>
                 item.SpecificationId === newValue.value
             );
             if (matchingCode) {
-                setValue('rmcode', { 
-                    label: matchingCode.RawMaterialCode, 
-                    value: matchingCode.SpecificationId 
+                setValue('rmcode', {
+                    label: matchingCode.RawMaterialCode,
+                    value: matchingCode.SpecificationId
                 });
             }
         }
@@ -454,7 +429,7 @@ function AddForecast(props) {
         // if (type !== Component) {
         //     setValue('partNumber', '')
         // }
-        
+
         // Clear all other fields
         setValue('RMName', '')
         setValue('RMGrade', '')
@@ -462,12 +437,12 @@ function AddForecast(props) {
         setValue('Specification', '')
         setValue('Value', '')
         setValue("rmcode", "")
-        
+
         // Reset state variables
         setRMName('')
         setRMGrade('')
         setRMSpecification('')
-        
+
         // Remove the logic that disables fields based on table data
         setDisabled(false)
     };
@@ -563,7 +538,7 @@ function AddForecast(props) {
                                                             options={renderListingRM('rmname')}
                                                             mandatory={true}
                                                             handleChange={(newValue) => handleRMName(newValue)}
-                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                         />
                                                     </Col>
 
@@ -581,7 +556,7 @@ function AddForecast(props) {
                                                             options={renderListingRM('rmgrade')}
                                                             mandatory={getValues('RMName') ? true : false}
                                                             handleChange={(newValue) => handleRMGrade(newValue)}
-                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                         />
                                                     </Col>
 
@@ -599,7 +574,7 @@ function AddForecast(props) {
                                                             options={renderListingRM('rmspecification')}
                                                             mandatory={getValues('RMName') ? true : false}
                                                             handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                         />
                                                     </Col>
 
