@@ -935,7 +935,7 @@ const AddFreight = (props) => {
       sourceLocation: [],
       destinationLocation: []
     }));
-    props.hideForm(type);
+    props.hideForm(type,state.isImport);
   };
 
   const cancelHandler = () => {
@@ -1418,7 +1418,7 @@ const AddFreight = (props) => {
                                 {"Load:"}
                               </div>
                             </Col>
-                            <Col md="2">
+                            <Col className="col-md-15">
                               <SearchableSelectHookForm
                                 name="Load"
                                 label="Load"
@@ -1437,7 +1437,7 @@ const AddFreight = (props) => {
                               />
                             </Col>
 
-                            <Col md='2' className='mt-2'>
+                            <Col className="col-md-15 mt-2">
                               <label id="AddFreight_TruckDimensions"
                                 className={`custom-checkbox w-auto mb-0 mt-4 `}
                                 onChange={onShowTruckDimensions}
@@ -1455,7 +1455,7 @@ const AddFreight = (props) => {
                                 />
                               </label>
                             </Col>
-                            {state.isShowTruckDimensions && <Col md="2">
+                            {state.isShowTruckDimensions && <Col className="col-md-15">
                               <div className="d-flex justify-space-between truck-dimensions inputwith-icon form-group">
                                 <SearchableSelectHookForm
                                   name="TruckDimensions"
@@ -1489,7 +1489,7 @@ const AddFreight = (props) => {
                                 </div>
                               </div>
                             </Col>}
-                            {(state.Load?.value === FullTruckLoad || state.isShowTruckDimensions) && <Col md="2">
+                            {(state.Load?.value === FullTruckLoad || state.isShowTruckDimensions) && <Col className="col-md-15">
                               <SearchableSelectHookForm
                                 name="Capacity"
                                 label="Capacity"
@@ -1508,7 +1508,7 @@ const AddFreight = (props) => {
                                 errors={errorsTableForm?.Capacity}
                               />
                             </Col>}
-                            <Col md="2">
+                            <Col className="col-md-15">
                               <SearchableSelectHookForm
                                 name="RateCriteria"
                                 label="Criteria"
@@ -1527,7 +1527,7 @@ const AddFreight = (props) => {
                                 errors={errorsTableForm?.RateCriteria}
                               />
                             </Col>
-                            {state.isImport && <Col md="2">
+                            {state.isImport && <Col className="col-md-15">
                               <TextFieldHookForm
                                 label={`Rate (${getValuesMainForm("currency")?.label ?? 'Currency'})`}
                                 name={"Rate"}
@@ -1548,7 +1548,7 @@ const AddFreight = (props) => {
                                 errors={errorsTableForm?.Rate}
                               />
                             </Col>}
-                            <Col md="2">
+                            <Col className="col-md-15">
                               {state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={state.hidePlantCurrency ? freightRateTitle()?.toolTipTextNetCostBaseCurrency : freightRateTitle()?.tooltipTextPlantCurrency} />}
                               <TextFieldHookForm
                                 label={`Rate (${!getValuesMainForm("plantCurrency") ? 'Currency' : getValuesMainForm("plantCurrency")})`}
@@ -1571,7 +1571,7 @@ const AddFreight = (props) => {
                                 errors={errorsTableForm?.RateLocalConversion}
                               />
                             </Col>
-                            {!state.hidePlantCurrency && <Col md="2">
+                            {!state.hidePlantCurrency && <Col className="col-md-15">
                               <TooltipCustom disabledIcon={true} id="freight-rate" tooltipText={state.isImport ? freightRateTitle()?.toolTipTextNetCostBaseCurrency : freightRateTitle()?.tooltipTextPlantCurrency} />
                               <TextFieldHookForm
                                 label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
@@ -1590,7 +1590,7 @@ const AddFreight = (props) => {
                                 errors={errorsTableForm?.RateConversion}
                               />
                             </Col>}
-                            <Col md="2">
+                            <Col className={`col-md-15  ${state.isShowTruckDimensions ? "mt30" : ""}`}>
                               <div className={`${state.isShowTruckDimensions ? "" : "pt-2"}`}>
                                 {state.isEditIndex ? (
                                   <>

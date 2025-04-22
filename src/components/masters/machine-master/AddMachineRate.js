@@ -273,7 +273,7 @@ class AddMachineRate extends Component {
             ExchangeSource?.label ?? null,
             res => {
               resolveAPI({
-                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                rate: res.data && res.data.Data && res.data.Data.CurrencyExchangeRate ? checkForNull(res.data.Data.CurrencyExchangeRate): 1,
                 exchangeRateId: res?.data?.Data?.ExchangeRateId,
                 showWarning: Object.keys(res.data.Data).length === 0,
                 showPlantWarning: Object.keys(res.data.Data).length === 0

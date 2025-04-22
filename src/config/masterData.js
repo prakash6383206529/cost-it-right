@@ -6485,6 +6485,23 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Effective Date", value: "EffectiveDate", }
 ]
 
+export const NFR_LISTING_DOWNLOAD_EXCEL = [
+    { label: "Customer RFQ ID", value: "CustomerRfqId" },
+    { label: "Customer Name", value: "CustomerName" },
+    { label: "Customer Part No.", value: "CustomerPartNo" },
+    { label: "Product Code", value: "ProductCode" },
+    { label: "Customer RFQ No.", value: "CustomerRfqNo" },
+    { label: "Plant Name", value: "PlantName" },
+    { label: "Segment", value: "Segment" },
+    { label: "SOP Date", value: "SopDate" },
+    { label: "Last Submission Date", value: "LastSubmissionDate" },
+    { label: "Attachment Present", value: "AttachmentPresent" },
+    { label: "Created By", value: "CreatedBy" },
+    { label: "Created Date", value: "CreatedDate" },
+    { label: "Status", value: "Status" }
+  ];
+
+
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },

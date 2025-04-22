@@ -817,7 +817,7 @@ const MachineRateListing = (props) => {
                   {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
                     <>
                       <button disabled={state?.disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                      {permissions?.Add && (<button type="button" className={"user-btn mr5 Tour_List_Add"} onClick={displayForm} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>)}
+                      {permissions?.Add && !state.isImport && (<button type="button" className={"user-btn mr5 Tour_List_Add"} onClick={displayForm} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>)}
                       {permissions?.BulkUpload && (<button type="button" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title="Bulk Upload"><div className={"upload mr-0"}></div>{/* Bulk Upload */} </button>)}
                       {permissions?.Download && <>  <button title={`Download ${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} type="button"  disabled ={state?.totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} </button>
 
@@ -846,7 +846,7 @@ const MachineRateListing = (props) => {
           <Row>
             <Col>
 
-              <div id="machine-master-grid" className={`ag-grid-wrapper  machine-master-grid height-width-wrapper ${(machineDatalist && machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+              <div id="machine-master-grid" className={`ag-grid-wrapper grid-parent-wrapper machine-master-grid height-width-wrapper ${(machineDatalist && machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material ${state?.isLoader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   {state?.render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact

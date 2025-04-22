@@ -597,7 +597,7 @@ function BudgetListing(props) {
                                             ""
                                         )}
 
-                                        {addAccessibility && !props?.isMasterSummaryDrawer && (
+                                        {addAccessibility && !props?.isMasterSummaryDrawer && !isImport && (
                                             <Button id="budgetListing_add" className={"user-btn mr5 Tour_List_Add "} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 
                                         )}
