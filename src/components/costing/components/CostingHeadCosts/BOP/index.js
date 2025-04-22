@@ -15,7 +15,7 @@ function BoughtOutPart(props) {
   const [tabAssemblyIndividualBopDetail, setTabAssemblyIndividualBopDetail] = useState({})
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-
+const editBopForAssemblyTechnology=props?.editBop?true:false
   // partType USED FOR CONDITIONAL RENDERING OF COLUMNS IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING  (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
@@ -64,7 +64,7 @@ function BoughtOutPart(props) {
           {!partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
           {!partType && <td>{'-'}</td>}
           <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item?.CostingPartDetails?.Quantity, initialConfiguration?.NoOfDecimalForPrice) : 1}</td>
-          {partType && <td>{item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item?.CostingPartDetails?.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+          {partType && <td>{!editBopForAssemblyTechnology?item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item?.CostingPartDetails?.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-':'-'}</td>}
           <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
           {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
           {partType && <td className='text-right'>{item?.PartType !== 'Assembly'/*  && item?.PartType !== 'BOP' */ && 

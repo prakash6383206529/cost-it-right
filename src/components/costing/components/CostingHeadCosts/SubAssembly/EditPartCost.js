@@ -630,7 +630,7 @@ function EditPartCost(props) {
             let editedChildPart = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails[index]
            
             
-            editedChildPart.CostingPartDetails.NetPOPrice = !isBOPView?weightedCost:null
+            editedChildPart.CostingPartDetails.NetPOPrice = weightedCost
             editedChildPart.CostingPartDetails.NetTotalRMBOPCC = weightedCost
             editedChildPart.CostingPartDetails.NetChildPartsCostWithQuantity = !isBOPView ? checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity):null
             editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = isBOPView?checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity):null
