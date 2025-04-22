@@ -10,7 +10,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import Dropzone from 'react-dropzone-uploader';
 import { dummyData } from './DummyData';
 // Components
-import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import Toaster from '../../common/Toaster';
 import LoaderCustom from '../../common/LoaderCustom';
 import HeaderTitle from '../../common/HeaderTitle';
@@ -24,10 +24,12 @@ import AddForecast from './AddForecast';
 import { getPlantSelectListByType, getUOMSelectList } from '../../../actions/Common';
 import { getBoughtOutPartSelectList } from '../actions/Part';
 import { getPartInfo, getPartSelectListByTechnology } from '../../costing/actions/Costing';
-import { getRMSpecificationDataList } from '../actions/Material';
+import { getRMSpecificationDataList, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI } from '../../masters/actions/Material';
 import { getClientSelectList } from '../actions/Client';
 import { fileUploadQuotation } from '../../rfq/actions/rfq';
 import { createNFRBOMDetails, getNFRPartWiseGroupDetail } from './actions/nfr';
+import { getFilteredDropdownOptions } from '../../../helper';
+import { fetchSpecificationDataAPI } from '../../../actions/Common';
 
 // Constants and Config
 import { EMPTY_DATA, FILE_URL, PartTypeIDFromAPI, ZBC, searchCount, DRAFTID } from '../../../config/constants';
@@ -67,6 +69,7 @@ function CreateManualNFR(props) {
     const [selectedPart, setSelectedPart] = useState('');
     const [selectedUOM, setSelectedUOM] = useState('');
     const [selectedPlant, setSelectedPlant] = useState('');
+    const [remarks, setRemarks] = useState('');
     const [selectedRawMaterial, setSelectedRawMaterial] = useState('');
     const [selectedBOPNumber, setSelectedBOPNumber] = useState('');
     const [selectedPartType, setSelectedPartType] = useState('');
@@ -98,6 +101,7 @@ function CreateManualNFR(props) {
     const [openAddRMDetails, setOpenAddRMDetails] = useState(false);
     const [rmDetailsGridIndex, setRMDetailsGridIndex] = useState('');
     const [openAddForecast, setOpenAddForecast] = useState(false)
+    const [rmDetails, setRMDetails] = useState([]);
 
     // Selection lists
     const [selectedPartList, setSelectedPartList] = useState([]);
@@ -109,12 +113,23 @@ function CreateManualNFR(props) {
     const [files, setFiles] = useState([])
     const [apiCallCounter, setApiCallCounter] = useState(0)
 
+    const [rmName, setRMName] = useState('');
+    const [rmgrade, setRMGrade] = useState('');
+    const [rmspecification, setRMSpecification] = useState('');
+    const [disabled, setDisabled] = useState(false);
+    const [tableData, setTableData] = useState([]);
+    const [getChildParts, setGetChildParts] = useState([]);
+    const [rawMaterialNameSelectList, setRawMaterialNameSelectList] = useState([]);
+    const [gradeSelectList, setGradeSelectList] = useState([]);
+    const [rmSpecification, setRmSpecification] = useState([]);
+
     useEffect(() => {
         if (!isViewFlag) {
             dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
             dispatch(getUOMSelectList(() => { }))
             dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
             dispatch(getBoughtOutPartSelectList(null, () => { }))
+            dispatch(getRawMaterialNameChild(() => { }))
         }
     }, [])
 
@@ -439,7 +454,7 @@ function CreateManualNFR(props) {
                         YearName: yearItem.toString(),
                         Quantity: '0'
                     }));
-                    
+
                     setSopQuantityList(newSopQuantityList);
                 }
             }),
@@ -463,7 +478,6 @@ function CreateManualNFR(props) {
     }
 
     const handleChangePlant = (newValue) => {
-        console.log("newValue,setSelectedPlant", newValue)
         setSelectedPlant(newValue)
     }
 
@@ -619,7 +633,7 @@ function CreateManualNFR(props) {
             years.push(year + i);
         }
         setFiveyearList(years)
-        
+
         // Only initialize the sopQuantityList when both SOP date and selectedPart are available
         if (date && selectedPart) {
             const newSopQuantityList = years.map(yearItem => ({
@@ -627,7 +641,7 @@ function CreateManualNFR(props) {
                 YearName: yearItem.toString(),
                 Quantity: '0'
             }));
-            
+
             setSopQuantityList(newSopQuantityList);
         }
     };
@@ -695,12 +709,33 @@ function CreateManualNFR(props) {
     const addRMDetails = (index) => {
         setOpenAddRMDetails(true)
         setRMDetailsGridIndex(index)
+        // Set the current RM details for the selected index
+        if (gridData[index] && gridData[index].NFRPartRawMaterialDetails) {
+            setRMDetails(gridData[index].NFRPartRawMaterialDetails);
+        } else {
+            setRMDetails([]);
+        }
     }
 
-    const openAndCloseDrawer = (isSave, dataList = []) => {
+    const openAndCloseDrawer = (isSave, dataList = [], rmDetails = []) => {
         setOpenAddRMDetails(false)
-        if (isSave === true && dataList && dataList.length > 0) {
+        if (isSave === true && ((dataList && dataList.length > 0) || (rmDetails && rmDetails.length > 0))) {
+            // Also update the rmDetails state
+            setRMDetails(rmDetails);
             setSopQuantityList([...dataList]);
+
+            // Update the gridData with the new RM details
+            if (rmDetailsGridIndex !== '') {
+                const updatedGridData = [...gridData];
+                updatedGridData[rmDetailsGridIndex] = {
+                    ...updatedGridData[rmDetailsGridIndex],
+                    NFRPartRawMaterialDetails: rmDetails
+                };
+                setGridData(updatedGridData);
+            }
+
+            // Show success message
+            Toaster.success("RM details saved successfully");
         }
         setOpenAddForecast(false)
     }
@@ -716,6 +751,10 @@ function CreateManualNFR(props) {
     }
 
     const VendorLoaderObj = { isLoader: VendorInputLoader }
+
+    const handleRemarkChange = (newValue) => {
+        setRemarks(newValue)
+    }
 
     const changePartType = (list) => {
         let tempList = list && list?.map(item => {
@@ -768,7 +807,135 @@ function CreateManualNFR(props) {
         }))
     }
 
+    const renderListingRM = (label) => {
+        let opts1 = []
+        if (label === 'childPartName') {
+            const opts1 = [];
 
+            getChildParts && getChildParts?.map(item => {
+                opts1.push({ label: item.Text, value: item.Value })
+            });
+            const selectedValues = tableData.map(data => data?.PartId);
+
+            return getFilteredDropdownOptions(opts1, selectedValues);
+        }
+        if (label === 'rmname') {
+            if (rawMaterialNameSelectList?.length > 0) {
+                let opts = [...rawMaterialNameSelectList]
+                opts && opts?.map(item => {
+                    if (item.Value === '0') return false
+                    item.label = item.Text
+                    item.value = item.Value
+                    opts1.push(item)
+                    return null
+                })
+            }
+            return opts1
+        }
+        if (label === 'rmgrade') {
+            if (gradeSelectList?.length > 0) {
+                let opts = [...gradeSelectList]
+                opts && opts?.map(item => {
+                    if (item.Value === '0') return false
+                    item.label = item.Text
+                    item.value = item.Value
+                    opts1.push(item)
+                    return null
+                })
+            }
+            return opts1
+        }
+
+        if (label === 'rmspecification') {
+            if (rmSpecification?.length > 0) {
+                let opts = [...rmSpecification]
+                opts && opts?.map(item => {
+                    if (item.Value === '0') return false
+                    item.label = item.Text
+                    item.value = item.Value
+                    opts1.push(item)
+                    return null
+                })
+            }
+            return opts1
+        }
+        if (label === 'rmcode') {
+            if (rmSpecificationList?.length > 0) {
+                let opts = [...rmSpecificationList]
+                opts && opts?.map(item => {
+                    if (item.Value === '0') return false
+                    item.label = item.RawMaterialCode
+                    item.value = item.SpecificationId
+                    opts1.push(item)
+                    return null
+                })
+            }
+            return opts1
+        }
+    }
+
+    const handleRMName = (newValue) => {
+        setRMName({ label: newValue?.label, value: newValue?.value })
+        setValue('RMGrade', '')
+        setValue('RMSpecification', '')
+        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }))
+    }
+
+    const handleRMGrade = (newValue) => {
+        setRMGrade({ label: newValue?.label, value: newValue?.value })
+        setValue('RMSpecification', '')
+        dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
+    }
+
+    const handleRMSpecification = (newValue) => {
+        setRMSpecification({ label: newValue?.label, value: newValue?.value })
+
+        // If we have all three fields (Name, Grade, and Specification), find and set the matching RM Code
+        if (rmName?.value && rmgrade?.value && newValue?.value) {
+            const matchingCode = rmSpecificationList?.find(item =>
+                item.RawMaterialId === rmName.value &&
+                item.GradeId === rmgrade.value &&
+                item.SpecificationId === newValue.value
+            );
+
+            if (matchingCode) {
+                setValue('rmcode', {
+                    label: matchingCode.RawMaterialCode,
+                    value: matchingCode.SpecificationId
+                });
+            }
+        }
+    }
+
+    const handleCode = (newValue) => {
+        if (newValue && newValue !== '') {
+            delete errors?.RawMaterialSpecification
+            delete errors?.RawMaterialGrade
+            delete errors.RawMaterialName
+            dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
+                if (res.status === 204) {
+                    setRMGrade({ label: '', value: '', })
+                    setRMSpecification({ label: '', value: '', })
+                    setRMName({ label: '', value: '', })
+                    Toaster.warning("The Raw Material Grade and Specification has set as unspecified. First update the Grade and Specification against this Raw Material Code from Manage Specification tab.")
+                    return false
+                }
+                let Data = res?.data?.Data
+
+                setRMGrade({ label: Data?.GradeName, value: Data?.GradeId })
+                setRMSpecification({ label: Data?.Specification, value: Data?.SpecificationId })
+                setRMName({ label: Data?.RawMaterialName, value: Data?.RawMaterialId, })
+                setValue('RMName', { label: Data?.RawMaterialName, value: Data?.RawMaterialId, })
+                setValue('RMGrade', { label: Data?.GradeName, value: Data?.GradeId })
+                setValue('RMSpecification', { label: Data?.Specification, value: Data?.SpecificationId })
+            }))
+        } else {
+            setValue('RMName', '')
+            setValue('RMGrade', '')
+            setValue('RMSpecification', '')
+            setDisabled(false)
+        }
+    }
 
     return (
         <>
@@ -833,12 +1000,29 @@ function CreateManualNFR(props) {
                                                     disabled={isViewFlag}
                                                 />
                                             </Col>
+                                            <Col md="3">
+                                                <SearchableSelectHookForm
+                                                    label={"Part Type"}
+                                                    name={`PartType`}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: true }}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    customClassName="costing-version"
+                                                    options={renderListing("PartType")}
+                                                    handleChange={(newValue) => handleChangePartType(newValue)}
+                                                    errors={errors?.PartType}
+                                                />
+                                            </Col>
+
                                             {
                                                 // selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID && 
                                                 <Col md="3" className="input-container">
-                                                    <div id="AddNFR_Customer_Part_No">
+                                                    <div id="AddNFR_Customer_Part_No" className="d-flex">
                                                         <AsyncSearchableSelectHookForm
-                                                            label={"Customer Part No."}
+                                                            label={"Part No."}
                                                             name={"Part"}
                                                             placeholder={"Select"}
                                                             Controller={Controller}
@@ -854,6 +1038,20 @@ function CreateManualNFR(props) {
                                                             disabled={isViewFlag}
                                                             NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                         />
+                                                        <button
+                                                            id="AddNFR_AddForecast"
+                                                            className="user-btn mt-30 ml-3"
+                                                            title="Add RM & Forecast"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                setOpenAddForecast(true);
+                                                            }}
+                                                            type="button"
+                                                            disabled={!selectedPart}
+                                                        >
+                                                            {rmDetails?.length > 0 ? <div className="view mr-2"></div> : <div className="plus"></div>}
+                                                            {/* {sopQuantityList?.some(item => parseInt(item?.Quantity) !== 0) ? "View Forecast" : "ADD Forecast"} */}
+                                                        </button>
                                                     </div>
                                                 </Col>}
                                             <Col md="3" className="input-container">
@@ -877,8 +1075,8 @@ function CreateManualNFR(props) {
                                             </Col>
 
 
-                                        </Row>
-                                        <Row>
+                                            {/* </Row>
+                                        <Row> */}
                                             <Col md="3" className="input-container">
                                                 <TextFieldHookForm
                                                     label="Part Description"
@@ -918,9 +1116,9 @@ function CreateManualNFR(props) {
                                                 />
                                             </Col>
                                             <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label="Product Code"
-                                                    name={"ProductCode"}
+                                                <TextFieldHookForm
+                                                    label="Group Code"
+                                                    name={"GroupCode"}
                                                     id="AddNFR_Product_Code"
                                                     Controller={Controller}
                                                     placeholder={isViewFlag ? '-' : "Select"}
@@ -933,7 +1131,7 @@ function CreateManualNFR(props) {
                                                     className=""
                                                     customClassName={"withBorder"}
                                                     errors={errors?.ProductCode}
-                                                    disabled={isViewFlag}
+                                                    disabled={true}
                                                 />
                                             </Col>
                                             <Col md="3">
@@ -975,10 +1173,10 @@ function CreateManualNFR(props) {
                                             <Col md="3">
                                                 <div className="form-group">
 
-                                                    <label>ZBC Submission Date</label>
+                                                    <label>ZBC Last Submission Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
-                                                            name="ZBC Submission Date"
+                                                            name="ZBC Last Submission Date"
                                                             id="AddNFR_ZBC_Date"
                                                             selected={DayTime(zbcDate).isValid() ? new Date(zbcDate) : ''}
                                                             onChange={handleZBCDateChange}
@@ -987,6 +1185,7 @@ function CreateManualNFR(props) {
                                                             dropdownMode='select'
                                                             dateFormat="dd/MM/yyyy"
                                                             minDate={new Date()}
+                                                            maxDate={sopDate}
                                                             placeholderText="Select Date"
                                                             className="withBorder"
                                                             mandatory={true}
@@ -1002,10 +1201,10 @@ function CreateManualNFR(props) {
                                             <Col md="3">
                                                 <div className="form-group">
 
-                                                    <label>CBC Submission Date</label>
+                                                    <label>Quotation Last Submission Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
-                                                            name="Quotation Submission Date"
+                                                            name="Quotation Last Submission Date"
                                                             id="AddNFR_CBC_Date"
                                                             selected={DayTime(cbcDate).isValid() ? new Date(cbcDate) : ''}
                                                             onChange={handleCBCDateChange}
@@ -1013,7 +1212,7 @@ function CreateManualNFR(props) {
                                                             showYearDropdown
                                                             dropdownMode='select'
                                                             dateFormat="dd/MM/yyyy"
-                                                            minDate={DayTime(zbcDate).isValid() ? new Date(zbcDate) : new Date(maxDate)}
+                                                            minDate={new Date(zbcDate)}
                                                             placeholderText="Select Date"
                                                             className="withBorder"
                                                             mandatory={true}
@@ -1026,7 +1225,7 @@ function CreateManualNFR(props) {
                                                     </div>
                                                 </div>
                                             </Col>
-                                            <Col md="3">
+                                            {/* <Col md="3">
                                                 <div className="form-group">
                                                     <label>SOP Date</label>
                                                     <div className="inputbox date-section">
@@ -1052,24 +1251,35 @@ function CreateManualNFR(props) {
                                                         />
                                                     </div>
                                                 </div>
-                                            </Col>
-                                            <button
-                                                id="AddNFR_AddForecast"
-                                                className="user-btn mt-30 ml-3"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    setOpenAddForecast(true);
-                                                }}
-                                                type="button"
-                                                disabled={!sopDate || !selectedPart}
-                                            >
-                                                {sopQuantityList?.some(item => parseInt(item?.Quantity) !== 0) ? <div className="view mr-2"></div> : <div className="plus"></div>}
-                                                {sopQuantityList?.some(item => parseInt(item?.Quantity) !== 0) ? "View Forecast" : "ADD Forecast"}
-                                            </button>
+                                            </Col> */}
                                         </Row>
                                         <Row>
-                                            <HeaderTitle title={'Attachment:'} customClass="mt-3" />
-                                            <Col md="6" className="height152-label">
+                                            <Col md="12">
+                                                <div className="left-border">
+                                                    {"Remarks & Attachments:"}
+                                                </div>
+                                            </Col>
+                                            <Col md="6">
+                                                <TextAreaHookForm
+                                                    label={"Remarks"}
+                                                    name={"remark"}
+                                                    placeholder={"Type here..."}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    value={remarks}
+                                                    //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                    // options={renderListing("DestinationPlant")}
+                                                    customClassName={"withBorder"}
+                                                    handleChange={(e) => { handleRemarkChange(e.target.value) }}
+                                                    errors={errors.remark}
+                                                    // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                    rowHeight={6}
+                                                    disabled={isViewFlag}
+                                                // isLoading={plantLoaderObj}
+                                                />
+                                            </Col>
+                                            <Col md="3" className="height152-label">
                                                 {/* <TooltipCustom id="uploadFile" tooltipText="Upload upto 4 file, size of each file upto 20MB" /> */}
                                                 <label>Upload Attachment (upload up to 4 files) <AttachmentValidationInfo /> </label>
                                                 <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
@@ -1278,7 +1488,7 @@ function CreateManualNFR(props) {
                     isOpen={openAddRMDetails}
                     closeDrawer={openAndCloseDrawer}
                     anchor={'right'}
-                    dataList={gridData[rmDetailsGridIndex]?.NFRPartRawMaterialDetails}
+                    dataList={rmDetails}
                 />
             }
 
@@ -1289,6 +1499,7 @@ function CreateManualNFR(props) {
                     anchor={'right'}
                     isViewFlag={isViewFlag}
                     partListData={partListData}
+                    rmDetails={rmDetails}
                     sopDate={sopDate}
                     handleSOPDateChange={handleSOPDateChange}
                     zbcDate={zbcDate}
@@ -1296,6 +1507,7 @@ function CreateManualNFR(props) {
                     gridOptionsPart={gridOptionsPart}
                     onGridReady={onGridReady}
                     EditableCallback={!isViewFlag}
+                    partType={selectedPartType}
                     fiveyearList={fiveyearList}
                     setFiveyearList={setFiveyearList}
                     AssemblyPartNumber={selectedPart}
