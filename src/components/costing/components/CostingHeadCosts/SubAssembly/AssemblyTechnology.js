@@ -179,6 +179,7 @@ function AssemblyTechnology(props) {
             index={index}
             item={el}
             children={el.CostingChildPartDetails}
+            editBop={true}
         />
     })
 
@@ -414,7 +415,7 @@ function AssemblyTechnology(props) {
 
                         {(item?.PartType === 'Assembly' && (subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost ||
                             subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost ||
-                            subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)) ?
+                            subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost|| subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost)) ?
 
                             <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                                 <span class="tooltiptext">
@@ -425,14 +426,14 @@ function AssemblyTechnology(props) {
                                     { }
                                     {(initialConfiguration?.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && `Labour Cost/Assembly:  ${checkForDecimalAndNull(checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost) + checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) + checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost), initialConfiguration?.NoOfDecimalForPrice)}`}
                                     {(initialConfiguration?.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <br></br>}
-                                    {`Total Child's Part Cost:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost, initialConfiguration?.NoOfDecimalForPrice)}`}
+                                    {`Total Child's Part Cost:  ${checkForDecimalAndNull((subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost+subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost), initialConfiguration?.NoOfDecimalForPrice)}`}
 
                                 </span >
                             </div > : ''
                         }
                     </td >
                 </div >
-                {item?.PartType !== 'Assembly' && item?.PartType !== 'BOP' && <td className='text-right'>
+                {item?.PartType !== 'Assembly'/*  && item?.PartType !== 'BOP' */ && <td className='text-right'>
                     <button
                         type="button"
                         className={'Edit mr-2 align-middle'}
@@ -539,6 +540,7 @@ function AssemblyTechnology(props) {
                     anchor={'bottom'}
                     tabAssemblyIndividualPartDetail={tabAssemblyIndividualPartDetail}
                     costingSummary={false}
+                    isBopEdit={false}
                 />
             }
 
