@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-//const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
- const BASE_URL = `http://10.10.1.100:10511/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+//  const BASE_URL = `http://10.10.1.102:2002/api/v1`;
 
 
 
@@ -3403,11 +3403,11 @@ export const CC = "CC"
 export const RMCC = "RM + CC"
 
 export const PAINTTECHNOLOGY = 31
-export const HANGEROVERHEAD = "Hanger OverHead"
+export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.18";
+export const VERSION = "V4.2.20";
 
 
 

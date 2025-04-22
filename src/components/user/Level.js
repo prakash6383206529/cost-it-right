@@ -54,7 +54,7 @@ const Level = (props) => {
   * @method componentDidMount
   * @description used to called after mounting component
   */
-  const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel  } = useLabels();
+  const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, vendorCodeLabel } = useLabels();
   useEffect(() => {
     dispatch(getApprovalModuleSelectList((res) => {
       if (res && res.data && res.data.Result) {
@@ -100,6 +100,7 @@ const Level = (props) => {
 
   const getLevelMappingDetails = () => {
     const handleResponse = (res, isEditlevelType, dataKey) => {
+      console.log("res", res);
       if (res && res.data && res.data.Data) {
         let Data = dataKey ? res.data.Data[0] : res.data.Data;
         setValue('LevelId', { label: Data?.Level, value: Data?.LevelId });
@@ -155,11 +156,37 @@ const Level = (props) => {
       const dispatchFunction = (apiFunction, approvalType, dataKey) => {
         if (Number(isEditlevelType) === ONBOARDING_MANAGEMENT_LEVEL) {
           dispatch(apiFunction(approvalType, (res) => {
-            handleResponse(res, isEditlevelType, dataKey);
+            if (res && res.data && res.data.Data) {
+              // Localize the approval type if needed
+              if (res.data.Data.ApprovalType && typeof res.data.Data.ApprovalType === 'string' && 
+                  res.data.Data.ApprovalType.includes('Vendor')) {
+                res.data.Data.ApprovalType = getLocalizedCostingHeadValue(
+                  res.data.Data.ApprovalType, 
+                  vendorBasedLabel, 
+                  zeroBasedLabel, 
+                  customerBasedLabel, 
+                  vendorCodeLabel
+                );
+              }
+              handleResponse(res, isEditlevelType, dataKey);
+            }
           }));
         } else {
           dispatch(apiFunction(TechnologyId, approvalType, (res) => {
-            handleResponse(res, isEditlevelType, dataKey);
+            if (res && res.data && res.data.Data) {
+              // Localize the approval type if needed
+              if (res.data.Data.ApprovalType && typeof res.data.Data.ApprovalType === 'string' && 
+                  res.data.Data.ApprovalType.includes('Vendor')) {
+                res.data.Data.ApprovalType = getLocalizedCostingHeadValue(
+                  res.data.Data.ApprovalType, 
+                  vendorBasedLabel, 
+                  zeroBasedLabel, 
+                  customerBasedLabel, 
+                  vendorCodeLabel
+                );
+              }
+              handleResponse(res, isEditlevelType, dataKey);
+            }
           }));
         }
       };
