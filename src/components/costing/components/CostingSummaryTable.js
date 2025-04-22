@@ -2801,8 +2801,8 @@ const CostingSummaryTable = (props) => {
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && <span className={highlighter("BurningLossWeight")}>Burning Loss Weight </span>}
                                     <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
-                                    {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("BurningLossWeight")}>Yield % </span>}
-                                    {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("BurningLossWeight")}>RM Base (Effective Date) </span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("YieldPercentage")}>Yield % </span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("EffectiveDate")}>RM Base (Effective Date) </span>}
                                   </td>
                                   {viewCostingData &&
                                     viewCostingData?.map((data) => {
