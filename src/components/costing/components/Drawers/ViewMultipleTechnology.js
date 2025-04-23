@@ -12,7 +12,7 @@ import { useLabels } from '../../../../helper/core'
 
 function ViewMultipleTechnology(props) {
     const { multipleTechnologyData, isPDFShow } = props
-    console.log("multipleTechnologyData", multipleTechnologyData)
+    
     const [viewMultiCost, setViewMultiCost] = useState([])
     const [costingDetailId, setCostingDetailId] = useState('')
     const [openDrawer, setOpemDrawer] = useState(false)

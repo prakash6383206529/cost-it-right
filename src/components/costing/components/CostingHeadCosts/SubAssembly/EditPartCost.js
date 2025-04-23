@@ -17,7 +17,7 @@ import CostingDetailSimulationDrawer from '../../../../simulation/components/Cos
 import { ViewCostingContext } from '../../CostingDetails';
 import { AWAITING_APPROVAL_ID, CBCTypeId, EMPTY_DATA, EMPTY_GUID, NFRTypeId, NCCTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, REJECTEDID, VBCTypeId, WACTypeId, ZBCTypeId, PENDING_FOR_APPROVAL_ID, INR } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, decimalNumberLimit6, NoSignMaxLengthMessage } from "../../../../../helper/validation";
 import { useLabels } from '../../../../../helper/core';
 import TooltipCustom from '../../../../common/Tooltip';
 import AddBOP from '../../Drawers/AddBOP';
@@ -36,15 +36,15 @@ function EditPartCost(props) {
     const [isLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch()
     const [selectedBOPItems, setSelectedBOPItems] = useState([]);
-    
+
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const PartCostFields = 'PartCostFields';
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-    
+
     const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
     const costData = useContext(costingInfoContext);
-    
+
     const { ToolTabData, OverheadProfitTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, RMCCTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const { vendorLabel } = useLabels()
@@ -54,7 +54,7 @@ function EditPartCost(props) {
     })
     const { currencySource } = useSelector(state => state.costing)
     const isBOPView = props?.isBopEdit || false;
-    
+
     useEffect(() => {
         if (!isBOPView) {
             gridData && gridData.map((item, index) => {
@@ -109,7 +109,7 @@ function EditPartCost(props) {
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
             })
             setWeightedCost(temp?.NetPOPrice)
-            
+
             if (isBOPView) {
                 setSelectedBOPItems(tempArray)
             } else {
@@ -148,7 +148,7 @@ function EditPartCost(props) {
                 } tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
             })
-            
+
             setWeightedCost(temp?.NetPOPrice)
             if (isBOPView) {
                 setSelectedBOPItems(tempArray)
@@ -246,7 +246,7 @@ function EditPartCost(props) {
         selectedBOPItems.forEach(item => {
             totalCost += Number(item.NetBoughtOutPartCost || 0) * Number(item.SOBPercentage || 0) / 100;
         });
-        
+
         setWeightedCost(totalCost);
     };
 
@@ -363,7 +363,7 @@ function EditPartCost(props) {
                 return checkForNull(accummlator) + checkForNull(el.NetCost)
             }, 0)
         }
-        
+
         setWeightedCost(weightedCostCalc)
     }
     const calculateWeightedCost = (arrayTemp = []) => {
@@ -388,13 +388,13 @@ function EditPartCost(props) {
 
                 if (isBOPView) {
                     let arr = Object.assign([...selectedBOPItems], { [index]: tempGrid })
-                    
+
                     setWeightedCost(calculateWeightedCost(arr))
                     setTableDataList(arr)
                 } else {
                     let arr = Object.assign([...gridData], { [index]: tempGrid })
                     setWeightedCost(calculateWeightedCost(arr))
-                    
+
                     setGridData(arr)
                 }
 
@@ -412,7 +412,7 @@ function EditPartCost(props) {
                 tempGrid.DeltaValue = 0
                 tempGrid.NetCost = 0
                 let arr = Object.assign([...gridData], { [index]: tempGrid })
-                
+
                 setWeightedCost(calculateWeightedCost(arr))
                 setGridData(arr)
 
@@ -445,7 +445,7 @@ function EditPartCost(props) {
                 setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
                 setValue(`${PartCostFields}.${index}.NetCost`, 0)
             }, 200);
-            
+
             setWeightedCost(calculateWeightedCost(selectedBOPItems))
             return false
         } else if (!isBOPView && (gridData[index]?.DeltaSign?.label === '-') && baseValue < value) {
@@ -454,7 +454,7 @@ function EditPartCost(props) {
                 setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
                 setValue(`${PartCostFields}.${index}.NetCost`, 0)
             }, 200);
-            
+
             setWeightedCost(calculateWeightedCost(gridData))
             return false
         }
@@ -501,7 +501,7 @@ function EditPartCost(props) {
             weightedCostCalc = tempArr && tempArr.reduce((accummlator, el) => {
                 return checkForNull(accummlator) + checkForNull(el.NetCost)
             }, 0)
-            
+
             setWeightedCost(weightedCostCalc)
             setSelectedBOPItems(tempArr)
         } else {
@@ -626,32 +626,31 @@ function EditPartCost(props) {
             const index = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.findIndex(object => {
                 return props?.tabAssemblyIndividualPartDetail?.PartNumber === object?.PartNumber;
             });
-            
+
             let editedChildPart = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails[index]
            
             
             editedChildPart.CostingPartDetails.NetPOPrice = weightedCost
             editedChildPart.CostingPartDetails.NetTotalRMBOPCC = weightedCost
-            editedChildPart.CostingPartDetails.NetChildPartsCostWithQuantity = !isBOPView ? checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity):null
-            editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = isBOPView?checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity):null
-            editedChildPart.CostingPartDetails.BoughtOutPartRate =isBOPView?checkForNull(weightedCost):null
+            editedChildPart.CostingPartDetails.NetChildPartsCostWithQuantity = !isBOPView ? checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity) : null
+            editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = isBOPView ? checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity) : null
+            editedChildPart.CostingPartDetails.BoughtOutPartRate = isBOPView ? checkForNull(weightedCost) : null
 
             Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
-            // tempsubAssemblyTechnologyArray[0].CostingChildPartDetails[index] = editedChildPart
 
-            
+
             // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
             costPerAssemblyTotalWithQuantity = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
                 return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.NetChildPartsCostWithQuantity)
             }, 0)
-            let bopCostperAssembly =tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
+            let bopCostperAssembly = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
                 return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
             }, 0)
             // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyWithoutQuantity = costPerAssemblyWithoutQuantity
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost =  checkForNull(bopCostperAssembly)
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = isBOPView ? editedChildPart?.CostingPartDetails?.NetChildPartsCost : costPerAssemblyTotalWithQuantity
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = checkForNull(costPerAssemblyTotalWithQuantity)
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerAssemblyTotalWithQuantity) +
-                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+                checkForNull(bopCostperAssembly) +
                 (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
                     checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC = checkForNull(costPerAssemblyTotalWithQuantity) +
@@ -698,7 +697,7 @@ function EditPartCost(props) {
                 "CostingSettledDetails": tempArray,
                 "LoggedInUserId": loggedInUserId()
             }
-
+            
             dispatch(saveSettledCostingDetails(obj, res => { }))
             let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
                 checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) +
@@ -755,7 +754,7 @@ function EditPartCost(props) {
 
             // Update the selectedBOPItems state
             setSelectedBOPItems(tempArr);
-            
+
         }
         setIsDrawerOpen(false)
     }
@@ -959,12 +958,12 @@ function EditPartCost(props) {
                                                         </td>
                                                         <td>{item?.EffectiveDate ? item?.EffectiveDate.split('T')[0] : '-'}</td>
                                                         <td >
-                                                            <button
+                                                            {/* <button
                                                                 type="button"
                                                                 className={'View mr-2 align-middle'}
                                                                 onClick={() => viewDetails(item)}
                                                             >
-                                                            </button>
+                                                            </button>For BOP, temporarily hide the View button. BOP master drawer will open when the View button is clicked */}
                                                             <button
                                                                 type="button"
                                                                 className={'Delete mr-2 align-middle'}

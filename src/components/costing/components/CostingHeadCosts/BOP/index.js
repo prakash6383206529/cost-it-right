@@ -4,7 +4,7 @@ import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, showBopLabel } from '../../../../../helper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
-import { WACTypeId } from '../../../../../config/constants';
+import { ASSEMBLY, WACTypeId } from '../../../../../config/constants';
 import EditPartCost from '../SubAssembly/EditPartCost';
 
 function BoughtOutPart(props) {
@@ -15,7 +15,7 @@ function BoughtOutPart(props) {
   const [tabAssemblyIndividualBopDetail, setTabAssemblyIndividualBopDetail] = useState({})
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-const editBopForAssemblyTechnology=props?.editBop?true:false
+  const editBopForAssemblyTechnology = props?.editBop ? true : false
   // partType USED FOR CONDITIONAL RENDERING OF COLUMNS IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING  (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
@@ -64,17 +64,17 @@ const editBopForAssemblyTechnology=props?.editBop?true:false
           {!partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
           {!partType && <td>{'-'}</td>}
           <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item?.CostingPartDetails?.Quantity, initialConfiguration?.NoOfDecimalForPrice) : 1}</td>
-          {partType && <td>{!editBopForAssemblyTechnology?item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item?.CostingPartDetails?.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-':'-'}</td>}
+          {partType && <td>{!editBopForAssemblyTechnology ? item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item?.CostingPartDetails?.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-' : '-'}</td>}
           <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
           {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
-          {partType && <td className='text-right'>{item?.PartType !== 'Assembly'/*  && item?.PartType !== 'BOP' */ && 
+          {partType && <td className='text-right'>{item?.TechnologyId === ASSEMBLY &&
             <button
               type="button"
               className={'Edit mr-2 align-middle'}
               onClick={() => viewOrEditItemDetails(item)}>
             </button>
-         }</td>}
-          {!partType && <td className='text-right'>{item?.PartType !== 'Assembly'&&
+          }</td>}
+          {!partType && <td className='text-right'>{item?.TechnologyId === ASSEMBLY &&
             <button
               type="button"
               className={'Edit mr-2 align-middle'}
