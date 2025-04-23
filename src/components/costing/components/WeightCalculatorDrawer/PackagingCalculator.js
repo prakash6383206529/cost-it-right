@@ -179,7 +179,7 @@ function PackagingCalculator(props) {
     const calculateVolumePerDay = () => {
         const volumePerDay = getValuesPackaging('VolumePerAnnum') / 12 * DaysInMonthForVolumePerDay
         setValuePackaging('VolumePerDay', checkForDecimalAndNull(volumePerDay, NoOfDecimalForInputOutput))
-        setState((prevState) => ({ ...prevState, volumePerDay: volumePerDay }))
+        setState((prevState) => ({ ...prevState, volumePerDay: volumePerDay ,volumePerAnnum:getValuesPackaging('VolumePerAnnum')}))
     }
     const renderListing = (label) => {
         const temp = [];
@@ -423,10 +423,14 @@ function PackagingCalculator(props) {
                     + spacerCostChecked;
                 break;
             default:
+                console.log(volumePerAnnum,'volumePerAnnum')
+                console.log(amortizedYears,'amortizedYears')
+                console.log(totalCostOfCrateWithAddedCost,'totalCostOfCrateWithAddedCost')
                 packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (volumePerAnnum * amortizedYears))
                     + coverCost
                     + spacerCostChecked;
         }
+        console.log(packagingCost,'packagingCost')
 
         // Update state
         setState(prevState => ({
