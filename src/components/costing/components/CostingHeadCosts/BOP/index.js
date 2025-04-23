@@ -9,7 +9,6 @@ import EditPartCost from '../SubAssembly/EditPartCost';
 
 function BoughtOutPart(props) {
   const { item } = props;
-  console.log("item", item)
   const dispatch = useDispatch()
   const [partCostDrawer, setPartCostDrawer] = useState(false);
   const [tabAssemblyIndividualBopDetail, setTabAssemblyIndividualBopDetail] = useState({})
