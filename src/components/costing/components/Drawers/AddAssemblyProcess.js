@@ -118,19 +118,21 @@ function AddAssemblyProcess(props) {
       // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
 
       let costPerPieceTotal = 0
+      let CostPerAssemblyBOPTotal = 0
       tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
         costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
+        CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
         return null
       })
 
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
         checkForNull(costPerPieceTotal) +
-        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+        checkForNull(CostPerAssemblyBOPTotal) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
         checkForNull(NetProcessCost)
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
         checkForNull(costPerPieceTotal) +
-        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+        checkForNull(CostPerAssemblyBOPTotal) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
         checkForNull(NetProcessCost)
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingProcessCostResponse = processGrid.CostingProcessCostResponse

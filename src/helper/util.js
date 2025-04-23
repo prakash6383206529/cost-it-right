@@ -1117,7 +1117,7 @@ export function findLostWeight(tableVal, isPlastic = false) {
 
 //THIS FUNCTION TO CHECK WHETHER MASTER APPROVAL IS APPLICALBE AND ON WHICH MASTER IT IS APPLICABLE (ApprovalMasterArrayList COMING FROM PAGE INIT)
 export function CheckApprovalApplicableMaster(number) {
-  const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
+  const isApproval = getConfigurationKey()?.ApprovalMasterArrayList?.includes(number) && getConfigurationKey()?.IsMasterApprovalAppliedConfigure
   return isApproval
 }
 
