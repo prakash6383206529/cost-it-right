@@ -418,7 +418,7 @@ function PackagingCalculator(props) {
                     + spacerCostChecked;
                 break;
             case "Polymer Trolley Calculation":
-                packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (noOfComponentsPerCrate / stockNormDays) * 300)
+                packagingCost = checkForNull(totalCostOfCrateWithAddedCost / ((noOfComponentsPerCrate / stockNormDays) * 300))
                     + coverCost
                     + spacerCostChecked;
                 break;
