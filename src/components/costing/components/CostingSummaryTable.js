@@ -52,6 +52,7 @@ import { BarChartComparison } from './BarChartComparison'
 import { CirLogo, CompanyLogo, useLabels } from '../../../helper/core'
 import { checkDivisionByPlantAndGetDivisionIdByPart } from '../../../actions/Common'
 import { fetchDivisionId } from '../CostingUtil'
+import AddLabourCost from './CostingHeadCosts/AdditionalOtherCost/AddLabourCost'
 
 
 
@@ -214,7 +215,7 @@ const CostingSummaryTable = (props) => {
   const [showRightButton, setShowRightButton] = useState(true);
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
-  const { discountLabel, toolMaintenanceCostLabel,finishWeightLabel } = useLabels();
+  const { discountLabel, toolMaintenanceCostLabel, finishWeightLabel } = useLabels();
   const { isNetPoPrice, setIsNetPoPrice } = useState(false)
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
@@ -958,7 +959,7 @@ const CostingSummaryTable = (props) => {
     setIsViewConversionCost(false)
     setIsViewToolCost(false)
     setViewMultipleTechnologyDrawer(false)
-    setDrawerOpen({ BOP: false, process: false, operation: false })
+    setDrawerOpen({ BOP: false, process: false, operation: false, labour: false })
   }
 
   /**
@@ -1627,15 +1628,15 @@ const CostingSummaryTable = (props) => {
           obj.totalToolCost = checkForNull(obj.NetToolCostConversion) ?? "-"
           obj.netRM = checkForNull(obj.NetRawMaterialsCostConversion) ?? "-"
           obj.netBOP = checkForNull(obj.NetBoughtOutPartCostConversion) ?? "-"
-          obj.nConvCost= checkForNull(obj.NetConversionCostConversion) ?? "-"
+          obj.nConvCost = checkForNull(obj.NetConversionCostConversion) ?? "-"
           if (getConfigurationKey()?.IsBasicRateAndCostingConditionVisible) {
             obj.BasicRate = checkForDecimalAndNull((
-                checkForNull(obj.nPackagingAndFreight) + 
-                checkForNull(obj.totalToolCost) + 
-                checkForNull(obj.netRM) + 
-                checkForNull(obj.netBOP) + 
-                checkForNull(obj.nConvCost)),
-                initialConfiguration?.NoOfDecimalForPrice
+              checkForNull(obj.nPackagingAndFreight) +
+              checkForNull(obj.totalToolCost) +
+              checkForNull(obj.netRM) +
+              checkForNull(obj.netBOP) +
+              checkForNull(obj.nConvCost)),
+              initialConfiguration?.NoOfDecimalForPrice
             );
           }
         }
@@ -1928,7 +1929,13 @@ const CostingSummaryTable = (props) => {
           setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, processHide: true, viewCostingDataObj: viewCostingDataObj, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
         }
         break;
-
+      case 'labour':
+        setDrawerOpen({ labour: true })
+        setIndex(index)
+        if (index !== -1) {
+          let data = viewCostingData[index]?.netLabourCostView
+        }
+        break;
       default:
         break;
     }
@@ -2730,6 +2737,9 @@ const CostingSummaryTable = (props) => {
                                 <span className={highlighter("", "finish-reducer")}>{showBopLabel()} Cost/Assembly</span>
                                 <span className={highlighter("BurningLossWeight")}>Process Cost/Assembly</span>
                                 <span className={highlighter("ScrapWeight")}>Operation Cost/Assembly</span>
+                                <span className={highlighter("LabourCost")}>Labour Cost/Assembly</span>
+                                <span className={highlighter("IndirectLabourCost")}>Indirect Labour Cost/Assembly</span>
+                                <span className={highlighter("StaffCost")}>Staff Cost/Assembly</span>
                               </td>
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
@@ -2738,13 +2748,22 @@ const CostingSummaryTable = (props) => {
                                       {data?.bestCost !== true && <>
                                         <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netChildPartsCost : ''}</span>
                                         <span className={highlighter("rmRate")}>
-                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? data?.netBoughtOutPartCost : ''}</button>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                         <span className={highlighter("scrapRate")}>
-                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? data?.netProcessCost : ''}</button>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netProcessCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                         <span className={highlighter("", "rm-reducer")}>
-                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? data?.netOperationCost : ''}</button>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netOperationCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                        </span>
+                                        <span className={highlighter("LabourCost")}>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('labour', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.NetLabourCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                        </span>
+                                        <span className={highlighter("IndirectLabourCost")}>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('labour', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.IndirectLaborCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                        </span>
+                                        <span className={highlighter("StaffCost")}>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('labour', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.StaffCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                       </>}
                                     </td>
@@ -4028,6 +4047,17 @@ const CostingSummaryTable = (props) => {
 
           />
         )
+      }
+      {
+        drawerOpen.labour && (
+          <AddLabourCost
+            isOpen={drawerOpen.labour}
+            item={{ CostingId: viewCostingData[index]?.costingId }}
+            closeDrawer={closeViewDrawer}
+            anchor={'right'}
+            isCostingSummary={true}
+          />)
+
       }
       {
         viewMultipleTechnologyDrawer && (

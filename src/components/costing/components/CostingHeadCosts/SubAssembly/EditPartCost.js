@@ -657,7 +657,10 @@ function EditPartCost(props) {
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC = checkForNull(costPerAssemblyTotalWithQuantity) +
                 checkForNull(bopCostperAssembly) +
                 (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
-                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
+                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)) +
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
             let tempArray = []
             if (!isBOPView) {
                 gridData && gridData?.map((item) => {
