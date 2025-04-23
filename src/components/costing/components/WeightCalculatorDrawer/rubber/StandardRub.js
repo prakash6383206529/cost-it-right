@@ -69,7 +69,9 @@ function StandardRub(props) {
 
         calculateTotalLength()
         calculateVolume()
-        calculateScrapWeight()
+        setTimeout(() =>{
+            calculateScrapWeight()
+        }, 500)
 
     }, [fieldValues, isVolumeAutoCalculate])
 
@@ -146,13 +148,17 @@ function StandardRub(props) {
 
     const calculateScrapWeight = () => {
         const FinishWeight = Number(getValues('FinishWeight'))
+        const GrossWeight = Number(getValues('GrossWeight'))
         if (Number(getValues('GrossWeight'))) {
-            let ScrapWeight = checkForNull(dataToSend.GrossWeight) - checkForNull(FinishWeight)
+            let ScrapWeight = checkForNull(getValues('GrossWeight')) - checkForNull(FinishWeight)
             setDataToSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
             setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
             setDataToSend(prevState => ({ ...prevState, NetRMCost: NetRmCost }))
             setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
+        } else if (GrossWeight === 0 && FinishWeight === 0) {
+            setDataToSend(prevState => ({ ...prevState, ScrapWeight: 0 }))
+            setValue('ScrapWeight', checkForDecimalAndNull(0, getConfigurationKey().NoOfDecimalForInputOutput))
         }
     }
 
