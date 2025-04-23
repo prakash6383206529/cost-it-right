@@ -73,27 +73,35 @@ const setupAxiosInterceptors = () => {
         async (error) => {
             const originalRequest = error.config;
             if (error.response?.status === 401 && !originalRequest._retry) {
-                if (!isRefreshing) {
-                    isRefreshing = true;
-                    try {
-                        const newToken = await refreshToken();
-                        isRefreshing = false;
-                        originalRequest._retry = true;
-                        originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-                        return axios(originalRequest);
-                    } catch (err) {
-                        isRefreshing = false;
-                        return Promise.reject(err);
+                if (originalRequest.url.includes('/refresh_token')) {
+                    reactLocalStorage.setObject("isUserLoggedIn", false);
+                    reactLocalStorage.setObject("userDetail", {});
+                    reactLocalStorage.set("ModuleId", "");
+                    window.location.assign("/login");
+                } else {
+                    if (!isRefreshing) {
+                        isRefreshing = true;
+                        try {
+                            const newToken = await refreshToken();
+                            isRefreshing = false;
+                            originalRequest._retry = true;
+                            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+                            return axios(originalRequest);
+                        } catch (err) {
+                            isRefreshing = false;
+                            return Promise.reject(err);
+                        }
                     }
+
+                    return new Promise((resolve) => {
+                        refreshSubscribers.push((token) => {
+                            originalRequest._retry = true;
+                            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+                            resolve(axios(originalRequest));
+                        });
+                    });
                 }
 
-                return new Promise((resolve) => {
-                    refreshSubscribers.push((token) => {
-                        originalRequest._retry = true;
-                        originalRequest.headers["Authorization"] = `Bearer ${token}`;
-                        resolve(axios(originalRequest));
-                    });
-                });
             }
             return Promise.reject(error);
         }
