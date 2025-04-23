@@ -36,6 +36,7 @@ export const useLabels = () => {
     vendorBasedLabel: tCommon('VendorBasedLabel', { defaultValue: 'Vendor Based' }),
     zeroBasedLabel: tCommon('ZeroBasedLabel', { defaultValue: 'Zero Based' }),
     customerBasedLabel: tCommon('CustomerBasedLabel', { defaultValue: 'Customer Based' }),
+    vendorCodeLabel: tMasterLabels('VendorCodeLabel', { defaultValue: 'Vendor(Code)' }),
     toolMaintenanceCostPerPcLabel: tCosting('toolMaintenanceCostPerPc', { defaultValue: 'Tool Maintenance Cost (per pcs)' }),
     toolInterestRatePercentLabel: tCosting('toolInterestRatePercent', { defaultValue: 'Interest on Tool Cost (%)' }),
     toolInterestCostLabel: tCosting('toolInterestCost', { defaultValue: 'Tool Interest Cost' }),

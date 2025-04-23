@@ -28,6 +28,7 @@ import WarningMessage from '../../common/WarningMessage';
 import TooltipCustom from '../../common/Tooltip';
 import { subDays } from 'date-fns';
 import { labels, LabelsClass } from '../../../helper/core';
+import { checkEffectiveDate } from '../masterUtil';
 import { ASSEMBLY } from '../../../config/masterData';
 
 const selector = formValueSelector('AddInterestRate');
@@ -64,6 +65,7 @@ class AddInterestRate extends Component {
       isGradeSelected: false,
       isEitherSectionFilled: false,
       isWarningVisible: true,
+      IsFinancialDataChanged: true,
       ICCSectionFilled: {
         ICCApplicability: false,
         ICCPercent: false
@@ -477,8 +479,8 @@ class AddInterestRate extends Component {
           setTimeout(() => {
             const { costingHead, iccApplicabilitySelectList, } = this.props;
             const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
-            const paymentObj = costingHead && costingHead.find(item => item.Value === Data.PaymentTermApplicability)
-            this.setState({
+            const paymentObj = costingHead && costingHead.find(item => item.Text === Data.PaymentTermApplicability)
+           this.setState({
               isEditFlag: true,
               costingTypeId: Data.CostingTypeId,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
@@ -580,6 +582,28 @@ class AddInterestRate extends Component {
     this.setState({ isVendorNameNotSelected: false })
 
     /** Update existing detail of supplier master **/
+    let formData = {
+      "VendorInterestRateId": this.state.isEditFlag ? InterestRateId : null,
+      "ModifiedBy": this.state.isEditFlag ? loggedInUserId() : null,
+      "VendorName": this.state.isEditFlag ? costingTypeId === VBCTypeId ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName : null,
+      "ICCApplicability": ICCApplicability.label,
+      "PaymentTermApplicability": PaymentTermsApplicability.label,
+      "CostingTypeId": costingTypeId,
+      "VendorIdRef": costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+      "ICCPercent": values.ICCPercent,
+      "PaymentTermPercent": values.PaymentTermPercent,
+      "RepaymentPeriod": values.RepaymentPeriod,
+      "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      "IsActive": true,
+      "CreatedDate": '',
+      "CreatedBy": loggedInUserId(),
+      "Plants": costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      "CustomerId": costingTypeId === CBCTypeId ? client.value : '',
+      "RawMaterialChildId": RawMaterial?.value,
+      "RawMaterialName": RawMaterial?.label,
+      "RawMaterialGradeId": RMGrade?.value,
+      "RawMaterialGrade": RMGrade?.label,
+    }
     if (this.state.isEditFlag) {
 
       if (Data.ICCApplicability === ICCApplicability.label && Data.ICCPercent === values.ICCPercent &&
@@ -590,38 +614,18 @@ class AddInterestRate extends Component {
         Toaster.warning('Please change the data to save Interest Rate Details');
         return false;
       }
-      this.setState({ setDisable: true })
-      let updateData = {
-        VendorInterestRateId: InterestRateId,
-        ModifiedBy: loggedInUserId(),
-        VendorName: costingTypeId === VBCTypeId ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName,
-        ICCApplicability: ICCApplicability.value,
-        PaymentTermApplicability: PaymentTermsApplicability.value,
-        CostingTypeId: costingTypeId,
-        VendorIdRef: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-        ICCPercent: values.ICCPercent,
-        PaymentTermPercent: values.PaymentTermPercent,
-        RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: data?.IsAssociatedData && !this.state.isDataChanged,
-        TechnologyId: this.state.isAssemblyCheckboxIcc ? ASSEMBLY : null
-      }
-      if (this.state.isEditFlag) {
-        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-          Toaster.warning('Please update the effective date')
+      // this.setState({ setDisable: true })
+      let financialDataChanged = (Number(Data?.ICCPercent) !== Number(values?.ICCPercent)) || (Number(Data?.PaymentTermPercent) !== Number(values?.PaymentTermPercent)) || (Number(Data?.RepaymentPeriod) !== Number(values?.RepaymentPeriod)) ||
+      ((Data?.ICCApplicability) !== (ICCApplicability.label)) || ((Data?.PaymentTermApplicability) !== (PaymentTermsApplicability.label))
+        if (financialDataChanged && checkEffectiveDate(effectiveDate, Data?.EffectiveDate) && this.props?.IsAssociatedData) {
           this.setState({ setDisable: false })
+          Toaster.warning('Please update the Effective date.')
           return false
         }
-        this.props.updateInterestRate(updateData, (res) => {
+        formData.IsFinancialDataChanged = financialDataChanged ? true : false
+
+      if (this.state.isEditFlag) {
+        this.props.updateInterestRate(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
@@ -634,27 +638,6 @@ class AddInterestRate extends Component {
     } else {/** Add new detail for creating operation master **/
 
       this.setState({ setDisable: true })
-      let formData = {
-        CostingTypeId: costingTypeId,
-        VendorIdRef: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-        ICCApplicability: ICCApplicability.label,
-        ICCPercent: values.ICCPercent,
-        PaymentTermApplicability: PaymentTermsApplicability.label,
-        PaymentTermPercent: values.PaymentTermPercent,
-        RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-        TechnologyId: this.state.isAssemblyCheckboxIcc ? ASSEMBLY : null
-      }
-
       this.props.createInterestRate(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
@@ -700,7 +683,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, t } = this.props;
-    const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged } = this.state;
+    const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged, IsFinancialDataChanged} = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
@@ -1087,7 +1070,7 @@ class AddInterestRate extends Component {
                             <Field
                               label="Effective Date"
                               name="EffectiveDate"
-                              placeholder="Select date"
+                              placeholder={isViewMode ? '-' : "Select Date"}
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
@@ -1100,7 +1083,7 @@ class AddInterestRate extends Component {
 
                               }}
                               component={renderDatePicker}
-                              disabled={isViewMode || isDataChanged}
+                              disabled={isViewMode}
                               className="form-control"
                             />
                           </div>
@@ -1159,11 +1142,9 @@ class AddInterestRate extends Component {
 function mapStateToProps(state) {
   const { interestRate, comman, client, material } = state;
 
-  const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent');
-
-
-  const {  iccApplicabilitySelectList, interestRateData } = interestRate;
-  const { vendorWithVendorCodeSelectList, plantSelectList ,costingHead } = comman;
+  const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent','ICCApplicability','PaymentTermsApplicability');
+  const { iccApplicabilitySelectList, interestRateData } = interestRate;
+  const { vendorWithVendorCodeSelectList, plantSelectList,costingHead } = comman;
   const { clientSelectList } = client;
   const { rawMaterialNameSelectList, gradeSelectList } = material
   let initialValues = {};

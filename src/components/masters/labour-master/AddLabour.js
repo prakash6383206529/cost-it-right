@@ -34,9 +34,10 @@ import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getPlantUnitAPI } from '../actions/Plant'
 import WarningMessage from '../../common/WarningMessage'
 import TooltipCustom from '../../common/Tooltip'
+import { checkEffectiveDate } from '../masterUtil'
 
 const selector = formValueSelector('AddLabour')
-
+const isAssociated = true;
 class AddLabour extends Component {
   constructor(props) {
     super(props)
@@ -72,7 +73,9 @@ class AddLabour extends Component {
         machineType: false,
         labourType: false,
         labourRate: false,
-        effectiveDate: false
+        effectiveDate: false,
+        efficiency: false,
+        workingHours: false
       },
       showErrorOnFocus: false,
       isEditMode: false,
@@ -223,10 +226,12 @@ class AddLabour extends Component {
               client: { label: Data.CustomerName, value: Data.CustomerId },
               city: Data.City !== undefined ? { label: Data?.City, value: Data?.CityId } : [],
               country: Data.Country !== undefined ? { label: Data?.Country, value: Data?.CountryId } : [],
-              currencyValue: currencyValue,
+              // currencyValue: currencyValue,
+              currencyValue: Data.CurrencyExchangeRate ? Data.CurrencyExchangeRate : 1,
               ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
               plantCurrencyID: Data?.LocalCurrencyId,
-              effectiveDate: effectiveDate
+              // effectiveDate: effectiveDate
+              effectiveDate: Data.EffectiveDate ? Data?.EffectiveDate : ""
             }, () => this.setState({ isLoader: false }))
             this.callExchangeRateAPI()
           }, 500)
@@ -348,12 +353,6 @@ class AddLabour extends Component {
    * @description EMPLOYEE TERMS
    */
   onPressEmployeeTerms = () => {
-    const fieldsToClear = [
-      'vendorName', 'state', 'Plant'
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddLabour', false, false, fieldName));
-    });
     this.setState({
       IsEmployeContractual: !this.state.IsEmployeContractual,
     })
@@ -578,12 +577,20 @@ class AddLabour extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, labourType: true } })
         count++;
       }
-      if (fieldsObj?.LabourRateConversion === 0 || fieldsObj?.LabourRate === 0) {
+      if (fieldsObj?.LabourRateConversion === 0 || fieldsObj?.LabourRateConversion === undefined || fieldsObj?.LabourRate === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, labourRate: true } })
         count++;
       }
       if (effectiveDate === undefined || effectiveDate === '') {
         this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
+        count++;
+      }
+      if (efficiency === undefined || efficiency === '') {
+        this.setState({ errorObj: { ...this.state.errorObj, efficiency: true } })
+        count++;
+      }
+      if (workingHours === undefined || workingHours === '') {
+        this.setState({ errorObj: { ...this.state.errorObj, workingHours: true } })
         count++;
       }
       if (count > 0) {
@@ -628,7 +635,8 @@ class AddLabour extends Component {
           labourType: [],
           effectiveDate: '',
           workingHours: '',
-          efficiency: ''
+          efficiency: '',
+          currencyValue: 1
         },
         () => this.props.change('LabourRate', ''),
         this.props.change('workingHours', ''),
@@ -648,7 +656,16 @@ class AddLabour extends Component {
     const { fieldsObj } = this.props
     const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRate) : 0
     const LabourRateConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRateConversion) : checkForNull(fieldsObj?.LabourRate)
-
+    let tempData = gridTable[gridEditIndex]
+    let financialDataChanged = (Number(tempData.LabourRateConversion) !== Number(fieldsObj?.LabourRateConversion)) || (fieldsObj?.Efficiency && Number(tempData.Efficiency) !== Number(fieldsObj?.Efficiency)) || Number(tempData.WorkingTime) !== Number(fieldsObj?.workingHours)
+    if (tempData.IsAssociated) {
+      if (financialDataChanged && checkEffectiveDate(effectiveDate, tempData.EffectiveDate)) {
+        Toaster.warning('Please update the Effective date.')
+        return false
+      }else if(financialDataChanged){
+        tempData.IsFinancialDataChanged = financialDataChanged 
+      }
+    }
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
     let skipEditedItem = gridTable.filter((el, i) => {
       if (i === gridEditIndex) return false
@@ -662,7 +679,7 @@ class AddLabour extends Component {
     const isExist = skipEditedItem.findIndex(
       (el) =>
         el.MachineTypeId === machineType.value &&
-        el.LabourTypeId === labourType.value,
+        el.LabourTypeId === labourType.value && checkEffectiveDate(effectiveDate, el.EffectiveDate) ,
     )
     if (isExist !== -1) {
       Toaster.warning('Already added, Please check the values.')
@@ -673,7 +690,6 @@ class AddLabour extends Component {
     }
     let tempArray = []
 
-    let tempData = gridTable[gridEditIndex]
     tempData = {
       MachineTypeId: machineType.value,
       MachineType: machineType?.label,
@@ -686,7 +702,9 @@ class AddLabour extends Component {
       LabourRateConversion: LabourRateConversion,
       CurrencyExchangeRate: this.state.currencyValue,
       ExchangeRateId: this.state.ExchangeRateId,
-
+      ...(tempData.IsAssociated !== undefined && { IsAssociated: tempData.IsAssociated }),
+      ...(tempData.LabourDetailId !== undefined && { LabourDetailId: tempData.LabourDetailId }), 
+      ...(financialDataChanged && { IsFinancialDataChanged: true }) 
     }
 
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData })
@@ -975,6 +993,7 @@ class AddLabour extends Component {
   }
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      this.props.fetchCityDataAPI(0, () => { });
       this.setState({ country: newValue, state: [], city: [] }, () => {
         this.getAllCityData()
       });
@@ -1121,9 +1140,9 @@ class AddLabour extends Component {
                           <div className={"left-title"}>Employed</div>
                           <Switch
                             onChange={this.onPressEmployeeTerms}
-                            checked={this.state.IsEmployeContractual}
+                            checked={this.state?.IsEmployeContractual}
                             id="normal-switch"
-                            disabled={isEditFlag ? true : false}
+                            disabled={isEditFlag || this.state?.gridTable?.length > 0}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
@@ -1229,7 +1248,7 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.countryHandler}
                             valueDescription={this.state.country}
-                            disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
+                            disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
                           />
                         </div>
                       </Col>
@@ -1248,7 +1267,7 @@ class AddLabour extends Component {
                               required={true}
                               handleChangeDescription={this.stateHandler}
                               valueDescription={this.state?.StateName}
-                              disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
+                              disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
                             />
                           </div>
                         </Col>}
@@ -1266,7 +1285,7 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.cityHandler}
                             valueDescription={this.state.city}
-                            disabled={isViewMode || isEditFlag || this.props.fieldsObj.LabourRate !== undefined}
+                            disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
                           />
                         </div>
                       </Col>
@@ -1372,6 +1391,33 @@ class AddLabour extends Component {
                         </Col>
                         <Col md="3">
                           <div className="form-group">
+                            <label>Effective Date<span className="asterisk-required">*</span></label>
+                            <div className="inputbox date-section">
+                              <DatePicker
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate ? new Date(this.state.effectiveDate) : ""}
+                                onChange={this.handleEffectiveDateChange}
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                dateFormat="dd/MM/yyyy"
+                                placeholderText={isViewMode ? '-' : "Select Date"}
+                                className="withBorder"
+                                autoComplete={"off"}
+                                disabledKeyboardNavigation
+                                onChangeRaw={(e) => e.preventDefault()}
+                                disabled={isViewMode}
+                                valueDescription={this.state.effectiveDate}
+                                minDate={getEffectiveDateMinDate()}
+
+                              />
+                              {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
+                            </div>
+                          </div>
+
+                        </Col>
+                        <Col md="3">
+                          <div className="form-group">
                             <Field
                               label={this.DisplayLabourRatePlantCurrencyLabel()}
                               name={"LabourRate"}
@@ -1388,8 +1434,10 @@ class AddLabour extends Component {
                               <div className='text-help'>This field is required.</div>
                             }                          </div>
                         </Col>
+
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
                           {<TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
+                          <div className="form-group">
                           <Field
                             label={`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={"LabourRateConversion"}
@@ -1404,6 +1452,10 @@ class AddLabour extends Component {
                             className=" "
                             customClassName=" withBorder"
                           />
+                          {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRateConversion === 0 &&
+                              <div className='text-help'>This field is required.</div>
+                            } 
+                          </div>
                         </Col>}
                         <Col md="3">
                           <div className="form-group">
@@ -1420,6 +1472,7 @@ class AddLabour extends Component {
                               className=" "
                               customClassName="withBorder"
                             />
+                            {this.state.errorObj.workingHours && this.state.workingHours === "" && <div className='text-help'>This field is required.</div>}
                           </div>
                         </Col>
                         <Col md="3">
@@ -1437,36 +1490,10 @@ class AddLabour extends Component {
                               className=" "
                               customClassName="withBorder"
                             />
+                             {this.state.errorObj.efficiency && this.state.efficiency === "" && <div className='text-help'>This field is required.</div>}
                           </div>
                         </Col>
 
-                        <Col md="3">
-                          <div className="form-group">
-                            <label>Effective Date<span className="asterisk-required">*</span></label>
-                            <div className="inputbox date-section">
-                              <DatePicker
-                                name="EffectiveDate"
-                                selected={this.state.effectiveDate ? new Date(this.state.effectiveDate) : ""}
-                                onChange={this.handleEffectiveDateChange}
-                                showMonthDropdown
-                                showYearDropdown
-                                dropdownMode="select"
-                                dateFormat="dd/MM/yyyy"
-                                placeholderText={isViewMode ? '-' : "Select Date"}
-                                className="withBorder"
-                                autoComplete={"off"}
-                                disabledKeyboardNavigation
-                                onChangeRaw={(e) => e.preventDefault()}
-                                disabled={isViewMode || isEditFlag}
-                                valueDescription={this.state.effectiveDate}
-                                minDate={getEffectiveDateMinDate()}
-                                maxDate={getEffectiveDateMaxDate()}
-                              />
-                              {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
-                            </div>
-                          </div>
-
-                        </Col>
                         <Col md="3">
                           <div className="btn-mr-rate mt30 pt-1 pr-0 col-auto">
                             {this.state.isEditIndex ? (
@@ -1530,7 +1557,7 @@ class AddLabour extends Component {
                                       <td>{item.MachineType}</td>
                                       <td>{item.LabourType}</td>
                                       <td>{checkForDecimalAndNull(item?.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                                      {!this?.state?.hidePlantCurrency && <td>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                      {!this?.state?.hidePlantCurrency && <td><div className="w-fit" id={`rate-${index}`}>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}<TooltipCustom disabledIcon={true} width={"350px"} id={`rate-${index}`} tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} /></div></td>}
                                       <td>{checkForDecimalAndNull(item?.WorkingTime, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                       <td>{checkForDecimalAndNull(item?.Efficiency, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                       <td>
@@ -1542,19 +1569,19 @@ class AddLabour extends Component {
                                         <button
                                           className="Edit mr-2"
                                           type={"button"}
-                                          disabled={isViewMode || item.IsAssociated}
+                                          disabled={isViewMode}  
                                           onClick={() =>
                                             this.editGridItemDetails(index)
                                           }
                                         />
-                                        <button
+                                        {!item.IsAssociatedlabour && <button
                                           className="Delete"
                                           disabled={isViewMode || item.IsAssociated}
                                           type={"button"}
                                           onClick={() =>
                                             this.deleteGridItem(index)
                                           }
-                                        />
+                                        />}
                                       </td>
                                     </tr>
                                   );

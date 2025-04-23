@@ -341,7 +341,7 @@ function OverheadProfit(props) {
     //   setModelType('')
     //   return false
     // } 
-
+    
     if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) {
       dispatch(isOverheadProfitDataChange(true))
 
@@ -820,6 +820,16 @@ function OverheadProfit(props) {
 
     setShowRefreshWarningMessage(false)
     if (!CostingViewMode) {
+      // Check if model type is empty, if so clear all overhead and profit data
+      if (!modelType || modelType?.length === 0 || !modelType?.value) {
+        setOverheadObj({})
+        setProfitObj({})
+        setOverheadValues({}, true)
+        setProfitValues({}, true)
+        setIsSurfaceTreatmentAdded(false)
+        return;
+      }
+
       let RM_CC_BOP_Overhead = 0
       let RM_CC_Overhead = 0
       let BOP_CC_Overhead = 0

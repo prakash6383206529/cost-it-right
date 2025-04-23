@@ -41,6 +41,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import ReactSwitch from 'react-switch'
 import { useRef } from "react";
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
+import TooltipCustom from '../../common/Tooltip'
 
 const gridOptions = {};
 function AddBudget(props) {
@@ -511,7 +512,7 @@ function AddBudget(props) {
         if (costConverSionInLocalCurrency) {
             setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
             setValue("totalSumPlantCurrency", checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
-            setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull((((total + currentPrice) * plantCurrency) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
         } else {
             setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
             setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
@@ -731,18 +732,34 @@ function AddBudget(props) {
 
             if (costConverSionInLocalCurrency && Object.keys(currency).length !== 0) {
                 const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
-                callAPI(currency?.label, plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
-                    const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
-                    callAPI(plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
-                        setPlantCurrency(rate1);
-                        setSettlementCurrency(rate2);
-                        setPlantExchangeRateId(exchangeRateId1);
-                        setSettlementExchangeRateId(exchangeRateId2);
-                        setShowPlantWarning(showPlantWarning1)
-                        setShowWarning(showWarning2)
-
+                
+                if (currency?.label === plantCurrency) {
+                    setPlantCurrency(1);
+                    setPlantExchangeRateId(null);
+                    setShowPlantWarning(false);
+                } else {
+                    callAPI(currency?.label, plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+                        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
+                        
+                        if (plantCurrency === reactLocalStorage.getObject("baseCurrency")) {
+                            setSettlementCurrency(1);
+                            setSettlementExchangeRateId(null);
+                            setShowWarning(false);
+                            setPlantCurrency(rate1);
+                            setPlantExchangeRateId(exchangeRateId1);
+                            setShowPlantWarning(showPlantWarning1);
+                        } else {
+                            callAPI(plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
+                                setPlantCurrency(rate1);
+                                setSettlementCurrency(rate2);
+                                setPlantExchangeRateId(exchangeRateId1);
+                                setSettlementExchangeRateId(exchangeRateId2);
+                                setShowPlantWarning(showPlantWarning1)
+                                setShowWarning(showWarning2)
+                            });
+                        }
                     });
-                });
+                }
             } else if (!costConverSionInLocalCurrency && fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
                 const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
                 callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning, showWarning }) => {
@@ -761,7 +778,7 @@ function AddBudget(props) {
         if (costConverSionInLocalCurrency) {
             setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
             setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
-            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull((((totalSum + currentPrice) * plantCurrency) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
         } else {
             setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
             setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
@@ -940,7 +957,7 @@ function AddBudget(props) {
 
                     setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
                     setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
-                    setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('totalSum', checkForDecimalAndNull((((totalSum + currentPrice) * plantCurrency) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
                 } else {
 
                     setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
@@ -1029,7 +1046,7 @@ function AddBudget(props) {
 
             setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
             setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
-            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull((((totalSum + currentPrice) * plantCurrency) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
         } else {
 
             setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
@@ -1071,6 +1088,13 @@ function AddBudget(props) {
 
 
     }
+    const budgetedTotalTitle = () => {
+        return {
+            tooltipTextNetCostBaseCurrencyDomestic: `Total Sum (${getValues("plantCurrency")}) * Plant Currency Rate (${plantCurrency})`,
+            tooltipTextPlantCurrency: `Total Sum (${currency?.label ? `${currency.label}` : getValues("plantCurrency")}) * Plant Currency Rate (${plantCurrency})`,
+            toolTipTextNetCostBaseCurrency: hidePlantCurrency ? `Total Sum (${currency.label}) * Currency Rate (${plantCurrency})` : `Total Sum (${getValues("plantCurrency")}) * Currency Rate (${settlementCurrency})`,
+        };
+    };
     return (
         <>
             <div className={`ag-grid-react`}>
@@ -1561,56 +1585,9 @@ function AddBudget(props) {
                                                         </Row>
                                                             <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
                                                     </>}
-
-
-                                                    {(!hidePlantCurrency && costConverSionInLocalCurrency) && <Col md="4">
-                                                        {/* {currency && currency?.label ? */}
-                                                        <div className='budgeting-details  mt-2 '>
-                                                            <label className='w-fit'>{`Total Sum (${getValues("plantCurrency") ?? "Currency"}):`}</label>
-                                                            <NumberFieldHookForm
-                                                                label=""
-                                                                name={"totalSumPlantCurrency"}
-                                                                errors={errors.totalSumPlantCurrency}
-                                                                Controller={Controller}
-                                                                control={control}
-                                                                register={register}
-                                                                disableErrorOverflow={true}
-                                                                mandatory={false}
-                                                                rules={{
-                                                                    required: false,
-                                                                }}
-                                                                handleChange={() => { }}
-                                                                disabled={true}
-                                                                customClassName={'withBorder'}
-                                                            />
-                                                        </div>  <></>
-                                                        {/* } */}
-                                                    </Col>}
-                                                    {(!(!costConverSionInLocalCurrency && reactLocalStorage.getObject("baseCurrency") === getValues("plantCurrency"))) && <Col md="4">
-                                                        <div className='budgeting-details  mt-2 mb-2'>
-                                                            <label className='w-fit'>{`Total Sum (${reactLocalStorage.getObject("baseCurrency")})):`}</label>
-                                                            <NumberFieldHookForm
-                                                                label=""
-                                                                name={"totalSum"}
-                                                                errors={errors.totalSum}
-                                                                Controller={Controller}
-                                                                control={control}
-                                                                register={register}
-                                                                disableErrorOverflow={true}
-                                                                mandatory={false}
-                                                                rules={{
-                                                                    required: false,
-                                                                }}
-                                                                handleChange={() => { }}
-                                                                disabled={true}
-                                                                customClassName={'withBorder'}
-                                                            />
-                                                        </div>
-                                                    </Col>}
                                                     <Col md="4">
-                                                        {/* {currency && currency?.label ? */}
                                                         <div className='budgeting-details  mt-2 '>
-                                                            <label className='w-fit'>{`Total Sum (${currency?.label ? `(${currency.label})` : getValues("plantCurrency")}):`}</label>
+                                                            <label className='w-fit'>{`Total Sum (${currency?.label ? `${currency.label}` : getValues("plantCurrency")}):`}</label>
                                                             <NumberFieldHookForm
                                                                 label=""
                                                                 name={"totalSumCurrency"}
@@ -1630,6 +1607,57 @@ function AddBudget(props) {
                                                         </div>  <></>
                                                         {/* } */}
                                                     </Col>
+
+                                                    {(!hidePlantCurrency && costConverSionInLocalCurrency) && <Col md="4">
+                                                        <TooltipCustom disabledIcon={true} id="total-local" tooltipText={hidePlantCurrency ?budgetedTotalTitle()?.toolTipTextNetCostBaseCurrency : budgetedTotalTitle()?.tooltipTextPlantCurrency} />
+                                                        {/* {currency && currency?.label ? */}
+                                                        <div className='budgeting-details  mt-2 '>
+                                                            <label className='w-fit'>{`Total Sum (${getValues("plantCurrency") ?? "Currency"}):`}</label>
+                                                            <NumberFieldHookForm
+                                                                label=""
+                                                                name={"totalSumPlantCurrency"}
+                                                                id="total-local"
+                                                                errors={errors.totalSumPlantCurrency}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                disableErrorOverflow={true}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                disabled={true}
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </div>  <></>
+                                                        {/* } */}
+                                                    </Col>}
+                                                   
+                                                
+                                                    {(!(!costConverSionInLocalCurrency && reactLocalStorage.getObject("baseCurrency") === getValues("plantCurrency"))) && <Col md="4">
+                                                        <TooltipCustom disabledIcon={true} id="total-base" tooltipText={budgetedEntryType?budgetedTotalTitle()?.toolTipTextNetCostBaseCurrency:budgetedTotalTitle()?.tooltipTextNetCostBaseCurrencyDomestic} />
+                                                        <div className='budgeting-details  mt-2 mb-2'>
+                                                            <label className='w-fit'>{`Total Sum (${reactLocalStorage.getObject("baseCurrency")}):`}</label>
+                                                            <NumberFieldHookForm
+                                                                label=""
+                                                                name={"totalSum"}
+                                                                id="total-base"
+                                                                errors={errors.totalSum}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                disableErrorOverflow={true}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                disabled={true}
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </div>
+                                                    </Col>}
 
                                                 </Row>
 
@@ -1663,7 +1691,7 @@ function AddBudget(props) {
                                                         <button type="submit"
                                                             id='AddBudget_SendForApproval'
                                                             className="user-btn approval-btn save-btn mr5"
-                                                            disabled={setDisable || disableSendForApproval || isViewMode}
+                                                            disabled={setDisable || disableSendForApproval || isViewMode || showWarning || showPlantWarning}
                                                         >
                                                             <div className="send-for-approval"></div>
                                                             {'Send For Approval'}
@@ -1673,7 +1701,7 @@ function AddBudget(props) {
                                                             type="submit"
                                                             id="AddBudget_Save"
                                                             className="user-btn mr5 save-btn"
-                                                            disabled={setDisable || disableSendForApproval || isViewMode}
+                                                            disabled={setDisable || disableSendForApproval || isViewMode || showWarning || showPlantWarning}
                                                         >
                                                             <div className={"save-icon"}></div>
                                                             {isEditFlag ? "Update" : "Save"}

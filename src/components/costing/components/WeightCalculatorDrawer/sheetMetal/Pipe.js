@@ -888,7 +888,7 @@ function Pipe(props) {
 
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of sheet / No. of Parts"} />
+                  <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={`${rmRowData?.RawMaterialCategory !== STD ? "Gross Weight = Weight of sheet / No. of Parts" : "Gross Weight = Weight of part + (Weight of scrap / No. of Parts)" }`} />
                   <TextFieldHookForm
                     label={`Gross Weight(${UOMDimension.label})`}
                     name={'GrossWeight'}

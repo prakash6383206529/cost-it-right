@@ -4,7 +4,7 @@ import AddRMDetails from "./AddRMDetails"
 import AddRMFinancialDetails from "./AddRMFinancialDetails"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, IsSelectSinglePlant, RM_MASTER_ID, VBCTypeId, ZBCTypeId } from "../../../config/constants"
 import { getCommodityIndexRateAverage } from '../../../../src/actions/Common';
-import { convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
+import { checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import Switch from 'react-switch'
@@ -34,9 +34,9 @@ import { useQueryClient } from "react-query";
 import { fetchDivisionId } from "../../costing/CostingUtil";
 
 function AddRMMaster(props) {
-    const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
-
-    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated, clearErrors } = useForm({
+    const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE,isRMAssociated } = props
+    
+    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, clearErrors } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -70,7 +70,9 @@ function AddRMMaster(props) {
         isSourceVendorApiCalled: false,
         sourceVendorRawMaterialId: null,
         isSourceVendor: false,
-        masterLevels: []
+        masterLevels: [],
+        IsWarning: false,
+        
     }
     const [state, setState] = useState(initialState);
     const isViewFlag = data?.isViewFlag === true ? true : false
@@ -225,15 +227,14 @@ function AddRMMaster(props) {
      * @method onPressVendor
      * @description Used for Vendor checked
      */
-    const onPressVendor = (costingHeadFlag) => {
-        reset({
-            Technology: '', RawMaterialCode: '', RawMaterialName: '', RawMaterialGrade: '', RawMaterialSpecification: '', RawMaterialCategory: '', Plants: '', UnitOfMeasurement: '', cutOffPriceBaseCurrency: '', sourceVendorName: '',
-            BasicRateSelectedCurrency: '', ScrapRateBaseCurrency: '', OtherCostBaseCurrency: '', BasicRateBaseCurrency: '', EffectiveDate: '',
-        });
-        setState(prevState => ({
-            ...prevState,
-            isImport: prevState.isImport,
-            costingTypeId: costingHeadFlag,
+    const onPressVendor = (costingHeadFlag, setStateData) => {
+        reset()
+        setValue('plantCurrency', '');
+        setValue('currency', '');
+        setState((prevState) => ({
+            ...initialState, // Reset all states to the initial state
+            isImport: prevState.isImport, // Preserve the current value of isImport
+            costingTypeId: costingHeadFlag, // Update costingTypeId as needed
         }));
         dispatch(setRawMaterialDetails({}, () => { }))
         dispatch(setExchangeRateDetails({}, () => { }))
@@ -351,6 +352,7 @@ function AddRMMaster(props) {
     };
 
     const onSubmit = debounce(handleSubmit((values, isDivision) => {
+        
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -521,29 +523,20 @@ function AddRMMaster(props) {
                     if (state?.isFinalApprovar && getConfigurationKey()?.IsMasterApprovalAppliedConfigure) {
                         Toaster.warning('Please change data to save RM')
                         return false
-                    } else {
-                        Toaster.warning('Please change data to send RM for approval')
+                    } else{
+                        Toaster.warning('Please change data to update RM otherwise cancel the form')
                         return false
                     }
-                } else if (!state?.isSourceVendor && (!financialDataNotChanged) && DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-                    Toaster.warning('Please update the effective date')
-                    setState(prevState => ({ ...prevState, isDateChanged: true }))
-                    return false
-                }
-                formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
-            } else {
-                if (financialDataNotChanged && nonFinancialDataNotChanged) {
-                    if (state?.isFinalApprovar && getConfigurationKey()?.IsMasterApprovalAppliedConfigure) {
-                        Toaster.warning('Please change data to save RM')
-                        return false
-                    } else {
-                        Toaster.warning('Please change data to send RM for approval')
-                        return false
-                    }
-                }
+                } 
+                formData.IsFinancialDataChanged = false
+            }else if (!state?.isSourceVendor && (!financialDataNotChanged) && checkEffectiveDate(values?.effectiveDate,DataToChange?.EffectiveDate)) {
+                Toaster.warning('Please update the effective date')
+                setState(prevState => ({ ...prevState, isDateChanged: true }))
+                return false
+            }
+             else {
                 formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
             }
-
 
         }
 
@@ -569,6 +562,10 @@ function AddRMMaster(props) {
         } else {
             return false
         }
+    }
+
+    const onWarningChange = (hasWarning) => {
+        setState(prevState => ({ ...prevState, IsWarning: hasWarning }));
     }
 
     return (
@@ -683,6 +680,7 @@ function AddRMMaster(props) {
                             commodityDetails={state?.commodityDetails}
                             disableAll={state?.disableAll}
                             reset={reset}
+                            onWarningChange={onWarningChange}
                         />
                         <RemarksAndAttachments states={state}
                             Controller={Controller}
@@ -716,7 +714,7 @@ function AddRMMaster(props) {
                                         id="addRMDomestic_sendForApproval"
                                         type="button"
                                         className="approval-btn mr5"
-                                        disabled={isViewFlag || state?.disableSendForApproval}
+                                        disabled={isViewFlag || state.disableSendForApproval || state.IsWarning}
                                         onClick={onSubmit}
                                         icon={(showSendForApproval() || !state?.disableSendForApproval) ? "send-for-approval" : "save-icon"}
                                         buttonName={(showSendForApproval() || !state?.disableSendForApproval) ? "Send For Approval" : data.isEditFlag ? "Update" : "Save"}
@@ -726,7 +724,7 @@ function AddRMMaster(props) {
                                         id="addRMDomestic_updateSave"
                                         type="button"
                                         className="mr5"
-                                        disabled={isViewFlag || state?.disableSendForApproval}
+                                        disabled={isViewFlag || state.disableSendForApproval || state.IsWarning}
                                         onClick={onSubmit}
                                         icon={"save-icon"}
                                         buttonName={data.isEditFlag ? "Update" : "Save"}

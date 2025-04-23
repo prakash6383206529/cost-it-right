@@ -40,6 +40,7 @@ import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
+import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddOperation');
 
@@ -949,9 +950,9 @@ class AddOperation extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue } , () => {
-            this.callExchangeRateAPI()
-        }
+      this.setState({ client: newValue }, () => {
+        this.callExchangeRateAPI()
+      }
       );
     }
     else {
@@ -1020,6 +1021,12 @@ class AddOperation extends Component {
   onSubmit = debounce((values) => {
     const { selectedPlants, vendorName, files,
       UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag, isImport } = this.state;
+    const { WeldingRate, Consumption, LabourRatePerUOM, Rate, RateConversion, RateLocalConversion, Remark, Description, EffectiveDate } = this.props?.fieldsObj
+   
+    const { Rate: oldRate, RateLocalConversion: oldRateLocal, RateConversion: oldRateConversion,
+      OperationBasicRate: oldWeldingRate, OperationConsumption: oldConsumption,
+      LabourRatePerUOM: oldLabourRate, Remark: oldRemark, Description: oldDescription, EffectiveDate: oldEffectiveDate } = DataToChange;
+
     const { initialConfiguration } = this.props;
     const userDetailsOperation = JSON.parse(localStorage.getItem('userDetail'))
     const userDetail = userDetails()
@@ -1062,24 +1069,7 @@ class AddOperation extends Component {
     //const plantArray = []
     let plantArray = Array?.isArray(destinationPlant) ? destinationPlant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
       destinationPlant ? [{ PlantId: destinationPlant?.value, PlantName: destinationPlant?.label, PlantCode: '' }] : [];
-    // if (costingTypeId === VBCTypeId || (costingTypeId === ZBCTypeId && initialConfiguration?.IsMultipleUserAllowForApproval)) {
-    //   plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    // } else {
-    //   selectedPlants && selectedPlants.map((item) => {
-    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-    //     return plantArray
-    //   })
-    // }
-    // let cbcPlantArray = []
-    // if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
-    //   cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    // }
-    // else {
-    //   userDetailsOperation?.Plants.map((item) => {
-    //     cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-    //     return cbcPlantArray
-    //   })
-    // }
+    
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
     let updatedFiles = files.map((file) => {
@@ -1087,7 +1077,6 @@ class AddOperation extends Component {
     })
 
     let formData = {
-      IsFinancialDataChanged: isDateChange ? true : false,
       IsSendForApproval: this.state.IsSendForApproval,
       OperationId: OperationId,
       CostingTypeId: costingTypeId,
@@ -1126,87 +1115,44 @@ class AddOperation extends Component {
       CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
       Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
     }
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
-
-      // if (this.state.isEditFlag) {
-      // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
-      //   this.cancel()
-      //   return false
-      // }
-
-      if (IsFinancialDataChanged) {
-
-        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.handleOperationAPI(formData, true)
-          return false
-
-        } else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
-          return false
-        }
-      }
-      else {
-
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-          && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
-          this.cancel('submit')
-          return false
-        }
-        else {
-          this.handleOperationAPI(formData, true)
-        }
-      }
-    } else {/** Add new detail for creating operation master **/
-
-      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-          && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
-          Toaster.warning('Please change data to send operation for approval')
-          return false
-        }
-        this.setState({ IsSendForApproval: true })
-        formData.IsSendForApproval = true;
-
-      } else {
-        this.setState({ IsSendForApproval: false })
-        formData.IsSendForApproval = false;
-      }
-
-      this.setState({ setDisable: true })
-
-
-      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
-
-        if (IsFinancialDataChanged) {
-
-          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState((prev) => ({
-              ...prev, approveDrawer: true, approvalObj: formData
-            }))
-            this.setState({ setDisable: true })
-            return false
-
-          } else {
-
-            this.setState({ setDisable: false })
-            Toaster.warning('Please update the effective date')
-            return false
+    const financialDataChanged =
+    (Rate && Number(Rate) !== Number(oldRate)) ||
+    (RateLocalConversion && Number(RateLocalConversion) !== Number(oldRateLocal)) ||
+    (RateConversion && Number(RateConversion) !== Number(oldRateConversion)) ||
+    (WeldingRate && Number(WeldingRate) !== Number(oldWeldingRate)) ||
+    (Consumption && Number(Consumption) !== Number(oldConsumption)) ||
+    (LabourRatePerUOM && Number(LabourRatePerUOM) !== Number(oldLabourRate));
+  const nonFinancialDataChanged = (Remark && Remark !== oldRemark) || (Description && Description !== oldDescription) || (files && JSON.stringify(files) !== JSON.stringify(DataToChange.Attachements))
+    if (isEditFlag) {
+      if (!this.props?.isOperationAssociated) {
+        if (!financialDataChanged && !nonFinancialDataChanged) {
+          if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+            Toaster.warning(`Please change data to send operation for approval`)
           }
-        }
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
-          this.cancel('submit')
+          else {
+            Toaster.warning(`Please change data to update operation`)
+          }
           return false
-        } else {
-          this.setState((prev) => ({
-            ...prev, approveDrawer: true, approvalObj: formData
-          }))
         }
-      } else {
-        this.handleOperationAPI(formData, false)
       }
+      else if (financialDataChanged && checkEffectiveDate(oldDate, effectiveDate)) {
+        Toaster.warning('Please update the effective date')
+        return false
+      }
+      formData.IsFinancialDataChanged = financialDataChanged ? true : false
+    } else {
+      formData.IsFinancialDataChanged = financialDataChanged ? true : false
     }
 
+    if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+      formData.IsSendForApproval = true
+      this.setState({ approveDrawer: true, approvalObj: formData })
+    }
+    else {
+      console.log("formData", formData)
+      formData.IsSendForApproval = false;
+      this.handleOperationAPI(formData, isEditFlag);
+    }
   }, 500)
 
   handleKeyDown = function (e) {
@@ -1289,8 +1235,8 @@ class AddOperation extends Component {
     const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.plantCurrency ?? ''})`
-        : `Rate1 (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: this.state?.hidePlantCurrency ? `Rate (${this.state.currency?.label ?? 'Currency'}) * Currency Rate (${this.state?.plantCurrency ?? ''})`
+        : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})  * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {
@@ -1512,7 +1458,7 @@ class AddOperation extends Component {
                           label={`Operation Code`}
                           name={"OperationCode"}
                           type="text"
-                          placeholder={(isEditFlag || isDisableCode) ? '-' : "Enter"}
+                          placeholder={(getConfigurationKey()?.IsAutoGeneratedOperationCode ? 'Auto Generated' : (isEditFlag || isDisableCode) ? '-' : "Enter")}
                           validate={[acceptAllExceptSingleSpecialCharacter, maxLength15, checkWhiteSpaces, required, checkSpacesInString, hashValidation]}
                           component={renderText}
                           required={true}
@@ -1529,7 +1475,7 @@ class AddOperation extends Component {
                           type="text"
                           placeholder={isViewMode ? '-' : "Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
-                          component={renderText}
+                          component={renderTextInputField}
                           disabled={isViewMode ? true : false || isDetailEntry}
                           className=" "
                           customClassName=" withBorder"
@@ -1683,9 +1629,9 @@ class AddOperation extends Component {
                             }}
                             component={renderDatePicker}
                             className=" "
-                            disabled={isViewMode || !this.state.IsFinancialDataChanged}
+                            disabled={isViewMode}
                             customClassName=" withBorder"
-                            placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
+                            placeholder={isViewMode ? '-' : "Select Date"}
                           />
                         </div>
                       </Col>
@@ -1718,13 +1664,13 @@ class AddOperation extends Component {
                           type="text"
                           label="UOM"
                           component={searchableSelect}
-                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("UOM")}
                           validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
+                          disabled={isEditFlag || isDetailEntry}
                         />
                       </Col>
                       {this.state.isWelding &&
@@ -1734,11 +1680,11 @@ class AddOperation extends Component {
                               label={`Welding Material Rate/Kg`}
                               name={"WeldingRate"}
                               type="text"
-                              placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
-                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
+                              disabled={isViewMode || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'WeldingRate') }}
                               className=" "
                               customClassName=" withBorder"
@@ -1749,11 +1695,11 @@ class AddOperation extends Component {
                               label={`Consumption`}
                               name={"Consumption"}
                               type="text"
-                              placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
-                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
+                              disabled={isViewMode || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'Consumption') }}
                               className=" "
                               customClassName=" withBorder"
@@ -1767,11 +1713,11 @@ class AddOperation extends Component {
                           name={"Rate"}
                           type="text"
                           id="rate"
-                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding ? '-' : "Enter"}
+                          placeholder={isViewMode || this.state.isWelding ? '-' : "Enter"}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
                           required={true}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
+                          disabled={isViewMode || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
@@ -1789,14 +1735,14 @@ class AddOperation extends Component {
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
                           required={true}
-                          disabled={this.state.isImport ? true : false || isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
+                          disabled={this.state.isImport ? true : false || isViewMode || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
                         />
                       </Col>
                       {!hidePlantCurrency && <Col md="3">
-                        <TooltipCustom disabledIcon={true} width="350px" id="operation-rate" tooltipText={this.state.isImport ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />
+                        <TooltipCustom disabledIcon={true} id="operation-rate" tooltipText={this.state.isImport ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />
                         <Field
                           name="RateConversion"
                           type="text"
@@ -1818,7 +1764,7 @@ class AddOperation extends Component {
                           placeholder={isViewMode ? '-' : "Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, number]}
                           component={renderTextInputField}
-                          disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
+                          disabled={isDetailEntry || isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -1956,7 +1902,7 @@ class AddOperation extends Component {
                         {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state?.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || ((initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) && !CostingTypePermission) ?
                           <button id="AddOperation_SendForApproval" type="submit"
                             class="user-btn approval-btn save-btn mr5"
-                            disabled={isViewMode || setDisable || disableSendForApproval}
+                            disabled={isViewMode || setDisable || disableSendForApproval || this.state?.showWarning || this.state?.showPlantWarning}
                           >
                             <div className="send-for-approval"></div>
                             {'Send For Approval'}
@@ -1966,7 +1912,7 @@ class AddOperation extends Component {
                             id="AddOperation_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
-                            disabled={isViewMode || setDisable || disableSendForApproval}
+                            disabled={isViewMode || setDisable || disableSendForApproval || this.state?.showWarning || this.state?.showPlantWarning}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
@@ -1991,6 +1937,7 @@ class AddOperation extends Component {
             isEditFlag={this.state.isEditFlag}
             isViewMode={this.state.isViewMode}
             callExchangeRateAPI={this.callExchangeRateAPI}
+            isOperationAssociated={this.props.isOperationAssociated}
           />
         }
         {
@@ -2051,7 +1998,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion", 'Rate', 'RateLocalConversion', 'LabourRatePerUOM');
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion", 'Rate', 'RateLocalConversion', 'LabourRatePerUOM', 'Remark');
   const { plantSelectList, filterPlantList, UOMSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;

@@ -461,12 +461,13 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
   let assemblyWorkingRow = []
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
     // let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
-    if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part')) {
+    if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part'||item.PartType === 'BOP')) {
       let subAssemblyObj = {
         "CostingId": item?.CostingId,
         "NetPOPrice": item?.CostingPartDetails?.NetPOPrice,
         "NetChildPartsCostWithQuantity": item?.CostingPartDetails?.NetChildPartsCostWithQuantity,
         "BasicRate": item?.CostingPartDetails?.NetPOPrice,
+        "TotalBoughtOutPartCostWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity
       }
       assemblyWorkingRow.push(subAssemblyObj)
     }
@@ -685,3 +686,5 @@ export const viewAddButtonIcon = (data, type, CostingViewMode) => {
     return title
   }
 }
+
+

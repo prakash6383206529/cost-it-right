@@ -18,7 +18,7 @@ export const config = () => {
 }
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.1.102:8002/api/v1`;
+//  const BASE_URL = `http://10.10.1.102:2002/api/v1`;
 
 
 
@@ -665,6 +665,7 @@ export const API = {
   getFreightCalculation: `${BASE_URL}/costing/get-costing-freight-calculation-details`,
   saveFreightCalculation: `${BASE_URL}/costing/save-costing-freight-calculation-details`,
   getTypeOfCost: `${BASE_URL}/costing/select-list-packaging-cost-type`,
+  getCalculationCriteriaList: `${BASE_URL}/costing/select-list-calculation-criteria`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
@@ -741,6 +742,7 @@ export const API = {
   login: `${BASE_URL}/user/login`,
   // login: `${BASE_URL}/user/login-ad`,         //RE
   tokenAPI: `${BASE_URL}/token`,
+  refreshTokenAPI: `${BASE_URL}/user/refresh_token`,
   AutoSignin: `${BASE_URL}/user/external-login`,
   logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,
@@ -1876,6 +1878,7 @@ export const SET_PACKAGING_CALCULATOR_AVAILABLE = 'SET_PACKAGING_CALCULATOR_AVAI
 export const SET_FREIGHT_CALCULATOR_AVAILABLE = 'SET_FREIGHT_CALCULATOR_AVAILABLE';
 export const GET_PAINT_COAT_LIST = 'GET_PAINT_COAT_LIST';
 export const GET_TYPE_OF_COST_SUCCESS = 'GET_TYPE_OF_COST_SUCCESS';
+export const GET_CALCULATION_CRITERIA_LIST_SUCCESS = 'GET_CALCULATION_CRITERIA_LIST_SUCCESS';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -2450,21 +2453,22 @@ export const VIEW_COSTING_DATA = {
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'Net Cost (Effective from)',
-  InfoCategory: 'Category',
   ExchangeRateSourceName: 'Exchange Rate Source',
-  CostingCurrency: 'Currency',
+  CostingCurrency: 'Costing Currency',
+  vendorExcel: 'Vendor (Code)',
+  customer: 'Customer (Code)',
+  InfoCategory: 'Category',
   partType: 'Part Type',
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
-  vendorExcel: 'Vendor (Code)',
-  customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
-  status: 'Status',
-  sobPercentageExcel: 'SOB',
+  // status: 'Status',
+  // sobPercentageExcel: 'SOB',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
+  scrapRecoveryPercentage: 'Scrap Recovery %',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
   castingWeightExcel: 'Casting Weight',
@@ -2498,23 +2502,27 @@ export const VIEW_COSTING_DATA = {
   overHeadApplicablity: 'Overhead Applicability',
   overHeadPercent: 'Overhead %',
   overHeadApplicablityValue: 'Overhead Value',
-  OverheadRemark: 'Overhead Remark',
+  // OverheadRemark: 'Overhead Remark',
   ProfitApplicablity: 'Profit Applicability',
   profitPercent: 'Profit %',
   ProfitApplicablityValue: 'Profit Value',
-  ProfitRemark: 'Profit Remark',
+  // ProfitRemark: 'Profit Remark',
   rejectionApplicablity: 'Rejection Applicability',
   rejectionPercent: 'Rejection %',
   rejectionApplicablityValue: 'Rejection Value',
-  RejectionRemark: 'Rejection Remark',
+  // RejectionRemark: 'Rejection Remark',
+  rejectionRecoveryApplicablity: 'Rejection Recovery Applicability',
+  rejectionRecoveryPercent: 'Rejection Recovery %',
+  rejectionRecoveryApplicablityValue: 'Rejection Recovery Value',
+  // rejectionRecoveryRemark: 'Rejection Recovery Remark',
   iccApplicablity: 'ICC Applicability',
   iccPercent: 'ICC %',
   iccApplicablityValue: 'ICC Value',
-  ICCRemark: 'Icc Remark',
-  nOverheadProfit: 'Net Overhead Profits',
+  // ICCRemark: 'Icc Remark',
+  nOverheadProfit: 'Net Overhead & Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
-  nPackagingAndFreight: 'Net Packaging and Freight',
+  nPackagingAndFreight: 'Net Packaging & Freight',
   toolMaintenanceCostApplicablity: 'Tool Maintenance Cost Applicability',
   toolMaintenanceCost: 'Tool Maintenance Cost Value',
   //toolMaintenanceCost: 'Tool Maintenance Cost',
@@ -2525,23 +2533,27 @@ export const VIEW_COSTING_DATA = {
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
   // otherDiscountValue: '',
-  otherDiscountApplicablity: 'Hundi/Discount Applicability',
-  otherDiscountValuePercent: 'Hundi/Discount Value',
+  // otherDiscountApplicablity: 'Hundi/Discount Applicability',
+  // otherDiscountValuePercent: 'Hundi/Discount Value',
   otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostTotal: 'Any Other Cost',
   saNumber: 'SA Number',
   lineNumber: 'Line Number',
-  BasicRate: 'Basic Price',
   npvCost: 'Net NPV Cost',
-  conditionCost: 'Net Costing Condition',
   paymentApplicablity: 'Payment Applicability',
   paymentPercent: 'Payment %',
   paymentcApplicablityValue: 'Payment Value',
-  PaymentTermRemark: 'Payment Remark',
-  nPOPrice: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+  // PaymentTermRemark: 'Payment Remark',
+  TaxCode: 'Tax Code',
+  BasicRate: 'Basic Price',
+  conditionCost: 'Net Condition Cost',
+  nPOPrice: `Net Cost (Settlement Currency)`,
+  NetPOPriceLocalConversion: `Net Cost (Plant Currency)`,
+  NetPOPriceConversion: `Net Cost (Base Currency)`,
   currencyTitle: 'Currency',
-  // currencyRate: 'Currency Rate',
   nPoPriceCurrency: 'Net Cost (In Currency)',
+  netCost: 'Net Cost',
+  // currencyRate: 'Currency Rate',
   NCCPartQuantity: "Quantity",
   IsRegularized: "Is Regularized",
   remark: 'Remarks',
@@ -3393,11 +3405,11 @@ export const CC = "CC"
 export const RMCC = "RM + CC"
 
 export const PAINTTECHNOLOGY = 31
-export const HANGEROVERHEAD = "Hanger OverHead"
+export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.16";
+export const VERSION = "V4.2.20";
 
 
 
