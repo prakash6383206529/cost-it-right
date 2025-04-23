@@ -8,7 +8,7 @@ import {
   SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET, RUBBER_CALCULATOR_RESET, GET_CARRIER_TYPE_LIST_SUCCESS,
   SET_PACKAGING_CALCULATOR_AVAILABLE,
   SET_FREIGHT_CALCULATOR_AVAILABLE,
-  GET_TYPE_OF_COST_SUCCESS
+  GET_TYPE_OF_COST_SUCCESS,GET_CALCULATION_CRITERIA_LIST_SUCCESS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -1931,6 +1931,31 @@ export function getTypeOfCost(callback) {
       if (response.data.Result) {
         dispatch({
           type: GET_TYPE_OF_COST_SUCCESS,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+    });
+  };
+}
+
+/**
+ * @method getCalculationCriteriaList
+ * @description Get calculation criteria dropdown list
+*/
+export function getCalculationCriteriaList(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(API.getCalculationCriteriaList, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_CALCULATION_CRITERIA_LIST_SUCCESS,
           payload: response.data.SelectList,
         });
         callback(response);

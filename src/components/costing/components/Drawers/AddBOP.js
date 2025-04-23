@@ -52,6 +52,11 @@ function AddBOP(props) {
   }, []);
 
   const onRowSelect = (event) => {
+    // Skip if the item is already in the Ids array (already selected)
+    if (props?.Ids && props?.Ids?.includes(event?.data?.BoughtOutPartId)) {
+      return;
+    }
+    
     if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
       if ((gridApi && gridApi?.getSelectedRows())?.length === 0) {
         setSelectedRowData([])
@@ -135,7 +140,14 @@ function AddBOP(props) {
 
   const isFirstColumn = (params) => {
     const rowData = params?.valueFormatted ? params.valueFormatted : params?.data;
-    const allBopSelected = bopDrawerList?.every(bop => props?.Ids?.includes(bop.BoughtOutPartId));
+    
+    // Check if the item is already in the Ids array
+    if (props?.Ids && props?.Ids?.includes(rowData?.BoughtOutPartId)) {
+      return false;
+    }
+    
+    // Original logic for non-BOP edit mode
+    const allBopSelected = bopDrawerList?.every(bop => props?.Ids && props?.Ids?.includes(bop?.BoughtOutPartId));
     if (allBopSelected) {
       return false;
     }
@@ -175,7 +187,7 @@ function AddBOP(props) {
     gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
-  const onFilterTextBoxChanged = (e) => {   
+  const onFilterTextBoxChanged = (e) => {
     gridApi.setQuickFilter(e.target.value);
   }
 
@@ -183,7 +195,7 @@ function AddBOP(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
   }
-    
+
   const frameworkComponents = {
     netLandedFormat: netLandedFormat,
     currencyFormatter: currencyFormatter,
@@ -197,8 +209,15 @@ function AddBOP(props) {
 
   }, [tableData])
 
-  const isRowSelectable = rowNode => rowNode.data ? !props.Ids.includes(rowNode.data.BoughtOutPartId) : false;
-
+  const isRowSelectable = rowNode => {
+    if (!rowNode?.data) return false;
+    
+    // Check if the item is already in the Ids array
+    const isAlreadySelected = props?.Ids && props?.Ids?.includes(rowNode?.data?.BoughtOutPartId);
+    
+    // Only allow selection if the item is not already selected and has a valid exchange rate
+    return !isAlreadySelected && rowNode?.data?.IsValidExchangeRate === true;
+  };
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
@@ -250,7 +269,7 @@ function AddBOP(props) {
                         floatingFilter={true}
                         domLayout='autoHeight'
                         // columnDefs={c}
-                        rowData={bopDrawerList}
+                        rowData={props?.isBopEdit ? props?.tableDataList : bopDrawerList}
                         pagination={true}
                         paginationPageSize={defaultPageSize}
                         onGridReady={onGridReady}
