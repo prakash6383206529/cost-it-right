@@ -3961,7 +3961,7 @@ function AddRfq(props) {
                                                             : (isViewFlag || !isEditAll) || disabledPartUid}
                                                     >
                                                         <div className={''}></div>
-                                                        RESET
+                                                        {!updateButtonPartNoTable ? "RESET" : "CANCEL"}
                                                     </button>
                                                     {(false && checkForNull(technology?.value) === LOGISTICS) && <button
                                                         type="button"
