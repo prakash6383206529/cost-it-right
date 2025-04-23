@@ -250,9 +250,30 @@ function AddLabourCost(props) {
             return false
         }
 
-
-        // If all mandatory fields are filled out, create a new object with the data and add it to the table.
-        if (getValues('cycleTime') && getValues('labourCost') && getValues('description') && getValues('absentism') && getValues('noOfLabour')) {
+        // Check if all required fields are filled out
+        const requiredFields = {
+            'description': 'Description',
+            'noOfLabour': 'No. of Labour',
+            'absentism': 'Absenteeism %',
+            'labourRate': 'Labour Rate',
+            'workingHours': 'Working Hours',
+            'cycleTime': 'Cycle Time'
+        };
+        
+        // Add efficiency to required fields if configured
+        if (initialConfiguration?.IsLabourEfficiencyFieldRequired) {
+            requiredFields['efficiency'] = 'Efficiency';
+        }
+        
+        // Check if all required fields have values
+        const missingFields = [];
+        Object.keys(requiredFields).forEach(field => {
+            if (!getValues(field)) {
+                missingFields.push(requiredFields[field]);
+            }
+        });
+        
+        if (missingFields.length === 0) {
             let obj = {}
             obj.Description = getValues('description') ? getValues('description') : ''
             obj.LabourRate = getValues('labourRate') ? getValues('labourRate') : ''
@@ -547,9 +568,9 @@ function AddLabourCost(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={initialConfiguration?.IsLabourEfficiencyFieldRequired}
                                             rules={{
-                                                required: true,
+                                                required: initialConfiguration?.IsLabourEfficiencyFieldRequired,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
                                             handleChange={() => { }}
