@@ -328,7 +328,7 @@ export const SearchableSelectHookForm = (field) => {
       ...provided,
       marginTop: "7px",
       left: 0,
-      top: 44,
+      // top: 44,
       marginRight: "5px",
       marginLeft: "5px",
       width: 'calc(100% - 10px)',
@@ -393,6 +393,7 @@ export const SearchableSelectHookForm = (field) => {
                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                 }}
                 filterOption={createFilter(filterConfig)}
+                menuPortalTarget={document.body}
               />
               {isLoader && <LoaderCustom customClass={"input-loader"} />}
               {buttonCross && <button type="button" className={'btn-cross'} disabled={isDisable} onClick={buttonCross}>
