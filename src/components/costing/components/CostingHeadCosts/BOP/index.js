@@ -4,12 +4,12 @@ import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, showBopLabel } from '../../../../../helper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
-import { ASSEMBLY, WACTypeId } from '../../../../../config/constants';
+import { ASSEMBLY, ASSEMBLYNAME, WACTypeId } from '../../../../../config/constants';
 import EditPartCost from '../SubAssembly/EditPartCost';
 
 function BoughtOutPart(props) {
   const { item } = props;
-
+  console.log("item", item)
   const dispatch = useDispatch()
   const [partCostDrawer, setPartCostDrawer] = useState(false);
   const [tabAssemblyIndividualBopDetail, setTabAssemblyIndividualBopDetail] = useState({})
@@ -67,14 +67,14 @@ function BoughtOutPart(props) {
           {partType && <td>{!editBopForAssemblyTechnology ? item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item?.CostingPartDetails?.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-' : '-'}</td>}
           <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
           {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
-          {partType && <td className='text-right'>{item?.TechnologyId === ASSEMBLY &&
+          {partType && <td className='text-right'>{item?.Technology === ASSEMBLYNAME &&
             <button
               type="button"
               className={'Edit mr-2 align-middle'}
               onClick={() => viewOrEditItemDetails(item)}>
             </button>
           }</td>}
-          {!partType && <td className='text-right'>{item?.TechnologyId === ASSEMBLY &&
+          {!partType && <td className='text-right'>{item?.Technology === ASSEMBLYNAME &&
             <button
               type="button"
               className={'Edit mr-2 align-middle'}
