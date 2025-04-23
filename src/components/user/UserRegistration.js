@@ -29,7 +29,7 @@ import { autoCompleteDropdown, DropDownFilterList } from "../common/CommonFuncti
 import _, { debounce } from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
-import { apiErrors } from "../../helper";
+import { apiErrors, getLocalizedCostingHeadValue } from "../../helper";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "./TourMessages";
@@ -142,7 +142,7 @@ function UserRegistration(props) {
   const [isShowDivision, setIsShowDivision] = useState(false)
   const [selectedDivision, setSelectedDivision] = useState([])
   const dispatch = useDispatch()
-  const { technologyLabel, vendorLabel } = useLabels();
+  const { technologyLabel, vendorLabel, vendorBasedLabel, customerBasedLabel, zeroBasedLabel } = useLabels();
   const { initialConfiguration, departmentList, roleList, technologyList, simulationTechnologyList,
     masterList, levelSelectList, simulationLevelSelectList, masterLevelSelectList, registerUserData, levelList, OnboardingLevelSelectList, plantSelectListForDepartment, divisionListForDepartment } = useSelector(state => state?.auth)
   const { getReporterListDropDown, approvalTypeCosting, approvalTypeSimulation, approvalTypeMaster, approvalTypeOnboarding } = useSelector(state => state?.comman)
@@ -466,7 +466,24 @@ function UserRegistration(props) {
     if (label === 'approvalTypeCosting') {
       approvalTypeCosting && approvalTypeCosting.forEach(item => {
         if (item.Value !== '0') {
-          temp.push({ label: item.Text, value: item.Value });
+          if (item.Text && typeof item.Text === 'string' && item.Text.includes('Vendor')) {
+            // Use the common function to get localized text
+            const localizedText = getLocalizedCostingHeadValue(
+              item.Text,
+              vendorBasedLabel,  
+              zeroBasedLabel,     
+              customerBasedLabel  
+            );
+            temp.push({ 
+              label: localizedText, 
+              value: item.Value 
+            });
+          } else {
+            temp.push({ 
+              label: item.Text, 
+              value: item.Value 
+            });
+          }
         }
       });
       // Add "Select All" at the 0th position if isEditIndex is false
@@ -484,7 +501,24 @@ function UserRegistration(props) {
     if (label === 'approvalTypeSimulation') {
       approvalTypeSimulation && approvalTypeSimulation.map(item => {
         if (item.Value !== '0') {
-          temp.push({ label: item.Text, value: item.Value });
+            if (item.Text && typeof item.Text === 'string' && item.Text.includes('Vendor')) {
+              // Use the common function to get localized text
+              const localizedText = getLocalizedCostingHeadValue(
+                item.Text,
+                vendorBasedLabel,  
+                zeroBasedLabel,     
+                customerBasedLabel  
+              );
+              temp.push({ 
+                label: localizedText, 
+                value: item.Value 
+              });
+            } else {
+              temp.push({ 
+                label: item.Text, 
+                value: item.Value 
+              });
+            }
         }
       });
       // Add "Select All" at the 0th position if isEditIndex is false
@@ -501,7 +535,24 @@ function UserRegistration(props) {
     if (label === 'approvalTypeMaster') {
       approvalTypeMaster && approvalTypeMaster.map(item => {
         if (item.Value !== '0') {
-          temp.push({ label: item.Text, value: item.Value });
+            if (item.Text && typeof item.Text === 'string' && item.Text.includes('Vendor')) {
+              // Use the common function to get localized text
+              const localizedText = getLocalizedCostingHeadValue(
+                item.Text,
+                vendorBasedLabel,  
+                zeroBasedLabel,     
+                customerBasedLabel  
+              );
+              temp.push({ 
+                label: localizedText, 
+                value: item.Value 
+              });
+            } else {
+              temp.push({ 
+                label: item.Text, 
+                value: item.Value 
+              });
+            }
         }
       });
       // Add "Select All" at the 0th position if isEditIndex is false
@@ -518,7 +569,24 @@ function UserRegistration(props) {
     if (label === 'approvalTypeOnboarding') {
       approvalTypeOnboarding && approvalTypeOnboarding.map(item => {
         if (item.Value !== '0') {
-          temp.push({ label: item.Text, value: item.Value });
+          if (item.Text && typeof item.Text === 'string' && item.Text.includes('Vendor')) {
+            // Use the common function to get localized text
+            const localizedText = getLocalizedCostingHeadValue(
+              item.Text,
+              vendorBasedLabel,  
+              zeroBasedLabel,     
+              customerBasedLabel  
+            );
+            temp.push({ 
+              label: localizedText, 
+              value: item.Value 
+            });
+          } else {
+            temp.push({ 
+              label: item.Text, 
+              value: item.Value 
+            });
+          }
         }
       });
       // Add "Select All" at the 0th position if isEditIndex is false

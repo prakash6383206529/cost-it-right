@@ -102,7 +102,7 @@ class AddProfit extends Component {
       this.props.getRawMaterialNameChild(() => { })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.fetchCostingHeadsAPI('Overhead and Profits', false, res => { });
+    this.props.fetchCostingHeadsAPI('profits', false, false, res => { });
     this.getDetails();
   }
 
@@ -921,6 +921,8 @@ class AddProfit extends Component {
   * @description Used for Surface Treatment
   */
   onPressAssemblyCheckbox = () => {
+    let isRequestForMultiTechnology = !this.state.isAssemblyCheckbox ? true : false
+    this.props.fetchCostingHeadsAPI('profits', false, isRequestForMultiTechnology, res => { });
     this.setState({ isAssemblyCheckbox: !this.state.isAssemblyCheckbox });
   }
   /**

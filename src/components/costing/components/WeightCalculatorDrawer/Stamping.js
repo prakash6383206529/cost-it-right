@@ -12,6 +12,7 @@ import { setPlasticArray } from '../../actions/Costing'
 import { debounce } from 'lodash'
 import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
+import { useLabels } from '../../../../helper/core'
 
 const dropDown = [
   {
@@ -37,7 +38,7 @@ function Stamping(props) {
   } else {
     totalRM = Number(rmRowData.RMRate)
   }
-
+  const { finishedWeightLabel, finishWeightLabel } = useLabels()
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
@@ -309,7 +310,7 @@ function Stamping(props) {
                 </Col>
                 <Col md="3" >
                   <NumberFieldHookForm
-                    label={`Finished Weight(Kg)`}
+                    label={`${finishedWeightLabel} Weight(Kg)`}
                     name={'finishedWeight'}
                     Controller={Controller}
                     control={control}
@@ -320,7 +321,7 @@ function Stamping(props) {
                       validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                       max: {
                         value: getValues('grossWeight'),
-                        message: 'Finish weight should not be greater than gross weight.'
+                        message: `${finishWeightLabel} weight should not be greater than gross weight.`
                       },
                     }}
                     handleChange={() => { }}
@@ -356,7 +357,7 @@ function Stamping(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} width="320px" id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Input Weight - Finish Weight) * Scrap Recovery % / 100'} />
+                  <TooltipCustom disabledIcon={true} width="320px" id={'scrap-weight-plastic'} tooltipText={`Scrap Weight = (Input Weight - ${finishWeightLabel} Weight) * Scrap Recovery % / 100`} />
                   <TextFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}

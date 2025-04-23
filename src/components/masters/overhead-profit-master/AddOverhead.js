@@ -85,6 +85,7 @@ class AddOverhead extends Component {
       RMGrade: [],
       IsFinancialDataChanged: true,
       isAssemblyCheckbox: false,
+     
     }
   }
 
@@ -101,9 +102,10 @@ class AddOverhead extends Component {
       this.props.getRawMaterialNameChild(() => { })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.fetchCostingHeadsAPI('Overhead and Profits', false, res => { });
+    this.props.fetchCostingHeadsAPI('overhead', false,false, res => { });
     this.getDetails();
   }
+
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
   }
@@ -261,7 +263,6 @@ class AddOverhead extends Component {
   renderListing = (label) => {
     const { clientSelectList, modelTypes, plantSelectList, costingHead, rawMaterialNameSelectList, gradeSelectList } = this.props;
     const temp = [];
-    const excludedItems = ['RM', 'RM + CC', 'RM + CC + BOP', 'RM + BOP'];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
         if (item.Value === '0') return false
@@ -291,12 +292,7 @@ class AddOverhead extends Component {
 
     if (label === 'OverheadApplicability') {
       costingHead && costingHead.map(item => {
-        if (item.Value === '0' || item.Text === 'Net Cost') return false;
-        if (!this.state.isAssemblyCheckbox && item.Text.includes('Part Cost')) {
-          return false;
-        } if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) {
-          return false;
-        } temp.push({ label: item.Text, value: item.Value });
+        temp.push({ label: item.Text, value: item.Value });
         return null;
       });
       return temp;
@@ -918,6 +914,8 @@ class AddOverhead extends Component {
   * @description Used for Surface Treatment
   */
   onPressAssemblyCheckbox = () => {
+    let isRequestForMultiTechnology = !this.state.isAssemblyCheckbox ? true : false
+    this.props.fetchCostingHeadsAPI('overhead', false, isRequestForMultiTechnology, res => { });
     this.setState({
       isAssemblyCheckbox: !this.state.isAssemblyCheckbox,
       overheadAppli: [],

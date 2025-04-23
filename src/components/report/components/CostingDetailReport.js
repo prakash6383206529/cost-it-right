@@ -77,7 +77,7 @@ function ReportListing(props) {
     const [selectedCostingHead, setSelectedCostingHead] = useState(null);
 
     const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
-    const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+    const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, finishWeightLabel } = useLabels();
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -186,7 +186,7 @@ function ReportListing(props) {
     }, [statusColumnData])
 
     useEffect(() => {
-        dispatch(fetchCostingHeadsAPI('master', false, res => {
+        dispatch(fetchCostingHeadsAPI('master', false,false, res => {
             if (res) {
                 let temp = []
                 res?.data?.SelectList && res?.data?.SelectList.map((item) => {
@@ -1113,7 +1113,7 @@ function ReportListing(props) {
                             <AgGridColumn field='RawMaterialRate' headerName='RM Rate' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialScrapWeight' headerName='Scrap Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
-                            <AgGridColumn field='RawMaterialFinishWeight' headerName='Finish Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                            <AgGridColumn field='RawMaterialFinishWeight' headerName={`${finishWeightLabel} Weight`} cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='rmHyperLinkFormatter'></AgGridColumn>
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Part Cost/Pc' cellRenderer='partCostFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialRemark' headerName='RM Remark' cellRenderer='remarkFormatter'></AgGridColumn>
