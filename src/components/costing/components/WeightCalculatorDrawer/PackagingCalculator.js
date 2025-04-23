@@ -129,8 +129,15 @@ function PackagingCalculator(props) {
             return sum + Number(item.NetCost || 0);
 
         }, 0);
+        let totalCostOfCrateWithAddedCost=0
         let cost = state.calculationCriteria?.label === "Annual Volume Basis" ? state.totalCostOfCrate : checkForNull(getValuesPackaging('CostOfCrate'))
-        let totalCostOfCrateWithAddedCost = cost + totalAddedCost
+        if(state?.calculationCriteria?.label === 'Bin/Trolley Life Basis'){
+            totalCostOfCrateWithAddedCost = (cost + totalAddedCost) * checkForNull(getValuesPackaging('StockNormDays'))
+        }else if (state.calculationCriteria?.label === 'Annual Volume Basis'){
+            totalCostOfCrateWithAddedCost = cost + totalAddedCost
+        }else{
+            totalCostOfCrateWithAddedCost = totalAddedCost
+        }
         setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice))
         setState(prev => ({
             ...prev,
@@ -351,10 +358,12 @@ function PackagingCalculator(props) {
         }
     }
     const totalCostOfCrateWithAddedCostText = () => {
-        if(state.calculationCriteria?.label === 'Bin/Trolley Life Basis'||state.calculationCriteria?.label === 'Polymer Trolley Calculation'){
-            return `${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}`
-        }else{
+        if(state.calculationCriteria?.label === 'Bin/Trolley Life Basis'){
+                    return `(${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}) * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })}`
+        }else if(state.calculationCriteria?.label === 'Annual Volume Basis'){
             return `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}`
+        }else{
+            return `${t('totalAddedCost', { defaultValue: 'Additional cost' })}`
         }
     }
     const packagingCalculatorSection2 = [
@@ -423,14 +432,10 @@ function PackagingCalculator(props) {
                     + spacerCostChecked;
                 break;
             default:
-                console.log(volumePerAnnum,'volumePerAnnum')
-                console.log(amortizedYears,'amortizedYears')
-                console.log(totalCostOfCrateWithAddedCost,'totalCostOfCrateWithAddedCost')
                 packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (volumePerAnnum * amortizedYears))
                     + coverCost
                     + spacerCostChecked;
         }
-        console.log(packagingCost,'packagingCost')
 
         // Update state
         setState(prevState => ({
