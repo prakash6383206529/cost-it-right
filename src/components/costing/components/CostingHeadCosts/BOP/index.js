@@ -91,6 +91,7 @@ function BoughtOutPart(props) {
             tabAssemblyIndividualPartDetail={tabAssemblyIndividualBopDetail}
             costingSummary={false}
             isBopEdit={true}
+            boughtOutPartChildId={item?.PartId}
           />
         }
       </tr>
