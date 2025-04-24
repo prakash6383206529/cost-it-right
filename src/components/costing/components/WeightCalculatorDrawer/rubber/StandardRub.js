@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, positiveAndDecimalNumber, loggedInUserId } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, positiveAndDecimalNumber, loggedInUserId, innerVsOuterValidation } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
@@ -157,8 +157,8 @@ function StandardRub(props) {
             setDataToSend(prevState => ({ ...prevState, NetRMCost: NetRmCost }))
             setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
         } else if (GrossWeight === 0 && FinishWeight === 0) {
-            setDataToSend(prevState => ({ ...prevState, ScrapWeight: 0 }))
-            setValue('ScrapWeight', checkForDecimalAndNull(0, getConfigurationKey().NoOfDecimalForInputOutput))
+            setDataToSend(prevState => ({ ...prevState, ScrapWeight: 0 })) 
+            setValue('ScrapWeight', checkForDecimalAndNull(0, getConfigurationKey().NoOfDecimalForInputOutput))   
         }
     }
 
@@ -572,11 +572,11 @@ function StandardRub(props) {
                                                 mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.InnerDiameter === 0))}
                                                 rules={{
                                                     required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.InnerDiameter === 0)),
-                                                    validate: { number, decimalAndNumberValidation },
-                                                    max: {
-                                                        value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
-                                                        message: 'Inner Diameter should not be greater than outer diameter.'
-                                                    },
+                                                    validate: { number, decimalAndNumberValidation, innerVsOuter: innerVsOuterValidation(getValues)},
+                                                    // max: {
+                                                    //     value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
+                                                    //     message: 'Inner Diameter should not be greater than outer diameter.'
+                                                    // },
                                                 }}
                                                 handleChange={(e) => handleInnerDiameter(e.target.value)}
                                                 defaultValue={''}
