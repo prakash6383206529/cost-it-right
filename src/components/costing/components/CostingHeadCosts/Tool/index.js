@@ -668,7 +668,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
+                        validate: { number, checkWhiteSpaces,  decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
                       }}
                       defaultValue={''}
                       className=""

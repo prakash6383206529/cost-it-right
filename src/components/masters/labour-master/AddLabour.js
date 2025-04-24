@@ -562,7 +562,7 @@ class AddLabour extends Component {
 
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId, efficiency, workingHours, city, country } = this.state
-    const { fieldsObj } = this.props
+    const { fieldsObj, initialConfiguration } = this.props
     if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || country.length === 0 || city.length === 0) {
       Toaster.warning('First fill upper detail')
       return false
@@ -585,8 +585,8 @@ class AddLabour extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
         count++;
       }
-      if (efficiency === undefined || efficiency === '') {
-        this.setState({ errorObj: { ...this.state.errorObj, efficiency: true } })
+      if (initialConfiguration?.IsLabourEfficiencyFieldRequired && (efficiency === undefined || efficiency === '')) {
+        this.setState({ errorObj: { ...this.state.errorObj, efficiency: initialConfiguration?.IsLabourEfficiencyFieldRequired } })
         count++;
       }
       if (workingHours === undefined || workingHours === '') {
@@ -662,8 +662,8 @@ class AddLabour extends Component {
       if (financialDataChanged && checkEffectiveDate(effectiveDate, tempData.EffectiveDate)) {
         Toaster.warning('Please update the Effective date.')
         return false
-      }else if(financialDataChanged){
-        tempData.IsFinancialDataChanged = financialDataChanged 
+      } else if (financialDataChanged) {
+        tempData.IsFinancialDataChanged = financialDataChanged
       }
     }
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
@@ -679,7 +679,7 @@ class AddLabour extends Component {
     const isExist = skipEditedItem.findIndex(
       (el) =>
         el.MachineTypeId === machineType.value &&
-        el.LabourTypeId === labourType.value && checkEffectiveDate(effectiveDate, el.EffectiveDate) ,
+        el.LabourTypeId === labourType.value && checkEffectiveDate(effectiveDate, el.EffectiveDate),
     )
     if (isExist !== -1) {
       Toaster.warning('Already added, Please check the values.')
@@ -703,8 +703,8 @@ class AddLabour extends Component {
       CurrencyExchangeRate: this.state.currencyValue,
       ExchangeRateId: this.state.ExchangeRateId,
       ...(tempData.IsAssociated !== undefined && { IsAssociated: tempData.IsAssociated }),
-      ...(tempData.LabourDetailId !== undefined && { LabourDetailId: tempData.LabourDetailId }), 
-      ...(financialDataChanged && { IsFinancialDataChanged: true }) 
+      ...(tempData.LabourDetailId !== undefined && { LabourDetailId: tempData.LabourDetailId }),
+      ...(financialDataChanged && { IsFinancialDataChanged: true })
     }
 
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData })
@@ -1438,23 +1438,23 @@ class AddLabour extends Component {
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
                           {<TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
                           <div className="form-group">
-                          <Field
-                            label={`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
-                            name={"LabourRateConversion"}
-                            id="rate"
-                            type="text"
-                            placeholder={"-"}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                            component={renderTextInputField}
-                            onChange={this.handleLabourRateBasicCurrency}
-                            required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName=" withBorder"
-                          />
-                          {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRateConversion === 0 &&
+                            <Field
+                              label={`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
+                              name={"LabourRateConversion"}
+                              id="rate"
+                              type="text"
+                              placeholder={"-"}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
+                              onChange={this.handleLabourRateBasicCurrency}
+                              required={true}
+                              disabled={true}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                            {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRateConversion === 0 &&
                               <div className='text-help'>This field is required.</div>
-                            } 
+                            }
                           </div>
                         </Col>}
                         <Col md="3">
@@ -1486,11 +1486,11 @@ class AddLabour extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, percentageLimitValidation, maxPercentValue]}
                               component={renderTextInputField}
                               onChange={this.handleEfficiency}
-                              required={true}
+                              required={initialConfiguration?.IsLabourEfficiencyFieldRequired}
                               className=" "
                               customClassName="withBorder"
                             />
-                             {this.state.errorObj.efficiency && this.state.efficiency === "" && <div className='text-help'>This field is required.</div>}
+                            {this.state.errorObj.efficiency && this.state.efficiency === "" && <div className='text-help'>This field is required.</div>}
                           </div>
                         </Col>
 
@@ -1569,7 +1569,7 @@ class AddLabour extends Component {
                                         <button
                                           className="Edit mr-2"
                                           type={"button"}
-                                          disabled={isViewMode}  
+                                          disabled={isViewMode}
                                           onClick={() =>
                                             this.editGridItemDetails(index)
                                           }
