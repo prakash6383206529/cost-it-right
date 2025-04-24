@@ -37,6 +37,7 @@ function PackagingCalculator(props) {
         editIndex: '',
         calculationCriteria: '',
         isVolumeAutoCalculate: false,
+        disableFields: false
     })
     const { costingData, CostingEffectiveDate } = useSelector(state => state.costing)
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
@@ -118,7 +119,7 @@ function PackagingCalculator(props) {
         const stockNormDays = getValuesPackaging('StockNormDays');
         const costOfCrate = getValuesPackaging('CostOfCrate');
 
-        if (noOfComponentsPerCrate && stockNormDays && costOfCrate) {
+        if (noOfComponentsPerCrate && stockNormDays && costOfCrate && state?.calculationCriteria) {
             setState((prevState) => ({ ...prevState, disableCost: false }));
         } else {
             setState((prevState) => ({ ...prevState, disableCost: true }));
@@ -138,12 +139,24 @@ function PackagingCalculator(props) {
         }else{
             totalCostOfCrateWithAddedCost = totalAddedCost
         }
+        console.log(totalCostOfCrateWithAddedCost,'totalCostOfCrateWithAddedCost')
         setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice))
         setState(prev => ({
             ...prev,
             totalAddedCost,
             totalCostOfCrateWithAddedCost
         }));
+        if(state?.gridTable && state?.gridTable?.length > 0){
+            setState(prev => ({
+                ...prev,
+                disableFields:true,
+            }));
+        }else{
+            setState(prev => ({
+                ...prev,
+                disableFields:false,
+            }));
+        }
     }, [state.gridTable])
     useEffect(() => {
         if (!CostingViewMode && state.calculationCriteria?.label === "Annual Volume Basis" && state.isVolumeAutoCalculate) {
@@ -293,8 +306,8 @@ function PackagingCalculator(props) {
             { label: t('volumePerAnnum', { defaultValue: 'Volume per annum' }), name: 'VolumePerAnnum', mandatory: false, disabled: state.isVolumeAutoCalculate || CostingViewMode, ...(state.isVolumeAutoCalculate ? {tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} * ${DaysInMonthForVolumePerDay} * 12`, width: '250px', disabledIcon: true }} : {}) },
             { label: t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' }), name: 'NoOfCratesRequiredPerDay', mandatory: false, disabled: state.isVolumeAutoCalculate || CostingViewMode, ...(state.isVolumeAutoCalculate ? {tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} / ${t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' })}`, width: '250px', disabledIcon: true }} : {}) }
         ] : []),
-        { label: t('stockNormDays', { defaultValue: 'Stock Norm days' }), name: 'StockNormDays', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('costOfCrate', { defaultValue: 'Cost of crate/trolley' }), name: 'CostOfCrate', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
+        { label: t('stockNormDays', { defaultValue: 'Stock Norm days' }), name: 'StockNormDays', mandatory: true, disabled: state.disableFields || CostingViewMode },
+        { label: t('costOfCrate', { defaultValue: 'Cost of crate/trolley' }), name: 'CostOfCrate', mandatory: true, disabled: state.disableFields || CostingViewMode },
         ...(state.calculationCriteria?.label === "Annual Volume Basis" ? [
             { label: t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' }), name: 'TotalCostOfCrate', mandatory: false, disabled: true, tooltip: { text: `${t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' })} * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })} * ${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })}`, width: '250px', disabledIcon: true } },
         ] : []),
@@ -661,14 +674,17 @@ function PackagingCalculator(props) {
                                         Controller={Controller}
                                         control={controlPackaging}
                                         register={registerPackaging}
-                                        mandatory={false}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                        }}
                                         options={renderListing('calculationCriteria')}
                                         handleChange={handleCalculationCriteriaChange}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errorsPackaging.CalculationCriteria}
-                                        disabled={CostingViewMode}
+                                        disabled={state.disableFields || CostingViewMode }
                                     />
                                 </Col>
                                 <Col md="3">
@@ -750,7 +766,8 @@ function PackagingCalculator(props) {
                                                 (state.gridTable.length > 0 &&
                                                     (name === 'NoOfComponentsPerCrate' ||
                                                         name === 'StockNormDays' ||
-                                                        name === 'CostOfCrate'))
+                                                        name === 'CostOfCrate'||
+                                                        state?.calculationCriteria))
                                             } />
                                     </Col>
                                 })}
