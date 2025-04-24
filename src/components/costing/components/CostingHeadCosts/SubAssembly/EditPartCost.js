@@ -186,34 +186,7 @@ function EditPartCost(props) {
             dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, isViewMode, res => { }))
 
         }
-        // If BOP view, fetch BOP data
-        if (isBOPView) {
-            setIsLoading(true)
-            const data = {
-                PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId || costData.CostingTypeId === PFS1TypeId
-                    || costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
-                VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-                EffectiveDate: CostingEffectiveDate,
-                CostingId: costData.CostingId,
-                categoryId: null,
-                CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
-                    || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
-                CustomerId: costData.CustomerId,
-                VendorId: null
-            }
 
-            dispatch(getBOPDrawerDataList(data, (res) => {
-                setIsLoading(false)
-                if (res && res.status === 200) {
-                    let Data = res.data.DataList;
-                    setTableDataList(Data)
-                } else if (res && res.response && res.response.status === 412) {
-                    setTableDataList([])
-                } else {
-                    setTableDataList([])
-                }
-            }))
-        }
 
         // dispatch(getEditPartCostDetails(obj, res => { }))
         return () => {

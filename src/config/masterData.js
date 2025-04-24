@@ -88,7 +88,7 @@ export const RMDomesticZBC = [
     { label: "QuantityForCostingCondition", value: "QuantityForCostingCondition" },
     { label: "ApplicabilityForCostingCondition", value: "ApplicabilityForCostingCondition" },
     { label: "PercentageOrCostForCostingCondition", value: "PercentageOrCostForCostingCondition" },
-    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", }, 
+    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
     { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
     { label: "ApplyScrap(%)", value: "IsCalculateScrapRate" },
@@ -2611,6 +2611,7 @@ export const Labour = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineType', value: 'MachineType', }, //*
     { label: 'LabourType', value: 'LabourType', }, //*
+    { label: 'RatePerPersonPerMonth', value: 'RatePerPersonPerMonth', }, //*
     { label: 'RatePerPersonPerAnnum', value: 'RatePerPersonPerAnnum', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'ProductNumber', value: 'ProductNumber', },
@@ -2627,7 +2628,8 @@ export const LabourTempData = [
         'PlantCode': 'Plant01',
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
-        'RatePerPersonPerAnnum': 2000000,
+        'RatePerPersonPerMonth': 100000,
+        'RatePerPersonPerAnnum': 1200000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "ProductNumber": 'Silencer',
         "Efficiency": '89',
@@ -2641,7 +2643,8 @@ export const LabourTempData = [
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
-        'RatePerPersonPerAnnum': 300000,
+        'RatePerPersonPerMonth': 100000,
+        'RatePerPersonPerAnnum': 1200000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "ProductNumber": 'Silencer',
         "Efficiency": '90',
@@ -6620,6 +6623,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
     { label: "Machine Type", value: "MachineType", },
     { label: "Labour Type", value: "LabourType", },
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: "Rate per Person/Month", value: "LabourRatePerMonth", },
     { label: "Rate per Person/Annum", value: "LabourRate", },
     { label: "Effective Date", value: "EffectiveDate", }
 ]

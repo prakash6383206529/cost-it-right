@@ -270,7 +270,7 @@ function AddBOP(props) {
                         floatingFilter={true}
                         domLayout='autoHeight'
                         // columnDefs={c}
-                        rowData={props?.isBopEdit ? props?.tableDataList : bopDrawerList}
+                        rowData={bopDrawerList}
                         pagination={true}
                         paginationPageSize={defaultPageSize}
                         onGridReady={onGridReady}
