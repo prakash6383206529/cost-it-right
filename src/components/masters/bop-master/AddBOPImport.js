@@ -35,7 +35,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, compareRateCommon,checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue, getEffectiveDateMaxDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -51,7 +51,6 @@ import { labels, LabelsClass } from '../../../helper/core';
 import { getPlantUnitAPI } from '../actions/Plant';
 import AddOtherCostDrawer from '../material-master/AddOtherCostDrawer';
 
-
 const selector = formValueSelector('AddBOPImport');
 
 class AddBOPImport extends Component {
@@ -60,6 +59,7 @@ class AddBOPImport extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
+    this.debouncedCompareRate = debounce(()=>compareRateCommon(this.state?.DataToChange?.BoughtOutPartOtherCostDetailsSchema, this.state?.DataToChange?.BoughtOutPartConditionsDetails), 1000);
     this.initialState = {
       isEditFlag: this.props?.data?.isEditFlag ? true : false,
       IsVendor: false,
@@ -1036,7 +1036,7 @@ class AddBOPImport extends Component {
     let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPrice)
     let netLandedCostPlantCurrency = checkForDecimalAndNull(checkForNull(netLandedCost) * checkForNull(this.state.plantCurrencyValue), getConfigurationKey().NoOfDecimalForPrice)
     let netLandedCostBaseCurrency = checkForDecimalAndNull(checkForDecimalAndNull(netLandedCostPlantCurrency, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(this.state.currencyValue), getConfigurationKey().NoOfDecimalForPrice)
-    this.props.change('NetConditionCost', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
+    // this.props.change('NetConditionCost', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCost', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCostPlantCurrency', checkForDecimalAndNull(netLandedCostPlantCurrency, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration?.NoOfDecimalForPrice))
@@ -1333,6 +1333,7 @@ class AddBOPImport extends Component {
   };
   handleBasicRateChange = (e) => {
     this.setState({ totalBasicRate: e.target.value })
+    this.state.isEditFlag && this.debouncedCompareRate()
   }
   handleBOPOperation = (formData, isEditFlag, isOnlySAPCodeChanged) => {
     const operation = isEditFlag ? this.props.updateBOP : this.props.createBOP;
@@ -1372,7 +1373,7 @@ class AddBOPImport extends Component {
       UOM, DataToChange, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
       Technology, NetConditionCost, conditionTableData, BasicPrice, NetLandedCost, otherCostTableData, totalOtherCost,
       currencyValue, DropdownChanged, IsSAPCodeUpdated, IsSAPCodeHandle, LocalExchangeRateId, LocalCurrencyId, plantCurrencyValue, ExchangeRateId, ExchangeSource } = this.state;
-    const { fieldsObj, isBOPAssociated, initialConfiguration } = this.props
+    const {  isBOPAssociated } = this.props
 
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -1463,73 +1464,42 @@ class AddBOPImport extends Component {
 
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
+    let financialDataNotChanged = checkForNull(NetLandedCost) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(this.state?.incoTerm?.value) === checkForNull(DataToChange?.IncoTerm) && (getConfigurationKey().IsShowPaymentTermsFields ? checkForNull(this.state?.paymentTerm?.value) === checkForNull(DataToChange?.PaymentTerm) : true)
+
+    let nonFinancialDataNotChanged = ((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) &&
+      ((DataToChange.Remark ? DataToChange.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
+      (getConfigurationKey().IsSAPCodeRequired ? (DataToChange.SAPPartNumber ? DataToChange.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : '') : true) &&
+      ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+      ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
+      DropdownChanged &&
+      (isTechnologyVisible?(DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : '') : true)
     if (isEditFlag) {
-      let basicPriceSelectedCurrency
-      let basicPriceSelectedCurrencyTemp = checkForNull(fieldsObj?.BasicRate) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
-      if (costingTypeId === ZBCTypeId) {
-        basicPriceSelectedCurrency = basicPriceSelectedCurrencyTemp
+      if (!isBOPAssociated) {
+        if (financialDataNotChanged && nonFinancialDataNotChanged) {
+          this.setState({ isEditBuffer: true })
+          if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
+            Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
+          }
+          else {
+            Toaster.warning(`Please change data to update ${showBopLabel()}`)
+          }
+          return false
+        }
+        formData.IsFinancialDataChanged = false
       }
-      const netLandedCostSelectedCurrency = checkForNull(basicPriceSelectedCurrencyTemp) + checkForNull(NetConditionCost)
+      else if (!financialDataNotChanged && checkEffectiveDate(oldDate, effectiveDate)) {
 
-      // CHECK IF THERE IS CHANGE !!!  
-      // IF: NO CHANGE  
-
-      if (((files ? JSON.stringify(files) : []) === (DataToChange?.Attachements ? JSON.stringify(DataToChange?.Attachements) : [])) &&
-        ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
-        ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : ''))
-        &&
-        ((DataToChange?.Source ? String(DataToChange?.Source) : ' ') === (values?.Source ? String(values?.Source) : '')) &&
-        ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
-        checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
-
-        checkForNull(fieldsObj?.NumberOfPieces) === checkForNull(DataToChange?.NumberOfPieces) &&
-        checkForNull(fieldsObj?.BasicRate) === checkForNull(DataToChange?.BasicRate) &&
-
-        checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(NetConditionCost) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged &&
-        ((DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
-        this.setState({ isEditBuffer: true })
-        if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
-          Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
-        }
-        else {
-          Toaster.warning(`Please change data to update ${showBopLabel()}`)
-        }
+        Toaster.warning('Please update the effective date')
         return false
       }
-      //  ELSE: CHANGE
-      else {
-        //  IF: NEE TO UPDATE EFFECTIVE DATE
-        if (IsFinancialDataChanged || isBOPAssociated) {
-          if (!isDateChange || (DayTime(oldDate).format("DD/MM/YYYY") === DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState({ isEditBuffer: true })
-            Toaster.warning('Please update the effective date')
-            return false
-          }
-        }
-      }
-      if (((files ? JSON.stringify(files) : []) === (DataToChange?.Attachements ? JSON.stringify(DataToChange?.Attachements) : [])) &&
-        ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
-        ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') !== (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
-        ((DataToChange?.Source ? String(DataToChange?.Source) : '') === (values?.Source ? String(values?.Source) : '')) &&
-        ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
-        checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
-        checkForNull(fieldsObj?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
-        checkForNull(fieldsObj?.BasicRateSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.BasicRate).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
-        // checkForNull(netLandedCostSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetLandedCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) && checkForNull(FinalConditionCostSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) && DropdownChanged &&
-        ((DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
-        isOnlySAPCodeChanged = true;
-      } else {
-        isOnlySAPCodeChanged = false;
-      }
-
+    } else {
+      formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
     }
 
-    //  IF: APPROVAL FLOW
-    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible && (isEditFlag ? !isOnlySAPCodeChanged : true)) {
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
       formData.IsSendForApproval = true
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
-    //  ELSE: NO APPROVAL FLOW
     else {
       formData.IsSendForApproval = false;
       this.handleBOPOperation(formData, isEditFlag, isOnlySAPCodeChanged);
@@ -1569,6 +1539,7 @@ class AddBOPImport extends Component {
   conditionToggle = () => {
     this.setState({ isOpenConditionDrawer: true })
   }
+
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
     const { initialConfiguration } = this.props
@@ -1633,7 +1604,7 @@ class AddBOPImport extends Component {
         this.state.NetConditionCost &&
         Array.isArray(this.state?.conditionTableData) &&
         this.state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
-        Toaster.warning("Please click on refresh button to update condition cost data.")
+        Toaster.warning("Please click on refresh button to update Condition Cost data.")
       }
       const basicPrice = checkForNull(this.props.fieldsObj?.BasicRate) + checkForNull(totalBase)
       const netLandedCost = checkForNull(basicPrice) + checkForNull(NetConditionCost)
@@ -1663,6 +1634,7 @@ class AddBOPImport extends Component {
     // Handle any additional actions based on isConditionCost
     if (isConditionCost) {
       // Update condition cost related data
+      this.props.change('NetConditionCost', checkForDecimalAndNull(result?.formValue?.value, getConfigurationKey().NoOfDecimalForPrice))
       this.setState({
         ...this.state,
         states: result.updatedState
@@ -2154,7 +2126,7 @@ class AddBOPImport extends Component {
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handleIncoTerm}
                               valueDescription={this.state.incoTerm}
-                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                              disabled={isViewMode}
                             />
                           </Col>
                           {getConfigurationKey().IsShowPaymentTermsFields && <Col md="3">
@@ -2169,7 +2141,7 @@ class AddBOPImport extends Component {
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handlePaymentTerm}
                               valueDescription={this.state.paymentTerm}
-                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                              disabled={isViewMode}
                             />
                           </Col>}
                           <Col md="3">
@@ -2230,7 +2202,7 @@ class AddBOPImport extends Component {
                                   required={false}
                                   className=""
                                   customClassName=" withBorder"
-                                  disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                  disabled={isViewMode}
                                 />
                               </Col>
                             </>
@@ -2242,11 +2214,11 @@ class AddBOPImport extends Component {
                                   label={`Basic Rate (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'})`}
                                   name={"BasicRate"}
                                   type="text"
-                                  placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                  placeholder={isEditFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={true}
-                                  disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                  disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
                                   onChange={this.handleBasicRateChange}
@@ -2302,7 +2274,7 @@ class AddBOPImport extends Component {
                                   name={"BasicPrice"}
                                   id="bop-basic-currency"
                                   type="text"
-                                  placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                  placeholder={isEditFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={true}
@@ -2348,7 +2320,7 @@ class AddBOPImport extends Component {
                           {
                             this.state.showCurrency && (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" disabledIcon={true} width="350px" tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
+                                <TooltipCustom id="bop-net-cost-currency" disabledIcon={true} width="350px" tooltipText={`Net Cost (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})= ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
                                   label={`Net Cost (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}
@@ -2364,7 +2336,7 @@ class AddBOPImport extends Component {
                                 />
                               </Col>
                               {<Col md="3">
-                                <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} width="350px" tooltipText={`Net Cost (${fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
+                                <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} width="350px" tooltipText={`Net Cost (${fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})  = Net Cost (${this.state?.currency?.label}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label}) * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
                                 <Field
                                   label={`Net Cost (${fieldsObj?.plantCurrency ?? 'Currency'}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={"NetLandedCostPlantCurrency"}
@@ -2380,7 +2352,7 @@ class AddBOPImport extends Component {
                                 />
                               </Col>}
                               {!this?.state?.hidePlantCurrency && <Col md="3">
-                                <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} width="350px" tooltipText={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} width="350px" tooltipText={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})  = Net Cost (${this.state?.hidePlantCurrency ? this.state?.currency?.label : fieldsObj?.plantCurrency}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label}) * Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
                                   label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")}/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
@@ -2409,7 +2381,7 @@ class AddBOPImport extends Component {
                               <input
                                 type="checkbox"
                                 checked={isClientVendorBOP}
-                                disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                                disabled={isViewMode ? true : false}
                               />
                               <span
                                 className=" before-box"
@@ -2540,7 +2512,7 @@ class AddBOPImport extends Component {
                                 id="addBOPIMport_sendForApproval"
                                 type="submit"
                                 className="mr5"
-                                disabled={isViewMode || setDisable || disableSendForApproval}
+                                disabled={isViewMode || setDisable || disableSendForApproval || this?.state?.showWarning || this.state?.showPlantWarning }
                                 icon="send-for-approval"
                                 buttonName="Send For Approval"
                               />
@@ -2549,7 +2521,7 @@ class AddBOPImport extends Component {
                                 id="addBOPIMport_save"
                                 type="submit"
                                 className="mr5"
-                                disabled={isViewMode || setDisable}
+                                disabled={isViewMode || setDisable || this?.state?.showWarning || this.state?.showPlantWarning }
                                 icon="save-icon"
                                 buttonName={isEditFlag ? "Update" : "Save"}
                               />
@@ -2606,7 +2578,7 @@ class AddBOPImport extends Component {
               tableData={conditionTableData}
               closeDrawer={this.openAndCloseAddConditionCosting}
               anchor={'right'}
-              ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
+              ViewMode={(isViewMode)}
               isFromMaster={true}
               currency={this.state.currency}
               currencyValue={this.state.currencyValue}

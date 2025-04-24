@@ -89,8 +89,10 @@ function AddAssemblyOperation(props) {
       let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
 
       let costPerPieceTotal = 0
+      let CostPerAssemblyBOPTotal = 0
       tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
         costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
+        CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
         return null
       })
 
@@ -104,12 +106,12 @@ function AddAssemblyOperation(props) {
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingOperationCostResponse = grid;
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
         checkForNull(costPerPieceTotal) +
-        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+        checkForNull(CostPerAssemblyBOPTotal) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
         checkForNull(totalOperationCost)
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
         checkForNull(costPerPieceTotal) +
-        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+        checkForNull(CostPerAssemblyBOPTotal) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
         checkForNull(totalOperationCost) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +

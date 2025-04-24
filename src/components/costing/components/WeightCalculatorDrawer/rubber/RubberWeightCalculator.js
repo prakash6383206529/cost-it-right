@@ -160,22 +160,22 @@ function RubberWeightCalculator(props) {
 
 
     const percentageChange = (percentage, index) => {
-
-        const result = calculateTotalPercentage(percentage, index, rmData, getValues, false);
+        
+        const result = calculateTotalPercentage(percentage, index, rmData, getValues,false);
         setPercentage(result?.total);
-
+        
         if (!result?.isValid) {
             Toaster.warning(result?.message);
             setFieldsEnabled(false);
             setValue(`rmGridFields.${index}.Percentage`, '');
             return false;
         }
-
+        
         setFieldsEnabled(result?.total === 100);
         calculateNetSCrapRate(percentage, index);
         calculateNetRmRate(percentage, index);
     };
-
+    
     const calculateNetRmRate = (percentageValue, indexTemp) => {
 
         let grossRMRate = 0;
@@ -398,6 +398,7 @@ function RubberWeightCalculator(props) {
         let value = checkForNull(Number(getValues('rejectionValue')))
         let rmCost = checkForNull(Number(getValues('rmCost')))
         let totalTableCost = checkForNull(getTotal(tableData))
+
         let obj = dataToSend
 
         if (value && rmCost && rejectionCostType) {

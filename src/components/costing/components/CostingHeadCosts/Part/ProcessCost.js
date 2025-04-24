@@ -946,6 +946,7 @@ function ProcessCost(props) {
     }
     let tempArr = []
     let tempData = processGroupGrid[index]
+    let processCost = 0
 
 
     if (!isNaN(event.target.value) && event.target.value !== '') {
@@ -1208,8 +1209,19 @@ function ProcessCost(props) {
         CostingConditionMasterAndTypeLinkingId: parentApplicability,
         CostingConditionNumber: processApplicabilitySelect.find(type => type.value === parentApplicability)?.label,
       }
-      let gridTempArr = Object.assign([...list], { [index]: tempData })
-      setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
+    } else {
+      // Set process cost to 0 when quantity is empty/null/undefined
+      tempData = {
+        ...tempData,
+        Quantity: '',
+        IsCalculatedEntry: false,
+        ProductionPerHour: tempData.UOMType !== TIME ? '-' : 0,
+        ProcessCost: 0
+      }
+    }
+
+    let gridTempArr = Object.assign([...list], { [index]: tempData })
+    setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(tempData.ProcessCost, getConfigurationKey().NoOfDecimalForInputOutput))
 
       //MAIN PROCESS ROW WITH GROUP
       const groupTotals = gridTempArr?.reduce((acc, el) => ({
@@ -1255,7 +1267,7 @@ function ProcessCost(props) {
       setGridData(processTemparr)
 
       dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
-    }
+
   }
 
   /**

@@ -644,7 +644,8 @@ export function getRMDrawerDataList(data, isNFR, rmNameList, surfaceTreatment = 
 export function getBOPDrawerDataList(data, callback) {
   return (dispatch) => {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&categoryId=${data.categoryId}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&categoryId=${data.categoryId}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&boughtOutPartChildId=${data?.boughtOutPartChildId}`;
+
     const request = axios.get(`${API.getBOPDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -2685,7 +2686,7 @@ export function setYOYCostGrid(grid) {
 export function getYOYCostList(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const query = `quotationId=${data?.quotationId ? data?.quotationId : ''}&partId=${data?.partId ? data?.partId : ''}&vendorId=${data?.vendorId ? data?.vendorId : ''}`
+    const query = `loggedInUserId=${loggedInUserId()}&quotationId=${data?.quotationId ? data?.quotationId : ''}&partId=${data?.partId ? data?.partId : ''}&vendorId=${data?.vendorId ? data?.vendorId : ''}`
     const request = axios.get(`${API.getYOYCostList}?${query}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -2738,7 +2739,7 @@ export function createPFS2Costing(data, callback) {
 
 export function getLabourDetailsByFilter(data, callback) {
   return (dispatch) => {
-    const queryParams = `effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${0}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${0}`
     const request = axios.get(`${API.getLabourDetailsByFilter}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -3073,6 +3074,7 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
   return (dispatch) => {
     const url = `${API.getSpecificationDetailTco}`;
     const requestData = {
+      loggedInUserId: loggedInUserId(),
       QuotationId: quotationId,
       BaseCostingIdList: baseCostingIds
     };

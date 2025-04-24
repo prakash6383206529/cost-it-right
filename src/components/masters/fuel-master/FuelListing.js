@@ -96,8 +96,8 @@ const FuelListing = (props) => {
     return (
       <>
         {permissions.View && (<Button id={`fuelListing_View${props.rowIndex}`} className={"View mr5"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />)}
-        {permissions.Edit && (<Button id={`fuelListing__edit${props.rowIndex}`} className={"Edit mr5"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />)}
-        {permissions.Delete && (<Button id={`fuelListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(rowData?.FuelDetailId)} title={"Delete"} />)}
+        {(permissions.Edit && rowData?.IsEditable) && (<Button id={`fuelListing__edit${props.rowIndex}`} className={"Edit mr5"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />)}
+        {(permissions.Delete && !rowData?.IsAssociated) && (<Button id={`fuelListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(rowData?.FuelDetailId)} title={"Delete"} />)}
       </>
     );
   };

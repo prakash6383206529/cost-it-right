@@ -115,6 +115,7 @@ function OtherCostDrawer(props) {
 
         if (!CostingViewMode) {
             if (value && value !== '') {
+                delete errors.ApplicabilityCost
                 setOtherCostType(value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value)
                 setValue('AnyOtherCost', 0)
                 setValue('PercentageOtherCost', 0)
@@ -541,9 +542,12 @@ function OtherCostDrawer(props) {
                                                 register={register}
                                                 mandatory={true}
                                                 rules={{
-                                                    required: false,
-                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                    required: !((CostingViewMode || Object.keys(otherCostType).length === 0 || (otherCostType && otherCostType?.value === 'Percentage'))),
+                                                    validate: !((CostingViewMode || Object.keys(otherCostType).length === 0 || (otherCostType && otherCostType?.value === 'Percentage')))
+                                                        ? { number, checkWhiteSpaces, decimalNumberLimit6 }
+                                                        : undefined,
                                                 }}
+
                                                 handleChange={(e) => {
                                                     e.preventDefault();
                                                 }}

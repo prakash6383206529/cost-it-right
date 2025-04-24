@@ -277,7 +277,7 @@ function Ferrous(props) {
     const percentageChange = (percentage, index) => {
 
         setValue(`rmGridFields.${index}.Percentage`, percentage);
-
+        
         setTimeout(() => {
             const result = calculateTotalPercentage(percentage, index, tableRawMaterials, getValues, false);
             setPercentage(result?.total);

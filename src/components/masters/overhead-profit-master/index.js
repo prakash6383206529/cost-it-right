@@ -31,6 +31,8 @@ const OverheadProfit = () => {
     BulkUploadAccessibility: false,
     DownloadAccessibility: false,
     stopApiCallOnCancel: false,
+    IsOverheadAssociated: false,
+    IsProfitAssociated: false,
     permissions: {}
   });
   const dispatch = useDispatch();
@@ -120,17 +122,17 @@ const OverheadProfit = () => {
     }
   }
 
-  const getOverHeadDetails = (data) => {
+  const getOverHeadDetails = (data,IsAssociated) => {
     setState(prevState => ({
       ...prevState,
-      isOverheadForm: true, data: data
+      isOverheadForm: true, data: data, IsOverheadAssociated: IsAssociated
     }))
   }
 
-  const getProfitDetails = (data) => {
+  const getProfitDetails = (data,IsProfitAssociated) => {
     setState(prevState => ({
       ...prevState,
-      isProfitForm: true, data: data
+      isProfitForm: true, data: data, IsProfitAssociated: IsProfitAssociated
     }))
   }
 
@@ -151,6 +153,7 @@ const OverheadProfit = () => {
     return <AddOverheadMaster
       data={data}
       hideForm={hideForm}
+      IsOverheadAssociated = {state.IsOverheadAssociated}
     />
   }
 
@@ -165,6 +168,7 @@ const OverheadProfit = () => {
     return <AddProfitMaster
       data={data}
       hideForm={hideForm}
+      IsProfitAssociated = {state.IsProfitAssociated}
     />
   }
 

@@ -9,12 +9,15 @@ import { useDispatch } from 'react-redux';
 import { getBOPCostMovement, getMachineProcessMovement, getOperationMovement, getRMCostMovement } from '../../actions/ReportListing';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import ReactExport from 'react-export-excel';
+import { getLocalizedCostingHeadValue } from '../../../../helper';
+import { useLabels } from '../../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function CostMovementByMasterReportListing(props) {
+    const { vendorBasedLabel, customerBasedLabel, zeroBasedLabel, vendorCodeLabel } = useLabels();
 
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);;
@@ -98,8 +101,20 @@ function CostMovementByMasterReportListing(props) {
                 dispatch(getRMCostMovement(formData, res => {
                     if (res.status === 200) {
                         setIsData(true)
-                        setRowData(res.data.Data.Data)
-                        setHeadersState(res.data.Data.TableHeads)
+                        const rowData = res.data.Data.Data.map(item => {
+                            if (item?.CostingHead && typeof item?.CostingHead === 'string' && item?.CostingHead?.includes('Vendor')) {
+                                item.CostingHead = getLocalizedCostingHeadValue(item.CostingHead, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, vendorCodeLabel)
+                            }
+                            return item
+                        })
+                        setRowData(rowData)
+                        const tableHeads = res.data.Data.TableHeads.map(item => {
+                            if (item?.headerName && typeof item?.headerName === 'string' && item?.headerName?.includes('Vendor')) {
+                                item.headerName = getLocalizedCostingHeadValue(item.headerName, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, vendorCodeLabel)
+                            }
+                            return item
+                        })
+                        setHeadersState(tableHeads)
                         setIsLoader(false)
                         mergeCategory(res.data.Data, 'Category')
                     }

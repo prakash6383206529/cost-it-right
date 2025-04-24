@@ -403,7 +403,7 @@ const MachineRateListing = (props) => {
     const rowData = props?.data;
     let isEditable = false
     let isDeleteButton = false
-    if (permissions?.Edit) { isEditable = true }
+    if (permissions?.Edit && rowData?.IsEditable) { isEditable = true }
     else { isEditable = false }
 
 
@@ -741,6 +741,7 @@ const MachineRateListing = (props) => {
     let finalArr = selectedRows;
     let length = finalArr?.length;
     let uniqueArray = _.uniqBy(finalArr, "MachineProcessRateId");
+    uniqueArray = uniqueArray.map(item => ({...item,EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY'): item.EffectiveDate}));
     if (props.isSimulation && !props?.isFromVerifyPage) {
       props.apply(uniqueArray, length);
     }
@@ -872,6 +873,7 @@ const MachineRateListing = (props) => {
                     <AgGridColumn field="CostingHead" headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
                                             floatingFilterComponent="statusFilter"
                                             cellRenderer={combinedCostingHeadRenderer}></AgGridColumn>
+                    {isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>}
                     {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
 
                     <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>

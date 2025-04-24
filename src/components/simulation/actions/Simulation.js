@@ -1056,7 +1056,7 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
 
 export function getCostingBoughtOutPartSimulationList(token, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingBoughtOutPartSimulationList}?simulationId=${token}?loggedInUserId=${loggedInUserId()}`, config());
+        const request = axios.get(`${API.getCostingBoughtOutPartSimulationList}?simulationId=${token}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {

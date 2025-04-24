@@ -535,12 +535,9 @@ export function setBopCostingData(data) {
   }
 };
 export function getViewBOPDetails(data, callback) {
-  const requestData = {
-    loggedInUserId: loggedInUserId(),
-    ...data
-  }
+
   return (dispatch) => {
-    const request = axiosInstance.post(API.getViewBOPDetails, requestData, config())
+    const request = axiosInstance.post(`${API.getViewBOPDetails}?loggedInUserId=${loggedInUserId()}`, data, config())
     request
       .then((response) => {
         if (response?.data.Result) {
