@@ -2734,7 +2734,7 @@ const CostingSummaryTable = (props) => {
                             <tr>
                               <td>
                                 <span className={highlighter("", "rm-reducer")}>Part Cost/Pc</span>
-                                <span className={highlighter("", "finish-reducer")}>{showBopLabel()} Cost/Assembly</span>
+                                <span className={highlighter("", "finish-reducer")}>{showBopLabel()} Cost/Assembly (Including Handling Charge)</span>
                                 <span className={highlighter("BurningLossWeight")}>Process Cost/Assembly</span>
                                 <span className={highlighter("ScrapWeight")}>Operation Cost/Assembly</span>
                                 <span className={highlighter("LabourCost")}>Labour Cost/Assembly</span>
@@ -2746,10 +2746,14 @@ const CostingSummaryTable = (props) => {
                                   return (
                                     <td className={tableDataClass(data)}>
                                       {data?.bestCost !== true && <>
-                                        <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netChildPartsCost : ''}</span>
-                                        <span className={highlighter("rmRate")}>
-                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                        <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netChildPartsCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</span>
+                                        <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                          <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included" tooltipText={`${checkForDecimalAndNull(data?.bopPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}`} />
                                         </span>
+
+                                        {/* <span className={highlighter("rmRate")}>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                        </span> */}
                                         <span className={highlighter("scrapRate")}>
                                           <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netProcessCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
