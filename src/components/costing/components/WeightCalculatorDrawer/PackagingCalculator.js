@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Row, Col, Container, Table, } from 'reactstrap'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { number, checkWhiteSpaces, maxLength7, maxLength5, maxLength4, maxLength3, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey } from '../../../../helper'
+import { number, checkWhiteSpaces, maxLength7, maxLength5, maxLength4, maxLength3, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey, decimalNumberLimit6 } from '../../../../helper'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
@@ -129,8 +129,15 @@ function PackagingCalculator(props) {
             return sum + Number(item.NetCost || 0);
 
         }, 0);
+        let totalCostOfCrateWithAddedCost=0
         let cost = state.calculationCriteria?.label === "Annual Volume Basis" ? state.totalCostOfCrate : checkForNull(getValuesPackaging('CostOfCrate'))
-        let totalCostOfCrateWithAddedCost = cost + totalAddedCost
+        if(state?.calculationCriteria?.label === 'Bin/Trolley Life Basis'){
+            totalCostOfCrateWithAddedCost = (cost + totalAddedCost) * checkForNull(getValuesPackaging('StockNormDays'))
+        }else if (state.calculationCriteria?.label === 'Annual Volume Basis'){
+            totalCostOfCrateWithAddedCost = cost + totalAddedCost
+        }else{
+            totalCostOfCrateWithAddedCost = totalAddedCost
+        }
         setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice))
         setState(prev => ({
             ...prev,
@@ -179,7 +186,7 @@ function PackagingCalculator(props) {
     const calculateVolumePerDay = () => {
         const volumePerDay = getValuesPackaging('VolumePerAnnum') / 12 * DaysInMonthForVolumePerDay
         setValuePackaging('VolumePerDay', checkForDecimalAndNull(volumePerDay, NoOfDecimalForInputOutput))
-        setState((prevState) => ({ ...prevState, volumePerDay: volumePerDay }))
+        setState((prevState) => ({ ...prevState, volumePerDay: volumePerDay ,volumePerAnnum:getValuesPackaging('VolumePerAnnum')}))
     }
     const renderListing = (label) => {
         const temp = [];
@@ -351,10 +358,12 @@ function PackagingCalculator(props) {
         }
     }
     const totalCostOfCrateWithAddedCostText = () => {
-        if(state.calculationCriteria?.label === 'Bin/Trolley Life Basis'||state.calculationCriteria?.label === 'Polymer Trolley Calculation'){
-            return `${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}`
-        }else{
+        if(state.calculationCriteria?.label === 'Bin/Trolley Life Basis'){
+                    return `(${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}) * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })}`
+        }else if(state.calculationCriteria?.label === 'Annual Volume Basis'){
             return `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}`
+        }else{
+            return `${t('totalAddedCost', { defaultValue: 'Additional cost' })}`
         }
     }
     const packagingCalculatorSection2 = [
@@ -418,7 +427,7 @@ function PackagingCalculator(props) {
                     + spacerCostChecked;
                 break;
             case "Polymer Trolley Calculation":
-                packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (noOfComponentsPerCrate / stockNormDays) * 300)
+                packagingCost = checkForNull(totalCostOfCrateWithAddedCost / ((noOfComponentsPerCrate / stockNormDays) * 300))
                     + coverCost
                     + spacerCostChecked;
                 break;
@@ -671,7 +680,7 @@ function PackagingCalculator(props) {
                                         register={registerPackaging}
                                         rules={{
                                             required: true,
-                                            validate: { number,maxLength5 },
+                                            validate: { number,decimalNumberLimit6 },
                                         }}
                                         mandatory={true}
                                         handleChange={() => { }}
@@ -725,7 +734,7 @@ function PackagingCalculator(props) {
                                             mandatory={item.mandatory}
                                             rules={{
                                                 required: item.mandatory,
-                                                validate: { number, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
+                                                validate: { number,decimalNumberLimit6, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
                                                 max: item.percentageLimit ? {
                                                     value: 100,
                                                     message: 'Percentage value should be equal to 100'
@@ -833,7 +842,7 @@ function PackagingCalculator(props) {
                                             mandatory={item.mandatory}
                                             rules={{
                                                 required: item.mandatory,
-                                                validate: { number, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
+                                                validate: { number,decimalNumberLimit6, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
                                                 max: item.percentageLimit ? {
                                                     value: 100,
                                                     message: 'Percentage value should be equal to 100'
