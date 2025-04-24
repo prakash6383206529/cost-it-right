@@ -75,7 +75,10 @@ class AddLabour extends Component {
         labourRate: false,
         effectiveDate: false,
         efficiency: false,
-        workingHours: false
+        workingHours: false,
+        labourRatePerMonth: false,
+        labourRatePerMonthConversion: false,
+        labourRateConversion: false
       },
       showErrorOnFocus: false,
       isEditMode: false,
@@ -131,13 +134,17 @@ class AddLabour extends Component {
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
   }
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.fieldsObj?.LabourRate !== prevProps.fieldsObj?.LabourRate) {
-      this.handleCalculation()
-    }
+  // componentDidUpdate(prevProps, prevState) {
+  //   
+  //   
+  //   if (this.props.fieldsObj?.LabourRate !== prevProps.fieldsObj?.LabourRate) {
+  //     this.handleCalculation()
+  //   }
+  //   if (this.props.fieldsObj?.LabourRatePerMonth !== prevProps.fieldsObj?.LabourRatePerMonth) {
+  //     this.handleCalculationForMonth()
+  //   }
 
-
-  }
+  // }
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, IsEmployeContractual } = this.state;
@@ -199,6 +206,8 @@ class AddLabour extends Component {
                   LabourRateConversion: item?.LabourRateConversion,
                   CurrencyExchangeRate: item?.CurrencyExchangeRate,
                   ExchangeRateId: item?.ExchangeRateId,
+                  LabourRatePerMonth: item?.LabourRatePerMonth,
+                  LabourRatePerMonthConversion: item?.LabourRatePerMonthConversion,
 
                 }
               })
@@ -567,6 +576,7 @@ class AddLabour extends Component {
       Toaster.warning('First fill upper detail')
       return false
     }
+
     let count = 0;
     setTimeout(() => {
       if (machineType.length === 0) {
@@ -579,6 +589,11 @@ class AddLabour extends Component {
       }
       if (fieldsObj?.LabourRateConversion === 0 || fieldsObj?.LabourRateConversion === undefined || fieldsObj?.LabourRate === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, labourRate: true } })
+        count++;
+      }
+      if (fieldsObj?.LabourRatePerMonthConversion === 0 || fieldsObj?.LabourRatePerMonthConversion === undefined || fieldsObj?.LabourRatePerMonth === 0) {
+
+        this.setState({ errorObj: { ...this.state.errorObj, labourRatePerMonth: true, labourRatePerMonthConversion: true } })
         count++;
       }
       if (effectiveDate === undefined || effectiveDate === '') {
@@ -611,6 +626,8 @@ class AddLabour extends Component {
       }
       const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRate) : 0
       const LabourRateConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRateConversion) : checkForNull(fieldsObj?.LabourRate)
+      const LabourRatePerMonth = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRatePerMonth) : 0
+      const LabourRatePerMonthConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRatePerMonthConversion) : checkForNull(fieldsObj?.LabourRatePerMonth)
       const tempArray = []
 
       tempArray.push(...gridTable, {
@@ -626,6 +643,8 @@ class AddLabour extends Component {
         LabourRateConversion: LabourRateConversion,
         CurrencyExchangeRate: this.state.currencyValue,
         ExchangeRateId: this.state.ExchangeRateId,
+        LabourRatePerMonth: LabourRatePerMonth,
+        LabourRatePerMonthConversion: LabourRatePerMonthConversion,
       })
 
       this.setState(
@@ -641,9 +660,11 @@ class AddLabour extends Component {
         () => this.props.change('LabourRate', ''),
         this.props.change('workingHours', ''),
         this.props.change('Efficiency', ''),
-        this.props.change("LabourRateConversion", "")
+        this.props.change("LabourRateConversion", ""),
+        this.props.change("LabourRatePerMonth", ""),
+        this.props.change("LabourRatePerMonthConversion", "")
       )
-      this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
+      this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false, labourRatePerMonth: false, labourRatePerMonthConversion: false } })
     }, 200);
   }
 
@@ -656,8 +677,10 @@ class AddLabour extends Component {
     const { fieldsObj } = this.props
     const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRate) : 0
     const LabourRateConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRateConversion) : checkForNull(fieldsObj?.LabourRate)
+    const LabourRatePerMonth = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRatePerMonth) : 0
+    const LabourRatePerMonthConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRatePerMonthConversion) : checkForNull(fieldsObj?.LabourRatePerMonth)
     let tempData = gridTable[gridEditIndex]
-    let financialDataChanged = (Number(tempData.LabourRateConversion) !== Number(fieldsObj?.LabourRateConversion)) || (fieldsObj?.Efficiency && Number(tempData.Efficiency) !== Number(fieldsObj?.Efficiency)) || Number(tempData.WorkingTime) !== Number(fieldsObj?.workingHours)
+    let financialDataChanged = (Number(tempData.LabourRateConversion) !== Number(fieldsObj?.LabourRateConversion)) || (fieldsObj?.Efficiency && Number(tempData.Efficiency) !== Number(fieldsObj?.Efficiency)) || Number(tempData.WorkingTime) !== Number(fieldsObj?.workingHours) || Number(tempData.LabourRatePerMonthConversion) !== Number(fieldsObj?.LabourRatePerMonthConversion) || Number(tempData.LabourRatePerMonth) !== Number(fieldsObj?.LabourRatePerMonth)
     if (tempData.IsAssociated) {
       if (financialDataChanged && checkEffectiveDate(effectiveDate, tempData.EffectiveDate)) {
         Toaster.warning('Please update the Effective date.')
@@ -702,6 +725,8 @@ class AddLabour extends Component {
       LabourRateConversion: LabourRateConversion,
       CurrencyExchangeRate: this.state.currencyValue,
       ExchangeRateId: this.state.ExchangeRateId,
+      LabourRatePerMonth: LabourRatePerMonth,
+      LabourRatePerMonthConversion: LabourRatePerMonthConversion,
       ...(tempData.IsAssociated !== undefined && { IsAssociated: tempData.IsAssociated }),
       ...(tempData.LabourDetailId !== undefined && { LabourDetailId: tempData.LabourDetailId }),
       ...(financialDataChanged && { IsFinancialDataChanged: true })
@@ -724,10 +749,12 @@ class AddLabour extends Component {
       () => this.props.change('LabourRate', 0),
       this.props.change('workingHours', ''),
       this.props.change('Efficiency', ''),
-      this.props.change("LabourRateConversion", 0)
+      this.props.change("LabourRateConversion", 0),
+      this.props.change("LabourRatePerMonth", 0),
+      this.props.change("LabourRatePerMonthConversion", 0)
 
     )
-    this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
+    this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false, labourRatePerMonth: false, labourRatePerMonthConversion: false } })
   }
 
   /**
@@ -745,7 +772,9 @@ class AddLabour extends Component {
         disableEffectiveDate: false
       },
       () => this.props.change('LabourRate', ''), this.props.change("LabourRateConversion", "")
-      , this.props.change('workingHours', ''), this.props.change('Efficiency', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
+      , this.props.change("LabourRatePerMonth", 0),
+      this.props.change("LabourRatePerMonthConversion", 0),
+      this.props.change('workingHours', ''), this.props.change('Efficiency', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
     )
   }
 
@@ -791,7 +820,9 @@ class AddLabour extends Component {
         'LabourRate': tempData.LabourRate,
         'LabourRateConversion': tempData.LabourRateConversion,
         'workingHours': tempData.WorkingTime,
-        'Efficiency': tempData.Efficiency
+        'Efficiency': tempData.Efficiency,
+        'LabourRatePerMonth': tempData.LabourRatePerMonth,
+        'LabourRatePerMonthConversion': tempData.LabourRatePerMonthConversion
       };
 
       // Update all form fields
@@ -823,6 +854,8 @@ class AddLabour extends Component {
     this.resetGridData()
     this.props.change('LabourRate', '')
     this.props.change("LabourRateConversion", "")
+    this.props.change("LabourRatePerMonth", 0)
+    this.props.change("LabourRatePerMonthConversion", 0)
 
   }
 
@@ -962,18 +995,31 @@ class AddLabour extends Component {
     }
   };
 
-  DisplayLabourRatePlantCurrencyLabel = () => {
-    return <>Rate per Person/Annum ({this.props.fieldsObj.plantCurrency ?? "Plant Currency"})</>
+  DisplayLabourRatePlantCurrencyLabel = (type) => {
+    return <>Rate per Person/{type} ({this.props.fieldsObj.plantCurrency ?? "Plant Currency"})</>
   }
   handleCalculation = (rate) => {
 
-    const { fieldsObj, initialConfiguration } = this.props
+    const { initialConfiguration } = this.props
     const { currencyValue } = this.state
 
 
-    const LabourRateConversion = checkForNull(fieldsObj?.LabourRate) * checkForNull(currencyValue)
+    const LabourRateConversion = checkForNull(rate) * checkForNull(currencyValue)
+    const LabourRatePerMonth = checkForNull(rate) / 12
+    const LabourRatePerMonthConversion = checkForNull(LabourRatePerMonth) * checkForNull(currencyValue)
     this.props.change('LabourRateConversion', checkForDecimalAndNull(LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice));
-
+    this.props.change('LabourRatePerMonth', checkForDecimalAndNull(LabourRatePerMonth, initialConfiguration?.NoOfDecimalForPrice));
+    this.props.change('LabourRatePerMonthConversion', checkForDecimalAndNull(LabourRatePerMonthConversion, initialConfiguration?.NoOfDecimalForPrice));
+  }
+  handleCalculationForMonth = (rate) => {
+    const { initialConfiguration } = this.props
+    const { currencyValue } = this.state
+    const LabourRatePerMonthConversion = checkForNull(rate) * checkForNull(currencyValue)
+    const LabourRatePerAnnum = checkForNull(rate) * 12
+    const LabourRatePerAnnumConversion = checkForNull(LabourRatePerAnnum) * checkForNull(currencyValue)
+    this.props.change('LabourRatePerMonthConversion', checkForDecimalAndNull(LabourRatePerMonthConversion, initialConfiguration?.NoOfDecimalForPrice));
+    this.props.change('LabourRate', checkForDecimalAndNull(LabourRatePerAnnum, initialConfiguration?.NoOfDecimalForPrice));
+    this.props.change('LabourRateConversion', checkForDecimalAndNull(LabourRatePerAnnumConversion, initialConfiguration?.NoOfDecimalForPrice));
   }
   handleExchangeRateSource = (newValue) => {
     this.setState({ ExchangeSource: newValue }
@@ -1023,7 +1069,11 @@ class AddLabour extends Component {
     }
   }
   handleLabourRateBasicCurrency = (newValue) => {
+
     this.handleCalculation(newValue?.target?.value)
+  }
+  handleLabourRatePerMonthBasicCurrency = (newValue) => {
+    this.handleCalculationForMonth(newValue?.target?.value)
   }
   /**
    * @method render
@@ -1419,13 +1469,33 @@ class AddLabour extends Component {
                         <Col md="3">
                           <div className="form-group">
                             <Field
-                              label={this.DisplayLabourRatePlantCurrencyLabel()}
+                              label={this.DisplayLabourRatePlantCurrencyLabel("Month")}
+                              name={"LabourRatePerMonth"}
+                              type="text"
+                              placeholder={isViewMode ? "-" : "Enter"}
+                              disabled={isViewMode}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
+                              onChange={(e) => this.handleCalculationForMonth(e.target.value)}
+                              required={true}
+                              className=" "
+                              customClassName="withBorder"
+                            />
+                            {this.state.errorObj.labourRatePerMonth && !this.props.fieldsObj?.LabourRatePerMonth &&
+                              <div className='text-help'>This field is required.</div>
+                            }                          </div>
+                        </Col>
+                        <Col md="3">
+                          <div className="form-group">
+                            <Field
+                              label={this.DisplayLabourRatePlantCurrencyLabel("Annum")}
                               name={"LabourRate"}
                               type="text"
                               placeholder={isViewMode ? "-" : "Enter"}
                               disabled={isViewMode}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
+                              onChange={(e) => this.handleCalculation(e.target.value)}
                               required={true}
                               className=" "
                               customClassName="withBorder"
@@ -1435,6 +1505,28 @@ class AddLabour extends Component {
                             }                          </div>
                         </Col>
 
+                        {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
+                          {<TooltipCustom disabledIcon={true} width={"350px"} id="ratePerMonth" tooltipText={`Rate per Person/Month (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
+                          <div className="form-group">
+                            <Field
+                              label={`Rate per Person/Month (${reactLocalStorage.getObject("baseCurrency")})`}
+                              name={"LabourRatePerMonthConversion"}
+                              id="ratePerMonth"
+                              type="text"
+                              placeholder={"-"}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
+                              onChange={this.handleLabourRatePerMonthBasicCurrency}
+                              required={true}
+                              disabled={true}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                            {this.state.errorObj.LabourRatePerMonthConversion && !this.props.fieldsObj?.LabourRatePerMonthConversion === 0 &&
+                              <div className='text-help'>This field is required.</div>
+                            }
+                          </div>
+                        </Col>}
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
                           {<TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
                           <div className="form-group">
@@ -1540,9 +1632,10 @@ class AddLabour extends Component {
                               <tr>
                                 <th>{`Machine Type`}</th>
                                 <th>{`Labour Type`}</th>
-                                <th>{this.DisplayLabourRatePlantCurrencyLabel()}</th>
+                                <th>{this.DisplayLabourRatePlantCurrencyLabel('Month')}</th>
+                                <th>{this.DisplayLabourRatePlantCurrencyLabel('Annum')}</th>
+                                {!this?.state?.hidePlantCurrency && <th>{`Rate per Person/Month (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                 {!this?.state?.hidePlantCurrency && <th>{`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
-
                                 <th>{`Working hours`}</th>
                                 <th>{`Efficiency`}</th>
                                 <th>{`Effective Date`}</th>
@@ -1556,7 +1649,9 @@ class AddLabour extends Component {
                                     <tr key={index}>
                                       <td>{item.MachineType}</td>
                                       <td>{item.LabourType}</td>
+                                      <td>{checkForDecimalAndNull(item?.LabourRatePerMonth, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                       <td>{checkForDecimalAndNull(item?.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                      {!this?.state?.hidePlantCurrency && <td><div className="w-fit" id={`ratePerMonth-${index}`}>{checkForDecimalAndNull(item?.LabourRatePerMonthConversion, initialConfiguration?.NoOfDecimalForPrice)}<TooltipCustom disabledIcon={true} width={"350px"} id={`ratePerMonth-${index}`} tooltipText={`Rate per Person/Month (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} /></div></td>}
                                       {!this?.state?.hidePlantCurrency && <td><div className="w-fit" id={`rate-${index}`}>{checkForDecimalAndNull(item?.LabourRateConversion, initialConfiguration?.NoOfDecimalForPrice)}<TooltipCustom disabledIcon={true} width={"350px"} id={`rate-${index}`} tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} /></div></td>}
                                       <td>{checkForDecimalAndNull(item?.WorkingTime, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                       <td>{checkForDecimalAndNull(item?.Efficiency, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
@@ -1657,7 +1752,7 @@ class AddLabour extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const fieldsObj = selector(state, 'LabourRate', 'plantCurrency', 'LabourRateConversion', 'workingHours', 'Efficiency', 'city', 'state', 'country')
+  const fieldsObj = selector(state, 'LabourRate', 'plantCurrency', 'LabourRateConversion', 'workingHours', 'Efficiency', 'city', 'state', 'country', 'LabourRatePerMonth', 'LabourRatePerMonthConversion')
   const { supplier, machine, fuel, labour, auth, comman, part, client } = state
   const {
     VendorLabourTypeSelectList,

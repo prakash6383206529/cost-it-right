@@ -392,8 +392,12 @@ function AssemblyTechnology(props) {
                                     {`Process Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost, initialConfiguration?.NoOfDecimalForPrice) : '0'}`}
                                     <br></br>
                                     { }
-                                    {(initialConfiguration?.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && `Labour Cost/Assembly:  ${checkForDecimalAndNull(checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost) + checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) + checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost), initialConfiguration?.NoOfDecimalForPrice)}`}
-                                    {(initialConfiguration?.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <br></br>}
+                                    {(initialConfiguration?.IsShowCostingLabour) && `Labour Cost/Assembly:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost, initialConfiguration?.NoOfDecimalForPrice)}`}
+                                    {(initialConfiguration?.IsShowCostingLabour) && <br></br>}
+                                    {(initialConfiguration?.IsShowCostingLabour) && `Indirect Labour Cost/Assembly:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost, initialConfiguration?.NoOfDecimalForPrice)}`}
+                                    {(initialConfiguration?.IsShowCostingLabour) && <br></br>}
+                                    {(initialConfiguration?.IsShowCostingLabour) && `Staff Cost/Assembly:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost, initialConfiguration?.NoOfDecimalForPrice)}`}
+                                    {(initialConfiguration?.IsShowCostingLabour) && <br></br>}
                                     {`Total Child's Part Cost:  ${checkForDecimalAndNull((subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost + subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost), initialConfiguration?.NoOfDecimalForPrice)}`}
 
                                 </span >
