@@ -1,6 +1,7 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import { Row, Col, Label } from 'reactstrap';
 import { required, getCodeBySplitting, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, maxLength512, acceptAllExceptSingleSpecialCharacter, validateFileName } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText, validateForm } from "../../layout/FormInputs";
@@ -32,6 +33,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
+import AddOverheadMaster from './AddOverheadMaster';
 import { checkEffectiveDate } from '../masterUtil';
 
 const selector = formValueSelector('AddOverhead');
@@ -48,6 +50,7 @@ class AddOverhead extends Component {
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isVendorNameNotSelected: false,
+      
       selectedPlants: [],
       ModelType: [],
       vendorName: [],
@@ -85,7 +88,6 @@ class AddOverhead extends Component {
       RMGrade: [],
       IsFinancialDataChanged: true,
       isAssemblyCheckbox: false,
-     
     }
   }
 
@@ -102,10 +104,9 @@ class AddOverhead extends Component {
       this.props.getRawMaterialNameChild(() => { })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.fetchCostingHeadsAPI('overhead', false,false, res => { });
-    this.getDetails();
+    this.props.fetchCostingHeadsAPI('Overhead and Profits', false, res => { });
+    // this.getDetails();
   }
-
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
   }
@@ -263,6 +264,7 @@ class AddOverhead extends Component {
   renderListing = (label) => {
     const { clientSelectList, modelTypes, plantSelectList, costingHead, rawMaterialNameSelectList, gradeSelectList } = this.props;
     const temp = [];
+    const excludedItems = ['RM', 'RM + CC', 'RM + CC + BOP', 'RM + BOP'];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
         if (item.Value === '0') return false
@@ -292,7 +294,12 @@ class AddOverhead extends Component {
 
     if (label === 'OverheadApplicability') {
       costingHead && costingHead.map(item => {
-        temp.push({ label: item.Text, value: item.Value });
+        if (item.Value === '0' || item.Text === 'Net Cost') return false;
+        if (!this.state.isAssemblyCheckbox && item.Text.includes('Part Cost')) {
+          return false;
+        } if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) {
+          return false;
+        } temp.push({ label: item.Text, value: item.Value });
         return null;
       });
       return temp;
@@ -914,8 +921,6 @@ class AddOverhead extends Component {
   * @description Used for Surface Treatment
   */
   onPressAssemblyCheckbox = () => {
-    let isRequestForMultiTechnology = !this.state.isAssemblyCheckbox ? true : false
-    this.props.fetchCostingHeadsAPI('overhead', false, isRequestForMultiTechnology, res => { });
     this.setState({
       isAssemblyCheckbox: !this.state.isAssemblyCheckbox,
       overheadAppli: [],
@@ -1463,6 +1468,27 @@ class AddOverhead extends Component {
                       </div>
                     </Row>
                   </form>
+
+                  {/* <AddOverheadsDetails 
+                    modelTypes={this.props.modelTypes} 
+                    costingHead={this.props.costingHead} 
+                    plantSelectList={this.props.plantSelectList} 
+                    costingTypeId={this.state.costingTypeId}
+                    modelType={this.state.ModelType}
+                    handleModelTypeChange={this.handleModelTypeChange}
+                  /> */}
+
+                  <AddOverheadMaster 
+                    // modelTypes={this.props?.modelTypes} 
+                    // costingHead={this.props.costingHead} 
+                    // plantSelectList={this.props.plantSelectList} 
+
+                    // costingTypeId={this.state.costingTypeId}
+                    // modelType={this.state.ModelType}
+                    // handleModelTypeChange={this.handleModelTypeChange}
+                    hideForm={this.props.hideForm}
+                    data={this.props.data}
+                  />
                 </div>
               </div>
             </div>
