@@ -1,17 +1,11 @@
-import React, { Component, useEffect, useRef, useState, } from 'react';
-// import { connect } from 'react-redux';
-// import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
+import React, { useEffect, useRef, useState, } from 'react';
 import { Row, Col, Label } from 'reactstrap';
-import { Field } from "redux-form";
 import { required, getCodeBySplitting, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, maxLength512, acceptAllExceptSingleSpecialCharacter, validateFileName } from "../../../helper";
-import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText, validateForm } from "../../layout/FormInputs";
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, PROFITMASTER, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
-import { SearchableSelectHookForm, DateTimePickerHookForm, TextFieldHookForm, DatePickerHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
+import { TextAreaHookForm } from '../../layout/HookFormInputs';
 import { debounce } from 'lodash'
-import AsyncSelect from 'react-select/async';
 import { LabelsClass } from '../../../helper/core';
 import AddOverheadMasterDetails from './AddOverheadMasterDetails';
 import Dropzone from 'react-dropzone-uploader';
@@ -23,9 +17,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import {
   createProfit, updateProfit, getProfitData, fileUploadProfit,
-} from '../actions/OverheadProfit';
-import {
-  createOverhead, updateOverhead, getOverheadData, fileUploadOverHead,
+  getProfitDataCheck,
 } from '../actions/OverheadProfit';
 import { fetchApplicabilityList, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
@@ -43,24 +35,13 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const AddProfitMaster = (props) => {
     const dropzoneRef = useRef(null);
     const { t } = useTranslation("MasterLabels");
-    // const {isEditFlag, costingTypeId, modelTypes, costingHead} = props
-    // const {isEditFlag, costingTypeId, modelTypes, plantSelectList, modelType, handleModelTypeChange} = props
-
-    // const {modelTypes, plantSelectList, costingTypeId, modelType, handleModelTypeChange } = props
-    // const {modelTypes, plantSelectList, modelType, handleModelTypeChange } = props
     const { plantSelectList, modelType, handleModelTypeChange } = props
-
     const dispatch = useDispatch();
     const conditionTypeId = getCostingConditionTypes(PROFITMASTER);
-    // const menu = useSelector((state) => state.menu);
-
     const clientSelectList = useSelector((state) => state.client.clientSelectList);
-    // const costingHead = useSelector((state) => state.comman.applicabilityList);
 
     const [state, setState] = useState({
         ProfitID: "",
-        // ModelType: "",
-        // vendorName: "",
         Plant: "",
         clientName: "",
         EffectiveDate: "",
@@ -68,9 +49,7 @@ const AddProfitMaster = (props) => {
         OverheadPercentage: "",
         ApplicabilityDetails: [],
         isAssemblyCheckbox: false,
-
         costingTypeId: ZBCTypeId,
-
         selectedPlants: [],
         vendorName: [],
         vendorCode: '',
@@ -79,9 +58,7 @@ const AddProfitMaster = (props) => {
         ModelType: [],
         DataToChange: [],
         IsFinancialDataChanged: true,
-
         showPopup: false,
-
         isEditFlag: false,
         isViewMode: props?.data?.isViewMode ? true : false, 
         remarks: "",
@@ -89,13 +66,13 @@ const AddProfitMaster = (props) => {
         uploadAttachements: true,
         setDisable: false,
         attachmentLoader: false,
-
         inputLoader: false,
         vendorFilterList: [],
-
         RawMaterial: [],
         RMGrade: [],
         RMSpec: [],
+        DropdownNotChanged: true,
+        minEffectiveDate: ''
     })
 
     const {isEditFlag, isViewMode, files, uploadAttachements, setDisable, attachmentLoader, selectedPlants, vendorName, vendorCode, client, singlePlantSelected, costingTypeId, ModelType} = state
@@ -104,9 +81,6 @@ const AddProfitMaster = (props) => {
             mode: 'onChange',
             reValidateMode: 'onChange',
             // defaultValues: defaultValues,
-            defaultValues: {
-                exampleField: '',
-            },
     })
 
     useEffect(() => {
@@ -118,61 +92,97 @@ const AddProfitMaster = (props) => {
           dispatch(getRawMaterialNameChild(() => { }));
         }
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }));
-        // dispatch(fetchCostingHeadsAPI('Overhead and Profits', false, res => { }));
         dispatch(fetchApplicabilityList(null, conditionTypeId, false, res => {
-          // if(res && res.data && res.data.Result){
-          //   setState(prev => ({ ...prev, ApplicabilityDetails: res.data.SelectList, }));
-          // }
+
          }));
         getDetails();
     }, [])
 
+    useEffect(() => {
+      if (!(props?.data?.isEditFlag || state.isViewMode)) {
+        const hasRequiredFields = (
+          (state.costingTypeId === ZBCTypeId) ||
+          (state.costingTypeId === CBCTypeId && state?.client) ||
+          (state.costingTypeId === VBCTypeId && state?.vendorName)
+        );
+        if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants && !(Object.keys(state?.DataToChange).length > 0)) {
+          let data = {
+            profitId: state?.ProfitID ?? null,
+            modelTypeId: state?.ModelType?.value,
+            costingHeadId: state?.costingTypeId,
+            plantId: state?.selectedPlants[0]?.value ?? null,
+            vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
+            customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
+            effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+            technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null
+          }
+          dispatch(getProfitDataCheck(data, (res) => {
+            if (res?.status === 200) {
+              let Data = res?.data?.Data;
+              if(Object.keys(Data).length > 0){
+                setDetails(Data);
+              }
+            }
+          }));
+        }
+      }
+    }, [state?.costingTypeId, state?.ModelType, state?.selectedPlants, state?.vendorName, state?.client, state?.EffectiveDate, state.isAssemblyCheckbox]);
+
+
+    const setDetails = (Data) => {
+      setState(prev => ({ ...prev, DataToChange: Data }));
+      setState(prev => ({ ...prev, minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '' }));
+      setTimeout(() => {
+        setValue("ModelType", { label: Data.ModelType, value: Data.ModelTypeId })
+        setValue("isAssemblyCheckbox", Data.TechnologyId === ASSEMBLY ? true : false)
+        setValue("Remark", Data.Remark)
+        setValue("costingTypeId", Data.CostingTypeId)
+        setValue("clientName", Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [])
+        setValue("vendorName", Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [])
+        setValue("Plant", Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [])
+        setValue("DestinationPlant", Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {})
+        // setValue("EffectiveDate", Data.EffectiveDate && DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '')
+        setValue("EffectiveDate", DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '')
+
+        setState(prev => ({ ...prev, 
+            IsFinancialDataChanged: false,
+            isEditFlag: true,
+            costingTypeId: Data.CostingTypeId,
+            ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
+            vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
+            client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+            remarks: Data.Remark,
+            files: Data.Attachements,
+            EffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+            selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [],
+            singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {},
+            RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
+            RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
+            isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false,
+            ApplicabilityDetails: Data.ApplicabilityDetails
+        }));
+
+        let files = Data.Attachements && Data.Attachements.map((item) => {
+          item.meta = {}
+          item.meta.id = item.FileId
+          item.meta.status = 'done'
+          return item
+        })
+        if (dropzoneRef.current !== null) {
+            dropzoneRef.current.files = files
+        }
+      }, 500)
+    }
+
 
     const getDetails = () => {
-      debugger
         const { data } = props;
         if (data && data.isEditFlag) {
             setState(prev => ({ ...prev, isEditFlag: false, isLoader: true, ProfitID: data.Id, }));
             dispatch(getProfitData(data.Id, res => {
-            debugger
             if (res && res.data && res.data.Result) {
               const Data = res.data.Data;
-            //   Data.OverheadCCPercentage = Data?.OverheadMachiningCCPercentage;
-              setState(prev => ({ ...prev, DataToChange: Data }));
-              Data?.OverheadApplicabilityType?.includes("Part Cost") ? setState(prev => ({ ...prev, showPartCost: true })) : setState(prev => ({ ...prev, showPartCost: false }))
-              this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-              setState(prev => ({ ...prev, minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' }));
-              setTimeout(() => {
-                const { costingHead } = this.props;
-                const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.OverheadApplicabilityId)
-                setState(prev => ({ ...prev, 
-                    IsFinancialDataChanged: false,
-                    isEditFlag: true,
-                    costingTypeId: Data.CostingTypeId,
-                    ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
-                    vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
-                    client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
-                    overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
-                    remarks: Data.Remark,
-                    files: Data.Attachements,
-                    effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                    selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [],
-                    singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {},
-                    RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
-                    RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
-                    isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false 
-                }));
-    
-                let files = Data.Attachements && Data.Attachements.map((item) => {
-                  item.meta = {}
-                  item.meta.id = item.FileId
-                  item.meta.status = 'done'
-                  return item
-                })
-                if (dropzoneRef.current !== null) {
-                    dropzoneRef.current.files = files
-                }
-              }, 500)
+              setDetails(Data);
             }
           }
         ));
@@ -189,9 +199,8 @@ const AddProfitMaster = (props) => {
     };
 
   const onSubmit = debounce(handleSubmit((values) => {
-    debugger
-      const { client, costingTypeId, ModelType, vendorName, overheadAppli, selectedPlants, remarks, ProfitID, RMGrade, ApplicabilityDetails,
-        isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged } = state;
+      const { client, costingTypeId, ModelType, vendorName, selectedPlants, remarks, ProfitID, RMGrade, ApplicabilityDetails,
+        singlePlantSelected, isEditFlag, files, EffectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged } = state;
       const userDetailsProfit = JSON.parse(localStorage.getItem('userDetail'))
       let plantArray = []
       if (costingTypeId === VBCTypeId) {
@@ -215,37 +224,12 @@ const AddProfitMaster = (props) => {
       if (vendorName.length <= 0) {
   
         if (costingTypeId === VBCTypeId) {
-          // this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
-          setState(prev => ({ ...prev, isVendorNameNotSelected: true, setDisable: false }));
+          setState(prev => ({ ...prev, isVendorNameNotSelected: true, setDisable: false })); // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
           return false
         }
       }
-      // this.setState({ isVendorNameNotSelected: false })
       setState(prev => ({ ...prev, isVendorNameNotSelected: false }));
-  
       if (isEditFlag) {
-  
-        // if (values.OverheadPercentage === '') {
-        //   values.OverheadPercentage = null
-        // }
-        // if (values.OverheadRMPercentage === '') {
-        //   values.OverheadRMPercentage = null
-        // }
-        // if (values.OverheadCCPercentage === '') {
-        //   values.OverheadCCPercentage = null
-        // }
-        // if (values.OverheadBOPPercentage === '') {
-        //   values.OverheadBOPPercentage = null
-        // }
-  
-        // if (
-        //   (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
-        //   && Number(DataToChange.OverheadCCPercentage) === Number(values.OverheadCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
-        //   && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
-        //   Toaster.warning('Please change the data to save Overhead Details')
-        //   return false
-        // }
-
         if (
             (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged 
               && (JSON.stringify(ApplicabilityDetails) === JSON.stringify(DataToChange.ApplicabilityDetails))
@@ -254,57 +238,44 @@ const AddProfitMaster = (props) => {
               Toaster.warning('Please change the data to save Overhead Details')
               return false
             }
-
-        // this.setState({ setDisable: true })
         setState(prev => ({ ...prev, setDisable: true }));
         let updatedFiles = files.map((file) => {
           return { ...file, ContextId: ProfitID }
         })
         let requestData = {
           ProfitId: ProfitID,
-                  VendorName: costingTypeId === VBCTypeId ? vendorName.label : '',
-                  IsClient: costingTypeId === CBCTypeId ? true : false,
-                  CustomerName: costingTypeId === CBCTypeId ? client.label : '',
-                //   ProfitApplicabilityType: profitAppli.label,
-                  ModelType: ModelType.label,
-                  CostingTypeId: costingTypeId,
-                //   IsCombinedEntry: !isProfitPercent ? true : false,
-                //   ProfitPercentage: values.ProfitPercentage,
-                //   ProfitMachiningCCPercentage: values.ProfitCCPercentage,
-                //   ProfitBOPPercentage: values.ProfitBOPPercentage,
-                //   ProfitRMPercentage: values.ProfitRMPercentage,
-                  Remark: remarks,
-                  VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
-                  VendorCode: this.state.vendorCode ? this.state.vendorCode : "",
-                  CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-                //   ProfitApplicabilityId: profitAppli.value,
-                  ModelTypeId: ModelType.value,
-                  IsActive: true,
-                  CreatedDate: '',
-                  CreatedBy: loggedInUserId(),
-                  Attachements: updatedFiles,
-                  EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-                  IsForcefulUpdated: true,
-                  Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-                  RawMaterialChildId: RawMaterial?.value,
-                  RawMaterialName: RawMaterial?.label,
-                  RawMaterialGradeId: RMGrade?.value,
-                  RawMaterialGrade: RMGrade?.label,
-                  IsFinancialDataChanged: IsFinancialDataChanged,
-                  ApplicabilityDetails: ApplicabilityDetails
+          VendorName: costingTypeId === VBCTypeId ? vendorName.label : '',
+          IsClient: costingTypeId === CBCTypeId ? true : false,
+          CustomerName: costingTypeId === CBCTypeId ? client.label : '',
+          ModelType: ModelType.label,
+          CostingTypeId: costingTypeId,
+          Remark: remarks,
+          VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
+          VendorCode: state.vendorCode ? state.vendorCode : "",
+          CustomerId: costingTypeId === CBCTypeId ? client.value : '',
+          ModelTypeId: ModelType.value,
+          IsActive: true,
+          CreatedDate: '',
+          CreatedBy: loggedInUserId(),
+          Attachements: updatedFiles,
+          EffectiveDate: DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+          IsForcefulUpdated: true,
+          Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+          RawMaterialChildId: RawMaterial?.value,
+          RawMaterialName: RawMaterial?.label,
+          RawMaterialGradeId: RMGrade?.value,
+          RawMaterialGrade: RMGrade?.label,
+          IsFinancialDataChanged: IsFinancialDataChanged,
+          ApplicabilityDetails: ApplicabilityDetails
         }
         if (isEditFlag && IsFinancialDataChanged) {
-          if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          if (DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
             Toaster.warning('Please update the effective date')
-            // this.setState({ setDisable: false })
             setState(prev => ({ ...prev, setDisable: false }));
             return false
           }
         }
-
-        console.log("requestData:", requestData)
         dispatch(updateProfit(requestData, (res) => {
-          // this.setState({ setDisable: false })
           setState(prev => ({ ...prev, setDisable: false }));
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
@@ -312,40 +283,31 @@ const AddProfitMaster = (props) => {
           }
         }));
       } else {
-        // this.setState({ setDisable: true })
         setState(prev => ({ ...prev, setDisable: true }));
         const formData = {
           EAttachementEntityName: 0,
           CostingTypeId: costingTypeId,
-            //   IsCombinedEntry: !isProfitPercent ? true : false,
-            //   ProfitPercentage: !isProfitPercent ? values.ProfitPercentage : '',
-            //   ProfitMachiningCCPercentage: !isCC ? values.ProfitCCPercentage : '',
-            //   ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',
-            //   ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
-                Remark: remarks,
-                VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
-                VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
-                CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-            //   ProfitApplicabilityId: profitAppli.value,
-                ModelTypeId: ModelType.value,
-                IsActive: true,
-                CreatedDate: '',
-                CreatedBy: loggedInUserId(),
-                Attachements: files,
-                EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-                Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-                RawMaterialChildId: RawMaterial?.value,
-                RawMaterialName: RawMaterial?.label,
-                RawMaterialGradeId: RMGrade?.value,
-                RawMaterialGrade: RMGrade?.label,
-                IsFinancialDataChanged: IsFinancialDataChanged,
-                TechnologyId: this.state.isAssemblyCheckbox ? ASSEMBLY : null,
-                ApplicabilityDetails: ApplicabilityDetails
+          Remark: remarks,
+          VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
+          VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
+          CustomerId: costingTypeId === CBCTypeId ? client.value : '',
+          ModelTypeId: ModelType.value,
+          IsActive: true,
+          CreatedDate: '',
+          CreatedBy: loggedInUserId(),
+          Attachements: files,
+          EffectiveDate: DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+          Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+          RawMaterialChildId: RawMaterial?.value,
+          RawMaterialName: RawMaterial?.label,
+          RawMaterialGradeId: RMGrade?.value,
+          RawMaterialGrade: RMGrade?.label,
+          IsFinancialDataChanged: IsFinancialDataChanged,
+          TechnologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
+          ApplicabilityDetails: ApplicabilityDetails
         }
 
-        console.log("formData:", formData)
         dispatch(createProfit(formData, (res) => {
-          // this.setState({ setDisable: false })
           setState(prev => ({ ...prev, setDisable: false }));
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.PROFIT_ADDED_SUCCESS);
@@ -353,10 +315,9 @@ const AddProfitMaster = (props) => {
           }
         }));
       }
-  }, (errors) => {  // Handle form errors
-    console.log( errors);  // Check if there are validation errors
-    debugger;
-}),  500);
+  }, (errors) => { 
+      console.log( errors);  // Check if there are validation errors
+  }),  500);
 
     const handleApplicabilityChange = (e) => {
         setState(prev => ({ ...prev, OverheadApplicability: e }));
@@ -364,7 +325,8 @@ const AddProfitMaster = (props) => {
     }
 
     const handleMessageChange = (e) => {
-        setState(prev => ({ ...prev, remarks: e?.target?.value }));
+      setValue("Remark", e?.target?.value);
+      setState(prev => ({ ...prev, remarks: e?.target?.value }));
     }
 
     const deleteFile = (FileId, OriginalFileName) => {
@@ -470,11 +432,8 @@ const AddProfitMaster = (props) => {
         'DestinationPlant',
         'clientName',
         'OverheadApplicability',
-        // 'OverheadPercentage',
-        // 'OverheadRMPercentage',
-        // 'OverheadCCPercentage',
-        // 'OverheadBOPPercentage',
         'RawMaterialGradeId',
+        'OverheadPercentage',
         'RawMaterialId',
       ];
     
@@ -499,8 +458,7 @@ const AddProfitMaster = (props) => {
 
     const cancel = (type) => {
         reset();
-        setState(prev => ({ ...prev, remarks: '', IsVendor: false, ModelType: [], vendorName: [], overheadAppli: [], }));
-        // this.props.getOverheadData('', res => { })
+        setState(prev => ({ ...prev, remarks: '', IsVendor: false, ModelType: [], vendorName: [] }));
         dispatch(getProfitData('', res => { }))
         props.hideForm(type)
     }
@@ -542,11 +500,8 @@ const AddProfitMaster = (props) => {
                 </div>
 
                 <form noValidate className="form"
-                onSubmit={handleSubmit(onSubmit)}
-                onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}
-                    // onSubmit={handleSubmit(onSubmit)}
-                    // onSubmit={handleSubmit(onSubmit)}
-                    // onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}
+                  onSubmit={handleSubmit(onSubmit)}
+                  onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}
                 >
                   <Row>
                     <Col md="12">
@@ -595,27 +550,18 @@ const AddProfitMaster = (props) => {
                     </Col>
                   </Row>
 
-
-
-
                     <AddOverheadMasterDetails 
-                        // modelTypes={modelTypes} 
-                        // costingHead={costingHead} 
-                        // plantSelectList={plantSelectList} 
-                        costingTypeId={costingTypeId}
-                        ModelType={ModelType}
-                        // handleModelTypeChange={handleModelTypeChange}
-
-                        handleApplicabilityChange={handleApplicabilityChange}
-                        state={state}
-                        setState={setState}
-
-                        register={register}
-                        handleSubmit={handleSubmit}
-                        control={control}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
+                      costingTypeId={costingTypeId}
+                      ModelType={ModelType}
+                      handleApplicabilityChange={handleApplicabilityChange}
+                      state={state}
+                      setState={setState}
+                      register={register}
+                      control={control}
+                      setValue={setValue}
+                      getValues={getValues}
+                      errors={errors}
+                      isOverHeadMaster={false}
                     />
 
                     <Row>
@@ -647,7 +593,6 @@ const AddProfitMaster = (props) => {
                                 />
                             </div>
                         </Col>
-
 
                         <Col md="3">
                             <label>Upload Files (upload up to {getConfigurationKey()?.MaxMasterFilesToUpload} files) <AttachmentValidationInfo /></label>
@@ -699,7 +644,6 @@ const AddProfitMaster = (props) => {
                             {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                             {files &&
                                 files.map((f) => {
-                                    debugger
                                 const withOutTild = f.FileURL.replace(
                                     "~",
                                     ""
@@ -729,8 +673,6 @@ const AddProfitMaster = (props) => {
                         </Col>
                     </Row>
 
-
-
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                         <button id="AddOverhead_Cancel"
@@ -746,23 +688,19 @@ const AddProfitMaster = (props) => {
                         {!isViewMode && <button id="AddOverhead_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
-                            // disabled={isViewMode || setDisable}
+                            disabled={state?.isViewMode || setDisable}
                         >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
                         </button>}
                         </div>
                     </Row>
-                    
                 </form>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-
-        
         {
           state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }

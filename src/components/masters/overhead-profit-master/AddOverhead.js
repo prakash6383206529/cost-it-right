@@ -1468,27 +1468,6 @@ class AddOverhead extends Component {
                       </div>
                     </Row>
                   </form>
-
-                  {/* <AddOverheadsDetails 
-                    modelTypes={this.props.modelTypes} 
-                    costingHead={this.props.costingHead} 
-                    plantSelectList={this.props.plantSelectList} 
-                    costingTypeId={this.state.costingTypeId}
-                    modelType={this.state.ModelType}
-                    handleModelTypeChange={this.handleModelTypeChange}
-                  /> */}
-
-                  <AddOverheadMaster 
-                    // modelTypes={this.props?.modelTypes} 
-                    // costingHead={this.props.costingHead} 
-                    // plantSelectList={this.props.plantSelectList} 
-
-                    // costingTypeId={this.state.costingTypeId}
-                    // modelType={this.state.ModelType}
-                    // handleModelTypeChange={this.handleModelTypeChange}
-                    hideForm={this.props.hideForm}
-                    data={this.props.data}
-                  />
                 </div>
               </div>
             </div>
