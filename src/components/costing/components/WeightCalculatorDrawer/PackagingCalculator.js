@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Row, Col, Container, Table, } from 'reactstrap'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { number, checkWhiteSpaces, maxLength7, maxLength5, maxLength4, maxLength3, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey } from '../../../../helper'
+import { number, checkWhiteSpaces, maxLength7, maxLength5, maxLength4, maxLength3, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey, decimalNumberLimit6 } from '../../../../helper'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
@@ -37,6 +37,7 @@ function PackagingCalculator(props) {
         editIndex: '',
         calculationCriteria: '',
         isVolumeAutoCalculate: false,
+        disableFields: false
     })
     const { costingData, CostingEffectiveDate } = useSelector(state => state.costing)
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
@@ -76,11 +77,17 @@ function PackagingCalculator(props) {
         name: ['NoOfComponentsPerCrate', 'StockNormDays', 'WeightOfCover', 'CostOfCrate', 'CostOfCoverPerKg', 'AmortizedNoOfYears', 'NoOfPartsPerCover', 'SpacerPackingInsertCost', 'NoOfSpacerPackingInsert'],
         defaultValue: []
     })
+    const noOfCratesRequiredPerDay = useWatch({
+        control: controlPackaging,
+        name: ['NoOfCratesRequiredPerDay'],
+        defaultValue: []
+    })
+  
     useEffect(() => {
         if (!CostingViewMode && calclulationFieldValues.some(value => value !== undefined)) {
             calculateAllValues();
         }
-    }, [calclulationFieldValues, state?.spacerPackingInsertRecoveryCostPerKg, state?.volumePerDay, state?.volumePerAnnum, state?.totalCostOfCrate, state?.totalAddedCost, state?.totalCostOfCrateWithAddedCost, state.isVolumeAutoCalculate]);
+    }, [calclulationFieldValues, state?.spacerPackingInsertRecoveryCostPerKg, state?.volumePerDay, state?.volumePerAnnum, state?.totalCostOfCrate, state?.totalAddedCost, state?.totalCostOfCrateWithAddedCost, state.isVolumeAutoCalculate,noOfCratesRequiredPerDay]);
     useEffect(() => {
 
         const tempData = rowObjData?.SimulationTempData
@@ -118,7 +125,7 @@ function PackagingCalculator(props) {
         const stockNormDays = getValuesPackaging('StockNormDays');
         const costOfCrate = getValuesPackaging('CostOfCrate');
 
-        if (noOfComponentsPerCrate && stockNormDays && costOfCrate) {
+        if (noOfComponentsPerCrate && stockNormDays && costOfCrate && state?.calculationCriteria) {
             setState((prevState) => ({ ...prevState, disableCost: false }));
         } else {
             setState((prevState) => ({ ...prevState, disableCost: true }));
@@ -129,14 +136,33 @@ function PackagingCalculator(props) {
             return sum + Number(item.NetCost || 0);
 
         }, 0);
+        let totalCostOfCrateWithAddedCost=0
         let cost = state.calculationCriteria?.label === "Annual Volume Basis" ? state.totalCostOfCrate : checkForNull(getValuesPackaging('CostOfCrate'))
-        let totalCostOfCrateWithAddedCost = cost + totalAddedCost
+        if(state?.calculationCriteria?.label === 'Bin/Trolley Life Basis'){
+            totalCostOfCrateWithAddedCost = (cost + totalAddedCost) * checkForNull(getValuesPackaging('StockNormDays'))
+        }else if (state.calculationCriteria?.label === 'Annual Volume Basis'){
+            totalCostOfCrateWithAddedCost = cost + totalAddedCost
+        }else{
+            totalCostOfCrateWithAddedCost = totalAddedCost
+        }
+        console.log(totalCostOfCrateWithAddedCost,'totalCostOfCrateWithAddedCost')
         setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice))
         setState(prev => ({
             ...prev,
             totalAddedCost,
             totalCostOfCrateWithAddedCost
         }));
+        if(state?.gridTable && state?.gridTable?.length > 0){
+            setState(prev => ({
+                ...prev,
+                disableFields:true,
+            }));
+        }else{
+            setState(prev => ({
+                ...prev,
+                disableFields:false,
+            }));
+        }
     }, [state.gridTable])
     useEffect(() => {
         if (!CostingViewMode && state.calculationCriteria?.label === "Annual Volume Basis" && state.isVolumeAutoCalculate) {
@@ -179,7 +205,7 @@ function PackagingCalculator(props) {
     const calculateVolumePerDay = () => {
         const volumePerDay = getValuesPackaging('VolumePerAnnum') / 12 * DaysInMonthForVolumePerDay
         setValuePackaging('VolumePerDay', checkForDecimalAndNull(volumePerDay, NoOfDecimalForInputOutput))
-        setState((prevState) => ({ ...prevState, volumePerDay: volumePerDay }))
+        setState((prevState) => ({ ...prevState, volumePerDay: volumePerDay ,volumePerAnnum:getValuesPackaging('VolumePerAnnum')}))
     }
     const renderListing = (label) => {
         const temp = [];
@@ -286,8 +312,8 @@ function PackagingCalculator(props) {
             { label: t('volumePerAnnum', { defaultValue: 'Volume per annum' }), name: 'VolumePerAnnum', mandatory: false, disabled: state.isVolumeAutoCalculate || CostingViewMode, ...(state.isVolumeAutoCalculate ? {tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} * ${DaysInMonthForVolumePerDay} * 12`, width: '250px', disabledIcon: true }} : {}) },
             { label: t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' }), name: 'NoOfCratesRequiredPerDay', mandatory: false, disabled: state.isVolumeAutoCalculate || CostingViewMode, ...(state.isVolumeAutoCalculate ? {tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} / ${t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' })}`, width: '250px', disabledIcon: true }} : {}) }
         ] : []),
-        { label: t('stockNormDays', { defaultValue: 'Stock Norm days' }), name: 'StockNormDays', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('costOfCrate', { defaultValue: 'Cost of crate/trolley' }), name: 'CostOfCrate', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
+        { label: t('stockNormDays', { defaultValue: 'Stock Norm days' }), name: 'StockNormDays', mandatory: true, disabled: state.disableFields || CostingViewMode },
+        { label: t('costOfCrate', { defaultValue: 'Cost of crate/trolley' }), name: 'CostOfCrate', mandatory: true, disabled: state.disableFields || CostingViewMode },
         ...(state.calculationCriteria?.label === "Annual Volume Basis" ? [
             { label: t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' }), name: 'TotalCostOfCrate', mandatory: false, disabled: true, tooltip: { text: `${t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' })} * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })} * ${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })}`, width: '250px', disabledIcon: true } },
         ] : []),
@@ -351,10 +377,12 @@ function PackagingCalculator(props) {
         }
     }
     const totalCostOfCrateWithAddedCostText = () => {
-        if(state.calculationCriteria?.label === 'Bin/Trolley Life Basis'||state.calculationCriteria?.label === 'Polymer Trolley Calculation'){
-            return `${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}`
-        }else{
+        if(state.calculationCriteria?.label === 'Bin/Trolley Life Basis'){
+                    return `(${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}) * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })}`
+        }else if(state.calculationCriteria?.label === 'Annual Volume Basis'){
             return `${t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' })} + ${t('totalAddedCost', { defaultValue: 'Additional cost' })}`
+        }else{
+            return `${t('totalAddedCost', { defaultValue: 'Additional cost' })}`
         }
     }
     const packagingCalculatorSection2 = [
@@ -418,7 +446,7 @@ function PackagingCalculator(props) {
                     + spacerCostChecked;
                 break;
             case "Polymer Trolley Calculation":
-                packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (noOfComponentsPerCrate / stockNormDays) * 300)
+                packagingCost = checkForNull(totalCostOfCrateWithAddedCost / ((noOfComponentsPerCrate / stockNormDays) * 300))
                     + coverCost
                     + spacerCostChecked;
                 break;
@@ -652,14 +680,17 @@ function PackagingCalculator(props) {
                                         Controller={Controller}
                                         control={controlPackaging}
                                         register={registerPackaging}
-                                        mandatory={false}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                        }}
                                         options={renderListing('calculationCriteria')}
                                         handleChange={handleCalculationCriteriaChange}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errorsPackaging.CalculationCriteria}
-                                        disabled={CostingViewMode}
+                                        disabled={state.disableFields || CostingViewMode }
                                     />
                                 </Col>
                                 <Col md="3">
@@ -671,7 +702,7 @@ function PackagingCalculator(props) {
                                         register={registerPackaging}
                                         rules={{
                                             required: true,
-                                            validate: { number,maxLength5 },
+                                            validate: { number,decimalNumberLimit6 },
                                         }}
                                         mandatory={true}
                                         handleChange={() => { }}
@@ -725,7 +756,7 @@ function PackagingCalculator(props) {
                                             mandatory={item.mandatory}
                                             rules={{
                                                 required: item.mandatory,
-                                                validate: { number, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
+                                                validate: { number,decimalNumberLimit6, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
                                                 max: item.percentageLimit ? {
                                                     value: 100,
                                                     message: 'Percentage value should be equal to 100'
@@ -741,7 +772,8 @@ function PackagingCalculator(props) {
                                                 (state.gridTable.length > 0 &&
                                                     (name === 'NoOfComponentsPerCrate' ||
                                                         name === 'StockNormDays' ||
-                                                        name === 'CostOfCrate'))
+                                                        name === 'CostOfCrate'||
+                                                        state?.calculationCriteria))
                                             } />
                                     </Col>
                                 })}
@@ -833,7 +865,7 @@ function PackagingCalculator(props) {
                                             mandatory={item.mandatory}
                                             rules={{
                                                 required: item.mandatory,
-                                                validate: { number, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
+                                                validate: { number,decimalNumberLimit6, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
                                                 max: item.percentageLimit ? {
                                                     value: 100,
                                                     message: 'Percentage value should be equal to 100'
