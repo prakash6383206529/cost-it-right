@@ -77,11 +77,17 @@ function PackagingCalculator(props) {
         name: ['NoOfComponentsPerCrate', 'StockNormDays', 'WeightOfCover', 'CostOfCrate', 'CostOfCoverPerKg', 'AmortizedNoOfYears', 'NoOfPartsPerCover', 'SpacerPackingInsertCost', 'NoOfSpacerPackingInsert'],
         defaultValue: []
     })
+    const noOfCratesRequiredPerDay = useWatch({
+        control: controlPackaging,
+        name: ['NoOfCratesRequiredPerDay'],
+        defaultValue: []
+    })
+  
     useEffect(() => {
         if (!CostingViewMode && calclulationFieldValues.some(value => value !== undefined)) {
             calculateAllValues();
         }
-    }, [calclulationFieldValues, state?.spacerPackingInsertRecoveryCostPerKg, state?.volumePerDay, state?.volumePerAnnum, state?.totalCostOfCrate, state?.totalAddedCost, state?.totalCostOfCrateWithAddedCost, state.isVolumeAutoCalculate]);
+    }, [calclulationFieldValues, state?.spacerPackingInsertRecoveryCostPerKg, state?.volumePerDay, state?.volumePerAnnum, state?.totalCostOfCrate, state?.totalAddedCost, state?.totalCostOfCrateWithAddedCost, state.isVolumeAutoCalculate,noOfCratesRequiredPerDay]);
     useEffect(() => {
 
         const tempData = rowObjData?.SimulationTempData
