@@ -21,7 +21,7 @@ import classnames from 'classnames';
 
 function AddForecast(props) {
     const dispatch = useDispatch();
-    const { isOpen, closeDrawer, anchor, isViewFlag, sopDate, handleSOPDateChange,addrmdetails, gridOptionsPart, onGridReady, EditableCallback, AssemblyPartNumber, isEditFlag, sopQuantityList, setSopQuantityList, partType, type,
+    const { isOpen, closeDrawer, anchor, isViewFlag, sopDate, handleSOPDateChange, addrmdetails, gridOptionsPart, onGridReady, EditableCallback, AssemblyPartNumber, isEditFlag, sopQuantityList, setSopQuantityList, partType, type,
         partTypeInPartList, n100Date, rmDetails } = props;
 
     const { register, setValue, getValues, formState: { errors }, control } = useForm({
@@ -38,7 +38,7 @@ function AddForecast(props) {
     const [tableData, setTableData] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
     const [childPart, setChildPart] = useState(null);
-    
+
     const [activeTab, setActiveTab] = useState("1");
 
     // Redux selectors
@@ -137,15 +137,28 @@ function AddForecast(props) {
 
     // Event handlers
     const handleSave = (isSave) => {
+        console.log("sopQuantityList", sopQuantityList)
+        console.log("tableData", tableData)
+
+        // const hasNonZeroQuantity = sopDate && (sopQuantityList && sopQuantityList.length > 0 && sopQuantityList[0].Quantity !== 0 && sopQuantityList[0].Quantity !== '0');
+        // if (tableData.length === 0) {
+        //     Toaster.warning("Please fill the RM Details.");
+        //     return;
+        // }else if(!hasNonZeroQuantity){
+        //     Toaster.warning("Please fill the first year's quantity.");
+        //     return;
+        // }
         if (isSave) {
             closeDrawer(true, sopQuantityList, tableData);
-        } else {
+        }
+        else {
             closeDrawer(false, sopQuantityList, tableData);
         }
     };
 
     // Add row to table
     const addRow = (index) => {
+        console.log("index", index)
         if (!rmName || !rmgrade || !rmspecification) {
             Toaster.warning("Please fill all required fields");
             return;
@@ -617,7 +630,7 @@ function AddForecast(props) {
                                                                     <button
                                                                         type="button"
                                                                         className="user-btn mt30 pull-left"
-                                                                        onClick={() => addRow(activeTab)}
+                                                                        onClick={() => addRow(0)}
                                                                         disabled={isViewFlag || (!isEditFlag ? (type === Component && activeTab === "1" ? false : false) : false)}
                                                                     >
                                                                         <div className="plus"></div>ADD
