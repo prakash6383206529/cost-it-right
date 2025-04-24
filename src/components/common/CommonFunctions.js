@@ -574,3 +574,7 @@ export const compareRateCommon = (otherCostData, conditionCostData) => {
         Toaster.warning("Please click on refresh button to update Condition Cost data.");
     }
 };
+
+export const checkEffectiveDate = (effectiveDate, effectiveDateToChange) => {
+    return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
+}

@@ -247,7 +247,7 @@ const SendForApproval = (props) => {
 
       }
       else {
-        if (initialConfiguration?.IsMultipleUserAllowForApproval && !dept?.label) {
+        if (initialConfiguration?.IsApprovalLevelFilterByPlant && !dept?.label) {
           Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.');
           return false;
         }
@@ -261,7 +261,7 @@ const SendForApproval = (props) => {
           // ApproverDepartmentId: dept?.value || '',
           ApproverLevel: approver?.levelName || '',
           // ApproverDepartmentName: dept?.label || '',
-          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval
+          ApproverIdList: initialConfiguration?.IsApprovalLevelFilterByPlant
             ? approverIdList
             : [approver?.value || ''],
           SenderLevelId: levelDetails?.LevelId,
@@ -283,7 +283,7 @@ const SendForApproval = (props) => {
           ReasonId: getValues('reason')?.value || '',
           Reason: getValues('reason')?.label || '',
           ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID,
-          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval
+          ApproverIdList: initialConfiguration?.IsApprovalLevelFilterByPlant
             ? classificationApproverIdList
             : [approver?.value || ''],
           ApproverDepartmentName: getValues('dept')?.label ?? '',
@@ -323,7 +323,7 @@ const SendForApproval = (props) => {
           ApproverDepartmentId: getValues('dept1')?.value ?? '',
           SenderRemark: getValues('remarks1'),
           ApprovalTypeId: LPSAPPROVALTYPEID,
-          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval
+          ApproverIdList: initialConfiguration?.IsApprovalLevelFilterByPlant
             ? lpsApproverIdList
             : [approver?.value || ''],
           FinalApprover: isFinalApproverLps,
@@ -771,7 +771,7 @@ const SendForApproval = (props) => {
                     </Col>}
                   <Col md="6">
                     {!isFinalApprover && <div className="input-group form-group col-md-12 input-withouticon">
-                      {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
+                      {initialConfiguration?.IsApprovalLevelFilterByPlant ? <>
                         <AllApprovalField
                           label="Approver"
                           approverList={classificationApprovalDropDown}
@@ -915,7 +915,7 @@ const SendForApproval = (props) => {
                       />
                     </Col>}
                   {!isFinalApproverLps && (<Col md="6">
-                    {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
+                    {initialConfiguration?.IsApprovalLevelFilterByPlant ? <>
                       <AllApprovalField
                         label="Approver"
                         approverList={lpsApprovalDropDown}

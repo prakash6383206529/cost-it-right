@@ -355,7 +355,7 @@ function SimulationApproveReject(props) {
           SenderLevel: levelDetails.Level,
           SenderId: userLoggedIn,
           // ApproverId: approver && approver.value ? approver.value : '',
-          ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+          ApproverIdList: initialConfiguration?.IsApprovalLevelFilterByPlant ? approverIdList : [approver && approver.value ? approver.value : ''],
           ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
           ApproverLevel: approver && approver.levelName ? approver.levelName : '',
           Remark: remark,
@@ -378,7 +378,7 @@ function SimulationApproveReject(props) {
         SenderLevel: levelDetails.Level,
         SenderId: userLoggedIn,
         // ApproverId: approver && approver.value ? approver.value : '',
-        ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+        ApproverIdList: initialConfiguration?.IsApprovalLevelFilterByPlant ? approverIdList : [approver && approver.value ? approver.value : ''],
         ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
         ApproverLevel: approver && approver.levelName ? approver.levelName : '',
         Remark: remark,
@@ -411,7 +411,7 @@ function SimulationApproveReject(props) {
       senderObj.ApproverLevel = approver && approver?.levelName ? approver?.levelName : ''
       senderObj.ApproverDepartmentName = dept && dept?.label ? dept?.label : ''
       senderObj.ApproverId = approver && approver?.value ? approver?.value : ''
-      senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver?.value ? approver?.value : '']
+      senderObj.ApproverIdList = initialConfiguration?.IsApprovalLevelFilterByPlant ? approverIdList : [approver && approver?.value ? approver?.value : '']
       senderObj.SenderLevelId = levelDetails?.LevelId
       senderObj.SenderLevel = levelDetails?.Level
       senderObj.SenderId = userLoggedIn

@@ -423,7 +423,7 @@ function MasterSendForApproval(props) {
         } else {
             setIsDisable(true)
 
-            if (initialConfiguration?.IsMultipleUserAllowForApproval && (initialConfiguration?.IsDivisionAllowedForDepartment ? false : !getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
+            if (initialConfiguration?.IsApprovalLevelFilterByPlant && (initialConfiguration?.IsDivisionAllowedForDepartment ? false : !getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
                 Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
                 setIsDisable(false)
                 return false
@@ -452,7 +452,7 @@ function MasterSendForApproval(props) {
                 senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
                 senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
                 // senderObj.ApproverId = approver && approver.value ? approver.value : ''
-                senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+                senderObj.ApproverIdList = initialConfiguration?.IsApprovalLevelFilterByPlant ? approverIdList : [approver && approver.value ? approver.value : '']
                 senderObj.SenderLevelId = levelDetails?.LevelId
                 senderObj.SenderId = loggedInUserId()
                 senderObj.SenderLevel = levelDetails?.Level
@@ -731,7 +731,7 @@ function MasterSendForApproval(props) {
                     SenderLevel: levelDetails.Level,
                     SenderDepartmentId: dept && dept.value ? dept.value : '',
                     SenderDepartmentName: dept && dept.label ? dept.label : '',
-                    ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+                    ApproverIdList: initialConfiguration?.IsApprovalLevelFilterByPlant ? approverIdList : [approver && approver.value ? approver.value : ''],
                     ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
                     ApproverLevel: approver && approver.levelName ? approver.levelName : '',
                     Remark: remark,
@@ -897,7 +897,7 @@ function MasterSendForApproval(props) {
                                                 options={departmentDropdown}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={initialConfiguration?.IsMultipleUserAllowForApproval || (type === 'Approve' && !props?.isRFQ) ? true : false && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
+                                                disabled={initialConfiguration?.IsApprovalLevelFilterByPlant || (type === 'Approve' && !props?.isRFQ) ? true : false && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
                                                 mandatory={true}
                                                 rules={{ required: true }}
 
@@ -921,7 +921,7 @@ function MasterSendForApproval(props) {
                                             />
                                         </Col>}
                                         {!isFinalApprover && <div className="input-group form-group col-md-6 input-withouticon">
-                                            {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
+                                            {initialConfiguration?.IsApprovalLevelFilterByPlant ? <>
                                                 <AllApprovalField
                                                     label="Approver"
                                                     approverList={approvalDropDown}

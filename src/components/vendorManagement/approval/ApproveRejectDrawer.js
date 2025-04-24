@@ -78,7 +78,7 @@ const ApproveRejectDrawer = (props) => {
 
                                     </div>
                                     <div className="input-group form-group col-md-12 input-withouticon">
-                                        {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
+                                        {initialConfiguration?.IsApprovalLevelFilterByPlant ? <>
                                             <AllApprovalField
                                                 label="Approver"
                                                 approverList={approvalDropDown}

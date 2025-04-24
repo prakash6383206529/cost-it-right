@@ -4,7 +4,7 @@ import AddRMDetails from "./AddRMDetails"
 import AddRMFinancialDetails from "./AddRMFinancialDetails"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, IsSelectSinglePlant, RM_MASTER_ID, VBCTypeId, ZBCTypeId } from "../../../config/constants"
 import { getCommodityIndexRateAverage } from '../../../../src/actions/Common';
-import { checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
+import {  convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import Switch from 'react-switch'
@@ -32,6 +32,7 @@ import { getRawMaterialDataBySourceVendor, setCommodityDetails, setOtherCostDeta
 import { useLabels } from "../../../helper/core";
 import { useQueryClient } from "react-query";
 import { fetchDivisionId } from "../../costing/CostingUtil";
+import { checkEffectiveDate } from "../masterUtil";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE,isRMAssociated } = props
@@ -261,7 +262,7 @@ function AddRMMaster(props) {
             TechnologyId: RM_MASTER_ID,
             Mode: 'master',
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state?.costingTypeId),
-            plantId: (getConfigurationKey().IsMultipleUserAllowForApproval && plantId) ? plantId : EMPTY_GUID,
+            plantId: (getConfigurationKey().IsApprovalLevelFilterByPlant && plantId) ? plantId : EMPTY_GUID,
             divisionId: null
         }
         if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
@@ -396,7 +397,7 @@ function AddRMMaster(props) {
         }
 
         let plantArray = []
-        if ((state?.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval && !IsSelectSinglePlant) || state?.isEditFlag) {
+        if ((state?.costingTypeId === ZBCTypeId && !getConfigurationKey().IsApprovalLevelFilterByPlant && !IsSelectSinglePlant) || state?.isEditFlag) {
             Plants && Plants.map((item) => {
                 plantArray.push({ PlantName: item.label, PlantId: item.value, PlantCode: '', })
                 return plantArray

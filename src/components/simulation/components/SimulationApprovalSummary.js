@@ -353,7 +353,7 @@ function SimulationApprovalSummary(props) {
                 divisionId: simulationData?.DivisionId ?? null,
                 ReceiverId: receiverId
             }
-            if (initialConfiguration?.IsMultipleUserAllowForApproval ? simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : true : true) {
+            if (initialConfiguration?.IsApprovalLevelFilterByPlant ? simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : true : true) {
                 dispatch(checkFinalUser(obj, res => {
                     if (res && res.data && res.data.Result) {
                         setFinalLevelUser(res.data.Data.IsFinalApprover)
