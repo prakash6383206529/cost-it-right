@@ -1,7 +1,7 @@
 {
     "discount": "Hundi/Discount",
     "return": "Return",
-    "toolMaintenanceCost": "Tool Maintenance Cost (per pcs)",
+    "toolMaintenanceCost": "Tool Maintenance Cost",
     "noOfComponentsPerCrate": "No. of components per crate/trolley",
     "amortizedNoOfYears": "Amortized no. of years",
     "weightOfCover": "Weight of cover (kg)",

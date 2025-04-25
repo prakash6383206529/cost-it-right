@@ -12,14 +12,18 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
 import NoContentFound from '../../../../common/NoContentFound';
-import { getSingleCostingDetails, gridDataAdded, setCostingViewData, setCostingViewDataForAssemblyTechnology } from '../../../actions/Costing';
+import { getSingleCostingDetails, gridDataAdded, setCostingViewData, setCostingViewDataForAssemblyTechnology, getBOPDrawerDataList } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
-import { AWAITING_APPROVAL_ID, CBCTypeId, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID, VBCTypeId, WACTypeId } from '../../../../../config/constants';
+import { AWAITING_APPROVAL_ID, CBCTypeId, EMPTY_DATA, EMPTY_GUID, NFRTypeId, NCCTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, REJECTEDID, VBCTypeId, WACTypeId, ZBCTypeId, PENDING_FOR_APPROVAL_ID, INR } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, decimalNumberLimit6, NoSignMaxLengthMessage } from "../../../../../helper/validation";
 import { useLabels } from '../../../../../helper/core';
 import TooltipCustom from '../../../../common/Tooltip';
+import AddBOP from '../../Drawers/AddBOP';
+import LoaderCustom from '../../../../common/Loader';
+import DayTime from '../../../../common/DayTimeWrapper';
+
 function EditPartCost(props) {
 
     const [gridData, setGridData] = useState([])
@@ -29,13 +33,19 @@ function EditPartCost(props) {
     const [isOpen, setIsOpen] = useState(false)
     const CostingViewMode = useContext(ViewCostingContext);
     const [technologyName, setTechnologyName] = useState('')
+    const [tableDataList, setTableDataList] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch()
+    const [selectedBOPItems, setSelectedBOPItems] = useState([]);
 
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const PartCostFields = 'PartCostFields';
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+
     const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
     const costData = useContext(costingInfoContext);
+
     const { ToolTabData, OverheadProfitTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, RMCCTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const { vendorLabel } = useLabels()
@@ -44,17 +54,29 @@ function EditPartCost(props) {
         reValidateMode: 'onChange',
     })
     const { currencySource } = useSelector(state => state.costing)
+    const isBOPView = props?.isBopEdit || false;
 
     useEffect(() => {
-        gridData && gridData.map((item, index) => {
-            setValue(`${PartCostFields}.${index}.DeltaValue`, item?.DeltaValue)
-            setValue(`${PartCostFields}.${index}.DeltaSign`, item?.DeltaSign)
-            setValue(`${PartCostFields}.${index}.SOBPercentage`, item?.SOBPercentage)
-            setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice))
-            return null
-        })
+        if (!isBOPView) {
+            gridData && gridData.map((item, index) => {
+                setValue(`${PartCostFields}.${index}.DeltaValue`, item?.DeltaValue)
+                setValue(`${PartCostFields}.${index}.DeltaSign`, item?.DeltaSign)
+                setValue(`${PartCostFields}.${index}.SOBPercentage`, item?.SOBPercentage)
+                setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice))
+                return null
+            })
+        } else {
+            selectedBOPItems && selectedBOPItems?.map((item, index) => {
+                setValue(`${PartCostFields}.${index}.DeltaValue`, item?.DeltaValue)
+                setValue(`${PartCostFields}.${index}.DeltaSign`, item?.DeltaSign)
+                setValue(`${PartCostFields}.${index}.SOBPercentage`, item?.SOBPercentage)
+                setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice))
+                return null
+            })
+            //calculateSelectedBOPWeightedCost();
 
-    }, [gridData])
+        }
+    }, [gridData, selectedBOPItems])
 
     useEffect(() => {
         let temp = []
@@ -77,11 +99,23 @@ function EditPartCost(props) {
                 tempObject.value = item?.BaseCostingId
                 tempObject.CustomerCode = item?.CustomerCode
                 tempObject.CustomerName = item?.CustomerName
+                if (isBOPView) {
+                    tempObject.BoughtOutPartId = item?.BoughtOutPartId
+                    tempObject.BoughtOutPartNumber = item?.BoughtOutPartNumber
+                    tempObject.Vendor = `${item?.VendorName} - ${item?.VendorCode}`
+                    tempObject.NetLandedCost = item?.SettledPrice
+                    tempObject.EffectiveDate = item?.EffectiveDate
+                }
                 tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
             })
             setWeightedCost(temp?.NetPOPrice)
-            setGridData(tempArray)
+
+            if (isBOPView) {
+                setSelectedBOPItems(tempArray)
+            } else {
+                setGridData(tempArray)
+            }
         }
     }, [settledCostingDetailsView])
 
@@ -106,11 +140,22 @@ function EditPartCost(props) {
                 tempObject.value = item?.BaseCostingId
                 tempObject.CustomerCode = item?.CustomerCode
                 tempObject.CustomerName = item?.CustomerName
-                tempArray.push(tempObject)
+                if (isBOPView) {
+                    tempObject.BoughtOutPartId = item?.BoughtOutPartId
+                    tempObject.BoughtOutPartNumber = item?.BoughtOutPartNumber
+                    tempObject.Vendor = `${item?.VendorName} - ${item?.VendorCode}`
+                    tempObject.NetLandedCost = item?.SettledPrice
+                    tempObject.EffectiveDate = item?.EffectiveDate
+                } tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
             })
+
             setWeightedCost(temp?.NetPOPrice)
-            setGridData(tempArray)
+            if (isBOPView) {
+                setSelectedBOPItems(tempArray)
+            } else {
+                setGridData(tempArray)
+            }
         }
     }, [settledCostingDetails])
 
@@ -139,7 +184,10 @@ function EditPartCost(props) {
             }))
         } else {
             dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, isViewMode, res => { }))
+
         }
+
+
         // dispatch(getEditPartCostDetails(obj, res => { }))
         return () => {
             gridData && gridData.map((item, index) => {
@@ -151,6 +199,30 @@ function EditPartCost(props) {
             })
         }
     }, [])
+
+    // useEffect(() => {
+    //     if (isBOPView && selectedBOPItems.length > 0) {
+    //         // Update form fields for each selected BOP item
+    //         selectedBOPItems.forEach((item, index) => {
+    //             setValue(`${PartCostFields}.${index}.DeltaValue`, item?.Delta || 0)
+    //             setValue(`${PartCostFields}.${index}.DeltaSign`, item?.DeltaSign || { label: '', value: '' })
+    //             setValue(`${PartCostFields}.${index}.SOBPercentage`, item?.SOBPercentage || 0)
+    //             setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetCost || 0, initialConfiguration?.NoOfDecimalForPrice))
+    //         });
+
+    //         // Calculate weighted cost based on selected BOPs
+    //         calculateSelectedBOPWeightedCost();
+    //     }
+    // }, [selectedBOPItems]);
+
+    const calculateSelectedBOPWeightedCost = () => {
+        let totalCost = 0;
+        selectedBOPItems.forEach(item => {
+            totalCost += Number(item.NetBoughtOutPartCost || 0) * Number(item.SOBPercentage || 0) / 100;
+        });
+
+        setWeightedCost(totalCost);
+    };
 
     /**
       * @method toggleDrawer
@@ -164,11 +236,15 @@ function EditPartCost(props) {
     };
 
     const netCostCalculator = (gridIndex, currentGrid = []) => {
-
         // TAKING OBJECT FROM WHOLE ARRAY LIST USING INDEX ON WHICH USER IS EDITING
-        let editedObject = gridData[gridIndex]
-        let weightedCostCalc = 0
-        let netCostLocalCurrency = 0
+        let editedObject;
+
+        if (isBOPView) {
+            editedObject = selectedBOPItems[gridIndex];
+            if (!editedObject) return;
+        } else {
+            editedObject = gridData[gridIndex];
+        }
 
         // GET RUN TIME EDITED VALUES FROM INPUT FIELD
         if (costData?.CostingTypeId === WACTypeId) {
@@ -178,7 +254,15 @@ function EditPartCost(props) {
             editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
             editedObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
             editedObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
-            let arr = Object.assign([...gridData], { [gridIndex]: editedObject })
+            let arr;
+            if (isBOPView) {
+                const updatedItems = [...selectedBOPItems];
+                updatedItems[gridIndex] = editedObject;
+                arr = updatedItems;
+            } else {
+                arr = Object.assign([...gridData], { [gridIndex]: editedObject });
+            }
+
             let sum = calcTotalSOBPercent(arr)
             if (sum > 100) {
                 Toaster.warning('Total SOB Percent should not be greater than 100');
@@ -188,49 +272,73 @@ function EditPartCost(props) {
 
             // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
             if (editedObject.DeltaSign?.label === '+') {
-                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPrice) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                let baseValue = isBOPView ? editedObject.NetLandedCost : editedObject.SettledPrice
+                let netCostLocalCurrency = percentageOfNumber(checkForNull(baseValue) + checkForNull(editedObject.DeltaValue || editedObject.Delta), checkForNull(editedObject.SOBPercentage))
                 editedObject.NetCost = netCostLocalCurrency
 
-                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceConversion) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-                editedObject.NetCost = netCostLocalCurrency
+                if (!isBOPView) {
+                    netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceConversion) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                    editedObject.NetCost = netCostLocalCurrency
 
-                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-                editedObject.NetCost = netCostLocalCurrency
+                    netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                    editedObject.NetCost = netCostLocalCurrency
+                }
 
                 setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration?.NoOfDecimalForPrice))
-            } if (editedObject.DeltaSign?.label === '-') {
-                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+            } else if (editedObject.DeltaSign?.label === '-') {
+                let baseValue = isBOPView ? editedObject.NetLandedCost : editedObject.SettledPrice
+                let netCostLocalCurrency = percentageOfNumber(checkForNull(baseValue) - checkForNull(editedObject.DeltaValue || editedObject.Delta), checkForNull(editedObject.SOBPercentage))
                 editedObject.NetCost = netCostLocalCurrency
 
-                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceConversion) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-                editedObject.NetCost = netCostLocalCurrency
+                if (!isBOPView) {
+                    netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceConversion) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                    editedObject.NetCost = netCostLocalCurrency
 
-                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-                editedObject.NetCost = netCostLocalCurrency
+                    netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                    editedObject.NetCost = netCostLocalCurrency
+                }
                 setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration?.NoOfDecimalForPrice))
-            } if (editedObject.DeltaSign === undefined) {
-                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
+            } else {
+                // When no delta sign is selected, just calculate based on SOB percentage
+                let baseValue = isBOPView ? editedObject.NetLandedCost : editedObject.SettledPrice
+                let netCostLocalCurrency = percentageOfNumber(checkForNull(baseValue), checkForNull(editedObject.SOBPercentage))
                 editedObject.NetCost = netCostLocalCurrency
 
-                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceConversion), checkForNull(editedObject.SOBPercentage))
-                editedObject.NetCost = netCostLocalCurrency
+                if (!isBOPView) {
+                    netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceConversion), checkForNull(editedObject.SOBPercentage))
+                    editedObject.NetCost = netCostLocalCurrency
 
-                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion), checkForNull(editedObject.SOBPercentage))
-                editedObject.NetCost = netCostLocalCurrency
+                    netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion), checkForNull(editedObject.SOBPercentage))
+                    editedObject.NetCost = netCostLocalCurrency
+                }
+
+                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration?.NoOfDecimalForPrice))
             }
-
         }
 
         // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
-        let gridTempArr = Object.assign([...gridData], { [gridIndex]: editedObject })
+        if (isBOPView) {
+            const updatedItems = [...selectedBOPItems];
+            updatedItems[gridIndex] = editedObject;
+            setSelectedBOPItems(updatedItems);
+        } else {
+            let gridTempArr = Object.assign([...gridData], { [gridIndex]: editedObject })
+            setGridData(gridTempArr)
+        }
 
         // CALCULATING TOTAL NET COST
-        weightedCostCalc = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-            return checkForNull(accummlator) + checkForNull(el.NetCost)
-        }, 0)
+        let weightedCostCalc = 0;
+        if (isBOPView) {
+            weightedCostCalc = selectedBOPItems && selectedBOPItems.reduce((accummlator, el) => {
+                return checkForNull(accummlator) + checkForNull(el.NetCost)
+            }, 0)
+        } else {
+            weightedCostCalc = gridData && gridData.reduce((accummlator, el) => {
+                return checkForNull(accummlator) + checkForNull(el.NetCost)
+            }, 0)
+        }
 
         setWeightedCost(weightedCostCalc)
-        setGridData(gridTempArr)
     }
     const calculateWeightedCost = (arrayTemp = []) => {
         let weightedCostCalc = 0
@@ -243,7 +351,34 @@ function EditPartCost(props) {
 
     const handleDeltaSignChange = (value, index) => {
         if (value?.label === '-') {
-            if (gridData && (checkForNull(gridData[index]?.SettledPriceLocalConversion) < checkForNull(gridData[index]?.DeltaValue))) {
+            let baseValue = isBOPView ? selectedBOPItems[index]?.NetLandedCost : gridData[index]?.SettledPriceLocalConversion
+            if (isBOPView && (checkForNull(baseValue) < checkForNull(getValues(`${PartCostFields}.${index}.DeltaValue`)))) {
+                Toaster.warning('Delta value should be less than settled price')
+
+                let tempGrid = isBOPView ? selectedBOPItems[index] : gridData[index]
+                tempGrid.DeltaSign = value
+                tempGrid.DeltaValue = 0
+                tempGrid.NetCost = 0
+
+                if (isBOPView) {
+                    let arr = Object.assign([...selectedBOPItems], { [index]: tempGrid })
+
+                    setWeightedCost(calculateWeightedCost(arr))
+                    setTableDataList(arr)
+                } else {
+                    let arr = Object.assign([...gridData], { [index]: tempGrid })
+                    setWeightedCost(calculateWeightedCost(arr))
+
+                    setGridData(arr)
+                }
+
+                setTimeout(() => {
+                    setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                    setValue(`${PartCostFields}.${index}.NetCost`, 0)
+                    setValue(`${PartCostFields}.${index}.DeltaSign`, value)
+                }, 200);
+                return false
+            } else if (!isBOPView && (checkForNull(baseValue) < checkForNull(getValues(`${PartCostFields}.${index}.DeltaValue`)))) {
                 Toaster.warning('Delta value should be less than settled price')
 
                 let tempGrid = gridData[index]
@@ -251,6 +386,7 @@ function EditPartCost(props) {
                 tempGrid.DeltaValue = 0
                 tempGrid.NetCost = 0
                 let arr = Object.assign([...gridData], { [index]: tempGrid })
+
                 setWeightedCost(calculateWeightedCost(arr))
                 setGridData(arr)
 
@@ -272,15 +408,27 @@ function EditPartCost(props) {
             netCostCalculator(index)
         }, 300);
     }
-
     const handleDeltaValue = (value, index) => {
-        if (gridData && (gridData[index]?.DeltaSign?.label === '-') && gridData[index]?.SettledPriceLocalConversion < value) {
 
+
+        let baseValue = isBOPView ? selectedBOPItems[index]?.NetLandedCost : gridData[index]?.SettledPriceLocalConversion
+
+        if (isBOPView && (selectedBOPItems[index]?.DeltaSign?.label === '-') && baseValue < value) {
             Toaster.warning('Delta value should be less than settled price')
             setTimeout(() => {
                 setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
                 setValue(`${PartCostFields}.${index}.NetCost`, 0)
             }, 200);
+
+            setWeightedCost(calculateWeightedCost(selectedBOPItems))
+            return false
+        } else if (!isBOPView && (gridData[index]?.DeltaSign?.label === '-') && baseValue < value) {
+            Toaster.warning('Delta value should be less than settled price')
+            setTimeout(() => {
+                setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                setValue(`${PartCostFields}.${index}.NetCost`, 0)
+            }, 200);
+
             setWeightedCost(calculateWeightedCost(gridData))
             return false
         }
@@ -318,14 +466,29 @@ function EditPartCost(props) {
     }
 
     const deleteDetails = (item, index) => {
-        let tempArr = gridData.filter(e => e?.value !== item?.value)
-        let weightedCostCalc = 0
-        weightedCostCalc = tempArr && tempArr.reduce((accummlator, el) => {
-            return checkForNull(accummlator) + checkForNull(el.NetCost)
-        }, 0)
 
-        setWeightedCost(weightedCostCalc)
-        setGridData(tempArr)
+
+        if (isBOPView) {
+            // For BOP view, filter by BoughtOutPartId instead of value
+            let tempArr = selectedBOPItems.filter(e => e?.BoughtOutPartId !== item?.BoughtOutPartId)
+            let weightedCostCalc = 0
+            weightedCostCalc = tempArr && tempArr.reduce((accummlator, el) => {
+                return checkForNull(accummlator) + checkForNull(el.NetCost)
+            }, 0)
+
+            setWeightedCost(weightedCostCalc)
+            setSelectedBOPItems(tempArr)
+        } else {
+            // For regular part cost view
+            let tempArr = gridData.filter(e => e?.value !== item?.value)
+            let weightedCostCalc = 0
+            weightedCostCalc = tempArr && tempArr.reduce((accummlator, el) => {
+                return checkForNull(accummlator) + checkForNull(el.NetCost)
+            }, 0)
+
+            setWeightedCost(weightedCostCalc)
+            setGridData(tempArr)
+        }
         setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
         setValue(`${PartCostFields}.${index}.DeltaSign`, 0)
         setValue(`${PartCostFields}.${index}.SOBPercentage`, 0)
@@ -345,31 +508,35 @@ function EditPartCost(props) {
     }
 
     const addGrid = () => {
-        if (Object.keys(costingNumberData).length > 0) {
-            setGridData([...gridData, costingNumberData])
-            let currentGrid = [...gridData, costingNumberData]
-            setValue('CostingNumber', {})
-            setCostingNumberData({})
-            let indexForUpdate = _.findIndex([...gridData, costingNumberData], costingNumberData);
-            setValue(`${PartCostFields}.${indexForUpdate}.DeltaValue`, 0)
-            setValue(`${PartCostFields}.${indexForUpdate}.DeltaSign`, 0)
-            setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, 0)
-            setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
-
-            if (costData?.CostingTypeId === WACTypeId) {
-                currentGrid[indexForUpdate].NetCost = checkForNull(currentGrid[indexForUpdate].SettledPriceLocalConversion) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100)
-                setGridData(currentGrid)
-                setTimeout(() => {
-                    setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, currentGrid[indexForUpdate].SOBPercentage)
-                    setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, checkForDecimalAndNull(checkForNull(currentGrid[indexForUpdate].SettledPriceLocalConversion) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100), initialConfiguration?.NoOfDecimalForPrice))
-                    setTimeout(() => {
-                        netCostCalculator(indexForUpdate, currentGrid)
-                    }, 300);
-                }, 300);
-            }
+        if (isBOPView) {
+            setIsDrawerOpen(true)
         } else {
-            Toaster.warning('Please select Costing Number')
-            return false
+            if (Object.keys(costingNumberData).length > 0) {
+                setGridData([...gridData, costingNumberData])
+                let currentGrid = [...gridData, costingNumberData]
+                setValue('CostingNumber', {})
+                setCostingNumberData({})
+                let indexForUpdate = _.findIndex([...gridData, costingNumberData], costingNumberData);
+                setValue(`${PartCostFields}.${indexForUpdate}.DeltaValue`, 0)
+                setValue(`${PartCostFields}.${indexForUpdate}.DeltaSign`, 0)
+                setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, 0)
+                setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
+
+                if (costData?.CostingTypeId === WACTypeId) {
+                    currentGrid[indexForUpdate].NetCost = checkForNull(currentGrid[indexForUpdate].SettledPriceLocalConversion) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100)
+                    setGridData(currentGrid)
+                    setTimeout(() => {
+                        setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, currentGrid[indexForUpdate].SOBPercentage)
+                        setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, checkForDecimalAndNull(checkForNull(currentGrid[indexForUpdate].SettledPriceLocalConversion) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100), initialConfiguration?.NoOfDecimalForPrice))
+                        setTimeout(() => {
+                            netCostCalculator(indexForUpdate, currentGrid)
+                        }, 300);
+                    }, 300);
+                }
+            } else {
+                Toaster.warning('Please select Costing Number')
+                return false
+            }
         }
     }
 
@@ -391,17 +558,42 @@ function EditPartCost(props) {
     }
 
     const onSubmit = (values) => {
+        // BOP validation checks
+        if (isBOPView) {
+            // Check if any BOP items are selected
+            if (selectedBOPItems.length === 0) {
+                Toaster.warning('Please select at least one BOP item');
+                return false;
+            }
+
+            // Calculate total SOB percentage for selected items
+            let totalSOB = 0;
+            selectedBOPItems.forEach(item => {
+                totalSOB += Number(item.SOBPercentage || 0);
+            });
+
+            // Check if total SOB is 100
+            if (totalSOB !== 100) {
+                Toaster.warning('Total SOB percentage for selected BOP items should be 100');
+                return false;
+            }
+        }
+
         const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
         const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
         const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
         const toolTabData = ToolTabData && ToolTabData[0]
 
-        if (!(settledCostingDetails?.length === 0 && gridData?.length === 0)) {
-            let sum = calcTotalSOBPercent(gridData)
-            if (gridData?.length !== 0 && checkForNull(sum) !== 100) {
-                Toaster.warning('Total SOB percent should be 100');
-                return false
+        if (isBOPView || !(settledCostingDetails?.length === 0 && gridData?.length === 0)) {
+            // For part cost case, validate SOB percentage
+            if (!isBOPView) {
+                let sum = calcTotalSOBPercent(gridData)
+                if (gridData?.length !== 0 && checkForNull(sum) !== 100) {
+                    Toaster.warning('Total SOB percent should be 100');
+                    return false
+                }
             }
+
             let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
             let costPerAssemblyTotalWithQuantity = 0
 
@@ -411,48 +603,78 @@ function EditPartCost(props) {
 
             let editedChildPart = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails[index]
 
+
             editedChildPart.CostingPartDetails.NetPOPrice = weightedCost
             editedChildPart.CostingPartDetails.NetTotalRMBOPCC = weightedCost
-            editedChildPart.CostingPartDetails.NetChildPartsCostWithQuantity = checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity)
+            editedChildPart.CostingPartDetails.NetChildPartsCostWithQuantity = !isBOPView ? checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity) : null
+            editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = isBOPView ? checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity) : null
+            editedChildPart.CostingPartDetails.BoughtOutPartRate = isBOPView ? checkForNull(weightedCost) : null
 
             Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
+
 
             // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
             costPerAssemblyTotalWithQuantity = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
                 return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.NetChildPartsCostWithQuantity)
             }, 0)
+            let bopCostperAssembly = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
+                return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
+            }, 0)
             // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyWithoutQuantity = costPerAssemblyWithoutQuantity
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = costPerAssemblyTotalWithQuantity
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost = checkForNull(bopCostperAssembly)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = checkForNull(costPerAssemblyTotalWithQuantity)
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerAssemblyTotalWithQuantity) +
-                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+                checkForNull(bopCostperAssembly) +
                 (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
                     checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC = checkForNull(costPerAssemblyTotalWithQuantity) +
-                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+                checkForNull(bopCostperAssembly) +
                 (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
-                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
+                    checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)) +
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
             let tempArray = []
-            gridData && gridData?.map((item) => {
-                let tempObject = {}
-                tempObject.BaseCostingId = item?.value
-                tempObject.SOBPercentage = item?.SOBPercentage
-                tempObject.Delta = item?.DeltaValue
-                tempObject.DeltaSign = item?.DeltaSign?.label
-                tempObject.NetCost = item?.NetCost
-                tempObject.BasicRate = item?.NetCost
-                tempObject.SettledPriceConversion = item?.SettledPriceConversion
-                tempObject.SettledPriceLocalConversion = item?.SettledPriceLocalConversion
-                tempArray.push(tempObject)
-            })
+            if (!isBOPView) {
+                gridData && gridData?.map((item) => {
+                    let tempObject = {}
+                    tempObject.BaseCostingId = item?.value
+                    tempObject.SOBPercentage = item?.SOBPercentage
+                    tempObject.Delta = item?.DeltaValue
+                    tempObject.DeltaSign = item?.DeltaSign?.label
+                    tempObject.NetCost = item?.NetCost
+                    tempObject.BasicRate = item?.NetCost
+                    tempObject.SettledPriceConversion = item?.SettledPriceConversion
+                    tempObject.SettledPriceLocalConversion = item?.SettledPriceLocalConversion
+                    tempArray.push(tempObject)
+                })
+            } else {
+                selectedBOPItems.forEach(item => {
+                    let tempObject = {}
+                    tempObject.BoughtOutPartId = item?.BoughtOutPartId
+                    tempObject.SOBPercentage = item?.SOBPercentage
+                    tempObject.Delta = item?.DeltaValue
+                    tempObject.DeltaSign = item?.DeltaSign?.label
+                    tempObject.NetCost = item?.NetCost || (item.NetBoughtOutPartCost * item.SOBPercentage / 100)
+                    tempObject.BasicRate = item?.NetCost || (item.NetBoughtOutPartCost * item.SOBPercentage / 100)
+                    tempObject.SettledPriceConversion = item?.SettledPriceConversion
+                    tempObject.SettledPriceLocalConversion = item?.SettledPriceLocalConversion
+                    tempArray.push(tempObject)
+                });
+            }
+
 
             dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
             let obj = {
+                "BaseCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
+
                 "BaseWeightedAverageCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
                 "NetPOPrice": weightedCost,
                 "BasicRate": weightedCost,
                 "CostingSettledDetails": tempArray,
-                "LoggedInUserId":loggedInUserId()
+                "LoggedInUserId": loggedInUserId()
             }
+
             dispatch(saveSettledCostingDetails(obj, res => { }))
             let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
                 checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) +
@@ -469,6 +691,7 @@ function EditPartCost(props) {
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
             dispatch(gridDataAdded(true))
         }
+
         props?.closeDrawer('')
 
         // SAVE API FOR PART COST
@@ -478,11 +701,51 @@ function EditPartCost(props) {
     const tooltipText = (item) => {
         return (
             <div>
-                <div>{`Settled Price (${initialConfiguration?.BaseCurrency}) : ${item?.SettledPriceConversion ? checkForDecimalAndNull(item?.SettledPriceConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}`}</div>
-                <div>{`Settled Price (${currencySource?.label ? currencySource?.label : props?.viewCostingData?.[props?.index]?.CostingCurrency}) : ${item?.SettledPrice ? checkForDecimalAndNull(item?.SettledPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'}`}</div>
+                <div>{`Settled Price (${initialConfiguration?.BaseCurrency}) : ${isBOPView ? (item?.NetLandedCost ? checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : '-') : (item?.SettledPriceConversion ? checkForDecimalAndNull(item?.SettledPriceConversion, initialConfiguration?.NoOfDecimalForPrice) : '-')}`}</div>
+                {/* <div>{`Settled Price (${currencySource?.label ? currencySource?.label : props?.viewCostingData?.[props?.index]?.CostingCurrency}) : ${item?.SettledPrice ? checkForDecimalAndNull(item?.SettledPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'}`}</div> */}
             </div>
         )
     }
+    const closeDrawer = (e = '', rowData = []) => {
+
+        if (rowData.length > 0) {
+            // Create a new array with the selected BOP items
+            let tempArr = [...selectedBOPItems];
+
+            // Process each new BOP item
+            rowData.forEach(newItem => {
+                // Check if this BOP item is already in the selectedBOPItems array
+                const existingIndex = tempArr.findIndex(existing => existing?.BoughtOutPartId === newItem?.BoughtOutPartId);
+
+                if (existingIndex === -1) {
+                    const newBOPItem = {
+                        ...newItem,
+                        DeltaValue: 0,
+                        DeltaSign: "",
+                        SOBPercentage: 0,
+                        NetCost: 0
+                    };
+                    tempArr.push(newBOPItem);
+                }
+            });
+
+            // Update the selectedBOPItems state
+            setSelectedBOPItems(tempArr);
+
+        }
+        setIsDrawerOpen(false)
+    }
+    // const handleBOPSelection = (index) => {
+    //     const updatedList = [...tableDataList];
+    //     const item = updatedList[index];
+
+    //     if (item.IsValidExchangeRate) {
+    //         const newSelectedItems = selectedBOPItems.includes(index)
+    //             ? selectedBOPItems.filter(i => i !== index)
+    //             : [...selectedBOPItems, index];
+    //         setSelectedBOPItems(newSelectedItems);
+    //     }
+    // };
 
     return (
         <div>
@@ -492,10 +755,11 @@ function EditPartCost(props) {
                 BackdropProps={props?.costingSummary && { style: { opacity: 0 } }}>
                 <div className="container-fluid">
                     <div className={'drawer-wrapper drawer-1500px master-summary-drawer'}>
+                        {/* {isLoading && <LoaderCustom />} */}
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`Part Cost:`}</h3>
+                                    <h3>{isBOPView ? `BOP Cost:` : `Part Cost:`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -512,36 +776,42 @@ function EditPartCost(props) {
                                             <th>{props?.costingSummary ? 'Parent Assembly Costing Number' : 'Parent Assembly Number'}: {`${props?.costingSummary ? props?.tabAssemblyIndividualPartDetail?.CostingNumber : props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
                                             <th>Part Number:  {`${props?.tabAssemblyIndividualPartDetail?.PartNumber}`}</th>
                                             <th>Part Name:  {`${props?.tabAssemblyIndividualPartDetail?.PartName}`}</th>
-                                            <th colSpan={2}>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration?.NoOfDecimalForPrice)}</th>
+                                            {!isBOPView && <th>Part Effective Date: {`${props?.tabAssemblyIndividualPartDetail?.EffectiveDate ? DayTime(props?.tabAssemblyIndividualPartDetail?.EffectiveDate).format('DD-MM-YYYY') : '-'}`}</th>}
+                                            <th colSpan={isBOPView ? 1 : 2}>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration?.NoOfDecimalForPrice)}</th>
                                         </tr>
                                     </thead>
                                 </Table>
-                                {!props?.costingSummary && <div className='add-container'>
-                                    <SearchableSelectHookForm
-                                        label={`Costing Number`}
-                                        name={`CostingNumber`}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        options={renderListing("CostingNumber")}
-                                        handleChange={(e) => handleChangeCostingNumber(e)}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
+                                {!props?.costingSummary && (
+                                    <div className='add-container'>
+                                        {!isBOPView && (
+                                            <SearchableSelectHookForm
+                                                label={`Costing Number`}
+                                                name={`CostingNumber`}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                options={renderListing("CostingNumber")}
+                                                handleChange={(e) => handleChangeCostingNumber(e)}
+                                                disabled={CostingViewMode ? true : false}
+                                            />
+                                        )}
 
-                                    <button
-                                        type="button"
-                                        className={"user-btn "}
-                                        onClick={() => addGrid()}
-                                        title="Add"
-                                        disabled={CostingViewMode ? true : false}
-                                    >
-                                        <div className={"plus "}></div>Add
-                                    </button>
-                                </div>}
+                                        <button
+                                            type="button"
+                                            className={"user-btn "}
+                                            onClick={() => addGrid()}
+                                            title="Add"
+                                            disabled={CostingViewMode ? true : false}
+                                        >
+                                            <div className={"plus "}></div>Add
+                                        </button>
+                                    </div>
+                                )}
                                 <Table className={`table cr-brdr-main mb-0 ${props?.costingSummary ? 'mt-2' : ''}`}>
                                     <thead>
                                         <tr >
+                                            {/* {isBOPView && <th>Select</th>} */}
                                             {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
                                                 <th>{vendorLabel} (Code)</th>
                                             }
@@ -553,22 +823,23 @@ function EditPartCost(props) {
                                             {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <th>Delta</th>}
                                             <th>SOB%</th>
                                             <th>Net Cost ({currencySource?.label ? currencySource?.label : '-'})</th>
+                                            {isBOPView && <th>Effective Date</th>}
                                             <th>Action</th>
                                         </tr >
                                     </thead >
                                     <tbody className="part-cost-table">
-                                        {gridData && gridData.map((item, index) => {
-                                            return (
-                                                <>
-                                                    <tr key={index} >
+                                        {isBOPView ? (
+                                            selectedBOPItems && selectedBOPItems.length > 0 ? (
+                                                selectedBOPItems.map((item, index) => (
+                                                    <tr key={index}>
                                                         {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
-                                                            <td>{`${item?.VendorName} (${item?.VendorCode})`}</td>
+                                                            <td>{`${item?.Vendor || '-'}`}</td>
                                                         }
                                                         {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
-                                                            <td>{`${item.CustomerName} (${item.CustomerCode})`}</td>
+                                                            <td>{`${item.CustomerName || '-'} (${item.CustomerCode || '-'})`}</td>
                                                         }
-                                                        <td>{item?.label}</td>
-                                                        <td>{item?.SettledPriceLocalConversion ? checkForDecimalAndNull(item?.SettledPriceLocalConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}{item?.SettledPriceLocalConversion && <span><TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`settled-price`} tooltipText={() => tooltipText(item)} /></span>}</td>
+                                                        <td>{item.BoughtOutPartNumber || '-'}</td>
+                                                        <td>{item?.NetLandedCost ? checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}{item?.NetLandedCost && <span><TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`settled-price-${index}`} tooltipText={() => tooltipText(item)} /></span>}</td>
 
                                                         {
                                                             (costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <td >
@@ -629,7 +900,13 @@ function EditPartCost(props) {
                                                                         message: 'Percentage cannot be greater than 100'
                                                                     },
                                                                 }}
-                                                                handleChange={(e) => handleSOBPercentage(e.target.value, index)}
+                                                                handleChange={(e) => {
+                                                                    // Update the selectedBOPItems state
+                                                                    const updatedItems = [...selectedBOPItems];
+                                                                    updatedItems[index] = { ...updatedItems[index], SOBPercentage: e.target.value };
+                                                                    setSelectedBOPItems(updatedItems);
+                                                                    handleSOBPercentage(e.target.value, index);
+                                                                }}
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
@@ -656,13 +933,14 @@ function EditPartCost(props) {
                                                                 customClassName={'withBorder'}
                                                             />
                                                         </td>
+                                                        <td>{item?.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD-MM-YYYY') : '-'}</td>
                                                         <td >
-                                                            <button
+                                                            {/* <button
                                                                 type="button"
                                                                 className={'View mr-2 align-middle'}
                                                                 onClick={() => viewDetails(item)}
                                                             >
-                                                            </button>
+                                                            </button>For BOP, temporarily hide the View button. BOP master drawer will open when the View button is clicked */}
                                                             <button
                                                                 type="button"
                                                                 className={'Delete mr-2 align-middle'}
@@ -671,13 +949,137 @@ function EditPartCost(props) {
                                                             >
                                                             </button>
                                                         </td>
-                                                    </tr >
-                                                </>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={8}>
+                                                        <NoContentFound title={EMPTY_DATA} />
+                                                    </td>
+                                                </tr>
                                             )
-                                        })
-                                        }
+                                        ) : (
+                                            gridData && gridData.map((item, index) => {
+                                                return (
+                                                    <>
+                                                        <tr key={index} >
+                                                            {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
+                                                                <td>{`${item?.VendorName} (${item?.VendorCode})`}</td>
+                                                            }
+                                                            {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
+                                                                <td>{`${item.CustomerName} (${item.CustomerCode})`}</td>
+                                                            }
+                                                            <td>{item?.label}</td>
+                                                            <td>{item?.SettledPriceLocalConversion ? checkForDecimalAndNull(item?.SettledPriceLocalConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}{item?.SettledPriceLocalConversion && <span><TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`settled-price`} tooltipText={() => tooltipText(item)} /></span>}</td>
+
+                                                            {
+                                                                (costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <td >
+                                                                    <div className='delta-warpper'>
+                                                                        <SearchableSelectHookForm
+                                                                            name={`${PartCostFields}.${index}.DeltaSign`}
+                                                                            placeholder={"Select"}
+                                                                            Controller={Controller}
+                                                                            control={control}
+                                                                            // rules={{ required: true }}
+                                                                            register={register}
+                                                                            customClassName="w-auto"
+                                                                            options={optionsForDelta}
+                                                                            mandatory={true}
+                                                                            handleChange={(e) => handleDeltaSignChange(e, index)}
+                                                                            disabled={CostingViewMode || props?.costingSummary ? true : false}
+                                                                        />
+
+                                                                        <NumberFieldHookForm
+                                                                            name={`${PartCostFields}.${index}.DeltaValue`}
+                                                                            Controller={Controller}
+                                                                            control={control}
+                                                                            register={register}
+                                                                            mandatory={false}
+                                                                            rules={{
+                                                                                required: false,
+                                                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                                                pattern: {
+                                                                                    value: /^\d*\.?\d*$/,
+                                                                                    message: 'Invalid Number.'
+                                                                                },
+                                                                            }}
+                                                                            handleChange={(e) => handleDeltaValue(e.target.value, index)}
+                                                                            defaultValue={''}
+                                                                            className=""
+                                                                            customClassName={'withBorder'}
+                                                                            disabled={CostingViewMode || props?.costingSummary ? true : false}
+                                                                            errors={errors?.PartCostFields && errors?.PartCostFields[index]?.DeltaValue}
+                                                                        />
+                                                                    </div>
+                                                                </td>
+                                                            }
+                                                            <td>
+                                                                <NumberFieldHookForm
+                                                                    name={`${PartCostFields}.${index}.SOBPercentage`}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={false}
+                                                                    rules={{
+                                                                        required: false,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+                                                                        max: {
+                                                                            value: 100,
+                                                                            message: 'Percentage cannot be greater than 100'
+                                                                        },
+                                                                    }}
+                                                                    handleChange={(e) => handleSOBPercentage(e.target.value, index)}
+                                                                    defaultValue={''}
+                                                                    className=""
+                                                                    customClassName={'withBorder'}
+                                                                    disabled={(CostingViewMode || props?.costingSummary || costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? true : false}
+                                                                />
+                                                            </td>
+                                                            <td >
+                                                                <NumberFieldHookForm
+                                                                    name={`${PartCostFields}.${index}.NetCost`}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={false}
+                                                                    rules={{
+                                                                        required: false,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+                                                                    }}
+                                                                    defaultValue={''}
+                                                                    className=""
+                                                                    disabled={true}
+                                                                    customClassName={'withBorder'}
+                                                                />
+                                                            </td>
+                                                            <td >
+                                                                <button
+                                                                    type="button"
+                                                                    className={'View mr-2 align-middle'}
+                                                                    onClick={() => viewDetails(item)}
+                                                                >
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className={'Delete mr-2 align-middle'}
+                                                                    onClick={() => deleteDetails(item, index)}
+                                                                    disabled={CostingViewMode || props?.costingSummary ? true : false}
+                                                                >
+                                                                </button>
+                                                            </td>
+                                                        </tr >
+                                                    </>
+                                                )
+                                            })
+                                        )}
                                         {
-                                            gridData && gridData.length === 0 && <tr>
+                                            !isBOPView && gridData && gridData.length === 0 && <tr>
                                                 <td colSpan={8}>
                                                     <NoContentFound title={EMPTY_DATA} />
                                                 </td>
@@ -718,6 +1120,19 @@ function EditPartCost(props) {
                     isFromAssemblyTechnology={true}
                 />
             }
+            {isDrawerOpen && <AddBOP
+                isOpen={isDrawerOpen}
+                closeDrawer={closeDrawer}
+                isEditFlag={false}
+                ID={''}
+                anchor={'right'}
+                Ids={selectedBOPItems?.map(item => item?.BoughtOutPartId) || []}
+                tableDataList={tableDataList}
+                isBopEdit={props?.isBopEdit}
+                selectedBOPItems={selectedBOPItems}
+                isOpenFromAssemblyTechnology={true}
+                boughtOutPartChildId={props?.boughtOutPartChildId}
+            />}
         </div >
     );
 }

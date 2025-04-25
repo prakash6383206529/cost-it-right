@@ -78,8 +78,9 @@ function OtherCostDrawer(props) {
     }, [fieldValuesForFixed])
 
     useEffect(() => {
-        let request = partType ? 'multiple technology assembly' : ''
-        dispatch(fetchCostingHeadsAPI(request, true, (res) => { }))
+        let request = partType ? 'multiple technology assembly' : 'other cost'
+        let isRequestForMultiTechnology = partType ? true : false
+        dispatch(fetchCostingHeadsAPI(request, true, isRequestForMultiTechnology, (res) => { }))
     }, [])
 
     /**

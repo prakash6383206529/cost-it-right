@@ -78,7 +78,8 @@ import {
   GET_COSTING_COST_DETAILS,
   SET_OPERATION_APPLICABILITY_SELECT,
   SET_PROCESS_APPLICABILITY_SELECT,
-  GET_PAINT_COAT_LIST
+  GET_PAINT_COAT_LIST,
+  GET_TOOL_TAB_DATA
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -643,7 +644,8 @@ export function getRMDrawerDataList(data, isNFR, rmNameList, surfaceTreatment = 
 export function getBOPDrawerDataList(data, callback) {
   return (dispatch) => {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&categoryId=${data.categoryId}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&categoryId=${data.categoryId}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&boughtOutPartChildId=${data?.boughtOutPartChildId}`;
+
     const request = axios.get(`${API.getBOPDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1173,6 +1175,10 @@ export function getToolTabData(data, IsUseReducer, callback) {
           let TabData = response.data.DataList;
           dispatch({
             type: SET_TOOL_TAB_DATA,
+            payload: TabData,
+          });
+          dispatch({
+            type: GET_TOOL_TAB_DATA,
             payload: TabData,
           });
           //callback(response);
@@ -2733,7 +2739,7 @@ export function createPFS2Costing(data, callback) {
 
 export function getLabourDetailsByFilter(data, callback) {
   return (dispatch) => {
-    const queryParams = `effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${0}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${0}`
     const request = axios.get(`${API.getLabourDetailsByFilter}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result) {

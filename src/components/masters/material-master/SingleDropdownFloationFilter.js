@@ -43,7 +43,7 @@ function SingleDropdownFloationFilter(props) {
     useEffect(() => {
         if (props.maxValue !== 11 || props.component !== 'RFQ') {
             const component = props?.component || 'master'
-            dispatch(fetchCostingHeadsAPI(component, false, res => {
+            dispatch(fetchCostingHeadsAPI(component, false,false, res => {
                 if (res) {
                     let temp = []
                     res?.data?.SelectList && res?.data?.SelectList.map((item) => {

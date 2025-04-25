@@ -29,6 +29,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { PreviousTabData } from '../CostingHeaderTabs';
 import _ from 'lodash'
+import { useLabels } from '../../../../helper/core';
 function TabToolCost(props) {
 
   const { handleSubmit } = useForm();
@@ -52,7 +53,14 @@ function TabToolCost(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const isPartType = useContext(IsPartType);
   const [loader, setLoader] = useState(false)
-
+  const [state, setState] = useState({
+    toolmaintenanceCostPerPc: 0,
+    toolInterestCostPerPc: 0,
+    toolAmortizationCost: 0,
+    netToolCost: 0,
+    disableToggle: false
+  })
+  const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel } = useLabels();
   const previousTab = useContext(PreviousTabData) || 0;
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -99,6 +107,10 @@ function TabToolCost(props) {
       if (props.activeTab === '5') {
         props.setHeaderCost(topHeaderData)
       }
+      setState(prevState => ({
+        ...prevState,
+        netToolCost: TopHeaderValues?.TotalToolCost || 0
+      }))
       //}, 1500)
     }
 
@@ -108,6 +120,25 @@ function TabToolCost(props) {
       }
     }
   }, [ToolTabData]);
+  useEffect(() => {
+    if (gridData && gridData.length > 0) {
+      const totalToolInterestCostPerPc = gridData.reduce((sum, item) => sum + (Number(item.ToolInterestCostPerPiece) || 0), 0);
+      const totalToolMaintenanceCostPerPc = gridData.reduce((sum, item) => sum + (Number(item.ToolMaintenanceCostPerPiece) || 0), 0);
+      const totalToolAmortizationCost = gridData.reduce((sum, item) => sum + (Number(item.ToolAmortizationCost) || 0), 0);
+      const totalNetToolCost = gridData.reduce((sum, item) => sum + (Number(item.TotalToolCost) || 0), 0);
+      setState({
+        toolInterestCostPerPc: totalToolInterestCostPerPc,
+        toolmaintenanceCostPerPc: totalToolMaintenanceCostPerPc,
+        toolAmortizationCost: totalToolAmortizationCost,
+        netToolCost: totalNetToolCost,
+        disableToggle: IsApplicableProcessWise ? true : false
+      });
+    } else {
+      setState({
+        disableToggle: false
+      })
+    }
+  }, [gridData])
 
   /**
   * @method setOverAllApplicabilityCost
@@ -164,10 +195,11 @@ function TabToolCost(props) {
   const setToolCost = (ToolGrid, IsChanged) => {
     const updatedToolTabData = _.cloneDeep(ToolTabData)
     let arr = dispatchToolCost(ToolGrid, IsChanged, updatedToolTabData)
-
-    dispatch(isToolDataChange(IsChanged))
     dispatch(setToolTabData(arr, () => {
-      dispatch(setComponentToolItemData(arr[0], () => { }))
+      dispatch(setComponentToolItemData(arr[0], () => {
+        dispatch(isToolDataChange(IsChanged))
+      }))
+
     }))
   }
 
@@ -222,21 +254,15 @@ function TabToolCost(props) {
   }
 
   useEffect(() => {
-
     if (IsApplicableProcessWise && props.activeTab === '5') {
       setLoader(true)
-      dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, (res) => {
-        setTimeout(() => {
-          setLoader(false)
-        }, 200);
-        if (res?.data && res?.data?.DataList) {
-          setGridData(res.data.DataList)
-
-        }
-      }))
+    }
+    if (ToolTabData && ToolTabData.length > 0) {
+      setLoader(false)
+      setGridData(ToolTabData && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse)
     }
 
-  }, [IsApplicableProcessWise, props.activeTab])
+  }, [IsApplicableProcessWise, props.activeTab, ToolTabData])
 
   /**
   * @method saveCosting
@@ -244,7 +270,6 @@ function TabToolCost(props) {
   */
   const saveCosting = debounce(handleSubmit((formData) => {
     if (checkIsToolTabChange) {
-
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
@@ -350,10 +375,8 @@ function TabToolCost(props) {
     setToolCost(filteredList, true);
   }
 
-
+ 
   const editItem = (index, data) => {
-
-
     let tempArr = data && data.find((el, i) => i === index)
     setEditIndex(index)
     setIsEditFlag(true)
@@ -394,11 +417,15 @@ function TabToolCost(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return checkForDecimalAndNull(cellValue, initialConfiguration?.NoOfDecimalForPrice)
   }
-
+  const valueFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue ? checkForDecimalAndNull(cellValue, initialConfiguration?.NoOfDecimalForPrice) : '-'
+  }
   const frameworkComponents = {
     customNoRowsOverlay: NoContentFound,
     totalValueRenderer: buttonFormatter,
     decimalFormatter: decimalFormatter,
+    valueFormatter: valueFormatter
   };
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
@@ -467,7 +494,7 @@ function TabToolCost(props) {
             <div className="shadow-lgg login-formg">
 
               <Row className="m-0 py-3 costing-border border-bottom-0 align-items-center ">
-                <Col md="9" className="px-3 border-section">
+                <Col md={IsApplicableProcessWise ? "4" : "9"} className="px-3 border-section">
                   <span className="d-inline-block pr-2 text-dark-blue">Applicability: </span>
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
@@ -478,7 +505,7 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={CostingViewMode}
+                            disabled={CostingViewMode || state.disableToggle}
                             //disabled={true}
                             background="#4DC771"
                             onColor="#4DC771"
@@ -496,10 +523,22 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md="3" className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
+                <Col md={IsApplicableProcessWise ? "8" : "3"} className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
+                  {IsApplicableProcessWise && <><div>
+                    {"Net Tool Maintenance Cost:"}
+                    <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(state?.toolmaintenanceCostPerPc, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                  </div>
+                    <div>
+                      {"Net Tool Interest Cost:"}
+                      <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(state?.toolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                    </div>
+                    <div>
+                      {"Net Tool Amortization Cost :"}
+                      <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(state?.toolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                    </div> </>}
                   <div>
                     {"Net Tool Cost:"}
-                    <span className="d-inline-block pl-1 font-weight-500">{IsApplicableProcessWise ? checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice) : (ToolTabData && ToolTabData.map((item) => checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice)))}</span>
+                    <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(IsApplicableProcessWise ? state?.netToolCost : gridData[0]?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
                   </div>
                   {IsApplicableProcessWise &&
                     <>
@@ -584,19 +623,26 @@ function TabToolCost(props) {
                                 {/* <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn> */}
                                 {initialConfiguration?.IsShowCRMHead && <AgGridColumn field="ToolCRMHead" headerName="CRM Head"></AgGridColumn>}
                                 <AgGridColumn field="BOMLevel" headerName="BOMLevel"></AgGridColumn>
-                                <AgGridColumn field="ParentPartNumber" headerName="Parent Part Number"></AgGridColumn>
-                                <AgGridColumn field="ChildPartNumber" headerName="Child Part Number"></AgGridColumn>
-                                <AgGridColumn field="PartQuantity" headerName="Part Quantity"></AgGridColumn>
+                                <AgGridColumn field="ParentPartNumber" headerName="Parent Part Number" ></AgGridColumn>
+                                <AgGridColumn field="ChildPartNumber" headerName="Child Part Number" ></AgGridColumn>
+                                <AgGridColumn field="PartQuantity" headerName="Part Quantity" cellRenderer={'valueFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartType" headerName="Part Type"></AgGridColumn>
-                                <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation"></AgGridColumn>
-                                <AgGridColumn field="ProcessOrOperationType" headerName="Process/Operation Type"></AgGridColumn>
-                                {/* <AgGridColumn field="ProcessOrOperationQuantity" headerName="Process/Operation Quantity"></AgGridColumn> */}
+                                <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation" ></AgGridColumn>
+                                <AgGridColumn field="ProcessOrOperationType" headerName="Process/Operation Type" ></AgGridColumn>
+                                <AgGridColumn field="ProcessOrOperationQuantity" headerName="Process Run Count" cellRenderer={'valueFormatter'}></AgGridColumn>
                                 <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
-                                <AgGridColumn field="ToolName" headerName="Tool Name"></AgGridColumn>
-                                <AgGridColumn field="ToolCost" headerName="Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Quantity" headerName="Quantity"></AgGridColumn>
-                                <AgGridColumn field="Life" headerName="Life/Amortization"></AgGridColumn>
-                                {/* NET TOOL COST */}
+                                <AgGridColumn field="ToolName" headerName="Tool Name" ></AgGridColumn>
+                                <AgGridColumn field="ToolCost" headerName="Tool Rate" cellRenderer={'decimalFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Life" headerName="Life/Amortization" cellRenderer={'valueFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ToolAmortizationCost" headerName="Tool Amortization Cost" cellRenderer={'valueFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ToolCostType" headerName="Tool Maintenance Applicability" ></AgGridColumn>
+                                <AgGridColumn field="ToolMaintenancePercentage" headerName="Maintenance Tool Cost (%)" cellRenderer={'valueFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ToolApplicabilityCost" headerName="Cost (Applicability)" cellRenderer={'valueFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ToolMaintenanceCost" headerName={`${toolMaintenanceCostLabel}`} cellRenderer={'valueFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ToolMaintenanceCostPerPiece" headerName={`${toolMaintenanceCostPerPcLabel}`} cellRenderer={'valueFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ToolInterestRatePercent" headerName={`${toolInterestRatePercentLabel}`} cellRenderer={'valueFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ToolInterestCost" headerName={`${toolInterestCostLabel}`} cellRenderer={'valueFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ToolInterestCostPerPiece" headerName={`${toolInterestCostPerPcLabel}`} cellRenderer={'valueFormatter'}></AgGridColumn>
                                 <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
                                 <AgGridColumn width={160} field="Life" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                               </AgGridReact>

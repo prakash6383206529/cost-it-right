@@ -665,7 +665,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   }
 
   obj.profitOn = {
-    profitTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '',    profitValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-',
+    profitTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '', profitValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-',
     profitPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitPercentage : '-',
     profitRMPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage : '-',
     profitBOPPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage : '-',
@@ -683,7 +683,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   }
 
   obj.iccOn = {
-    iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '',    iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
+    iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '', iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
     iccPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate : '-',
     ICCCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead : '-',
     ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
@@ -693,7 +693,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
 
   obj.paymentTerms = {
-    paymentTitle: paymentTermDetail?.PaymentTermApplicability || '',   
+    paymentTitle: paymentTermDetail?.PaymentTermApplicability || '',
     paymentValue: paymentTermDetail?.NetCost || 0,
     paymentPercentage: paymentTermDetail?.InterestRate || '-',
     PaymentTermCRMHead: paymentTermDetail?.PaymentTermCRMHead || '-',
@@ -966,7 +966,10 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.OtherCostConversion = dataFromAPI?.OtherCostConversion
   obj.RawMaterialCostWithCutOffConversion = dataFromAPI?.RawMaterialCostWithCutOffConversion
   obj.NetLabourCostConversion = dataFromAPI?.NetLabourCostConversion
+  obj.NetLabourCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetLabourCost ? dataFromAPI?.CostingPartDetails?.NetLabourCost : 0
+  obj.IndirectLaborCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IndirectLaborCost ? dataFromAPI?.CostingPartDetails?.IndirectLaborCost : 0
   obj.IndirectLaborCostConversion = dataFromAPI?.IndirectLaborCostConversion
+  obj.StaffCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.StaffCost ? dataFromAPI?.CostingPartDetails?.StaffCost : 0
   obj.StaffCostConversion = dataFromAPI?.StaffCostConversion
   obj.LocalCurrency = dataFromAPI?.LocalCurrency
   obj.NetPOPriceLocalConversion = dataFromAPI?.NetPOPriceLocalConversion
@@ -1117,7 +1120,7 @@ export function findLostWeight(tableVal, isPlastic = false) {
 
 //THIS FUNCTION TO CHECK WHETHER MASTER APPROVAL IS APPLICALBE AND ON WHICH MASTER IT IS APPLICABLE (ApprovalMasterArrayList COMING FROM PAGE INIT)
 export function CheckApprovalApplicableMaster(number) {
-  const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
+  const isApproval = getConfigurationKey()?.ApprovalMasterArrayList?.includes(number) && getConfigurationKey()?.IsMasterApprovalAppliedConfigure
   return isApproval
 }
 
@@ -1768,9 +1771,7 @@ export const getChangeHighlightClass = (originalValue, updatedValue) => {
 
 //localized listing
 export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel = '', zeroBasedLabel = '', customerBasedLabel = '', vendorCodeLabel = '') => {
-  console.log("cellValue",typeof cellValue);
   if (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') {
-    console.log("vendorBasedLabel", vendorBasedLabel);
     return vendorBasedLabel;
   } else if (cellValue === false || cellValue === 'Zero Based' || cellValue === 'ZBC') {
     return zeroBasedLabel;
@@ -1778,6 +1779,8 @@ export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel = '', z
     return customerBasedLabel;
   } else if (cellValue === 'Vendor(Code)') {
     return vendorCodeLabel;
+  }else{
+    return cellValue
   }
 }
 // export const frameBreaker = () => {

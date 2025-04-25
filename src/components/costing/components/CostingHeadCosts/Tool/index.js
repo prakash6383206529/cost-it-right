@@ -14,13 +14,12 @@ import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../.
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
-import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8, decimalNumberLimit13 } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalIntegerNumberLimit, decimalNumberLimit13 } from "../../../../../helper/validation";
 import { useLabels } from '../../../../../helper/core';
-import _ from 'lodash';
 
 let counter = 0;
 function Tool(props) {
@@ -46,7 +45,11 @@ function Tool(props) {
     MaintananceCostApplicability: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolApplicabilityCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice) : '',
     ToolAmortizationCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice) : '',
     maintanenceToolCost: (ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined && ObjectForOverAllApplicability.ToolCostType === 'Fixed') ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice) : '',
-    crmHeadTool: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCRMHead && { label: ObjectForOverAllApplicability.ToolCRMHead, value: 1 }
+    ToolMaintenanceCostPerPc: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCostPerPiece !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCostPerPiece, initialConfiguration?.NoOfDecimalForPrice) : '',
+    crmHeadTool: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCRMHead && { label: ObjectForOverAllApplicability.ToolCRMHead, value: 1 },
+    ToolInterestRatePercent: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolInterestRatePercent !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolInterestRatePercent, initialConfiguration?.NoOfDecimalForPrice) : '',
+    ToolInterestCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolInterestCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolInterestCost, initialConfiguration?.NoOfDecimalForPrice) : '',
+    ToolInterestCostPerPiece: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolInterestCostPerPiece !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolInterestCostPerPiece, initialConfiguration?.NoOfDecimalForPrice) : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
@@ -62,56 +65,65 @@ function Tool(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [applicability, setApplicability] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? { label: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType, value: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
   const [valueByAPI, setValueByAPI] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
-  const { costingData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+  const { costingData, isBreakupBoughtOutPartCostingFromAPI, getToolTabData } = useSelector(state => state.costing)
 
   const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
+  const [state, setState] = useState({
+    ToolInterestCost: 0,
+    ToolInterestCostPerPc: 0,
+    ToolMaintenanceCostPerPc: 0
+  })
   const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
-  const { toolMaintenanceCostLabel } = useLabels();
+  const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel } = useLabels();
 
-
+  const fieldValues = useWatch({
+    control,
+    name: ['ToolCost','Life','ToolInterestRatePercent','MaintenancePercentage','MaintananceCostApplicability'],
+  });
   useEffect(() => {
     let isDataChanged = false;
     if (IsApplicableProcessWise) {
       // Use the original approach for process-wise applicability
       isDataChanged = JSON.stringify(gridData) !== JSON.stringify(
-        data && data?.CostingPartDetails?.CostingToolCostResponse?.length > 0 
-          ? data?.CostingPartDetails?.CostingToolCostResponse 
+        getToolTabData && getToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.length > 0
+          ? getToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse
           : []
         );
-        
+       
     } else {
       // Define the keys we want to compare for overall applicability
       const keysToCompare = [
-         'ProcessOrOperation', 'ToolCategory', 'ToolName', 
-        'Quantity', 'ToolCost', 'Life', 'NetToolCost', 
-        'ToolMaintenanceCost', 'ToolCostType', 'ToolApplicabilityTypeId', 
-        'ToolMaintenancePercentage', 'ToolApplicabilityCost', 'ToolAmortizationCost', 
-        'IsCostForPerAssembly', 'ToolCRMHead'
+         'ProcessOrOperation', 'ToolCategory', 'ToolName',
+        'Quantity', 'ToolCost', 'Life', 'NetToolCost',
+        'ToolMaintenanceCost', 'ToolCostType', 'ToolApplicabilityTypeId',
+        'ToolMaintenancePercentage', 'ToolApplicabilityCost', 'ToolAmortizationCost',
+        'IsCostForPerAssembly', 'ToolCRMHead','ToolInterestRatePercent','ToolInterestCost','ToolInterestCostPerPiece','ToolMaintenanceCostPerPiece'
       ];
-      
+     
       // Use Lodash to pick only the specified keys from each array
       const filteredGridData = gridData.map(item => _.pick(item, keysToCompare));
-      const filteredResponseData = data?.CostingPartDetails?.CostingToolCostResponse?.length > 0 
-        ? data.CostingPartDetails.CostingToolCostResponse.map(item => _.pick(item, keysToCompare)) 
+      const filteredResponseData = getToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.length > 0
+        ? getToolTabData[0].CostingPartDetails.CostingToolCostResponse.map(item => _.pick(item, keysToCompare))
         : [];
      // Compare the filtered arrays using _.isEqual
       isDataChanged = !_.isEqual(filteredGridData, filteredResponseData);
-      
+     
     }
-    
     props.setToolCost(gridData, isDataChanged);
   }, [gridData, getValues('maintanenceToolCost'), getValues('maintanencePercentage')]);
 
   useEffect(() => {
-    dispatch(setComponentToolItemData(data, () => { }))
+    const updatedToolTabData = _.cloneDeep(data)
+    dispatch(setComponentToolItemData(updatedToolTabData, () => { }))
   }, [data && data?.CostingPartDetails?.CostingToolCostResponse])
 
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : 'toolcost'
-    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    let isRequestForMultiTechnology = partType ? true : false
+    dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
   }, [])
 
   useEffect(() => {
@@ -170,56 +182,6 @@ function Tool(props) {
   }
 
   /**
-  * @method handleToolMaintanenceChange
-  * @description HANDLE TOOL MAINTANENCE CHANGE
-  */
-  const handleToolMaintanenceChange = (event) => {
-
-    if (!isNaN(event.target.value)) {
-      setValue('ToolMaintenanceCost', event.target.value)
-
-      const ToolMaintenanceCost = checkForNull(event.target.value)
-
-      const ToolCost = checkForNull(getValues('ToolCost'));
-      const Life = checkForNull(getValues('Life'))
-      const ToolAmortizationCost = checkForNull(ToolCost / Life)
-
-      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration?.NoOfDecimalForPrice))
-
-      const zeroIndex = 0;
-      let rowArray = {
-        "ToolOperationId": null,
-        "ProcessOrOperation": null,
-        "ToolCategory": null,
-        "ToolName": null,
-        "Quantity": null,
-        "ToolCost": ToolCost,
-        "Life": Life,
-        "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life))),
-        "TotalToolCost": null,
-        "ToolMaintenanceCost": ToolMaintenanceCost,
-        "ToolCostType": toolObj.ToolApplicability,
-        "ToolApplicabilityTypeId": toolObj.ToolApplicabilityId,
-        "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
-        "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
-        "ToolAmortizationCost": ToolAmortizationCost,
-        "IsCostForPerAssembly": null,
-        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
-      }
-
-      let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-      // dispatch(isToolDataChange(true))
-      setTimeout(() => {
-        setGridData(tempArr)
-      }, 200)
-
-    } else {
-      Toaster.warning('Please enter valid number.')
-    }
-  }
-
-  /**
   * @method handleToolCostChange
   * @description HANDLE TOOL COST CHANGE
   */
@@ -238,38 +200,42 @@ function Tool(props) {
 
     if (!isNaN(event.target.value)) {
 
-      setValue('ToolCost', event.target.value)
+      // setValue('ToolCost', event.target.value)
 
-      const ToolMaintenanceCost = checkForNull(toolObj.ToolMaintenanceCost)
-      const ToolCost = checkForNull(event.target.value);
-      const Life = checkForNull(getValues('Life'))
-      const ToolAmortizationCost = checkForNull(ToolCost / Life)
+      // const ToolMaintenanceCost = checkForNull(toolObj?.ToolMaintenanceCost)
+      // const ToolCost = checkForNull(event.target.value);
+      // const Life = checkForNull(getValues('Life'))
+      // const ToolAmortizationCost = checkForNull(ToolCost / Life)
 
-      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration?.NoOfDecimalForPrice))
+      // setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
+      // setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost), initialConfiguration?.NoOfDecimalForPrice))
 
-      const zeroIndex = 0;
-      let rowArray = {
-        "ToolOperationId": null,
-        "ProcessOrOperation": null,
-        "ToolCategory": null,
-        "ToolName": null,
-        "Quantity": null,
-        "ToolCost": ToolCost,
-        "Life": Life,
-        "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life))),
-        "TotalToolCost": null,
-        "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
-        "ToolCostType": toolObj.ToolApplicability,
-        "ToolApplicabilityTypeId": toolObj.ToolApplicabilityId,
-        "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
-        "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
-        "ToolAmortizationCost": ToolAmortizationCost,
-        "IsCostForPerAssembly": null,
-        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
-      }
-      let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-      setGridData(tempArr)
+      // const zeroIndex = 0;
+      // let rowArray = {
+      //   "ToolOperationId": null,
+      //   "ProcessOrOperation": null,
+      //   "ToolCategory": null,
+      //   "ToolName": null,
+      //   "Quantity": null,
+      //   "ToolCost": ToolCost,
+      //   "Life": Life,
+      //   "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost)),
+      //   "TotalToolCost": null,
+      //   "ToolMaintenanceCost": toolObj?.ToolMaintenanceCost,
+      //   "ToolCostType": toolObj?.ToolApplicability,
+      //   "ToolApplicabilityTypeId": toolObj?.ToolApplicabilityId,
+      //   "ToolMaintenancePercentage": toolObj?.MaintanencePercentage,
+      //   "ToolApplicabilityCost": toolObj?.ToolApplicabilityCost,
+      //   "ToolAmortizationCost": ToolAmortizationCost,
+      //   "IsCostForPerAssembly": null,
+      //   "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : '',
+      //   "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
+      //   "ToolInterestCost": state.ToolInterestCost,
+      //   "ToolInterestCostPerPiece": state.ToolInterestCostPerPc,
+      //   "ToolMaintenanceCostPerPiece": ToolMaintenanceCost / Life
+      // }
+      // let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
+      // setGridData(tempArr)
       dispatch(isToolDataChange(true))
     } else {
       Toaster.warning('Please enter valid number.')
@@ -284,37 +250,41 @@ function Tool(props) {
 
     if (!isNaN(event.target.value)) {
 
-      setValue('Life', event.target.value)
-      const ToolMaintenanceCost = checkForNull(toolObj.ToolMaintenanceCost)
-      const ToolCost = checkForNull(getValues('ToolCost'));
-      const Life = checkForNull(event.target.value)
-      const ToolAmortizationCost = ToolCost / Life
+      // setValue('Life', event.target.value)
+      // const ToolMaintenanceCost = checkForNull(toolObj?.ToolMaintenanceCost)
+      // const ToolCost = checkForNull(getValues('ToolCost'));
+      // const Life = checkForNull(event.target.value)
+      // const ToolAmortizationCost = ToolCost / Life
 
-      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration?.NoOfDecimalForPrice))
+      // setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
+      // setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost), initialConfiguration?.NoOfDecimalForPrice))
 
-      const zeroIndex = 0;
-      let rowArray = {
-        "ToolOperationId": null,
-        "ProcessOrOperation": null,
-        "ToolCategory": null,
-        "ToolName": null,
-        "Quantity": null,
-        "ToolCost": ToolCost,
-        "Life": Life,
-        "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life))),
-        "TotalToolCost": null,
-        "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
-        "ToolCostType": toolObj.ToolApplicability,
-        "ToolApplicabilityTypeId": toolObj.ToolApplicabilityId,
-        "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
-        "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
-        "ToolAmortizationCost": ToolAmortizationCost,
-        "IsCostForPerAssembly": null,
-        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
-      }
-      let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-      setGridData(tempArr)
+      // const zeroIndex = 0;
+      // let rowArray = {
+      //   "ToolOperationId": null,
+      //   "ProcessOrOperation": null,
+      //   "ToolCategory": null,
+      //   "ToolName": null,
+      //   "Quantity": null,
+      //   "ToolCost": ToolCost,
+      //   "Life": Life,
+      //   "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost)),
+      //   "TotalToolCost": null,
+      //   "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
+      //   "ToolCostType": toolObj.ToolApplicability,
+      //   "ToolApplicabilityTypeId": toolObj.ToolApplicabilityId,
+      //   "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
+      //   "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
+      //   "ToolAmortizationCost": ToolAmortizationCost,
+      //   "IsCostForPerAssembly": null,
+      //   "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : '',
+      //   "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
+      //   "ToolInterestCost": state.ToolInterestCost,
+      //   "ToolInterestCostPerPiece": state.ToolInterestCostPerPc,
+      //   "ToolMaintenanceCostPerPiece": ToolMaintenanceCost / Life
+      // }
+      // let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
+      // setGridData(tempArr)
       dispatch(isToolDataChange(true))
     }
   }
@@ -324,9 +294,8 @@ function Tool(props) {
   * @description Used to Submit the form
   */
   const onSubmit = debounce(handleSubmit((values) => {
-
+    
     if (errorCheckObject(ErrorObjTools)) return false;
-
     if (applicability.label !== "Fixed" && percentageLimit) {
       return false
     }
@@ -394,191 +363,153 @@ function Tool(props) {
 
   const toolFieldValue = useWatch({
     control,
-    name: ['maintanencePercentage', 'maintanenceToolCost'],
+    name: ['maintanencePercentage', 'maintanenceToolCost','ToolInterestRatePercent'],
   });
 
-  useEffect(() => {
-    setValueOfToolCost(applicability.label)
-  }, [toolFieldValue])
-
 
   useEffect(() => {
     setValueOfToolCost(applicability.label)
-  }, [valueByAPI, applicability])
+  }, [valueByAPI, applicability,toolFieldValue])
 
 
-
-  /**
-    * @method checkRejectionApplicability
-    * @description REJECTION APPLICABILITY CALCULATION
-    */
   const setValueOfToolCost = (Text) => {
-    if (headerCosts && Text !== '' && valueByAPI === false) {
-      const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.NetProcessCost + headerCosts.NetOperationCost
-      const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
-
-      const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-      const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
-      const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
-      const maintanencePercentage = getValues('maintanencePercentage')
-      const maintanenceToolCost = getValues('maintanenceToolCost')
-
-      let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
-      const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight)
-
-      // const netCostForTool = 
-
-      switch (Text) {
-        case 'RM':
-        case 'Part Cost':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
-          setToolObj({
-            ...toolObj,
-            ToolApplicabilityId: applicability.value,
-            ToolApplicability: applicability.label,
-            MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: headerCosts.NetRawMaterialsCost,
-            ToolMaintenanceCost: checkForNull((headerCosts.NetRawMaterialsCost * calculatePercentage(maintanencePercentage)))
-          })
-
-          break;
-
-        case 'BOP':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
-          setToolObj({
-            ...toolObj,
-            ToolApplicabilityId: applicability.value,
-            ToolApplicability: applicability.label,
-            MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: headerCosts.NetBoughtOutPartCost,
-            ToolMaintenanceCost: checkForNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(maintanencePercentage)))
-          })
-          break;
-
-        case 'CC':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration?.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull(((ConversionCostForCalculation) * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
-          setToolObj({
-            ...toolObj,
-            ToolApplicabilityId: applicability.value,
-            ToolApplicability: applicability.label,
-            MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: ConversionCostForCalculation,
-            ToolMaintenanceCost: checkForNull(((ConversionCostForCalculation) * calculatePercentage(maintanencePercentage)))
-          })
-          break;
-
-        case 'RM + CC + BOP':
-        case 'Part Cost + CC + BOP':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration?.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOPCC * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
-          setToolObj({
-            ...toolObj,
-            ToolApplicabilityId: applicability.value,
-            ToolApplicability: applicability.label,
-            MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: RMBOPCC,
-            ToolMaintenanceCost: checkForNull((RMBOPCC * calculatePercentage(maintanencePercentage)))
-          })
-          break;
-
-        case 'RM + BOP':
-        case 'Part Cost + BOP':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration?.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMBOP * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
-          setToolObj({
-            ...toolObj,
-            ToolApplicabilityId: applicability.value,
-            ToolApplicability: applicability.label,
-            MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: RMBOP,
-            ToolMaintenanceCost: checkForNull((RMBOP * calculatePercentage(maintanencePercentage)))
-          })
-          break;
-
-        case 'RM + CC':
-        case 'Part Cost + CC':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration?.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((RMCC * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
-          setToolObj({
-            ...toolObj,
-            ToolApplicabilityId: applicability.value,
-            ToolApplicability: applicability.label,
-            MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: RMCC,
-            ToolMaintenanceCost: checkForNull((RMCC * calculatePercentage(maintanencePercentage)))
-          })
-          break;
-
-        case 'BOP + CC':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(BOPCC, initialConfiguration?.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull((BOPCC * calculatePercentage(maintanencePercentage)), initialConfiguration?.NoOfDecimalForPrice))
-          setToolObj({
-            ...toolObj,
-            ToolApplicabilityId: applicability.value,
-            ToolApplicability: applicability.label,
-            MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: BOPCC,
-            ToolMaintenanceCost: checkForNull((BOPCC * calculatePercentage(maintanencePercentage)))
-          })
-          break;
-
-        case 'Fixed':
-
-          setValue('MaintananceCostApplicability', '-')
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull(maintanenceToolCost, initialConfiguration?.NoOfDecimalForPrice))
-          setToolObj({
-            ...toolObj,
-            ToolApplicabilityId: applicability.value,
-            ToolApplicability: applicability.label,
-            MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: maintanenceToolCost,
-            ToolMaintenanceCost: checkForNull(maintanenceToolCost)
-          })
-          break;
-
-        case 'Net Cost':
-          setValue('MaintananceCostApplicability', checkForDecimalAndNull(totalTabCost, initialConfiguration?.NoOfDecimalForPrice))
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull(totalTabCost * calculatePercentage(maintanencePercentage), initialConfiguration?.NoOfDecimalForPrice))
-          setToolObj({
-            ...toolObj,
-            ToolApplicabilityId: applicability.value,
-            ToolApplicability: applicability.label,
-            MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: checkForNull(totalTabCost),
-            ToolMaintenanceCost: checkForNull((totalTabCost * calculatePercentage(maintanencePercentage)))
-          })
-          break;
-        default:
-          break;
+    if (!headerCosts || Text === '' || valueByAPI) return;
+  
+    const ConversionCostForCalculation = costData.IsAssemblyPart
+      ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)
+      : checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost);
+  
+    const RMBOPCC = checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(headerCosts.NetBoughtOutPartCost) + ConversionCostForCalculation;
+    const RMBOP = checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(headerCosts.NetBoughtOutPartCost);
+    const RMCC = checkForNull(headerCosts.NetRawMaterialsCost) + ConversionCostForCalculation;
+    const BOPCC = checkForNull(headerCosts.NetBoughtOutPartCost) + ConversionCostForCalculation;
+  
+    const maintanencePercentage = getValues('maintanencePercentage');
+    const maintanenceToolCost = getValues('maintanenceToolCost');
+    const toolRate = getValues('ToolCost');
+    const life = checkForNull(getValues('Life'));
+    const noOfDecimal = initialConfiguration?.NoOfDecimalForPrice;
+  
+    let dataList = CostingDataList?.length ? CostingDataList[0] : {};
+    const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) +
+      checkForNull(dataList.NetSurfaceTreatmentCost) +
+      checkForNull(dataList.NetOverheadAndProfitCost) +
+      checkForNull(dataList.NetPackagingAndFreight);
+  
+    const applyToolValues = (baseCost) => {
+      const toolCost = checkForNull(baseCost * calculatePercentage(maintanencePercentage));
+      const costPerPc = toolCost / life;
+  
+      setValue('MaintananceCostApplicability', checkForDecimalAndNull(baseCost, noOfDecimal));
+      setValue('ToolMaintenanceCost', checkForDecimalAndNull(toolCost, noOfDecimal));
+      setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, noOfDecimal));
+  
+      setToolObj({
+        ...toolObj,
+        ToolApplicabilityId: applicability.value,
+        ToolApplicability: applicability.label,
+        MaintanencePercentage: maintanencePercentage,
+        ToolApplicabilityCost: baseCost,
+        ToolMaintenanceCost: toolCost,
+        ToolMaintenanceCostPerPiece: costPerPc
+      });
+    };
+  
+    switch (Text) {
+      case 'RM':
+      case 'Part Cost':
+        applyToolValues(checkForNull(headerCosts.NetRawMaterialsCost));
+        break;
+  
+      case 'BOP':
+        applyToolValues(checkForNull(headerCosts.NetBoughtOutPartCost));
+        break;
+  
+      case 'CC':
+        applyToolValues(checkForNull(ConversionCostForCalculation));
+        break;
+  
+      case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
+        applyToolValues(RMBOPCC);
+        break;
+  
+      case 'RM + BOP':
+      case 'Part Cost + BOP':
+        applyToolValues(RMBOP);
+        break;
+  
+      case 'RM + CC':
+      case 'Part Cost + CC':
+        applyToolValues(RMCC);
+        break;
+  
+      case 'BOP + CC':
+        applyToolValues(BOPCC);
+        break;
+  
+      case 'Net Cost':
+        applyToolValues(totalTabCost);
+        break;
+  
+      case 'Tool Rate': {
+        const toolCost = checkForNull(toolRate * calculatePercentage(maintanencePercentage));
+        const costPerPc = toolCost / life;
+        setValue('MaintananceCostApplicability', checkForDecimalAndNull(toolRate, noOfDecimal));
+        setValue('ToolMaintenanceCost', checkForDecimalAndNull(toolCost, noOfDecimal));
+        setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, noOfDecimal));
+  
+        setToolObj({
+          ...toolObj,
+          ToolApplicabilityId: applicability.value,
+          ToolApplicability: applicability.label,
+          MaintanencePercentage: maintanencePercentage,
+          ToolApplicabilityCost: toolRate,
+          ToolMaintenanceCost: toolCost,
+          ToolMaintenanceCostPerPiece: costPerPc
+        });
+        break;
       }
-
-      // setTimeout(() => {
-      //   calculateNetToolCost()
-      // }, 500);
+  
+      case 'Fixed':
+        setValue('MaintananceCostApplicability', '-');
+        setValue('ToolMaintenanceCost', checkForDecimalAndNull(maintanenceToolCost, noOfDecimal));
+        setToolObj({
+          ...toolObj,
+          ToolApplicabilityId: applicability.value,
+          ToolApplicability: applicability.label,
+          MaintanencePercentage: maintanencePercentage,
+          ToolApplicabilityCost: maintanenceToolCost,
+          ToolMaintenanceCost: checkForNull(maintanenceToolCost)
+        });
+        break;
+  
+      default:
+        break;
     }
-  }
+  };
 
   useEffect(() => {
-
     calculateNetToolCost()
-  }, [toolObj])
+  }, [toolObj,fieldValues])
 
   const calculateNetToolCost = () => {
 
-    const ToolMaintenanceCost = checkForNull(toolObj?.ToolMaintenanceCost)
-
+    const ToolMaintenanceCostPerPiece = checkForNull(toolObj?.ToolMaintenanceCostPerPiece)
     const ToolCost = checkForNull(getValues('ToolCost'));
     const Life = checkForNull(getValues('Life'))
     const ToolAmortizationCost = ToolCost / Life
-
-    const maintanencePercentage = getValues('maintanencePercentage')
-    //  const applicabilityCost =  getValues('MaintananceCostApplicability')
-    const applicabilityCost = toolObj?.ToolApplicabilityCost
-    const netToolValue = checkForNull(ToolMaintenanceCost) + checkForNull(ToolAmortizationCost)
-
+    const toolInterestRatePercent = checkForNull(getValues('ToolInterestRatePercent'))
+    const toolInterestCost= ToolCost * toolInterestRatePercent / 100
+    const toolInterestCostPerPc = toolInterestCost / checkForNull(getValues('Life'))
+    setValue('ToolInterestCost', checkForDecimalAndNull(toolInterestCost, initialConfiguration?.NoOfDecimalForPrice))
+    setValue('ToolInterestCostPerPc', checkForDecimalAndNull(toolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice))
+    setState(prevState => ({
+      ...prevState,
+      ToolInterestCost: toolInterestCost,
+      ToolInterestCostPerPc: toolInterestCostPerPc
+    }))
+    const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(fieldValues.ToolInterestCostPerPc)
     if (netToolValue) {
       setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
       setValue('NetToolCost', checkForDecimalAndNull(netToolValue, initialConfiguration.NoOfDecimalForPrice))
@@ -593,24 +524,25 @@ function Tool(props) {
         "Life": Life,
         "NetToolCost": netToolValue,
         "TotalToolCost": null,
-        "ToolMaintenanceCost": ToolMaintenanceCost,
+        "ToolMaintenanceCost": ToolMaintenanceCostPerPiece,
         "ToolCostType": applicability.label,
         "ToolApplicabilityTypeId": applicability.value,
-        "ToolMaintenancePercentage": maintanencePercentage,
-        "ToolApplicabilityCost": applicabilityCost,
+        "ToolMaintenancePercentage": getValues('maintanencePercentage'),
+        "ToolApplicabilityCost": getValues('MaintananceCostApplicability'),
         "ToolAmortizationCost": ToolAmortizationCost,
         "IsCostForPerAssembly": null,
-        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : '',
+        "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
+        "ToolInterestCost": toolInterestCost,
+        "ToolInterestCostPerPiece": toolInterestCostPerPc,
+        "ToolMaintenanceCostPerPiece": toolObj?.ToolMaintenanceCost / Life,
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-      // dispatch(isToolDataChange(true))
+      dispatch(isToolDataChange(true))
       setTimeout(() => {
         setGridData(tempArr)
       }, 200)
-    }
-
-
-
+    } 
   }
 
   const resetData = () => {
@@ -703,6 +635,70 @@ function Tool(props) {
               {/* BELOW CONDITION RENDER WHEN APPLICABILITY IS OVERALL */}
               {!IsApplicableProcessWise &&
                 <>
+                  <Col md="3">
+                    <TextFieldHookForm
+                      label="Tool Rate"
+                      name={`ToolCost`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                        validate: { number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
+                      }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      handleChange={(e) => {
+                        e.preventDefault()
+                        handleToolCostChange(e)
+                      }}
+                      errors={errors && errors.ToolCost}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                  </Col>
+                  <Col md="3">
+                    <TextFieldHookForm
+                      label="Amortization Quantity (Tool Life)"
+                      name={`Life`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                        validate: { number, checkWhiteSpaces,  decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
+                      }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      handleChange={(e) => {
+                        e.preventDefault()
+                        handleToolLifeChange(e)
+                      }}
+                      errors={errors && errors.Life}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                  </Col>
+                  <Col md="3">
+                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = (Tool Cost / Amortization Quantity)"} />
+                    <TextFieldHookForm
+                      label="Tool Amortization Cost"
+                      name={`ToolAmortizationCost`}
+                      id={"tool-amortization"}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      handleChange={(e) => { }}
+                      errors={errors && errors.ToolAmortizationCost}
+                      disabled={true}
+                    />
+                  </Col>
                   <Col md="3">
                     <SearchableSelectHookForm
                       label={"Tool Maintenance Applicability"}
@@ -823,64 +819,83 @@ function Tool(props) {
                       customClassName={'withBorder'}
                       handleChange={(e) => {
                         e.preventDefault()
-                        handleToolMaintanenceChange(e)
                       }}
                       errors={errors && errors.ToolMaintenanceCost}
                       disabled={true}
                     />
                   </Col>
-                  <Col md="3">
+                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence-per-pc"} tooltipText={`${toolMaintenanceCostPerPcLabel}= (${toolMaintenanceCostLabel} / Amortization Quantity (Tool Life) `} />}
                     <TextFieldHookForm
-                      label="Tool Cost"
-                      name={`ToolCost`}
+                      label={toolMaintenanceCostPerPcLabel}
+                      name={`ToolMaintenanceCostPerPc`}
+                      id={"tool-maintanence-per-pc"}
                       Controller={Controller}
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
-                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
                       handleChange={(e) => {
                         e.preventDefault()
-                        handleToolCostChange(e)
                       }}
-                      errors={errors && errors.ToolCost}
-                      disabled={CostingViewMode ? true : false}
+                      errors={errors && errors.ToolMaintenanceCostPerPc}
+                      disabled={true}
                     />
                   </Col>
                   <Col md="3">
-                    <TextFieldHookForm
-                      label="Amortization Quantity (Tool Life)"
-                      name={`Life`}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
-                      }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      handleChange={(e) => {
-                        e.preventDefault()
-                        handleToolLifeChange(e)
-                      }}
-                      errors={errors && errors.Life}
-                      disabled={CostingViewMode ? true : false}
-                    />
+                  <TextFieldHookForm
+                          label={toolInterestRatePercentLabel}
+                          name={'ToolInterestRatePercent'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={(e) => {
+                            e.preventDefault()
+                            dispatch(isToolDataChange(true))
+                            setValueByAPI(false)
+                          }}
+                          rules={{
+                            required: true,
+                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                            max: {
+                              value: 100,
+                              message: 'Percentage cannot be greater than 100'
+                            },
+                          }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.maintanencePercentage}
+                          disabled={!getValues('ToolCost')|| CostingViewMode ? true : false}
+                        />
                   </Col>
                   <Col md="3">
-                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = (Tool Cost / Amortization Quantity)"} />
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-interest-cost"} tooltipText={`${toolInterestCostLabel}= (Tool Rate * ${toolInterestRatePercentLabel} / 100)`} />
+                  <TextFieldHookForm
+                          label={toolInterestCostLabel}
+                          Controller={Controller}
+                          name={'ToolInterestCost'}
+                          id={"tool-interest-cost"}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{required: false}}
+                          handleChange={(e) => {}}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ToolInterestCost}
+                          disabled={ true }
+
+                        />
+                  </Col>
+                  <Col md="3">{ <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-interest-cost-per-pc"} tooltipText={`${toolInterestCostPerPcLabel}= (${toolInterestCostLabel} / Amortization Quantity (Tool Life) `} />}
                     <TextFieldHookForm
-                      label="Tool Amortization Cost"
-                      name={`ToolAmortizationCost`}
-                      id={"tool-amortization"}
+                      label={toolInterestCostPerPcLabel}
+                      name={`ToolInterestCostPerPc`}
+                      id={"tool-interest-cost-per-pc"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -889,11 +904,10 @@ function Tool(props) {
                       className=""
                       customClassName={'withBorder'}
                       handleChange={(e) => { }}
-                      errors={errors && errors.ToolAmortizationCost}
+                      errors={errors && errors.ToolInterestCostPerPc}
                       disabled={true}
                     />
                   </Col>
-
                   <Col md="3">
                     <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={`Net Tool Cost = (${toolMaintenanceCostLabel}+ Tool Amortization)`} />
                     <TextFieldHookForm
@@ -968,6 +982,7 @@ function Tool(props) {
         editIndex={editIndex}
         rowObjData={rowObjData}
         anchor={'right'}
+        partType={partType}
       />}
 
     </ >

@@ -665,6 +665,7 @@ export const API = {
   getFreightCalculation: `${BASE_URL}/costing/get-costing-freight-calculation-details`,
   saveFreightCalculation: `${BASE_URL}/costing/save-costing-freight-calculation-details`,
   getTypeOfCost: `${BASE_URL}/costing/select-list-packaging-cost-type`,
+  getCalculationCriteriaList: `${BASE_URL}/costing/select-list-calculation-criteria`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
@@ -1831,6 +1832,7 @@ export const SET_OVERHEAD_PROFIT_TAB_DATA = 'SET_OVERHEAD_PROFIT_TAB_DATA';
 export const SET_DISCOUNT_AND_OTHER_TAB_DATA = "SET_DISCOUNT_AND_OTHER_TAB_DATA"
 export const SET_PACKAGE_AND_FREIGHT_TAB_DATA = 'SET_PACKAGE_AND_FREIGHT_TAB_DATA';
 export const SET_TOOL_TAB_DATA = 'SET_TOOL_TAB_DATA';
+export const GET_TOOL_TAB_DATA = 'GET_TOOL_TAB_DATA';
 export const SET_TOOL_PROCESS_WISE_DATALIST = 'SET_TOOL_PROCESS_WISE_DATALIST';
 export const SET_OTHER_DISCOUNT_TAB_DATA = 'SET_OTHER_DISCOUNT_TAB_DATA';
 export const SET_EXCHANGE_RATE_CURRENCY_DATA = 'SET_EXCHANGE_RATE_CURRENCY_DATA';
@@ -1876,6 +1878,7 @@ export const SET_PACKAGING_CALCULATOR_AVAILABLE = 'SET_PACKAGING_CALCULATOR_AVAI
 export const SET_FREIGHT_CALCULATOR_AVAILABLE = 'SET_FREIGHT_CALCULATOR_AVAILABLE';
 export const GET_PAINT_COAT_LIST = 'GET_PAINT_COAT_LIST';
 export const GET_TYPE_OF_COST_SUCCESS = 'GET_TYPE_OF_COST_SUCCESS';
+export const GET_CALCULATION_CRITERIA_LIST_SUCCESS = 'GET_CALCULATION_CRITERIA_LIST_SUCCESS';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -3406,7 +3409,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.19.1";
+export const VERSION = "V4.2.30";
 
 
 
