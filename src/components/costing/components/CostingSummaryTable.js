@@ -3726,18 +3726,18 @@ const CostingSummaryTable = (props) => {
                               return <td className={tableDataClass(data)}>
                                 {data?.CostingHeading === VARIANCE ? (
                                   // For variance column, show only the value without currency
-                                  displayValueWithSign(data, "nPOPrice")
+                                  displayValueWithSign(data, "NetPOPriceConversion")
                                 ) : data?.bestCost === true ? (
                                   // For best cost column
                                   <>
                                     {`${initialConfiguration?.BaseCurrency}: `}
-                                    {showConvertedCurrency ? displayValueWithSign(data, "nPOPrice") : ''}
+                                    {showConvertedCurrency ? displayValueWithSign(data, "NetPOPriceConversion") : displayValueWithSign(data, "NetPOPriceConversion")}
                                   </>
                                 ) : (
                                   // For regular columns
                                   <>
                                     {`${viewCostingData?.[0]?.CostingCurrency || initialConfiguration?.BaseCurrency}: `}
-                                    {displayValueWithSign(data, "nPOPrice")}
+                                    {displayValueWithSign(data, "NetPOPriceConversion")}
                                   </>
                                 )}
                                 {(data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
