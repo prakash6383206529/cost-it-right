@@ -165,7 +165,8 @@ function PackagingCalculator(props) {
         } else {
             setValuePackaging('VolumePerDay', '')
             setValuePackaging('VolumePerAnnum', '')
-            setState((prevState) => ({ ...prevState, volumePerDay: 0, volumePerAnnum: 0 }))
+            setValuePackaging('NoOfCratesRequiredPerDay', '')
+            setState((prevState) => ({ ...prevState, volumePerDay: 0, volumePerAnnum: 0,disableSubmit:false ,noOfCratesRequiredPerDay:0}))
         }
     }, [state.isVolumeAutoCalculate])
     useEffect(() => {
@@ -278,7 +279,7 @@ function PackagingCalculator(props) {
 
     }
     const handleCalculationCriteriaChange = (value) => {
-        setState((prevState) => ({ ...prevState, calculationCriteria: value }))
+        setState((prevState) => ({ ...prevState, calculationCriteria: value,disableSubmit:false }))
         resetValues()
     }
     const handleCostPercentageChange = (value) => {
