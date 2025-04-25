@@ -288,7 +288,7 @@ function AssemblyTechnology(props) {
             let stCostingData = findSurfaceTreatmentData(item)
             let basicRate = 0
             if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
-                basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+                basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
                     checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
                     checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
             } else {
@@ -307,7 +307,7 @@ function AssemblyTechnology(props) {
                 "NetOperationCost": item?.CostingPartDetails?.NetOperationCost,
                 "NetOtherOperationCost": item?.CostingPartDetails?.NetOtherOperationCost,
                 "NetTotalRMBOPCC": item?.CostingPartDetails?.NetTotalRMBOPCC,
-                "NetPOPrice": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+                "NetPOPrice": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.NetTotalRMBOPCC,
                 "LoggedInUserId": loggedInUserId(),
                 "NetLabourCost": item.NetLabourCost,
                 "IndirectLaborCost": item.IndirectLaborCost,
@@ -341,10 +341,10 @@ function AssemblyTechnology(props) {
 
             item.NetOperationCost = item?.CostingPartDetails?.NetOperationCost
             let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
-
+            console.log(request, 'request')
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
             }))
-
+            console.log(requestData, 'requestData')
             dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
             }))
             setCallSaveAssemblyApi(false)
