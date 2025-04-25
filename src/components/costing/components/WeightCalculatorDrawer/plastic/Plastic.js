@@ -229,7 +229,7 @@ function Plastic(props) {
         obj.NetWeight = dataToSend.grossWeight
         obj.RunnerWeight = getValues('runnerWeight')
         obj.GrossWeight = getValues('netWeight')
-        obj.FinishWeight = getValues('finishedWeight')
+        obj.FinishWeight =!IsShowFinishedWeightInPlasticTechCostingCalculator ? getValues('netWeight') : getValues('finishedWeight')
         obj.RecoveryPercentage = getValues('scrapRecoveryPercent')
         obj.ScrapWeight = dataToSend.scrapWeight
         obj.RMCost = dataToSend.rmCost
