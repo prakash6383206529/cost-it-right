@@ -6739,11 +6739,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Model Type", value: "ModelType", },
-    { label: "Overhead Applicability", value: "OverheadApplicabilityType", },
-    { label: "Overhead Applicability (%)", value: "OverheadPercentage", },
-    { label: "Overhead on RM/ Part Cost (%)", value: "OverheadRMPercentage", },
-    { label: "Overhead on BOP (%)", value: "OverheadBOPPercentage", },
-    { label: "Overhead on CC (%)", value: "OverheadMachiningCCPercentage", },
+    { label: "Overhead Applicability", value: "Applicability", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]
 
@@ -6868,11 +6864,7 @@ export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Model Type", value: "ModelType", },
-    { label: "Profit Applicability", value: "ProfitApplicabilityType", },
-    { label: "Profit Applicability (%)", value: "ProfitPercentage", },
-    { label: "Profit on RM/ Part Cost (%)", value: "ProfitRMPercentage", },
-    { label: "Profit on BOP (%)", value: "ProfitBOPPercentage", },
-    { label: "Profit on CC (%)", value: "ProfitMachiningCCPercentage", },
+    { label: "Profit Applicability", value: "Applicability", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]
 export const ZBCPLANT_DOWNLOAD_EXCEl = [

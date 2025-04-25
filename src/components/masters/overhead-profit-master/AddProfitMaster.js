@@ -290,12 +290,11 @@ const AddProfitMaster = (props) => {
           IsFinancialDataChanged: IsFinancialDataChanged,
           ApplicabilityDetails: ApplicabilityDetails
         }
-        if (isEditFlag && IsFinancialDataChanged) {
-          if (DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-            Toaster.warning('Please update the effective date')
-            setState(prev => ({ ...prev, setDisable: false }));
-            return false
-          }
+
+        if (IsFinancialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props.IsProfitAssociated) {
+          Toaster.warning('Please update the Effective date.') ;
+          setState(prev => ({ ...prev, setDisable: false }));  
+          return false
         }
         dispatch(updateProfit(requestData, (res) => {
           setState(prev => ({ ...prev, setDisable: false }));
@@ -340,11 +339,6 @@ const AddProfitMaster = (props) => {
   }, (errors) => { 
       // console.log( errors);  // Check if there are validation errors
   }),  500);
-
-    const handleApplicabilityChange = (e) => {
-        setState(prev => ({ ...prev, OverheadApplicability: e }));
-        setValue("OverheadApplicability", e)
-    }
 
     const handleMessageChange = (e) => {
       setValue("Remark", e?.target?.value);
@@ -574,8 +568,6 @@ const AddProfitMaster = (props) => {
 
                     <AddOverheadMasterDetails 
                       costingTypeId={costingTypeId}
-                      ModelType={ModelType}
-                      handleApplicabilityChange={handleApplicabilityChange}
                       state={state}
                       setState={setState}
                       register={register}
@@ -612,6 +604,7 @@ const AddProfitMaster = (props) => {
                                     customClassName={'textAreaWithBorder'}
                                     errors={errors.remark}
                                     disabled={isViewMode}
+                                    rowHeight={4.8}
                                 />
                             </div>
                         </Col>
