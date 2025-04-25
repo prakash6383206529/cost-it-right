@@ -12,7 +12,7 @@ import { useLabels } from '../../../../helper/core'
 
 function ViewMultipleTechnology(props) {
     const { multipleTechnologyData, isPDFShow } = props
-    
+
     const [viewMultiCost, setViewMultiCost] = useState([])
     const [costingDetailId, setCostingDetailId] = useState('')
     const [openDrawer, setOpemDrawer] = useState(false)
@@ -88,7 +88,7 @@ function ViewMultipleTechnology(props) {
                                                 <th>{`${item?.VendorName} (${item?.VendorCode})`}</th>}
                                             {props?.costingTypeId === CBCTypeId &&
                                                 <td>{`${item?.CustomerName} (${item?.CustomerCode})`}</td>}
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.CostingNumber}>{item?.PartType === 'BOP' ? "-": item?.CostingNumber}</span></td>
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.CostingNumber}>{item?.PartType === 'BOP' ? "-" : item?.CostingNumber}</span></td>
                                             <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartNumber}>{item?.PartNumber}</span></td>
                                             <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartName}>{item?.PartName}</span></td>
                                             <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartTypeName}>{item?.PartTypeName}</span></td>
@@ -107,7 +107,7 @@ function ViewMultipleTechnology(props) {
                                             <td>
                                                 {checkForDecimalAndNull(item?.PartTypeName === 'BOP' ? item?.NetBoughtOutPartCostWithQuantity : item?.NetChildPartsCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice)}
                                             </td>
-                                            <td> {item?.PartTypeName !== BOUGHTOUTPART && <button
+                                            <td> {<button
                                                 type="button"
                                                 title='View'
                                                 className="float-right mb-0 View "
@@ -170,6 +170,7 @@ function ViewMultipleTechnology(props) {
                 simulationMode={props?.simulationMode}
                 SimulationId={props?.SimulationId}
                 viewCostingData={props?.viewCostingData}
+                isBopEdit={costingDetailId?.PartTypeName === 'BOP' ? true : false}
             />}
 
         </Fragment>

@@ -77,6 +77,7 @@ function PackagingCalculator(props) {
         name: ['NoOfComponentsPerCrate', 'StockNormDays', 'WeightOfCover', 'CostOfCrate', 'CostOfCoverPerKg', 'AmortizedNoOfYears', 'NoOfPartsPerCover', 'SpacerPackingInsertCost', 'NoOfSpacerPackingInsert'],
         defaultValue: []
     })
+   
     useEffect(() => {
         if (!CostingViewMode && calclulationFieldValues.some(value => value !== undefined)) {
             calculateAllValues();
@@ -164,7 +165,8 @@ function PackagingCalculator(props) {
         } else {
             setValuePackaging('VolumePerDay', '')
             setValuePackaging('VolumePerAnnum', '')
-            setState((prevState) => ({ ...prevState, volumePerDay: 0, volumePerAnnum: 0 }))
+            setValuePackaging('NoOfCratesRequiredPerDay', '')
+            setState((prevState) => ({ ...prevState, volumePerDay: 0, volumePerAnnum: 0,disableSubmit:false ,noOfCratesRequiredPerDay:0}))
         }
     }, [state.isVolumeAutoCalculate])
     useEffect(() => {
@@ -277,7 +279,7 @@ function PackagingCalculator(props) {
 
     }
     const handleCalculationCriteriaChange = (value) => {
-        setState((prevState) => ({ ...prevState, calculationCriteria: value }))
+        setState((prevState) => ({ ...prevState, calculationCriteria: value,disableSubmit:false }))
         resetValues()
     }
     const handleCostPercentageChange = (value) => {
@@ -300,11 +302,23 @@ function PackagingCalculator(props) {
         const cost = costApplicable * (parseFloat(value) / 100);
         setValueCost('cost', checkForDecimalAndNull(cost, NoOfDecimalForPrice));
     }
+    const handleNoOfCratesRequiredPerDayChange = (e) => {
+        if (!state.isVolumeAutoCalculate) {
+            const value = e.target.value;
+            setValuePackaging('NoOfCratesRequiredPerDay', value);
+            setState(prevState => ({
+                ...prevState,
+                noOfCratesRequiredPerDay: checkForNull(value)
+            }));
+            calculateAllValues();
+        }
+    };
+    
     const packagingCalculatorSection1 = [
         ...(state.calculationCriteria?.label === "Annual Volume Basis" ? [
             ...(state.isVolumeAutoCalculate ? [{ label: t('volumePerDay', { defaultValue: 'Volume per day' }), name: 'VolumePerDay', mandatory: false, disabled: true, tooltip: { text: `Coming from the volume master, budgeted for the specified effective date (Budgeted Quantity / ${DaysInMonthForVolumePerDay})`, width: '250px', customClass: "mt-4", disabledIcon: false } }] : []),
             { label: t('volumePerAnnum', { defaultValue: 'Volume per annum' }), name: 'VolumePerAnnum', mandatory: false, disabled: state.isVolumeAutoCalculate || CostingViewMode, ...(state.isVolumeAutoCalculate ? {tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} * ${DaysInMonthForVolumePerDay} * 12`, width: '250px', disabledIcon: true }} : {}) },
-            { label: t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' }), name: 'NoOfCratesRequiredPerDay', mandatory: false, disabled: state.isVolumeAutoCalculate || CostingViewMode, ...(state.isVolumeAutoCalculate ? {tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} / ${t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' })}`, width: '250px', disabledIcon: true }} : {}) }
+            { label: t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' }), name: 'NoOfCratesRequiredPerDay', mandatory: false,handleChange: handleNoOfCratesRequiredPerDayChange, disabled: state.isVolumeAutoCalculate || CostingViewMode, ...(state.isVolumeAutoCalculate ? {tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} / ${t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' })}`, width: '250px', disabledIcon: true }} : {}) }
         ] : []),
         { label: t('stockNormDays', { defaultValue: 'Stock Norm days' }), name: 'StockNormDays', mandatory: true, disabled: state.disableFields || CostingViewMode },
         { label: t('costOfCrate', { defaultValue: 'Cost of crate/trolley' }), name: 'CostOfCrate', mandatory: true, disabled: state.disableFields || CostingViewMode },
