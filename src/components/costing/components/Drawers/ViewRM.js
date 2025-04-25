@@ -13,6 +13,7 @@ import { Row, Col, Table } from 'reactstrap'
 import TooltipCustom from '../../../common/Tooltip';
 import _ from 'lodash';
 import { useLabels } from '../../../../helper/core';
+import DayTime from '../../../common/DayTimeWrapper';
 
 function ViewRM(props) {
 
@@ -290,6 +291,7 @@ function ViewRM(props) {
               {viewCostingData[0]?.technologyId === DIE_CASTING && <th>Melting Loss (Loss%)</th>}
               <th >{`Net RM Cost ${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''}`}</th>
               {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
+              <th>{`Effective Date`}</th>
               <th className="costing-border-right">{`Remark`}</th>
 
             </tr>
@@ -326,6 +328,7 @@ function ViewRM(props) {
                     viewCostingData[props.index]?.technologyId !== INSULATION &&
                     <TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : `Net RM Cost =((RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate${isScrapRecoveryApplied ? ' * Scrap Recovery/100' : ''})${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''})`} />}</div>{item?.RawMaterialCalculatorId === null && item?.GrossWeight !== null && viewCostingData[props.index]?.technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
                   {initialConfiguration?.IsShowCRMHead && <td>{item?.RawMaterialCRMHead}</td>}
+                  <td>{item?.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-'}</td>
                   <td>
                     <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item?.Remark}>
                       <span>{item?.Remark ? item?.Remark : "-"}</span></div>

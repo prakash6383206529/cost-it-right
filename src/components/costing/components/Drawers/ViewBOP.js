@@ -6,6 +6,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA, TOOLING } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import DayTime from '../../../common/DayTimeWrapper'
 
 function ViewBOP(props) {
   const { viewBOPData, isPDFShow } = props
@@ -53,6 +54,7 @@ function ViewBOP(props) {
                 <th>{`Quantity`}</th>
                 <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net ${showBopLabel()} Cost`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
+                <th>{`Effective Date`}</th>
               </tr>
             </thead>
             <tbody>
@@ -72,6 +74,7 @@ function ViewBOP(props) {
                         {checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice)}
                       </td>
                       {initialConfiguration?.IsShowCRMHead && <td>{item.BoughtOutPartCRMHead}</td>}
+                      <td>{item.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-'}</td>
                     </tr>
                   )
                 })}
