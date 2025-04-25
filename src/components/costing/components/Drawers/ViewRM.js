@@ -291,6 +291,7 @@ function ViewRM(props) {
               <th >{`Net RM Cost ${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''}`}</th>
               {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
               <th className="costing-border-right">{`Remark`}</th>
+              <th>{`Effective Date`}</th>
 
             </tr>
           </thead>
@@ -330,6 +331,7 @@ function ViewRM(props) {
                     <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item?.Remark}>
                       <span>{item?.Remark ? item?.Remark : "-"}</span></div>
                   </td>
+                  <td>{item?.EffectiveDate}</td>
                 </tr>
               )
             })}
