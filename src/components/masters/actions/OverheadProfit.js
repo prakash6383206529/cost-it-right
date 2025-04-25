@@ -168,7 +168,7 @@ export function getOverheadDataCheck(data, callback) {
     return (dispatch) => {
         axios.get(`${API.getOverheadDataCheck}?overheadId=${data?.overheadId??null}&modelTypeId=${data?.modelTypeId??null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId??null}`, config())
             .then((response) => {
-                if (response.data.Result === true) {
+                if (response.data.Result === true || response.status === 204) {
                     dispatch({
                         type: GET_OVERHEAD_PROFIT_DATA_SUCCESS,
                         payload: response.data.Data,
@@ -191,7 +191,7 @@ export function getProfitDataCheck(data, callback) {
     return (dispatch) => {
         axios.get(`${API.getProfitDataCheck}?overheadId=${data?.overheadId??null}&modelTypeId=${data?.modelTypeId??null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId??null}`, config())
             .then((response) => {
-                if (response.data.Result === true) {
+                if (response.data.Result === true || response.status === 204) {
                     dispatch({
                         type: GET_OVERHEAD_PROFIT_DATA_SUCCESS,
                         payload: response.data.Data,

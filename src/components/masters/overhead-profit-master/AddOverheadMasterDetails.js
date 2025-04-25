@@ -57,7 +57,7 @@ const AddOverheadMasterDetails = (props) => {
               const newCostingHead = costingHead.filter(
                 item => !state.ApplicabilityDetails.some(
                   ap => ap.ApplicabilityId == item.Value
-                )
+                ) && Number(item.Value) !== 0
               );
               temp = newCostingHead.map(item => ({
                 label: item.Text,
@@ -65,6 +65,7 @@ const AddOverheadMasterDetails = (props) => {
               }));
             } else {
               costingHead && costingHead.forEach(item => {
+                if(Number(item.Value) === 0) return false
                 temp.push({ label: item.Text, value: item.Value });
               });
             }
@@ -266,7 +267,7 @@ const AddOverheadMasterDetails = (props) => {
     }
 
     const handleEffectiveDate = (value) => {
-        setState(prev => ({...prev, EffectiveDate: value,IsFinancialDataChanged: true}));
+        setState(prev => ({...prev, EffectiveDate: value, IsFinancialDataChanged: true}));
         setValue("EffectiveDate", value);
     }
 

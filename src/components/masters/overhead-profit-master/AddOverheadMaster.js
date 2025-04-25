@@ -30,6 +30,7 @@ import { useTranslation } from 'react-i18next';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkEffectiveDate } from '../masterUtil';
 
 
 const AddOverheadMaster = (props) => {
@@ -106,7 +107,7 @@ const AddOverheadMaster = (props) => {
             (state.costingTypeId === CBCTypeId && state?.client) ||
             (state.costingTypeId === VBCTypeId && state?.vendorName)
           );
-          if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants && !(Object.keys(state?.DataToChange).length > 0)) {
+          if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
             let data = {
               overheadId: state?.OverheadID ?? null,
               modelTypeId: state?.ModelType?.value,
@@ -121,21 +122,35 @@ const AddOverheadMaster = (props) => {
               if (res?.status === 200) {
                 let Data = res?.data?.Data;
                 if(Object.keys(Data).length > 0){
-                  setDetails(Data);
+                  setValue("Remark", Data.Remark)
+                  setValue("costingTypeId", Data.CostingTypeId)
+                  setState(prev => ({ ...prev, 
+                    IsFinancialDataChanged: false,
+                    isEditFlag: true,
+                    remarks: Data.Remark,
+                    files: Data.Attachements,
+                    RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
+                    RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
+                    ApplicabilityDetails: Data.ApplicabilityDetails,
+                    minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+                    OverheadID: Data.OverheadId,
+                  }));
                 }
               } else {
-                // setState(prev => ({
-                //   ...prev,
-                //   gridTable: [],
-                //   IsFreightAssociated: false,
-                //   callUpdate: false,
-                //   freightID: null
-                // }));
+                setState(prev => ({
+                  ...prev,
+                  isEditFlag: false,
+                  ApplicabilityDetails: [],
+                  files: [],
+                  IsFinancialDataChanged: true,
+                  minEffectiveDate: '',
+                  OverheadID: "",
+                }));
               }
             }));
           }
         }
-      }, [state?.costingTypeId, state?.ModelType, state?.selectedPlants, state?.vendorName, state?.client, state?.EffectiveDate, state.isAssemblyCheckbox]);
+      }, [state?.ModelType, state?.selectedPlants, state?.vendorName, state?.client, state?.EffectiveDate, state.isAssemblyCheckbox]);
 
       const setDetails = (Data) => {
         setState(prev => ({ ...prev, DataToChange: Data }));
@@ -236,13 +251,16 @@ const AddOverheadMaster = (props) => {
       }
       setState(prev => ({ ...prev, isVendorNameNotSelected: false }));
       if (isEditFlag) {
+
+
         if (
           (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged 
             && (JSON.stringify(ApplicabilityDetails) === JSON.stringify(DataToChange.ApplicabilityDetails))
-          && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
+          && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate)) {
           Toaster.warning('Please change the data to save Overhead Details')
           return false
         }
+
         setState(prev => ({ ...prev, setDisable: true }));
         let updatedFiles = files.map((file) => {
           return { ...file, ContextId: OverheadID }
@@ -322,7 +340,7 @@ const AddOverheadMaster = (props) => {
         }));
       }
   }, (errors) => {  // Handle form errors
-    console.log( errors);  // Check if there are validation errors
+    // console.log( errors);  // Check if there are validation errors
 }),  500);
 
     const handleApplicabilityChange = (e) => {

@@ -30,6 +30,7 @@ import { useTranslation } from 'react-i18next';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkEffectiveDate } from '../masterUtil';
 
 
 const AddProfitMaster = (props) => {
@@ -105,7 +106,7 @@ const AddProfitMaster = (props) => {
           (state.costingTypeId === CBCTypeId && state?.client) ||
           (state.costingTypeId === VBCTypeId && state?.vendorName)
         );
-        if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants && !(Object.keys(state?.DataToChange).length > 0)) {
+        if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
           let data = {
             profitId: state?.ProfitID ?? null,
             modelTypeId: state?.ModelType?.value,
@@ -120,13 +121,35 @@ const AddProfitMaster = (props) => {
             if (res?.status === 200) {
               let Data = res?.data?.Data;
               if(Object.keys(Data).length > 0){
-                setDetails(Data);
+                setValue("Remark", Data.Remark)
+                setValue("costingTypeId", Data.CostingTypeId)
+                setState(prev => ({ ...prev, 
+                  IsFinancialDataChanged: false,
+                  isEditFlag: true,
+                  remarks: Data.Remark,
+                  files: Data.Attachements,
+                  RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
+                  RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
+                  ApplicabilityDetails: Data.ApplicabilityDetails,
+                  minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+                  ProfitID: Data.ProfitId
+                }));
               }
+            }else{
+              setState(prev => ({
+                ...prev,
+                isEditFlag: false,
+                ApplicabilityDetails: [],
+                files: [],
+                IsFinancialDataChanged: true,
+                minEffectiveDate: '',
+                ProfitID: "",
+              }));
             }
           }));
         }
       }
-    }, [state?.costingTypeId, state?.ModelType, state?.selectedPlants, state?.vendorName, state?.client, state?.EffectiveDate, state.isAssemblyCheckbox]);
+    }, [state?.ModelType, state?.selectedPlants, state?.vendorName, state?.client, state?.EffectiveDate, state.isAssemblyCheckbox]);
 
 
     const setDetails = (Data) => {
@@ -222,7 +245,6 @@ const AddProfitMaster = (props) => {
         })
       }
       if (vendorName.length <= 0) {
-  
         if (costingTypeId === VBCTypeId) {
           setState(prev => ({ ...prev, isVendorNameNotSelected: true, setDisable: false })); // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
           return false
@@ -233,9 +255,9 @@ const AddProfitMaster = (props) => {
         if (
             (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged 
               && (JSON.stringify(ApplicabilityDetails) === JSON.stringify(DataToChange.ApplicabilityDetails))
-            && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements
+            && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate)
           ) {
-              Toaster.warning('Please change the data to save Overhead Details')
+              Toaster.warning('Please change the data to save Profit Details')
               return false
             }
         setState(prev => ({ ...prev, setDisable: true }));
@@ -316,7 +338,7 @@ const AddProfitMaster = (props) => {
         }));
       }
   }, (errors) => { 
-      console.log( errors);  // Check if there are validation errors
+      // console.log( errors);  // Check if there are validation errors
   }),  500);
 
     const handleApplicabilityChange = (e) => {
@@ -599,7 +621,7 @@ const AddProfitMaster = (props) => {
                             <div className={`alert alert-danger mt-2 ${files.length === getConfigurationKey()?.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                             </div>
-                            <div id="AddOverhead_UploadFiles" className={`${files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                            <div id="AddProfit_UploadFiles" className={`${files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                             <Dropzone
                                 ref={dropzoneRef}
                                 onChangeStatus={handleChangeStatus}
