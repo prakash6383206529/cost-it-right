@@ -18,9 +18,8 @@ import { useSelector } from 'react-redux'
 import { sourceCurrencyFormatter } from '../../Drawers/processCalculatorDrawer/CommonFormula'
 import { saveRawMaterialCalculationForRubberStandard } from '../../../actions/CostWorking'
 import { useLabels } from '../../../../../helper/core'
-
-
-
+import PopupMsgWrapper from '../../../../common/PopupMsgWrapper'
+import { generateUnusedRMsMessage } from '../../../../common/CommonFunctions'
 
 const gridOptions = {};
 function StandardRub(props) {
@@ -46,6 +45,9 @@ function StandardRub(props) {
     const [reRender, setRerender] = useState(false)
     const [isVolumeAutoCalculate, setIsVolumeAutoCalculate] = useState(false)
     const { currencySource } = useSelector((state) => state?.costing);
+		const [showUnusedRMsPopup, setShowUnusedRMsPopup] = useState(false);
+		const [unusedRMsMessage, setUnusedRMsMessage] = useState('');
+		const [pendingObj, setPendingObj] = useState({});
 
     const defaultValues = {
         shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ShotWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
@@ -449,7 +451,9 @@ function StandardRub(props) {
     const onSubmit = debounce(handleSubmit(() => {
         setIsDisable(true)
         let obj = {}
-        // obj.LayoutType = 'Default'
+        const usedRmData = rmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
+        const unUsedRmData = rmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));				
+				// obj.LayoutType = 'Default'
         // obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
         // obj.IsChangeApplied = true //NEED TO MAKE IT DYNAMIC how to do
         obj.PartId = costData.PartId
@@ -467,18 +471,16 @@ function StandardRub(props) {
         obj.BaseCostingId = costData.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialRubberStandardWeightCalculator = tableData
+        obj.usedRmData = usedRmData
 
-
-        //APPLY NEW ACTION HERE 
-
-        dispatch(saveRawMaterialCalculationForRubberStandard(obj, (res) => {
-            if (res?.data?.Result) {
-                Toaster.success("Calculation saved successfully")
-                obj.CalculatorType = "Standard"
-                props.toggleDrawer('Standard', obj)
-            }
-        }))
-
+				if (unUsedRmData.length > 0) {
+					const message = generateUnusedRMsMessage(unUsedRmData)
+					setUnusedRMsMessage(message)
+					setShowUnusedRMsPopup(true)
+					setPendingObj(obj)
+				} else {
+					saveRawMaterialCalculationForRubberStandardFunction(obj)
+			}
     }), 500)
 
     const cancel = () => {
@@ -510,6 +512,24 @@ function StandardRub(props) {
         setIsVolumeAutoCalculate((prev) => !prev)
         clearErrors();
     }
+
+		const saveRawMaterialCalculationForRubberStandardFunction = (obj) => {
+			//APPLY NEW ACTION HERE 
+			dispatch(saveRawMaterialCalculationForRubberStandard(obj, (res) => {
+				if (res?.data?.Result) {
+					Toaster.success("Calculation saved successfully")
+					obj.CalculatorType = "Standard"
+					props.toggleDrawer('Standard', obj)
+				}
+			}))
+		}
+		const closeUnusedRMsPopup = () => {
+			setShowUnusedRMsPopup(false)
+		}
+		const confirmRemoveUnusedRMs = () => {
+			setShowUnusedRMsPopup(false)
+			saveRawMaterialCalculationForRubberStandardFunction(pendingObj)
+		}
 
     let volumeFormula = <div>Volume = (π/4) * (Outer Diameter<sup>2</sup> - Inner Diameter <sup>2</sup>) * Total Length</div>
     return (
@@ -896,6 +916,14 @@ function StandardRub(props) {
                                 {'SAVE'}
                             </button>
                         </div>
+                        {showUnusedRMsPopup && (
+													<PopupMsgWrapper
+														isOpen={showUnusedRMsPopup}
+														closePopUp={closeUnusedRMsPopup}
+														confirmPopup={confirmRemoveUnusedRMs}
+														message={unusedRMsMessage}
+													/>
+											  )}
                     </form>
                 </Col >
             </Row >
