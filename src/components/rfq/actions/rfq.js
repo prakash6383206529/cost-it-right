@@ -481,7 +481,7 @@ export function getNfrSelectList(callback) {
 
 export function rfqGetBestCostingDetails(bestCostId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.rfqGetBestCostingDetails}?bestCostId=${bestCostId}`, config());
+        const request = axios.get(`${API.rfqGetBestCostingDetails}?loggedInUserId=${loggedInUserId()}&bestCostId=${bestCostId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 const tempObj = response?.data?.Data;
