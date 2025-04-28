@@ -1768,9 +1768,7 @@ export const getChangeHighlightClass = (originalValue, updatedValue) => {
 
 //localized listing
 export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel = '', zeroBasedLabel = '', customerBasedLabel = '', vendorCodeLabel = '') => {
-  console.log("cellValue",typeof cellValue);
   if (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') {
-    console.log("vendorBasedLabel", vendorBasedLabel);
     return vendorBasedLabel;
   } else if (cellValue === false || cellValue === 'Zero Based' || cellValue === 'ZBC') {
     return zeroBasedLabel;
