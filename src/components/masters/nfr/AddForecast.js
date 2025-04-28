@@ -297,7 +297,8 @@ function AddForecast(props) {
 
     // Cancel edit
     const cancelEdit = () => {
-        // resetForm();
+        resetFormAndDropdowns();
+        resetForm();
     };
 
     // Functions for RM handling

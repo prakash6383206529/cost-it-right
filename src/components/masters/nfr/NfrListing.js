@@ -284,6 +284,7 @@ function NfrListing(props) {
         if (isSaveAPICalled === true) {
             getDataList()
         }
+        props.openAddNFRDrawer(false)
         setShowAddNFRDrawer(false)
     }
 
@@ -600,6 +601,7 @@ function NfrListing(props) {
 
     const addNFRFunction = () => {
         setIsViewMode(false)
+        props.openAddNFRDrawer(true)
         setShowAddNFRDrawer(true)
     }
 

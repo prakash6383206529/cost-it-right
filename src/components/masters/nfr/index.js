@@ -25,6 +25,10 @@ function NfrTabs(props) {
         setisFromDiscount(value)
     }
 
+    const openAddNFRDrawer = (isOpen) => {
+        setShowAddNFRDrawer(isOpen)
+    }
+
     return (
         <>
             <div className="user-page container-fluid costing-main-container">
@@ -60,7 +64,7 @@ function NfrTabs(props) {
                                 changeIsFromDiscount={changeIsFromDiscount} 
                                 activeTab={activeTab}
                                 showAddNFRDrawer={showAddNFRDrawer}
-                                setShowAddNFRDrawer={setShowAddNFRDrawer}
+                                openAddNFRDrawer={openAddNFRDrawer}
                             />}
                         </TabPane>
 
