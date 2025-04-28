@@ -411,24 +411,24 @@ function SurfaceTreatment(props) {
         // Get cost values once for all cases that need them
         switch (item.CostingConditionNumber) {
           case TAPEANDPAINT:
-            item.ApplicabiltyCost = paintAndMaskingDetails?.TotalPaintCost
-            item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TotalPaintCost, item?.Rate)
+            item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
+            item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.TotalPaintCost), item?.Rate)
             break;
           case HANGER:
-            item.ApplicabiltyCost = hangerCostDetails?.HangerCostPerPart
-            item.TransportationCost = calculatePercentageValue(hangerCostDetails?.HangerCostPerPart, item?.Rate)
+            item.ApplicabiltyCost = checkForNull(hangerCostDetails?.HangerCostPerPart)
+            item.TransportationCost = calculatePercentageValue(checkForNull(hangerCostDetails?.HangerCostPerPart), item?.Rate)
             break;
           case SURFACETREATMENTLABEL:
-            item.ApplicabiltyCost = surfaceCost(surfaceTreatmentData?.gridData)
-            item.TransportationCost = calculatePercentageValue(surfaceCost(surfaceTreatmentData?.gridData), item?.Rate)
+            item.ApplicabiltyCost = checkForNull(surfaceCost(surfaceTreatmentData?.gridData))
+            item.TransportationCost = calculatePercentageValue(checkForNull(surfaceCost(surfaceTreatmentData?.gridData)), item?.Rate)
             break;
           case TAPE:
-            item.ApplicabiltyCost = paintAndMaskingDetails?.TapeCost
-            item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TapeCost, item?.Rate)
+            item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.TapeCost)
+            item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.TapeCost), item?.Rate)
             break;
           case PAINT:
-            item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
-            item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
+            item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.PaintCost)
+            item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.PaintCost), item?.Rate)
             break;
           case RMCC:
             item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost)
@@ -436,16 +436,16 @@ function SurfaceTreatment(props) {
             break;
           case RM:
             item.ApplicabiltyCost = checkForNull(rawMaterialsCost);
-            item.TransportationCost = calculatePercentageValue(rawMaterialsCost, item?.Rate);
+            item.TransportationCost = calculatePercentageValue(checkForNull(rawMaterialsCost), item?.Rate);
             break;
           case CC:
             item.ApplicabiltyCost = checkForNull(conversionCost);
-            item.TransportationCost = calculatePercentageValue(conversionCost, item?.Rate);
+            item.TransportationCost = calculatePercentageValue(checkForNull(conversionCost), item?.Rate);
             break;
           case PART_COST:
             
             item.ApplicabiltyCost = checkForNull(netpartCost);
-            item.TransportationCost = calculatePercentageValue(netpartCost, item?.Rate);
+            item.TransportationCost = calculatePercentageValue(checkForNull(netpartCost), item?.Rate);
             break;
           case PART_COST_CC:
             item.ApplicabiltyCost = checkForNull(netpartCost) + checkForNull(conversionCost);

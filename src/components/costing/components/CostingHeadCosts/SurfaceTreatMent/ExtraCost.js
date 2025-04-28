@@ -65,44 +65,44 @@ function ExtraCost(props) {
 
                 switch (item?.CostingConditionNumber) {
                     case TAPEANDPAINT:
-                        item.ApplicabiltyCost = paintAndMaskingDetails?.TotalPaintCost
-                        item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TotalPaintCost, item?.Rate)
+                        item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.TotalPaintCost), item?.Rate)
                         break;
                     case HANGER:
-                        item.ApplicabiltyCost = hangerCostDetails?.HangerCostPerPart
-                        item.TransportationCost = calculatePercentageValue(hangerCostDetails?.HangerCostPerPart, item?.Rate)
+                        item.ApplicabiltyCost = checkForNull(hangerCostDetails?.HangerCostPerPart)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(hangerCostDetails?.HangerCostPerPart), item?.Rate)
                         break;
                     case SURFACETREATMENTLABEL:
-                        item.ApplicabiltyCost = surfaceCost
-                        item.TransportationCost = calculatePercentageValue(surfaceCost, item?.Rate)
+                        item.ApplicabiltyCost = checkForNull(surfaceCost)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(surfaceCost), item?.Rate)
                         break;
                     case TAPE:
-                        item.ApplicabiltyCost = paintAndMaskingDetails?.TapeCost
-                        item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TapeCost, item?.Rate)
+                        item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.TapeCost)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.TapeCost), item?.Rate)
                         break;
                     case PAINT:
-                        item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
-                        item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
+                        item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.PaintCost)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.PaintCost), item?.Rate)
                         break;
                     case RMCC:
                         item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
-                        item.TransportationCost = calculatePercentageValue(item?.ApplicabiltyCost, item?.Rate);
+                        item.TransportationCost = calculatePercentageValue((checkForNull(rawMaterialsCost) + checkForNull(conversionCost)), item?.Rate);
                         break;
                     case RM:
                         item.ApplicabiltyCost = checkForNull(rawMaterialsCost);
-                        item.TransportationCost = calculatePercentageValue(rawMaterialsCost, item?.Rate);
+                        item.TransportationCost = calculatePercentageValue(checkForNull(rawMaterialsCost), item?.Rate);
                         break;
                     case CC:
                         item.ApplicabiltyCost = checkForNull(conversionCost);
-                        item.TransportationCost = calculatePercentageValue(conversionCost, item?.Rate);
+                        item.TransportationCost = calculatePercentageValue(checkForNull(conversionCost), item?.Rate);
                         break;
                     case PART_COST:
                         item.ApplicabiltyCost = checkForNull(netpartCost);
-                        item.TransportationCost = calculatePercentageValue(netpartCost, item?.Rate);
+                        item.TransportationCost = calculatePercentageValue(checkForNull(netpartCost), item?.Rate);
                         break;
                     case PART_COST_CC:
                         item.ApplicabiltyCost = checkForNull(netpartCost) + checkForNull(conversionCost);
-                        item.TransportationCost = calculatePercentageValue(item?.ApplicabiltyCost, item?.Rate);
+                        item.TransportationCost = calculatePercentageValue((checkForNull(netpartCost) + checkForNull(conversionCost)), item?.Rate);
                         break;
                     default:
                         // No action for unknown condition types
@@ -313,6 +313,18 @@ function ExtraCost(props) {
             return;
         }
 
+        // Check if Applicability already exists in tableData (regardless of description)
+        // During edit mode, exclude the current row being edited from duplicate check
+        const existingCondition = tableData?.find((item, index) => 
+            item.CostingConditionMasterId === data?.Applicability?.value && 
+            (isEditMode ? index !== editIndex : true)
+        );
+
+        if (existingCondition) {
+            Toaster.warning('This applicability is already added in the table');
+            return;
+        }
+
         if (isEditMode) {
             let tempData = [...tableData];
             let obj = {
@@ -341,15 +353,7 @@ function ExtraCost(props) {
             resetData();
             return;
         }
-        // Check if CostingConditionMasterId already exists in tableData
-        const existingCondition = tableData.find(item =>
-            item.CostingConditionMasterId === data?.Applicability?.value && item.Description.toLowerCase() === data?.CostDescription.toLowerCase()
-        );
 
-        if (existingCondition) {
-            Toaster.warning('Applicability already exists');
-            return;
-        }
         const existingFixedDescription = tableData.find(item =>
             (item.Description.toLowerCase() === data?.CostDescription.toLowerCase() && item.UOM === type?.label)
         );
