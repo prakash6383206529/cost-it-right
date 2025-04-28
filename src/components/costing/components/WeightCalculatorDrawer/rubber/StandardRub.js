@@ -71,9 +71,6 @@ function StandardRub(props) {
 
         calculateTotalLength()
         calculateVolume()
-        setTimeout(() =>{
-            calculateScrapWeight()
-        }, 500)
 
     }, [fieldValues, isVolumeAutoCalculate])
 
@@ -142,17 +139,19 @@ function StandardRub(props) {
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
             let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
+            calculateScrapWeight(checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) }))
             setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }
     }, 500)
 
 
-    const calculateScrapWeight = () => {
+    const calculateScrapWeight = (scrapWeight) => {
         const FinishWeight = Number(getValues('FinishWeight'))
         const GrossWeight = Number(getValues('GrossWeight'))
-        if (Number(getValues('GrossWeight'))) {
-            let ScrapWeight = checkForNull(getValues('GrossWeight')) - checkForNull(FinishWeight)
+        if (Number(getValues('GrossWeight')) || checkForNull(scrapWeight)) {
+            const updatedScrapRate = checkForNull(scrapWeight) ? checkForNull(scrapWeight) : checkForNull(dataToSend.GrossWeight)
+            let ScrapWeight = checkForNull(updatedScrapRate) - checkForNull(FinishWeight)
             setDataToSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
             setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
