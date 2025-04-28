@@ -3,13 +3,13 @@
     "RMCategoryLabel": "RM Category",
     "BOPCategoryLabel": "BOP Category",
     "TechnologyLabel": "Technology",
-    "VendorLabel": "Supplier",
-    "RMVendorLabel": "Supplier",
-    "BOPVendorLabel": "Supplier",
+    "VendorLabel": "Vendor",
+    "RMVendorLabel": "Vendor",
+    "BOPVendorLabel": "Vendor",
     "LengthLabel": "Length (mm)",
     "BreadthLabel": "Breadth (mm)",
     "HeightLabel": "Height (mm)",
-    "VendorCodeLabel": "Supplier(Code)",
-    "FinishedWeightLabel": "Net",
-    "FinishWeightLabel": "Net"
+    "VendorCodeLabel": "Vendor(Code)",
+    "FinishedWeightLabel": "finish",
+    "FinishWeightLabel": "finish"
 }
