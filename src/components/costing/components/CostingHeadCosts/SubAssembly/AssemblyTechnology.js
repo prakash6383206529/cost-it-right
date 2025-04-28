@@ -341,10 +341,10 @@ function AssemblyTechnology(props) {
 
             item.NetOperationCost = item?.CostingPartDetails?.NetOperationCost
             let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
-            console.log(request, 'request')
+
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
             }))
-            console.log(requestData, 'requestData')
+
             dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
             }))
             setCallSaveAssemblyApi(false)
