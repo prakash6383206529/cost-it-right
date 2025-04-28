@@ -83,7 +83,8 @@ function AddConditionCosting(props) {
         }
     }, [tableData]);
     useEffect(() => {
-        dispatch(getCostingCondition(0, conditionTypeId, (res) => {
+        // Check if the technology ID is included in IdForMultiTechnology
+        dispatch(getCostingCondition(0, conditionTypeId, false, (res) => {
             if (res?.data?.DataList) {
                 let Data = res?.data?.DataList
                 let temp = []
@@ -118,7 +119,7 @@ function AddConditionCosting(props) {
                         ? tableData[0].CostingConditionEntryTypeId
                         : props?.costingConditionEntryType;
 
-            dispatch(getCostingCondition(entryTypeId, conditionTypeId, (res) => {
+            dispatch(getCostingCondition(entryTypeId, conditionTypeId, false, (res) => {
                 if (res?.data?.DataList) {
                     const temp = res.data.DataList.map(item => ({
                         label: `${item.Description} (${item.CostingConditionNumber})`,
@@ -204,7 +205,7 @@ function AddConditionCosting(props) {
     const onConditionEntryTypeChange = (e) => {
         if (e) {
             setCostingConditionEntryType(e.value)
-            dispatch(getCostingCondition(e.value, conditionTypeId, (res) => {
+            dispatch(getCostingCondition(e.value, conditionTypeId, false, (res) => {
                 if (res?.data?.DataList) {
                     let Data = res?.data?.DataList
                     let temp = []
