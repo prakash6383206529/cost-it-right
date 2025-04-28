@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container, TabPane, Nav, NavItem, NavLink, TabContent } from 'reactstrap';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -18,6 +19,7 @@ import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial, getRMSpecif
 import { fetchSpecificationDataAPI } from '../../../actions/Common';
 import { getFilteredDropdownOptions } from '../../../helper';
 import classnames from 'classnames';
+import { getAssemblyChildpart } from '../../rfq/actions/rfq';
 
 function AddForecast(props) {
     const dispatch = useDispatch();
@@ -38,6 +40,7 @@ function AddForecast(props) {
     const [tableData, setTableData] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
     const [childPart, setChildPart] = useState(null);
+    const [childPartsData, setChildPartsData] = useState([]);
 
     const [activeTab, setActiveTab] = useState("1");
 
@@ -55,9 +58,8 @@ function AddForecast(props) {
         sortable: false,
     };
 
-    // Load data on component mount
     useEffect(() => {
-        if (partType === "Component") {
+        if (partType.label === "Component") {
             if (!isViewFlag) {
                 dispatch(getRawMaterialNameChild(() => { }))
                 dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
@@ -65,26 +67,30 @@ function AddForecast(props) {
         }
     }, [partType, isViewFlag, dispatch]);
 
-    // Set Part No field with AssemblyPartNumber prop
-    useEffect(() => {
-        if (AssemblyPartNumber) {
-            setValue('partNumber', {
-                label: AssemblyPartNumber.label || AssemblyPartNumber,
-                value: AssemblyPartNumber.value || AssemblyPartNumber
-            });
-        }
-    }, [AssemblyPartNumber, setValue]);
 
-    // Initialize tableData with rmDetails
+    useEffect(() => {
+
+        if (partType && partType.label === 'Component') {
+            setValue('partNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value });
+            setChildPart({ label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value });
+        } else if (!isViewFlag && AssemblyPartNumber?.value) {
+            dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => {
+                if (res && res.data && res.data.DataList && res.data.DataList.length > 0) {
+                    setChildPartsData(res.data.DataList);
+                }
+            }));
+        }
+
+    }, [AssemblyPartNumber, partType]);
+
     useEffect(() => {
         if (rmDetails && rmDetails.length > 0) {
-            setTableData(rmDetails);
+            setTableData(rmDetails)
         }
     }, [rmDetails]);
 
-    // Formatter functions
     const partNumberFormatter = (params) => {
-        const partNumber = AssemblyPartNumber?.label || (typeof AssemblyPartNumber === 'string' ? AssemblyPartNumber : '') || params.value || '-';
+        let partNumber = AssemblyPartNumber?.label || (typeof AssemblyPartNumber === 'string' ? AssemblyPartNumber : '') || params.value || '-';
         return partNumber;
     };
 
@@ -137,18 +143,12 @@ function AddForecast(props) {
 
     // Event handlers
     const handleSave = (isSave) => {
-        console.log("sopQuantityList", sopQuantityList)
-        console.log("tableData", tableData)
-
-        // const hasNonZeroQuantity = sopDate && (sopQuantityList && sopQuantityList.length > 0 && sopQuantityList[0].Quantity !== 0 && sopQuantityList[0].Quantity !== '0');
-        // if (tableData.length === 0) {
-        //     Toaster.warning("Please fill the RM Details.");
-        //     return;
-        // }else if(!hasNonZeroQuantity){
-        //     Toaster.warning("Please fill the first year's quantity.");
-        //     return;
-        // }
+        if (tableData.length === 0) {
+            Toaster.warning("Please fill the RM Details.");
+            return;
+        }
         if (isSave) {
+            setTableData([])
             closeDrawer(true, sopQuantityList, tableData);
         }
         else {
@@ -158,8 +158,7 @@ function AddForecast(props) {
 
     // Add row to table
     const addRow = (index) => {
-        console.log("index", index)
-        if (!rmName || !rmgrade || !rmspecification) {
+        if (!rmName || !rmgrade || !rmspecification || !childPart) {
             Toaster.warning("Please fill all required fields");
             return;
         }
@@ -191,8 +190,8 @@ function AddForecast(props) {
         }
 
         const newRow = {
-            PartNumber: AssemblyPartNumber?.label || childPart?.label || '-',
-            PartId: AssemblyPartNumber?.value || childPart?.value || '',
+            PartNumber: childPart?.label || AssemblyPartNumber?.label || '-',
+            PartId: childPart?.value || AssemblyPartNumber?.value || '',
             RawMaterialName: rmName?.label || '-',
             RawMaterialId: rmName?.value || '',
             RawMaterialGrade: rmgrade?.label || '-',
@@ -204,8 +203,6 @@ function AddForecast(props) {
         };
 
         setTableData([...tableData, newRow]);
-        addrmdetails(index)
-        // resetForm();
         resetFormAndDropdowns();
     };
 
@@ -300,21 +297,28 @@ function AddForecast(props) {
 
     // Cancel edit
     const cancelEdit = () => {
-        resetForm();
+        // resetForm();
     };
 
     // Functions for RM handling
     const renderListingRM = (label) => {
         let opts1 = []
         if (label === 'childPartName') {
-            const opts1 = [];
+            const options = [];
+            if (childPartsData && childPartsData.length > 0) {
+                childPartsData.forEach(item => {
+                    if (item && item.Text && item.Value) {
+                        options.push({
+                            label: item.Text,
+                            value: item.Value
+                        });
+                    }
+                });
 
-            getChildParts && getChildParts?.map(item => {
-                opts1.push({ label: item.Text, value: item.Value })
-            });
-            const selectedValues = tableData.map(data => data?.PartId);
-
-            return getFilteredDropdownOptions(opts1, selectedValues);
+                const selectedValues = tableData.map(data => data?.PartId);
+                return getFilteredDropdownOptions(options, selectedValues);
+            }
+            return [];
         }
         if (label === 'rmname') {
             if (rawMaterialNameSelectList?.length > 0) {
@@ -372,7 +376,17 @@ function AddForecast(props) {
     }
 
     const handleChildPart = (newValue) => {
-        setChildPart({ label: newValue?.label, value: newValue?.value })
+        setChildPart({ label: newValue?.label, value: newValue?.value });
+        if (partType && partType.label !== 'Component') {
+            setValue('partNumber', { label: newValue?.label, value: newValue?.value });
+            setValue('RMName', '');
+            setValue('RMGrade', '');
+            setValue('RMSpecification', '');
+            setValue('rmcode', '');
+            setRMName('');
+            setRMGrade('');
+            setRMSpecification('');
+        }
     }
 
     const handleRMName = (newValue) => {
@@ -437,9 +451,9 @@ function AddForecast(props) {
 
     const resetFormAndDropdowns = () => {
         // Keep the Part No value by not resetting it
-        // if (type !== Component) {
-        //     setValue('partNumber', '')
-        // }
+        if (partType.value !== Component) {
+            setValue('partNumber', '')
+        }
 
         // Clear all other fields
         setValue('RMName', '')
@@ -458,14 +472,8 @@ function AddForecast(props) {
         setDisabled(false)
     };
 
-    const toggleDrawer = (e) => {
-        props.closeDrawer('', false)
-        setTableData([])
-        setChildPart(null)
-        setRMName('')
-        setRMGrade('')
-        setRMSpecification('')
-        setValue('rmcode', '')
+    const toggleDrawer = () => {
+        props.closeDrawer(false)
 
     }
 
@@ -529,8 +537,9 @@ function AddForecast(props) {
                                                                 mandatory={true}
                                                                 handleChange={(newValue) => handleChildPart(newValue)}
                                                                 errors={errors.partNumber}
-                                                                disabled={(isViewFlag || type === Component) ? true : false}
+                                                                disabled={(isViewFlag || (partType && partType.label === 'Component')) ? true : false}
                                                                 options={renderListingRM('childPartName')}
+                                                                selected={childPart}
                                                             />
                                                         </div>
                                                     </Col>
@@ -603,7 +612,7 @@ function AddForecast(props) {
                                                             handleChange={handleCode}
                                                             isClearable={true}
                                                             errors={errors.Code}
-                                                        // disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -797,7 +806,7 @@ function AddForecast(props) {
                         <button
                             type={'button'}
                             className="reset cancel-btn mr15"
-                            onClick={() => handleSave(false)}
+                            onClick={toggleDrawer}
                         >
                             <div className={'cancel-icon'}></div> {'Cancel'}
                         </button>

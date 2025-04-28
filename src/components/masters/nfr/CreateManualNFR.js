@@ -19,7 +19,7 @@ import NoContentFound from '../../common/NoContentFound';
 
 // Actions
 import { getPlantSelectListByType, getUOMSelectList } from '../../../actions/Common';
-import { getBoughtOutPartSelectList, getSelectListPartType } from '../actions/Part';
+import { getSelectListPartType } from '../actions/Part';
 import { getPartInfo } from '../../costing/actions/Costing';
 import { getRMSpecificationDataList, getRawMaterialNameChild } from '../../masters/actions/Material';
 import { getClientSelectList } from '../actions/Client';
@@ -29,7 +29,7 @@ import { getPartSelectListWtihRevNo } from '../actions/Volume';
 
 // Constants and Config
 import { FILE_URL, ZBC, searchCount, PRODUCT_ID, EMPTY_DATA } from '../../../config/constants';
-import { AcceptableRMUOM, NFR_BOP_STANDARD_ID, NFR_BOP_STANDARD_LABEL, NFR_COMPONENT_CUSTOMIZED_ID, NFR_COMPONENT_CUSTOMIZED_LABEL, NFR_RAW_MATERIAL_ID, NFR_RAW_MATERIAL_LABEL, NFR_RAW_MATERIAL_NAME, PART_TYPE_LIST_FOR_NFR } from '../../../config/masterData';
+import { AcceptableRMUOM, NFR_COMPONENT_CUSTOMIZED_ID, NFR_COMPONENT_CUSTOMIZED_LABEL, NFR_RAW_MATERIAL_ID, NFR_RAW_MATERIAL_LABEL, NFR_RAW_MATERIAL_NAME, PART_TYPE_LIST_FOR_NFR } from '../../../config/masterData';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { Steps } from './TourMessages';
 
@@ -39,6 +39,7 @@ import { maxLength20, checkForDecimalAndNull, validateFileName, minLength3 } fro
 import AddForecast from './AddForecast';
 // Assets
 import redcrossImg from '../../../assests/images/red-cross.png';
+import BOMViewer from '../part-master/BOMViewer';
 
 function CreateManualNFR(props) {
     const { t } = useTranslation("Nfr")
@@ -54,7 +55,6 @@ function CreateManualNFR(props) {
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
     const { rmSpecificationList } = useSelector((state) => state.material);
-    const boughtOutPartSelectList = useSelector(state => state.part.boughtOutPartSelectList)
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -66,12 +66,12 @@ function CreateManualNFR(props) {
     const [selectedPlant, setSelectedPlant] = useState('');
     const [remarks, setRemarks] = useState('');
     const [selectedRawMaterial, setSelectedRawMaterial] = useState('');
-    const [selectedBOPNumber, setSelectedBOPNumber] = useState('');
     const [selectedPartType, setSelectedPartType] = useState('');
     const [previousPartType, setPreviousPartType] = useState('');
     const [customer, setCustomer] = useState([]);
     const [zbcDate, setZbcDate] = useState('')
     const [cbcDate, setCbcDate] = useState('')
+    const [fieldDisabled, setFieldDisabled] = useState(false)
 
     const [sopDate, setSOPDate] = useState('')
     const [fiveyearList, setFiveyearList] = useState([])
@@ -97,11 +97,11 @@ function CreateManualNFR(props) {
     const [rmDetailsGridIndex, setRMDetailsGridIndex] = useState('');
     const [openAddForecast, setOpenAddForecast] = useState(false)
     const [rmDetails, setRMDetails] = useState([]);
+    const [openBOMViewer, setOpenBOMViewer] = useState(false)
     const [viewRMDetails, setViewRMDetails] = useState(false)
 
     // Selection lists
     const [selectedPartList, setSelectedPartList] = useState([]);
-    const [selectedBOPList, setSelectedBOPList] = useState([]);
     const [selectedRMList, setSelectedRMList] = useState([]);
 
     // File upload state
@@ -118,7 +118,6 @@ function CreateManualNFR(props) {
                 setPartTypeList(res?.data?.SelectList)
             }))
             dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
-            dispatch(getBoughtOutPartSelectList(null, () => { }))
             dispatch(getRawMaterialNameChild(() => { }))
         }
     }, [])
@@ -195,15 +194,7 @@ function CreateManualNFR(props) {
                     return null
                 });
                 break;
-                
-            case 'BOPNumber':
-                boughtOutPartSelectList && boughtOutPartSelectList?.map(item => {
-                    if (item.Value === '0') return false;
-                    temp.push({ label: item.Text, value: item.Value })
-                    return null;
-                });
-                break;
-                
+
             case 'RawMaterial':
                 rmSpecificationList && rmSpecificationList?.map(item => {
                     if (item.Value === '0') return false;
@@ -211,8 +202,9 @@ function CreateManualNFR(props) {
                     return null;
                 });
                 break;
+            default:
+                return null;
         }
-        
         return temp;
     }
 
@@ -247,6 +239,12 @@ function CreateManualNFR(props) {
         }
     }
 
+    useEffect(() => {
+        if (rmDetails && rmDetails.length > 0) {
+            setRMDetails(rmDetails)
+        }
+    }, [rmDetails]);
+
     const onGridReady = (params) => {
         params.api.sizeColumnsToFit();
         setGridColumnApi(params.columnApi)
@@ -257,10 +255,7 @@ function CreateManualNFR(props) {
 
 
     const resetData = () => {
-        // Clear form errors
         errors.Quantity = {};
-
-        // Reset form values
         setValue("PartType", '');
         setValue("Part", '');
         setValue("PartNumber", '');
@@ -270,13 +265,12 @@ function CreateManualNFR(props) {
         setValue("PartName", '');
         setValue("Description", '');
         setValue("UnitOfMeasurement", '');
-
-        // Reset state variables
         setSelectedPartType('');
         setSelectedPart('');
-        setSelectedBOPNumber('');
         setSelectedRawMaterial('');
         setEditIndex('');
+        setZbcDate('');
+        setCbcDate('');
     }
 
     const checkIsDataFilled = () => {
@@ -284,9 +278,6 @@ function CreateManualNFR(props) {
         switch (selectedPartType?.value) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
                 value = selectedPart
-                break;
-            case NFR_BOP_STANDARD_ID:
-                value = selectedBOPNumber
                 break;
             case NFR_RAW_MATERIAL_ID:
                 value = selectedRawMaterial
@@ -303,16 +294,16 @@ function CreateManualNFR(props) {
 
     // Event handlers for form fields
     const handleChangePartType = (value) => {
+        console.log("value", value)
         setPreviousPartType(selectedPartType?.value);
         setSelectedPartType(value)
-        setSelectedBOPNumber('')
         setSelectedRawMaterial('')
         setSelectedPart('')
         setValue("Part", '')
-        setValue("BOPNumber", '')
         setValue("RawMaterial", '')
+        setSopQuantityList([]);
+        setRMDetails([]);
     }
-
     const handlePartChange = (newValue) => {
         setSelectedPart(newValue);
 
@@ -396,8 +387,13 @@ function CreateManualNFR(props) {
     };
 
     const addTableHandler = debounce(() => {
+        // Check if required fields are filled
+        if (!getValues("CustomerRFQNo") || !customer || !selectedPartType || !selectedPlant) {
+            Toaster.warning("Please fill all the required fields")
+            return false
+        }
+
         if (selectedPartList?.includes(selectedPart?.value) ||
-            selectedBOPList?.includes(selectedBOPNumber?.value) ||
             selectedRMList?.includes(selectedRawMaterial?.value)) {
             Toaster.warning("This item has already been added to the table.")
             return false
@@ -410,9 +406,6 @@ function CreateManualNFR(props) {
             PartTypeId: selectedPartType?.value,
             PartId: selectedPart?.value,
             PartNumber: selectedPart?.label,
-            BoughtOutPartChildId: selectedPartType?.value === NFR_BOP_STANDARD_ID ? selectedBOPNumber?.value : '',
-            BoughtOutPartNumber: selectedPartType?.value === NFR_BOP_STANDARD_ID ? selectedBOPNumber?.label : '',
-            RawMaterialCode: selectedPartType?.value === NFR_RAW_MATERIAL_ID ? selectedRawMaterial?.label : '',
             CustomerRFQNo: getValues("CustomerRFQNo"),
             CustomerId: customer?.value,
             CustomerName: customer?.label || '',
@@ -430,9 +423,6 @@ function CreateManualNFR(props) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
                 setSelectedPartList([...selectedPartList, selectedPart?.value])
                 break;
-            case NFR_BOP_STANDARD_ID:
-                setSelectedBOPList([...selectedBOPList, selectedBOPNumber?.value])
-                break;
             case NFR_RAW_MATERIAL_ID:
                 setSelectedRMList([...selectedRMList, selectedRawMaterial?.value])
                 break;
@@ -443,7 +433,8 @@ function CreateManualNFR(props) {
         tempData.push(obj)
         setGridData(tempData)
         setRfqData(tempData)
-        resetData()
+        // resetData()
+        setFieldDisabled(true)
 
         Toaster.success("Item added successfully")
     }, 500)
@@ -456,14 +447,6 @@ function CreateManualNFR(props) {
                 if (gridData?.findIndex(item => item?.PartId === selectedPart?.value) !== editIndex) {
                     if (selectedPartList?.includes(selectedPart?.value)) {
                         Toaster.warning("This part has already been added to the table.")
-                        return false
-                    }
-                }
-                break;
-            case NFR_BOP_STANDARD_ID:
-                if (gridData?.findIndex(item => item?.BoughtOutPartChildId === selectedBOPNumber?.value) !== editIndex) {
-                    if (selectedBOPList?.includes(selectedBOPNumber?.value)) {
-                        Toaster.warning("This bought out part has already been added to the table.")
                         return false
                     }
                 }
@@ -487,8 +470,6 @@ function CreateManualNFR(props) {
             PartTypeId: selectedPartType?.value,
             PartId: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? selectedPart?.value : '',
             PartNumber: selectedPart?.label,
-            BoughtOutPartChildId: selectedPartType?.value === NFR_BOP_STANDARD_ID ? selectedBOPNumber?.value : '',
-            BoughtOutPartNumber: selectedPartType?.value === NFR_BOP_STANDARD_ID ? selectedBOPNumber?.label : '',
             RawMaterialCode: selectedPartType?.value === NFR_RAW_MATERIAL_ID ? selectedRawMaterial?.label : '',
             NFRPartRawMaterialDetails: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? tempData?.NFRPartRawMaterialDetails : [],
             CustomerRFQNo: getValues("CustomerRFQNo"),
@@ -507,12 +488,10 @@ function CreateManualNFR(props) {
         let tempArray = Object.assign([...gridData], { [editIndex]: tempData })
 
         // Update the selected lists
-        const boughtOutPartChildIdArray = [];
         const partIdArray = [];
         const rawMaterialCodeArray = [];
 
         tempArray?.forEach(item => {
-            boughtOutPartChildIdArray?.push(item?.BoughtOutPartChildId);
             partIdArray?.push(item?.PartId);
             rawMaterialCodeArray?.push(item?.RawMaterialCode);
         });
@@ -520,9 +499,6 @@ function CreateManualNFR(props) {
         switch (selectedPartType?.value) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
                 setSelectedPartList(partIdArray)
-                break;
-            case NFR_BOP_STANDARD_ID:
-                setSelectedBOPList(boughtOutPartChildIdArray)
                 break;
             case NFR_RAW_MATERIAL_ID:
                 setSelectedRMList(rawMaterialCodeArray)
@@ -534,22 +510,22 @@ function CreateManualNFR(props) {
         // Update both gridData and rfqData
         setGridData(tempArray)
         setRfqData(tempArray)
-        resetData()
+        // resetData()
+        setFieldDisabled(true)
 
         // Show success message
         Toaster.success("Item updated successfully")
     }
 
     const cancelEdit = () => {
-        setEditIndex('')
-        resetData()
+        setFieldDisabled(true)
     }
 
     const editItemDetails = (index) => {
         let tempObj = rfqData[index]
         setViewRMDetails(false)
         setEditIndex(index)
-
+        setFieldDisabled(false)
         errors.Quantity = {}
         
         setValue('HeaderMaterial', tempObj?.HeaderMaterial)
@@ -600,15 +576,6 @@ function CreateManualNFR(props) {
             setSelectedPlant({ label: tempObj?.Plant, value: tempObj?.Plant })
         }
 
-        // Set dates
-        if (tempObj?.ZBCLastSubmissionDate) {
-            setZbcDate(tempObj?.ZBCLastSubmissionDate)
-        }
-        if (tempObj?.QuotationLastSubmissionDate) {
-            setCbcDate(tempObj?.QuotationLastSubmissionDate)
-        }
-
-        // Set remarks
         if (tempObj?.Remarks) {
             setRemarks(tempObj?.Remarks)
         }
@@ -617,10 +584,6 @@ function CreateManualNFR(props) {
         switch (tempObj?.PartTypeId) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
                 setValue('Part', { label: tempObj?.PartNumber, value: tempObj?.PartId })
-                break;
-            case NFR_BOP_STANDARD_ID:
-                setValue('BOPNumber', { label: tempObj?.BoughtOutPartNumber, value: tempObj?.BoughtOutPartChildId })
-                setSelectedBOPNumber({ label: tempObj?.BoughtOutPartNumber, value: tempObj?.BoughtOutPartChildId })
                 break;
             case NFR_RAW_MATERIAL_ID:
                 const rmId = filterRMFromList(rmSpecificationList, tempObj?.RawMaterialCode)[0]?.SpecificationId
@@ -636,12 +599,19 @@ function CreateManualNFR(props) {
         const updatedData = gridData.filter((_, i) => i !== index);
         setGridData(updatedData);
         setRfqData(updatedData)
+        setFieldDisabled(false)
         resetData()
     }
 
     const viewItemDetails = () => {
         setViewRMDetails(true)
         setOpenAddForecast(true)
+    }
+
+    const toggleBOMViewer = () => {
+        if (selectedPart?.value) {
+            setOpenBOMViewer(!openBOMViewer)
+        }
     }
 
     // File upload related functions
@@ -734,15 +704,6 @@ function CreateManualNFR(props) {
         }
     }
 
-    // Drawer related functions
-    const addRMDetails = (index) => {
-        setRMDetailsGridIndex(index);
-
-        const currentRMDetails = gridData[index]?.NFRPartRawMaterialDetails || [];
-
-        setRMDetails(currentRMDetails);
-    }
-
     const openAndCloseDrawer = (isSave, dataList = [], rmDetails = []) => {
 
         setOpenAddRMDetails(false);
@@ -756,6 +717,7 @@ function CreateManualNFR(props) {
             if (rmDetailsGridIndex !== '') {
                 const updatedGridData = [...gridData];
                 updatedGridData[rmDetailsGridIndex] = {
+                    ...updatedGridData[rmDetailsGridIndex],
                     NFRPartRawMaterialDetails: rmDetails
                 };
                 setGridData(updatedGridData);
@@ -779,6 +741,10 @@ function CreateManualNFR(props) {
 
     // Form submission function
     const onSubmit = (values) => {
+        if (rfqData?.length === 0) {
+            Toaster.warning("Please add at least one part to the table.")
+            return false
+        }
         // Prepare the request object with all the necessary data
         let requestObj = {
             "CustomerRFQNo": values?.CustomerRFQNo,
@@ -851,7 +817,7 @@ function CreateManualNFR(props) {
                                                     className=""
                                                     customClassName={"withBorder"}
                                                     errors={errors?.CustomerRFQNo}
-                                                    disabled={isViewFlag}
+                                                    disabled={isViewFlag || fieldDisabled}
                                                 />
                                             </Col>
 
@@ -871,7 +837,7 @@ function CreateManualNFR(props) {
                                                     handleChange={handleCustomerChange}
                                                     errors={errors.Customer}
                                                     isLoading={VendorLoaderObj}
-                                                    disabled={isViewFlag}
+                                                    disabled={isViewFlag || fieldDisabled}
                                                 />
                                             </Col>
                                             <Col md="3">
@@ -888,7 +854,7 @@ function CreateManualNFR(props) {
                                                     options={renderListing("PartType")}
                                                     handleChange={(newValue) => handleChangePartType(newValue)}
                                                     errors={errors?.PartType}
-                                                    disabled={isViewFlag}
+                                                    disabled={isViewFlag || fieldDisabled}
                                                 />
                                             </Col>
 
@@ -908,9 +874,18 @@ function CreateManualNFR(props) {
                                                         isLoading={loaderObj}
                                                         handleChange={handlePartChange}
                                                         errors={errors?.Part}
-                                                        disabled={isViewFlag}
+                                                        disabled={isViewFlag || fieldDisabled}
                                                         NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                     />
+                                                    {selectedPartType?.label === "Assembly" && selectedPart?.value && <button
+                                                        id="AssemblyPart_Add_BOM"
+                                                        type="button"
+                                                        disabled={!selectedPart?.value || fieldDisabled}
+                                                        onClick={toggleBOMViewer}
+                                                        className={"user-btn pull-left mt30 mb-4 ml-2"}>
+                                                        <div className={'fa fa-eye pr-1'}></div> BOM
+                                                    </button>}
+
                                                     <button
                                                         id="AddNFR_AddForecast"
                                                         className="user-btn mt-30 ml-3"
@@ -920,7 +895,7 @@ function CreateManualNFR(props) {
                                                             setOpenAddForecast(true);
                                                         }}
                                                         type="button"
-                                                        disabled={!selectedPart}
+                                                        disabled={!selectedPart || fieldDisabled}
                                                     >
                                                         {rmDetails?.length > 0 ? <div className="view mr-2"></div> : <div className="plus"></div>}
                                                     </button>
@@ -1008,7 +983,7 @@ function CreateManualNFR(props) {
                                                     customClassName="costing-version"
                                                     options={renderListing("Segment")}
                                                     errors={errors?.Segment}
-                                                    disabled={isViewFlag}
+                                                    disabled={isViewFlag || fieldDisabled}
                                                 />
                                             </Col>
                                             <Col md="3" className="input-container">
@@ -1026,7 +1001,7 @@ function CreateManualNFR(props) {
                                                     options={renderListing("Plant")}
                                                     handleChange={(newValue) => handleChangePlant(newValue)}
                                                     errors={errors?.Plant}
-                                                    disabled={isViewFlag}
+                                                    disabled={isViewFlag || fieldDisabled}
                                                 />
                                             </Col>
                                             <Col md="3">
@@ -1051,7 +1026,7 @@ function CreateManualNFR(props) {
                                                             disabledKeyboardNavigation
                                                             yearDropdownItemNumber={100}
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isViewFlag}
+                                                            disabled={isViewFlag || fieldDisabled}
                                                         />
                                                     </div>
                                                 </div>
@@ -1078,7 +1053,7 @@ function CreateManualNFR(props) {
                                                             disabledKeyboardNavigation
                                                             yearDropdownItemNumber={100}
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isViewFlag}
+                                                            disabled={isViewFlag || fieldDisabled}
                                                         />
                                                     </div>
                                                 </div>
@@ -1086,13 +1061,13 @@ function CreateManualNFR(props) {
                                         </Row>
                                         <Row>
                                             <Col md="3">
-                                                <div className='pt-2 pr-0'>
+                                                <div className='m-2'>
                                                     {editIndex !== '' ? (
                                                         <>
-                                                            <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={updateRateGrid}>Update</button>
+                                                            <button type="button" className={"btn btn-primary pull-left mt-2 mr5"} onClick={updateRateGrid}>Update</button>
                                                             <button
                                                                 type="button"
-                                                                className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                                                                className={"mr15 ml-1 add-cancel-btn cancel-btn"}
                                                                 onClick={() => cancelEdit()}
                                                             >
                                                                 <div className={"cancel-icon"}></div>Cancel
@@ -1102,16 +1077,18 @@ function CreateManualNFR(props) {
                                                         <>
                                                             <button id="AddNFR_AddData"
                                                                 type="button"
-                                                                className={"user-btn mt30 pull-left"}
+                                                                className={"user-btn pull-left"}
                                                                 onClick={addTableHandler}
+                                                                disabled={fieldDisabled}
                                                             >
                                                                 <div className={"plus"}></div>ADD
                                                             </button>
                                                             <button
                                                                 id="AddNFR_ResetData"
                                                                 type="button"
-                                                                className={"mr15 ml-1 mt30 reset-btn"}
+                                                                className={"mr15 ml-1  reset-btn"}
                                                                 onClick={() => resetData()}
+                                                                disabled={fieldDisabled}
                                                             >
                                                                 Reset
                                                             </button>
@@ -1324,9 +1301,10 @@ function CreateManualNFR(props) {
                     isOpen={openAddForecast}
                     closeDrawer={openAndCloseDrawer}
                     anchor={'right'}
-                    isViewFlag={isViewFlag || viewRMDetails}
+                    isViewFlag={isViewFlag || fieldDisabled}
                     partListData={partListData}
                     rmDetails={rmDetails}
+                    setRMDetails={setRMDetails}
                     sopDate={sopDate}
                     handleSOPDateChange={handleSOPDateChange}
                     zbcDate={zbcDate}
@@ -1338,9 +1316,20 @@ function CreateManualNFR(props) {
                     AssemblyPartNumber={selectedPart}
                     sopQuantityList={sopQuantityList}
                     setSopQuantityList={setSopQuantityList}
-                    addrmdetails={addRMDetails}
+                // addrmdetails={addRMDetails}
                 />
             }
+
+            {openBOMViewer && <BOMViewer
+                isOpen={openBOMViewer}
+                anchor="right"
+                isEditFlag={true}
+                PartId={selectedPart?.value}
+                avoidAPICall={false}
+                closeDrawer={() => setOpenBOMViewer(false)}
+                BOMViewerData={[]}
+                NewAddedLevelOneChilds={[]}
+            />}
         </>
     );
 }

@@ -208,16 +208,16 @@ function NfrListing(props) {
             rowData: rowData,
             Id: Id
         }
-        // setShowNfrPartListing(true)
-        setIsViewMode(true)
-        setShowAddNFRDrawer(true)
+        setShowNfrPartListing(true)
+        // setIsViewMode(true)
+        // setShowAddNFRDrawer(true)
         setSelectedPartData(rowData)
         setNfrId(rowData?.NfrNumber)
         let obj = { ...nfrDetailsForDiscount, rowData: rowData }
         dispatch(nfrDetailsForDiscountAction(obj))
         setIsEdit(true)
         setAddRfqData(data)
-        // setAddRfq(true)
+        setAddRfq(true)
     }
 
     /**
@@ -610,7 +610,6 @@ function NfrListing(props) {
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
                             {sapLoader && <LoaderCustom message="Fetching data from SAP" />}
-                            {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                                 <Col md="3" lg="3" className='mb-2'>
