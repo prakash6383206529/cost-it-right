@@ -9,14 +9,14 @@ import { Row, Col, } from 'reactstrap';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getCostValues, loggedInUserId } from '../../../../../helper';
 import { createToprowObjAndSave, findrmCctData, formatMultiTechnologyUpdate, viewAddButtonIcon } from '../../../CostingUtil';
 import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
 import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
-import { ASSEMBLY, ASSEMBLYNAME, CC, HANGER, LEVEL0, PAINT, RM, RMCC, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT, WACTypeId } from '../../../../../config/constants';
+import { ASSEMBLY, ASSEMBLYNAME, CC, HANGER, LEVEL0, PAINT, PART_COST, PART_COST_CC, RM, RMCC, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { PreviousTabData } from '../../CostingHeaderTabs';
 import Hanger from './Hanger';
@@ -401,53 +401,59 @@ function SurfaceTreatment(props) {
     }))
     // }
   }
-  const getCostValues = () => {
-    const isAssembly = RMCCTabData[0]?.CostingPartDetails?.PartType
-    if (isAssembly) {
 
-        return {
-            rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
-            conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalConversionCostWithQuantity)
-        };
-    } else {
-      
-        return {
-            rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost),
-            conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
-        };
-    }
-};
   const updateExtraCost = () => {
     let tempData = extraCostDetails?.TransportationDetails ? [...extraCostDetails?.TransportationDetails] : []
+    const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
+    const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
     tempData.map(item => {
       if (item?.CostingConditionMasterId) {
-        if (item.CostingConditionNumber === TAPEANDPAINT) {
-          item.ApplicabiltyCost = paintAndMaskingDetails?.TotalPaintCost
-          item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TotalPaintCost, item?.Rate)
-        } else if (item.CostingConditionNumber === HANGER) {
-          item.ApplicabiltyCost = hangerCostDetails?.HangerCostPerPart
-          item.TransportationCost = calculatePercentageValue(hangerCostDetails?.HangerCostPerPart, item?.Rate)
-        } else if (item.CostingConditionNumber === SURFACETREATMENTLABEL) {
-          item.ApplicabiltyCost = surfaceCost(surfaceTreatmentData?.gridData)
-          item.TransportationCost = calculatePercentageValue(surfaceCost(surfaceTreatmentData?.gridData), item?.Rate)
-        } else if (item.CostingConditionNumber === TAPE) {
-          item.ApplicabiltyCost = paintAndMaskingDetails?.TapeCost
-          item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TapeCost, item?.Rate)
-        } else if (item.CostingConditionNumber === PAINT) {
-          item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
-          item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
-        } else if (item.CostingConditionNumber === RMCC) {
-          const { rawMaterialsCost, conversionCost } = getCostValues();       
-          item.ApplicabiltyCost = checkForNull(rawMaterialsCost)+checkForNull(conversionCost)
-          item.TransportationCost = calculatePercentageValue(checkForNull(rawMaterialsCost)+checkForNull(conversionCost), item?.Rate)
-        }else if(item.CostingConditionNumber === RM){
-          
-          item.ApplicabiltyCost = getCostValues()?.rawMaterialsCost
-          item.TransportationCost = calculatePercentageValue(getCostValues()?.rawMaterialsCost, item?.Rate)
-        }else if(item.CostingConditionNumber === CC){
-          
-          item.ApplicabiltyCost = getCostValues()?.conversionCost
-          item.TransportationCost = calculatePercentageValue(getCostValues()?.conversionCost, item?.Rate)
+        // Get cost values once for all cases that need them
+        switch (item.CostingConditionNumber) {
+          case TAPEANDPAINT:
+            item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
+            item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.TotalPaintCost), item?.Rate)
+            break;
+          case HANGER:
+            item.ApplicabiltyCost = checkForNull(hangerCostDetails?.HangerCostPerPart)
+            item.TransportationCost = calculatePercentageValue(checkForNull(hangerCostDetails?.HangerCostPerPart), item?.Rate)
+            break;
+          case SURFACETREATMENTLABEL:
+            item.ApplicabiltyCost = checkForNull(surfaceCost(surfaceTreatmentData?.gridData))
+            item.TransportationCost = calculatePercentageValue(checkForNull(surfaceCost(surfaceTreatmentData?.gridData)), item?.Rate)
+            break;
+          case TAPE:
+            item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.TapeCost)
+            item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.TapeCost), item?.Rate)
+            break;
+          case PAINT:
+            item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.PaintCost)
+            item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.PaintCost), item?.Rate)
+            break;
+          case RMCC:
+            item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost)
+            item.TransportationCost = calculatePercentageValue(checkForNull(rawMaterialsCost) + checkForNull(conversionCost), item?.Rate)
+            break;
+          case RM:
+            item.ApplicabiltyCost = checkForNull(rawMaterialsCost);
+            item.TransportationCost = calculatePercentageValue(checkForNull(rawMaterialsCost), item?.Rate);
+            break;
+          case CC:
+            item.ApplicabiltyCost = checkForNull(conversionCost);
+            item.TransportationCost = calculatePercentageValue(checkForNull(conversionCost), item?.Rate);
+            break;
+          case PART_COST:
+            
+            item.ApplicabiltyCost = checkForNull(netpartCost);
+            item.TransportationCost = calculatePercentageValue(checkForNull(netpartCost), item?.Rate);
+            break;
+          case PART_COST_CC:
+            item.ApplicabiltyCost = checkForNull(netpartCost) + checkForNull(conversionCost);
+            item.TransportationCost = calculatePercentageValue(checkForNull(netpartCost) + checkForNull(conversionCost), item?.Rate);
+            break;
+          default:
+            // No action for unknown condition types
+            break;
         }
       }
     })

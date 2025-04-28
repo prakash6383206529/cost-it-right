@@ -514,7 +514,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "RejectionCost": overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost,
       "ICCCost": overHeadAndProfitTabData?.CostingPartDetails?.ICCCost,
       "PaymentTermCost": DiscountCostData?.paymentTermCost || 0,
-      "NetLabourCost": tabData?.NetLabourCost,
+      "NetLabourCost": tabData?.CostingPartDetails?.NetLabourCost,
       "IndirectLaborCost": tabData?.IndirectLaborCost,
       "StaffCost": tabData?.StaffCost,
       "StaffCRMHead": tabData?.CostingPartDetails?.StaffCRMHead,
