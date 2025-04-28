@@ -128,7 +128,7 @@ class AddMachineRate extends Component {
       ExchangeSource: '',
       showWarning: false,
       currencyValue: 1,
-      isImport: false,
+      isImport: props?.isImport ? props?.isImport : false,
       currency: [],
       hidePlantCurrency: false,
       settlementCurrency: 1,
@@ -1329,7 +1329,7 @@ class AddMachineRate extends Component {
       isFormHide: true,
       IsVendor: false,
       isEditFlag: false,
-    }, () => this.props.hideForm(type))
+    }, () => this.props.hideForm(type, this.state.isImport))
 
   }
   cancelHandler = () => {

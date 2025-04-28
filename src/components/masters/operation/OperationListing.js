@@ -136,7 +136,7 @@ const OperationListing = (props) => {
         if (!props.stopAPICall && props.isSimulation && props.selectionForListingMasterAPI === 'Combined') {
             fetchData();
         } else if (!props.stopAPICall) {
-            getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData);
+            getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData, state.isImport);
         } else if (props.stopAPICall === true) {
             setState(prevState => ({ ...prevState, tableData: props.operationDataHold }));
         }
@@ -341,7 +341,7 @@ const OperationListing = (props) => {
             //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0, 
             noData: false,
         }));
-        getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData, state.isImport)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     };
 
     const resetState = () => {
@@ -419,7 +419,7 @@ const OperationListing = (props) => {
                 if (state?.gridApi) {
                     state?.gridApi?.deselectAll();
                 }
-                getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData);
+                getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData, state.isImport);
                 setState((prevState) => ({ ...prevState, dataCount: 0 }));
             }
         }));
@@ -653,7 +653,7 @@ const OperationListing = (props) => {
             }, 400);
 
         } else {
-            getTableListData(null, null, null, null, 0, defaultPageSize, false, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+            getTableListData(null, null, null, null, 0, defaultPageSize, false, state.floatingFilterData, state.isImport)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         }
     }
     const OPERATION_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(OPERATION_DOWNLOAD_EXCEl, "MasterLabels")

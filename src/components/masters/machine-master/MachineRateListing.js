@@ -84,7 +84,7 @@ const MachineRateListing = (props) => {
     attachment: false,
     viewAttachment: [],
     render: false,
-    isImport: false,
+    isImport: props?.isImport ? props?.isImport : false,
     editSelectedList: false,
 
   });
@@ -109,7 +109,7 @@ const MachineRateListing = (props) => {
             }
           }
           if (props.selectionForListingMasterAPI === 'Master') {
-            getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state?.floatingFilterData);
+            getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state?.floatingFilterData, state?.isImport);
           }
         }
 
@@ -143,7 +143,7 @@ const MachineRateListing = (props) => {
         temp.push(DayTime(state?.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
         temp.push(DayTime(state?.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
         dataObj.dateArray = temp
-      }
+      } 
     }
     let statusString = [props?.approvalStatus].join(",")
     const filterData = {
@@ -277,7 +277,7 @@ const MachineRateListing = (props) => {
     }));
     dispatch(updatePageNumber(1));
     dispatch(updateCurrentRowIndex(0))
-    getDataList("", 0, '', 0, "", "", 0, globalTakes, true, state?.floatingFilterData);
+    getDataList("", 0, '', 0, "", "", 0, globalTakes, true, state?.floatingFilterData, state?.isImport);
   };
 
 
@@ -372,7 +372,7 @@ const MachineRateListing = (props) => {
         if (state?.gridApi) {
           state?.gridApi?.deselectAll();
         }
-        getDataList("", 0, "", 0, "", "", pageRecord, globalTakes, true, state?.floatingFilterData);
+        getDataList("", 0, "", 0, "", "", pageRecord, globalTakes, true, state?.floatingFilterData, state?.isImport);
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
       }
     }));
@@ -578,7 +578,7 @@ const MachineRateListing = (props) => {
         button && button.click()
       }, 400);
     } else {
-      getDataList("", 0, "", 0, "", "", 0, defaultPageSize, false, state?.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+      getDataList("", 0, "", 0, "", "", 0, defaultPageSize, false, state?.floatingFilterData, state?.isImport)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   }
   const MACHINERATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(MACHINERATE_DOWNLOAD_EXCEl, "MasterLabels")
