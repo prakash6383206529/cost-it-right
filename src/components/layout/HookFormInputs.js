@@ -10,6 +10,7 @@ import { validateSpecialChars } from "../../helper";
 import { MESSAGES } from "../../config/message";
 import {  Col } from "reactstrap";
 import Button from "../layout/Button";
+import $ from "jquery"
 
 export const TextFieldHooks = (input) => {
 
@@ -337,6 +338,10 @@ export const SearchableSelectHookForm = (field) => {
   const filterConfig = {
     stringify: option => `${option.label}`,
   };
+
+  $('body').on('click', '#costingHeadDropDown_container', function() {
+    $('body').find('.multi-select-container__menu').parent().css('z-index', '9999')
+  })
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`} id={id ? id : containerId}>
       <label className={label === false ? 'd-none' : ''}>
