@@ -52,20 +52,27 @@ function ExtraCost(props) {
     })
 
     const getCostValues = () => {
-        const isAssembly = RMCCTabData[0]?.CostingPartDetails?.PartType
-        
-        
-        if (isAssembly) {
-            
+        const isAssembly = item?.PartType
+
+
+
+        let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
+
+        let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex(costingItem => costingItem.PartNumber === item?.PartNumber && costingItem.AssemblyPartNumber === item?.AssemblyPartNumber)
+
+        let objectToGetRMCCData = tempArrForCosting[indexForUpdate]
+
+        if (isAssembly === "Assembly" || isAssembly === "Sub Assembly") {
+
             return {
-                rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
-                conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalConversionCostWithQuantity)
+                rawMaterialsCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
+                conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalConversionCostWithQuantity)
             };
         } else {
-            
+
             return {
-                rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost),
-                conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
+                rawMaterialsCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.NetRawMaterialsCost),
+                conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.NetConversionCost)
             };
         }
     };
@@ -91,7 +98,7 @@ function ExtraCost(props) {
                     item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
                 } else if (item.CostingConditionNumber === RMCC) {
                     const { rawMaterialsCost, conversionCost } = getCostValues();
-item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
+                    item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
                     item.TransportationCost = calculatePercentageValue(item.ApplicabiltyCost, item?.Rate);
                 } else if (item.CostingConditionNumber === RM) {
                     const { rawMaterialsCost } = getCostValues();
@@ -233,7 +240,7 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
             return;
         } else if (e?.label === RM) {
             const { rawMaterialsCost } = getCostValues();
- setValue('ApplicabilityCost', checkForDecimalAndNull(rawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ApplicabilityCost', checkForDecimalAndNull(rawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, ApplicabilityCost: rawMaterialsCost }));
             return;
         } else if (e?.label === CC) {
@@ -244,6 +251,7 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
             return;
         } else if (e?.label === RMCC) {
             const { rawMaterialsCost, conversionCost } = getCostValues();
+
 
             let totalCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
             setValue('ApplicabilityCost', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice));
@@ -288,7 +296,7 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
     }
 
     const onSubmit = data => {
-        
+
         // Check if NetCost is 0 or empty
         if (!data?.NetCost || Number(data?.NetCost) === 0) {
             Toaster.warning('Cost cannot be zero. Please enter a valid value.');
@@ -397,7 +405,7 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
         //     }
         //     return null;
         // })
-        // console.log(SurfaceTabData, "Coming here in saveExtraCost", newData)
+        // 
         // dispatch(setSurfaceData(SurfaceTabData, () => { }))
         props.closeDrawer('Save', totalCostCurrency)
         setSurfaceData({ Params: { index: props.index }, extraCostObj: { TransportationDetails: tableData, TransportationCost: totalCostCurrency }, type: 'ExtraCost' }, errors)
