@@ -78,7 +78,7 @@ export function createRfqQuotation(data, callback) {
 }
 
 export function cancelRfqQuotation(id, callback) {
-    let data = { loggedInUserId: loggedInUserId() ,QuotationId: id }
+    let data = { loggedInUserId: loggedInUserId(), QuotationId: id }
     return (dispatch) => {
         const request = axiosInstance.post(`${API.cancelRfqQuotation}`, data, config());
         request.then((response) => {
@@ -282,14 +282,15 @@ export function getCommunicationHistory(data, callback) {
 
 export function checkExistCosting(data, callback) {
     const requestData = {
-        
-            "LoggedInUserId": loggedInUserId(),
-            "PartIdList": [
-              data.PartIdList
-            ],
-            "PlantId": data.PlantId,
-            "VendorId": data.VendorId
-          }
+
+        "LoggedInUserId": loggedInUserId(),
+        "PartIdList":
+            data.PartIdList
+        ,
+        "PlantId": data.PlantId,
+        "VendorId": data.VendorId
+    }
+    console.log("requestData", requestData);
     return (dispatch) => {
         const request = axiosInstance.post(API.checkExistCosting, requestData, config());
         request.then((response) => {
@@ -341,7 +342,7 @@ export function checkRFQBulkUpload(data, callback) {
     };
 }
 export function checkComponentOrAssemblyRFQBulkUpload(data, callback) {
-    
+
     return (dispatch) => {
         const request = axios.post(API.checkComponentOrAssemblyRFQBulkUpload, data, config());
         request.then((response) => {
@@ -442,7 +443,7 @@ export function setQuotationIdForRFQ(data) {
 };
 
 export function rfqSaveBestCosting(data, callback) {
-    const requestData = { loggedInUserId: loggedInUserId() ,...data }
+    const requestData = { loggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
         const request = axiosInstance.post(API.rfqSaveBestCosting, requestData, config());
         request.then((response) => {
@@ -480,7 +481,7 @@ export function getNfrSelectList(callback) {
 
 export function rfqGetBestCostingDetails(bestCostId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.rfqGetBestCostingDetails}?bestCostId=${bestCostId}`, config());
+        const request = axios.get(`${API.rfqGetBestCostingDetails}?loggedInUserId=${loggedInUserId()}&bestCostId=${bestCostId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 const tempObj = response?.data?.Data;
@@ -905,7 +906,7 @@ export function getRfqReviewHistory(data, callback) {
     };
 }
 export function checkRmExistInRfq(data, callback) {
-    const requestData = { loggedInUserId: loggedInUserId(), ...data}
+    const requestData = { loggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
         const request = axiosInstance.post(API.checkRmExistInRfq, requestData, config());
         request.then((response) => {
@@ -921,7 +922,7 @@ export function checkRmExistInRfq(data, callback) {
 }
 
 export function checkBopExistInRfq(data, callback) {
-    const requestData = { loggedInUserId: loggedInUserId(), ...data}
+    const requestData = { loggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
         const request = axiosInstance.post(API.checkBopExistInRfq, requestData, config());
         request.then((response) => {

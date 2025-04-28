@@ -577,3 +577,9 @@ export const compareRateCommon = (otherCostData, conditionCostData) => {
         Toaster.warning("Please click on refresh button to update Condition Cost data.");
     }
 };
+
+export const generateUnusedRMsMessage = (unusedRMs) => {
+    const rmStrings = unusedRMs.map(rm => `${rm.RMName}-${rm.RMGrade}`);
+    const rmList = rmStrings.join(', ');
+    return `Raw materials (${rmList}) are not used in the weight calculator. Remove the unused raw materials to save the calculator. Click "OK" to remove.`;
+}
