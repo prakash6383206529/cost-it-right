@@ -536,7 +536,7 @@ const OperationListing = (props) => {
             return "Lorem Ipsum";
         } else {
             const cellValue = props?.valueFormatted || props?.value || '-';
-            return cellValue !== '-' ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+            return (cellValue !== '-' && cellValue.includes('T')) ? DayTime(cellValue).format('DD/MM/YYYY') : cellValue;
         }
     }
 
@@ -797,7 +797,6 @@ const OperationListing = (props) => {
 
             props.apply(uniqueArray, length)
         }
-
         setState(prevState => ({ ...prevState, selectedRowData: selectedRows }))
 
     }
