@@ -20,7 +20,7 @@ import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../a
 const AddOverheadMasterDetails = (props) => {
     const dispatch = useDispatch();
     const { t } = useTranslation("MasterLabels");
-    const { costingTypeId, handleApplicabilityChange, state, setState, inputLoader, register, control, setValue, getValues, errors} = props
+    const { costingTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors} = props
     const [isEditIndex, setIsEditIndex] = useState(false)
     const [editItemId, setEditItemId] = useState("")
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
@@ -109,6 +109,11 @@ const AddOverheadMasterDetails = (props) => {
         }
     }
 
+    const handleApplicabilityChange = (e) => {
+        setState(prev => ({ ...prev, OverheadApplicability: e, IsFinancialDataChanged: true }));
+        setValue("OverheadApplicability", e)
+    }
+
     const handleModelTypeChange = (newValue, actionMeta=null) => {
         if (newValue && newValue !== '') {
           setState(prev => ({ ...prev, ModelType: newValue }));
@@ -133,12 +138,12 @@ const AddOverheadMasterDetails = (props) => {
 
     const handleAddApplicability = () => {
         const percentage = getValues("OverheadPercentage");
-        if(!checkForNull(percentage)){
+        if(!checkForNull(percentage) && state?.OverheadApplicability?.label != "Fixed"){
             setValue("OverheadPercentage", "")
             return false
-        }        
+        }      
         const applicability = getValues("OverheadApplicability");
-        if(percentage && applicability){
+        if((state?.OverheadApplicability?.label === "Fixed" || percentage) && applicability){
             let prevApplicability = [...state.ApplicabilityDetails]
             let obj = {
                 "ApplicabilityId": applicability.value,
@@ -333,7 +338,7 @@ const AddOverheadMasterDetails = (props) => {
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.ModelType}
-                            disabled={state?.isViewMode}
+                            disabled={state?.isEditFlag || state?.isViewMode}
                         />
                     </Col>
 
@@ -507,6 +512,7 @@ const AddOverheadMasterDetails = (props) => {
                         />
                     </Col>
                     
+                    {state?.OverheadApplicability?.label != "Fixed" &&
                     <Col md="3">
                         <TextFieldHookForm
                             label={`${props?.isOverHeadMaster ? "Overhead" : "Profit"} (%)`}
@@ -532,6 +538,7 @@ const AddOverheadMasterDetails = (props) => {
                             disabled={!(Object.keys(state?.OverheadApplicability).length > 0) || state?.isViewMode}
                         />
                     </Col>
+                    }
 
                     <Col md="3">
                         <div className={`pt-2 mt-4 pr-0 mb-3`}>
