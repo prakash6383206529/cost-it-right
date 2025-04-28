@@ -294,7 +294,6 @@ function CreateManualNFR(props) {
 
     // Event handlers for form fields
     const handleChangePartType = (value) => {
-        console.log("value", value)
         setPreviousPartType(selectedPartType?.value);
         setSelectedPartType(value)
         setSelectedRawMaterial('')
@@ -1328,6 +1327,7 @@ function CreateManualNFR(props) {
                 avoidAPICall={false}
                 closeDrawer={() => setOpenBOMViewer(false)}
                 BOMViewerData={[]}
+                isFromVishualAd={true}
                 NewAddedLevelOneChilds={[]}
             />}
         </>
