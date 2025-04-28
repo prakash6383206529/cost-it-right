@@ -251,12 +251,10 @@ const AddOverheadMaster = (props) => {
       }
       setState(prev => ({ ...prev, isVendorNameNotSelected: false }));
       if (isEditFlag) {
-
-
         if (
           (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged 
             && (JSON.stringify(ApplicabilityDetails) === JSON.stringify(DataToChange.ApplicabilityDetails))
-          && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate)) {
+          && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
           Toaster.warning('Please change the data to save Overhead Details')
           return false
         }
@@ -291,12 +289,11 @@ const AddOverheadMaster = (props) => {
           IsFinancialDataChanged: IsFinancialDataChanged,
           ApplicabilityDetails: ApplicabilityDetails
         }
-        if (isEditFlag && IsFinancialDataChanged) {
-          if (DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-            Toaster.warning('Please update the effective date')
-            setState(prev => ({ ...prev, setDisable: false }));
-            return false
-          }
+
+        if (IsFinancialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props.IsOverheadAssociated) {
+          Toaster.warning('Please update the Effective date.') ;
+          setState(prev => ({ ...prev, setDisable: false }));  
+          return false
         }
 
         dispatch(updateOverhead(requestData, (res) => {
@@ -342,11 +339,6 @@ const AddOverheadMaster = (props) => {
   }, (errors) => {  // Handle form errors
     // console.log( errors);  // Check if there are validation errors
 }),  500);
-
-    const handleApplicabilityChange = (e) => {
-        setState(prev => ({ ...prev, OverheadApplicability: e, IsFinancialDataChanged: true }));
-        setValue("OverheadApplicability", e)
-    }
 
     const handleMessageChange = (e) => {
       setValue("Remark", e?.target?.value);
@@ -575,8 +567,6 @@ const AddOverheadMaster = (props) => {
 
                   <AddOverheadMasterDetails 
                       costingTypeId={costingTypeId}
-                      ModelType={ModelType}
-                      handleApplicabilityChange={handleApplicabilityChange}
                       state={state}
                       setState={setState}
                       setValue={setValue}
@@ -614,6 +604,7 @@ const AddOverheadMaster = (props) => {
                                     className=""
                                     errors={errors.remark}
                                     disabled={isViewMode}
+                                    rowHeight={4.8}
                                 />
                             </div>
                         </Col>
