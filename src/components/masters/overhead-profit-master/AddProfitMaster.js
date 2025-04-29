@@ -73,7 +73,8 @@ const AddProfitMaster = (props) => {
         RMGrade: [],
         RMSpec: [],
         DropdownNotChanged: true,
-        minEffectiveDate: ''
+        minEffectiveDate: '',
+        isLoader: false
     })
 
     const {isEditFlag, isViewMode, files, uploadAttachements, setDisable, attachmentLoader, selectedPlants, vendorName, vendorCode, client, singlePlantSelected, costingTypeId, ModelType} = state
@@ -182,7 +183,8 @@ const AddProfitMaster = (props) => {
             RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
             RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
             isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false,
-            ApplicabilityDetails: Data.ApplicabilityDetails
+            ApplicabilityDetails: Data.ApplicabilityDetails,
+            isLoader: false
         }));
 
         let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -454,13 +456,9 @@ const AddProfitMaster = (props) => {
       ];
     
       fieldsToClear.forEach(fieldName => {
-        setValue(fieldName, ''); // or null depending on your field type
+        setValue(fieldName, '');
       });
-    
-      // clear any related field errors if needed
       clearErrors(fieldsToClear);
-    
-      // update component-level state
       setState(prev => ({
         ...prev,
         vendorName: [],
@@ -498,6 +496,7 @@ const AddProfitMaster = (props) => {
 
     return (
       <>
+      {state.isLoader && <LoaderCustom />}
       <div className="container-fluid">
         <div className="login-container signup-form">
           <div className="row">
