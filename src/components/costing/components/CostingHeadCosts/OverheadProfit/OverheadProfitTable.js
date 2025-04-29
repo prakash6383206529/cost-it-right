@@ -16,7 +16,6 @@ const OverheadProfitTable = ({
   initialConfiguration,
   onCostChange,
 }) => {
-  console.log(data,'data')
   const renderTableHeader = () => (
     <Row className="costing-border-inner-section m-0">
       <Col md="3">
