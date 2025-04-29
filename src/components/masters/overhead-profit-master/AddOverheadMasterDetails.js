@@ -1,4 +1,4 @@
-import React, { useState, } from 'react';
+import React, { useEffect, useState, } from 'react';
 import { Row, Col, Label, Table } from 'reactstrap';
 import { Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -52,24 +52,30 @@ const AddOverheadMasterDetails = (props) => {
         }
 
         if (label === 'OverheadApplicability') {
-            let temp = [];
+            if (!costingHead) return [];
+            let excludeFixed = false;
+            let includeOnlyFixed = false;
             if (state.ApplicabilityDetails && state.ApplicabilityDetails.length > 0) {
-              const newCostingHead = costingHead.filter(
-                item => !state.ApplicabilityDetails.some(
-                  ap => ap.ApplicabilityId == item.Value
-                ) && Number(item.Value) !== 0
-              );
-              temp = newCostingHead.map(item => ({
+                const fixedExists = state.ApplicabilityDetails.some(
+                    ap => ap.Applicability?.toLowerCase() === "fixed"
+                );
+                includeOnlyFixed = fixedExists;
+                excludeFixed = !fixedExists;
+            }
+            const filtered = costingHead.filter(item => {
+                const isFixed = item.Text?.toLowerCase() === "fixed";
+                const isAlreadyUsed = state.ApplicabilityDetails?.some(
+                    ap => ap.ApplicabilityId == item.Value
+                );
+                if (Number(item.Value) === 0) return false;
+                if (includeOnlyFixed && !isFixed) return false;
+                if (excludeFixed && isFixed) return false;
+                return !isAlreadyUsed;
+            });
+            return filtered.map(item => ({
                 label: item.Text,
                 value: item.Value
-              }));
-            } else {
-              costingHead && costingHead.forEach(item => {
-                if(Number(item.Value) === 0) return false
-                temp.push({ label: item.Text, value: item.Value });
-              });
-            }
-            return temp;
+            }));
         }
 
         if (label === 'ModelType') {
