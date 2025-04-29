@@ -17,6 +17,8 @@ import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
 import { createToprowObjAndSave } from '../../../CostingUtil';
 import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
 import ViewBOP from '../../Drawers/ViewBOP';
+import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
+import { useForm } from 'react-hook-form';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -35,6 +37,16 @@ function AssemblyPart(props) {
   const[viewBopDrawer, setViewBopDrawer] = useState(false)
   const [counter, setCounter] = useState(0)
   const [bopAndBopHandlingDetails, setBopAndBopHandlingDetails] = useState([])
+  const [singleBopRemark, setSingleBopRemark] = useState(false)
+  const [remarkAccept, setRemarkAccept] = useState(false);
+  const [remark, setRemark] = useState("");
+
+
+  const [bopRemarks, setBopRemarks] = useState({})
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange'
+  });
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -263,7 +275,7 @@ function AssemblyPart(props) {
   const closeProcessDrawer = (e = '', rowData = {}) => {
     setIsProcessDrawerOpen(false)
   }
-
+  
   const nestedAssembly = children && children.map(el => {
     if (el.PartType !== 'Sub Assembly') return false;
     return <AssemblyPart
@@ -282,13 +294,59 @@ function AssemblyPart(props) {
       setAssemblyProcessCost={props.setAssemblyProcessCost}
     />
   })
+  const popupInputData = (data) => {
+    setRemark(data);
+  };
 
-  const nestedBOP = children && children.map(el => {
+ /**
+   * @method openRemarkPopup
+   * @description Open the remark popup
+   */
+ const openRemarkPopup = () => {
+  // Set current remark value from CostingPartDetails
+  const currentRemark = item?.CostingPartDetails?.Remark || '';
+  setRemarkAccept(true);
+}
+
+/**
+ * @method closePopUp
+ * @description Close the remark popup
+ */
+const closePopUp = () => {
+  setRemarkAccept(false);
+}
+
+/**
+ * @method handleRemarkPopupConfirm
+ * @description Handle remark popup confirm
+ */
+const handleRemarkPopupConfirm = () => {
+  // Create API request payload to save the remark
+
+}
+
+  const nestedBOP = children && children.map((el, idx) => {
     if (el.PartType !== 'BOP') return false;
+    
+    // Create the remark button that will be passed to the BoughtOutPart component
+    const remarkButton = (
+      remarkAccept && (
+        <PopupMsgWrapper
+          setInputData={popupInputData}
+          isOpen={remarkAccept}
+          closePopUp={closePopUp}
+          confirmPopup={handleRemarkPopupConfirm}
+          header={"Remark"}
+          isInputField={true}
+        />
+      )
+    );
+    
     return <BoughtOutPart
       index={index}
       item={el}
       children={el.CostingChildPartDetails}
+      remarkButton={remarkButton}
     />
   })
 
@@ -335,6 +393,56 @@ function AssemblyPart(props) {
         setViewBopDrawer(true);
       }
     }))
+  }
+
+  /**
+   * @method onRemarkPopUpClick
+   * @description Handle remark popup save
+   */
+  const onRemarkPopUpClick = (index, bopItem) => {
+    if (errors && errors[`bop_remark_${index}`]) {
+      return false;
+    }
+    
+    const remarkValue = getValues(`bop_remark_${index}`);
+    if (remarkValue) {
+      // Update remarks state
+      setBopRemarks(prev => ({
+        ...prev,
+        [bopItem.PartNumber]: remarkValue
+      }));
+      
+      // Save logic would go here in production
+      // This would typically involve an API call to save the remark
+      
+      Toaster.success('Remark saved successfully');
+    }
+    
+    // Close the popup
+    const popupElement = document.getElementById(`bop_popUpTrigger_${index}`);
+    if (popupElement) {
+      popupElement.click();
+    }
+  }
+
+  /**
+   * @method onRemarkPopUpClose
+   * @description Handle remark popup close
+   */
+  const onRemarkPopUpClose = (index, bopItem) => {
+    // Close the popup
+    const popupElement = document.getElementById(`bop_popUpTrigger_${index}`);
+    if (popupElement) {
+      popupElement.click();
+    }
+    
+    // Set the current value back to what it was
+    setValue(`bop_remark_${index}`, bopRemarks[bopItem.PartNumber] || '');
+    
+    // Reset errors
+    if (errors && errors[`bop_remark_${index}`]) {
+      setSingleBopRemark(false);
+    }
   }
 
   /**

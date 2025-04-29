@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CRMHeads, EMPTY_DATA, EMPTY_GUID } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
@@ -20,13 +20,15 @@ import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
 import { useTranslation } from 'react-i18next';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { REMARKMAXLENGTH } from '../../../../../config/masterData';
+import Popup from 'reactjs-popup';
 
 let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
-  const { register, handleSubmit, control, formState: { errors }, setValue, clearErrors } = useForm({
+  const { register, handleSubmit, control, formState: { errors }, setValue, clearErrors, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -49,6 +51,7 @@ function BOPCost(props) {
   const [fixedLimit, setFixedLimit] = useState(false)
   const [headerPinned, setHeaderPinned] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
+  const [singleProcessRemark, setSingleProcessRemark] = useState(true)
   const [tourState, setTourState] = useState(
     {
       steps: []
@@ -59,14 +62,6 @@ function BOPCost(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const { t } = useTranslation("Costing")
   const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
-
-  // useEffect(() => {
-  //   setValue('BOPHandlingCharges', item?.CostingPartDetails?.BOPHandlingCharges)
-  // }, [])
-
-  // useEffect(() => {
-  //   setValue('BOPHandlingCharges', item?.CostingPartDetails?.BOPHandlingCharges)
-  // }, [])
 
   useEffect(() => {
     setTimeout(() => {
@@ -98,6 +93,7 @@ function BOPCost(props) {
         if (gridData?.length === 0) {
           setIsApplyBOPHandlingCharges(false)
         }
+        console.log("1111", gridData)
         props.setBOPCost(gridData, Params, item, BOPHandlingFields)
         if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
           dispatch(isDataChange(true))
@@ -106,49 +102,6 @@ function BOPCost(props) {
     }, 100)
     selectedIds(gridData)
   }, [gridData]);
-
-  // useEffect(() => {
-  //   let bopHandlingPercentage = getValues('BOPHandlingPercentage')
-  //   setTimeout(() => {
-  //     const Params = {
-  //       index: props.index,
-  //       BOMLevel: props.item.BOMLevel,
-  //       PartNumber: props.item.PartNumber,
-  //     }
-  //     let totalBOPCost = netBOPCost(gridData)
-  //     if (!CostingViewMode && !IsLocked) {
-  //       const BOPHandlingFields = {
-  //         IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
-  //         BOPHandlingPercentage: bopHandlingPercentage,
-  //         BOPHandlingCharges: BOPHandlingType?.label === 'Percentage' ? (totalBOPCost + calculatePercentageValue(totalBOPCost, bopHandlingPercentage)) : totalBOPCost,         // TEST
-  //         BOPHandlingType: BOPHandlingType
-  //       }
-  //       props.setBOPCost(gridData, Params, item, BOPHandlingFields)
-  //       if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
-  //         dispatch(isDataChange(true))
-  //       }
-  //     }
-  //   }, 100)
-
-
-  //   if (BOPHandlingType?.label === 'Percentage') {
-  //     if (bopHandlingPercentage > 100) {
-  //       setValue('BOPHandlingPercentage', 0)
-  //       setValue('BOPHandlingCharges', 0)
-  //       return false;
-  //     }
-
-  //     setValue('BOPHandlingCharges', checkForDecimalAndNull(calculatePercentageValue(netBOPCost(gridData), bopHandlingPercentage), initialConfiguration?.NoOfDecimalForPrice))
-  //   } else {
-  //     setValue('BOPHandlingCharges', checkForDecimalAndNull(bopHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice))     //////////
-  //   }
-  // }, [IsApplyBOPHandlingCharges]);
-
-  // useEffect(() => {
-  //   if (IsApplyBOPHandlingCharges) {
-  //     handleBOPPercentageChange(getValues('BOPHandlingPercentage'))
-  //   }
-  // }, [item?.CostingPartDetails?.NetBoughtOutPartCost])
 
   /**
    * @method netBOPCost
@@ -341,6 +294,7 @@ function BOPCost(props) {
           BOPHandlingFixed: (gridData?.length !== 0 && BOPHandlingType === 'Fixed') ? item?.CostingPartDetails?.BOPHandlingCharges : 0,
           BOPHandlingChargeType: BOPHandlingType
         }
+        console.log("2222",gridData)
         props.setBOPCost(gridData, Params, item, BOPHandlingFields)
       }
     }, 100)
@@ -394,6 +348,7 @@ function BOPCost(props) {
           BOPHandlingChargeType: BOPHandlingType
         }
         if (!CostingViewMode && !IsLocked) {
+          console.log("3333",gridData)
           props.setBOPCost(gridData, Params, item, BOPHandlingFields)
           dispatch(isDataChange(true))
         }
@@ -459,12 +414,59 @@ function BOPCost(props) {
       // BOPHandlingFixed: 0,
       BOPHandlingChargeType: newValue?.label
     }
+    console.log("4444",gridData)
     props.setBOPCost(gridData, Params, item, BOPHandlingFields)
     clearErrors('');
   }
 
   const bopGridFields = 'bopGridFields';
+  
+  /**
+   * @method onRemarkPopUpClick
+   * @description Handle remark popup save
+   */
+  const onRemarkPopUpClick = (index) => {
+    if (errors.bopGridFields && errors.bopGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
+    
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      Remark: getValues(`${bopGridFields}.${index}.remarkPopUp`),
+    }
 
+    let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+    setGridData(gridTempArr)
+
+    if (getValues(`${bopGridFields}.${index}.remarkPopUp`)) {
+      Toaster.success('Remark saved successfully')
+    }
+    
+    // Close the popup
+    const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
+    if (popupElement) {
+      popupElement.click();
+    }
+  }
+
+  /**
+   * @method onRemarkPopUpClose
+   * @description Handle remark popup close
+   */
+  const onRemarkPopUpClose = (index) => {
+    // Close the popup
+    const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
+    if (popupElement) {
+      popupElement.click();
+    }
+    
+    setValue(`${bopGridFields}.${index}.remarkPopUp`, gridData[index]?.Remark)
+    if (errors && errors?.bopGridFields && errors.bopGridFields[index]?.remarkPopUp) {
+      delete errors.bopGridFields[index].remarkPopUp;
+      setSingleProcessRemark(false)
+    }
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -623,6 +625,37 @@ function BOPCost(props) {
                                 <div className='action-btn-wrapper'>
                                   {!CostingViewMode && !IsLocked && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
                                   {!CostingViewMode && !IsLocked && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
+                                  <Popup 
+                                    trigger={<button id={`bop_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
+                                    position="top right"
+                                    open={false}
+                                    onOpen={() => setSingleProcessRemark(true)}
+                                  >
+                                    <TextAreaHookForm
+                                      label="Remark:"
+                                      name={`${bopGridFields}.${index}.remarkPopUp`}
+                                      Controller={Controller}
+                                      control={control}
+                                      register={register}
+                                      mandatory={false}
+                                      rules={{
+                                        maxLength: setSingleProcessRemark && REMARKMAXLENGTH
+                                      }}
+                                      handleChange={(e) => { setSingleProcessRemark(true) }}
+                                      defaultValue={item.Remark ?? item.Remark}
+                                      className=""
+                                      customClassName={"withBorder"}
+                                      errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].remarkPopUp : ''}
+                                      disabled={(CostingViewMode || IsLocked) ? true : false}
+                                      hidden={false}
+                                    />
+                                    <Row>
+                                      <Col md="12" className='remark-btn-container'>
+                                        <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                        <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                      </Col>
+                                    </Row>
+                                  </Popup>
                                 </div>
                               </td>
                             </tr>
@@ -659,7 +692,38 @@ function BOPCost(props) {
                               <td>
                                 <div className='action-btn-wrapper'>
                                   {!CostingViewMode && !IsLocked && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} />}
-                                  {!CostingViewMode && !IsLocked && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
+                                   {!CostingViewMode && !IsLocked && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} />} 
+                                  <Popup 
+                                    trigger={<button id={`bop_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
+                                    position="top right"
+                                    open={false}
+                                    onOpen={() => setSingleProcessRemark(true)}
+                                  >
+                                    <TextAreaHookForm
+                                      label="Remark:"
+                                      name={`${bopGridFields}.${index}.remarkPopUp`}
+                                      Controller={Controller}
+                                      control={control}
+                                      register={register}
+                                      mandatory={false}
+                                      rules={{
+                                        maxLength: setSingleProcessRemark && REMARKMAXLENGTH
+                                      }}
+                                      handleChange={(e) => { setSingleProcessRemark(true) }}
+                                      defaultValue={item.Remark ?? item.Remark}
+                                      className=""
+                                      customClassName={"withBorder"}
+                                      errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].remarkPopUp : ''}
+                                      disabled={(CostingViewMode || IsLocked) ? true : false}
+                                      hidden={false}
+                                    />
+                                    <Row>
+                                      <Col md="12" className='remark-btn-container'>
+                                        <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                        <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                      </Col>
+                                    </Row>
+                                  </Popup>
                                 </div>
                               </td>
                             </tr>

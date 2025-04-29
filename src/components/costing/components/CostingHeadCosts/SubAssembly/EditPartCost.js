@@ -3,8 +3,8 @@ import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId, percentageOfNumber } from '../../../../../helper';
-import { ListForPartCost, optionsForDelta } from '../../../../../config/masterData';
-import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
+import { ListForPartCost, optionsForDelta, REMARKMAXLENGTH } from '../../../../../config/masterData';
+import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
 import { getCostingForMultiTechnology, getEditPartCostDetails, getSettledCostingDetails, getSettledSimulationCostingDetails, saveSettledCostingDetails, setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
@@ -23,7 +23,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import AddBOP from '../../Drawers/AddBOP';
 import LoaderCustom from '../../../../common/Loader';
 import DayTime from '../../../../common/DayTimeWrapper';
-
+import Popup from 'reactjs-popup';
 function EditPartCost(props) {
 
     const [gridData, setGridData] = useState([])
@@ -39,6 +39,8 @@ function EditPartCost(props) {
     const [selectedBOPItems, setSelectedBOPItems] = useState([]);
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [singleProcessRemark, setSingleProcessRemark] = useState(true)
+    const [remark, setRemark] = useState('')
     const PartCostFields = 'PartCostFields';
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
@@ -105,6 +107,7 @@ function EditPartCost(props) {
                     tempObject.Vendor = `${item?.VendorName} - ${item?.VendorCode}`
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
+                    tempObject.Remark = getValues(`${PartCostFields}.${index}.remarkPopUp`)
                 }
                 tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -146,6 +149,8 @@ function EditPartCost(props) {
                     tempObject.Vendor = `${item?.VendorName} - ${item?.VendorCode}`
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
+                    tempObject.Remark = getValues(`${PartCostFields}.${index}.remarkPopUp`)
+
                 } tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
             })
@@ -659,6 +664,7 @@ function EditPartCost(props) {
                     tempObject.BasicRate = item?.NetCost || (item.NetBoughtOutPartCost * item.SOBPercentage / 100)
                     tempObject.SettledPriceConversion = item?.SettledPriceConversion
                     tempObject.SettledPriceLocalConversion = item?.SettledPriceLocalConversion
+                    tempObject.Remark = getValues(`${PartCostFields}.${index}.remarkPopUp`)
                     tempArray.push(tempObject)
                 });
             }
@@ -746,6 +752,52 @@ function EditPartCost(props) {
     //         setSelectedBOPItems(newSelectedItems);
     //     }
     // };
+
+    // Add the onRemarkPopUpClick function
+    const onRemarkPopUpClick = (index) => {
+
+
+        if (errors.PartCostFields && errors.PartCostFields[index]?.remarkPopUp !== undefined) {
+            return false
+        }
+
+        // Only handle remarks for BOP items
+        let tempData = selectedBOPItems[index]
+        tempData = {
+            ...tempData,
+            Remark: getValues(`${PartCostFields}.${index}.remarkPopUp`),
+        }
+        setRemark(getValues(`${PartCostFields}.${index}.remarkPopUp`))
+        let gridTempArr = Object.assign([...selectedBOPItems], { [index]: tempData })
+        setSelectedBOPItems(gridTempArr)
+
+        if (getValues(`${PartCostFields}.${index}.remarkPopUp`)) {
+            Toaster.success('Remark saved successfully')
+        }
+
+        // Close the popup
+        // const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
+        // 
+        // if (popupElement) {
+        //     popupElement.click();
+        // }
+    }
+
+    // Add the onRemarkPopUpClose function
+    const onRemarkPopUpClose = (index) => {
+        // Close the popup
+        const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
+
+        if (popupElement) {
+            popupElement.click();
+        }
+
+        setValue(`${PartCostFields}.${index}.remarkPopUp`, selectedBOPItems[index]?.Remark || '')
+        if (errors && errors?.PartCostFields && errors.PartCostFields[index]?.remarkPopUp) {
+            delete errors.PartCostFields[index].remarkPopUp;
+            setSingleProcessRemark(false)
+        }
+    }
 
     return (
         <div>
@@ -855,7 +907,7 @@ function EditPartCost(props) {
                                                                         options={optionsForDelta}
                                                                         mandatory={true}
                                                                         handleChange={(e) => handleDeltaSignChange(e, index)}
-                                                                        disabled={CostingViewMode || props?.costingSummary ? true : false}
+                                                                        disabled={(CostingViewMode || props?.costingSummary) ? true : false}
                                                                     />
 
                                                                     <NumberFieldHookForm
@@ -876,7 +928,7 @@ function EditPartCost(props) {
                                                                         defaultValue={''}
                                                                         className=""
                                                                         customClassName={'withBorder'}
-                                                                        disabled={CostingViewMode || props?.costingSummary ? true : false}
+                                                                        disabled={(CostingViewMode || props?.costingSummary) ? true : false}
                                                                         errors={errors?.PartCostFields && errors?.PartCostFields[index]?.DeltaValue}
                                                                     />
                                                                 </div>
@@ -935,19 +987,52 @@ function EditPartCost(props) {
                                                         </td>
                                                         <td>{item?.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD-MM-YYYY') : '-'}</td>
                                                         <td >
-                                                            {/* <button
+                                                            <div className='action-btn-wrapper'>
+                                                                {/* <button
                                                                 type="button"
                                                                 className={'View mr-2 align-middle'}
                                                                 onClick={() => viewDetails(item)}
                                                             >
                                                             </button>For BOP, temporarily hide the View button. BOP master drawer will open when the View button is clicked */}
-                                                            <button
-                                                                type="button"
-                                                                className={'Delete mr-2 align-middle'}
-                                                                onClick={() => deleteDetails(item, index)}
-                                                                disabled={CostingViewMode || props?.costingSummary ? true : false}
-                                                            >
-                                                            </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className={'Delete mr-2 align-middle'}
+                                                                    onClick={() => deleteDetails(item, index)}
+                                                                    disabled={(CostingViewMode || props?.costingSummary) ? true : false}
+                                                                >
+                                                                </button>
+                                                                {/* <textarea name={`${PartCostFields}.${index}`} /> */}
+                                                                <Popup
+                                                                    trigger={<button id={`bop_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
+                                                                    position="top right"
+                                                                    onOpen={true}
+                                                                >
+                                                                    <TextAreaHookForm
+                                                                        label="Remark:"
+                                                                        name={`${PartCostFields}.${index}.remarkPopUp`}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        register={register}
+                                                                        // mandatory={false}
+                                                                        // rules={{
+                                                                        //     maxLength:singleProcessRemark && REMARKMAXLENGTH
+                                                                        // }}
+                                                                        handleChange={(e) => setSingleProcessRemark(true)}
+                                                                        defaultValue={item.Remark ?? item.Remark}
+                                                                        className=""
+                                                                        customClassName={"withBorder"}
+                                                                        errors={errors && errors.PartCostFields && errors.PartCostFields[index] !== undefined ? errors.PartCostFields[index].remarkPopUp : ''}
+                                                                    // disabled={(CostingViewMode || props?.costingSummary) ? true : false}
+                                                                    // hidden={false}
+                                                                    />
+                                                                    <Row>
+                                                                        <Col md="12" className='remark-btn-container'>
+                                                                            <button className='submit-button mr-2' disabled={(CostingViewMode || props?.costingSummary) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                                                            <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                                                        </Col>
+                                                                    </Row>
+                                                                </Popup>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 ))
@@ -986,7 +1071,7 @@ function EditPartCost(props) {
                                                                             options={optionsForDelta}
                                                                             mandatory={true}
                                                                             handleChange={(e) => handleDeltaSignChange(e, index)}
-                                                                            disabled={CostingViewMode || props?.costingSummary ? true : false}
+                                                                            disabled={(CostingViewMode || props?.costingSummary) ? true : false}
                                                                         />
 
                                                                         <NumberFieldHookForm
@@ -1007,7 +1092,7 @@ function EditPartCost(props) {
                                                                             defaultValue={''}
                                                                             className=""
                                                                             customClassName={'withBorder'}
-                                                                            disabled={CostingViewMode || props?.costingSummary ? true : false}
+                                                                            disabled={(CostingViewMode || props?.costingSummary) ? true : false}
                                                                             errors={errors?.PartCostFields && errors?.PartCostFields[index]?.DeltaValue}
                                                                         />
                                                                     </div>
@@ -1069,7 +1154,7 @@ function EditPartCost(props) {
                                                                     type="button"
                                                                     className={'Delete mr-2 align-middle'}
                                                                     onClick={() => deleteDetails(item, index)}
-                                                                    disabled={CostingViewMode || props?.costingSummary ? true : false}
+                                                                    disabled={(CostingViewMode || props?.costingSummary) ? true : false}
                                                                 >
                                                                 </button>
                                                             </td>
@@ -1133,6 +1218,7 @@ function EditPartCost(props) {
                 isOpenFromAssemblyTechnology={true}
                 boughtOutPartChildId={props?.boughtOutPartChildId}
             />}
+
         </div >
     );
 }
