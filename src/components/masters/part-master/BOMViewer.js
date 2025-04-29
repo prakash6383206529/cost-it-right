@@ -190,7 +190,7 @@ class BOMViewer extends Component {
             selectedPartType: childData.selectedPartType,
             PartId: childData.PartId,
             DeleteNodeL1: DeleteNodeL1,
-            Technology: el?.Technology ?? childData?.Technology.label ?? '',
+            Technology: el?.Technology || '',
             RevisionNo: el?.RevisionNo || null
           })
           return null;
@@ -231,7 +231,7 @@ class BOMViewer extends Component {
         selectedPartType: childData.selectedPartType,
         PartId: childData.PartId,
         Input: childData.Input,
-        Technology: childData && childData?.Technology !== undefined ? childData?.Technology?.label ?? childData?.Technology : '',
+        Technology: childData && childData?.Technology !== undefined ? childData?.Technology?.label : '',
         RevisionNo: childData?.RevisionNo || null,
         IsBreakupBoughtOutPart: childData?.IsBreakupBoughtOutPart
 
