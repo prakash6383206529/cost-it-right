@@ -1698,10 +1698,9 @@ class AddOperation extends Component {
                               name={"Consumption"}
                               type="text"
                               placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
-                              validate={[this.state.isWelding ? required : "", positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
-                              required={this.state.isWelding ? true : false}
-                              mendatory={this.state.isWelding ? true : false}
+                              required={false}
                               disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'Consumption') }}
                               className=" "
