@@ -552,13 +552,6 @@ function SurfaceTreatment(props) {
                             setSurfaceData={SetSurfaceData}
                           />
                           {/* <hr /> */}
-                          <Hanger
-                            ViewMode={CostingViewMode}
-                            index={props?.index}
-                            data={surfaceData}
-                            item={props?.item}
-                            setSurfaceData={SetSurfaceData}
-                          />
                           {/* <TransportationCost
                             index={props.index}
                             data={transportationData}
@@ -630,6 +623,13 @@ function SurfaceTreatment(props) {
                               </div>
                             </Col>
                           </Row>
+                          <Hanger
+                            ViewMode={CostingViewMode}
+                            index={props?.index}
+                            data={surfaceData}
+                            item={props?.item}
+                            setSurfaceData={SetSurfaceData}
+                          />
                         </div>
                       </div >
 
