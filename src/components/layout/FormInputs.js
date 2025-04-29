@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import "./formInputs.scss";
 import { SPACEBAR } from "../../config/constants";
 import { validateSpecialChars } from "../../helper";
+import WarningMessage from "../common/WarningMessage";
 
 /*
 @method: renderLoginTextInputField
@@ -432,9 +433,17 @@ export function renderTextInputField(field) {
         )}
       </div>
       {children}
-      <div className="text-help mb-2">
+      {touched || error && (
+        <div className="text-help mb-2">
+          {touched ? (validateSpecialChars(input.value) || error) : ""}
+        </div>
+      )}
+      {/* <div className="text-help mb-2">
         {touched ? (validateSpecialChars(input.value) || error) : ""}
-      </div>
+      </div> */}
+      {field?.warningMessage && (
+        <WarningMessage dClass={field?.warningMessageClass} message={field?.warningMessage} />
+      )}
     </div>
   );
 }
@@ -658,7 +667,15 @@ export function renderText(field) {
         />
       </div>
       {children}
-      <div className="text-help mb-2">{touched ? (validateSpecialChars(input.value) || error) : ""}</div>
+      {touched || error && (
+        <div className="text-help mb-2">
+          {touched ? (validateSpecialChars(input.value) || error) : ""}
+        </div>
+      )}
+      {/* <div className="text-help mb-2">{touched ? (validateSpecialChars(input.value) || error) : ""}</div> */}
+      {field?.warningMessage && (
+        <WarningMessage dClass={field?.warningMessageClass} message={field?.warningMessage} />
+      )}
     </div>
   );
 }
