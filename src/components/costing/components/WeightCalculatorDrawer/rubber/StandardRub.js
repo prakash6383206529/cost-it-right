@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, positiveAndDecimalNumber, loggedInUserId, innerVsOuterValidation } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, decimalNumberLimit8And7, positiveAndDecimalNumber, loggedInUserId, innerVsOuterValidation } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
@@ -727,7 +727,7 @@ function StandardRub(props) {
                                                 register={register}
                                                 rules={{
                                                     required: !isVolumeAutoCalculate && (Object.keys(rmRowDataState).length > 0),
-                                                    validate: { number, decimalAndNumberValidation },
+                                                    validate: { number, decimalNumberLimit8And7 },
                                                 }}
                                                 mandatory={!isVolumeAutoCalculate && (Object.keys(rmRowDataState).length > 0)}
                                                 handleChange={() => { }}
