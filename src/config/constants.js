@@ -18,7 +18,7 @@ export const config = () => {
 }
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//  const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+ //const BASE_URL = `http://10.10.1.102:2002/api/v1`;
 
 
 
@@ -2447,6 +2447,7 @@ export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
 
 export const PART_COST = 'Part Cost'
+export const PART_COST_CC = 'Part Cost + CC'
 
 export const VIEW_COSTING_DATA = {
   costingHeadCheck: 'VBC/ZBC/NCC/CBC',
@@ -3409,7 +3410,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.34";
+export const VERSION = "V4.2.36";
 
 
 

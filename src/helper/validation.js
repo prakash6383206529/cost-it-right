@@ -611,3 +611,13 @@ export const validateFileName = (fileName) => {
 
     return true;
 };
+
+export const innerVsOuterValidation = (getValues) => (value) => {
+    const outer = parseFloat(getValues('OuterDiameter'));
+    if (!isFinite(outer)) return true;
+    if (value) {
+    return parseFloat(value) <= outer - 0.00000001
+      || 'Inner Diameter should not be greater than outer diameter.';
+    }
+    return true
+};
