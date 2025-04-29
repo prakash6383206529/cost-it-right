@@ -2091,15 +2091,17 @@ const CostingSummaryTable = (props) => {
     return valueWithSign; // Return the value with sign component
   };
 
-  const overheadAndProfitTooltipText = <>
-    {viewRejectAndModelType?.isRmCutOffApplicable && <p>RM Cut Off Price {viewRejectAndModelType?.rawMaterialCostWithCutOff} is Applied</p>}
-    {viewRejectAndModelType?.isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
-    {viewRejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
-  </>
-  const iccToolTipText = <>
-    {viewRejectAndModelType?.isIncludeToolCostInCCForICC && <p>Tool Cost Included</p>}
-    {viewRejectAndModelType?.isIncludeOverheadAndProfitInICC && <p>Overhead and Profit Included</p>}
-  </>
+  const overheadAndProfitTooltipText = `
+  ${viewRejectAndModelType?.isRmCutOffApplicable ? `M Cut Off Price ${viewRejectAndModelType?.rawMaterialCostWithCutOff} is Applied.` : ''}
+  ${viewRejectAndModelType?.isIncludeToolCostWithOverheadAndProfit ? 'Tool Cost Included.' : ''}
+  ${viewRejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit ? 'Surface Treatment Cost Included.' : ''}
+`.trim();
+
+const iccToolTipText = `
+  ${viewRejectAndModelType?.isIncludeToolCostInCCForICC ? 'Tool Cost Included.' : ''}
+  ${viewRejectAndModelType?.isIncludeOverheadAndProfitInICC ? 'Overhead and Profit Included.' : ''}
+`.trim();
+
   const highlighter = (key, columnName = '') => {
     const firstInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 1 : 0
     const secondInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 0 : 1
