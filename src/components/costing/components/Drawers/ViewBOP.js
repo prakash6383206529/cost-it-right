@@ -55,6 +55,7 @@ function ViewBOP(props) {
                 <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net ${showBopLabel()} Cost`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
                 <th>{`Effective Date`}</th>
+                <th>{`Remark`}</th>
               </tr>
             </thead>
             <tbody>
@@ -75,6 +76,7 @@ function ViewBOP(props) {
                       </td>
                       {initialConfiguration?.IsShowCRMHead && <td>{item.BoughtOutPartCRMHead}</td>}
                       <td>{item.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-'}</td>
+                      <td>{item?.Remark}</td>
                     </tr>
                   )
                 })}
