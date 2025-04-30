@@ -2607,7 +2607,9 @@ export const Labour = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'EmploymentTerms', value: 'EmploymentTerms', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'Country', value: 'Country', }, //*
     { label: 'State', value: 'State', }, //*
+    { label: 'City', value: 'City', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineType', value: 'MachineType', }, //*
     { label: 'LabourType', value: 'LabourType', }, //*
@@ -2616,7 +2618,7 @@ export const Labour = [
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'ProductNumber', value: 'ProductNumber', },
     { label: 'Efficiency', value: 'Efficiency', },
-    { label: 'WorkingTime', value: 'WorkingTime', },
+    { label: 'WorkingHours', value: 'WorkingTime', },
 
 ]
 export const LabourTempData = [
@@ -2624,7 +2626,9 @@ export const LabourTempData = [
         "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Contractual',
         'VendorCode': 'VC123',
+        'Country': 'India',
         'State': 'Madhya Pradesh',
+        'City': 'Indore',
         'PlantCode': 'Plant01',
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
@@ -2639,7 +2643,9 @@ export const LabourTempData = [
         "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Employed',
         'VendorCode': 'VC124',
+        'Country': 'India',
         'State': 'Madhya Pradesh',
+        'City': 'Indore',
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
