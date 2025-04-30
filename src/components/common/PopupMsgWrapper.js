@@ -95,7 +95,7 @@ function PopupMsgWrapper(props) {
           <form>
             <div className="mb-3">
               <label className="asterisk-sign text-left">
-                Add Remark<span className="asterisk-required">*</span>
+                Add Remark{/* <span className="asterisk-required">*</span> */}
               </label>
               <Controller
                 control={control}

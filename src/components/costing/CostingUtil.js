@@ -14,14 +14,15 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
  let Arr = JSON.parse(sessionStorage.getItem('costingArray'))
   let surfaceTreatmentArr = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
   let assemblyWorkingRow = []
-
+  
   if (tabId === 1) {
     // TABRMCC SUB ASSEMBLIES
     Arr && Arr.map((item) => {
+      
       let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
       if (item.PartType === 'Sub Assembly' || item.PartType === 'BOP') {
         let subAssemblyObj = {
-          "CostingId": item.CostingId,
+          "CostingId": item.PartType === 'BOP' && bopCostingIdForRemark ? bopCostingIdForRemark : item.CostingId,
           "SubAssemblyCostingId": item.SubAssemblyCostingId,
           "CostingNumber": "", // Need to find out how to get it.
           "TotalRawMaterialsCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.NetRawMaterialsCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
@@ -90,35 +91,14 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "BOPHandlingChargeApplicability": item && item?.CostingPartDetails?.BOPHandlingChargeApplicability,
           "RawMaterialCostWithCutOff": item && item?.CostingPartDetails?.RawMaterialCostWithCutOff,
           "BasicRate": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.NetTotalRMBOPCC,
-          //"BOPCostingId": bopCostingIdForRemark ?? EMPTY_GUID,
-          "Remark": remark
+          "Remark": item.PartType === 'BOP' && remark ? remark : (item.Remark || '')
         }
+        
         assemblyWorkingRow.push(subAssemblyObj)
       }
       return ''
     })
-
-    // Process BOP parts for Working Rows
-    if (tabData?.CostingChildPartDetails && tabData.CostingChildPartDetails.length > 0) {
-      tabData.CostingChildPartDetails.forEach(childPart => {
-        if (childPart.PartType === 'BOP') {
-          let bopObj = {
-            "CostingId": childPart.CostingId,
-            "PartId": childPart.PartId,
-            "BOPId": childPart.BOPId || childPart.PartId,
-            "PartType": childPart.PartType,
-            "PartNumber": childPart.PartNumber,
-            "PartName": childPart.PartName,
-            "Remark": childPart.CostingPartDetails?.Remark || '',
-            "BoughtOutPartRate": childPart.CostingPartDetails?.BoughtOutPartRate,
-            "Quantity": childPart.CostingPartDetails?.Quantity || 1,
-            "TotalBoughtOutPartCostWithQuantity": childPart.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity
-          };
-          assemblyWorkingRow.push(bopObj);
-        }
-      });
-    }
-  }
+}
   else if (tabId === 2) {
     //SURFACE TREATMENT SUBASSEMBLIES
     surfaceTreatmentArr && surfaceTreatmentArr.map((item) => {
