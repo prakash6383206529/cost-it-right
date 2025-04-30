@@ -111,7 +111,7 @@ function EditPartCost(props) {
                     tempObject.Vendor = `${item?.VendorName} - ${item?.VendorCode}`
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
-                    tempObject.Remark = getValues(`${PartCostFields}.${index}.remarkPopUp`)
+                    tempObject.Remark = item?.Remark
                 }
                 tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -153,7 +153,7 @@ function EditPartCost(props) {
                     tempObject.Vendor = `${item?.VendorName} - ${item?.VendorCode}`
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
-                    tempObject.Remark = getValues(`${PartCostFields}.${index}.remarkPopUp`)
+                    tempObject.Remark = item?.Remark
 
                 } tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -668,7 +668,7 @@ function EditPartCost(props) {
                     tempObject.BasicRate = item?.NetCost || (item.NetBoughtOutPartCost * item.SOBPercentage / 100)
                     tempObject.SettledPriceConversion = item?.SettledPriceConversion
                     tempObject.SettledPriceLocalConversion = item?.SettledPriceLocalConversion
-                    tempObject.Remark = getValues(`${PartCostFields}.${index}.remarkPopUp`)
+                    tempObject.Remark = item?.Remark
                     tempArray.push(tempObject)
                 });
             }
@@ -745,76 +745,40 @@ function EditPartCost(props) {
         }
         setIsDrawerOpen(false)
     }
-    // const handleBOPSelection = (index) => {
-    //     const updatedList = [...tableDataList];
-    //     const item = updatedList[index];
-
-    //     if (item.IsValidExchangeRate) {
-    //         const newSelectedItems = selectedBOPItems.includes(index)
-    //             ? selectedBOPItems.filter(i => i !== index)
-    //             : [...selectedBOPItems, index];
-    //         setSelectedBOPItems(newSelectedItems);
-    //     }
-    // };
+   
 
     // Add the onRemarkPopUpClick function
     const onRemarkPopUpClick = (index) => {
-        console.log(index, "index")
         setOpenRemarkPopUp(true)
         setRemarkIndex(index)
-
-        // if (errors.PartCostFields && errors.PartCostFields[index]?.remarkPopUp !== undefined) {
-        //     return false
-        // }
-
-        // // Only handle remarks for BOP items
-        // let tempData = selectedBOPItems[index]
-        // tempData = {
-        //     ...tempData,
-        //     Remark: getValues(`${PartCostFields}.${index}.remarkPopUp`),
-        // }
-        // setRemark(getValues(`${PartCostFields}.${index}.remarkPopUp`))
-        // let gridTempArr = Object.assign([...selectedBOPItems], { [index]: tempData })
-        // setSelectedBOPItems(gridTempArr)
-
-        // if (getValues(`${PartCostFields}.${index}.remarkPopUp`)) {
-        //     Toaster.success('Remark saved successfully')
-        // }
-
-        // // Close the popup
-        // // const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
-        // // 
-        // // if (popupElement) {
-        // //     popupElement.click();
-        // // }
+        // Set the remark state to the current remark of the selected BOP item
+        setRemark(selectedBOPItems[index]?.Remark || '')
+       
     }
 
     // Add the onRemarkPopUpClose function
     const onRemarkPopUpClose = (index, type = '') => {
-        if (type === 'close') {
-            setOpenRemarkPopUp(false)
-        } else {
-            const editedBOPItem = selectedBOPItems[remarkIndex]
-            setOpenRemarkPopUp(false)
+        setOpenRemarkPopUp(false)
+       
+    }
+    const onRemarkPopUpConfirm = () => {
+       let editedBOPItem = selectedBOPItems[remarkIndex]
+        editedBOPItem = {
+            ...editedBOPItem,
+            Remark: remark,
         }
-        // Close the popup
-        // const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
-
-        // if (popupElement) {
-        //     popupElement.click();
-        // }
-
-        // setValue(`${PartCostFields}.${index}.remarkPopUp`, selectedBOPItems[index]?.Remark || '')
-        // if (errors && errors?.PartCostFields && errors.PartCostFields[index]?.remarkPopUp) {
-        //     delete errors.PartCostFields[index].remarkPopUp;
-        //     setSingleProcessRemark(false)
-        // }
+        let gridTempArr = Object.assign([...selectedBOPItems], { [remarkIndex]: editedBOPItem })
+        setSelectedBOPItems(gridTempArr)
+        if (remark.length > 0) {
+            Toaster.success('Remark saved successfully')
+        }
+        setOpenRemarkPopUp(false)
     }
     const handleRendered = () => {
         setTimeout(() => {
-            const drawerEl = drawerRef.current;
-            const divEl = drawerEl.querySelector('.MuiDrawer-paperAnchorBottom');
-            divEl.removeAttribute('tabindex');
+            const drawerEl = drawerRef?.current;
+            const divEl = drawerEl?.querySelector('.MuiDrawer-paperAnchorBottom');
+            divEl?.removeAttribute('tabindex');
         }, 500);
 
     };
@@ -1214,7 +1178,7 @@ function EditPartCost(props) {
                 boughtOutPartChildId={props?.boughtOutPartChildId}
             />}
 
-            {openRemarkPopUp && <PopupMsgWrapper isOpen={openRemarkPopUp} closePopUp={onRemarkPopUpClose} confirmPopup={() => { }} message={'Remark'} isInputField={true} />}
+            {openRemarkPopUp && <PopupMsgWrapper isOpen={openRemarkPopUp} closePopUp={onRemarkPopUpClose} confirmPopup={onRemarkPopUpConfirm} message={'Remark'} isInputField={true} defaultValue={remark} setInputData={setRemark} isDisabled={props?.costingSummary || CostingViewMode} />}
         </div >
     );
 }
