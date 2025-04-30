@@ -16,8 +16,10 @@ import CostingSummaryTable from "../../../costing/components/CostingSummaryTable
 import { getMultipleCostingDetails } from "../../../rfq/actions/rfq";
 import LoaderCustom from "../../../common/LoaderCustom";
 import NoContentFound from "../../../common/NoContentFound";
+import { useLocation, useHistory } from "react-router-dom/cjs/react-router-dom";
+import Button from "../../../layout/Button";
 
-const CostVariance = () => {
+const CostVariance = ({ formData, viewCostVariance }) => {
     const { control, register, handleSubmit, formState: { errors } } = useForm();
     const { technologyLabel } = useLabels();
     const [partTypeList, setPartTypeList] = useState([])
@@ -30,11 +32,27 @@ const CostVariance = () => {
     const { costingSpecifiTechnology: technology, viewCostingDetailData } = useSelector((state) => state.costing)
 
     useEffect(() => {
+        // window.history.replaceState({}, document.title);
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getSelectListPartType((res) => {
             setPartTypeList(res?.data?.SelectList)
         }))
     }, [])
+
+    useEffect(() => {
+        if (formData) {
+            getData(formData);
+        }
+    }, [formData]);
+    const backHandler = () => {
+        viewCostVariance({
+            view: false,
+            data: {
+                TechnologyId: '',
+                PartId: '',
+            }
+        })
+    }
     const renderListing = (type) => {
         const temp = []
         if (type === "Technology") {
@@ -55,16 +73,20 @@ const CostVariance = () => {
     }
     const handleTechnologyChange = (e) => {
         setSelectedTechnology(e)
+        // getData({ TechnologyId: e.value, PartId: partType.value })
     }
+
     const handlePartTypeChange = (e) => {
         setPartType(e)
+        getData({ TechnologyId: selectedTechnology.value, PartId: e.value })
     }
-    const handlePartChange = (e) => {
+
+    const getData = (data) => {
         setIsLoader(true)
-        dispatch(checkPartWithTechnology({ TechnologyId: selectedTechnology?.value, PartId: e?.value }, (response) => {
+        dispatch(checkPartWithTechnology(data, (response) => {
             if (response.data.Result) {
-                dispatch(getPartInfo(e?.value, (res) => {
-                    dispatch(getExistingCosting(e?.value, (res) => {
+                dispatch(getPartInfo(data.PartId, (res) => {
+                    dispatch(getExistingCosting(data.PartId, (res) => {
                         const DataList = res?.data?.DataList;
                         const approvedCosting = DataList?.map(item => item?.CostingOptions?.filter(item => ApprovedCostingStatus.includes(String(item?.StatusId))))
                         const finalData = approvedCosting?.flat()
@@ -89,6 +111,9 @@ const CostVariance = () => {
                 setIsLoader(false)
             }
         }))
+    }
+    const handlePartChange = (e) => {
+        getData({ TechnologyId: selectedTechnology.value, PartId: e.value })
     }
     const filterList = async (inputValue) => {
         if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -121,8 +146,8 @@ const CostVariance = () => {
         }
     }
     return (
-        <div>
-            <Row>
+        <div className="p-relative">
+            {formData?.TechnologyId && formData?.PartId ? <><Row><Col md="12"><Button className="float-right" buttonName="Back" title="Back" icon="back-icon" onClick={backHandler} /></Col></Row></> : <Row>
                 <Col className="col-md-15">
                     <SearchableSelectHookForm
                         label={technologyLabel}
@@ -179,7 +204,7 @@ const CostVariance = () => {
                     />
 
                 </Col>
-            </Row>
+            </Row>}
             {isLoader ? <LoaderCustom /> :
                 viewCostingDetailData.length > 0 ? <>
                     <Row>

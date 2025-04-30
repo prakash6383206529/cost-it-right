@@ -1156,6 +1156,8 @@ export const API = {
   getCostRatioReport: `${BASE_URL}/reports/get-cost-ratio-report`,
   getNfrInsightsDetails: `${BASE_URL}/reports/get-nfr-insights-details`,
   getNfrInsightsStatusDetails: `${BASE_URL}/reports/get-nfr-insights-status-details`,
+  getCostDeviationReport: `${BASE_URL}/reports/get-weight-comparison-report`,
+
 
   //RFQ
   getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
@@ -2120,6 +2122,8 @@ export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
 //MINDA
 export const GET_NFR_INSIGHT_DETAILS = 'GET_NFR_INSIGHT_DETAILS'
 export const GET_NFR_INSIGHT_STATUS_DETAILS = 'GET_NFR_INSIGHT_STATUS_DETAILS'
+export const GET_COST_DEVIATION_REPORT = 'GET_COST_DEVIATION_REPORT'
+
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
@@ -2313,7 +2317,10 @@ export const CUSTOMER_POAM_REPORT = 'Customer POAM Summary'
 export const BUDGETING = 'Budgeting'
 export const SALES_PROVISION_FILE_NAME = 'Sales Provision Report'
 export const PURCHASE_PROVISION_FILE_NAME = 'Purchase Provision Report'
-export const SALES_PROVISION_REPORT = 'Sales Provision Report'          						//RE
+export const SALES_PROVISION_REPORT = 'Sales Provision Report'    
+export const COST_DEVIATION_REPORT = 'Cost Deviation'
+export const COST_VARIANCE_REPORT = 'Cost Variance'
+      						//RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
 export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
 export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
@@ -3062,6 +3069,11 @@ export const APPROVER = 'Approver'          						//RE
 export const NEW_COMPONENT = "New Component"
 export const CUSTOMER_BASED = "Customer Based"
 
+export const GROSS_WEIGHT_COMPARISON = "Gross Weight"
+export const FINISH_WEIGHT_COMPARISON = "Finish Weight"
+export const SCRAP_WEIGHT_COMPARISON = "Scrap Weight"
+
+
 // Original release strategy constants
 export const RELEASE_STRATEGY_B1 = "Release Strategy B1"
 export const RELEASE_STRATEGY_B2 = "Release Strategy B2"
@@ -3135,7 +3147,11 @@ export const BOUGHTOUTPARTSRFQ = "BoughtOutPartsRFQ"
 export const RAWMATERIALSRFQ = "RawMaterialsRFQ"
 export const SAP_PUSH = "SAP Push"
 
-
+export const applicabilityOn = [
+  { label: 'Gross Weight', value: 1 },
+  { label: 'Finish Weight', value: 2 },
+  { label: 'Scrap Weight', value: 3 },
+]
 
 
 //STATUS FILTER DROPDOWN OPTIONS
