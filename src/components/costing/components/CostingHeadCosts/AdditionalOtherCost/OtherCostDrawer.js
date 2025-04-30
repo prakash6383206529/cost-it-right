@@ -42,7 +42,7 @@ function OtherCostDrawer(props) {
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
 
-    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, getCostingPaymentDetails, UpdatePaymentTermCost } = useSelector(state => state.costing)
+    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, getCostingPaymentDetails, UpdatePaymentTermCost, ToolTabData } = useSelector(state => state.costing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingHead = useSelector(state => state.comman.costingHead)
     const [isEdit, setIsEdit] = useState(false);
@@ -406,6 +406,21 @@ function OtherCostDrawer(props) {
                 totalCost = (dataList?.ToolCost) * calculatePercentage(percent)
                 setApplicabilityCost(dataList?.ToolCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(dataList?.ToolCost, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case 'Net Tool Amortization Cost':
+                totalCost = (ToolTabData?.[0]?.CostingPartDetails?.NetToolAmortizationCost) * calculatePercentage(percent)
+                setApplicabilityCost(ToolTabData?.[0]?.CostingPartDetails?.NetToolAmortizationCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(ToolTabData?.[0]?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case 'Net Tool Interest Cost':
+                totalCost = (ToolTabData?.[0]?.CostingPartDetails?.NetToolInterestCost) * calculatePercentage(percent)
+                setApplicabilityCost(ToolTabData?.[0]?.CostingPartDetails?.NetToolInterestCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(ToolTabData?.[0]?.CostingPartDetails?.NetToolInterestCost, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case 'Net Tool Maintenance Cost':
+                totalCost = (ToolTabData?.[0]?.CostingPartDetails?.NetToolMaintenanceCost) * calculatePercentage(percent)
+                setApplicabilityCost(ToolTabData?.[0]?.CostingPartDetails?.NetToolMaintenanceCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(ToolTabData?.[0]?.CostingPartDetails?.NetToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             default:
                 totalCost = getValues('ApplicabilityCost')
