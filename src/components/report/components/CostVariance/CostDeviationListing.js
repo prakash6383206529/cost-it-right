@@ -112,7 +112,8 @@ const CostDeviationListing = ({ formData, viewCostVariance }) => {
                         gridOptions={gridOptions}
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
-                        noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
+                        // noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
+                        noRowsOverlayComponentParams={{ title: 'No Deviations Identified', imagClass: 'imagClass' }}
                         rowSelection={'multiple'}
                         onFilterModified={onFloatingFilterChanged}
                         onSelectionChanged={() => { }}

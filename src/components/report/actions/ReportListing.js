@@ -651,7 +651,7 @@ export function getCostDeviationReport(data, callback) {
     };
 
     // Add each param conditionally
-    addParam("loggedInUserId", "f00ff1a4-2858-43a1-bf3a-6a9ee77a40fd"); // Fixed user ID
+    addParam("loggedInUserId", loggedInUserId()); // Fixed user ID
     addParam("partNumber", data?.partNumber);
     addParam("revisionNumber", data?.revisionNumber);
     addParam("vendorCode", data?.vendorCode);
