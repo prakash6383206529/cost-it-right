@@ -821,7 +821,7 @@ function AddLabourCost(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
-                                        disabled={CostingViewMode}
+                                        disabled={CostingViewMode||props?.isCostingSummary}
                                         onClick={() => { props.closeDrawer('save', tableData) }} >
                                         <div className={"save-icon"}></div>
                                         {'Save'}
