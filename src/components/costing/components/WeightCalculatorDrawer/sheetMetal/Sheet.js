@@ -5,7 +5,7 @@ import { Col, Row, Table } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, calculatePercentage, percentageLimitValidation, calculateScrapWeight } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, calculatePercentage, percentageLimitValidation, calculateScrapWeight, blockInvalidNumberKeys, noDecimal } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
@@ -419,6 +419,7 @@ function Sheet(props) {
                                             required: true,
                                             validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+																				onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -439,6 +440,7 @@ function Sheet(props) {
                                             required: true,
                                             validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+																				onKeyDown={blockInvalidNumberKeys}
                                         handleChange={(e) => { setValue('SheetWidthBottom', e.target.value) }}
                                         defaultValue={''}
                                         className=""
@@ -459,6 +461,7 @@ function Sheet(props) {
                                             required: true,
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+																				onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -507,6 +510,7 @@ function Sheet(props) {
                                             required: false,
                                             validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+																				onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -527,6 +531,7 @@ function Sheet(props) {
                                             required: false,
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+																				onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -568,7 +573,7 @@ function Sheet(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation, noDecimal },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
