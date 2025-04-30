@@ -18,11 +18,10 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
   if (tabId === 1) {
     // TABRMCC SUB ASSEMBLIES
     Arr && Arr.map((item) => {
-      
       let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
       if (item.PartType === 'Sub Assembly' || item.PartType === 'BOP') {
         let subAssemblyObj = {
-          "CostingId": item.PartType === 'BOP' && bopCostingIdForRemark ? bopCostingIdForRemark : item.CostingId,
+          "CostingId": item.CostingId,
           "SubAssemblyCostingId": item.SubAssemblyCostingId,
           "CostingNumber": "", // Need to find out how to get it.
           "TotalRawMaterialsCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.NetRawMaterialsCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
@@ -93,7 +92,6 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "BasicRate": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.NetTotalRMBOPCC,
           "Remark": item.PartType === 'BOP' && remark ? remark : (item.Remark || '')
         }
-        
         assemblyWorkingRow.push(subAssemblyObj)
       }
       return ''
