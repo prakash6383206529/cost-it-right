@@ -495,7 +495,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         <Drawer anchor={anchor} open={isOpen}>
             <div className="ag-grid-react hidepage-size">
                 <Container className="add-bop-drawer">
-                    <div className="drawer-wrapper layout-min-width-1000px">
+                    <div className="drawer-wrapper paint-and-masking layout-min-width-1000px">
                         <Row className="drawer-heading">
                             <Col className="pl-0">
                                 <div className="header-wrapper left">

@@ -1017,9 +1017,14 @@ function RawMaterialCost(props) {
             }
             return item;
           });
+          const usedRmData = weightData?.usedRmData || []
+          if (usedRmData.length > 0) {
+            updatedData = updatedData.filter(rmData => usedRmData.find(usedRmData => usedRmData?.RawMaterialId === rmData?.RawMaterialId));
+          }
           setTimeout(() => {
             setGridData(updatedData)
           }, 400)
+          selectedIds(updatedData)
         }else{
           gridData && gridData.map((item, index) => {
             item.FinishWeight = weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight ? weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight : 0
@@ -1105,7 +1110,10 @@ function RawMaterialCost(props) {
       if (Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
         selectedId.push(el.RawMaterialId)
         setIds(selectedId)
-
+      }
+      if (Number(costData?.TechnologyId) === Number(RUBBER)) {
+        selectedId.push(el.RawMaterialId)
+        setIds(selectedId)
       }
       if(IsApplyMasterBatch){
         selectedId.push(el.RawMaterialId)

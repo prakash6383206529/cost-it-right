@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -24,7 +24,9 @@ import AddBOP from '../../Drawers/AddBOP';
 import LoaderCustom from '../../../../common/Loader';
 import DayTime from '../../../../common/DayTimeWrapper';
 import Popup from 'reactjs-popup';
+import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 function EditPartCost(props) {
+    const drawerRef = useRef();
 
     const [gridData, setGridData] = useState([])
     const { settledCostingDetails, settledCostingDetailsView } = useSelector(state => state.subAssembly)
@@ -57,6 +59,8 @@ function EditPartCost(props) {
     })
     const { currencySource } = useSelector(state => state.costing)
     const isBOPView = props?.isBopEdit || false;
+    const [openRemarkPopUp, setOpenRemarkPopUp] = useState(false);
+    const [remarkIndex, setRemarkIndex] = useState(null);
 
     useEffect(() => {
         if (!isBOPView) {
@@ -755,56 +759,75 @@ function EditPartCost(props) {
 
     // Add the onRemarkPopUpClick function
     const onRemarkPopUpClick = (index) => {
+        console.log(index, "index")
+        setOpenRemarkPopUp(true)
+        setRemarkIndex(index)
 
-
-        if (errors.PartCostFields && errors.PartCostFields[index]?.remarkPopUp !== undefined) {
-            return false
-        }
-
-        // Only handle remarks for BOP items
-        let tempData = selectedBOPItems[index]
-        tempData = {
-            ...tempData,
-            Remark: getValues(`${PartCostFields}.${index}.remarkPopUp`),
-        }
-        setRemark(getValues(`${PartCostFields}.${index}.remarkPopUp`))
-        let gridTempArr = Object.assign([...selectedBOPItems], { [index]: tempData })
-        setSelectedBOPItems(gridTempArr)
-
-        if (getValues(`${PartCostFields}.${index}.remarkPopUp`)) {
-            Toaster.success('Remark saved successfully')
-        }
-
-        // Close the popup
-        // const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
-        // 
-        // if (popupElement) {
-        //     popupElement.click();
+        // if (errors.PartCostFields && errors.PartCostFields[index]?.remarkPopUp !== undefined) {
+        //     return false
         // }
+
+        // // Only handle remarks for BOP items
+        // let tempData = selectedBOPItems[index]
+        // tempData = {
+        //     ...tempData,
+        //     Remark: getValues(`${PartCostFields}.${index}.remarkPopUp`),
+        // }
+        // setRemark(getValues(`${PartCostFields}.${index}.remarkPopUp`))
+        // let gridTempArr = Object.assign([...selectedBOPItems], { [index]: tempData })
+        // setSelectedBOPItems(gridTempArr)
+
+        // if (getValues(`${PartCostFields}.${index}.remarkPopUp`)) {
+        //     Toaster.success('Remark saved successfully')
+        // }
+
+        // // Close the popup
+        // // const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
+        // // 
+        // // if (popupElement) {
+        // //     popupElement.click();
+        // // }
     }
 
     // Add the onRemarkPopUpClose function
-    const onRemarkPopUpClose = (index) => {
+    const onRemarkPopUpClose = (index, type = '') => {
+        if (type === 'close') {
+            setOpenRemarkPopUp(false)
+        } else {
+            const editedBOPItem = selectedBOPItems[remarkIndex]
+            setOpenRemarkPopUp(false)
+        }
         // Close the popup
-        const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
+        // const popupElement = document.getElementById(`bop_popUpTriggers${index}`);
 
-        if (popupElement) {
-            popupElement.click();
-        }
+        // if (popupElement) {
+        //     popupElement.click();
+        // }
 
-        setValue(`${PartCostFields}.${index}.remarkPopUp`, selectedBOPItems[index]?.Remark || '')
-        if (errors && errors?.PartCostFields && errors.PartCostFields[index]?.remarkPopUp) {
-            delete errors.PartCostFields[index].remarkPopUp;
-            setSingleProcessRemark(false)
-        }
+        // setValue(`${PartCostFields}.${index}.remarkPopUp`, selectedBOPItems[index]?.Remark || '')
+        // if (errors && errors?.PartCostFields && errors.PartCostFields[index]?.remarkPopUp) {
+        //     delete errors.PartCostFields[index].remarkPopUp;
+        //     setSingleProcessRemark(false)
+        // }
     }
+    const handleRendered = () => {
+        setTimeout(() => {
+            const drawerEl = drawerRef.current;
+            const divEl = drawerEl.querySelector('.MuiDrawer-paperAnchorBottom');
+            divEl.removeAttribute('tabindex');
+        }, 500);
+
+    };
 
     return (
         <div>
             <Drawer className={`${props?.costingSummary ? '' : 'bottom-drawer'}`}
                 anchor={props?.anchor}
                 open={props?.isOpen}
-                BackdropProps={props?.costingSummary && { style: { opacity: 0 } }}>
+                BackdropProps={props?.costingSummary && { style: { opacity: 0 } }}
+                ref={drawerRef}
+                onRendered={handleRendered}
+            >
                 <div className="container-fluid">
                     <div className={'drawer-wrapper drawer-1500px master-summary-drawer'}>
                         {/* {isLoading && <LoaderCustom />} */}
@@ -1002,36 +1025,7 @@ function EditPartCost(props) {
                                                                 >
                                                                 </button>
                                                                 {/* <textarea name={`${PartCostFields}.${index}`} /> */}
-                                                                <Popup
-                                                                    trigger={<button id={`bop_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
-                                                                    position="top right"
-                                                                    onOpen={true}
-                                                                >
-                                                                    <TextAreaHookForm
-                                                                        label="Remark:"
-                                                                        name={`${PartCostFields}.${index}.remarkPopUp`}
-                                                                        Controller={Controller}
-                                                                        control={control}
-                                                                        register={register}
-                                                                        // mandatory={false}
-                                                                        // rules={{
-                                                                        //     maxLength:singleProcessRemark && REMARKMAXLENGTH
-                                                                        // }}
-                                                                        handleChange={(e) => setSingleProcessRemark(true)}
-                                                                        defaultValue={item.Remark ?? item.Remark}
-                                                                        className=""
-                                                                        customClassName={"withBorder"}
-                                                                        errors={errors && errors.PartCostFields && errors.PartCostFields[index] !== undefined ? errors.PartCostFields[index].remarkPopUp : ''}
-                                                                    // disabled={(CostingViewMode || props?.costingSummary) ? true : false}
-                                                                    // hidden={false}
-                                                                    />
-                                                                    <Row>
-                                                                        <Col md="12" className='remark-btn-container'>
-                                                                            <button className='submit-button mr-2' disabled={(CostingViewMode || props?.costingSummary) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
-                                                                            <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
-                                                                        </Col>
-                                                                    </Row>
-                                                                </Popup>
+                                                                <button id={`bopAssembly_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} onClick={() => onRemarkPopUpClick(index)} />
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -1189,6 +1183,7 @@ function EditPartCost(props) {
                         </Row >}
                     </div >
                 </div >
+
             </Drawer >
             {
                 isOpen &&
@@ -1219,6 +1214,7 @@ function EditPartCost(props) {
                 boughtOutPartChildId={props?.boughtOutPartChildId}
             />}
 
+            {openRemarkPopUp && <PopupMsgWrapper isOpen={openRemarkPopUp} closePopUp={onRemarkPopUpClose} confirmPopup={() => { }} message={'Remark'} isInputField={true} />}
         </div >
     );
 }
