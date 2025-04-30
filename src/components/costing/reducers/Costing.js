@@ -31,7 +31,8 @@ import {
   SET_OPERATION_APPLICABILITY_SELECT,
   SET_PROCESS_APPLICABILITY_SELECT,
   GET_PAINT_COAT_LIST,
-  GET_TOOL_TAB_DATA
+  GET_TOOL_TAB_DATA,
+  SET_BOP_REMARK
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -91,7 +92,9 @@ const initialState = {
   baseFromCurrency: '',
   baseToCurrency: '',
   paintCoatList: [],
-  getToolTabData: []
+  getToolTabData: [],
+  remark: '',
+  bopCostingId: ''
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -461,24 +464,6 @@ export default function costingReducer(state = initialState, action) {
         PaymentTermDataDiscountTab: action.payload
       }
     case GET_RM_DRAWER_DATA_LIST:
-      // let isNFR = action?.isNFR
-      // let list = []
-      // let rmNameList = action?.rmNameList
-      // let temp = [...action.payload]
-      // let arrayRM = temp && temp.map((item) => {
-      //   item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
-      //   item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
-      //   return item
-      // })
-      // if (isNFR) {
-      //   arrayRM && arrayRM?.filter(element => {
-      //     if (rmNameList?.includes(element?.RawMaterial)) {
-      //       list.push(element)
-      //     }
-      //   })
-      // } else {
-      //   list = [...arrayRM]
-      // }
       let temp = [...action.payload]
       let arrayRM = temp && temp.map((item) => {
         item.NetLandedCostCombine = /* item.EntryType === IMPORT ? item.NetLandedCostConversion :  */item.NetLandedCost
@@ -949,6 +934,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         getToolTabData: action.payload,
+      }
+    case SET_BOP_REMARK:
+      return {
+        ...state,
+        remark: action?.payload?.remark,
+        bopCostingId: action?.payload?.bopCostingId
       }
     default:
       return state

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import confirmImg from "../../assests/images/confirm.svg";
 import { Controller, useForm } from "react-hook-form";
@@ -7,10 +7,20 @@ import { useHistory } from 'react-router-dom';
 import { SUPPLIER_MANAGEMENT } from '../../config/constants';
 
 function PopupMsgWrapper(props) {
+  
   const { handleSubmit, control } = useForm();
-  const [remark, setRemark] = useState("");
+  const [remark, setRemark] = useState(props.defaultValue || "");
   const [formError, setFormError] = useState("");
   const history = useHistory();
+  
+  // Initialize remark with defaultValue when component mounts or defaultValue changes
+  useEffect(() => {
+    // This will ensure the remark is updated when a new default value is provided
+    setRemark(props.defaultValue || "");
+    if (props.defaultValue) {
+      props.setInputData && props.setInputData(props.defaultValue);
+    }
+  }, [props.defaultValue, props.setInputData]);
 
   function confirmHandler(e) {
     props.confirmPopup(e);
@@ -94,10 +104,11 @@ function PopupMsgWrapper(props) {
                   <textarea
                     rows={3}
                     placeholder="Enter"
-                    value={field.value}
+                    value={remark}
                     onChange={(e) => {
                       changeHandler(e);
                     }}
+                    disabled={props?.isDisabled}
                     // onChange={(e) => field.onChange(e.target.value)}
                     className="form-control hl-textarea-h"
                   />
@@ -131,7 +142,7 @@ function PopupMsgWrapper(props) {
             className={
               "save-btn"
             }
-          // disabled={props.disablePopup || props.buttonLoader}
+            disabled={ props.isDisabled}
           >
             <div className={`save-icon ${props.iconClass}`}></div>
             {props.firstButtonName ? props.firstButtonName : props.nfrPopup ? 'Yes' : 'OK'}
