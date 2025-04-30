@@ -17,6 +17,7 @@ import Hanger from '../CostingHeadCosts/SurfaceTreatMent/Hanger'
 import { viewAddButtonIcon } from '../../CostingUtil'
 import Button from '../../../layout/Button'
 import PaintAndMasking from '../CostingHeadCosts/SurfaceTreatMent/PaintAndMasking'
+import DayTime from '../../../common/DayTimeWrapper'
 
 function ViewConversionCost(props) {
 
@@ -864,6 +865,7 @@ function ViewConversionCost(props) {
                     <th>Paint Cost</th>
                     {isPDFShow && <th>Masking/Tape Cost</th>}
                     {isPDFShow && <th>Total Paint & Masking Cost</th>}
+                    <th>Effective Date</th>
                   </tr>
   
                   {Coats.map((coat, parentIndex) =>
@@ -895,6 +897,7 @@ function ViewConversionCost(props) {
                             {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                           </td>
                         )}
+                        <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                       </tr>
                     ))
                   )}
@@ -902,7 +905,7 @@ function ViewConversionCost(props) {
                   {/* Totals when PDF is not shown */}
                   {(!IsAssemblyCosting && !isPDFShow) || (IsAssemblyCosting && !isPDFShow) ? (
                     <tr className="table-footer">
-                      <td colSpan={!isPDFShow ? 8 : 10} className="text-right">
+                      <td colSpan={!isPDFShow ? 9 : 11} className="text-right">
                         <strong>Total Paint Cost:</strong>
                       </td>
                       <td>
