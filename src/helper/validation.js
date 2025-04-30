@@ -561,6 +561,10 @@ export const decimalNumberLimit3 = value =>
     value && !/^\d{0,3}(\.\d{0,3})?$/.test(value)
         ? 'Maximum length for integer is 3 and for decimal is 3' : undefined;
 
+export const decimalNumberLimit8And7 = (value) => {
+    return value && !/^\d{0,8}(\.\d{0,7})?$/i.test(value) ? 'Maximum length for integer is 8 and for decimal is 7' : undefined;
+}
+
 export const decimalNumberLimit13 = value => {
     let tempValue = value && Number('0' + String(value)?.replace(/^0+/, ''))
     return tempValue && !/^[0-9][0-9]{0,12}(\.\d{0,2})?$/.test(tempValue)

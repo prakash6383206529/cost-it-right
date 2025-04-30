@@ -15,9 +15,10 @@ import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCa
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
+import DayTime from '../../../../common/DayTimeWrapper'
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
 const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
-const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Action']
+const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Effective Date', 'Action']
 
 const FORM_DEFAULTS = {
     mode: 'onChange',
@@ -465,6 +466,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         disabled: true,
                         tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate (Currency/UOM)'
                     })}</td>
+                    <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                     {childIndex === 0 && !ViewMode && !IsLocked && (
                         <td width="50" rowSpan={item.RawMaterials.length}>
                             <Button
