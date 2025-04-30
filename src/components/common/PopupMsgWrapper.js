@@ -16,11 +16,11 @@ function PopupMsgWrapper(props) {
   // Initialize remark with defaultValue when component mounts or defaultValue changes
   useEffect(() => {
     // This will ensure the remark is updated when a new default value is provided
-    setRemark(props.defaultValue || "");
-    if (props.defaultValue) {
-      props.setInputData && props.setInputData(props.defaultValue);
+    setRemark(props?.defaultValue || "");
+    if (props?.defaultValue) {
+      props?.setInputData && props?.setInputData(props?.defaultValue);
     }
-  }, [props.defaultValue, props.setInputData]);
+  }, [props?.defaultValue, props?.setInputData]);
 
   function confirmHandler(e) {
     props.confirmPopup(e);
