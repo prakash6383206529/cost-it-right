@@ -2531,12 +2531,9 @@ export const VIEW_COSTING_DATA = {
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
   nPackagingAndFreight: 'Net Packaging & Freight',
-  toolMaintenanceCostApplicablity: 'Tool Maintenance Cost Applicability',
-  toolMaintenanceCost: 'Tool Maintenance Cost Value',
-  //toolMaintenanceCost: 'Tool Maintenance Cost',
-  toolPrice: 'Tool Price',
-  amortizationQty: 'Amortization Quantity',
-  toolAmortizationCost: 'Tool Amortization Cost',
+  netToolMaintenanceCost: 'Net Tool Maintenance Cost (per pcs)',
+  netToolInterestCost: 'Net Tool Interest Cost (per pcs)',
+  netAmortizationCost: 'Net Tool Amortization Cost',
   totalToolCost: 'Net Tool Cost',
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
@@ -2790,27 +2787,19 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'nPackagingAndFreight'
   },
   {
-    label: 'Tool Maintenance Cost Applicability',
-    value: 'toolMaintenanceCostApplicablity'
+    label: 'Net Tool Maintenance Cost (per pcs)',
+    value: 'netToolMaintenanceCost'
   },
   {
-    label: 'Tool Maintenance Cost Value',
-    value: 'toolMaintenanceCost'
+    label: 'Net Tool Interest Cost (per pcs)',
+    value: 'netToolInterestCost'
   },
   {
-    label: 'Tool Price',
-    value: 'toolPrice'
+    label: 'Net Tool Amortization Cost',
+    value: 'netAmortizationCost'
   },
   {
-    label: 'Amortization Quantity',
-    value: 'amortizationQty'
-  },
-  {
-    label: 'Tool Amortization Cost',
-    value: 'toolAmortizationCost'
-  },
-  {
-    label: 'Net Tool Cost',
+    label: `Net Tool Cost`,
     value: 'totalToolCost'
   },
 
