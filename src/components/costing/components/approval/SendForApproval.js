@@ -51,7 +51,7 @@ const SendForApproval = (props) => {
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { IsApprovalLevelFilterByPlant } = initialConfiguration
+  const { IsMultipleUserAllowForApproval,IsApprovalLevelFilterByPlant } = initialConfiguration
 
   const [selectedDepartment, setSelectedDepartment] = useState([])
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -160,7 +160,7 @@ const SendForApproval = (props) => {
         setSelectedApprover(Data.Value)
         setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
         if (tempDropdownList?.length !== 0) {
-          if (!initialConfiguration?.IsApprovalLevelFilterByPlant) {
+          if (!initialConfiguration?.IsMultipleUserAllowForApproval) {
             setValue('approver', { label: Data.Text, value: Data.Value })
           }
           setShowValidation(false)
@@ -491,7 +491,7 @@ const SendForApproval = (props) => {
       Toaster.warning('Please upload file to send for approval.')
       return false
     }
-    if (initialConfiguration?.IsApprovalLevelFilterByPlant && approvalDropDown.length === 0) {
+    if (initialConfiguration?.IsMultipleUserAllowForApproval && approvalDropDown.length === 0) {
       Toaster.warning('There is no selected approver.')
       return false
     }
@@ -551,7 +551,7 @@ const SendForApproval = (props) => {
 
         // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
         // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
-        tempObj.ApproverIdList = initialConfiguration?.IsApprovalLevelFilterByPlant ? approverIdList : [selectedApprover]
+        tempObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [selectedApprover]
         tempObj.SenderLevelId = levelDetails.LevelId
         tempObj.SenderLevel = levelDetails.Level
         tempObj.SenderId = userData.LoggedInUserId
@@ -611,7 +611,7 @@ const SendForApproval = (props) => {
         ApproverLevelId: selectedApproverLevelId.levelId,
         ApproverLevel: selectedApproverLevelId.levelName,
         // ApproverId: selectedApprover,
-        ApproverIdList: initialConfiguration?.IsApprovalLevelFilterByPlant ? approverIdList : [selectedApprover],
+        ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [selectedApprover],
         // ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
         // ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
         // ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
@@ -1233,7 +1233,7 @@ const SendForApproval = (props) => {
                         />
                       </Col>}
                       <Col md="6">
-                        {initialConfiguration?.IsApprovalLevelFilterByPlant ? <>
+                        {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                           <AllApprovalField
                             label="Approver1"
                             approverList={approvalDropDown}
