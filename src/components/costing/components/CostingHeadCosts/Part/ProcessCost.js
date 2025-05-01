@@ -1480,6 +1480,8 @@ function ProcessCost(props) {
                 </>
               }
             </td>
+            {/* Group process applicability td column */}
+            <td></td>
             <td>
               <div className='action-btn-wrapper'>
                 {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
