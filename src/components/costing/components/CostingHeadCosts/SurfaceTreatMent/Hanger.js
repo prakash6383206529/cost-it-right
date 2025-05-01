@@ -20,7 +20,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
     const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
     const dispatch = useDispatch()
     const [state, setState] = useState({
-        showHanger: false
+        showHanger: true
     })
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
     useEffect(() => {
@@ -57,7 +57,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
     return (
         <>
             <Row>
-                <Col md="8"><div className="left-border">
+                <Col md="8" className={`${(!state.showHanger && !isSummary) ? 'mb-4' : ""}`}><div className="left-border">
                     {'Hanger Cost:'}
                 </div></Col>
                {!isSummary && <Col md="4" className="text-right">

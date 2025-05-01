@@ -438,7 +438,8 @@ function AddFreight(props) {
   const calculateCostValue = (value, rate) => {
     const Rate = rate
     if (Rate !== '') {
-      const cost = checkForNull(Rate) * checkForNull(value);
+      let criteria = getValues("Criteria");
+      const cost = (criteria?.value === "INR/Trip") ? checkForNull(Rate) / checkForNull(value) : checkForNull(Rate) * checkForNull(value);
       setValue('FreightCost', cost ? checkForDecimalAndNull(cost, getConfigurationKey().NoOfDecimalForPrice) : '');
     } else {
       setValue('FreightCost', '');
@@ -891,9 +892,11 @@ function AddFreight(props) {
 
                   <Col md="12">
                     <div className="packaging-cost-warpper">
+                      {((freightType === 3) || (freightType === 4)) && <TooltipCustom tooltipClass='freight-cost' disabledIcon={true} id={'freight-cost'} tooltipText={`Cost = ${(criteria?.value === "INR/Trip") ? "Rate / Quantity" : "Rate * Quantity" }`} />}
                       <TextFieldHookForm
                         label="Cost"
                         name={'FreightCost'}
+                        id="freight-cost"
                         Controller={Controller}
                         control={control}
                         register={register}
