@@ -532,8 +532,8 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "StaffCRMHead": tabData?.CostingPartDetails?.StaffCRMHead,
       "NetLabourCRMHead": tabData?.CostingPartDetails?.NetLabourCRMHead,
       "IndirectLabourCRMHead": tabData?.CostingPartDetails?.IndirectLabourCRMHead,
-      "StaffCostPercentage": tabData?.StaffCostPercentage,
-      "IndirectLaborCostPercentage": tabData?.IndirectLaborCostPercentage,
+      "StaffCostPercentage": tabData?.CostingPartDetails?.StaffCostPercentage,
+      "IndirectLaborCostPercentage": tabData?.CostingPartDetails?.IndirectLaborCostPercentage,
       "BasicRate": basicRate,
       "RawMaterialCostWithCutOff": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetOtherOperationCost": 0,               // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
