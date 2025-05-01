@@ -845,7 +845,7 @@ function ViewConversionCost(props) {
       if (!Coats || Coats.length === 0) return null;
   
       return (
-          <Row className="firefox-spaces mt-4">
+          <Row className="firefox-spaces mb-4">
             <Col md="12">
               <div className="left-border">{`Paint and Masking:`}</div>
             </Col>
@@ -1028,8 +1028,8 @@ function ViewConversionCost(props) {
 
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                     <>
-                      {hangerTableData()}
                       {paintAndMaskingTableData()}
+                      {hangerTableData()}
                       {extraCostTableData()}
                     </>
                   }
