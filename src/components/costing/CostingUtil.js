@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { HOUR, MACHINING, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
+import { EMPTY_GUID, HOUR, MACHINING, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, getConfigurationKey, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
@@ -10,16 +10,16 @@ import Toaster from "../common/Toaster";
 import { MESSAGES } from "../../config/message";
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
-export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}, IsAddPaymentTermInNetCost = false) => {
-  let Arr = JSON.parse(sessionStorage.getItem('costingArray'))
+export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}, IsAddPaymentTermInNetCost = false, remark = '', bopCostingIdForRemark = '') => {
+ let Arr = JSON.parse(sessionStorage.getItem('costingArray'))
   let surfaceTreatmentArr = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
   let assemblyWorkingRow = []
-
+  
   if (tabId === 1) {
     // TABRMCC SUB ASSEMBLIES
     Arr && Arr.map((item) => {
       let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
-      if (item.PartType === 'Sub Assembly') {
+      if (item.PartType === 'Sub Assembly' || item.PartType === 'BOP') {
         let subAssemblyObj = {
           "CostingId": item.CostingId,
           "SubAssemblyCostingId": item.SubAssemblyCostingId,
@@ -64,12 +64,12 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalProcessCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead),
           "TotalProcessCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead),
           "TotalProcessCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
-          "TotalProcessCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead),
+          "TotalProcessCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
 
           "TotalProcessCostPerAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
           "TotalProcessCostSubAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit),
           "TotalProcessCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForProfit),
-          "TotalProcessCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
+          "TotalProcessCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForProfit),
 
 
 
@@ -88,16 +88,15 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "BOPHandlingPercentage": item && item?.CostingPartDetails?.BOPHandlingPercentage,
           "BOPHandlingCharges": item && item?.CostingPartDetails?.BOPHandlingCharges,
           "BOPHandlingChargeApplicability": item && item?.CostingPartDetails?.BOPHandlingChargeApplicability,
-
-
           "RawMaterialCostWithCutOff": item && item?.CostingPartDetails?.RawMaterialCostWithCutOff,
           "BasicRate": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.NetTotalRMBOPCC,
+          "Remark": item.PartType === 'BOP' && remark ? remark : (item.Remark || '')
         }
         assemblyWorkingRow.push(subAssemblyObj)
       }
       return ''
     })
-  }
+}
   else if (tabId === 2) {
     //SURFACE TREATMENT SUBASSEMBLIES
     surfaceTreatmentArr && surfaceTreatmentArr.map((item) => {
@@ -456,19 +455,32 @@ export const clearCosting = (dispatch) => {
 
 }
 
-export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false) => {
+export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false,remark="",bopCostingId="") => {
   let Arr = tabData
   let assemblyWorkingRow = []
+  const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || []
+
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
     // let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
-    if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part'||item.PartType === 'BOP')) {
+    if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part' || item.PartType === 'BOP')) {
+      let bopRemark = ''
+      if (item?.PartType === 'BOP') {
+        const bopObject = costingArray.find(costingItem => 
+          costingItem.PartNumber === item?.PartNumber && 
+          costingItem.AssemblyPartNumber === item?.AssemblyPartNumber && 
+          costingItem.PartType === 'BOP'
+        )
+        // Use the BOP's specific remark from costingArray if found
+        bopRemark = bopObject?.Remark || ''
+      }
       let subAssemblyObj = {
         "CostingId": item?.CostingId,
         "NetPOPrice": item?.CostingPartDetails?.NetPOPrice,
         "NetChildPartsCostWithQuantity": item?.CostingPartDetails?.NetChildPartsCostWithQuantity,
         "BasicRate": item?.CostingPartDetails?.NetPOPrice,
-        "TotalBoughtOutPartCostWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity
-      }
+        "TotalBoughtOutPartCostWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+        // Only add remark to BOP type when the bopCostingId matches
+        "Remark": item.PartType === 'BOP' ? bopRemark : (item.Remark || '')      }
       assemblyWorkingRow.push(subAssemblyObj)
     }
     return ''
@@ -515,13 +527,13 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "ICCCost": overHeadAndProfitTabData?.CostingPartDetails?.ICCCost,
       "PaymentTermCost": DiscountCostData?.paymentTermCost || 0,
       "NetLabourCost": tabData?.CostingPartDetails?.NetLabourCost,
-      "IndirectLaborCost": tabData?.IndirectLaborCost,
-      "StaffCost": tabData?.StaffCost,
+      "IndirectLaborCost": tabData?.CostingPartDetails?.IndirectLaborCost,
+      "StaffCost": tabData?.CostingPartDetails?.StaffCost,
       "StaffCRMHead": tabData?.CostingPartDetails?.StaffCRMHead,
       "NetLabourCRMHead": tabData?.CostingPartDetails?.NetLabourCRMHead,
       "IndirectLabourCRMHead": tabData?.CostingPartDetails?.IndirectLabourCRMHead,
-      "StaffCostPercentage": tabData?.StaffCostPercentage,
-      "IndirectLaborCostPercentage": tabData?.IndirectLaborCostPercentage,
+      "StaffCostPercentage": tabData?.CostingPartDetails?.StaffCostPercentage,
+      "IndirectLaborCostPercentage": tabData?.CostingPartDetails?.IndirectLaborCostPercentage,
       "BasicRate": basicRate,
       "RawMaterialCostWithCutOff": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetOtherOperationCost": 0,               // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION

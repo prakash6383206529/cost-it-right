@@ -76,6 +76,7 @@ function ViewMultipleTechnology(props) {
                                 <th>{`Part Cost/Pc`}</th>
                                 <th>{`${showBopLabel()} Cost`}</th>
                                 <th>{`Part Cost/Assembly`}</th>
+                                <th>{`Remark`}</th>
                                 <th className="costing-border-right">{`Action`}</th>
                             </tr >
                         </thead >
@@ -106,6 +107,9 @@ function ViewMultipleTechnology(props) {
                                             </td>
                                             <td>
                                                 {checkForDecimalAndNull(item?.PartTypeName === 'BOP' ? item?.NetBoughtOutPartCostWithQuantity : item?.NetChildPartsCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice)}
+                                            </td>
+                                            <td>
+                                                {item?.PartTypeName === 'BOP' ? item?.Remark : '-'}
                                             </td>
                                             <td> {<button
                                                 type="button"
