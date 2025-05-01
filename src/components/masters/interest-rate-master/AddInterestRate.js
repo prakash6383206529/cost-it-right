@@ -28,6 +28,8 @@ import WarningMessage from '../../common/WarningMessage';
 import TooltipCustom from '../../common/Tooltip';
 import { subDays } from 'date-fns';
 import { labels, LabelsClass } from '../../../helper/core';
+import { checkEffectiveDate } from '../masterUtil';
+import { ASSEMBLY } from '../../../config/masterData';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -63,6 +65,7 @@ class AddInterestRate extends Component {
       isGradeSelected: false,
       isEitherSectionFilled: false,
       isWarningVisible: true,
+      IsFinancialDataChanged: true,
       ICCSectionFilled: {
         ICCApplicability: false,
         ICCPercent: false
@@ -71,7 +74,10 @@ class AddInterestRate extends Component {
         PaymentTermsApplicability: false,
         RepaymentPeriod: false,
         // PaymentTermPercent: false,
-      }
+      },
+      isAssemblyCheckboxIcc: false,
+      iccApplicability: [],
+      paymentTermsApplicability: [],
     }
   }
   /**
@@ -96,7 +102,24 @@ class AddInterestRate extends Component {
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     this.getDetail()
     this.props.getICCAppliSelectList(() => { })
-    this.props.fetchCostingHeadsAPI('paymentterms', false, res => { });
+    this.props.fetchCostingHeadsAPI('payment terms', false, false, res => {
+      const temp = [];
+      res?.data?.SelectList?.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      this.setState({ paymentTermsApplicability: temp })
+      this.props.fetchCostingHeadsAPI('ICC', false, false, res => {
+        const temp = [];
+        res?.data?.SelectList?.map((item) => {
+          if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+        this.setState({ iccApplicability: temp })
+      });
+    });
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
     }
@@ -147,7 +170,7 @@ class AddInterestRate extends Component {
       // Iterate over the modifiedArray
       modifiedArray?.map((item) => {
         // Check conditions to exclude certain items
-        if (item.Value !== '0' && item.Text !== 'Net Cost') {
+        if (item.Value !== '0' && item.Text !== 'Net Cost' && item.Text !== 'Total Cost + Other Cost - Discount') {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
@@ -456,8 +479,8 @@ class AddInterestRate extends Component {
           setTimeout(() => {
             const { costingHead, iccApplicabilitySelectList, } = this.props;
             const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
-            const paymentObj = costingHead && costingHead.find(item => item.Value === Data.PaymentTermApplicability)
-            this.setState({
+            const paymentObj = costingHead && costingHead.find(item => item.Text === Data.PaymentTermApplicability)
+           this.setState({
               isEditFlag: true,
               costingTypeId: Data.CostingTypeId,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
@@ -469,6 +492,7 @@ class AddInterestRate extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
               RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
+              isAssemblyCheckboxIcc: Data?.TechnologyId === ASSEMBLY ? true : false
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -558,6 +582,28 @@ class AddInterestRate extends Component {
     this.setState({ isVendorNameNotSelected: false })
 
     /** Update existing detail of supplier master **/
+    let formData = {
+      "VendorInterestRateId": this.state.isEditFlag ? InterestRateId : null,
+      "ModifiedBy": this.state.isEditFlag ? loggedInUserId() : null,
+      "VendorName": this.state.isEditFlag ? costingTypeId === VBCTypeId ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName : null,
+      "ICCApplicability": ICCApplicability.label,
+      "PaymentTermApplicability": PaymentTermsApplicability.label,
+      "CostingTypeId": costingTypeId,
+      "VendorIdRef": costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+      "ICCPercent": values.ICCPercent,
+      "PaymentTermPercent": values.PaymentTermPercent,
+      "RepaymentPeriod": values.RepaymentPeriod,
+      "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      "IsActive": true,
+      "CreatedDate": '',
+      "CreatedBy": loggedInUserId(),
+      "Plants": costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      "CustomerId": costingTypeId === CBCTypeId ? client.value : '',
+      "RawMaterialChildId": RawMaterial?.value,
+      "RawMaterialName": RawMaterial?.label,
+      "RawMaterialGradeId": RMGrade?.value,
+      "RawMaterialGrade": RMGrade?.label,
+    }
     if (this.state.isEditFlag) {
 
       if (Data.ICCApplicability === ICCApplicability.label && Data.ICCPercent === values.ICCPercent &&
@@ -568,37 +614,18 @@ class AddInterestRate extends Component {
         Toaster.warning('Please change the data to save Interest Rate Details');
         return false;
       }
-      this.setState({ setDisable: true })
-      let updateData = {
-        VendorInterestRateId: InterestRateId,
-        ModifiedBy: loggedInUserId(),
-        VendorName: costingTypeId === VBCTypeId ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName,
-        ICCApplicability: ICCApplicability.value,
-        PaymentTermApplicability: PaymentTermsApplicability.value,
-        CostingTypeId: costingTypeId,
-        VendorIdRef: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-        ICCPercent: values.ICCPercent,
-        PaymentTermPercent: values.PaymentTermPercent,
-        RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: data?.IsAssociatedData && !this.state.isDataChanged
-      }
-      if (this.state.isEditFlag) {
-        if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-          Toaster.warning('Please update the effective date')
+      // this.setState({ setDisable: true })
+      let financialDataChanged = (Number(Data?.ICCPercent) !== Number(values?.ICCPercent)) || (Number(Data?.PaymentTermPercent) !== Number(values?.PaymentTermPercent)) || (Number(Data?.RepaymentPeriod) !== Number(values?.RepaymentPeriod)) ||
+      ((Data?.ICCApplicability) !== (ICCApplicability.label)) || ((Data?.PaymentTermApplicability) !== (PaymentTermsApplicability.label))
+        if (financialDataChanged && checkEffectiveDate(effectiveDate, Data?.EffectiveDate) && this.props?.IsAssociatedData) {
           this.setState({ setDisable: false })
+          Toaster.warning('Please update the Effective date.')
           return false
         }
-        this.props.updateInterestRate(updateData, (res) => {
+        formData.IsFinancialDataChanged = financialDataChanged ? true : false
+
+      if (this.state.isEditFlag) {
+        this.props.updateInterestRate(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
@@ -611,26 +638,6 @@ class AddInterestRate extends Component {
     } else {/** Add new detail for creating operation master **/
 
       this.setState({ setDisable: true })
-      let formData = {
-        CostingTypeId: costingTypeId,
-        VendorIdRef: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-        ICCApplicability: ICCApplicability.label,
-        ICCPercent: values.ICCPercent,
-        PaymentTermApplicability: PaymentTermsApplicability.label,
-        PaymentTermPercent: values.PaymentTermPercent,
-        RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        RawMaterialChildId: RawMaterial?.value,
-        RawMaterialName: RawMaterial?.label,
-        RawMaterialGradeId: RMGrade?.value,
-        RawMaterialGrade: RMGrade?.label,
-      }
-
       this.props.createInterestRate(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
@@ -643,6 +650,24 @@ class AddInterestRate extends Component {
     }
 
   }, 500)
+  /**
+  * @method onPressAssemblyCheckbox
+  * @description Used for Surface Treatment
+  */
+  onPressAssemblyCheckboxIcc = () => {
+    let isRequestForMultiTechnology = !this.state.isAssemblyCheckboxIcc ? true : false
+    this.props.fetchCostingHeadsAPI('payment terms', false, isRequestForMultiTechnology, res => {
+      this.props.fetchCostingHeadsAPI('ICC', false, isRequestForMultiTechnology, res => { });
+    });
+    this.setState({
+      isAssemblyCheckboxIcc: !this.state.isAssemblyCheckboxIcc,
+      ICCApplicability: [],
+      isHideRM: false
+    });
+
+    this.props.change('ICCApplicability', '');
+    this.props.change('PaymentTermApplicability', '');
+  };
 
   /**
   * @method render
@@ -658,7 +683,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, t } = this.props;
-    const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged } = this.state;
+    const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged, IsFinancialDataChanged} = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
@@ -907,12 +932,31 @@ class AddInterestRate extends Component {
                           />
                         </Col>
                       }
+                       <Col md="2" className="st-operation mt-4 pt-2">
+                          <label id="AddInterestRate_ApplyPartCheckbox"
+                            className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
+                              }`}
+                            onChange={this.onPressAssemblyCheckboxIcc}
+                          >
+                            Apply for Part Type
+                            <input
+                              type="checkbox"
+                              checked={this.state.isAssemblyCheckboxIcc}
+                              disabled={isEditFlag ? true : false}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={this.state.isAssemblyCheckboxIcc}
+                              onChange={this.onPressAssemblyCheckboxIcc}
+                            />
+                          </label>
+                        </Col>
                     </Row >
-
                     <Row>
                       <Col md="12">
                         <div className="left-border">{"ICC:"}</div>
                       </Col>
+                     
                       <Col md="3">
                         <Field
                           name="ICCApplicability"
@@ -921,13 +965,6 @@ class AddInterestRate extends Component {
                           component={searchableSelect}
                           placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("ICC")}
-                          // validate={
-                          //   this.state.ICCApplicability == null ||
-                          //     this.state.ICCApplicability.length === 0
-                          //     ? [required]
-                          //     : []
-                          // }
-
                           handleChangeDescription={
                             this.handleICCApplicability
                           }
@@ -1033,7 +1070,7 @@ class AddInterestRate extends Component {
                             <Field
                               label="Effective Date"
                               name="EffectiveDate"
-                              placeholder="Select date"
+                              placeholder={isViewMode ? '-' : "Select Date"}
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
@@ -1046,7 +1083,7 @@ class AddInterestRate extends Component {
 
                               }}
                               component={renderDatePicker}
-                              disabled={isViewMode || isDataChanged}
+                              disabled={isViewMode}
                               className="form-control"
                             />
                           </div>
@@ -1105,11 +1142,9 @@ class AddInterestRate extends Component {
 function mapStateToProps(state) {
   const { interestRate, comman, client, material } = state;
 
-  const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent');
-
-
-  const {  iccApplicabilitySelectList, interestRateData } = interestRate;
-  const { vendorWithVendorCodeSelectList, plantSelectList ,costingHead } = comman;
+  const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent','ICCApplicability','PaymentTermsApplicability');
+  const { iccApplicabilitySelectList, interestRateData } = interestRate;
+  const { vendorWithVendorCodeSelectList, plantSelectList,costingHead } = comman;
   const { clientSelectList } = client;
   const { rawMaterialNameSelectList, gradeSelectList } = material
   let initialValues = {};

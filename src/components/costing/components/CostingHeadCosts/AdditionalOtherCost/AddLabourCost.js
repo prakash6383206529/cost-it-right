@@ -73,23 +73,24 @@ function AddLabourCost(props) {
                 }
             }
         }))
-
-        let obj = {}
-        obj.partId = costingData.CostingTypeId === CBCTypeId ? item.AssemblyPartId : EMPTY_GUID
-        obj.vendorId = costingData.CostingTypeId === VBCTypeId ? item.VendorId : EMPTY_GUID
-        obj.customerId = costingData.CostingTypeId === CBCTypeId ? item.CustomerId : EMPTY_GUID
-        obj.effectiveDate = DayTime(item.CostingDate).format('DD/MM/YYYY')
-        obj.costingHeadId = costingData.CostingTypeId === WACTypeId ? ZBCTypeId : costingData.CostingTypeId
-        obj.plantId = (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID
-        dispatch(getLabourDetailsByFilter(obj, (res) => {
-            if (res) {
-                let Data = res.data.DataList[0]
-                setValue('labourRate', Data.LabourRate)
-                setValue('workingHours', Data.WorkingTime)
-                setValue('efficiency', Data.Efficiency)
-                setLabourDetailsId(Data.LabourDetailsId)
-            }
-        }))
+        if (!props?.isCostingSummary && !CostingViewMode) {
+            let obj = {}
+            obj.partId = costingData.CostingTypeId === CBCTypeId ? item.AssemblyPartId : EMPTY_GUID
+            obj.vendorId = costingData.CostingTypeId === VBCTypeId ? item.VendorId : EMPTY_GUID
+            obj.customerId = costingData.CostingTypeId === CBCTypeId ? item.CustomerId : EMPTY_GUID
+            obj.effectiveDate = DayTime(item.CostingDate).format('DD/MM/YYYY')
+            obj.costingHeadId = costingData.CostingTypeId === WACTypeId ? ZBCTypeId : costingData.CostingTypeId
+            obj.plantId = (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID
+            dispatch(getLabourDetailsByFilter(obj, (res) => {
+                if (res) {
+                    let Data = res?.data?.DataList[0]
+                    setValue('labourRate', Data.LabourRate)
+                    setValue('workingHours', Data.WorkingTime)
+                    setValue('efficiency', Data.Efficiency)
+                    setLabourDetailsId(Data.LabourDetailsId)
+                }
+            }))
+        }
 
     }, [])
 
@@ -148,7 +149,7 @@ function AddLabourCost(props) {
         let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
         let absentism = Number(checkForNull(getValues('absentism'))) / 100
         let labourRate = Number(getValues('labourRate'))
-        let workingHours = Number(getValues('workingHours'))*3600;
+        let workingHours = Number(getValues('workingHours')) * 3600;
         let efficiency = Number(getValues('efficiency'))
         efficiency = efficiency / 100
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
@@ -164,7 +165,7 @@ function AddLabourCost(props) {
             let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
             let absentism = Number(checkForNull(getValues('absentism'))) / 100
             let labourRate = Number(getValues('labourRate'))
-            let workingHours = Number(getValues('workingHours'))*3600;
+            let workingHours = Number(getValues('workingHours')) * 3600;
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(e?.target?.value)
@@ -180,7 +181,7 @@ function AddLabourCost(props) {
         let noOfLabour = Number(checkForNull(e?.target?.value))
         let absentism = Number(checkForNull(getValues('absentism'))) / 100
         let labourRate = Number(getValues('labourRate'))
-        let workingHours = Number(getValues('workingHours'))*3600;
+        let workingHours = Number(getValues('workingHours')) * 3600;
         let efficiency = Number(getValues('efficiency'))
         efficiency = efficiency / 100
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
@@ -195,7 +196,7 @@ function AddLabourCost(props) {
             let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
             let absentism = Number(checkForNull(e?.target?.value)) / 100
             let labourRate = Number(getValues('labourRate'))
-            let workingHours = Number(getValues('workingHours'))*3600;
+            let workingHours = Number(getValues('workingHours')) * 3600;
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(checkForNull(getValues('cycleTime')))
@@ -250,9 +251,30 @@ function AddLabourCost(props) {
             return false
         }
 
+        // Check if all required fields are filled out
+        const requiredFields = {
+            'description': 'Description',
+            'noOfLabour': 'No. of Labour',
+            'absentism': 'Absenteeism %',
+            'labourRate': 'Labour Rate',
+            'workingHours': 'Working Hours',
+            'cycleTime': 'Cycle Time'
+        };
 
-        // If all mandatory fields are filled out, create a new object with the data and add it to the table.
-        if (getValues('cycleTime') && getValues('labourCost') && getValues('description') && getValues('absentism') && getValues('noOfLabour')) {
+        // Add efficiency to required fields if configured
+        if (initialConfiguration?.IsLabourEfficiencyFieldRequired) {
+            requiredFields['efficiency'] = 'Efficiency';
+        }
+
+        // Check if all required fields have values
+        const missingFields = [];
+        Object.keys(requiredFields).forEach(field => {
+            if (!getValues(field)) {
+                missingFields.push(requiredFields[field]);
+            }
+        });
+
+        if (missingFields.length === 0) {
             let obj = {}
             obj.Description = getValues('description') ? getValues('description') : ''
             obj.LabourRate = getValues('labourRate') ? getValues('labourRate') : ''
@@ -547,9 +569,9 @@ function AddLabourCost(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={initialConfiguration?.IsLabourEfficiencyFieldRequired}
                                             rules={{
-                                                required: true,
+                                                required: initialConfiguration?.IsLabourEfficiencyFieldRequired,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
                                             handleChange={() => { }}

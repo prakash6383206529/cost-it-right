@@ -80,7 +80,7 @@ function LabourListing(props) {
       setState((prevState) => ({ ...prevState, isLoader: true }))
     } setTimeout(() => { filterList() }, 500);
   }, [topAndLeftMenuData])
-  const {  vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const { vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
 
   const applyPermission = (topAndLeftMenuData) => {
@@ -178,8 +178,8 @@ function LabourListing(props) {
     return (
       <>
         {ViewAccessibility && (<Button id={`labourListing_View${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />)}
-        {EditAccessibility && (<Button id={`labourListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />)}
-        {DeleteAccessibility && (<Button id={`labourListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(labourDetailsId)} title={"Delete"} />
+        {(EditAccessibility && props?.data?.IsEditable) && (<Button id={`labourListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />)}
+        {(DeleteAccessibility && !(props?.data?.IsLabourAssociated)) && (<Button id={`labourListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(labourDetailsId)} title={"Delete"} />
         )}
       </>
     );
@@ -362,21 +362,21 @@ function LabourListing(props) {
     suppressFilterButton: true,
     component: CostingHeadDropdownFilter,
     onFilterChange: (originalValue, value) => {
-        setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
-        setState((prevState) => ({ ...prevState, disableFilter: false, warningMessage: true }));
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+      setState((prevState) => ({ ...prevState, disableFilter: false, warningMessage: true }));
     }
-};
-const combinedCostingHeadRenderer = (props) => {
-  // Call the existing checkBoxRenderer
-  costingHeadFormatter(props);
+  };
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    costingHeadFormatter(props);
 
-  // Get and localize the cell value
-  const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-  const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
 
-  // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
-  return localizedValue;
-};
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
@@ -387,7 +387,7 @@ const combinedCostingHeadRenderer = (props) => {
     customerFormatter: customerFormatter,
     statusFilter: CostingHeadDropdownFilter,
     combinedCostingHeadRenderer: combinedCostingHeadRenderer,
-    
+
   };
 
   return (
@@ -463,9 +463,8 @@ const combinedCostingHeadRenderer = (props) => {
             >
               <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
               <AgGridColumn field="CostingHead" minWidth={170} headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
-                                            floatingFilterComponent="statusFilter"
-                                            cellRenderer={"combinedCostingHeadRenderer"}></AgGridColumn>
-
+                floatingFilterComponent="statusFilter"
+                cellRenderer={"combinedCostingHeadRenderer"}></AgGridColumn>
               <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
               {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
               <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
@@ -475,7 +474,7 @@ const combinedCostingHeadRenderer = (props) => {
               <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
               <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
               {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-
+              <AgGridColumn width={205} field="LabourRatePerMonth" headerName="Rate per Person/Month" cellRenderer={'commonCostFormatter'}></AgGridColumn>
               <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
               <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
               <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

@@ -1764,7 +1764,8 @@ export function setRawMaterialCostingData(data) {
     }
 };
 export function getViewRawMaterialDetails(data, callback) {
-    const requestData = { LoggedInUserId: loggedInUserId(), ...data }
+        const requestData = { RawMaterialIdList : data, LoggedInUserId: loggedInUserId() }
+    
     return (dispatch) => {
         const request = axiosInstance.post(API.getViewRawMaterialDetails, requestData, config())
         request

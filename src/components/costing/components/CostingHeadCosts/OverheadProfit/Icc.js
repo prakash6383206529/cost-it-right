@@ -122,6 +122,15 @@ function Icc(props) {
             }))
         } else {
             setICCapplicability([])
+            // Clear all ICC-related values when toggle is turned off
+            setValue('InterestRatePercentage', '')
+            setValue('CostApplicability', '')
+            setValue('NetICCTotal', '')
+            setValue('crmHeadIcc', '')
+            setValue('iccRemark', '')
+            setICCInterestRateId('')
+            setInventoryObj({})
+            setTempInventoryObj({})
             if (!CostingViewMode) {
                 // props.setICCDetail(null, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })  OPENING THIS CREATED CLEARING OF OVERHEAD REDUCER WHEN CLOSE ICC TOGGLE
             }
@@ -316,7 +325,7 @@ function Icc(props) {
             }
             setValue('CostApplicability', IsInventoryApplicable ? checkForDecimalAndNull(tempInventoryObj.CostApplicability, initialConfiguration?.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
-
+                
                 props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
             }
         }, 200)

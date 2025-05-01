@@ -362,6 +362,7 @@ function RawMaterialCost(props) {
       setValue('MBPrice', value)
       let calculatedPercentage = percentageOfNumber(value, checkForNull(getValues("MBPercentage")))
       setValue('RMTotal', checkForDecimalAndNull(calculatedPercentage, initialConfiguration?.NoOfDecimalForPrice))
+      selectedIds([...gridData, ...rowData])
     }
     setDrawerOpen(false)
   }
@@ -568,12 +569,15 @@ function RawMaterialCost(props) {
       let recoveredScrapWeight;
       if (isScrapRecoveryPercentageApplied) {
         const ScrapRecoveryPercentage = checkForNull(tempData.ScrapRecoveryPercentage);
-        recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
-        scrapWeight = recoveredScrapWeight
+        if(ScrapRecoveryPercentage){
+          recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
+          scrapWeight = recoveredScrapWeight
+        }
       }
 
       // const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
-      const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+      // const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+      const ScrapCost = (checkForNull(tempData.FinishWeight) < 0) ? 0 : scrapWeight * tempData.ScrapRate;
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
       if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
@@ -652,7 +656,9 @@ function RawMaterialCost(props) {
           }
 
           // ternary condition
-          const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData?.ScrapRate) : 0;
+          // const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData?.ScrapRate) : 0;
+          const ScrapCost = FinishWeight < 0 ? 0 : scrapWeight * checkForNull(tempData?.ScrapRate);
+          // const ScrapCost = scrapWeight * tempData?.ScrapRate;
           const CutOffRMC = tempData?.IsCutOffApplicable ? ((GrossWeight * checkForNull(tempData?.CutOffPrice)) - ScrapCost) : 0;
           if (tempData?.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
             return false
@@ -731,7 +737,8 @@ function RawMaterialCost(props) {
       }
 
       // const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
-      const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+      // const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+      const ScrapCost = (checkForNull(tempData.FinishWeight) < 0) ? 0 : scrapWeight * tempData.ScrapRate;
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
       if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
@@ -1100,7 +1107,10 @@ function RawMaterialCost(props) {
         setIds(selectedId)
 
       }
-      if (Ids.includes(el.RawMaterialId) === false) {
+      if(IsApplyMasterBatch){
+        selectedId.push(el.RawMaterialId)
+        setIds(selectedId)
+      }else if(Ids.includes(el.RawMaterialId) === false) {
         let selectedIds = Ids;
         selectedIds.push(el.RawMaterialId)
         setIds(selectedIds)
@@ -1238,13 +1248,20 @@ function RawMaterialCost(props) {
   * @description ON PRESS APPLY MASTER BATCH
   */
   const onPressApplyMasterBatch = () => {
+    if(IsApplyMasterBatch){
+      if(Ids && Ids.length > 0){
+        let prevIds = JSON.parse(JSON.stringify(Ids));
+        let mbId = getValues('MBId')
+        const filteredprevIds = prevIds.filter((item) => item !== mbId);
+        setIds(filteredprevIds)
+      }
+    }
     reset({
       MBName: '',
       MBPrice: '',
       MBPercentage: '',
       RMTotal: '',
     })
-
     dispatch(isDataChange(true))
     setEditCalculation(false)
     setIsApplyMasterBatch(!IsApplyMasterBatch)
@@ -1816,7 +1833,7 @@ function RawMaterialCost(props) {
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
                   >
-                    Apply Master Batch(MB)
+                    Apply Master Batch (MB)
                     <input
                       type="checkbox"
                       checked={IsApplyMasterBatch}
@@ -1828,7 +1845,7 @@ function RawMaterialCost(props) {
                       onChange={onPressApplyMasterBatch}
                     />
                   </label>
-                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n2 mt-1" tooltipText="Can only be added with 1 RM" />
+                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n3 mt-1" tooltipText="Can only be added with 1 RM" />
                 </Col >
               }
 

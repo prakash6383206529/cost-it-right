@@ -61,8 +61,9 @@ function AddOtherDiscount(props) {
         }
     }, [fieldValuesForFixed])
     useEffect(() => {
-        let request = partType ? 'multiple technology assembly' : ''
-        dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+        let request = partType ? 'multiple technology assembly' : 'other cost'
+        let isRequestForMultiTechnology = partType ? true : false
+        dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
     }, [])
 
     const renderListing = (label) => {
@@ -242,6 +243,7 @@ function AddOtherDiscount(props) {
     const handleOherCostApplicabilityChange = (value) => {
         if (!CostingViewMode) {
             if (value && value !== '') {
+                delete errors.ApplicabilityCost
                 let applicability = value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value
                 // setState(prevState => ({ ...prevState, otherDiscountApplicabilityType: applicability }))
                 setOtherCostApplicability(applicability)
@@ -501,7 +503,9 @@ function AddOtherDiscount(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: !(CostingViewMode || Object.keys(otherCostApplicability).length === 0 || (otherCostApplicability && otherCostApplicability?.value === 'Percentage')),
-                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                    validate: !(CostingViewMode || Object.keys(otherCostApplicability).length === 0 || (otherCostApplicability && otherCostApplicability?.value === 'Percentage'))
+                                                        ? { number, checkWhiteSpaces, decimalNumberLimit6 }
+                                                        : undefined,
                                                 }}
                                                 handleChange={(e) => {
                                                     e.preventDefault();

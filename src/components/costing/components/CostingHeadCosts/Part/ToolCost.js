@@ -69,6 +69,10 @@ function ToolCost(props) {
         ToolCost: rowData.ToolCost,
         Life: rowData.Life,
         TotalToolCost: rowData.TotalToolCost,
+        ToolMaintenanceCostPerPiece:rowData.ToolMaintenanceCostPerPiece,
+        ToolInterestRatePercent:rowData.ToolInterestRatePercent,
+        ToolInterestCost:rowData.ToolInterestCost,
+        ToolInterestCostPerPiece:rowData.ToolInterestCostPerPiece
       }
       if (editIndex !== '' && isEditFlag) {
         let tempArr = Object.assign([...gridData], { [editIndex]: rowArray })

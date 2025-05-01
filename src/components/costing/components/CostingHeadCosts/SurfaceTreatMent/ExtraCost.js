@@ -51,6 +51,25 @@ function ExtraCost(props) {
         ApplicabilityCost: 0,
     })
 
+    const getCostValues = () => {
+        const isAssembly = RMCCTabData[0]?.CostingPartDetails?.PartType
+        
+        
+        if (isAssembly) {
+            
+            return {
+                rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
+                conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalConversionCostWithQuantity)
+            };
+        } else {
+            
+            return {
+                rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost),
+                conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
+            };
+        }
+    };
+
     useEffect(() => {
         let tempData = [...tableData]
         tempData.map(item => {
@@ -71,15 +90,19 @@ function ExtraCost(props) {
                     item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
                     item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
                 } else if (item.CostingConditionNumber === RMCC) {
-                    item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
-                    item.TransportationCost = calculatePercentageValue(checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost), item?.Rate)
-                }else if(item.CostingConditionNumber === RM){
-                    
-                    item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost)
-                    item.TransportationCost = calculatePercentageValue(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost, item?.Rate)
-                }else if(item.CostingConditionNumber === CC){
-                    item.ApplicabiltyCost = checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
-                    item.TransportationCost = calculatePercentageValue(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost, item?.Rate)
+                    const { rawMaterialsCost, conversionCost } = getCostValues();
+item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
+                    item.TransportationCost = calculatePercentageValue(item.ApplicabiltyCost, item?.Rate);
+                } else if (item.CostingConditionNumber === RM) {
+                    const { rawMaterialsCost } = getCostValues();
+
+                    item.ApplicabiltyCost = checkForNull(rawMaterialsCost);
+                    item.TransportationCost = calculatePercentageValue(rawMaterialsCost, item?.Rate);
+                } else if (item.CostingConditionNumber === CC) {
+                    const { conversionCost } = getCostValues();
+
+                    item.ApplicabiltyCost = checkForNull(conversionCost);
+                    item.TransportationCost = calculatePercentageValue(conversionCost, item?.Rate);
                 }
             }
         })
@@ -126,6 +149,7 @@ function ExtraCost(props) {
             setValue('Applicability', { label: selectedData?.CostingConditionNumber, value: selectedData?.CostingConditionMasterId })
             setValue('ApplicabilityCost', checkForDecimalAndNull(selectedData?.ApplicabiltyCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('Percentage', checkForDecimalAndNull(selectedData?.Rate, initialConfiguration?.NoOfDecimalForPrice))
+            setState(prevState => ({ ...prevState, ApplicabilityCost: selectedData?.ApplicabiltyCost }))
         } else if (selectedData?.UOM === "Hanger Overhead") {
             const hangerType = { label: "Hanger Overhead", value: "Hanger Overhead" };
             setType(hangerType);
@@ -133,11 +157,13 @@ function ExtraCost(props) {
             setValue('Quantity', selectedData?.Quantity)
             setValue('Rate', selectedData?.Rate)
             setValue('NetCost', selectedData?.TransportationCost)
+            setState(prevState => ({ ...prevState, ApplicabilityCost: selectedData?.TransportationCost }))
         }
         else {
             const fixedType = { label: 'Fixed', value: 'Fixed' };
             setType(fixedType);
             setValue('Type', fixedType);
+            setState(prevState => ({ ...prevState, ApplicabilityCost: selectedData?.TransportationCost }))
         }
         setValue('CostDescription', selectedData?.Description)
         setValue('Remark', selectedData?.Remark)
@@ -206,17 +232,22 @@ function ExtraCost(props) {
             setState(prevState => ({ ...prevState, ApplicabilityCost: hangerCostDetails?.HangerCostPerPart }));
             return;
         } else if (e?.label === RM) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost }));
+            const { rawMaterialsCost } = getCostValues();
+ setValue('ApplicabilityCost', checkForDecimalAndNull(rawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: rawMaterialsCost }));
             return;
         } else if (e?.label === CC) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: RMCCTabData[0]?.CostingPartDetails?.NetConversionCost }));
-            return;
-        } else if (e?.label === RMCC) {
-            let conversionCost = RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost + RMCCTabData[0]?.CostingPartDetails?.NetConversionCost
+            const { conversionCost } = getCostValues();
+
             setValue('ApplicabilityCost', checkForDecimalAndNull(conversionCost, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, ApplicabilityCost: conversionCost }));
+            return;
+        } else if (e?.label === RMCC) {
+            const { rawMaterialsCost, conversionCost } = getCostValues();
+
+            let totalCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
+            setValue('ApplicabilityCost', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, ApplicabilityCost: totalCost }));
             return;
         }
     }
@@ -257,6 +288,12 @@ function ExtraCost(props) {
     }
 
     const onSubmit = data => {
+        
+        // Check if NetCost is 0 or empty
+        if (!data?.NetCost || Number(data?.NetCost) === 0) {
+            Toaster.warning('Cost cannot be zero. Please enter a valid value.');
+            return;
+        }
 
         if (isEditMode) {
             let tempData = [...tableData];
@@ -580,7 +617,7 @@ function ExtraCost(props) {
                                             <TextFieldHookForm
                                                 label={`Cost`}
                                                 name={'NetCost'}
-                                                id="NetCost"
+                                                id={'NetCost'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}

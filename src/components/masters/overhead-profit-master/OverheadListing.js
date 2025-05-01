@@ -378,7 +378,7 @@ function OverheadListing(props) {
             isViewMode: isViewMode,
             costingTypeId: rowData.CostingTypeId,
         }
-        props.getDetails(data);
+        props.getDetails(data, rowData?.IsAssociated);
     }
 
     /**
@@ -453,8 +453,8 @@ function OverheadListing(props) {
         return (
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {(DeleteAccessibility && !rowData?.IsOverheadAssociated) && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {EditAccessibility && rowData?.IsEditable && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {DeleteAccessibility && !rowData?.IsAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };

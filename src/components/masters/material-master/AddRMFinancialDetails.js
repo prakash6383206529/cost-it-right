@@ -31,9 +31,9 @@ import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 import { getPlantUnitAPI } from "../actions/Plant"
 import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
-import { getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
+import { compareRateCommon, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
-    const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
+    const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll, onWarningChange } = props
     const { isEditFlag, isViewFlag } = data
 
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
@@ -119,6 +119,7 @@ function AddRMFinancialDetails(props) {
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const exchangeRateDetailsRef = useRef(exchangeRateDetails);
     const rawMaterailDetailsRefFinancial = useRef(rawMaterailDetails)
+    const debounceTimerRef = useRef(null);
 
     useEffect(() => {
         exchangeRateDetailsRef.current = exchangeRateDetails;
@@ -203,8 +204,10 @@ function AddRMFinancialDetails(props) {
                             if (Object.keys(res?.data?.Data).length === 0) {
 
                                 setState(prevState => ({ ...prevState, showWarning: true }));
+                                onWarningChange && onWarningChange(true);
                             } else {
                                 setState(prevState => ({ ...prevState, showWarning: false }));
+                                onWarningChange && onWarningChange(false);
                             }
                             const exchangeRate = res?.data?.Data?.CurrencyExchangeRate ?? 1;
                             const Data = res?.data?.Data
@@ -333,6 +336,9 @@ function AddRMFinancialDetails(props) {
         }
     }, [state?.totalBasicRate])
 
+    useEffect(() => {
+        return () => clearTimeout(debounceTimerRef?.current);
+    }, []);
 
     const netCostTitle = () => {
         const isBasicRateVisible = getConfigurationKey().IsBasicRateAndCostingConditionVisible &&
@@ -342,7 +348,7 @@ function AddRMFinancialDetails(props) {
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency ? netCostText : `${netCostlabel} * Plant Currency Rate (${states.isImport ? CurrencyExchangeRate?.plantCurrencyRate : CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
-            toolTipTextNetCostBaseCurrency: `Net Cost (${getValues('plantCurrency') ?? 'Plant Currency'}) * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
+            toolTipTextNetCostBaseCurrency: `Net Cost (${state.hidePlantCurrency ? getValues('currency')?.label : getValues('plantCurrency') ?? 'Plant Currency'}) * Currency Rate (${getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency") ? CurrencyExchangeRate?.settlementCurrencyRate ?? '' : CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
         };
     };
 
@@ -532,20 +538,20 @@ function AddRMFinancialDetails(props) {
 
         let NetLandedCostConversion
         let NetLandedCostLocalConversion
-        NetLandedCostLocalConversion = checkForDecimalAndNull(NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
+        NetLandedCostLocalConversion = (checkForNull(NetLandedCost) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1)
 
         if (states.isImport) {
             if (getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency")) {
-                NetLandedCostConversion = checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
+                NetLandedCostConversion = checkForNull(NetLandedCostLocalConversion) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
             } else {
-                NetLandedCostConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
+                NetLandedCostConversion = checkForNull(NetLandedCost) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
             }
             setValue('NetLandedCost', checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', checkForDecimalAndNull(NetLandedCostConversion, getConfigurationKey().NoOfDecimalForPrice))
         } else {
-            NetLandedCostLocalConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
-            NetLandedCostConversion = checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
+            NetLandedCostLocalConversion = checkForNull(NetLandedCost) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
+            NetLandedCostConversion = checkForNull(NetLandedCost) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
 
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
@@ -976,7 +982,7 @@ function AddRMFinancialDetails(props) {
 
         if (type === 'Save') {
             if (Number(states.costingTypeId) === Number(ZBCTypeId) && state.NetConditionCost && Array.isArray(state?.conditionTableData) && state.conditionTableData.some(item => item.ConditionType === "Percentage")) {
-                Toaster.warning("Please click on refresh button to update condition cost data.")
+                Toaster.warning("Please click on refresh button to update Condition Cost data.")
             }
             const netCost = checkForNull(totalBase) + checkForNull(getValues('BasicRate'))
             const netCostLocalCurrency = convertIntoBase(netCost, CurrencyExchangeRate?.plantCurrencyRate)
@@ -1010,6 +1016,8 @@ function AddRMFinancialDetails(props) {
     const conditionToggle = () => {
         setState(prevState => ({ ...prevState, isOpenConditionDrawer: true }))
     }
+
+
     const openAndCloseAddConditionCosting = (type, data = state.conditionTableData) => {
         if (data && data.length > 0 && type === 'save') {
             dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRefFinancial.current, netCostChanged: true }, () => { }))
@@ -1017,21 +1025,21 @@ function AddRMFinancialDetails(props) {
         const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(state.NetCostWithoutConditionCost)  //Condition cost + Basic price
         let netConditionCost = checkForNull(sumBaseCurrency)
-        let netLandedCostLocalConversion = checkForDecimalAndNull(checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate), getConfigurationKey().NoOfDecimalForPrice)
+        let netLandedCostLocalConversion = checkForNull(netLandedCost) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
 
         setValue('FinalConditionCost', checkForDecimalAndNull(netConditionCost, getConfigurationKey().NoOfDecimalForPrice))
 
         if (states.isImport) {
             let netLandedCostConversion
             if (getValues('plantCurrency') !== reactLocalStorage.getObject("baseCurrency")) {
-                netLandedCostConversion = checkForDecimalAndNull(netLandedCostLocalConversion * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
+                netLandedCostConversion = checkForNull(netLandedCostLocalConversion) * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate) ?? 1
             } else {
-                netLandedCostConversion = checkForDecimalAndNull(checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice)
+                netLandedCostConversion = checkForNull(netLandedCost) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate) ?? 1
             }
 
             setValue('NetLandedCost', checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(netLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
-            setValue('NetLandedCostConversion', netLandedCostConversion)
+            setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCostConversion))
         } else {
             setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate) ?? 1, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull((netLandedCost), getConfigurationKey().NoOfDecimalForPrice))
@@ -1186,6 +1194,14 @@ function AddRMFinancialDetails(props) {
             dispatch(setOtherCostDetails(result.tableData));
         }
     };
+
+    const debouncedCompareRate = () => {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+            compareRateCommon(state?.otherCostTableData, state?.conditionTableData);
+        }, 1000);
+    };
+
     const showNetCost = () => {
         let show = false
         if (state.hidePlantCurrency) {
@@ -1422,7 +1438,7 @@ function AddRMFinancialDetails(props) {
                                 disabled={disableAll || isEditFlag || isViewFlag}
                                 customClassName="mb-1"
                             />
-                            {state.showWarning && <WarningMessage dClass="mt-1" message={`${state.currency?.label} to ${getValues("plantCurrency")} rate is not present in the Exchange Master`} />}
+                            {state.showWarning && !isViewFlag && <WarningMessage dClass="mt-1" message={`${state.currency?.label} to ${getValues("plantCurrency")} rate is not present in the Exchange Master`} />}
                         </Col>}
                         <Col className="col-md-15">
                             {getValues('plantCurrency') && !state.hidePlantCurrency && !states.isImport && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${getValues('plantCurrency')} = ${CurrencyExchangeRate?.settlementCurrencyRate ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
@@ -1445,7 +1461,7 @@ function AddRMFinancialDetails(props) {
                                 handleChange={() => { }}
                                 errors={errors.plantCurrency}
                             />
-                            {state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${getValues('plantCurrency')} rate is not present in the Exchange Master`} />}
+                            {state.showPlantWarning && !isViewFlag &&<WarningMessage dClass="mt-1" message={`${getValues('plantCurrency')} rate is not present in the Exchange Master`} />}
                         </Col>
                         <Col className="col-md-15">
                             <div className="inputbox date-section mb-5">
@@ -1521,7 +1537,7 @@ function AddRMFinancialDetails(props) {
                                         disabled={disableAll || state.isShowIndexCheckBox ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                         className=" "
                                         customClassName=" withBorder"
-                                        handleChange={() => { }}
+                                        handleChange={isEditFlag ? debouncedCompareRate : () => { }}
                                         errors={errors.BasicRate}
                                     />
                                 </Col></>
@@ -1938,9 +1954,15 @@ function AddRMFinancialDetails(props) {
                                         />
                                     </div>
                                     <div className="d-flex align-items-center mt-1">
-                                        <button type="button" id="other-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(false)} disabled={isViewFlag}>
-                                            <TooltipCustom disabledIcon={true} width="350px" id="other-cost-refresh" tooltipText="Refresh to update other cost" />
-                                        </button>
+                                        {!isViewFlag && <TooltipCustom disabledIcon={true} width="350px" id="other-cost-refresh" tooltipText="Refresh to update other cost" />}
+                                        {!isViewFlag && <Button
+                                            id="other-cost-refresh"
+                                            type="button"
+                                            variant={'refresh-icon'}
+                                            onClick={() => updateTableCost(false)}
+                                            className={"right mt-1 ml-1"}
+                                            disabled={isViewFlag}
+                                        />}
                                         {<Button
                                             id="addRMDomestic_otherToggle"
                                             onClick={otherCostToggle}
@@ -1990,9 +2012,15 @@ function AddRMFinancialDetails(props) {
                                             />
                                         </div>
                                         <div className="d-flex align-items-center mt-1">
-                                        <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(true)} disabled={isViewFlag}>
-                                                <TooltipCustom disabledIcon={true} width="350px" id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
-                                            </button>
+                                            {!isViewFlag && <TooltipCustom disabledIcon={true} width="350px" id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />}
+                                            {!isViewFlag && <Button
+                                                id="condition-cost-refresh"
+                                                type="button"
+                                                variant={'refresh-icon'}
+                                                onClick={() => updateTableCost(true)}
+                                                className={"right mt-1 ml-1"}
+                                                disabled={isViewFlag}
+                                            />}
                                             <Button
                                                 id="addRMDomestic_conditionToggl"
                                                 onClick={conditionToggle}
@@ -2009,7 +2037,7 @@ function AddRMFinancialDetails(props) {
                             </>}
 
                             {states.isImport && <Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost" tooltipText={`Net Cost = ${netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost" tooltipText={`${netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                     name={'NetLandedCost'}
@@ -2025,7 +2053,7 @@ function AddRMFinancialDetails(props) {
                                 />
                             </Col>}
                             {showNetCost() && <Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-currency" tooltipText={`Net Cost = ${states.isImport ? netCostTitle()?.tooltipTextPlantCurrency : netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-currency" tooltipText={`${states.isImport ? netCostTitle()?.tooltipTextPlantCurrency : netCostTitle()?.toolTipTextNetCostSelectedCurrency}`} />
                                 <TextFieldHookForm
                                     // label={`Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`}
                                     label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, `${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')}`)}
@@ -2042,7 +2070,7 @@ function AddRMFinancialDetails(props) {
                                 />
                             </Col>}
                             {<Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost-currency" tooltipText={`Net Cost = ${states.isImport ? netCostTitle()?.toolTipTextNetCostBaseCurrency : netCostTitle()?.tooltipTextPlantCurrency}`} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost-currency" tooltipText={`${states.isImport ? netCostTitle()?.toolTipTextNetCostBaseCurrency : netCostTitle()?.tooltipTextPlantCurrency}`} />
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Net Cost", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency")))}
                                     name={'NetLandedCostConversion'}
