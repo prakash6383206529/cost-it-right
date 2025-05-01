@@ -183,7 +183,6 @@ function NfrPartsListing(props) {
     }
 
     const addCosting = (rowData) => {
-        console.log("rowData", rowData)
         history.push({
             pathname: '/costing',
             state: {isNFR: true,partDetails: rowData,costingData: {},isViewMode: false}

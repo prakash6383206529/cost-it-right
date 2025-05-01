@@ -221,7 +221,7 @@ class AddOperation extends Component {
             const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
             callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
               this.setState({
-                plantCurrency: rate1,
+                plantCurrency: rate1 !== 0 ? rate1 : 1,
                 settlementCurrency: rate2,
                 plantExchangeRateId: exchangeRateId1,
                 settlementExchangeRateId: exchangeRateId2
@@ -1150,7 +1150,6 @@ class AddOperation extends Component {
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
     else {
-      console.log("formData", formData)
       formData.IsSendForApproval = false;
       this.handleOperationAPI(formData, isEditFlag);
     }

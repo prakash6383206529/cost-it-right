@@ -194,7 +194,7 @@ class AddFuel extends Component {
               callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId)
                 .then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
                   this.setState({
-                    plantCurrency: rate1,
+                    plantCurrency: rate1 !== 0 ? rate1 : 1,
                     settlementCurrency: rate2,
                     plantExchangeRateId: exchangeRateId1,
                     settlementExchangeRateId: exchangeRateId2,

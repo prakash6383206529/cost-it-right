@@ -258,7 +258,7 @@ const AddFreight = (props) => {
             .then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1 }) => {
               setState(prev => ({
                 ...prev,
-                plantCurrency: rate1,
+                plantCurrency: rate1 !== 0 ? rate1 : 1,
                 plantExchangeRateId: exchangeRateId1,
                 settlementCurrency: 1,
                 settlementExchangeRateId: null,
@@ -275,8 +275,8 @@ const AddFreight = (props) => {
             callAPI(getValuesMainForm("plantCurrency"), reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
               setState(prev => ({
                 ...prev,
-                plantCurrency: rate1,
-                settlementCurrency: rate2,
+                plantCurrency: rate1 !== 0 ? rate1 : 1,
+                settlementCurrency: rate2 !== 0 ? rate2 : 1,
                 plantExchangeRateId: exchangeRateId1,
                 settlementExchangeRateId: exchangeRateId2,
                 showPlantWarning: showPlantWarning1,

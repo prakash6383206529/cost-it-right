@@ -43,7 +43,6 @@ class Department extends Component {
 	componentDidMount() {
 		const { DepartmentId, isEditFlag } = this.props;
 		this.setState({ isLoader: true });
-console.log(this.props);
 
 		this.props.getPlantSelectListByType(ZBC, "", '', (res) => {
 			if (res?.status === 204) {
@@ -81,7 +80,6 @@ console.log(this.props);
 
 			if (this.props.isDivision) {
 				this.props.getDivisionAPI(DepartmentId, (res) => {
-					console.log(res);
 					let Data = res?.data?.Data
 					if (res?.status === 204) {
 						this.setState({ DataToChange: null, selectedPlants: [] });
@@ -96,7 +94,6 @@ console.log(this.props);
 				})
 			} else {
 				this.props.getDepartmentAPI(DepartmentId, (res) => {
-					console.log(res);
 					
 					if (res?.status === 204) {
 						this.setState({ DataToChange: null, selectedPlants: [] });
