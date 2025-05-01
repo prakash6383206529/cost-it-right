@@ -124,13 +124,14 @@ function Sheet(props) {
     
 
     useEffect(() => {
-        setGrossWeight();
+        setGrossWeight()
     }, [grossWeightValue, UOMDimension])
 
     useEffect(() => {
+        setFinishWeight()
         calculateyieldPercentage();
     }, [yieldValue])
-
+    
     useEffect(() => {
         calculateRMCost();
     }, [RMCostValue])
@@ -182,11 +183,10 @@ function Sheet(props) {
         }
     }, [getValues('GrossWeight'), fieldValues])
 
-    const setFinishWeight = (e) => {
-        const FinishWeightOfSheet = e.target.value
-        setFinishWeights(FinishWeightOfSheet)
+    const setFinishWeight = () => {
+        const FinishWeightOfSheet = checkForNull(getValues('FinishWeightOfSheet'))
         const grossWeight = checkForNull(getValues('GrossWeight'))
-        if (e.target.value > grossWeight) {
+        if (FinishWeightOfSheet > grossWeight) {
             setTimeout(() => {
                 setValue('FinishWeightOfSheet', '')
             }, 200);
@@ -211,6 +211,7 @@ function Sheet(props) {
                 }, 200);
                 break;
             default:
+                setFinishWeights(FinishWeightOfSheet)
                 break;
         }
     }
@@ -644,7 +645,8 @@ function Sheet(props) {
                                                 message: `${finishWeightLabel} weight should not be greater than gross weight.`
                                             },
                                         }}
-                                        handleChange={setFinishWeight}
+                                        // handleChange={setFinishWeight}
+                                        handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
