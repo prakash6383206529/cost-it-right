@@ -648,7 +648,7 @@ function AddLabourCost(props) {
                                         }
                                     </Col>
                                 </Row>
-                                {<LabourCost hideAction={CostingViewMode} tableData={tableData} editData={editData} />}
+                                {<LabourCost hideAction={CostingViewMode||props?.isCostingSummary} tableData={tableData} editData={editData} />}
                                 <Row className='mt-4'>
 
                                     {initialConfiguration?.IsShowCRMHead && <Col md="3" className='pr-1'>
@@ -821,7 +821,7 @@ function AddLabourCost(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
-                                        disabled={CostingViewMode}
+                                        disabled={CostingViewMode||props?.isCostingSummary}
                                         onClick={() => { props.closeDrawer('save', tableData) }} >
                                         <div className={"save-icon"}></div>
                                         {'Save'}
