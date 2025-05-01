@@ -121,7 +121,6 @@ function TabOverheadProfit(props) {
   */
   const setPartDetails = (Params, Data = {}) => {
     let arr = formatData(Params, Data, OverheadProfitTabData)
-    console.log(arr,'arr')
     dispatch(setOverheadProfitData(arr, () => { }))
   }
 
@@ -162,7 +161,6 @@ function TabOverheadProfit(props) {
   */
   const toggleAssembly = (params, Children = {}) => {
     let arr = setAssembly(params, Children, OverheadProfitTabData)
-    console.log(arr,'arr2')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
@@ -220,7 +218,6 @@ function TabOverheadProfit(props) {
   */
   const setOverheadDetail = (data, params) => {
     let arr = dispatchOverheadDetail(data, params, OverheadProfitTabData)
-    console.log(arr,'arr3')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
@@ -231,31 +228,38 @@ function TabOverheadProfit(props) {
   const dispatchOverheadDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj, modelType } = data;
+    // Extract and sum all TotalCost values from CostingApplicabilityDetails
+    let OverheadCost = 0;
+    overheadObj?.CostingApplicabilityDetails?.forEach(detail => {
+      OverheadCost += checkForNull(detail.TotalCost);
+    });
 
+    // let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
+    //   checkForNull(overheadObj.OverheadBOPTotalCost) +
+    //   checkForNull(overheadObj.OverheadCCTotalCost);
 
-    let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
-      checkForNull(overheadObj.OverheadBOPTotalCost) +
-      checkForNull(overheadObj.OverheadCCTotalCost);
+    // if (overheadObj.IsOverheadFixedApplicable === true) {
+    //   OverheadCost = overheadObj.OverheadFixedTotalCost;
+    // }
 
-    if (overheadObj.IsOverheadFixedApplicable === true) {
-      OverheadCost = overheadObj.OverheadFixedTotalCost;
-    }
+    // if (overheadObj.IsOverheadCombined === true) {
+    //   OverheadCost = overheadObj.OverheadCombinedTotalCost;
+    // }
+    let ProfitCost = 0;
+    profitObj?.CostingApplicabilityDetails?.forEach(detail => {
+      ProfitCost += checkForNull(detail.TotalCost);
+    });
+    // let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
+    //   checkForNull(profitObj.ProfitBOPTotalCost) +
+    //   checkForNull(profitObj.ProfitCCTotalCost);
 
-    if (overheadObj.IsOverheadCombined === true) {
-      OverheadCost = overheadObj.OverheadCombinedTotalCost;
-    }
+    // if (profitObj.IsProfitFixedApplicable === true) {
+    //   ProfitCost = profitObj.ProfitFixedTotalCost;
+    // }
 
-    let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
-      checkForNull(profitObj.ProfitBOPTotalCost) +
-      checkForNull(profitObj.ProfitCCTotalCost);
-
-    if (profitObj.IsProfitFixedApplicable === true) {
-      ProfitCost = profitObj.ProfitFixedTotalCost;
-    }
-
-    if (profitObj.IsProfitCombined === true) {
-      ProfitCost = profitObj.ProfitCombinedTotalCost;
-    }
+    // if (profitObj.IsProfitCombined === true) {
+    //   ProfitCost = profitObj.ProfitCombinedTotalCost;
+    // }
 
     let tempArr = [];
     try {
@@ -276,7 +280,6 @@ function TabOverheadProfit(props) {
           formatData(data, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
           i.CostingPartDetails.CostingOverheadDetail = overheadObj;
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.OverheadCost = OverheadCost;
@@ -306,7 +309,6 @@ function TabOverheadProfit(props) {
 */
   const setProfitDetail = (data, params) => {
     let arr = dispatchProfitDetail(data, params, OverheadProfitTabData)
-    console.log(arr,'arr4')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
@@ -367,7 +369,6 @@ function TabOverheadProfit(props) {
 */
   const setRejectionDetail = (data, params) => {
     let arr = dispatchRejectionDetail(data, params, OverheadProfitTabData)
-    console.log(arr,'arr5')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
@@ -419,7 +420,6 @@ function TabOverheadProfit(props) {
   */
   const setICCDetail = (data, params) => {
     let arr = dispatchICCDetail(data, params, OverheadProfitTabData)
-    console.log(arr,'arr6')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
