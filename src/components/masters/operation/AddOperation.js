@@ -140,7 +140,7 @@ class AddOperation extends Component {
   componentDidMount() {
     const { initialConfiguration } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
@@ -660,7 +660,7 @@ class AddOperation extends Component {
           if (Data && Data?.Plant?.length > 0) {
             plantArray = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
           }
-          // this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0].Value)
+          this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0]?.Value)
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
           }
