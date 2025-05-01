@@ -40,6 +40,7 @@ import AddForecast from './AddForecast';
 // Assets
 import redcrossImg from '../../../assests/images/red-cross.png';
 import BOMViewer from '../part-master/BOMViewer';
+import { loggedInUserId } from '../../../helper';
 
 function CreateManualNFR(props) {
     const { t } = useTranslation("Nfr")
@@ -378,7 +379,8 @@ function CreateManualNFR(props) {
             const newSopQuantityList = years.map(yearItem => ({
                 PartNumber: partNumber,
                 YearName: yearItem.toString(),
-                Quantity: '0'
+                Quantity: 0,
+                SOPDate: sopDate
             }));
 
             setSopQuantityList(newSopQuantityList);
@@ -470,7 +472,8 @@ function CreateManualNFR(props) {
             PartId: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? selectedPart?.value : '',
             PartNumber: selectedPart?.label,
             RawMaterialCode: selectedPartType?.value === NFR_RAW_MATERIAL_ID ? selectedRawMaterial?.label : '',
-            NFRPartRawMaterialDetails: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? tempData?.NFRPartRawMaterialDetails : [],
+            NFRPartRawMaterialDetails: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? rmDetails: [],
+            SOPQuantityDetails: sopQuantityList,
             CustomerRFQNo: getValues("CustomerRFQNo"),
             CustomerName: customer?.label || '',
             PartName: getValues("PartName"),
@@ -745,26 +748,41 @@ function CreateManualNFR(props) {
             return false
         }
         // Prepare the request object with all the necessary data
-        let requestObj = {
-            "CustomerRFQNo": values?.CustomerRFQNo,
-            "GroupCode": values?.GroupCode,
-            "Plant": [{
-                "PlantName": selectedPlant?.label,
-                "PlantId": selectedPlant?.value,
-                "PlantCode": selectedPlant?.plantCode
-            }],
+        const obj = {
+            "CustomerId": customer?.value,
+            "CustomerNumber": values?.CustomerRFQNo,
             "CustomerName": customer,
-            "PartNumber": selectedPart,
-            "PartName": values?.CustomerPartName,
-            "PartDescription": values?.CustomerPartDescription,
-            "UOM": values?.UnitOfMeasurement,
-            "SOPDate": sopDate,
-            "LastSubmissionDate": zbcDate,
-            "Files": files
+            "PartDetails": [
+                {
+                  "PartIdRef": selectedPart?.value,
+                  "PartTypeIdRef": selectedPartType?.value,
+                  "PartName": values?.PartName,
+                  "PartNumber": selectedPart?.label,
+                  "PartDescription": values?.Description,
+                  "Quantity": 0,
+                  "Uom": values?.UnitOfMeasurement,
+                  "PlantIdRef": selectedPlant?.value,
+                  "Attachments": files,
+                  "RMDetails": rmDetails,
+                  "ForecastQuantities": sopQuantityList,
+                  "Plant": [
+                    {
+                      "PlantName": selectedPlant?.label,
+                      "PlantId": selectedPlant?.value,
+                      "PlantCode": selectedPlant?.plantCode
+                    }
+                  ]
+                }
+              ],
+              "QuotationLastSubmissionDate": cbcDate,
+              "ZBCLastSubmissionDate": zbcDate,
+              "LoggedInUserId": loggedInUserId(),
+              "Remarks": remarks
         }
-        
+
+
         setLoader(true);
-        dispatch(createNFRBOMDetails(requestObj, (res) => {
+        dispatch(createNFRBOMDetails(obj, (res) => {
             if (res?.data?.Result) {
                 Toaster.success("Customer RFQ created successfully.");
             }

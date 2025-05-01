@@ -253,7 +253,7 @@ function NfrListing(props) {
 
         return (
             <>
-                <button className="Add-file mr-1" id="nfr_AddCosting" type={"button"} title={`Add Costing`} />
+                {/* <button className="Add-file mr-1" id="nfr_AddCosting" type={"button"} title={`Add Costing`} /> */}
                 {<button title='View' className="View mr-1" id="viewNfr_list" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 <button className="Edit mr-1" id="nfr_EditCosting" type={"button"} title={"Edit Details"} />
                 {<button title='Delete' className="Delete mr-1" id="deleteNfr_list" type={'button'} onClick={() => deleteItemDetails(rowData)} />}
@@ -268,10 +268,12 @@ function NfrListing(props) {
             setShowExtraData(showTour)
             setRender(false)
         }, 200);
-
-
     }
+
     const closeDrawer = () => {
+        setDataCount(0)
+        setSelectedRowData([])
+        reactLocalStorage.remove('selectedRow');
         setAddRfqData({})
         setAddRfq(false)
         getDataList()
@@ -366,7 +368,7 @@ function NfrListing(props) {
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
-        
+
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
         }
@@ -690,7 +692,7 @@ function NfrListing(props) {
                                                 <AgGridColumn field="CustomerRfqNo" headerName="Customer RFQ No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CustomerName" headerName="Customer Name" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CustomerPartNo" headerName="Customer Part No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="ProductCode" headerName='Product Code' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="GroupCode" headerName='Group Code' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PlantNameDescription" headerName="Part Description" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="UOM" headerName='UOM' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="Segment" headerName="Segment" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>

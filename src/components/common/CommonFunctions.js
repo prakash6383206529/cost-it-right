@@ -360,7 +360,7 @@ export const getEffectiveDateMinDate = () => {
     // Get the value from initialConfiguration in Redux store
     const effectiveDateRangeDayPrevious = reactLocalStorage.getObject('InitialConfiguration')?.EffectiveDateRangeDayPrevious;
 
-    if (effectiveDateRangeDayPrevious === null) {
+    if (effectiveDateRangeDayPrevious === null || effectiveDateRangeDayPrevious === undefined) {
         return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
     }
     if (effectiveDateRangeDayPrevious === 0) {
