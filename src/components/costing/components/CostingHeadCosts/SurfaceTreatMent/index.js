@@ -586,6 +586,15 @@ function SurfaceTreatment(props) {
                                 title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "title", (CostingViewMode || IsLocked))}
                               />
                             </Col>
+                          </Row>
+                          <Hanger
+                            ViewMode={CostingViewMode}
+                            index={props?.index}
+                            data={surfaceData}
+                            item={props?.item}
+                            setSurfaceData={SetSurfaceData}
+                          />
+                          <Row>
                             <Col md="4" className="d-flex align-items-center">
                               <TextFieldHookForm
                                 label="Other Cost"
@@ -623,13 +632,6 @@ function SurfaceTreatment(props) {
                               </div>
                             </Col>
                           </Row>
-                          <Hanger
-                            ViewMode={CostingViewMode}
-                            index={props?.index}
-                            data={surfaceData}
-                            item={props?.item}
-                            setSurfaceData={SetSurfaceData}
-                          />
                         </div>
                       </div >
 

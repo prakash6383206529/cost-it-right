@@ -3099,14 +3099,14 @@ const iccToolTipText = `
                                 <span className={highlighter("sTreatment")}>
                                   Surface Treatment
                                 </span>
-                                <span className={highlighter("tCost")}>
-                                  Other Surface Treatment Cost
-                                </span>
                                 <span className={highlighter("TotalPaintCost")}>
                                   Paint and Masking Cost
                                 </span>
                                 <span className={highlighter("HangerCostPerPart")}>
                                   Hanger Cost
+                                </span>
+                                <span className={highlighter("tCost")}>
+                                  Other Surface Treatment Cost
                                 </span>
                               </td>
                               {viewCostingData &&
@@ -3116,11 +3116,6 @@ const iccToolTipText = `
                                       <span className={highlighter("sTreatment")}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.sTreatment, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.sTreatment, initialConfiguration?.NoOfDecimalForPrice)}</span>) : '')}
                                       </span>
-                                      <span className={highlighter("tCost")}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
-                                          : '')}
-                                      </span>
                                       <span className={highlighter("TotalPaintCost")}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
                                           (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
@@ -3129,6 +3124,11 @@ const iccToolTipText = `
                                       <span className={highlighter("HangerCostPerPart")}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
                                           (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                          : '')}
+                                      </span>
+                                      <span className={highlighter("tCost")}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                           : '')}
                                       </span>
                                     </td>
