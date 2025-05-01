@@ -339,7 +339,7 @@ function ProfitListing(props) {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
         }
-        props.getDetails(data, rowData?.IsAssociated);
+        props.getDetails(data, rowData?.IsProfitAssociated);
     }
 
     /**
@@ -416,7 +416,7 @@ function ProfitListing(props) {
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {EditAccessibility && rowData?.IsEditable && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && !rowData?.IsAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {DeleteAccessibility && !rowData?.IsProfitAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -519,6 +519,7 @@ function ProfitListing(props) {
 
 
     const onGridReady = (params) => {
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
@@ -780,11 +781,7 @@ function ProfitListing(props) {
                                             <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                            <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit}></AgGridColumn>
-                                            <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
-                                            <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM/ Part Cost (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="ProfitBOPPercentage" headerName={`Profit on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="Applicability" headerName="Profit Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                             <AgGridColumn field="ProfitId" width={180} cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                         </AgGridReact>

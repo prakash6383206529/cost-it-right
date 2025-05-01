@@ -19,6 +19,7 @@ import Toaster from '../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import axiosInstance from '../../../utils/axiosInstance';
 import { loggedInUserId } from '../../../helper';
+import DayTime from '../../common/DayTimeWrapper';
 // const config() = config
 
 /**
@@ -155,6 +156,52 @@ export function getOverheadData(ID, callback) {
             });
             callback();
         }
+    };
+}
+
+/**
+ * @method getOverheadDataCheck
+ * @description Get Overhead data check
+ */
+export function getOverheadDataCheck(data, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    return (dispatch) => {
+        axios.get(`${API.getOverheadDataCheck}?overheadId=${data?.overheadId??null}&modelTypeId=${data?.modelTypeId??null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId??null}`, config())
+            .then((response) => {
+                if (response.data.Result === true || response.status === 204) {
+                    dispatch({
+                        type: GET_OVERHEAD_PROFIT_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getProfitDataCheck
+ * @description Get Profit data check
+ */
+export function getProfitDataCheck(data, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    return (dispatch) => {
+        axios.get(`${API.getProfitDataCheck}?overheadId=${data?.overheadId??null}&modelTypeId=${data?.modelTypeId??null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId??null}`, config())
+            .then((response) => {
+                if (response.data.Result === true || response.status === 204) {
+                    dispatch({
+                        type: GET_OVERHEAD_PROFIT_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 

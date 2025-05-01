@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
- //const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+ const BASE_URL = `http://10.10.1.102:3002/api/v1`;
 
 
 
@@ -485,6 +485,8 @@ export const API = {
   createOverhead: `${BASE_URL}/masters-overhead-and-profit/create-overhead`,
   updateOverhead: `${BASE_URL}/masters-overhead-and-profit/update-overhead`,
   getOverheadData: `${BASE_URL}/masters-overhead-and-profit/get`,
+  getOverheadDataCheck: `${BASE_URL}/masters-overhead-and-profit/get-overhead-data`,
+  getProfitDataCheck: `${BASE_URL}/masters-overhead-and-profit/get-profit-data`,
   getOverheadDataList: `${BASE_URL}/masters-overhead-and-profit/get-all-overhead-by-filter`,
   deleteOverhead: `${BASE_URL}/masters-overhead-and-profit/delete-overhead`,
   activeInactiveOverhead: `${BASE_URL}/masters-overhead-and-profit/active-inactive-overhead`,
@@ -623,6 +625,7 @@ export const API = {
   saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
   getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
   getCostingBopAndBopHandlingDetails: `${BASE_URL}/costing/get-costing-bop-and-bop-handling-details`,
+  getApplicabilityList: `${BASE_URL}/costing/select-list-get-applicability-data`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1644,6 +1647,7 @@ export const GET_STATE_WHILE_DOWNLOADING = 'GET_STATE_WHILE_DOWNLOADING';
 export const GET_DATA_WHILE_LOADING = 'GET_DATA_WHILE_LOADING';
 export const CORRUGATED_DATA = 'CORRUGATED_DATA';
 export const TOUR_START_DATA = 'TOUR_START_DATA';
+export const GET_APPLICABILITY_LIST_SUCCESS = 'GET_APPLICABILITY_LIST_SUCCESS';
 export const GUIDE_BUTTON_SHOW = true;
 
 //PAGINATION CONTROLS
@@ -3401,6 +3405,8 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const COSTINGOVERHEADANDPROFTFORPROCESS = "Costing Overhead Profit For Process"
 export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Operation"
 export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra Cost"
+export const OVERHEADMASTER = "Overhead Master"
+export const PROFITMASTER = "Profit Master"
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"

@@ -121,6 +121,7 @@ function TabOverheadProfit(props) {
   */
   const setPartDetails = (Params, Data = {}) => {
     let arr = formatData(Params, Data, OverheadProfitTabData)
+    console.log(arr,'arr')
     dispatch(setOverheadProfitData(arr, () => { }))
   }
 
@@ -161,6 +162,7 @@ function TabOverheadProfit(props) {
   */
   const toggleAssembly = (params, Children = {}) => {
     let arr = setAssembly(params, Children, OverheadProfitTabData)
+    console.log(arr,'arr2')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
@@ -218,6 +220,7 @@ function TabOverheadProfit(props) {
   */
   const setOverheadDetail = (data, params) => {
     let arr = dispatchOverheadDetail(data, params, OverheadProfitTabData)
+    console.log(arr,'arr3')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
@@ -303,6 +306,7 @@ function TabOverheadProfit(props) {
 */
   const setProfitDetail = (data, params) => {
     let arr = dispatchProfitDetail(data, params, OverheadProfitTabData)
+    console.log(arr,'arr4')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
@@ -363,6 +367,7 @@ function TabOverheadProfit(props) {
 */
   const setRejectionDetail = (data, params) => {
     let arr = dispatchRejectionDetail(data, params, OverheadProfitTabData)
+    console.log(arr,'arr5')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
@@ -414,6 +419,7 @@ function TabOverheadProfit(props) {
   */
   const setICCDetail = (data, params) => {
     let arr = dispatchICCDetail(data, params, OverheadProfitTabData)
+    console.log(arr,'arr6')
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 

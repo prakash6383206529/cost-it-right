@@ -19,6 +19,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import Popup from 'reactjs-popup';
 import Toaster from '../../../../common/Toaster';
 import WarningMessage from '../../../../common/WarningMessage';
+import OverheadProfitTable from './OverheadProfitTable';
 
 let counter = 0;
 
@@ -34,13 +35,12 @@ function OverheadProfit(props) {
 
   const { CostingOverheadDetail, CostingProfitDetail, CostingRejectionDetail, CostingInterestRateDetail } = props.data?.CostingPartDetails;
 
-
   const ICCApplicabilityDetail = CostingInterestRateDetail && CostingInterestRateDetail.ICCApplicabilityDetail !== null ? CostingInterestRateDetail.ICCApplicabilityDetail : {}
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const defaultValues = {
-    overHeadRemark: CostingOverheadDetail.Remark ? CostingOverheadDetail.Remark : '',
+    overHeadRemark: CostingOverheadDetail?.Remark ? CostingOverheadDetail?.Remark : '',
     crmHeadOverhead: CostingOverheadDetail && CostingOverheadDetail.OverheadCRMHead && { label: CostingOverheadDetail.OverheadCRMHead, value: 1 },
     //REJECTION FIELDS
     Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
@@ -71,11 +71,11 @@ function OverheadProfit(props) {
   const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
 
-
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
 
 
   const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
+  console.log(tempOverheadObj,'tempOverheadObj')
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
   const [totalToolCost, setTotalToolCost] = useState(0)
@@ -95,19 +95,19 @@ function OverheadProfit(props) {
       handleModelTypeChange({ label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId }, false)
     }
 
-    //GET FIXED VALUE IN GET API
-    if (Object.keys(CostingOverheadDetail).length > 0) {
-      setOverheadValues(CostingOverheadDetail, false)
-    }
+    // GET FIXED VALUE IN GET API
+    // if (Object.keys(CostingOverheadDetail).length > 0) {
+    //   setOverheadValues(CostingOverheadDetail, false)
+    // }
 
-    //GET FIXED VALUE IN GET API
-    if (Object.keys(CostingProfitDetail).length > 0) {
-      setProfitValues(CostingProfitDetail, false)
-      setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
-        label: CostingProfitDetail.ProfitCRMHead, value: 1
-      })
-      setValue('profitRemark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
-    }
+    // //GET FIXED VALUE IN GET API
+    // if (Object.keys(CostingProfitDetail).length > 0) {
+    //   setProfitValues(CostingProfitDetail, false)
+    //   setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
+    //     label: CostingProfitDetail.ProfitCRMHead, value: 1
+    //   })
+    //   setValue('profitRemark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
+    // }
 
     setTimeout(() => {
       IncludeSurfaceTreatmentCall()
@@ -168,90 +168,37 @@ function OverheadProfit(props) {
 
   const overheadFixedFieldValues = useWatch({
     control,
-    name: 'OverheadFixedPercentage',
+    name: 'OverheadFixedCost',
   });
 
   const profitFixedFieldValues = useWatch({
     control,
-    name: 'ProfitFixedPercentage',
+    name: 'ProfitFixedCost',
   });
 
   useEffect(() => {
 
-    setTimeout(() => {
-
+    setTimeout(() => { 
 
       let tempObj = {
-        "OverheadId": overheadObj && overheadObj.OverheadId,
-        "OverheadApplicabilityId": overheadObj && overheadObj.OverheadApplicabilityId,
-        "OverheadApplicability": overheadObj && overheadObj.OverheadApplicability,
-
-        "IsOverheadCombined": overheadObj && overheadObj.IsOverheadCombined,
-        "OverheadPercentage": overheadObj && overheadObj.IsOverheadCombined ? getValues('OverheadPercentage') : '',
-        "OverheadCombinedCost": overheadObj && overheadObj.IsOverheadCombined ? overheadObj.OverheadCombinedCost : '',
-        "OverheadCombinedTotalCost": overheadObj && overheadObj.IsOverheadCombined ? overheadObj.OverheadCombinedTotalCost : '',
-
-        "IsOverheadCCApplicable": overheadObj && overheadObj.IsOverheadCCApplicable,
-        "OverheadCCPercentage": overheadObj && overheadObj.IsOverheadCCApplicable ? tempOverheadObj.OverheadCCPercentage : '',
-        "OverheadCCCost": overheadObj && overheadObj.IsOverheadCCApplicable ? tempOverheadObj.OverheadCCCost : '',
-        "OverheadCCTotalCost": overheadObj && overheadObj.IsOverheadCCApplicable ? tempOverheadObj.OverheadCCTotalCost : '',
-
-        "IsOverheadBOPApplicable": overheadObj && overheadObj.IsOverheadBOPApplicable,
-        "OverheadBOPPercentage": overheadObj && overheadObj.IsOverheadBOPApplicable ? tempOverheadObj.OverheadBOPPercentage : '',
-        "OverheadBOPCost": overheadObj && overheadObj.IsOverheadBOPApplicable ? tempOverheadObj.OverheadBOPCost : '',
-        "OverheadBOPTotalCost": overheadObj && overheadObj.IsOverheadBOPApplicable ? tempOverheadObj.OverheadBOPTotalCost : '',
-
-        "IsOverheadRMApplicable": overheadObj && overheadObj.IsOverheadRMApplicable,
-        "OverheadRMPercentage": overheadObj && overheadObj.IsOverheadRMApplicable ? tempOverheadObj.OverheadRMPercentage : '',
-        "OverheadRMCost": overheadObj && overheadObj.IsOverheadRMApplicable ? tempOverheadObj.OverheadRMCost : '',
-        "OverheadRMTotalCost": overheadObj && overheadObj.IsOverheadRMApplicable ? tempOverheadObj.OverheadRMTotalCost : '',
-
-        "IsOverheadFixedApplicable": overheadObj && overheadObj.IsOverheadFixedApplicable,
-        "OverheadFixedPercentage": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedPercentage : '',
-        "OverheadFixedCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedCost : '',
-        "OverheadFixedTotalCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedPercentage : '',
-
-        "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
-        "OverheadCRMHead": overheadObj.OverheadCRMHead ? overheadObj.OverheadCRMHead : '',
-        "Remark": overheadObj.Remark ? overheadObj.Remark : ''
+        "OverheadDetailId": overheadObj?.OverheadDetailId || "00000000-0000-0000-0000-000000000000",
+        "OverheadId": overheadObj?.OverheadId || "00000000-0000-0000-0000-000000000000", 
+        "OverheadCRMHead": overheadObj?.OverheadCRMHead || "",
+        "Remark": overheadObj?.Remark || "",
+        "CostingApplicabilityDetails": [
+          ...tempOverheadObj?.CostingApplicabilityDetails
+        ]
       }
 
       let profitTempObj = {
-        "ProfitId": profitObj && profitObj.ProfitId,
-        "ProfitApplicabilityId": profitObj && profitObj.ProfitApplicabilityId,
-        "ProfitApplicability": profitObj && profitObj.ProfitApplicability,
-
-        "IsProfitCombined": profitObj && profitObj.IsProfitCombined,
-        "ProfitPercentage": profitObj && profitObj.IsProfitCombined ? profitObj.ProfitPercentage : '',
-        "ProfitCombinedCost": profitObj && profitObj.IsProfitCombined ? profitObj.ProfitCombinedCost : '',
-        "ProfitCombinedTotalCost": profitObj && profitObj.IsProfitCombined ? profitObj.ProfitCombinedTotalCost : '',
-
-        "IsProfitCCApplicable": profitObj && profitObj.IsProfitCCApplicable,
-        "ProfitCCPercentage": profitObj && profitObj.IsProfitCCApplicable ? tempProfitObj.ProfitCCPercentage : '',
-        "ProfitCCCost": profitObj && profitObj.IsProfitCCApplicable ? tempProfitObj.ProfitCCCost : '',
-        "ProfitCCTotalCost": profitObj && profitObj.IsProfitCCApplicable ? tempProfitObj.ProfitCCTotalCost : '',
-
-        "IsProfitBOPApplicable": profitObj && profitObj.IsProfitBOPApplicable,
-        "ProfitBOPPercentage": profitObj && profitObj.IsProfitBOPApplicable ? tempProfitObj.ProfitBOPPercentage : '',
-        "ProfitBOPCost": profitObj && profitObj.IsProfitBOPApplicable ? tempProfitObj.ProfitBOPCost : '',
-        "ProfitBOPTotalCost": profitObj && profitObj.IsProfitBOPApplicable ? tempProfitObj.ProfitBOPTotalCost : '',
-
-        "IsProfitRMApplicable": profitObj && profitObj.IsProfitRMApplicable,
-        "ProfitRMPercentage": profitObj && profitObj.IsProfitRMApplicable ? tempProfitObj.ProfitRMPercentage : '',
-        "ProfitRMCost": profitObj && profitObj.IsProfitRMApplicable ? tempProfitObj.ProfitRMCost : '',
-        "ProfitRMTotalCost": profitObj && profitObj.IsProfitRMApplicable ? tempProfitObj.ProfitRMTotalCost : '',
-
-        "IsProfitFixedApplicable": profitObj && profitObj.IsProfitFixedApplicable,
-        "ProfitFixedPercentage": profitObj && profitObj.IsProfitFixedApplicable ? profitObj.ProfitFixedPercentage : '',
-        "ProfitFixedCost": profitObj && profitObj.IsProfitFixedApplicable ? profitObj.ProfitFixedCost : '',
-        "ProfitFixedTotalCost": profitObj && profitObj.IsProfitFixedApplicable ? profitObj.ProfitFixedTotalCost : '',
-
-        "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
-        "ProfitCRMHead": profitObj.ProfitCRMHead ? profitObj.ProfitCRMHead : '',
-        "Remark": profitObj.Remark ? profitObj.Remark : ''
+        "ProfitDetailId": profitObj?.ProfitDetailId || "00000000-0000-0000-0000-000000000000",
+        "ProfitId": profitObj?.ProfitId || "00000000-0000-0000-0000-000000000000",
+        "ProfitCRMHead": profitObj?.ProfitCRMHead || "",
+        "Remark": profitObj?.Remark || "",
+        "CostingApplicabilityDetails": [
+          ...tempProfitObj?.CostingApplicabilityDetails
+        ]
       }
-
-
       if (!CostingViewMode) {
         props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj, modelType: modelType }, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
       }
@@ -280,13 +227,12 @@ function OverheadProfit(props) {
   */
   const calculateOverheadFixedTotalCost = () => {
     if (!CostingViewMode) {
-      if (headerCosts !== undefined && overheadFixedFieldValues !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
-        setValue('OverheadFixedCost', '-')
+      if (headerCosts !== undefined && overheadFixedFieldValues !== undefined && overheadObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')) {
         setValue('OverheadFixedTotalCost', checkForDecimalAndNull(overheadFixedFieldValues, initialConfiguration?.NoOfDecimalForPrice))
         setOverheadObj({
           ...overheadObj,
           OverheadFixedPercentage: overheadFixedFieldValues,
-          OverheadFixedCost: '-',
+          OverheadFixedCost: getValues('OverheadFixedCost'),
           OverheadFixedTotalCost: overheadFixedFieldValues,
         })
       }
@@ -299,13 +245,12 @@ function OverheadProfit(props) {
   */
   const calculateProfitFixedTotalCost = () => {
     if (!CostingViewMode) {
-      if (headerCosts !== undefined && profitFixedFieldValues !== undefined && profitObj && profitObj.IsProfitFixedApplicable) {
-        setValue('ProfitFixedCost', '-')
+      if (headerCosts !== undefined && profitFixedFieldValues !== undefined && profitObj && profitObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')) {
         setValue('ProfitFixedTotalCost', checkForDecimalAndNull(profitFixedFieldValues, initialConfiguration?.NoOfDecimalForPrice))
         setProfitObj({
           ...profitObj,
           ProfitFixedPercentage: profitFixedFieldValues,
-          ProfitFixedCost: '-',
+          ProfitFixedCost: getValues('ProfitFixedCost'),
           ProfitFixedTotalCost: profitFixedFieldValues,
         })
       }
@@ -370,8 +315,9 @@ function OverheadProfit(props) {
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
           if (res && res.data && res.data.Data) {
             let Data = res.data.Data;
+            // console.log(Data,'Data')
             let showWarning = false
-            if (applicabilityList.includes(Data?.CostingOverheadDetail?.OverheadApplicability)) {
+            if (Data?.CostingOverheadDetail?.CostingApplicabilityDetails?.some(detail => applicabilityList.includes(detail.Applicability))) {
               if (isBreakupBoughtOutPartCostingFromAPI) {
                 showWarning = true
               } else {
@@ -385,8 +331,7 @@ function OverheadProfit(props) {
               }
               dispatch(gridDataAdded(true))
             }
-
-            if (applicabilityList.includes(Data?.CostingProfitDetail?.ProfitApplicability)) {
+            if (Data?.CostingProfitDetail?.CostingApplicabilityDetails?.some(detail => applicabilityList.includes(detail.Applicability))) {
               setProfitObj(Data.CostingProfitDetail)
               if (Data.CostingProfitDetail) {
                 setTimeout(() => {
@@ -409,7 +354,6 @@ function OverheadProfit(props) {
       }
     }
   }
-
   /**
   * @method setOverheadValues
   * @description  SET OVERHEAD VALUES IN FIXED, COMBINED, RM, CC AND BOP
@@ -424,182 +368,76 @@ function OverheadProfit(props) {
     }
 
     if (!CostingViewMode) {
-
-      let OverheadRMCost = 0
-      let OverheadRMTotalCost = 0
-      let OverheadBOPCost = 0
-      let OverheadBOPTotalCost = 0
-      let OverheadCCCost = 0
-      let OverheadCCTotalCost = 0
-
-      let OverheadRMPercentage = (dataObj?.IsOverheadRMApplicable ? checkForNull(dataObj?.OverheadRMPercentage) : '')
-      let OverheadBOPPercentage = (dataObj?.IsOverheadBOPApplicable ? checkForNull(dataObj?.OverheadBOPPercentage) : '')
-      let OverheadCCPercentage = (dataObj?.IsOverheadCCApplicable ? checkForNull(dataObj?.OverheadCCPercentage) : '')
-
       const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
       const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
 
-      // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
-      if (partType) {
-        OverheadRMCost = checkForNull(headerCosts?.NetRawMaterialsCost)
-        OverheadCCCost = getCCCost('overhead')
-        OverheadBOPCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
-        OverheadRMTotalCost = OverheadRMCost * calculatePercentage(OverheadRMPercentage)
-        OverheadCCTotalCost = OverheadCCCost * calculatePercentage(OverheadCCPercentage)
-        OverheadBOPTotalCost = OverheadBOPCost * calculatePercentage(OverheadBOPPercentage)
-      } else {
-        OverheadRMCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
-        OverheadRMTotalCost = (IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)) * calculatePercentage(checkForNull(OverheadRMPercentage))
-        OverheadBOPCost = checkForNull(headerCosts && headerCosts?.NetBoughtOutPartCost)
-        OverheadBOPTotalCost = checkForNull(OverheadBOPCost) * calculatePercentage(checkForNull(OverheadBOPPercentage))
-        OverheadCCCost = getCCCost('overhead')
-        OverheadCCTotalCost = OverheadCCCost * calculatePercentage(OverheadCCPercentage)
-      }
+      // Process each applicability type
+      dataObj?.CostingApplicabilityDetails?.forEach(detail => {
+        const { Applicability, Percentage, Cost, TotalCost } = detail;
 
-      if (dataObj?.IsOverheadFixedApplicable && IsAPIResponse === false) {
+        switch(Applicability) {
+          case 'Fixed':
+            if (IsAPIResponse === false) {
+              setValue('OverheadFixedPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice) || '')
+              setValue('OverheadFixedCost', '-')
+              setValue('OverheadFixedTotalCost', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice) || '')
+            }
+            break;
+          case 'RM':
+            const rmCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
+            const rmTotalCost = rmCost * calculatePercentage(Percentage)
+            setValue('OverheadRMPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('OverheadRMCost', checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('OverheadRMTotalCost', checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            break;
 
-        setValue('OverheadFixedPercentage', dataObj?.IsOverheadFixedApplicable ? checkForDecimalAndNull(dataObj?.OverheadFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : '')
-        setValue('OverheadFixedCost', '-')
-        setValue('OverheadFixedTotalCost', dataObj?.IsOverheadFixedApplicable ? checkForDecimalAndNull(dataObj?.OverheadFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : '')
-        setOverheadObj({
-          ...overheadObj,
-          OverheadFixedPercentage: dataObj?.OverheadFixedPercentage,
-          OverheadFixedCost: '-',
-          OverheadFixedTotalCost: dataObj?.OverheadFixedPercentage,
-        })
-      }
-      if (dataObj?.IsOverheadCombined && IsAPIResponse === false) {
+          case 'BOP':
+            const bopCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
+            const bopTotalCost = bopCost * calculatePercentage(Percentage)
+            
+            setValue('OverheadBOPPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('OverheadBOPCost', checkForDecimalAndNull(bopCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('OverheadBOPTotalCost', checkForDecimalAndNull(bopTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            break;
 
-        const RMBOPCC = headerCosts?.NetBoughtOutPartCost + headerCosts?.NetRawMaterialsCost + getCCCost("overhead")
-        const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffCost + headerCosts?.NetBoughtOutPartCost + getCCCost("overhead") : RMBOPCC;
-        setValue('OverheadPercentage', dataObj?.IsOverheadCombined ? checkForDecimalAndNull(dataObj?.OverheadPercentage, initialConfiguration?.NoOfDecimalForPrice) : '')
-        setValue('OverheadCombinedCost', headerCosts && checkForDecimalAndNull(CutOffRMBOPCCTotal, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCombinedTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(dataObj?.OverheadPercentage)), initialConfiguration?.NoOfDecimalForPrice))
-        setOverheadObj({
-          ...overheadObj,
-          OverheadPercentage: dataObj?.OverheadPercentage,
-          OverheadCombinedCost: headerCosts && checkForNull(CutOffRMBOPCCTotal),
-          OverheadCombinedTotalCost: checkForNull(CutOffRMBOPCCTotal) * calculatePercentage(checkForNull(dataObj?.OverheadPercentage)),
-        })
-      }
+          case 'CC':
+            const ccCost = getCCCost('overhead')
+            const ccTotalCost = ccCost * calculatePercentage(Percentage)
+            
+            setValue('OverheadCCPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('OverheadCCCost', checkForDecimalAndNull(ccCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('OverheadCCTotalCost', checkForDecimalAndNull(ccTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            break;
 
-      if (dataObj?.IsOverheadRMApplicable && dataObj?.IsOverheadBOPApplicable && dataObj?.IsOverheadCCApplicable) {
-        //RM
-        setValue('OverheadRMPercentage', checkForDecimalAndNull(OverheadRMPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadRMCost', checkForDecimalAndNull(OverheadRMCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadRMTotalCost', checkForDecimalAndNull(OverheadRMTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        //BOP
-        setValue('OverheadBOPPercentage', checkForDecimalAndNull(OverheadBOPPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadBOPCost', checkForDecimalAndNull(OverheadBOPCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadBOPTotalCost', checkForDecimalAndNull(OverheadBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+          default:
+            break;
+        }
+      });
 
-        //CC
-        setValue('OverheadCCPercentage', OverheadCCPercentage)
-        setValue('OverheadCCCost', checkForDecimalAndNull(OverheadCCCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCCTotalCost', checkForDecimalAndNull(OverheadCCTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+      // Update tempOverheadObj with CostingApplicabilityDetails
+      const costingApplicabilityDetails = dataObj?.CostingApplicabilityDetails?.map(detail => {
+        const { Applicability, Percentage,ApplicabilityDetailsId,ApplicabilityId } = detail;
+        const baseCost = Applicability === 'RM' ? 
+          (IsCutOffApplicable ? CutOffCost : headerCosts?.NetRawMaterialsCost) :
+          Applicability === 'BOP' ? headerCosts?.NetBoughtOutPartCost :
+          Applicability === 'CC' ? getCCCost('overhead') : 0;
+          
+        const totalCost = baseCost * calculatePercentage(Percentage);
 
-        setTempOverheadObj({
-          ...tempOverheadObj,
-          OverheadRMPercentage: OverheadRMPercentage,
-          OverheadRMCost: OverheadRMCost,
-          OverheadRMTotalCost: OverheadRMTotalCost,
-          OverheadBOPPercentage: OverheadBOPPercentage,
-          OverheadBOPCost: OverheadBOPCost,
-          OverheadBOPTotalCost: OverheadBOPTotalCost,
-          OverheadCCPercentage: OverheadCCPercentage,
-          OverheadCCCost: OverheadCCCost,
-          OverheadCCTotalCost: OverheadCCTotalCost
-        })
-      }
+        return {
+          ApplicabilityDetailsId: ApplicabilityDetailsId,
+          ApplicabilityId: ApplicabilityId,
+          Applicability: Applicability,
+          Percentage: Percentage,
+          Cost: baseCost,
+          TotalCost: totalCost
+        };
+      });
 
-      if (dataObj?.IsOverheadRMApplicable && !dataObj?.IsOverheadBOPApplicable && !dataObj?.IsOverheadCCApplicable) {
-
-        setValue('OverheadRMPercentage', OverheadRMPercentage)
-        setValue('OverheadRMCost', checkForDecimalAndNull(OverheadRMCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadRMTotalCost', checkForDecimalAndNull(OverheadRMTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setTempOverheadObj({
-          ...tempOverheadObj,
-          OverheadRMPercentage: OverheadRMPercentage,
-          OverheadRMCost: OverheadRMCost,
-          OverheadRMTotalCost: OverheadRMTotalCost
-        })
-      }
-      if (dataObj?.IsOverheadBOPApplicable && !dataObj?.IsOverheadRMApplicable && !dataObj?.IsOverheadCCApplicable) {
-        setValue('OverheadBOPPercentage', checkForDecimalAndNull(OverheadBOPPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadBOPCost', checkForDecimalAndNull(OverheadBOPCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadBOPTotalCost', checkForDecimalAndNull(OverheadBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setTempOverheadObj({
-          ...tempOverheadObj,
-          OverheadBOPPercentage: OverheadBOPPercentage,
-          OverheadBOPCost: OverheadBOPCost,
-          OverheadBOPTotalCost: OverheadBOPTotalCost,
-        })
-      }
-      if (dataObj?.IsOverheadCCApplicable && !dataObj?.IsOverheadBOPApplicable && !dataObj?.IsOverheadRMApplicable) {
-        setValue('OverheadCCPercentage', checkForDecimalAndNull(OverheadCCPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCCCost', checkForDecimalAndNull(OverheadCCCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCCTotalCost', checkForDecimalAndNull(OverheadCCTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setTempOverheadObj({
-          ...tempOverheadObj,
-          OverheadCCPercentage: OverheadCCPercentage,
-          OverheadCCCost: OverheadCCCost,
-          OverheadCCTotalCost: OverheadCCTotalCost
-        })
-      }
-      if (dataObj?.IsOverheadRMApplicable && dataObj?.IsOverheadCCApplicable && !dataObj?.IsOverheadBOPApplicable) {
-        setValue('OverheadRMPercentage', checkForDecimalAndNull(OverheadRMPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadRMCost', checkForDecimalAndNull(OverheadRMCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadRMTotalCost', checkForDecimalAndNull(OverheadRMTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCCPercentage', checkForDecimalAndNull(OverheadCCPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCCCost', checkForDecimalAndNull(OverheadCCCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCCTotalCost', checkForDecimalAndNull(OverheadCCTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-
-        setTempOverheadObj({
-          ...tempOverheadObj,
-          OverheadRMPercentage: OverheadRMPercentage,
-          OverheadRMCost: OverheadRMCost,
-          OverheadRMTotalCost: OverheadRMTotalCost,
-          OverheadCCPercentage: OverheadCCPercentage,
-          OverheadCCCost: OverheadCCCost,
-          OverheadCCTotalCost: OverheadCCTotalCost
-        })
-      }
-      if (dataObj?.IsOverheadRMApplicable && dataObj?.IsOverheadBOPApplicable && !dataObj?.IsOverheadCCApplicable) {
-        setValue('OverheadRMPercentage', checkForDecimalAndNull(OverheadRMPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadRMCost', checkForDecimalAndNull(OverheadRMCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadRMTotalCost', checkForDecimalAndNull(OverheadRMTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadBOPPercentage', checkForDecimalAndNull(OverheadBOPPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadBOPCost', checkForDecimalAndNull(OverheadBOPCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadBOPTotalCost', checkForDecimalAndNull(OverheadBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-
-        setTempOverheadObj({
-          ...tempOverheadObj,
-          OverheadRMPercentage: OverheadRMPercentage,
-          OverheadRMCost: OverheadRMCost,
-          OverheadRMTotalCost: OverheadRMTotalCost,
-          OverheadBOPPercentage: OverheadBOPPercentage,
-          OverheadBOPCost: OverheadBOPCost,
-          OverheadBOPTotalCost: OverheadBOPTotalCost,
-        })
-      }
-      if (dataObj?.IsOverheadBOPApplicable && dataObj?.IsOverheadCCApplicable && !dataObj?.IsOverheadRMApplicable) {
-        setValue('OverheadBOPPercentage', checkForDecimalAndNull(OverheadBOPPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadBOPCost', checkForDecimalAndNull(OverheadBOPCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadBOPTotalCost', checkForDecimalAndNull(OverheadBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCCPercentage', checkForDecimalAndNull(OverheadCCPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCCCost', checkForDecimalAndNull(OverheadCCCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('OverheadCCTotalCost', checkForDecimalAndNull(OverheadCCTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-
-        setTempOverheadObj({
-          ...tempOverheadObj,
-          OverheadBOPPercentage: OverheadBOPPercentage,
-          OverheadBOPCost: OverheadBOPCost,
-          OverheadBOPTotalCost: OverheadBOPTotalCost,
-          OverheadCCPercentage: OverheadCCPercentage,
-          OverheadCCCost: OverheadCCCost,
-          OverheadCCTotalCost: OverheadCCTotalCost
-        })
-      }
+      setTempOverheadObj({
+        ...tempOverheadObj,
+        CostingApplicabilityDetails: costingApplicabilityDetails
+      });
     }
   }
 
@@ -616,182 +454,78 @@ function OverheadProfit(props) {
     }
 
     if (!CostingViewMode) {
-
-      let ProfitRMCost = 0
-      let ProfitRMTotalCost = 0
-      let ProfitBOPCost = 0
-      let ProfitBOPTotalCost = 0
-      let ProfitCCCost = 0
-      let ProfitCCTotalCost = 0
-
-      let ProfitRMPercentage = (dataObj?.IsProfitRMApplicable ? checkForNull(dataObj?.ProfitRMPercentage) : '')
-      let ProfitBOPPercentage = (dataObj?.IsProfitBOPApplicable ? checkForNull(dataObj?.ProfitBOPPercentage) : '')
-      let ProfitCCPercentage = (dataObj?.IsProfitCCApplicable ? checkForNull(dataObj?.ProfitCCPercentage) : '')
-
-      let profitTotalCost = 0
-      const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
-      const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + getCCCost("profit")
       const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
-      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffCost + headerCosts.NetBoughtOutPartCost + getCCCost("profit") : RMBOPCC; //NEED TO ASK HERE ALSO
-      const CutOffRMC = CutOffCost;
+      const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
 
-      // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
-      if (partType) {
-        ProfitRMCost = checkForNull(headerCosts?.NetRawMaterialsCost)
-        ProfitCCCost = getCCCost('profit')
-        ProfitBOPCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
-        ProfitRMTotalCost = ProfitRMCost * calculatePercentage(ProfitRMPercentage)
-        ProfitCCTotalCost = ProfitCCCost * calculatePercentage(ProfitCCPercentage)
-        ProfitBOPTotalCost = ProfitBOPCost * calculatePercentage(ProfitBOPPercentage)
-      } else {
-        ProfitRMCost = IsCutOffApplicable ? checkForNull(CutOffRMC) : checkForNull(headerCosts?.NetRawMaterialsCost)
-        ProfitRMTotalCost = (IsCutOffApplicable ? checkForNull(CutOffRMC) : checkForNull(headerCosts?.NetRawMaterialsCost)) * calculatePercentage(checkForNull(ProfitRMPercentage))
-        ProfitBOPCost = checkForNull(headerCosts && headerCosts?.NetBoughtOutPartCost)
-        ProfitBOPTotalCost = checkForNull(ProfitBOPCost) * calculatePercentage(checkForNull(ProfitBOPPercentage))
-        ProfitCCCost = getCCCost('profit')
-        ProfitCCTotalCost = ProfitCCCost * calculatePercentage(ProfitCCPercentage)
-      }
+      // Process each applicability type
+      dataObj?.CostingApplicabilityDetails?.forEach(detail => {
+        const { Applicability, Percentage, Cost, TotalCost } = detail;
 
-      if (dataObj?.IsProfitFixedApplicable && IsAPIResponse === false) {
+        switch(Applicability) {
+          case 'Fixed':
+            if (IsAPIResponse === false) {
+              setValue('ProfitFixedPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice) || '')
+              setValue('ProfitFixedCost', '-')
+              setValue('ProfitFixedTotalCost', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice) || '')
+            }
+            break;
+          case 'RM':
+            const rmCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
+            const rmTotalCost = rmCost * calculatePercentage(Percentage)
+            
+            setValue('ProfitRMPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('ProfitRMCost', checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('ProfitRMTotalCost', checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            break;
 
-        setValue('ProfitFixedPercentage', dataObj?.IsProfitFixedApplicable ? checkForDecimalAndNull(dataObj?.ProfitFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : '')
-        setValue('ProfitFixedCost', '-')
-        setValue('ProfitFixedTotalCost', dataObj?.IsProfitFixedApplicable ? checkForDecimalAndNull(dataObj?.ProfitFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : '')
-        setProfitObj({
-          ...profitObj,
-          ProfitFixedPercentage: dataObj?.ProfitFixedPercentage,
-          ProfitFixedCost: '-',
-          ProfitFixedTotalCost: dataObj?.ProfitFixedPercentage,
-        })
-      }
-      if (dataObj?.IsProfitCombined && IsAPIResponse === false) {
+          case 'BOP':
+            const bopCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
+            const bopTotalCost = bopCost * calculatePercentage(Percentage)
+            
+            setValue('ProfitBOPPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('ProfitBOPCost', checkForDecimalAndNull(bopCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('ProfitBOPTotalCost', checkForDecimalAndNull(bopTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            break;
 
-        const RMBOPCC = headerCosts?.NetBoughtOutPartCost + headerCosts?.NetRawMaterialsCost + getCCCost("profit")
-        const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts?.NetBoughtOutPartCost + getCCCost("profit") : RMBOPCC;
-        setValue('ProfitPercentage', dataObj?.IsProfitCombined ? checkForDecimalAndNull(dataObj?.ProfitPercentage, initialConfiguration?.NoOfDecimalForPrice) : '')
-        setValue('ProfitCombinedCost', headerCosts && checkForDecimalAndNull(CutOffRMBOPCCTotal, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCombinedTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(dataObj?.ProfitPercentage)), initialConfiguration?.NoOfDecimalForPrice))
-        setProfitObj({
-          ...profitObj,
-          ProfitPercentage: dataObj?.ProfitPercentage,
-          ProfitCombinedCost: headerCosts && checkForNull(CutOffRMBOPCCTotal),
-          ProfitCombinedTotalCost: checkForNull(CutOffRMBOPCCTotal) * calculatePercentage(checkForNull(dataObj?.ProfitPercentage)),
-        })
-      }
-      if (dataObj?.IsProfitRMApplicable && dataObj?.IsProfitBOPApplicable && dataObj?.IsProfitCCApplicable) {
-        setValue('ProfitRMPercentage', checkForDecimalAndNull(ProfitRMPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitRMCost', checkForDecimalAndNull(ProfitRMCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitRMTotalCost', checkForDecimalAndNull(ProfitRMTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPPercentage', checkForDecimalAndNull(ProfitBOPPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPCost', checkForDecimalAndNull(ProfitBOPCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPTotalCost', checkForDecimalAndNull(ProfitBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCPercentage', checkForDecimalAndNull(ProfitCCPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCCost', checkForDecimalAndNull(ProfitCCCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCTotalCost', checkForDecimalAndNull(ProfitCCTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+          case 'CC':
+            const ccCost = getCCCost('profit')
+            const ccTotalCost = ccCost * calculatePercentage(Percentage)
+            
+            setValue('ProfitCCPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('ProfitCCCost', checkForDecimalAndNull(ccCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('ProfitCCTotalCost', checkForDecimalAndNull(ccTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            break;
 
-        setTempProfitObj({
-          ...tempProfitObj,
-          ProfitRMPercentage: ProfitRMPercentage,
-          ProfitRMCost: ProfitRMCost,
-          ProfitRMTotalCost: ProfitRMTotalCost,
-          ProfitBOPPercentage: ProfitBOPPercentage,
-          ProfitBOPCost: ProfitBOPCost,
-          ProfitBOPTotalCost: ProfitBOPTotalCost,
-          ProfitCCPercentage: ProfitCCPercentage,
-          ProfitCCCost: ProfitCCCost,
-          ProfitCCTotalCost: ProfitCCTotalCost
-        })
-      }
-      // SINGLE
-      if (dataObj?.IsProfitRMApplicable && !dataObj?.IsProfitBOPApplicable && !dataObj?.IsProfitCCApplicable) {
-        setValue('ProfitRMPercentage', checkForDecimalAndNull(ProfitRMPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitRMCost', checkForDecimalAndNull(ProfitRMCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitRMTotalCost', checkForDecimalAndNull(ProfitRMTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setTempProfitObj({
-          ...tempProfitObj,
-          ProfitRMPercentage: ProfitRMPercentage,
-          ProfitRMCost: ProfitRMCost,
-          ProfitRMTotalCost: ProfitRMTotalCost
-        })
-      }
-      if (dataObj?.IsProfitBOPApplicable && !dataObj?.IsProfitRMApplicable && !dataObj?.IsProfitCCApplicable) {
-        setValue('ProfitBOPPercentage', checkForDecimalAndNull(ProfitBOPPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPCost', checkForDecimalAndNull(ProfitBOPCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPTotalCost', checkForDecimalAndNull(ProfitBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setTempProfitObj({
-          ...tempProfitObj,
-          ProfitBOPPercentage: ProfitBOPPercentage,
-          ProfitBOPCost: ProfitBOPCost,
-          ProfitBOPTotalCost: ProfitBOPTotalCost,
-        })
-      }
-      if (dataObj?.IsProfitCCApplicable && !dataObj?.IsProfitBOPApplicable && !dataObj?.IsProfitRMApplicable) {
-        setValue('ProfitCCPercentage', checkForDecimalAndNull(ProfitCCPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCCost', checkForDecimalAndNull(ProfitCCCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCTotalCost', checkForDecimalAndNull(ProfitCCTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setTempProfitObj({
-          ...tempProfitObj,
-          ProfitCCPercentage: ProfitCCPercentage,
-          ProfitCCCost: ProfitCCCost,
-          ProfitCCTotalCost: ProfitCCTotalCost
-        })
-      }
-      if (dataObj?.IsProfitRMApplicable && dataObj?.IsProfitCCApplicable && !dataObj?.IsProfitBOPApplicable) {
-        setValue('ProfitRMPercentage', checkForDecimalAndNull(ProfitRMPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitRMCost', checkForDecimalAndNull(ProfitRMCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitRMTotalCost', checkForDecimalAndNull(ProfitRMTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCPercentage', checkForDecimalAndNull(ProfitCCPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCCost', checkForDecimalAndNull(ProfitCCCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCTotalCost', checkForDecimalAndNull(ProfitCCTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+          default:
+            break;
+        }
+      });
 
-        setTempProfitObj({
-          ...tempProfitObj,
-          ProfitRMPercentage: ProfitRMPercentage,
-          ProfitRMCost: ProfitRMCost,
-          ProfitRMTotalCost: ProfitRMTotalCost,
-          ProfitCCPercentage: ProfitCCPercentage,
-          ProfitCCCost: ProfitCCCost,
-          ProfitCCTotalCost: ProfitCCTotalCost
-        })
-      }
-      if (dataObj?.IsProfitRMApplicable && dataObj?.IsProfitBOPApplicable && !dataObj?.IsProfitCCApplicable) {
-        setValue('ProfitRMPercentage', checkForDecimalAndNull(ProfitRMPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitRMCost', checkForDecimalAndNull(ProfitRMCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitRMTotalCost', checkForDecimalAndNull(ProfitRMTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPPercentage', checkForDecimalAndNull(ProfitBOPPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPCost', checkForDecimalAndNull(ProfitBOPCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPTotalCost', checkForDecimalAndNull(ProfitBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+      // Update tempProfitObj with CostingApplicabilityDetails
+      const costingApplicabilityDetails = dataObj?.CostingApplicabilityDetails?.map(detail => {
+        const { Applicability, Percentage, ApplicabilityDetailsId, ApplicabilityId } = detail;
+        const baseCost = Applicability === 'RM' ? 
+          (IsCutOffApplicable ? CutOffCost : headerCosts?.NetRawMaterialsCost) :
+          Applicability === 'BOP' ? headerCosts?.NetBoughtOutPartCost :
+          Applicability === 'CC' ? getCCCost('profit') : 0;
+          
+        const totalCost = baseCost * calculatePercentage(Percentage);
 
-        setTempProfitObj({
-          ...tempProfitObj,
-          ProfitRMPercentage: ProfitRMPercentage,
-          ProfitRMCost: ProfitRMCost,
-          ProfitRMTotalCost: ProfitRMTotalCost,
-          ProfitBOPPercentage: ProfitBOPPercentage,
-          ProfitBOPCost: ProfitBOPCost,
-          ProfitBOPTotalCost: ProfitBOPTotalCost,
-        })
-      }
-      if (dataObj?.IsProfitBOPApplicable && dataObj?.IsProfitCCApplicable && !dataObj?.IsProfitRMApplicable) {
-        setValue('ProfitBOPPercentage', checkForDecimalAndNull(ProfitBOPPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPCost', checkForDecimalAndNull(ProfitBOPCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitBOPTotalCost', checkForDecimalAndNull(ProfitBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCPercentage', checkForDecimalAndNull(ProfitCCPercentage, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCCost', checkForDecimalAndNull(ProfitCCCost, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('ProfitCCTotalCost', checkForDecimalAndNull(ProfitCCTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+        return {
+          ApplicabilityDetailsId: ApplicabilityDetailsId,
+          ApplicabilityId: ApplicabilityId,
+          Applicability: Applicability,
+          Percentage: Percentage,
+          Cost: baseCost,
+          TotalCost: totalCost
+        };
+      });
 
-        setTempProfitObj({
-          ...tempProfitObj,
-          ProfitBOPPercentage: ProfitBOPPercentage,
-          ProfitBOPCost: ProfitBOPCost,
-          ProfitBOPTotalCost: ProfitBOPTotalCost,
-          ProfitCCPercentage: ProfitCCPercentage,
-          ProfitCCCost: ProfitCCCost,
-          ProfitCCTotalCost: ProfitCCTotalCost
-        })
-      }
+      setTempProfitObj({
+        ...tempProfitObj,
+        CostingApplicabilityDetails: costingApplicabilityDetails
+      });
     }
-
   }
   /**
   * @method getCCCost
@@ -1325,6 +1059,7 @@ function OverheadProfit(props) {
   */
 
   const showValueInInput = () => {
+    // console.log(data,'data')
     let value = checkForDecimalAndNull(checkForNull(data?.CostingPartDetails?.OverheadCost) + checkForNull(data?.CostingPartDetails?.ProfitCost), initialConfiguration?.NoOfDecimalForPrice);
     return value === 0 ? '' : value;
   }
@@ -1415,6 +1150,31 @@ function OverheadProfit(props) {
     let temp = <div>{<p>{text}</p>}{showWarning && <p>BOP cost is not included for BOP part type</p>}</div>
     return temp;
   }
+
+  const handleCostChange = (e, item, type) => {
+    const value = e.target.value;
+    // Update the cost in the appropriate state
+    if (type === 'Overhead') {
+      setOverheadObj(prev => ({
+        ...prev,
+        CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail => 
+          detail.ApplicabilityDetailsId === item.ApplicabilityDetailsId 
+            ? { ...detail, Cost: value }
+            : detail
+        )
+      }));
+    } else {
+      setProfitObj(prev => ({
+        ...prev,
+        CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail => 
+          detail.ApplicabilityDetailsId === item.ApplicabilityDetailsId 
+            ? { ...detail, Cost: value }
+            : detail
+        )
+      }));
+    }
+  };
+
   return (
     <>
       <div className="user-page p-0">
@@ -1501,345 +1261,22 @@ function OverheadProfit(props) {
 
 
               <Col md={overheadObj?.OverheadApplicability ? "11" : "12"} className='first-section'>
-                <Row className="costing-border-inner-section m-0">
-                  <Col md="3">
-                    <span className="head-text">
-                      {'Overhead On'}
-                    </span>
-                  </Col>
-                  <Col md="3">
-                    <span className="head-text">
-                      {`${overheadObj && overheadObj.IsOverheadFixedApplicable ? 'Fixed Cost' : 'Percentage (%)'}`}
-                    </span>
-                  </Col>
-                  <Col md="3">
-                    <span className="head-text">
-                      {'Cost (Applicability)'}
-                    </span>
-                  </Col>
-                  <Col md="3">
-                    <span className="head-text">
-                      {'Overhead'}
-                    </span>
-                  </Col>
-
-
-                  {
-                    overheadObj && overheadObj.IsOverheadFixedApplicable &&
-                    <>
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? overheadObj.OverheadApplicability : '-'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadFixedPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          rules={{
-                            required: false,
-                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                          }}
-                          handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                          defaultValue={overheadObj.OverheadFixedPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadFixedPercentage}
-                          disabled={CostingViewMode ? true : false}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadFixedCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                          defaultValue={overheadObj.OverheadFixedCost !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadFixedCost}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadFixedTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadFixedTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadFixedTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-
-                    </>
-                  }
-
-                  {
-                    overheadObj && overheadObj.IsOverheadCombined &&
-                    <>
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadPercentage}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <div className="d-inline-block tooltip-container">
-                          <TextFieldHookForm
-                            label=""
-                            name={'OverheadCombinedCost'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            defaultValue={overheadObj.OverheadCombinedCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCombinedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.OverheadCombinedCost}
-                            disabled={true}
-                          />
-                          {OverheadAndProfitTooltip("OverheadCombinedCost", overheadObj, CostingDataList, showWarning, initialConfiguration?.NoOfDecimalForPrice)}
-
-
-                        </div>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadCombinedTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCombinedTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCombinedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadCombinedTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-
-                    </>
-                  }
-
-                  {
-                    overheadObj && overheadObj.IsOverheadRMApplicable &&
-
-                    <>
-
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${(overheadObj && overheadObj.OverheadApplicability.includes(PART_COST)) ? PART_COST : 'RM'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadRMPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadRMPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadRMPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadRMPercentage}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <div className="d-inline-block tooltip-container">
-                          <TextFieldHookForm
-                            label=""
-                            name={'OverheadRMCost'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            defaultValue={overheadObj.OverheadRMCost !== null ? checkForDecimalAndNull(overheadObj.OverheadRMCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.OverheadRMCost}
-                            disabled={true}
-                          />
-
-                          {OverheadAndProfitTooltip("OverheadRMCost", "", CostingDataList, showWarning, initialConfiguration?.NoOfDecimalForPrice)}
-
-                        </div>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadRMTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadRMTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadRMTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-
-                    </>
-                  }
-
-                  {
-                    overheadObj && overheadObj.IsOverheadBOPApplicable &&
-                    <>
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? 'BOP' : '-'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadBOPPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadBOPPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadBOPPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadBOPPercentage}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadBOPCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadBOPCost !== null ? checkForDecimalAndNull(overheadObj.OverheadBOPCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadBOPCost}
-                          disabled={true}
-                        />
-                        {OverheadAndProfitTooltip("OverheadBOPCost", "", CostingDataList, showWarning, initialConfiguration?.NoOfDecimalForPrice)}
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadBOPTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadBOPTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadBOPTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-                    </>
-                  }
-
-                  {
-                    overheadObj && overheadObj.IsOverheadCCApplicable &&
-                    <>
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? 'CC' : '-'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadCCPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCCPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadCCPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadCCPercentage}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadCCCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCCCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCCCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadCCCost}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'OverheadCCTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCCTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.OverheadCCTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-                    </>
-                  }
-                </Row>
+                <OverheadProfitTable
+                  data={overheadObj}
+                  type="Overhead"
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  setValue={setValue}
+                  getValues={getValues}
+                  errors={errors}
+                  CostingViewMode={CostingViewMode}
+                  initialConfiguration={initialConfiguration}
+                  onCostChange={(e, item) => handleCostChange(e, item, 'Overhead')}
+                  isFixedApplicable={overheadObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
+                />
               </Col>
+
               {
                 overheadObj && overheadObj.OverheadApplicability &&
                 <Col md="1" className='second-section'>
@@ -1902,339 +1339,20 @@ function OverheadProfit(props) {
                 />
               </Col>}
               <Col md={profitObj?.ProfitApplicability ? "11" : "12"} className='first-section'>
-                <Row className="costing-border-inner-section m-0">
-                  <Col md="3">
-                    <span className="head-text">
-                      {'Profit On'}
-                    </span>
-                  </Col>
-                  <Col md="3">
-                    <span className="head-text">
-                      {`${profitObj && profitObj.IsProfitFixedApplicable ? 'Fixed Cost' : 'Percentage (%)'}`}
-                    </span>
-                  </Col>
-                  <Col md="3">
-                    <span className="head-text">
-                      {'Cost (Applicability)'}
-                    </span>
-                  </Col>
-                  <Col md="3">
-                    <span className="head-text">
-                      {'Profit'}
-                    </span>
-                  </Col>
-
-
-                  {
-                    profitObj && profitObj.IsProfitFixedApplicable &&
-                    <>
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitFixedPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          rules={{
-                            required: false,
-                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                          }}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitFixedPercentage !== null ? checkForDecimalAndNull(profitObj.ProfitFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitFixedPercentage}
-                          disabled={CostingViewMode ? true : false}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitFixedCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitFixedCost !== null ? checkForDecimalAndNull(profitObj.ProfitFixedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitFixedCost}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitFixedTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitFixedTotalCost !== null ? checkForDecimalAndNull(profitObj.ProfitFixedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitFixedTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-
-                    </>
-                  }
-
-                  {
-                    profitObj && profitObj.IsProfitCombined &&
-                    <>
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitPercentage !== null ? checkForDecimalAndNull(profitObj.ProfitPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitPercentage}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <div className="d-inline-block tooltip-container">
-                          <TextFieldHookForm
-                            label=""
-                            name={'ProfitCombinedCost'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            defaultValue={profitObj.ProfitCombinedCost !== null ? checkForDecimalAndNull(profitObj.ProfitCombinedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.ProfitCombinedCost}
-                            disabled={true}
-                          />
-                          {OverheadAndProfitTooltip("ProfitCombinedCost", profitObj, CostingDataList, showWarning, initialConfiguration?.NoOfDecimalForPrice)}
-                          {(profitObj && profitObj?.ProfitApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) && false && <TooltipCustom id="ProfitCombinedCost" disabledIcon={true} customClass="mt-2 d-none" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration?.NoOfDecimalForPrice)} applied`} />}
-                        </div>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitCombinedTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitCombinedTotalCost !== null ? checkForDecimalAndNull(profitObj.ProfitCombinedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitCombinedTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-
-                    </>
-                  }
-
-                  {
-                    profitObj && profitObj.IsProfitRMApplicable &&
-                    <>
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${(profitObj && profitObj.ProfitApplicability.includes(PART_COST)) ? PART_COST : 'RM'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitRMPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitRMPercentage !== null ? checkForDecimalAndNull(profitObj.ProfitRMPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitRMPercentage}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <div className="d-inline-block tooltip-container">
-                          <TextFieldHookForm
-                            label=""
-                            name={'ProfitRMCost'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            defaultValue={profitObj.ProfitRMCost !== null ? checkForDecimalAndNull(profitObj.ProfitRMCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.ProfitRMCost}
-                            disabled={true}
-                          />
-                          {OverheadAndProfitTooltip("ProfitRMCost", "", CostingDataList, showWarning, initialConfiguration?.NoOfDecimalForPrice)}
-                          {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable) && <></>}
-                        </div>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitRMTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitRMTotalCost !== null ? checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitRMTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-                    </>
-                  }
-
-                  {
-                    profitObj && profitObj.IsProfitBOPApplicable &&
-                    <>
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${profitObj && profitObj.ProfitApplicability ? 'BOP' : '-'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitBOPPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitBOPPercentage !== null ? checkForDecimalAndNull(profitObj.ProfitBOPPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitBOPPercentage}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitBOPCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitBOPCost !== null ? checkForDecimalAndNull(profitObj.ProfitBOPCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitBOPCost}
-                          disabled={true}
-                        />
-                        {OverheadAndProfitTooltip("ProfitBOPCost", "", CostingDataList, showWarning, initialConfiguration?.NoOfDecimalForPrice)}
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitBOPTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitBOPTotalCost !== null ? checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitBOPTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-                    </>
-                  }
-
-                  {
-                    profitObj && profitObj.IsProfitCCApplicable &&
-                    <>
-                      <Col md="3">
-                        <label className="col-label">
-                          {`${profitObj && profitObj.ProfitApplicability ? 'CC' : '-'}`}
-                        </label>
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitCCPercentage'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitCCPercentage !== null ? checkForDecimalAndNull(profitObj.ProfitCCPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitCCPercentage}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitCCCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitCCCost !== null ? checkForDecimalAndNull(profitObj.ProfitCCCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitCCCost}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label=""
-                          name={'ProfitCCTotalCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          defaultValue={profitObj.ProfitCCTotalCost !== null ? checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.ProfitCCTotalCost}
-                          disabled={true}
-                        />
-                      </Col>
-                    </>
-                  }
-                </Row>
+                <OverheadProfitTable
+                  data={profitObj}
+                  type="Profit"
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  setValue={setValue}
+                  getValues={getValues}
+                  errors={errors}
+                  CostingViewMode={CostingViewMode}
+                  initialConfiguration={initialConfiguration}
+                  onCostChange={(e, item) => handleCostChange(e, item, 'Profit')}
+                  isFixedApplicable={profitObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
+                />
               </Col>
               {
                 profitObj && profitObj.ProfitApplicability &&

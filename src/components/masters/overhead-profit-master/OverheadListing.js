@@ -378,7 +378,7 @@ function OverheadListing(props) {
             isViewMode: isViewMode,
             costingTypeId: rowData.CostingTypeId,
         }
-        props.getDetails(data, rowData?.IsAssociated);
+        props.getDetails(data, rowData?.IsOverheadAssociated);
     }
 
     /**
@@ -454,7 +454,7 @@ function OverheadListing(props) {
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {EditAccessibility && rowData?.IsEditable && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && !rowData?.IsAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {DeleteAccessibility && !rowData?.IsOverheadAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -537,7 +537,7 @@ function OverheadListing(props) {
 
 
     const onGridReady = (params) => {
-
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
 
@@ -806,11 +806,7 @@ function OverheadListing(props) {
                                             <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                            <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>
-                                            <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM/ Part Cost (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="OverheadBOPPercentage" headerName={`Overhead on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="Applicability" headerName="Overhead Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                             <AgGridColumn field="OverheadId" width={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                         </AgGridReact>}
