@@ -1763,6 +1763,7 @@ export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
 export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
 export const CHECK_IS_PAYMENT_TERMS_DATA_CHANGE = 'CHECK_IS_PAYMENT_TERMS_DATA_CHANGE'
 export const CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE = 'CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE'
+export const SET_BOP_REMARK="SET_BOP_REMARK"
 
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
 export const GET_FG_WISE_IMPACT_DATA_FOR_COSTING = 'GET_FG_WISE_IMPACT_DATA_FOR_COSTING'
@@ -2531,12 +2532,9 @@ export const VIEW_COSTING_DATA = {
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
   nPackagingAndFreight: 'Net Packaging & Freight',
-  toolMaintenanceCostApplicablity: 'Tool Maintenance Cost Applicability',
-  toolMaintenanceCost: 'Tool Maintenance Cost Value',
-  //toolMaintenanceCost: 'Tool Maintenance Cost',
-  toolPrice: 'Tool Price',
-  amortizationQty: 'Amortization Quantity',
-  toolAmortizationCost: 'Tool Amortization Cost',
+  netToolMaintenanceCost: 'Net Tool Maintenance Cost (per pcs)',
+  netToolInterestCost: 'Net Tool Interest Cost (per pcs)',
+  netAmortizationCost: 'Net Tool Amortization Cost',
   totalToolCost: 'Net Tool Cost',
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
@@ -2790,27 +2788,19 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'nPackagingAndFreight'
   },
   {
-    label: 'Tool Maintenance Cost Applicability',
-    value: 'toolMaintenanceCostApplicablity'
+    label: 'Net Tool Maintenance Cost (per pcs)',
+    value: 'netToolMaintenanceCost'
   },
   {
-    label: 'Tool Maintenance Cost Value',
-    value: 'toolMaintenanceCost'
+    label: 'Net Tool Interest Cost (per pcs)',
+    value: 'netToolInterestCost'
   },
   {
-    label: 'Tool Price',
-    value: 'toolPrice'
+    label: 'Net Tool Amortization Cost',
+    value: 'netAmortizationCost'
   },
   {
-    label: 'Amortization Quantity',
-    value: 'amortizationQty'
-  },
-  {
-    label: 'Tool Amortization Cost',
-    value: 'toolAmortizationCost'
-  },
-  {
-    label: 'Net Tool Cost',
+    label: `Net Tool Cost`,
     value: 'totalToolCost'
   },
 
@@ -3426,7 +3416,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.37";
+export const VERSION = "V4.2.38";
 
 
 

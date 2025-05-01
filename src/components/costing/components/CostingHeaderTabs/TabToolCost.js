@@ -223,6 +223,9 @@ function TabToolCost(props) {
         i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
         i.CostingPartDetails.TotalToolCost = getTotalCost(ToolGrid);
         i.CostingPartDetails.IsToolCostProcessWise = IsApplicableProcessWise
+        i.CostingPartDetails.NetToolAmortizationCost = ToolGrid.reduce((sum, item) => sum + (Number(item.ToolAmortizationCost) || 0), 0);
+        i.CostingPartDetails.NetToolMaintenanceCost = ToolGrid.reduce((sum, item) => sum + (Number(item.ToolMaintenanceCostPerPiece) || 0), 0);
+        i.CostingPartDetails.NetToolInterestCost = ToolGrid.reduce((sum, item) => sum + (Number(item.ToolInterestCostPerPiece) || 0), 0);
         //i?.CostingPartDetails?.OverAllApplicability = {};
         i.IsChanged = IsChanged;
 
@@ -275,6 +278,7 @@ function TabToolCost(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit((formData) => {
+    console.log(checkIsToolTabChange,"checkIsToolTabChange")
     if (checkIsToolTabChange) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
@@ -444,7 +448,7 @@ function TabToolCost(props) {
       const refId = item.ProcessOrOperationType === 'Operation' ? item.OperationChildIdRef : item.ProcessIdRef;
       const key = `${item.ChildPartNumber}-${refId}`;
 
-      const level = parseInt(item.BOMLevel.substring(1), 10); // Extract numerical part of BOMLevel
+      const level = parseInt(item?.BOMLevel?.substring(1), 10); // Extract numerical part of BOMLevel
 
       if (!acc[key] || acc[key].highestLevel < level) {
         acc[key] = { highestIndex: index, highestLevel: level };
@@ -531,11 +535,11 @@ function TabToolCost(props) {
                 </Col>
                 <Col md={IsApplicableProcessWise ? "8" : "3"} className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
                   {IsApplicableProcessWise && <><div>
-                    {"Net Tool Maintenance Cost:"}
+                    {"Net Tool Maintenance Cost (per pcs):"}
                     <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(state?.toolmaintenanceCostPerPc, initialConfiguration?.NoOfDecimalForPrice)}</span>
                   </div>
                     <div>
-                      {"Net Tool Interest Cost:"}
+                      {"Net Tool Interest Cost (per pcs):"}
                       <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(state?.toolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice)}</span>
                     </div>
                     <div>
@@ -649,7 +653,7 @@ function TabToolCost(props) {
                                 <AgGridColumn field="ToolInterestRatePercent" headerName={`${toolInterestRatePercentLabel}`} cellRenderer={'valueFormatter'}></AgGridColumn>
                                 <AgGridColumn field="ToolInterestCost" headerName={`${toolInterestCostLabel}`} cellRenderer={'valueFormatter'}></AgGridColumn>
                                 <AgGridColumn field="ToolInterestCostPerPiece" headerName={`${toolInterestCostPerPcLabel}`} cellRenderer={'valueFormatter'}></AgGridColumn>
-                                <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
+                                <AgGridColumn field="NetToolCost" headerName="Total Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
                                 <AgGridColumn width={160} field="Life" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                               </AgGridReact>
                               {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
