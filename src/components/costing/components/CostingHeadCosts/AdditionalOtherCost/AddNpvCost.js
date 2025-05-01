@@ -95,9 +95,8 @@ function AddNpvCost(props) {
                 }
                 setValue('Quantity', checkForNull(totalToolLife))
             }
-        } else {
-            setDisableQuantity(false)
         }
+        setDisableQuantity(false)
     }
 
 

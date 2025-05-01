@@ -140,7 +140,6 @@ function PackagingCalculator(props) {
         }else{
             totalCostOfCrateWithAddedCost = totalAddedCost
         }
-        console.log(totalCostOfCrateWithAddedCost,'totalCostOfCrateWithAddedCost')
         setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice))
         setState(prev => ({
             ...prev,

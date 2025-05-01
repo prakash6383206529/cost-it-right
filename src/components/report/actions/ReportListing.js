@@ -13,7 +13,8 @@ import {
     GET_PRODUCT_PART_DATA_LIST,
     GET_STAGE_OF_PART_DETAILS,
     GET_NFR_INSIGHT_DETAILS,
-    GET_NFR_INSIGHT_STATUS_DETAILS
+    GET_NFR_INSIGHT_STATUS_DETAILS,
+    GET_COST_DEVIATION_REPORT
 } from '../../../config/constants';
 import { apiErrors, loggedInUserId, userDetails } from '../../../helper';
 
@@ -635,6 +636,59 @@ export function getNfrInsightsStatusDetails(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+        })
+    }
+}
+
+export function getCostDeviationReport(data, callback) {
+    const params = new URLSearchParams();
+
+    // Function to add params only if they have a valid value
+    const addParam = (key, value) => {
+        if (value !== null && value !== undefined && value !== '') {
+            params.append(key, value);
+        }
+    };
+
+    // Add each param conditionally
+    addParam("loggedInUserId", loggedInUserId()); // Fixed user ID
+    addParam("partNumber", data?.partNumber);
+    addParam("revisionNumber", data?.revisionNumber);
+    addParam("vendorCode", data?.vendorCode);
+    addParam("rawMaterialCode", data?.rawMaterialCode);
+    addParam("rawMaterialName", data?.rawMaterialName);
+    addParam("rawMaterialGrade", data?.rawMaterialGrade);
+    addParam("rawMaterialSpecification", data?.rawMaterialSpecification);
+    addParam("status", data?.status); // Assuming status is fixed
+    addParam("fromDate", data?.fromDate);
+    addParam("toDate", data?.toDate);
+    addParam("rawMaterialRate", data?.rawMaterialRate);
+    addParam("scrapRate", data?.scrapRate);
+    addParam("netRawMaterialsCost", data?.netRawMaterialsCost);
+    addParam("rawMaterialGrossWeight", data?.rawMaterialGrossWeight);
+    addParam("rawMaterialFinishWeight", data?.rawMaterialFinishWeight);
+    addParam("rawMaterialScrapWeight", data?.rawMaterialScrapWeight);
+    addParam("isGrossWeightComparison", data?.isGrossWeightComparison);
+    addParam("isFinishWeightComparison", data?.isFinishWeightComparison);
+    addParam("isScrapWeightComparison", data?.isScrapWeightComparison);
+    addParam("costingHeadId", data?.costingHeadId); // Default to 1
+    addParam("skip", data?.skip);
+    addParam("take", data?.take);
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getCostDeviationReport}?${params.toString()}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_COST_DEVIATION_REPORT,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error);
         })
     }
 }

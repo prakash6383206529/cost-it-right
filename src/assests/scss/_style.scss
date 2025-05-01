@@ -7134,7 +7134,10 @@ body {
   display: flex;
   align-items: center;
 }
-
+textarea.form-control.hl-textarea-h {
+  min-height: 120px;
+  resize: none;
+}
 .main-modal-container {
   z-index: 1040 !important;
 }

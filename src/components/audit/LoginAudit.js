@@ -61,15 +61,17 @@ function LoginAudit(props) {
 
     })
     const dispatch = useDispatch();
-    const auditDataList = useSelector(state => state.audit.auditDataList);
+    const auditDataList = useSelector(state => state?.audit.auditDataList);
     const [fromDate, setFromDate] = useState(null)
     const [toDate, setToDate] = useState(null)
     const [filteredData, setFilteredData] = useState(auditDataList);
     const [searchText, setSearchText] = useState('');
-    const { selectedRowForPagination } = useSelector(state => state.simulation);
-    const { topAndLeftMenuData } = useSelector(state => state.auth);
+    const { selectedRowForPagination } = useSelector(state => state?.simulation);
+    const { topAndLeftMenuData } = useSelector(state => state?.auth);
+    const today = new Date();
+
     useEffect(() => {
-        getDataList(0, state.globalTake, true, state.floatingFilterData);
+        getDataList(0, state?.globalTake, true, state?.floatingFilterData);
         // eslint-disable-next-line
     }, [])
 
@@ -84,11 +86,11 @@ function LoginAudit(props) {
     }, [topAndLeftMenuData])
     const getDataList = (skip = 0, take = 10, isPagination = true, dataObj) => {
         setState(prevState => ({ ...prevState, isLoader: true }));
-        if (state.filterModel?.LoginTime) {
-            if (state.filterModel.LoginTime.dateTo) {
+        if (state?.filterModel?.LoginTime) {
+            if (state?.filterModel.LoginTime.dateTo) {
                 let temp = [];
-                temp.push(DayTime(state.filterModel.LoginTime.dateFrom).format('DD/MM/YYYY[T]hh:mm:ss'));
-                temp.push(DayTime(state.filterModel.LoginTime.dateTo).format('DD/MM/YYYY[T]hh:mm:ss'));
+                temp.push(DayTime(state?.filterModel.LoginTime.dateFrom).format('DD/MM/YYYY[T]hh:mm:ss'));
+                temp.push(DayTime(state?.filterModel.LoginTime.dateTo).format('DD/MM/YYYY[T]hh:mm:ss'));
                 dataObj.dateArray = temp;
             }
         }
@@ -127,12 +129,12 @@ function LoginAudit(props) {
                 if (res) {
                     let isReset = true
                     setTimeout(() => {
-                        for (var prop in state.floatingFilterData) {
-                            if (state.floatingFilterData[prop] !== "") {
+                        for (var prop in state?.floatingFilterData) {
+                            if (state?.floatingFilterData[prop] !== "") {
                                 isReset = false
                             }
                         }
-                        isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
+                        isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state?.filterModel))
                     }, 300);
                 }
 
@@ -157,15 +159,15 @@ function LoginAudit(props) {
         }
     }
     const onBtPrevious = () => {
-        let pageSize = state.globalTake;
-        let previousPage = state.pageNo - 1;
+        let pageSize = state?.globalTake;
+        let previousPage = state?.pageNo - 1;
         let skip = (previousPage - 1) * pageSize;
-        if (state.currentRowIndex >= 10) {
-            const previousNo = state.currentRowIndex - 10;
-            const newPageNo = state.pageNo - 1;
+        if (state?.currentRowIndex >= 10) {
+            const previousNo = state?.currentRowIndex - 10;
+            const newPageNo = state?.pageNo - 1;
             setState((prevState) => ({ ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo, }));
             const filterDataObj = {
-                ...state.floatingFilterData,
+                ...state?.floatingFilterData,
                 fromDate: fromDate ? formatToDateString(fromDate) : '',
                 toDate: toDate ? formatToDateString(toDate) : ''
             };
@@ -174,20 +176,20 @@ function LoginAudit(props) {
     };
 
     const onBtNext = () => {
-        let pageSize = state.globalTake;
-        let nextPage = state.pageNo + 1;
+        let pageSize = state?.globalTake;
+        let nextPage = state?.pageNo + 1;
         let skip = (nextPage - 1) * pageSize;
-        if (state.pageSize?.pageSize50 && state.pageNo >= Math.ceil(state.totalRecordCount / 50)) {
+        if (state?.pageSize?.pageSize50 && state?.pageNo >= Math.ceil(state?.totalRecordCount / 50)) {
             return false;
         }
-        if (state.pageSize?.pageSize100 && state.pageNo >= Math.ceil(state.totalRecordCount / 100)) {
+        if (state?.pageSize?.pageSize100 && state?.pageNo >= Math.ceil(state?.totalRecordCount / 100)) {
             return false;
         }
-        if (state.currentRowIndex < state.totalRecordCount - 10) {
+        if (state?.currentRowIndex < state?.totalRecordCount - 10) {
             setState((prevState) => ({ ...prevState, pageNo: nextPage, pageNoNew: nextPage, }));
-            const nextNo = state.currentRowIndex + 10;
+            const nextNo = state?.currentRowIndex + 10;
             const filterDataObj = {
-                ...state.floatingFilterData,
+                ...state?.floatingFilterData,
                 fromDate: fromDate ? formatToDateString(fromDate) : '',
                 toDate: toDate ? formatToDateString(toDate) : ''
             };
@@ -196,7 +198,7 @@ function LoginAudit(props) {
         }
     };
     const onFilterTextBoxChanged = (e) => {
-        setSearchText(state.gridApi.setQuickFilter(e.target.value));
+        setSearchText(state?.gridApi.setQuickFilter(e.target.value));
     }
     const handleFromDateChange = (date) => {
         setFromDate(date);
@@ -290,13 +292,13 @@ function LoginAudit(props) {
 
         setTimeout(() => {
             if (auditDataList?.length !== 0) {
-                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state?.noData), }));
             }
         }, 500);
         setState((prevState) => ({ ...prevState, disableFilter: false }));
         const model = gridOptions?.api?.getFilterModel();
         setState((prevState) => ({ ...prevState, filterModel: { ...model } }));
-        if (!state.isFilterButtonClicked) {
+        if (!state?.isFilterButtonClicked) {
             setState((prevState) => ({ ...prevState, warningMessage: true }));
         }
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
@@ -304,19 +306,19 @@ function LoginAudit(props) {
             if (model !== undefined && model !== null) {
                 if (Object.keys(model).length > 0) {
                     isFilterEmpty = false;
-                    for (var property in state.floatingFilterData) {
+                    for (var property in state?.floatingFilterData) {
                         if (property === value.column.colId) {
                             state.floatingFilterData[property] = "";
                         }
                     }
-                    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, }));
+                    setState((prevState) => ({ ...prevState, floatingFilterData: state?.floatingFilterData, }));
                 }
                 if (isFilterEmpty) {
                     setState((prevState) => ({ ...prevState, warningMessage: false }));
-                    for (var prop in state.floatingFilterData) {
+                    for (var prop in state?.floatingFilterData) {
                         state.floatingFilterData[prop] = "";
                     }
-                    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, }));
+                    setState((prevState) => ({ ...prevState, floatingFilterData: state?.floatingFilterData, }));
                 }
             }
         } else {
@@ -334,24 +336,24 @@ function LoginAudit(props) {
         setToDate(null);
         setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
-        if (state.gridApi) {
-            state.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
+        if (state?.gridApi) {
+            state?.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
         }
-        state.gridApi.deselectAll();
+        state?.gridApi.deselectAll();
         gridOptions?.columnApi?.resetColumnState(null);
         const val = gridOptions?.api?.setFilterModel({});
-        for (var prop in state.floatingFilterData) {
+        for (var prop in state?.floatingFilterData) {
             state.floatingFilterData[prop] = "";
         }
-        setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, fromDate: null, toDate: null }));
-        getDataList(0, state.defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        setState((prevState) => ({ ...prevState, floatingFilterData: state?.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, fromDate: null, toDate: null }));
+        getDataList(0, state?.defaultPageSize, true, state?.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         dispatch(setSelectedRowForPagination([]));
 
         setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { pageSize10: true, pageSize50: false, pageSize100: false, }, }));
         setSearchText(''); // Assuming this state is bound to the input value
     };
     const onRowSelect = (event) => {
-        var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
+        var selectedRows = state?.gridApi && state?.gridApi?.getSelectedRows();
 
         if (selectedRows === undefined || selectedRows === null) {     //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
@@ -440,7 +442,7 @@ function LoginAudit(props) {
 
         // Create an updated filter object including fromDate and toDate
         const filterDataObj = {
-            ...state.floatingFilterData,
+            ...state?.floatingFilterData,
             // LoginTime: loginTime ? formatToDateString(loginTime) : '',
             fromDate: fromDate ? formatToDateString(fromDate) : '',
             toDate: toDate ? formatToDateString(toDate) : ''
@@ -448,7 +450,7 @@ function LoginAudit(props) {
         gridOptions?.columnApi?.resetColumnState();
 
         // Call the API with updated filtering options
-        getDataList(0, state.globalTake, true, filterDataObj);
+        getDataList(0, state?.globalTake, true, filterDataObj);
     };
     const onPageSizeChanged = (newPageSize) => {
         let pageSize, totalRecordCount;
@@ -461,9 +463,9 @@ function LoginAudit(props) {
             pageSize = 100;
         }
 
-        totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
+        totalRecordCount = Math.ceil(state?.totalRecordCount / pageSize);
         const filterDataObj = {
-            ...state.floatingFilterData,
+            ...state?.floatingFilterData,
             fromDate: fromDate ? formatToDateString(fromDate) : '',
             toDate: toDate ? formatToDateString(toDate) : ''
         };
@@ -477,16 +479,16 @@ function LoginAudit(props) {
             ...prevState,
             globalTake: pageSize,
             auditDataList: [],
-            pageNo: Math.min(state.pageNo, totalRecordCount), // Ensure pageNo is within bounds
+            pageNo: Math.min(state?.pageNo, totalRecordCount), // Ensure pageNo is within bounds
             pageSize: {
                 pageSize10: pageSize === 10,
                 pageSize50: pageSize === 50,
                 pageSize100: pageSize === 100,
             },
         }));
-        // state.gridApi.api.sizeColumnsToFit()
+        // state?.gridApi.api.sizeColumnsToFit()
 
-        state.gridApi.paginationSetPageSize(Number(newPageSize));
+        state?.gridApi.paginationSetPageSize(Number(newPageSize));
     };
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -510,7 +512,7 @@ function LoginAudit(props) {
         if (fromDate && toDate) {
             // If a date range is selected, download data for that range
             const filterDataObj = {
-                ...state.floatingFilterData,
+                ...state?.floatingFilterData,
                 fromDate: formatToDateString(fromDate),
                 toDate: formatToDateString(toDate),
             };
@@ -527,13 +529,13 @@ function LoginAudit(props) {
                     button && button.click();
                 }, 400);
             } else {
-                getDataList(0, defaultPageSize, false, state.floatingFilterData);
+                getDataList(0, defaultPageSize, false, state?.floatingFilterData);
             }
         }
     }
     const onBtExport = () => {
         let tempArr = []
-        //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+        //tempArr = state?.gridApi && state?.gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (auditDataList ? auditDataList : [])
 
@@ -564,11 +566,11 @@ function LoginAudit(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
     const handleDate = (newDate) => {
-        let temp = state.inRangeDate
+        let temp = state?.inRangeDate
         temp.push(newDate)
         setState(prevState => ({ ...prevState, inRangeDate: temp }))
         if (props?.benchMark) {
-            props?.handleDate(state.inRangeDate)
+            props?.handleDate(state?.inRangeDate)
         }
         setTimeout(() => {
             var y = document.getElementsByClassName('ag-radio-button-input');
@@ -580,7 +582,7 @@ function LoginAudit(props) {
 
 
     const setDate = (date) => {
-        setState(prevState => ({ ...prevState, floatingFilterData: { ...state.floatingFilterData, LoginTime: date } }))
+        setState(prevState => ({ ...prevState, floatingFilterData: { ...state?.floatingFilterData, LoginTime: date } }))
     }
 
     const filterParams = {
@@ -625,16 +627,15 @@ function LoginAudit(props) {
         effectiveDateFormatter: effectiveDateFormatter,
         hyphenFormatter: hyphenFormatter,
         checkBoxRenderer: checkBoxRenderer
-
     };
 
     return (
         <>
             {
-                (state.isLoader) ? <LoaderCustom customClass="loader-center" /> :
-                    <div className={`ag-grid-react custom-pagination ${state.DownloadAccessibility ? "show-table-btn" : ""}`}>
-                        {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                        <div className={`ag-grid-react ? "custom-pagination" : ""} ${state.DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+                (state?.isLoader) ? <LoaderCustom customClass="loader-center" /> :
+                    <div className={`ag-grid-react custom-pagination ${state?.DownloadAccessibility ? "show-table-btn" : ""}`}>
+                        {state?.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+                        <div className={`ag-grid-react ? "custom-pagination" : ""} ${state?.DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                             <Row className={`filter-row-large blue-before pb-3`}>
                                 <Col md="7" lg="7" className='d-flex'>
                                     <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -652,7 +653,7 @@ function LoginAudit(props) {
                                                     showYearDropdown
                                                     dropdownMode="select"
                                                     isClearable
-                                                    maxDate={toDate}
+                                                    maxDate={today}
                                                     dateFormat="dd/MM/yyyy"
                                                     placeholderText="select date"
                                                     className="form-control"
@@ -673,11 +674,12 @@ function LoginAudit(props) {
                                                     dropdownMode="select"
                                                     isClearable
                                                     minDate={fromDate}
+                                                    maxDate={today}
                                                     dateFormat="dd/MM/yyyy"
                                                     placeholderText="select date"
                                                     className="form-control"
                                                     autoComplete="off"
-                                                    disabled={!fromDate} // Disable if fromDate is not selected
+                                                    disabled={!fromDate}
                                                 />
 
                                             </div>
@@ -694,16 +696,16 @@ function LoginAudit(props) {
                                 <Col md="5" lg="5" className="d-flex justify-content-end">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div className="warning-message d-flex align-items-center">
-                                            {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            <button id="Audit_List_Filter" disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                            {state.DownloadAccessibility &&
+                                            {state?.warningMessage && !state?.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            <button id="Audit_List_Filter" disabled={state?.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                            {state?.DownloadAccessibility &&
                                                 <>
-                                                    <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button"
+                                                    <button title={`Download ${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} type="button"
                                                         onClick={onExcelDownload}
                                                         id="Audit_List_Download"
                                                         className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                         {/* DOWNLOAD */}
-                                                        {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                                        {`${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`}
                                                     </button>
                                                     <ExcelFile filename={'LoginAudit'} fileExtension={'.xls'} element={
                                                         <button id={'Excel-Downloads-LoginAudit-DownloadExcel'} className="p-absolute" type="button" >
@@ -720,17 +722,16 @@ function LoginAudit(props) {
                             </Row>
                             <Row>
                                 <Col>
-                                    <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !state.noData) ? 'master-approval-overlay' : ''} ${(auditDataList && auditDataList.length <= 0) || state.noData ? 'overlay-contain' : ''} `}>
-                                        <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
-                                            {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                            {!state.isLoader && <AgGridReact
+                                    <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !state?.noData) ? 'master-approval-overlay' : ''} ${(auditDataList && auditDataList.length <= 0) || state?.noData ? 'overlay-contain' : ''} `}>
+                                        <div className={`ag-theme-material ${(state?.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                                            {!state?.isLoader && <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 rowData={auditDataList}
                                                 pagination={true}
-                                                paginationPageSize={state.globalTake}
+                                                paginationPageSize={state?.globalTake}
                                                 onGridReady={onGridReady}
                                                 gridOptions={gridOptions}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -748,13 +749,13 @@ function LoginAudit(props) {
                                                 <AgGridColumn field="LoginTime" headerName="Login Time (Local Time)" filter="agDateColumnFilter" cellRenderer={'effectiveDateFormatter'} filterParams={filterParams} ></AgGridColumn>
                                             </AgGridReact>}
                                             <div className='button-wrapper'>
-                                                {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
+                                                {!state?.isLoader && <PaginationWrapper gridApi={state?.gridApi} setPage={onPageSizeChanged} globalTake={state?.globalTake} />}
                                                 {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
                                                     <div className="d-flex pagination-button-container">
                                                         <p><Button id="auditListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                                                        {state.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 10)}</p>}
-                                                        {state.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 50)}</p>}
-                                                        {state.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 100)}</p>}
+                                                        {state?.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state?.pageNo}</span> of {Math.ceil(state?.totalRecordCount / 10)}</p>}
+                                                        {state?.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state?.pageNo}</span> of {Math.ceil(state?.totalRecordCount / 50)}</p>}
+                                                        {state?.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state?.pageNo}</span> of {Math.ceil(state?.totalRecordCount / 100)}</p>}
                                                         <p><Button id="auditListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
                                                     </div>
                                                 }
