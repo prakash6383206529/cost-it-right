@@ -575,10 +575,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                             <tbody>
                                 {renderTableRows()}
                                 <tr className="table-footer">
-                                    <td colSpan={TABLE_HEADERS.length - 2} className="text-right">
+                                    <td colSpan={TABLE_HEADERS.length - 3} className="text-right">
                                         Total Paint Cost
                                     </td>
-                                    <td colSpan={2}>
+                                    <td colSpan={3}>
                                         {/* <TooltipCustom
                                             id="totalGSM"
                                             disabledIcon
