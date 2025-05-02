@@ -354,6 +354,28 @@ export function createNFRBOMDetails(requestData, callback) {
 }
 
 /**
+ * @method createCustomerRfq
+ * @description create Customer RFQ
+ */
+export function createCustomerRfq(requestData, callback) {
+    const requestedData = {
+        loggedInUserId: loggedInUserId(),
+        ...requestData
+    }
+    return (dispatch) => {
+        axiosInstance.post(API.createCustomerRfq, requestedData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
  * @method deleteNFRDetailAPI
  * @description delete NFR Detail API 
  */

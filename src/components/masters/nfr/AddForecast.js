@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container, TabPane, Nav, NavItem, NavLink, TabContent } from 'reactstrap';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -23,25 +22,26 @@ import { getAssemblyChildpart } from '../../rfq/actions/rfq';
 
 function AddForecast(props) {
     const dispatch = useDispatch();
-    const { isOpen, closeDrawer, anchor, isViewFlag, sopDate, handleSOPDateChange, addrmdetails, gridOptionsPart, onGridReady, EditableCallback, AssemblyPartNumber, isEditFlag, sopQuantityList, setSopQuantityList, partType, type,
-        partTypeInPartList, n100Date, rmDetails } = props;
+    const { isOpen, closeDrawer, anchor, isViewFlag, sopDate, handleSOPDateChange, gridOptionsPart, onGridReady, EditableCallback, AssemblyPartNumber, isEditFlag, sopQuantityList, setSopQuantityList, partType, type,
+        partTypeInPartList, rmDetails } = props;
 
     const { register, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
+        defaultValues: {
+            rmName: '',
+            rmgrade: '',
+            rmspecification: '',
+            childPart: null,
+            isEdit: false,
+            editIndex: null,
+            disabled: false
+        }
     });
 
-    // State variables
-    const [rmName, setRMName] = useState('');
-    const [rmgrade, setRMGrade] = useState('');
-    const [rmspecification, setRMSpecification] = useState('');
-    const [disabled, setDisabled] = useState(false);
-    const [editIndex, setEditIndex] = useState(null);
+    // State for array-type fields
     const [tableData, setTableData] = useState([]);
-    const [isEdit, setIsEdit] = useState(false);
-    const [childPart, setChildPart] = useState(null);
     const [childPartsData, setChildPartsData] = useState([]);
-
     const [activeTab, setActiveTab] = useState("1");
 
     // Redux selectors
@@ -49,14 +49,6 @@ function AddForecast(props) {
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList);
-    const getChildParts = useSelector(state => state?.rfq?.getChildParts);
-
-    // Grid configuration
-    const defaultColDef = {
-        resizable: true,
-        filter: true,
-        sortable: false,
-    };
 
     useEffect(() => {
         if (partType.label === "Component") {
@@ -67,12 +59,10 @@ function AddForecast(props) {
         }
     }, [partType, isViewFlag, dispatch]);
 
-
     useEffect(() => {
-
         if (partType && partType.label === 'Component') {
             setValue('partNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value });
-            setChildPart({ label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value });
+            setValue('childPart', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value });
         } else if (!isViewFlag && AssemblyPartNumber?.value) {
             dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => {
                 if (res && res.data && res.data.DataList && res.data.DataList.length > 0) {
@@ -80,7 +70,6 @@ function AddForecast(props) {
                 }
             }));
         }
-
     }, [AssemblyPartNumber, partType]);
 
     useEffect(() => {
@@ -158,29 +147,30 @@ function AddForecast(props) {
 
     // Add row to table
     const addRow = (index) => {
+        const rmName = getValues('rmName');
+        const rmgrade = getValues('rmgrade');
+        const rmspecification = getValues('rmspecification');
+        const childPart = getValues('childPart');
+
         if (!rmName || !rmgrade || !rmspecification || !childPart) {
             Toaster.warning("Please fill all required fields");
             return;
         }
 
-        // Check for duplicate records with more comprehensive checks
+        // Check for duplicate records
         const isDuplicate = tableData.some(item => {
-            // Check by material details
             const sameMaterials =
                 item.RawMaterialId === rmName?.value &&
                 item.RawMaterialGradeId === rmgrade?.value &&
                 item.RawMaterialSpecificationId === rmspecification?.value;
 
-            // Check by code if available
             const sameCode = getValues('rmcode')?.value &&
                 item.RawMaterialCodeId === getValues('rmcode')?.value;
 
-            // If part is specified, check for same part + material/code
             if (childPart?.value) {
                 return item.PartId === childPart?.value && (sameMaterials || sameCode);
             }
 
-            // If no part specified, just check materials/code
             return sameMaterials || sameCode;
         });
 
@@ -209,16 +199,17 @@ function AddForecast(props) {
     // Edit row in table
     const editRow = (index) => {
         const row = tableData[index];
-        setChildPart({ label: row.PartNumber, value: row.PartId });
-        setRMName({ label: row.RawMaterialName, value: row.RawMaterialId });
-        setRMGrade({ label: row.RawMaterialGrade, value: row.RawMaterialGradeId });
-        setRMSpecification({ label: row.RawMaterialSpecification, value: row.RawMaterialSpecificationId });
-        setValue('RMName', { label: row.RawMaterialName, value: row.RawMaterialId, })
-        setValue('RMGrade', { label: row.RawMaterialGrade, value: row.RawMaterialGradeId })
-        setValue('RMSpecification', { label: row.RawMaterialSpecification, value: row.RawMaterialSpecificationId })
+        
+        setValue('childPart', { label: row.PartNumber, value: row.PartId });
+        setValue('rmName', { label: row.RawMaterialName, value: row.RawMaterialId });
+        setValue('rmgrade', { label: row.RawMaterialGrade, value: row.RawMaterialGradeId });
+        setValue('rmspecification', { label: row.RawMaterialSpecification, value: row.RawMaterialSpecificationId });
+        setValue('RMName', { label: row.RawMaterialName, value: row.RawMaterialId });
+        setValue('RMGrade', { label: row.RawMaterialGrade, value: row.RawMaterialGradeId });
+        setValue('RMSpecification', { label: row.RawMaterialSpecification, value: row.RawMaterialSpecificationId });
         setValue('rmcode', { label: row.RawMaterialCode, value: row.RawMaterialCodeId });
-        setEditIndex(index);
-        setIsEdit(true);
+        setValue('editIndex', index);
+        setValue('isEdit', true);
     };
 
     // Delete row from table
@@ -230,43 +221,43 @@ function AddForecast(props) {
 
     // Reset form after adding or editing
     const resetForm = () => {
-        setChildPart(null);
-        setRMName('');
-        setRMGrade('');
-        setRMSpecification('');
+        setValue('childPart', null);
+        setValue('rmName', '');
+        setValue('rmgrade', '');
+        setValue('rmspecification', '');
         setValue('rmcode', '');
-        setEditIndex(null);
-        setIsEdit(false);
+        setValue('editIndex', null);
+        setValue('isEdit', false);
     };
 
     // Update row in table
     const updateRow = () => {
+        const rmName = getValues('rmName');
+        const rmgrade = getValues('rmgrade');
+        const rmspecification = getValues('rmspecification');
+        const childPart = getValues('childPart');
+        const editIndex = getValues('editIndex');
+
         if (!rmName || !rmgrade || !rmspecification) {
             Toaster.warning("Please fill all required fields");
             return;
         }
 
-        // Check for duplicate records in other rows (excluding the current edit row)
         const isDuplicate = tableData.some((item, index) => {
-            // Skip checking the row being edited
             if (index === editIndex) return false;
 
-            // Check by material details
             const sameMaterials =
                 item.RawMaterialId === rmName?.value &&
                 item.RawMaterialGradeId === rmgrade?.value &&
                 item.RawMaterialSpecificationId === rmspecification?.value;
 
-            // Check by code if available
             const sameCode = getValues('rmcode')?.value &&
                 item.RawMaterialCodeId === getValues('rmcode')?.value;
 
-            // If part is specified, check for same part + material/code
             if (childPart?.value) {
                 return item.PartId === childPart?.value && (sameMaterials || sameCode);
             }
 
-            // If no part specified, just check materials/code
             return sameMaterials || sameCode;
         });
 
@@ -295,10 +286,97 @@ function AddForecast(props) {
         resetFormAndDropdowns();
     };
 
-    // Cancel edit
-    const cancelEdit = () => {
-        resetFormAndDropdowns();
-        resetForm();
+    const handleChildPart = (newValue) => {
+        setValue('childPart', { label: newValue?.label, value: newValue?.value });
+        if (partType && partType.label !== 'Component') {
+            setValue('partNumber', { label: newValue?.label, value: newValue?.value });
+            setValue('RMName', '');
+            setValue('RMGrade', '');
+            setValue('RMSpecification', '');
+            setValue('rmcode', '');
+            setValue('rmName', '');
+            setValue('rmgrade', '');
+            setValue('rmspecification', '');
+        }
+    }
+
+    const handleRMName = (newValue) => {
+        setValue('rmName', { label: newValue?.label, value: newValue?.value });
+        setValue('RMGrade', '');
+        setValue('RMSpecification', '');
+        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }));
+    }
+
+    const handleRMGrade = (newValue) => {
+        setValue('rmgrade', { label: newValue?.label, value: newValue?.value });
+        setValue('RMSpecification', '');
+        dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }));
+    }
+
+    const handleRMSpecification = (newValue) => {
+        setValue('rmspecification', { label: newValue?.label, value: newValue?.value });
+
+        const rmName = getValues('rmName');
+        const rmgrade = getValues('rmgrade');
+
+        if (rmName?.value && rmgrade?.value && newValue?.value) {
+            const matchingCode = rmSpecificationList?.find(item =>
+                item.SpecificationId === newValue.value
+            );
+            if (matchingCode) {
+                setValue('rmcode', {
+                    label: matchingCode.RawMaterialCode,
+                    value: matchingCode.SpecificationId
+                });
+            }
+        }
+    }
+
+    const handleCode = (newValue) => {
+        if (newValue && newValue !== '') {
+            delete errors?.RawMaterialSpecification;
+            delete errors?.RawMaterialGrade;
+            delete errors.RawMaterialName;
+            dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
+                if (res.status === 204) {
+                    setValue('rmgrade', { label: '', value: '' });
+                    setValue('rmspecification', { label: '', value: '' });
+                    setValue('rmName', { label: '', value: '' });
+                    Toaster.warning("The Raw Material Grade and Specification has set as unspecified. First update the Grade and Specification against this Raw Material Code from Manage Specification tab.");
+                    return false;
+                }
+                let Data = res?.data?.Data;
+
+                setValue('rmgrade', { label: Data?.GradeName, value: Data?.GradeId });
+                setValue('rmspecification', { label: Data?.Specification, value: Data?.SpecificationId });
+                setValue('rmName', { label: Data?.RawMaterialName, value: Data?.RawMaterialId });
+                setValue('RMName', { label: Data?.RawMaterialName, value: Data?.RawMaterialId });
+                setValue('RMGrade', { label: Data?.GradeName, value: Data?.GradeId });
+                setValue('RMSpecification', { label: Data?.Specification, value: Data?.SpecificationId });
+            }));
+        } else {
+            setValue('RMName', '');
+            setValue('RMGrade', '');
+            setValue('RMSpecification', '');
+            setValue('disabled', false);
+        }
+    }
+
+    const resetFormAndDropdowns = () => {
+        if (partType.value !== Component) {
+            setValue('partNumber', '');
+        }
+
+        setValue('RMName', '');
+        setValue('RMGrade', '');
+        setValue('RMSpecification', '');
+        setValue('Specification', '');
+        setValue('Value', '');
+        setValue('rmcode', '');
+        setValue('rmName', '');
+        setValue('rmgrade', '');
+        setValue('rmspecification', '');
+        setValue('disabled', false);
     };
 
     // Functions for RM handling
@@ -376,109 +454,14 @@ function AddForecast(props) {
         }
     }
 
-    const handleChildPart = (newValue) => {
-        setChildPart({ label: newValue?.label, value: newValue?.value });
-        if (partType && partType.label !== 'Component') {
-            setValue('partNumber', { label: newValue?.label, value: newValue?.value });
-            setValue('RMName', '');
-            setValue('RMGrade', '');
-            setValue('RMSpecification', '');
-            setValue('rmcode', '');
-            setRMName('');
-            setRMGrade('');
-            setRMSpecification('');
-        }
-    }
-
-    const handleRMName = (newValue) => {
-        setRMName({ label: newValue?.label, value: newValue?.value })
-        setValue('RMGrade', '')
-        setValue('RMSpecification', '')
-        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }))
-    }
-
-    const handleRMGrade = (newValue) => {
-        setRMGrade({ label: newValue?.label, value: newValue?.value })
-        setValue('RMSpecification', '')
-        dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
-    }
-
-    const handleRMSpecification = (newValue) => {
-        setRMSpecification({ label: newValue?.label, value: newValue?.value })
-
-        // If we have all three fields (Name, Grade, and Specification), find and set the matching RM Code
-        if (rmName?.value && rmgrade?.value && newValue?.value) {
-            const matchingCode = rmSpecificationList?.find(item =>
-                item.SpecificationId === newValue.value
-            );
-            if (matchingCode) {
-                setValue('rmcode', {
-                    label: matchingCode.RawMaterialCode,
-                    value: matchingCode.SpecificationId
-                });
-            }
-        }
-    }
-
-    const handleCode = (newValue) => {
-        if (newValue && newValue !== '') {
-            delete errors?.RawMaterialSpecification
-            delete errors?.RawMaterialGrade
-            delete errors.RawMaterialName
-            dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
-                if (res.status === 204) {
-                    setRMGrade({ label: '', value: '', })
-                    setRMSpecification({ label: '', value: '', })
-                    setRMName({ label: '', value: '', })
-                    Toaster.warning("The Raw Material Grade and Specification has set as unspecified. First update the Grade and Specification against this Raw Material Code from Manage Specification tab.")
-                    return false
-                }
-                let Data = res?.data?.Data
-
-                setRMGrade({ label: Data?.GradeName, value: Data?.GradeId })
-                setRMSpecification({ label: Data?.Specification, value: Data?.SpecificationId })
-                setRMName({ label: Data?.RawMaterialName, value: Data?.RawMaterialId, })
-                setValue('RMName', { label: Data?.RawMaterialName, value: Data?.RawMaterialId, })
-                setValue('RMGrade', { label: Data?.GradeName, value: Data?.GradeId })
-                setValue('RMSpecification', { label: Data?.Specification, value: Data?.SpecificationId })
-            }))
-        } else {
-            setValue('RMName', '')
-            setValue('RMGrade', '')
-            setValue('RMSpecification', '')
-            setDisabled(false)
-        }
-    }
-
-    const resetFormAndDropdowns = () => {
-        // Keep the Part No value by not resetting it
-        if (partType.value !== Component) {
-            setValue('partNumber', '')
-        }
-
-        // Clear all other fields
-        setValue('RMName', '')
-        setValue('RMGrade', '')
-        setValue('RMSpecification', '')
-        setValue('Specification', '')
-        setValue('Value', '')
-        setValue("rmcode", "")
-
-        // Reset state variables
-        setRMName('')
-        setRMGrade('')
-        setRMSpecification('')
-
-        // Remove the logic that disables fields based on table data
-        setDisabled(false)
-    };
-
     const toggleDrawer = () => {
         props.closeDrawer(false)
-
     }
 
-
+    // Function to handle tab switching
+    const handleTabChange = (tabId) => {
+        setActiveTab(tabId);
+    };
 
     return (
         <div className='p-relative'>
@@ -502,7 +485,7 @@ function AddForecast(props) {
                                 <NavItem>
                                     <NavLink
                                         className={classnames({ active: activeTab === "1" })}
-                                        onClick={() => setActiveTab("1")}
+                                        onClick={() => handleTabChange("1")}
                                     >
                                         Add RM
                                     </NavLink>
@@ -510,7 +493,7 @@ function AddForecast(props) {
                                 <NavItem>
                                     <NavLink
                                         className={classnames({ active: activeTab === "2" })}
-                                        onClick={() => setActiveTab("2")}
+                                        onClick={() => handleTabChange("2")}
                                     >
                                         Add Forecast
                                     </NavLink>
@@ -540,7 +523,7 @@ function AddForecast(props) {
                                                                 errors={errors.partNumber}
                                                                 disabled={(isViewFlag || (partType && partType.label === 'Component')) ? true : false}
                                                                 options={renderListingRM('childPartName')}
-                                                                selected={childPart}
+                                                                selected={getValues('childPart')}
                                                             />
                                                         </div>
                                                     </Col>
@@ -552,14 +535,14 @@ function AddForecast(props) {
                                                             placeholder={"Select"}
                                                             Controller={Controller}
                                                             control={control}
-                                                            selected={rmName ? rmName : ''}
+                                                            selected={getValues('rmName') ? getValues('rmName') : ''}
                                                             rules={{ required: true }}
                                                             register={register}
                                                             customClassName="costing-version"
                                                             options={renderListingRM('rmname')}
                                                             mandatory={true}
                                                             handleChange={(newValue) => handleRMName(newValue)}
-                                                            disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                         />
                                                     </Col>
 
@@ -570,14 +553,14 @@ function AddForecast(props) {
                                                             placeholder={"Select"}
                                                             Controller={Controller}
                                                             control={control}
-                                                            selected={rmgrade ? rmgrade : ''}
+                                                            selected={getValues('rmgrade') ? getValues('rmgrade') : ''}
                                                             rules={{ required: getValues('RMName') ? true : false }}
                                                             register={register}
                                                             customClassName="costing-version"
                                                             options={renderListingRM('rmgrade')}
                                                             mandatory={getValues('RMName') ? true : false}
                                                             handleChange={(newValue) => handleRMGrade(newValue)}
-                                                            disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                         />
                                                     </Col>
 
@@ -588,14 +571,14 @@ function AddForecast(props) {
                                                             placeholder={"Select"}
                                                             Controller={Controller}
                                                             control={control}
-                                                            selected={rmspecification ? rmspecification : ''}
+                                                            selected={getValues('rmspecification') ? getValues('rmspecification') : ''}
                                                             rules={{ required: getValues('RMName') ? true : false }}
                                                             register={register}
                                                             customClassName="costing-version"
                                                             options={renderListingRM('rmspecification')}
                                                             mandatory={getValues('RMName') ? true : false}
                                                             handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                            disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                         />
                                                     </Col>
 
@@ -613,12 +596,12 @@ function AddForecast(props) {
                                                             handleChange={handleCode}
                                                             isClearable={true}
                                                             errors={errors.Code}
-                                                            disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                         />
                                                     </Col>
                                                     <Col md="3">
                                                         <div className="d-flex justify-content-start mb-2">
-                                                            {isEdit ? (
+                                                            {getValues('isEdit') ? (
                                                                 <>
                                                                     <button
                                                                         type="button"
@@ -630,7 +613,7 @@ function AddForecast(props) {
                                                                     <button
                                                                         type="button"
                                                                         className="mt30 cancel-btn ml-2"
-                                                                        onClick={cancelEdit}
+                                                                        onClick={resetForm}
                                                                     >
                                                                         <div className="cancel-icon"></div>Cancel
                                                                     </button>
@@ -641,14 +624,14 @@ function AddForecast(props) {
                                                                         type="button"
                                                                         className="user-btn mt30 pull-left"
                                                                         onClick={() => addRow(0)}
-                                                                        disabled={isViewFlag || (!isEditFlag ? (type === Component && activeTab === "1" ? false : false) : false)}
+                                                                        disabled={isViewFlag || (!isEditFlag ? (type === Component && getValues('activeTab') === "1" ? false : false) : false)}
                                                                     >
                                                                         <div className="plus"></div>ADD
                                                                     </button>
                                                                     <button
                                                                         type="button"
                                                                         className="mr15 ml-2 mt30 reset-btn"
-                                                                        disabled={isViewFlag || (!isEditFlag ? (type === Component && activeTab === "1" ? false : false) : false)}
+                                                                        disabled={isViewFlag || (!isEditFlag ? (type === Component && getValues('activeTab') === "1" ? false : false) : false)}
                                                                         onClick={resetFormAndDropdowns}
                                                                     >
                                                                         Reset
@@ -734,7 +717,7 @@ function AddForecast(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dropdownMode='select'
-                                                            minDate={n100Date || new Date()}
+                                                            minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="Select date"
                                                             className="withBorder"
@@ -755,7 +738,7 @@ function AddForecast(props) {
                                                     <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${sopQuantityList && sopQuantityList.length === 0 ? "overlay-contain" : ""} `}>
                                                         <div className={`ag-theme-material`}>
                                                             <AgGridReact
-                                                                defaultColDef={defaultColDef}
+                                                                // defaultColDef={state.gridOptions.defaultColDef}
                                                                 floatingFilter={false}
                                                                 domLayout='autoHeight'
                                                                 rowData={sopQuantityList}
@@ -815,7 +798,7 @@ function AddForecast(props) {
                             type={'button'}
                             className="submit-button save-btn mr-2"
                             onClick={() => handleSave(true)}
-                            disabled={isViewFlag || disabled}
+                            disabled={isViewFlag || getValues('disabled')}
                         >
                             <div className={"save-icon"}></div>
                             {'Save'}

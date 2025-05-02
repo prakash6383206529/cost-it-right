@@ -1178,6 +1178,7 @@ export const API = {
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
+  createCustomerRfq: `${BASE_URL}/nfr/create-customer-rfq`,
   getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
@@ -3401,6 +3402,8 @@ export const SURFACETREATMENTLABEL = "Surface Treatment"
 export const RM = "RM"
 export const CC = "CC"
 export const RMCC = "RM + CC"
+
+export const DEFAULTRMPRESSURE = 500
 
 export const PAINTTECHNOLOGY = 31
 export const HANGEROVERHEAD = "Hanger Overhead"

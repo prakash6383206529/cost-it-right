@@ -12,7 +12,6 @@ import Dropzone from 'react-dropzone-uploader';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import Toaster from '../../common/Toaster';
 import LoaderCustom from '../../common/LoaderCustom';
-import HeaderTitle from '../../common/HeaderTitle';
 import DayTime from '../../common/DayTimeWrapper';
 import TourWrapper from "../../common/Tour/TourWrapper";
 import NoContentFound from '../../common/NoContentFound';
@@ -24,152 +23,111 @@ import { getPartInfo } from '../../costing/actions/Costing';
 import { getRMSpecificationDataList, getRawMaterialNameChild } from '../../masters/actions/Material';
 import { getClientSelectList } from '../actions/Client';
 import { fileUploadQuotation } from '../../rfq/actions/rfq';
-import { createNFRBOMDetails, getNFRPartWiseGroupDetail } from './actions/nfr';
 import { getPartSelectListWtihRevNo } from '../actions/Volume';
 
 // Constants and Config
 import { FILE_URL, ZBC, searchCount, PRODUCT_ID, EMPTY_DATA } from '../../../config/constants';
-import { AcceptableRMUOM, NFR_COMPONENT_CUSTOMIZED_ID, NFR_COMPONENT_CUSTOMIZED_LABEL, NFR_RAW_MATERIAL_ID, NFR_RAW_MATERIAL_LABEL, NFR_RAW_MATERIAL_NAME, PART_TYPE_LIST_FOR_NFR } from '../../../config/masterData';
+import { AcceptableRMUOM, NFR_COMPONENT_CUSTOMIZED_ID, NFR_RAW_MATERIAL_ID } from '../../../config/masterData';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { Steps } from './TourMessages';
 
 // Helpers
 import { autoCompleteDropdownPart } from '../../common/CommonFunctions';
-import { maxLength20, checkForDecimalAndNull, validateFileName, minLength3 } from "../../../helper/validation";
+import { maxLength20, validateFileName, minLength3 } from "../../../helper/validation";
 import AddForecast from './AddForecast';
 // Assets
 import redcrossImg from '../../../assests/images/red-cross.png';
 import BOMViewer from '../part-master/BOMViewer';
 import { loggedInUserId } from '../../../helper';
+import { createCustomerRfq, createNFRBOMDetails } from './actions/nfr';
 
 function CreateManualNFR(props) {
     const { t } = useTranslation("Nfr")
-    const { isViewFlag, partListData, data } = props;
+    const { isViewFlag, partListData, cbcGrid } = props;
     const dropzone = useRef(null);
-    const { handleSubmit, formState: { errors }, register, control, getValues, setValue } = useForm({
+    const { handleSubmit:handleSubmitTableForm, formState: { errors }, register, control, getValues, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange'
     })
     const dispatch = useDispatch();
 
     // Redux selectors
-    const plantSelectList = useSelector(state => state.comman.plantSelectList);
-    const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
-    const { rmSpecificationList } = useSelector((state) => state.material);
-    const clientSelectList = useSelector((state) => state.client.clientSelectList)
-    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const plantSelectList = useSelector(state => state?.comman?.plantSelectList);
+    const UOMSelectList = useSelector(state => state?.comman?.UOMSelectList)
+    const { rmSpecificationList } = useSelector((state) => state?.material);
+    const clientSelectList = useSelector((state) => state?.client?.clientSelectList)
+    const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
 
-    // Form data state
-    const [sopQuantityList, setSopQuantityList] = useState([])
-    const [partName, setpartName] = useState('')
-    const [selectedPart, setSelectedPart] = useState('');
-    const [selectedUOM, setSelectedUOM] = useState('');
-    const [selectedPlant, setSelectedPlant] = useState('');
-    const [remarks, setRemarks] = useState('');
-    const [selectedRawMaterial, setSelectedRawMaterial] = useState('');
-    const [selectedPartType, setSelectedPartType] = useState('');
-    const [previousPartType, setPreviousPartType] = useState('');
-    const [customer, setCustomer] = useState([]);
-    const [zbcDate, setZbcDate] = useState('')
-    const [cbcDate, setCbcDate] = useState('')
-    const [fieldDisabled, setFieldDisabled] = useState(false)
+    // Unified state object
+    const [state, setState] = useState({
+        sopQuantityList: [],
+        zbcDate: '',
+        cbcDate: '',
+        sopDate: '',
+        editIndex: '',
+        remarks: '',
+        gridColumnApi: null,
+        gridApi: null,
+        fiveyearList: [],
+        gridData: [],
+        rfqData: [],
+        rmDetails: [],
+        selectedPartList: [],
+        selectedRMList: [],
+        files: [],
+        partTypeList: [],
+        rmDetailsGridIndex: '',
+        apiCallCounter: 0,
+        attachmentLoader: false,
+        fieldDisabled: false,
+        openBOMViewer: false,
+        inputLoader: false,
+        loader: false,
+        VendorInputLoader: false,
+        openAddForecast: false,
+    });
 
-    const [sopDate, setSOPDate] = useState('')
-    const [fiveyearList, setFiveyearList] = useState([])
-
-    // Table and grid state
-    const [rowData, setRowData] = useState([]);
-    const [modifiedRowData, setModifiedRowData] = useState([]);
-    const [gridData, setGridData] = useState([]);
-    const [editIndex, setEditIndex] = useState('');
-    const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [gridApi, setGridApi] = useState(null);
-    const [rfqData, setRfqData] = useState([])
-    const gridOptionsPart = {}
-
-    // UI state
-    const [tableLoader, setTableLoader] = useState(false);
-    const [inputLoader, setInputLoader] = useState(false)
-    const [loader, setLoader] = useState(false)
-    const [VendorInputLoader, setVendorInputLoader] = useState(false)
-
-    // Drawer state
-    const [openAddRMDetails, setOpenAddRMDetails] = useState(false);
-    const [rmDetailsGridIndex, setRMDetailsGridIndex] = useState('');
-    const [openAddForecast, setOpenAddForecast] = useState(false)
-    const [rmDetails, setRMDetails] = useState([]);
-    const [openBOMViewer, setOpenBOMViewer] = useState(false)
-    const [viewRMDetails, setViewRMDetails] = useState(false)
-
-    // Selection lists
-    const [selectedPartList, setSelectedPartList] = useState([]);
-    const [selectedRMList, setSelectedRMList] = useState([]);
-
-    // File upload state
-    const [attachmentLoader, setAttachmentLoader] = useState(false)
-    const [files, setFiles] = useState([])
-    const [apiCallCounter, setApiCallCounter] = useState(0)
-
-    const [partTypeList, setPartTypeList] = useState([]);
     useEffect(() => {
         if (!isViewFlag) {
             dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
             dispatch(getUOMSelectList(() => { }))
             dispatch(getSelectListPartType((res) => {
-                setPartTypeList(res?.data?.SelectList)
+                setState(prevState => ({ ...prevState, partTypeList: res?.data?.SelectList }));
             }))
             dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
             dispatch(getRawMaterialNameChild(() => { }))
+            setState(prevState => ({ ...prevState, VendorInputLoader: true }));
+            dispatch(getClientSelectList((res) => {
+                setState(prevState => ({ ...prevState, VendorInputLoader: false }));
+            }))
+            dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
+
+            let tempArr = [];
+            cbcGrid && cbcGrid.map(el => {
+                tempArr.push(el.CustomerId)
+                return null;
+            })
+            initialConfiguration?.IsDestinationPlantConfigure === false && setValue('Customer', tempArr);
         }
     }, [])
 
-    useEffect(() => {
-        setVendorInputLoader(true)
-        const { cbcGrid } = props;
-        dispatch(getClientSelectList((res) => {
-            setVendorInputLoader(false)
-        }))
-        dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
-
-        let tempArr = [];
-        cbcGrid && cbcGrid.map(el => {
-            tempArr.push(el.CustomerId)
-            return null;
-        })
-        initialConfiguration?.IsDestinationPlantConfigure === false && setCustomer(tempArr)
-    }, []);
-
-    useEffect(() => {
-        if (data?.Id) {
-            setTableLoader(true);
-            dispatch(getNFRPartWiseGroupDetail(data?.Id, (res) => {
-                if (res?.data?.DataList?.length > 0) {
-                    setRowData(res?.data?.DataList);
-                    setModifiedRowData(res?.data?.DataList);
-                }
-                setTableLoader(false);
-            }));
-        }
-    }, [data]);
-
-    // Utility functions
     const renderListing = (value) => {
         const temp = [];
-        
-        switch(value) {
+
+        switch (value) {
             case 'Plant':
                 plantSelectList && plantSelectList?.map(item => {
                     if (item.PlantId === '0') return false;
-                    temp.push({ 
-                        label: item.PlantNameCode, 
-                        value: item.PlantId, 
-                        plantCode: item.PlantCode, 
-                        plantName: item.PlantName 
+                    temp.push({
+                        label: item.PlantNameCode,
+                        value: item.PlantId,
+                        plantCode: item.PlantCode,
+                        plantName: item.PlantName
                     })
                     return null
                 });
                 break;
-                
+
             case 'Customer':
                 clientSelectList && clientSelectList.map(item => {
                     if (item.Value === '0') return false;
@@ -177,15 +135,15 @@ function CreateManualNFR(props) {
                     return null;
                 });
                 break;
-                
+
             case 'PartType':
-                partTypeList && partTypeList?.map(item => {
+                state.partTypeList && state.partTypeList?.map(item => {
                     if (item?.Value === '0' || item?.Value === PRODUCT_ID || item?.Value === '3' || item?.Value === '5') return false;
                     temp.push({ label: item?.Text, value: item?.Value });
                     return null
                 });
                 break;
-                
+
             case 'UOM':
                 UOMSelectList && UOMSelectList?.map(item => {
                     const accept = AcceptableRMUOM.includes(item.Type)
@@ -214,12 +172,11 @@ function CreateManualNFR(props) {
             inputValue = inputValue.trim();
         }
         const resultInput = inputValue.slice(0, searchCount)
-        if ((inputValue?.length >= searchCount && partName !== resultInput) ||
-            (selectedPartType?.value !== previousPartType && inputValue?.length >= searchCount)) {
-            setInputLoader(true)
-            const res = await getPartSelectListWtihRevNo(resultInput, null, null, selectedPartType?.value);
-            setInputLoader(false)
-            setpartName(resultInput)
+        if ((inputValue?.length >= searchCount && getValues('PartName') !== resultInput) || (inputValue?.length >= searchCount)) {
+            setState(prevState => ({ ...prevState, inputLoader: true }));
+            const res = await getPartSelectListWtihRevNo(resultInput, null, null, getValues('PartType')?.value);
+            setState(prevState => ({ ...prevState, inputLoader: false }));
+            setValue('PartName', resultInput);
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
                 return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)
@@ -241,19 +198,17 @@ function CreateManualNFR(props) {
     }
 
     useEffect(() => {
-        if (rmDetails && rmDetails.length > 0) {
-            setRMDetails(rmDetails)
+        if (state.rmDetails && state.rmDetails.length > 0) {
+            setState(prevState => ({ ...prevState, rmDetails: state.rmDetails }));
         }
-    }, [rmDetails]);
+    }, [state.rmDetails]);
 
     const onGridReady = (params) => {
         params.api.sizeColumnsToFit();
-        setGridColumnApi(params.columnApi)
-        setGridApi(params.api)
+        setState(prevState => ({ ...prevState, gridColumnApi: params.columnApi }));
+        setState(prevState => ({ ...prevState, gridApi: params.api }));
         params.api.paginationGoToPage(0);
     };
-
-
 
     const resetData = () => {
         errors.Quantity = {};
@@ -266,46 +221,20 @@ function CreateManualNFR(props) {
         setValue("PartName", '');
         setValue("Description", '');
         setValue("UnitOfMeasurement", '');
-        setSelectedPartType('');
-        setSelectedPart('');
-        setSelectedRawMaterial('');
-        setEditIndex('');
-        setZbcDate('');
-        setCbcDate('');
-    }
-
-    const checkIsDataFilled = () => {
-        let value = ''
-        switch (selectedPartType?.value) {
-            case NFR_COMPONENT_CUSTOMIZED_ID:
-                value = selectedPart
-                break;
-            case NFR_RAW_MATERIAL_ID:
-                value = selectedRawMaterial
-                break;
-            default:
-                break;
-        }
-        let check = false
-        if (selectedPartType?.length === 0 || value?.length === 0 || getValues("HeaderMaterial") === '') {
-            check = true
-        }
-        return check
     }
 
     // Event handlers for form fields
     const handleChangePartType = (value) => {
-        setPreviousPartType(selectedPartType?.value);
-        setSelectedPartType(value)
-        setSelectedRawMaterial('')
-        setSelectedPart('')
-        setValue("Part", '')
-        setValue("RawMaterial", '')
-        setSopQuantityList([]);
-        setRMDetails([]);
+        setValue("PartType", value);
+        setValue("Part", '');
+        setState(prevState => ({ ...prevState, rmDetails: [], sopQuantityList: [] }));
     }
+
     const handlePartChange = (newValue) => {
-        setSelectedPart(newValue);
+        if (getValues("Part")?.value !== newValue?.value) {
+            setState(prevState => ({ ...prevState, rmDetails: [], sopQuantityList: [] }));
+          }
+        setValue("Part", newValue);
 
         if (newValue && newValue !== '') {
             dispatch(getPartInfo(newValue.value, (res) => {
@@ -315,14 +244,15 @@ function CreateManualNFR(props) {
                 setValue('Description', Data?.Description ? Data.Description : '');
                 setValue('UnitOfMeasurement', Data?.UnitOfMeasurement ? Data.UnitOfMeasurement : '');
 
-                if (sopDate) {
-                    const newSopQuantityList = fiveyearList.map(yearItem => ({
+                if (state.sopDate) {
+                    const newSopQuantityList = state.fiveyearList.map(yearItem => ({
                         PartNumber: newValue?.label || '',
                         YearName: yearItem.toString(),
-                        Quantity: '0'
+                        Quantity: 0,
+                        SOPDate: state.sopDate
                     }));
 
-                    setSopQuantityList(newSopQuantityList);
+                    setState(prevState => ({ ...prevState, sopQuantityList: newSopQuantityList }));
                 }
             }));
         } else {
@@ -333,128 +263,135 @@ function CreateManualNFR(props) {
     }
 
     const handleChangePlant = (newValue) => {
-        setSelectedPlant(newValue)
+        setValue("Plant", newValue);
     }
 
     const handleCustomerChange = (newValue) => {
         if (newValue && newValue !== '') {
-            setCustomer(newValue)
+            setValue("Customer", newValue);
         }
     }
 
     const handleRemarkChange = (newValue) => {
-        setRemarks(newValue)
+        setValue("Remarks", newValue);
     }
 
     // Date change handlers
     const handleZBCDateChange = (date) => {
-        setZbcDate(DayTime(date).isValid() ? DayTime(date) : '')
+        setState(prevState => ({
+            ...prevState,
+            zbcDate: DayTime(date).isValid() ? DayTime(date) : ''
+        }));
     };
 
     const handleCBCDateChange = (date) => {
-        setCbcDate(DayTime(date).isValid() ? DayTime(date) : '')
+        setState(prevState => ({
+            ...prevState,
+            cbcDate: DayTime(date).isValid() ? DayTime(date) : ''
+        }));
     };
 
     const handleSOPDateChange = (date) => {
         const newDate = DayTime(date).isValid() ? DayTime(date) : '';
 
         // Validate that SOP date is not before ZBC date
-        if (zbcDate && newDate && new Date(newDate) < new Date(zbcDate)) {
+        if (state.zbcDate && newDate && new Date(newDate) < new Date(state.zbcDate)) {
             Toaster.warning("SOP Date cannot be before ZBC Last Submission Date");
             return;
         }
 
-        setSOPDate(newDate);
+        setState(prevState => ({ ...prevState, sopDate: newDate }));
 
         let year = new Date(date).getFullYear();
         const years = [];
         for (let i = 0; i < 5; i++) {
             years.push(year + i);
         }
-        setFiveyearList(years);
+        setState(prevState => ({ ...prevState, fiveyearList: years }));
 
         if (date) {
-            const partNumber = selectedPart?.label || '';
+            const partNumber = getValues('Part')?.label || '';
 
             const newSopQuantityList = years.map(yearItem => ({
                 PartNumber: partNumber,
                 YearName: yearItem.toString(),
                 Quantity: 0,
-                SOPDate: sopDate
+                SOPDate: state.sopDate
             }));
 
-            setSopQuantityList(newSopQuantityList);
+            setState(prevState => ({ ...prevState, sopQuantityList: newSopQuantityList }));
         }
     };
 
     const addTableHandler = debounce(() => {
         // Check if required fields are filled
-        if (!getValues("CustomerRFQNo") || !customer || !selectedPartType || !selectedPlant) {
+        if (!getValues("CustomerRFQNo") || !getValues("Customer") || !getValues("PartType") || !getValues("Plant")) {
             Toaster.warning("Please fill all the required fields")
             return false
         }
-
-        if (selectedPartList?.includes(selectedPart?.value) ||
-            selectedRMList?.includes(selectedRawMaterial?.value)) {
-            Toaster.warning("This item has already been added to the table.")
-            return false
-        }
-
-        let tempData = rfqData ? [...rfqData] : []
         let obj = {
             HeaderMaterial: getValues("HeaderMaterial"),
-            PartType: selectedPartType?.label,
-            PartTypeId: selectedPartType?.value,
-            PartId: selectedPart?.value,
-            PartNumber: selectedPart?.label,
+            PartType: getValues("PartType")?.label,
+            PartTypeId: getValues("PartType")?.value,
+            PartId: getValues("Part")?.value,
+            PartNumber: getValues("Part")?.label,
             CustomerRFQNo: getValues("CustomerRFQNo"),
-            CustomerId: customer?.value,
-            CustomerName: customer?.label || '',
+            CustomerId: getValues("Customer")?.value,
+            CustomerName: getValues("Customer")?.label || '',
             PartName: getValues("PartName"),
             Description: getValues("Description"),
             UnitOfMeasurement: getValues("UnitOfMeasurement"),
             GroupCode: getValues("GroupCode"),
-            Plant: selectedPlant?.label || '',
-            ZBCLastSubmissionDate: zbcDate ? DayTime(zbcDate).format('DD/MM/YYYY') : '',
-            QuotationLastSubmissionDate: cbcDate ? DayTime(cbcDate).format('DD/MM/YYYY') : '',
-            Remarks: remarks
+            Plant: getValues("Plant")?.label || '',
+            ZBCLastSubmissionDate: state.zbcDate ? DayTime(state.zbcDate).format('DD/MM/YYYY') : '',
+            QuotationLastSubmissionDate: state.cbcDate ? DayTime(state.cbcDate).format('DD/MM/YYYY') : '',
+            Remarks: getValues("Remarks")
         }
 
-        switch (selectedPartType?.value) {
+        switch (getValues("PartType")?.value) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
-                setSelectedPartList([...selectedPartList, selectedPart?.value])
+                setState(prevState => ({
+                    ...prevState,
+                    selectedPartList: [...prevState.selectedPartList, getValues("Part")?.value]
+                }));
                 break;
             case NFR_RAW_MATERIAL_ID:
-                setSelectedRMList([...selectedRMList, selectedRawMaterial?.value])
+                setState(prevState => ({
+                    ...prevState,
+                    selectedRMList: [...prevState.selectedRMList, getValues("RawMaterial")?.value]
+                }));
                 break;
             default:
                 break;
         }
 
+        let tempData = state.rfqData ? [...state.rfqData] : []
         tempData.push(obj)
-        setGridData(tempData)
-        setRfqData(tempData)
-        // resetData()
-        setFieldDisabled(true)
+        setState(prevState => ({
+            ...prevState,
+            gridData: tempData,
+            rfqData: tempData,
+            fieldDisabled: true
+        }));
 
         Toaster.success("Item added successfully")
     }, 500)
 
     const updateRateGrid = () => {
-        let tempData = gridData[editIndex];
+        let tempData = state.gridData[state.editIndex];
 
-        switch (selectedPartType?.value) {
+        switch (getValues("PartType")?.value) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
-                if (gridData?.findIndex(item => item?.PartId === selectedPart?.value) !== editIndex) {
-                    if (selectedPartList?.includes(selectedPart?.value)) {
+                if (state.gridData?.findIndex(item => item?.PartId === getValues("Part")?.value) !== state.editIndex) {
+                    if (state.selectedPartList?.includes(getValues("Part")?.value)) {
                         Toaster.warning("This part has already been added to the table.")
                         return false
                     }
                 }
                 break;
             case NFR_RAW_MATERIAL_ID:
-                if (gridData?.findIndex(item => item?.RawMaterialCode === selectedRawMaterial?.label) !== editIndex) {
-                    if (selectedRMList?.includes(selectedRawMaterial?.value)) {
+                if (state.gridData?.findIndex(item => item?.RawMaterialCode === getValues("RawMaterial")?.label) !== state.editIndex) {
+                    if (state.selectedRMList?.includes(getValues("RawMaterial")?.value)) {
                         Toaster.warning("This raw material has already been added to the table.")
                         return false
                     }
@@ -466,28 +403,27 @@ function CreateManualNFR(props) {
 
         tempData = {
             ...tempData,
-            HeaderMaterial: getValues("HeaderMaterial"),
-            PartType: selectedPartType?.label,
-            PartTypeId: selectedPartType?.value,
-            PartId: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? selectedPart?.value : '',
-            PartNumber: selectedPart?.label,
-            RawMaterialCode: selectedPartType?.value === NFR_RAW_MATERIAL_ID ? selectedRawMaterial?.label : '',
-            NFRPartRawMaterialDetails: selectedPartType?.value === NFR_COMPONENT_CUSTOMIZED_ID ? rmDetails: [],
-            SOPQuantityDetails: sopQuantityList,
+            PartType: getValues("PartType")?.label,
+            PartTypeId: getValues("PartType")?.value,
+            PartId: getValues("PartType")?.value === NFR_COMPONENT_CUSTOMIZED_ID ? getValues("Part")?.value : '',
+            PartNumber: getValues("Part")?.label,
+            RawMaterialCode: getValues("PartType")?.value === NFR_RAW_MATERIAL_ID ? getValues("RawMaterial")?.label : '',
+            NFRPartRawMaterialDetails: getValues("PartType")?.value === NFR_COMPONENT_CUSTOMIZED_ID ? getValues("rmDetails") : [],
+            SOPQuantityDetails: getValues("sopQuantityList"),
             CustomerRFQNo: getValues("CustomerRFQNo"),
-            CustomerName: customer?.label || '',
+            CustomerName: getValues("Customer")?.label || '',
             PartName: getValues("PartName"),
             Description: getValues("Description"),
             UnitOfMeasurement: getValues("UnitOfMeasurement"),
             GroupCode: getValues("GroupCode"),
-            Plant: selectedPlant?.label || '',
-            ZBCLastSubmissionDate: zbcDate ? DayTime(zbcDate).format('DD/MM/YYYY') : '',
-            QuotationLastSubmissionDate: cbcDate ? DayTime(cbcDate).format('DD/MM/YYYY') : '',
-            Remarks: remarks
+            Plant: getValues("Plant")?.label || '',
+            ZBCLastSubmissionDate: getValues("ZBCDate") ? DayTime(getValues("ZBCDate")).format('DD/MM/YYYY') : '',
+            QuotationLastSubmissionDate: getValues("CBCDate") ? DayTime(getValues("CBCDate")).format('DD/MM/YYYY') : '',
+            Remarks: getValues("Remarks")
         }
 
         // Update the grid data
-        let tempArray = Object.assign([...gridData], { [editIndex]: tempData })
+        let tempArray = Object.assign([...state.gridData], { [state.editIndex]: tempData })
 
         // Update the selected lists
         const partIdArray = [];
@@ -498,99 +434,65 @@ function CreateManualNFR(props) {
             rawMaterialCodeArray?.push(item?.RawMaterialCode);
         });
 
-        switch (selectedPartType?.value) {
+        switch (getValues("PartType")?.value) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
-                setSelectedPartList(partIdArray)
+                setState(prevState => ({ ...prevState, selectedPartList: partIdArray }));
                 break;
             case NFR_RAW_MATERIAL_ID:
-                setSelectedRMList(rawMaterialCodeArray)
+                setState(prevState => ({ ...prevState, selectedRMList: rawMaterialCodeArray }));
                 break;
             default:
                 break;
         }
 
         // Update both gridData and rfqData
-        setGridData(tempArray)
-        setRfqData(tempArray)
+        setState(prevState => ({ ...prevState, gridData: tempArray, rfqData: tempArray }));
         // resetData()
-        setFieldDisabled(true)
+        setState(prevState => ({ ...prevState, fieldDisabled: true }));
 
         // Show success message
         Toaster.success("Item updated successfully")
     }
 
     const cancelEdit = () => {
-        setFieldDisabled(true)
+        setState(prevState => ({ ...prevState, fieldDisabled: true }));
     }
 
     const editItemDetails = (index) => {
-        let tempObj = rfqData[index]
-        setViewRMDetails(false)
-        setEditIndex(index)
-        setFieldDisabled(false)
-        errors.Quantity = {}
-        
-        setValue('HeaderMaterial', tempObj?.HeaderMaterial)
-        setValue('Quantity', tempObj?.Quantity)
-        setValue('CustomerRFQNo', tempObj?.CustomerRFQNo)
-        setValue('Customer', tempObj?.CustomerName)
-        setValue('PartName', tempObj?.PartName)
-        setValue('PartNumber', tempObj?.PartNumber)
-        setValue('Description', tempObj?.Description)
-        setValue('Plant', tempObj?.Plant)
-        setValue('UnitOfMeasurement', tempObj?.UnitOfMeasurement)
-        setValue('GroupCode', tempObj?.GroupCode)
+        let tempObj = state.rfqData[index]
+        setState(prevState => ({ ...prevState, editIndex: index, fieldDisabled: false, errors: {} }));
 
-        // Set PartType and update related state
-        setValue('PartType', { label: tempObj?.PartType, value: tempObj?.PartTypeId })
-        setSelectedPartType({ label: tempObj?.PartType, value: tempObj?.PartTypeId })
-
-        // Set Customer
-        setValue('Customer', { label: tempObj?.CustomerName, value: tempObj?.CustomerId })
-        setCustomer({ label: tempObj?.CustomerName, value: tempObj?.CustomerId })
-
-        // Set Plant
-        setValue('Plant', { label: tempObj?.Plant, value: tempObj?.Plant })
-        setSelectedPlant({ label: tempObj?.Plant, value: tempObj?.Plant })
-
-        // Set UOM
-        setValue('UOM', { label: tempObj?.Uom, value: tempObj?.Uom })
-        setSelectedUOM({ label: tempObj?.Uom, value: tempObj?.Uom })
-
-        // Set Part details
-        setValue('Part', { label: tempObj?.PartNumber, value: tempObj?.PartId })
-        setSelectedPart({ label: tempObj?.PartNumber, value: tempObj?.PartId })
+        setValue('HeaderMaterial', tempObj?.HeaderMaterial);
+        setValue('CustomerRFQNo', tempObj?.CustomerRFQNo);
+        setValue('Customer', { label: tempObj?.CustomerName, value: tempObj?.CustomerId });
+        setValue('PartName', tempObj?.PartName);
+        setValue('PartNumber', tempObj?.PartNumber);
+        setValue('Description', tempObj?.Description);
+        setValue('Plant', { label: tempObj?.Plant, value: tempObj?.Plant });
+        setValue('UnitOfMeasurement', tempObj?.UnitOfMeasurement);
+        setValue('GroupCode', tempObj?.GroupCode);
+        setValue('PartType', { label: tempObj?.PartType, value: tempObj?.PartTypeId });
+        setValue('Customer', { label: tempObj?.CustomerName, value: tempObj?.CustomerId });
+        setValue('Plant', { label: tempObj?.Plant, value: tempObj?.Plant });
+        setValue('UOM', { label: tempObj?.Uom, value: tempObj?.Uom });
+        setValue('Part', { label: tempObj?.PartNumber, value: tempObj?.PartId });
 
         // Set Raw Material if exists
         if (tempObj?.RawMaterialCode) {
-            const rmId = filterRMFromList(rmSpecificationList, tempObj?.RawMaterialCode)[0]?.SpecificationId
-            setValue('RawMaterial', { label: tempObj?.RawMaterialCode, value: rmId })
-            setSelectedRawMaterial({ label: tempObj?.RawMaterialCode, value: rmId })
-        }
-
-        // Set Customer
-        if (tempObj?.CustomerName) {
-            setCustomer({ label: tempObj?.CustomerName, value: tempObj?.CustomerName })
-        }
-
-        // Set plant
-        if (tempObj?.Plant) {
-            setSelectedPlant({ label: tempObj?.Plant, value: tempObj?.Plant })
-        }
-
-        if (tempObj?.Remarks) {
-            setRemarks(tempObj?.Remarks)
+            const rmId = filterRMFromList(rmSpecificationList, tempObj?.RawMaterialCode)[0]?.SpecificationId;
+            setValue('RawMaterial', { label: tempObj?.RawMaterialCode, value: rmId });
+            setState(prevState => ({ ...prevState, selectedRawMaterial: { label: tempObj?.RawMaterialCode, value: rmId } }));
         }
 
         // Handle different part types
         switch (tempObj?.PartTypeId) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
-                setValue('Part', { label: tempObj?.PartNumber, value: tempObj?.PartId })
+                setValue('Part', { label: tempObj?.PartNumber, value: tempObj?.PartId });
                 break;
             case NFR_RAW_MATERIAL_ID:
-                const rmId = filterRMFromList(rmSpecificationList, tempObj?.RawMaterialCode)[0]?.SpecificationId
-                setValue('RawMaterial', { label: tempObj?.RawMaterialCode, value: rmId })
-                setSelectedRawMaterial({ label: tempObj?.RawMaterialCode, value: rmId })
+                const rmId = filterRMFromList(rmSpecificationList, tempObj?.RawMaterialCode)[0]?.SpecificationId;
+                setValue('RawMaterial', { label: tempObj?.RawMaterialCode, value: rmId });
+                setState(prevState => ({ ...prevState, selectedRawMaterial: { label: tempObj?.RawMaterialCode, value: rmId } }));
                 break;
             default:
                 break;
@@ -598,21 +500,18 @@ function CreateManualNFR(props) {
     }
 
     const deleteItem = (index) => {
-        const updatedData = gridData.filter((_, i) => i !== index);
-        setGridData(updatedData);
-        setRfqData(updatedData)
-        setFieldDisabled(false)
-        resetData()
+        const updatedData = state.gridData.filter((_, i) => i !== index);
+        setState(prevState => ({ ...prevState, gridData: updatedData, rfqData: updatedData, fieldDisabled: false }));
+        resetData();
     }
 
     const viewItemDetails = () => {
-        setViewRMDetails(true)
-        setOpenAddForecast(true)
+        setState(prevState => ({ ...prevState, openAddForecast: true }));
     }
 
     const toggleBOMViewer = () => {
-        if (selectedPart?.value) {
-            setOpenBOMViewer(!openBOMViewer)
+        if (getValues("Part")?.value) {
+            setState(prevState => ({ ...prevState, openBOMViewer: !prevState.openBOMViewer }));
         }
     }
 
@@ -620,8 +519,8 @@ function CreateManualNFR(props) {
     const handleChangeStatus = ({ meta, file }, status) => {
         if (status === 'removed') {
             const removedFileName = file.name;
-            let tempArr = files && files.filter(item => item?.OriginalFileName !== removedFileName)
-            setFiles(tempArr)
+            let tempArr = state.files && state.files.filter(item => item?.OriginalFileName !== removedFileName)
+            setState(prevState => ({ ...prevState, files: tempArr }));
         }
 
         if (status === 'done') {
@@ -632,8 +531,8 @@ function CreateManualNFR(props) {
                 setDisableFalseFunction()
                 return false;
             }
-            setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
-            setAttachmentLoader(true);
+            setState(prevState => ({ ...prevState, apiCallCounter: prevState.apiCallCounter + 1 }));
+            setState(prevState => ({ ...prevState, attachmentLoader: true }));
 
             dispatch(fileUploadQuotation(data, (res) => {
                 if (res && res?.status !== 200) {
@@ -645,17 +544,15 @@ function CreateManualNFR(props) {
                 if ('response' in res) {
                     status = res && res?.response?.status
                     dropzone.current.files.pop()
-                    setAttachmentLoader(false)
+                    setState(prevState => ({ ...prevState, attachmentLoader: false }));
                 }
                 else {
                     let Data = res.data[0]
-                    setFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+                    setState(prevState => ({ ...prevState, files: [...prevState.files, Data] })); // Update the state using the callback function
                 }
-                setApiCallCounter(prevCounter => prevCounter - 1);
-
-                // Check if this is the last API call
-                if (apiCallCounter === 0) {
-                    setAttachmentLoader(false)
+                setState(prevState => ({ ...prevState, apiCallCounter: prevState.apiCallCounter - 1 }));
+                if (state.apiCallCounter === 0) {
+                    setState(prevState => ({ ...prevState, attachmentLoader: false }));
                 }
             }))
         }
@@ -664,16 +561,17 @@ function CreateManualNFR(props) {
             Toaster.warning('Allowed only xls, doc, docx, pptx jpeg, pdf, zip files.');
         } else if (status === 'error_file_size') {
             setDisableFalseFunction()
-            setAttachmentLoader(false)
+            setState(prevState => ({ ...prevState, attachmentLoader: false }));
             dropzone.current.files.pop()
             Toaster.warning("File size greater than 20 mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setAttachmentLoader(false)
+            setState(prevState => ({ ...prevState, attachmentLoader: false }));
             dropzone.current.files.pop()
             Toaster.warning("Something went wrong")
         }
+
     }
 
     const Preview = ({ meta }) => {
@@ -686,12 +584,12 @@ function CreateManualNFR(props) {
 
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
-            let tempArr = files.filter((item) => item?.FileId !== FileId)
-            setFiles(tempArr);
+            let tempArr = state.files.filter((item) => item?.FileId !== FileId)
+            setState(prevState => ({ ...prevState, files: tempArr }));
         }
         if (FileId == null) {
-            let tempArr = files && files.filter(item => item?.FileName !== OriginalFileName)
-            setFiles(tempArr)
+            let tempArr = state.files && state.files.filter(item => item?.FileName !== OriginalFileName)
+            setState(prevState => ({ ...prevState, files: tempArr }));
         }
         // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
         if (dropzone?.current !== null) {
@@ -700,29 +598,27 @@ function CreateManualNFR(props) {
     }
 
     const setDisableFalseFunction = () => {
-        const loop = Number(dropzone.current.files?.length) - Number(files?.length)
-        if (Number(loop) === 1 || Number(dropzone.current.files?.length) === Number(files?.length)) {
+        const loop = Number(dropzone.current.files?.length) - Number(state.files?.length)
+        if (Number(loop) === 1 || Number(dropzone.current.files?.length) === Number(state.files?.length)) {
             // No action needed
         }
     }
 
     const openAndCloseDrawer = (isSave, dataList = [], rmDetails = []) => {
 
-        setOpenAddRMDetails(false);
-
         if (isSave === true && ((dataList && dataList.length > 0) || (rmDetails && rmDetails.length > 0))) {
-            setRMDetails(rmDetails);
+            setState(prevState => ({ ...prevState, rmDetails: rmDetails }));
 
-            setSopQuantityList([...dataList]);
+            setState(prevState => ({ ...prevState, sopQuantityList: [...dataList] }));
 
             // Update the gridData with the new RM details
-            if (rmDetailsGridIndex !== '') {
-                const updatedGridData = [...gridData];
-                updatedGridData[rmDetailsGridIndex] = {
-                    ...updatedGridData[rmDetailsGridIndex],
+            if (state.rmDetailsGridIndex !== '') {
+                const updatedGridData = [...state.gridData];
+                updatedGridData[state.rmDetailsGridIndex] = {
+                    ...updatedGridData[state.rmDetailsGridIndex],
                     NFRPartRawMaterialDetails: rmDetails
                 };
-                setGridData(updatedGridData);
+                setState(prevState => ({ ...prevState, gridData: updatedGridData }));
             }
 
             // Show success message
@@ -730,7 +626,7 @@ function CreateManualNFR(props) {
         }
 
         // Close the forecast drawer
-        setOpenAddForecast(false);
+        setState(prevState => ({ ...prevState, openAddForecast: false }));
     }
 
     const cancel = (isSaveAPICalled = false) => {
@@ -743,56 +639,53 @@ function CreateManualNFR(props) {
 
     // Form submission function
     const onSubmit = (values) => {
-        if (rfqData?.length === 0) {
+        if (state.rfqData?.length === 0) {
             Toaster.warning("Please add at least one part to the table.")
             return false
         }
         // Prepare the request object with all the necessary data
         const obj = {
-            "CustomerId": customer?.value,
-            "CustomerNumber": values?.CustomerRFQNo,
-            "CustomerName": customer,
+            "CustomerId": getValues("Customer")?.value,
+            "CustomerNumber": getValues("CustomerRFQNo"),
+            "CustomerName": getValues("Customer")?.label,
             "PartDetails": [
                 {
-                  "PartIdRef": selectedPart?.value,
-                  "PartTypeIdRef": selectedPartType?.value,
-                  "PartName": values?.PartName,
-                  "PartNumber": selectedPart?.label,
-                  "PartDescription": values?.Description,
-                  "Quantity": 0,
-                  "Uom": values?.UnitOfMeasurement,
-                  "PlantIdRef": selectedPlant?.value,
-                  "Attachments": files,
-                  "RMDetails": rmDetails,
-                  "ForecastQuantities": sopQuantityList,
-                  "Plant": [
-                    {
-                      "PlantName": selectedPlant?.label,
-                      "PlantId": selectedPlant?.value,
-                      "PlantCode": selectedPlant?.plantCode
-                    }
-                  ]
+                    "PartIdRef": getValues("Part")?.value,
+                    "PartTypeIdRef": getValues("PartType")?.value,
+                    "PartName": getValues("PartName"),
+                    "PartNumber": getValues("Part")?.label,
+                    "PartDescription": getValues("Description"),
+                    "Uom": getValues("UnitOfMeasurement"),
+                    "PlantIdRef": getValues("Plant")?.value,
+                    "Attachments": state.files,
+                    "RMDetails": state.rmDetails,
+                    "ForecastQuantities": state.sopQuantityList,
+                    "Plant": [
+                        {
+                            "PlantName": getValues("Plant")?.label,
+                            "PlantId": getValues("Plant")?.value,
+                            "PlantCode": getValues("Plant")?.plantCode
+                        }
+                    ]
                 }
-              ],
-              "QuotationLastSubmissionDate": cbcDate,
-              "ZBCLastSubmissionDate": zbcDate,
-              "LoggedInUserId": loggedInUserId(),
-              "Remarks": remarks
+            ],
+            "QuotationLastSubmissionDate": state.cbcDate,
+            "ZBCLastSubmissionDate": state.zbcDate,
+            "LoggedInUserId": loggedInUserId(),
+            "Remarks": getValues("Remarks")
         }
-
-
-        setLoader(true);
-        dispatch(createNFRBOMDetails(obj, (res) => {
+        setState(prevState => ({ ...prevState, loader: true }));
+        dispatch(createCustomerRfq(obj, (res) => {
             if (res?.data?.Result) {
                 Toaster.success("Customer RFQ created successfully.");
             }
-            setLoader(false);
+            setState(prevState => ({ ...prevState, loader: false }));
             cancel(true);
         }));
     }
 
-    const loaderObj = { isLoader: inputLoader }
-    const VendorLoaderObj = { isLoader: VendorInputLoader }
+    const loaderObj = { isLoader: state.inputLoader }
+    const VendorLoaderObj = { isLoader: state.VendorInputLoader }
 
     return (
         <>
@@ -812,9 +705,12 @@ function CreateManualNFR(props) {
                     <div className="row">
                         <div className="col-md-12">
                             <div className="shadow-lgg login-formg">
-                                <form onSubmit={handleSubmit(onSubmit)}>
-                                    <>
                                         <Row>
+                                            <Col md="12">
+                                                <div className="left-border">
+                                                    {"Customer RFQ Details:"}
+                                                </div>
+                                            </Col>
                                             <Col md="3">
                                                 <TextFieldHookForm
                                                     label="Customer RFQ No."
@@ -834,7 +730,7 @@ function CreateManualNFR(props) {
                                                     className=""
                                                     customClassName={"withBorder"}
                                                     errors={errors?.CustomerRFQNo}
-                                                    disabled={isViewFlag || fieldDisabled}
+                                                    disabled={isViewFlag || state.fieldDisabled}
                                                 />
                                             </Col>
 
@@ -848,14 +744,22 @@ function CreateManualNFR(props) {
                                                     control={control}
                                                     rules={{ required: true }}
                                                     register={register}
-                                                    defaultValue={customer.length !== 0 ? customer : ""}
+                                                    defaultValue={getValues("Customer")?.length !== 0 ? getValues("Customer") : ""}
                                                     options={renderListing("Customer")}
                                                     mandatory={true}
                                                     handleChange={handleCustomerChange}
                                                     errors={errors.Customer}
                                                     isLoading={VendorLoaderObj}
-                                                    disabled={isViewFlag || fieldDisabled}
+                                                    disabled={isViewFlag || state.fieldDisabled}
                                                 />
+                                              
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col md="12">
+                                                <div className="left-border">
+                                                    {"Part Details:"}
+                                                </div>
                                             </Col>
                                             <Col md="3">
                                                 <SearchableSelectHookForm
@@ -871,8 +775,9 @@ function CreateManualNFR(props) {
                                                     options={renderListing("PartType")}
                                                     handleChange={(newValue) => handleChangePartType(newValue)}
                                                     errors={errors?.PartType}
-                                                    disabled={isViewFlag || fieldDisabled}
+                                                    disabled={isViewFlag || state.fieldDisabled}
                                                 />
+                                               
                                             </Col>
 
                                             <Col md="3" className="input-container">
@@ -885,19 +790,19 @@ function CreateManualNFR(props) {
                                                         control={control}
                                                         rules={{ required: true }}
                                                         register={register}
-                                                        defaultValue={selectedPart?.length !== 0 ? selectedPart : ""}
+                                                        defaultValue={getValues("Part")?.length !== 0 ? getValues("Part") : ""}
                                                         asyncOptions={filterList}
                                                         mandatory={true}
                                                         isLoading={loaderObj}
                                                         handleChange={handlePartChange}
                                                         errors={errors?.Part}
-                                                        disabled={isViewFlag || fieldDisabled}
+                                                        disabled={isViewFlag || state.fieldDisabled}
                                                         NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                     />
-                                                    {selectedPartType?.label === "Assembly" && selectedPart?.value && <button
+                                                    {getValues("PartType")?.label === "Assembly" && getValues("Part")?.value && <button
                                                         id="AssemblyPart_Add_BOM"
                                                         type="button"
-                                                        disabled={!selectedPart?.value || fieldDisabled}
+                                                        disabled={!getValues("Part")?.value || state.fieldDisabled}
                                                         onClick={toggleBOMViewer}
                                                         className={"user-btn pull-left mt30 mb-4 ml-2"}>
                                                         <div className={'fa fa-eye pr-1'}></div> BOM
@@ -909,14 +814,14 @@ function CreateManualNFR(props) {
                                                         title="Add RM & Forecast"
                                                         onClick={(e) => {
                                                             e.preventDefault();
-                                                            setOpenAddForecast(true);
+                                                            setState(prevState => ({ ...prevState, openAddForecast: true }));
                                                         }}
                                                         type="button"
-                                                        disabled={!selectedPart || fieldDisabled}
+                                                        disabled={!getValues("Part")?.value || state.fieldDisabled}
                                                     >
-                                                        {rmDetails?.length > 0 ? <div className="view mr-2"></div> : <div className="plus"></div>}
+                                                        {state.rmDetails?.length > 0 ? <div className="view mr-2"></div> : <div className="plus"></div>}
                                                     </button>
-                                                </div>
+                                            </div>
                                             </Col>
                                             <Col md="3" className="input-container">
                                                 <TextFieldHookForm
@@ -1000,7 +905,7 @@ function CreateManualNFR(props) {
                                                     customClassName="costing-version"
                                                     options={renderListing("Segment")}
                                                     errors={errors?.Segment}
-                                                    disabled={isViewFlag || fieldDisabled}
+                                                    disabled={isViewFlag || state.fieldDisabled}
                                                 />
                                             </Col>
                                             <Col md="3" className="input-container">
@@ -1018,7 +923,7 @@ function CreateManualNFR(props) {
                                                     options={renderListing("Plant")}
                                                     handleChange={(newValue) => handleChangePlant(newValue)}
                                                     errors={errors?.Plant}
-                                                    disabled={isViewFlag || fieldDisabled}
+                                                    disabled={isViewFlag || state.fieldDisabled}
                                                 />
                                             </Col>
                                             <Col md="3">
@@ -1028,14 +933,14 @@ function CreateManualNFR(props) {
                                                         <DatePicker
                                                             name="ZBC Last Submission Date"
                                                             id="AddNFR_ZBC_Date"
-                                                            selected={DayTime(zbcDate).isValid() ? new Date(zbcDate) : ''}
+                                                            selected={DayTime(state.zbcDate).isValid() ? new Date(state.zbcDate) : ''}
                                                             onChange={handleZBCDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dropdownMode='select'
                                                             dateFormat="dd/MM/yyyy"
                                                             minDate={new Date()}
-                                                            maxDate={sopDate ? new Date(sopDate) : null}
+                                                            maxDate={state.sopDate ? new Date(state.sopDate) : null}
                                                             placeholderText="Select Date"
                                                             className="withBorder"
                                                             mandatory={true}
@@ -1043,7 +948,7 @@ function CreateManualNFR(props) {
                                                             disabledKeyboardNavigation
                                                             yearDropdownItemNumber={100}
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isViewFlag || fieldDisabled}
+                                                            disabled={isViewFlag || state.fieldDisabled}
                                                         />
                                                     </div>
                                                 </div>
@@ -1055,14 +960,14 @@ function CreateManualNFR(props) {
                                                         <DatePicker
                                                             name="Quotation Last Submission Date"
                                                             id="AddNFR_CBC_Date"
-                                                            selected={DayTime(cbcDate).isValid() ? new Date(cbcDate) : ''}
+                                                            selected={DayTime(state.cbcDate).isValid() ? new Date(state.cbcDate) : ''}
                                                             onChange={handleCBCDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dropdownMode='select'
                                                             dateFormat="dd/MM/yyyy"
-                                                            minDate={new Date(zbcDate)}
-                                                            maxDate={sopDate ? new Date(sopDate) : null}
+                                                            minDate={new Date(state.zbcDate)}
+                                                            maxDate={state.sopDate ? new Date(state.sopDate) : null}
                                                             placeholderText="Select Date"
                                                             className="withBorder"
                                                             mandatory={true}
@@ -1070,21 +975,19 @@ function CreateManualNFR(props) {
                                                             disabledKeyboardNavigation
                                                             yearDropdownItemNumber={100}
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isViewFlag || fieldDisabled}
+                                                            disabled={isViewFlag || state.fieldDisabled}
                                                         />
                                                     </div>
                                                 </div>
                                             </Col>
-                                        </Row>
-                                        <Row>
                                             <Col md="3">
-                                                <div className='m-2'>
-                                                    {editIndex !== '' ? (
+                                                <div className='mt30'>
+                                                    {state.editIndex !== '' ? (
                                                         <>
                                                             <button type="button" className={"btn btn-primary pull-left mt-2 mr5"} onClick={updateRateGrid}>Update</button>
                                                             <button
                                                                 type="button"
-                                                                className={"mr15 ml-1 add-cancel-btn cancel-btn"}
+                                                                className={"mr15 ml-2 add-cancel-btn cancel-btn"}
                                                                 onClick={() => cancelEdit()}
                                                             >
                                                                 <div className={"cancel-icon"}></div>Cancel
@@ -1095,17 +998,17 @@ function CreateManualNFR(props) {
                                                             <button id="AddNFR_AddData"
                                                                 type="button"
                                                                 className={"user-btn pull-left"}
-                                                                onClick={addTableHandler}
-                                                                disabled={fieldDisabled}
+                                                                onClick={handleSubmitTableForm(addTableHandler)}
+                                                                disabled={state.fieldDisabled}
                                                             >
                                                                 <div className={"plus"}></div>ADD
                                                             </button>
                                                             <button
                                                                 id="AddNFR_ResetData"
                                                                 type="button"
-                                                                className={"mr15 ml-1  reset-btn"}
+                                                                className={"mr15 ml-2  reset-btn"}
                                                                 onClick={() => resetData()}
-                                                                disabled={fieldDisabled}
+                                                                disabled={state.fieldDisabled}
                                                             >
                                                                 Reset
                                                             </button>
@@ -1133,7 +1036,7 @@ function CreateManualNFR(props) {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {rfqData && rfqData?.map((item, index) => {
+                                                        {state.rfqData && state.rfqData?.map((item, index) => {
                                                             return (
                                                                 <tr key={index}>
                                                                     <td>{item.PartType ? item.PartType : '-'}</td>
@@ -1174,7 +1077,7 @@ function CreateManualNFR(props) {
                                                         })}
                                                     </tbody>
 
-                                                    {rfqData?.length === 0 && (
+                                                    {state.rfqData?.length === 0 && (
                                                         <tbody className='border'>
                                                             <tr>
                                                                 <td colSpan={"12"}> <NoContentFound title={EMPTY_DATA} /></td>
@@ -1199,7 +1102,7 @@ function CreateManualNFR(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    value={remarks}
+                                                    value={state.remarks}
                                                     customClassName={"withBorder"}
                                                     handleChange={(e) => { handleRemarkChange(e.target.value) }}
                                                     errors={errors.remark}
@@ -1209,10 +1112,10 @@ function CreateManualNFR(props) {
                                             </Col>
                                             <Col md="3" className="height152-label">
                                                 <label>Upload Attachment (upload up to 4 files) <AttachmentValidationInfo /> </label>
-                                                <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
+                                                <div className={`alert alert-danger mt-2 ${state.files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                                     Maximum file upload limit has been reached.
                                                 </div>
-                                                <div id="AddNFR_uploadFile" className={`${files?.length >= 4 ? 'd-none' : ''}`}>
+                                                <div id="AddNFR_uploadFile" className={`${state.files?.length >= 4 ? 'd-none' : ''}`}>
                                                     <Dropzone
                                                         ref={dropzone}
                                                         onChangeStatus={handleChangeStatus}
@@ -1248,11 +1151,11 @@ function CreateManualNFR(props) {
                                                     />
                                                 </div>
                                             </Col>
-                                            <Col md="4" className=' p-relative'>
+                                            <Col md="3" className=' p-relative'>
                                                 <div className={"attachment-wrapper"}>
-                                                    {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                                                    {files &&
-                                                        files.map((f) => {
+                                                    {state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                                                    {state.files &&
+                                                        state.files.map((f) => {
                                                             const withOutTild = f.FileURL?.replace("~", "");
                                                             const fileURL = `${FILE_URL}${withOutTild}`;
                                                             return (
@@ -1288,6 +1191,7 @@ function CreateManualNFR(props) {
                                                 <button
                                                     id="SaveNFR_SubmitData"
                                                     type={'submit'}
+                                                    onClick={onSubmit}
                                                     className="submit-button save-btn mr-2"
                                                     disabled={isViewFlag}
                                                 >
@@ -1296,6 +1200,7 @@ function CreateManualNFR(props) {
                                                 <button
                                                     id="AddNFR_SubmitData"
                                                     type={'submit'}
+                                                    onClick={onSubmit}
                                                     disabled={isViewFlag}
                                                     className="submit-button save-btn"
                                                     value="send"
@@ -1304,46 +1209,43 @@ function CreateManualNFR(props) {
                                                 </button>
                                             </div>
                                         </Row>
-                                    </>
-                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {loader && <LoaderCustom customClass="Rfq-Loader" />}
+            {state.loader && <LoaderCustom customClass="Rfq-Loader" />}
 
-            {openAddForecast &&
+            {state.openAddForecast &&
                 <AddForecast
-                    isOpen={openAddForecast}
+                    isOpen={state.openAddForecast}
                     closeDrawer={openAndCloseDrawer}
                     anchor={'right'}
-                    isViewFlag={isViewFlag || fieldDisabled}
+                    isViewFlag={isViewFlag || state.fieldDisabled}
                     partListData={partListData}
-                    rmDetails={rmDetails}
-                    setRMDetails={setRMDetails}
-                    sopDate={sopDate}
+                    rmDetails={state.rmDetails}
+                    setRMDetails={(details) => setState(prevState => ({ ...prevState, rmDetails: details }))}
+                    sopDate={state.sopDate}
                     handleSOPDateChange={handleSOPDateChange}
-                    zbcDate={zbcDate}
+                    zbcDate={state.zbcDate}
                     errors={errors}
-                    gridOptionsPart={gridOptionsPart}
+                    // gridOptionsPart={gridOptionsPart}
                     onGridReady={onGridReady}
                     EditableCallback={!isViewFlag}
-                    partType={selectedPartType}
-                    AssemblyPartNumber={selectedPart}
-                    sopQuantityList={sopQuantityList}
-                    setSopQuantityList={setSopQuantityList}
-                // addrmdetails={addRMDetails}
+                    partType={getValues("PartType")}
+                    AssemblyPartNumber={getValues("Part")}
+                    sopQuantityList={state.sopQuantityList}
+                    setSopQuantityList={(list) => setState(prevState => ({ ...prevState, sopQuantityList: list }))}
                 />
             }
 
-            {openBOMViewer && <BOMViewer
-                isOpen={openBOMViewer}
+            {state.openBOMViewer && <BOMViewer
+                isOpen={state.openBOMViewer}
                 anchor="right"
                 isEditFlag={true}
-                PartId={selectedPart?.value}
+                PartId={getValues("Part")?.value}
                 avoidAPICall={false}
-                closeDrawer={() => setOpenBOMViewer(false)}
+                closeDrawer={() => setState(prevState => ({ ...prevState, openBOMViewer: false }))}
                 BOMViewerData={[]}
                 isFromVishualAd={true}
                 NewAddedLevelOneChilds={[]}

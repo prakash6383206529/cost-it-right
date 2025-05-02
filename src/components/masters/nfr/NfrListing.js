@@ -663,7 +663,7 @@ function NfrListing(props) {
                                 <Col>
                                     <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                         <div className={`ag-theme-material`}>
-                                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                            {/* {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />} */}
                                             <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
