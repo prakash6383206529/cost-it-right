@@ -212,31 +212,61 @@ function AssemblyTechnology(props) {
  * @description Handle remark popup confirm and save remark to session storage
  */
     const handleRemarkPopupConfirm = () => {
-        if (!activeRemark || !activeRemark?.partNumber || !activeRemark?.assemblyPartNumber) {
+        if (!activeRemark?.partNumber || !activeRemark?.assemblyPartNumber) {
             closePopUp();
             return;
         }
-        // Find the BOP item that matches the activeRemark part number and assembly part number
-        const bopItem = children?.find(child => child?.PartType === 'BOP' && child?.PartNumber === activeRemark?.partNumber && child.AssemblyPartNumber === activeRemark.assemblyPartNumber);
-        if (bopItem) {
-            const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
-            const bopIndex = costingArray.findIndex(item =>
-                item.AssemblyPartNumber === activeRemark?.assemblyPartNumber && item?.PartNumber === activeRemark?.partNumber && item.PartType === 'BOP');
-
-            if (bopIndex !== -1) {
-                // Update the remark directly on the BOP object
-                costingArray[bopIndex].Remark = remark;
-                sessionStorage.setItem('costingArray', JSON.stringify(costingArray));
-                const bopCostingId = bopItem?.CostingId || "00000000-0000-0000-0000-000000000000";
-
-                // Save remark and costingId to Redux state for API call
-                dispatch(setBopRemark(remark, bopCostingId));
-                setCallSaveAssemblyApi(true);
-                Toaster.success('Remark saved successfully');
+        
+        // Get and update subAssemblyTechnologyArray
+        if (subAssemblyTechnologyArray?.[0]?.CostingChildPartDetails?.length > 0) {
+            const tempArray = JSON.parse(JSON.stringify(subAssemblyTechnologyArray));
+            
+            // Find and update target BOP object
+            const childPart = tempArray[0].CostingChildPartDetails.find(part => 
+                part.PartType === 'BOP' && 
+                part.PartNumber === activeRemark?.partNumber && 
+                part.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+            );
+            
+            if (childPart) {
+                childPart.Remark = remark;
+                dispatch(setSubAssemblyTechnologyArray(tempArray, () => {}));
             }
         }
-
-        // Close the popup
+        
+        // Update session storage
+        const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+        const bopIndex = costingArray.findIndex(item =>
+            item.AssemblyPartNumber === activeRemark?.assemblyPartNumber && 
+            item.PartNumber === activeRemark?.partNumber && 
+            item.PartType === 'BOP'
+        );
+        
+        if (bopIndex !== -1) {
+            costingArray[bopIndex].Remark = remark;
+        } else {
+            costingArray.push({
+                PartNumber: activeRemark?.partNumber,
+                AssemblyPartNumber: activeRemark?.assemblyPartNumber,
+                PartType: 'BOP',
+                Remark: remark
+            });
+        }
+        sessionStorage.setItem('costingArray', JSON.stringify(costingArray));
+        
+        // Find BOP item and update Redux for API
+        const bopItem = children?.find(child => 
+            child.PartType === 'BOP' && 
+            child.PartNumber === activeRemark?.partNumber && 
+            child.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+        );
+        
+        if (bopItem) {
+            dispatch(setBopRemark(remark, bopItem?.CostingId || "00000000-0000-0000-0000-000000000000"));
+        }
+        
+        setCallSaveAssemblyApi(true);
+        Toaster.success('Remark saved successfully');
         closePopUp();
     }
  const nestedBOP = children && children.map((el, idx) => {

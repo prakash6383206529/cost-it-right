@@ -12,10 +12,10 @@ import $ from "jquery"
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}, IsAddPaymentTermInNetCost = false, remark = '', bopCostingIdForRemark = '') => {
- let Arr = JSON.parse(sessionStorage.getItem('costingArray'))
+  let Arr = JSON.parse(sessionStorage.getItem('costingArray'))
   let surfaceTreatmentArr = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
   let assemblyWorkingRow = []
-  
+
   if (tabId === 1) {
     // TABRMCC SUB ASSEMBLIES
     Arr && Arr.map((item) => {
@@ -97,7 +97,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       }
       return ''
     })
-}
+  }
   else if (tabId === 2) {
     //SURFACE TREATMENT SUBASSEMBLIES
     surfaceTreatmentArr && surfaceTreatmentArr.map((item) => {
@@ -456,32 +456,23 @@ export const clearCosting = (dispatch) => {
 
 }
 
-export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false,remark="",bopCostingId="") => {
+export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false, remark = "", bopCostingId = "") => {
   let Arr = tabData
+  console.log("Arr", Arr)
   let assemblyWorkingRow = []
-  const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || []
 
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
     // let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
     if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part' || item.PartType === 'BOP')) {
-      let bopRemark = ''
-      if (item?.PartType === 'BOP') {
-        const bopObject = costingArray.find(costingItem => 
-          costingItem.PartNumber === item?.PartNumber && 
-          costingItem.AssemblyPartNumber === item?.AssemblyPartNumber && 
-          costingItem.PartType === 'BOP'
-        )
-        // Use the BOP's specific remark from costingArray if found
-        bopRemark = bopObject?.Remark || ''
-      }
+     
       let subAssemblyObj = {
         "CostingId": item?.CostingId,
         "NetPOPrice": item?.CostingPartDetails?.NetPOPrice,
         "NetChildPartsCostWithQuantity": item?.CostingPartDetails?.NetChildPartsCostWithQuantity,
         "BasicRate": item?.CostingPartDetails?.NetPOPrice,
         "TotalBoughtOutPartCostWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-        // Only add remark to BOP type when the bopCostingId matches
-        "Remark": item.PartType === 'BOP' ? bopRemark : (item.Remark || '')      }
+        "Remark": item.Remark ?? ""
+      }
       assemblyWorkingRow.push(subAssemblyObj)
     }
     return ''
