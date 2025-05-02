@@ -90,7 +90,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "BOPHandlingChargeApplicability": item && item?.CostingPartDetails?.BOPHandlingChargeApplicability,
           "RawMaterialCostWithCutOff": item && item?.CostingPartDetails?.RawMaterialCostWithCutOff,
           "BasicRate": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.NetTotalRMBOPCC,
-          "Remark": item.PartType === 'BOP' && remark ? remark : (item.Remark || '')
+          "Remark": item?.Remark ?? ""
         }
         assemblyWorkingRow.push(subAssemblyObj)
       }
@@ -463,7 +463,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
     // let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
     if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part' || item.PartType === 'BOP')) {
-     
+
       let subAssemblyObj = {
         "CostingId": item?.CostingId,
         "NetPOPrice": item?.CostingPartDetails?.NetPOPrice,

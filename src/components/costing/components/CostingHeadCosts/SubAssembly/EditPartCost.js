@@ -1178,7 +1178,7 @@ function EditPartCost(props) {
                 boughtOutPartChildId={props?.boughtOutPartChildId}
             />}
 
-            {openRemarkPopUp && <PopupMsgWrapper isOpen={openRemarkPopUp} closePopUp={onRemarkPopUpClose} confirmPopup={onRemarkPopUpConfirm} message={'Remark'} isInputField={true} defaultValue={remark} setInputData={setRemark} isDisabled={props?.costingSummary || CostingViewMode} />}
+            {openRemarkPopUp && <PopupMsgWrapper isOpen={openRemarkPopUp} closePopUp={onRemarkPopUpClose} confirmPopup={onRemarkPopUpConfirm} message={'Remark'} header={'Remark'} isInputField={true} defaultValue={remark} setInputData={setRemark} isDisabled={props?.costingSummary || CostingViewMode} maxLength={REMARKMAXLENGTH} />}
         </div >
     );
 }
