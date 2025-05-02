@@ -15,7 +15,7 @@ import { EMPTY_GUID, WACTypeId } from '../../../../../config/constants';
 import _ from 'lodash';
 import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
 import Toaster from '../../../../common/Toaster';
-import { PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
+import { PART_TYPE_ASSEMBLY, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 
 function AssemblyTechnology(props) {
@@ -286,6 +286,8 @@ function AssemblyTechnology(props) {
                 isInputField={true}
                 isDisabled={CostingViewMode}
                 defaultValue={remark}
+                maxLength={REMARKMAXLENGTH}
+                
             />
         );
 
