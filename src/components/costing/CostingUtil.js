@@ -8,6 +8,7 @@ import { PART_TYPE_ASSEMBLY, PLASTIC } from "../../config/masterData";
 import { checkDivisionByPlantAndGetDivisionIdByPart } from "../../actions/Common";
 import Toaster from "../common/Toaster";
 import { MESSAGES } from "../../config/message";
+import $ from "jquery"
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}, IsAddPaymentTermInNetCost = false, remark = '', bopCostingIdForRemark = '') => {
@@ -696,6 +697,14 @@ export const viewAddButtonIcon = (data, type, CostingViewMode) => {
     return className
   } else if (type === "title") {
     return title
+  }
+}
+export const handleRemarkPopup = (event, id) => {
+  if (event === "open") {
+    $('body').find('.MuiPaper-root.MuiDrawer-paper').css('overflow', 'hidden')
+    $('body').find(`[id="${id}"]`).focus()
+  } else {
+    $('body').find('.MuiPaper-root.MuiDrawer-paper').css('overflow', '')
   }
 }
 

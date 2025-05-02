@@ -16,7 +16,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, REMARKMAXLENGTH, } from '../../../../../config/masterData'
-import { findProcessCost, findProductionPerHour, swappingLogicCommon } from '../../../CostingUtil';
+import { findProcessCost, findProductionPerHour, swappingLogicCommon, handleRemarkPopup } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
@@ -1891,7 +1891,10 @@ function ProcessCost(props) {
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                                 {(item?.GroupName === '' || item?.GroupName === null) && <Popup trigger={<button id={`process_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
-                                  position="top right">
+                                  position="top right"
+                                  onOpen={() => handleRemarkPopup("open", `${ProcessGridFields}.${index}.remarkPopUp`)}
+                                  onClose={() => handleRemarkPopup()}
+                                  >
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${ProcessGridFields}.${index}.remarkPopUp`}
