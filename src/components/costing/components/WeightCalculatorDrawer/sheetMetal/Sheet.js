@@ -420,7 +420,7 @@ function Sheet(props) {
                                             required: true,
                                             validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
-																				onKeyDown={blockInvalidNumberKeys}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -441,7 +441,7 @@ function Sheet(props) {
                                             required: true,
                                             validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
-																				onKeyDown={blockInvalidNumberKeys}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={(e) => { setValue('SheetWidthBottom', e.target.value) }}
                                         defaultValue={''}
                                         className=""
@@ -462,7 +462,7 @@ function Sheet(props) {
                                             required: true,
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
-																				onKeyDown={blockInvalidNumberKeys}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -511,7 +511,7 @@ function Sheet(props) {
                                             required: false,
                                             validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
-																				onKeyDown={blockInvalidNumberKeys}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -532,7 +532,7 @@ function Sheet(props) {
                                             required: false,
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
-																				onKeyDown={blockInvalidNumberKeys}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -564,7 +564,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`NO. of Components`}
+                                        label={`No. of Components`}
                                         // name={'NoOfComponent'}
                                         name={'TotalComponentByWidth'}
                                         id={'total-component-width'}
@@ -657,7 +657,7 @@ function Sheet(props) {
                                 <Col md="3"> 
                                     <TooltipCustom disabledIcon={true} id={'yield-percentage'} tooltipText={`Yield % = (${finishWeightLabel} Weight(${UOMDimension.label}) / Gross Weight(${UOMDimension.label})) * 100`} />
                                     <TextFieldHookForm
-                                        label={`Yield %`}
+                                        label={`Yield (%)`}
                                         name={'YieldPercentage'}
                                         Controller={Controller}
                                         id={'yield-percentage'}
