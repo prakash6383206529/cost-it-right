@@ -19,6 +19,7 @@ import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
 import ViewBOP from '../../Drawers/ViewBOP';
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { useForm } from 'react-hook-form';
+import { REMARKMAXLENGTH } from '../../../../../config/masterData';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -353,6 +354,32 @@ function AssemblyPart(props) {
 
         // Save remark and costingId to Redux state for API call
         dispatch(setBopRemark(remark, bopCostingId));
+        
+        // Update the remark in RMCCTabData as well
+        if (RMCCTabData && RMCCTabData.length > 0) {
+          const updatedRMCCTabData = JSON.parse(JSON.stringify(RMCCTabData));
+          
+          // Search through all items in RMCCTabData to find matching BOP
+          updatedRMCCTabData.forEach(rmccItem => {
+            if (rmccItem?.CostingChildPartDetails && rmccItem?.CostingChildPartDetails?.length > 0) {
+              // Find the BOP within CostingChildPartDetails that matches the PartNumber and AssemblyPartNumber
+              const childBopIndex = rmccItem?.CostingChildPartDetails?.findIndex(
+                childPart => childPart?.PartType === 'BOP' && 
+                             childPart?.PartNumber === activeRemark?.partNumber && 
+                             childPart?.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+              );
+              
+              if (childBopIndex !== -1) {
+                // Update the remark for the matching BOP
+                rmccItem.CostingChildPartDetails[childBopIndex].Remark = remark;
+              }
+            }
+          });
+          
+          // Dispatch updated RMCCTabData to the Redux store
+          dispatch(setRMCCData(updatedRMCCTabData, () => {}));
+        }
+        
         setCallSaveAssemblyApi(true);
         Toaster.success('Remark saved successfully');
       }
@@ -379,6 +406,7 @@ function AssemblyPart(props) {
         isInputField={true}
         isDisabled={CostingViewMode}
         defaultValue={remark}
+        maxLength={REMARKMAXLENGTH}
       />
     );
 
