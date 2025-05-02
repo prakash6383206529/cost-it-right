@@ -23,6 +23,7 @@ import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
 import { useTranslation } from 'react-i18next';
 import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
+import { de } from 'date-fns/locale';
 
 let counter = 0;
 function OperationCost(props) {
@@ -153,7 +154,8 @@ function OperationCost(props) {
           ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
           CurrencyExchangeRate: el.CurrencyExchangeRate,
           CostingConditionNumber: el.CostingConditionNumber,
-          CostingConditionMasterAndTypeLinkingId: el.CostingConditionMasterAndTypeLinkingId
+          CostingConditionMasterAndTypeLinkingId: el.CostingConditionMasterAndTypeLinkingId,
+          ForType: el.ForType
         }
       })
       let tempArr = [...GridArray, ...rowArray]

@@ -75,7 +75,6 @@ function OverheadProfit(props) {
 
 
   const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
-  console.log(tempOverheadObj,'tempOverheadObj')
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
   const [totalToolCost, setTotalToolCost] = useState(0)
@@ -96,18 +95,18 @@ function OverheadProfit(props) {
     }
 
     // GET FIXED VALUE IN GET API
-    // if (Object.keys(CostingOverheadDetail).length > 0) {
-    //   setOverheadValues(CostingOverheadDetail, false)
-    // }
+    if (CostingOverheadDetail && (CostingOverheadDetail)?.length > 0) {
+      setOverheadValues(CostingOverheadDetail, false)
+    }
 
-    // //GET FIXED VALUE IN GET API
-    // if (Object.keys(CostingProfitDetail).length > 0) {
-    //   setProfitValues(CostingProfitDetail, false)
-    //   setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
-    //     label: CostingProfitDetail.ProfitCRMHead, value: 1
-    //   })
-    //   setValue('profitRemark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
-    // }
+    //GET FIXED VALUE IN GET API
+    if (CostingProfitDetail && (CostingProfitDetail)?.length > 0) {
+      setProfitValues(CostingProfitDetail, false)
+      setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
+        label: CostingProfitDetail.ProfitCRMHead, value: 1
+      })
+      setValue('profitRemark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
+    }
 
     setTimeout(() => {
       IncludeSurfaceTreatmentCall()
@@ -177,27 +176,20 @@ function OverheadProfit(props) {
   });
 
   useEffect(() => {
-
-    setTimeout(() => { 
-
+    setTimeout(() => {
       let tempObj = {
         "OverheadDetailId": overheadObj?.OverheadDetailId || "00000000-0000-0000-0000-000000000000",
         "OverheadId": overheadObj?.OverheadId || "00000000-0000-0000-0000-000000000000", 
         "OverheadCRMHead": overheadObj?.OverheadCRMHead || "",
         "Remark": overheadObj?.Remark || "",
-        "CostingApplicabilityDetails": [
-          ...tempOverheadObj?.CostingApplicabilityDetails
-        ]
+        "CostingApplicabilityDetails": tempOverheadObj?.CostingApplicabilityDetails || []
       }
-
       let profitTempObj = {
         "ProfitDetailId": profitObj?.ProfitDetailId || "00000000-0000-0000-0000-000000000000",
         "ProfitId": profitObj?.ProfitId || "00000000-0000-0000-0000-000000000000",
         "ProfitCRMHead": profitObj?.ProfitCRMHead || "",
         "Remark": profitObj?.Remark || "",
-        "CostingApplicabilityDetails": [
-          ...tempProfitObj?.CostingApplicabilityDetails
-        ]
+        "CostingApplicabilityDetails": tempProfitObj?.CostingApplicabilityDetails || []
       }
       if (!CostingViewMode) {
         props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj, modelType: modelType }, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
@@ -286,7 +278,7 @@ function OverheadProfit(props) {
     //   setModelType('')
     //   return false
     // } 
-    
+
     if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) {
       dispatch(isOverheadProfitDataChange(true))
 
@@ -315,7 +307,6 @@ function OverheadProfit(props) {
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
           if (res && res.data && res.data.Data) {
             let Data = res.data.Data;
-            // console.log(Data,'Data')
             let showWarning = false
             if (Data?.CostingOverheadDetail?.CostingApplicabilityDetails?.some(detail => applicabilityList.includes(detail.Applicability))) {
               if (isBreakupBoughtOutPartCostingFromAPI) {
@@ -373,9 +364,9 @@ function OverheadProfit(props) {
 
       // Process each applicability type
       dataObj?.CostingApplicabilityDetails?.forEach(detail => {
-        const { Applicability, Percentage, Cost, TotalCost } = detail;
+        const { Applicability, Percentage} = detail;
 
-        switch(Applicability) {
+        switch (Applicability) {
           case 'Fixed':
             if (IsAPIResponse === false) {
               setValue('OverheadFixedPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice) || '')
@@ -394,7 +385,7 @@ function OverheadProfit(props) {
           case 'BOP':
             const bopCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
             const bopTotalCost = bopCost * calculatePercentage(Percentage)
-            
+
             setValue('OverheadBOPPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
             setValue('OverheadBOPCost', checkForDecimalAndNull(bopCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('OverheadBOPTotalCost', checkForDecimalAndNull(bopTotalCost, initialConfiguration?.NoOfDecimalForPrice))
@@ -403,12 +394,20 @@ function OverheadProfit(props) {
           case 'CC':
             const ccCost = getCCCost('overhead')
             const ccTotalCost = ccCost * calculatePercentage(Percentage)
-            
+
             setValue('OverheadCCPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
             setValue('OverheadCCCost', checkForDecimalAndNull(ccCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('OverheadCCTotalCost', checkForDecimalAndNull(ccTotalCost, initialConfiguration?.NoOfDecimalForPrice))
             break;
 
+          case 'Welding':
+            const weldingCost = checkForNull(headerCosts?.NetWeldingCostForOverhead)
+            const weldingTotalCost = weldingCost * calculatePercentage(Percentage)
+
+            setValue('OverheadWeldingPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('OverheadWeldingCost', checkForDecimalAndNull(weldingCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('OverheadWeldingTotalCost', checkForDecimalAndNull(weldingTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            break;
           default:
             break;
         }
@@ -416,14 +415,14 @@ function OverheadProfit(props) {
 
       // Update tempOverheadObj with CostingApplicabilityDetails
       const costingApplicabilityDetails = dataObj?.CostingApplicabilityDetails?.map(detail => {
-        const { Applicability, Percentage,ApplicabilityDetailsId,ApplicabilityId } = detail;
-        const baseCost = Applicability === 'RM' ? 
+        const { Applicability, Percentage, ApplicabilityDetailsId, ApplicabilityId } = detail;
+        const baseCost = Applicability === 'RM' ?
           (IsCutOffApplicable ? CutOffCost : headerCosts?.NetRawMaterialsCost) :
           Applicability === 'BOP' ? headerCosts?.NetBoughtOutPartCost :
-          Applicability === 'CC' ? getCCCost('overhead') : 0;
-          
-        const totalCost = baseCost * calculatePercentage(Percentage);
+            Applicability === 'CC' ? getCCCost('overhead') :
+              Applicability === 'Welding' ? checkForNull(headerCosts?.NetWeldingCostForOverhead) : 0;
 
+        const totalCost = baseCost * calculatePercentage(Percentage);
         return {
           ApplicabilityDetailsId: ApplicabilityDetailsId,
           ApplicabilityId: ApplicabilityId,
@@ -433,7 +432,7 @@ function OverheadProfit(props) {
           TotalCost: totalCost
         };
       });
-
+      
       setTempOverheadObj({
         ...tempOverheadObj,
         CostingApplicabilityDetails: costingApplicabilityDetails
@@ -461,7 +460,7 @@ function OverheadProfit(props) {
       dataObj?.CostingApplicabilityDetails?.forEach(detail => {
         const { Applicability, Percentage, Cost, TotalCost } = detail;
 
-        switch(Applicability) {
+        switch (Applicability) {
           case 'Fixed':
             if (IsAPIResponse === false) {
               setValue('ProfitFixedPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice) || '')
@@ -472,7 +471,7 @@ function OverheadProfit(props) {
           case 'RM':
             const rmCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
             const rmTotalCost = rmCost * calculatePercentage(Percentage)
-            
+
             setValue('ProfitRMPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
             setValue('ProfitRMCost', checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('ProfitRMTotalCost', checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
@@ -481,7 +480,7 @@ function OverheadProfit(props) {
           case 'BOP':
             const bopCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
             const bopTotalCost = bopCost * calculatePercentage(Percentage)
-            
+
             setValue('ProfitBOPPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
             setValue('ProfitBOPCost', checkForDecimalAndNull(bopCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('ProfitBOPTotalCost', checkForDecimalAndNull(bopTotalCost, initialConfiguration?.NoOfDecimalForPrice))
@@ -490,12 +489,20 @@ function OverheadProfit(props) {
           case 'CC':
             const ccCost = getCCCost('profit')
             const ccTotalCost = ccCost * calculatePercentage(Percentage)
-            
+
             setValue('ProfitCCPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
             setValue('ProfitCCCost', checkForDecimalAndNull(ccCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('ProfitCCTotalCost', checkForDecimalAndNull(ccTotalCost, initialConfiguration?.NoOfDecimalForPrice))
             break;
 
+          case 'Welding':
+            const weldingCost = checkForNull(headerCosts?.NetWeldingCostForProfit)
+            const weldingTotalCost = weldingCost * calculatePercentage(Percentage)
+
+            setValue('ProfitWeldingPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('ProfitWeldingCost', checkForDecimalAndNull(weldingCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('ProfitWeldingTotalCost', checkForDecimalAndNull(weldingTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            break;
           default:
             break;
         }
@@ -504,11 +511,11 @@ function OverheadProfit(props) {
       // Update tempProfitObj with CostingApplicabilityDetails
       const costingApplicabilityDetails = dataObj?.CostingApplicabilityDetails?.map(detail => {
         const { Applicability, Percentage, ApplicabilityDetailsId, ApplicabilityId } = detail;
-        const baseCost = Applicability === 'RM' ? 
+        const baseCost = Applicability === 'RM' ?
           (IsCutOffApplicable ? CutOffCost : headerCosts?.NetRawMaterialsCost) :
           Applicability === 'BOP' ? headerCosts?.NetBoughtOutPartCost :
-          Applicability === 'CC' ? getCCCost('profit') : 0;
-          
+            Applicability === 'CC' ? getCCCost('profit') : 0;
+
         const totalCost = baseCost * calculatePercentage(Percentage);
 
         return {
@@ -533,9 +540,9 @@ function OverheadProfit(props) {
   */
   const getCCCost = (type = '') => {
     if (type === 'overhead') {
-      return checkForNull(headerCosts?.NetProcessCostForOverhead) + checkForNull(headerCosts?.NetOperationCostForOverhead) +  checkForNull(totalToolCost);
+      return checkForNull(headerCosts?.NetProcessCostForOverhead) + checkForNull(headerCosts?.NetOperationCostForOverhead) + checkForNull(totalToolCost) - checkForNull(headerCosts?.NetWeldingCostForOverhead);
     } else if (type === 'profit') {
-      return checkForNull(headerCosts?.NetProcessCostForProfit) +checkForNull(headerCosts?.NetOperationCostForProfit) +checkForNull(totalToolCost) ;
+      return checkForNull(headerCosts?.NetProcessCostForProfit) + checkForNull(headerCosts?.NetOperationCostForProfit) + checkForNull(totalToolCost) - checkForNull(headerCosts?.NetWeldingCostForProfit);
     }
   }
   /**
@@ -1059,7 +1066,6 @@ function OverheadProfit(props) {
   */
 
   const showValueInInput = () => {
-    // console.log(data,'data')
     let value = checkForDecimalAndNull(checkForNull(data?.CostingPartDetails?.OverheadCost) + checkForNull(data?.CostingPartDetails?.ProfitCost), initialConfiguration?.NoOfDecimalForPrice);
     return value === 0 ? '' : value;
   }
@@ -1157,8 +1163,8 @@ function OverheadProfit(props) {
     if (type === 'Overhead') {
       setOverheadObj(prev => ({
         ...prev,
-        CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail => 
-          detail.ApplicabilityDetailsId === item.ApplicabilityDetailsId 
+        CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail =>
+          detail.ApplicabilityDetailsId === item.ApplicabilityDetailsId
             ? { ...detail, Cost: value }
             : detail
         )
@@ -1166,8 +1172,8 @@ function OverheadProfit(props) {
     } else {
       setProfitObj(prev => ({
         ...prev,
-        CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail => 
-          detail.ApplicabilityDetailsId === item.ApplicabilityDetailsId 
+        CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail =>
+          detail.ApplicabilityDetailsId === item.ApplicabilityDetailsId
             ? { ...detail, Cost: value }
             : detail
         )
