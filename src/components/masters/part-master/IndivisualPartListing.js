@@ -61,7 +61,7 @@ const IndivisualPartListing = (props) => {
     searchText: "",
     isFilterButtonClicked: false,
     // : { pageSize10: true, pageSize50: false, pageSize100: false, },
-    floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "", },
+    floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "", NEPNumber: "", PartsModelMaster: "" },
     tableData: [],
     isBulkUpload: false,
     deletedId: "",
@@ -852,6 +852,8 @@ const IndivisualPartListing = (props) => {
                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                {initialConfiguration?.IsPartModelMaster && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                {initialConfiguration?.IsPartModelMaster && <AgGridColumn field="PartsModelMaster" headerName="Parts Model Master" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                 <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>

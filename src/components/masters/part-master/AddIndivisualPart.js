@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3, validateFileName } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect, validateForm } from "../../layout/FormInputs";
-import { createPart, updatePart, getPartData, fileUploadPart, getProductGroupSelectList, getPartDescription } from '../actions/Part';
+import { createPart, updatePart, getPartData, fileUploadPart, getProductGroupSelectList, getPartDescription, getModelList, editModel, addModel } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -27,9 +27,12 @@ import { subDays } from 'date-fns';
 import { getUOMSelectList } from '../../../actions/Common';
 import TooltipCustom from '../../common/Tooltip';
 import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import Button from '../../layout/Button';
+import AddModel from './AddModel';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
+    
     super(props);
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
@@ -56,7 +59,11 @@ class AddIndivisualPart extends Component {
       disablePartName: false,
       attachmentLoader: false,
       showPopup: false,
-      uomSelected: []
+      uomSelected: [],
+      isModelDrawerOpen: false,
+      Model: [],
+      isModelEditFlag: false,
+      modelOptions: [],
     }
   }
 
@@ -69,8 +76,11 @@ class AddIndivisualPart extends Component {
       this.props.getProductGroupSelectList(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
     }
+    this.getModelList()
     this.getDetails()
     this.props.getUOMSelectList(() => { })
+    this.getModelList()
+
   }
 
   /**
@@ -388,21 +398,20 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-
     const { PartId, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
-    let isStructureChanges
-    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text, ProductId: item.Value })) : [{ GroupCode: values.GroupCode }]
+    let isStructureChanges;
+    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text, ProductId: item.Value })) : [{ GroupCode: values.GroupCode }];
 
     if (isEditFlag) {
-      let isGroupCodeChange
+      let isGroupCodeChange;
       if (!this.state.isBomEditable) {
         if (this.props.initialConfiguration?.IsProductMasterConfigurable) {
-          let isEqualValue = _.isEqual(this.state.DataToCheck.GroupCodeList, productArray)
-          isGroupCodeChange = isEqualValue ? false : true
+          let isEqualValue = _.isEqual(this.state.DataToCheck.GroupCodeList, productArray);
+          isGroupCodeChange = isEqualValue ? false : true;
         } else {
-          let isEqualValue = String(this.state.DataToCheck.GroupCode) === String(values.GroupCode)
-          isGroupCodeChange = isEqualValue ? false : true
+          let isEqualValue = String(this.state.DataToCheck.GroupCode) === String(values.GroupCode);
+          isGroupCodeChange = isEqualValue ? false : true;
         }
       }
       //THIS CONDITION TO CHECK IF ALL VALUES ARE SAME (IF YES, THEN NO NEED TO CALL UPDATE API JUST SEND IT TO LISTING PAGE)
@@ -410,7 +419,7 @@ class AddIndivisualPart extends Component {
         String(DataToCheck.ECNNumber) === String(values.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
         && String(DataToCheck.Remark) === String(values.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)) {
-          Toaster.warning('Please change data to save Part Details');
+        Toaster.warning('Please change data to save Part Details');
         return false;
       }
 
@@ -418,35 +427,32 @@ class AddIndivisualPart extends Component {
       if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) &&
         String(oldProductGroup) === String(ProductGroup)) {
-        isStructureChanges = false
+        isStructureChanges = false;
       }
-
       //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
       else if (this.state.isBomEditable === false && (String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
         String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
       )) {
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
         if (DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-          Toaster.warning('Please edit Revision no or ECN no, and Effective date')
-          return false
+          Toaster.warning('Please edit Revision no or ECN no, and Effective date');
+          return false;
         } else if ((DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') !== DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) && (String(DataToCheck.RevisionNumber).toLowerCase() === String(values.RevisionNumber).toLowerCase() && String(DataToCheck.ECNNumber).toLowerCase() === String(values.ECNNumber).toLowerCase())) {
-          Toaster.warning('Please edit Revision no or ECN no, and Effective date')
-          return false
+          Toaster.warning('Please edit Revision no or ECN no, and Effective date');
+          return false;
         } else {
-          isStructureChanges = true
+          isStructureChanges = true;
         }
       }
       // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
       else {
-        isStructureChanges = false
+        isStructureChanges = false;
       }
 
-
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true });
       let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: PartId }
-      })
-
+        return { ...file, ContextId: PartId };
+      });
 
       let updateData = {
         LoggedInUserId: loggedInUserId(),
@@ -469,20 +475,20 @@ class AddIndivisualPart extends Component {
         TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
         IsTechnologyUpdateRequired: false,
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
-
-      }
+        NEPNumber: values.NEP,
+        PartModelIdRef: this.state.Model?.value || "",
+        PartsModelMaster: this.state.Model?.label || "",
+      };
 
       this.props.updatePart(updateData, (res) => {
-        this.setState({ setDisable: false })
+        this.setState({ setDisable: false });
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-          this.cancel('submit')
+          this.cancel('submit');
         }
       });
-
     } else {
-
-      this.setState({ setDisable: true, isLoader: true })
+      this.setState({ setDisable: true, isLoader: true });
       let formData = {
         LoggedInUserId: loggedInUserId(),
         BOMLevel: 0,
@@ -502,23 +508,96 @@ class AddIndivisualPart extends Component {
         TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
-      }
+        NEPNumber: values.NEP,
+        PartModelIdRef: this.state.Model?.value || "",
+        PartsModelMaster: this.state.Model?.label || "",
+      };
 
       this.props.createPart(formData, (res) => {
-        this.setState({ setDisable: false, isLoader: false })
+        this.setState({ setDisable: false, isLoader: false });
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PART_ADD_SUCCESS);
-          this.cancel('submit')
+          this.cancel('submit');
         }
       });
     }
-  }, 500)
+  }, 500);
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
     }
   };
+  modelToggler = (modelId = '') => {
+    const { isEditFlag, Model } = this.state;
+    
+    if (isEditFlag && Model && Model.value) {
+      // No need to make API call to fetch model data for edit
+      // Just open the drawer with existing model data
+      this.setState({ 
+        isModelDrawerOpen: true,
+        isModelEditFlag: true
+      });
+    } else {
+      // If in add mode, just open the drawer
+      this.setState({ 
+        isModelDrawerOpen: true,
+        isModelEditFlag: false,
+        Model: modelId ? { value: modelId } : null
+      });
+    }
+  }
+  
+  handleModelChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ Model: newValue });
+      
+    } else {
+      // this.setState({ BOPCategory: [], });
+
+    }
+  }
+
+  getModelList = () => {
+    this.setState({ isLoader: true });
+    this.props.getModelList((res) => {
+      this.setState({ isLoader: false });
+      if (res && res.data && res.data.Result) {
+        // Transform the SelectList into the format needed for the dropdown
+        const modelOptions = res.data.SelectList
+          .filter(item => item.Value !== "0") // Filter out the default "Select" option
+          .map(item => ({
+            label: item.Text,
+            value: item.Value
+          }));
+        this.setState({ modelOptions });
+      }
+    });
+  }
+
+  handleModelSubmit = (modelData) => {
+    if (this.state.isModelEditFlag) {
+      this.props.editModel({
+        PartModelId: modelData.Id,
+        PartModelMasterName: modelData.ModelName
+      }, (res) => {
+        if (res && res.data && res.data.Result) {
+          this.getModelList(); // Refresh the model list
+          this.setState({ isModelDrawerOpen: false });
+        }
+      });
+    } else {
+      this.props.addModel({
+        PartModelMasterName: modelData.ModelName
+      }, (res) => {
+        if (res && res.data && res.data.Result) {
+          this.getModelList(); // Refresh the model list
+          this.setState({ isModelDrawerOpen: false });
+        }
+      });
+    }
+  }
+
 
   /**
   * @method render
@@ -643,6 +722,61 @@ class AddIndivisualPart extends Component {
                               />
                             </Col>
                           }
+                        </Row>
+                        <Row>
+                        <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="Model"
+                                  type="text"
+                                  label={`Model`}
+                                  component={searchableSelect}
+                                  placeholder={isEditFlag ? '-' : "Select"}
+                                  options={this.state.modelOptions}
+                                  validate={
+                                    this.state.Model == null || this.state.Model.length === 0 ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={this.handleModelChange}
+                                  valueDescription={this.state.Model}
+                                  disabled={isViewMode}
+                                />
+                              </div>
+                              {!isViewMode && (
+                                isEditFlag && this.state.Model && this.state.Model.value ? 
+                                  <Button
+                                    id="Model-edit"
+                                    className="drawer-edit mt30"
+                                    variant="Edit"
+                                    onClick={() => this.modelToggler(this.state.Model.value)}
+                                  /> :
+                                  <div className='d-flex justify-content-center align-items-center'>
+                                    <Button
+                                      id="Model-add"
+                                      className="mb-3"
+                                      variant="plus-icon-square"
+                                      onClick={() => this.modelToggler('')}
+                                    />
+                                  </div>
+                              )}
+                            </div>
+                          </Col>
+                        <Col md="3">
+                          <span>
+                            <Field
+                              label={`NEP`}
+                              name={"NEP"}
+                              type="text"
+                              placeholder={isViewMode ? '-' : "Enter"}
+                              validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName={"withBorder"}
+                              disabled={isViewMode}
+                            />
+                          </span>
+                        </Col>
                         </Row>
 
                         <Row>
@@ -898,6 +1032,17 @@ class AddIndivisualPart extends Component {
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
+          {console.log(this.state.isModelDrawerOpen)}
+          {this.state.isModelDrawerOpen && (
+            <AddModel
+              isOpen={this.state.isModelDrawerOpen}
+              onClose={() => this.setState({ isModelDrawerOpen: false })}
+              onSubmit={this.handleModelSubmit}
+              ID={this?.state?.Model?.value}
+              isEditFlag={this?.state?.isModelEditFlag}
+              refreshModelList={this.getModelList}
+            />
+          )}
         </div>
       </>
     );
@@ -948,6 +1093,9 @@ export default connect(mapStateToProps, {
   getPartDescription,
   getCostingSpecificTechnology,
   getUOMSelectList,
+  getModelList,
+  addModel,
+  editModel,
 })(reduxForm({
   form: 'AddIndivisualPart',
   validate: validateForm,
