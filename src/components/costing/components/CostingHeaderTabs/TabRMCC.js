@@ -166,13 +166,12 @@ function TabRMCC(props) {
   */
   const getOverheadAndProfitTotalCostForAssembly = (tempArr, type, costType) => {
     // let tempArr = setArrayForCosting && setArrayForCosting.filter(item=>item.AssemblyPartNumber === PartNo && item.PartType !== 'Assembly')
-    const costField = costType === 'Process' ? 'ProcessCost' : 'OperationCost';
+    const costField = costType === 'Process' ? 'ProcessCost' : (costType === 'Welding' ? 'WeldingCost' : 'OperationCost');
 
     switch (type) {
       case 'Overhead':
       case 'Profit':
-      case 'Welding':
-        {
+     {
           let netCost = 0;
           netCost = tempArr && tempArr.reduce((accumulator, el) => {
             if (el.PartType === 'Part') {
@@ -417,11 +416,11 @@ function TabRMCC(props) {
       * @description SET OVERHEAD AND PROFIT COST FOR SUB ASSEMBLY
      */
   const setOverheadAndProfitCostForAssembly = (tempArr, type, costType) => {
-    const costField = costType === 'Process' ? 'ProcessCost' : 'OperationCost';
+    const costField = costType === 'Process' ? 'ProcessCost' : (costType === 'Welding' ? 'WeldingCost' : 'OperationCost');
     switch (type) {
       case 'Overhead':
       case 'Profit':
-      case 'Welding':
+    
         {
 
           const total = tempArr && tempArr.reduce((accumulator, item) => {
