@@ -1024,148 +1024,153 @@ export function deleteModel(modelId, callback) {
 }
 
 
-// /**
-//  * @method getPartFamilyList
-//  * @description Get part family list with pagination
-//  */
-// export function getPartFamilyList(skip, take, filterData, isPagination, callback) {
-//     return (dispatch) => {
-//       dispatch({ type: API_REQUEST });
-//       const requestData = {
-//         Skip: skip,
-//         Take: take,
-//         LoggedInUserId: loggedInUserId(),
-//         FilterData: filterData,
-//       };
-//       const request = axiosInstance.post(API.getPartFamilyList, requestData, config());
-//       request
-//         .then((response) => {
-//           if (isPagination) {
-//             dispatch({ type: GET_PART_FAMILY_LIST_SUCCESS, payload: response.data.DataList });
-//           } else {
-//             dispatch({ type: GET_ALL_PART_FAMILY_LIST_SUCCESS, payload: response.data.DataList });
-//           }
-//           callback(response);
-//         })
-//         .catch((error) => {
-//           apiErrors(error);
-//           dispatch({ type: API_FAILURE });
-//           callback(error.response);
-//         });
-//     };
-//   }
+/**
+ * @method getPartFamilyList
+ * @description Get part family list with pagination
+ */
+export function getPartFamilyList(skip, take, filterData, isPagination = false, callback) {
+    return (dispatch) => {
+      dispatch({ type: API_REQUEST });
+      // Build base query params
+      
+      // Build and encode additional filter parameters only if they have values
+      let additionalQueryParams = encodeQueryParams({
+        LoggedInUserId: loggedInUserId(),
+        PartFamilyName: filterData?.PartFamilyName || "",
+        PartFamilyCode: filterData?.PartFamilyCode || "",
+        Description: filterData?.description || "",
+        ApplyPagination: isPagination
+      });
+      const request = axios.get(`${API.getPartFamilyList}?${additionalQueryParams}`, config());
+
+      request
+        .then((response) => {
+          if (isPagination) {
+            dispatch({ type: GET_PART_FAMILY_LIST_SUCCESS, payload: response.data.DataList });
+          } else {
+            dispatch({ type: GET_ALL_PART_FAMILY_LIST_SUCCESS, payload: response.data.DataList });
+          }
+          callback(response);
+        })
+        .catch((error) => {
+          apiErrors(error);
+          dispatch({ type: API_FAILURE });
+          callback(error.response);
+        });
+    };
+  }
   
-//   /**
-//    * @method getPartFamilyById
-//    * @description Get part family details by id
-//    */
-//   export function getPartFamilyById(partFamilyId, callback) {
-//     return (dispatch) => {
-//       dispatch({ type: API_REQUEST });
-//       const loggedUser = loggedInUserId();
-//       const request = axios.get(`${API.getPartFamilyById}?loggedInUserId=${loggedUser}&partFamilyId=${partFamilyId}`, config());
-//       request
-//         .then((response) => {
-//           dispatch({ type: GET_PART_FAMILY_DETAILS_SUCCESS, payload: response.data.Data });
-//           callback(response);
-//         })
-//         .catch((error) => {
-//           apiErrors(error);
-//           dispatch({ type: API_FAILURE });
-//           callback(error.response);
-//         });
-//     };
-//   }
+  /**
+   * @method getPartFamilyById
+   * @description Get part family details by id
+   */
+  export function getPartFamilyById(partFamilyId, callback) {
+    return (dispatch) => {
+      dispatch({ type: API_REQUEST });
+      const loggedUser = loggedInUserId();
+      const request = axios.get(`${API.getPartFamilyById}?loggedInUserId=${loggedUser}&partFamilyId=${partFamilyId}`, config());
+      request
+        .then((response) => {
+          dispatch({ type: GET_PART_FAMILY_DETAILS_SUCCESS, payload: response.data.Data });
+          callback(response);
+        })
+        .catch((error) => {
+          apiErrors(error);
+          dispatch({ type: API_FAILURE });
+          callback(error.response);
+        });
+    };
+  }
   
-//   /**
-//    * @method addPartFamily
-//    * @description Add a new part family
-//    */
-//   export function addPartFamily(data, callback) {
-//     return (dispatch) => {
-//       const request = axiosInstance.post(API.addPartFamily, data, config());
-//       request
-//         .then((response) => {
-//           callback(response);
-//         })
-//         .catch((error) => {
-//           apiErrors(error);
-//           callback(error.response);
-//         });
-//     };
-//   }
+  /**
+   * @method addPartFamily
+   * @description Add a new part family
+   */
+  export function addPartFamily(data, callback) {
+    return (dispatch) => {
+      const request = axiosInstance.post(API.addPartFamily, data, config());
+      request
+        .then((response) => {
+          callback(response);
+        })
+        .catch((error) => {
+          apiErrors(error);
+          callback(error.response);
+        });
+    };
+  }
   
-//   /**
-//    * @method editPartFamily
-//    * @description Edit an existing part family using update-part-family
-//    */
-//   export function editPartFamily(data, callback) {
-//     // Prepare data according to API structure
-//     const requestData = {
-//       PartFamilyId: data.PartFamilyId,
-//       PartFamilyCode: data.PartFamilyCode,
-//       PartFamilyName: data.PartFamilyName,
-//       Description: data.Description,
-//       LoggedInUserId: data.LoggedInUserId
-//     };
+  /**
+   * @method editPartFamily
+   * @description Edit an existing part family using update-part-family
+   */
+  export function editPartFamily(data, callback) {
+    // Prepare data according to API structure
+    const requestData = {
+      PartFamilyId: data.PartFamilyId,
+      PartFamilyCode: data.PartFamilyCode,
+      PartFamilyName: data.PartFamilyName,
+      Description: data.Description,
+      LoggedInUserId: data.LoggedInUserId
+    };
     
-//     return (dispatch) => {
-//       const request = axiosInstance.put(API.updatePartFamily, requestData, config());
-//       request
-//         .then((response) => {
-//           callback(response);
-//         })
-//         .catch((error) => {
-//           apiErrors(error);
-//           callback(error.response);
-//         });
-//     };
-//   }
+    return (dispatch) => {
+      const request = axiosInstance.put(API.updatePartFamily, requestData, config());
+      request
+        .then((response) => {
+          callback(response);
+        })
+        .catch((error) => {
+          apiErrors(error);
+          callback(error.response);
+        });
+    };
+  }
   
-//   /**
-//    * @method deletePartFamily
-//    * @description Delete a part family
-//    */
-//   export function deletePartFamily(partFamilyId, loggedInUserId, callback) {
-//     return (dispatch) => {
-//       dispatch({ type: API_REQUEST });
-//       const queryParams = `loggedInUserId=${loggedInUserId}&partFamilyId=${partFamilyId}`;
-//       axios
-//         .delete(`${API.deletePartFamily}?${queryParams}`, config())
-//         .then((response) => {
-//           callback(response);
-//         })
-//         .catch((error) => {
-//           apiErrors(error);
-//           dispatch({ type: API_FAILURE });
-//           callback(error.response);
-//         });
-//     };
-//   }
+  /**
+   * @method deletePartFamily
+   * @description Delete a part family
+   */
+  export function deletePartFamily(partFamilyId, loggedInUserId, callback) {
+    return (dispatch) => {
+      dispatch({ type: API_REQUEST });
+      const queryParams = `loggedInUserId=${loggedInUserId}&partFamilyId=${partFamilyId}`;
+      axios
+        .delete(`${API.deletePartFamily}?${queryParams}`, config())
+        .then((response) => {
+          callback(response);
+        })
+        .catch((error) => {
+          apiErrors(error);
+          dispatch({ type: API_FAILURE });
+          callback(error.response);
+        });
+    };
+  }
   
-//   /**
-//    * @method activeInactivePartFamily
-//    * @description Toggle active/inactive status of part family
-//    */
-//   export function activeInactivePartFamily(data, callback) {
-//     // Prepare data according to API structure
-//     const requestData = {
-//       Id: data.Id,
-//       LoggedInUserId: data.LoggedInUserId,
-//       IsActive: data.IsActive
-//     };
+  /**
+   * @method activeInactivePartFamily
+   * @description Toggle active/inactive status of part family
+   */
+  export function activeInactivePartFamily(data, callback) {
+    // Prepare data according to API structure
+    const requestData = {
+      Id: data.Id,
+      LoggedInUserId: data.LoggedInUserId,
+      IsActive: data.IsActive
+    };
     
-//     return (dispatch) => {
-//       dispatch({ type: API_REQUEST });
-//       axiosInstance
-//         .put(`${API.activePartFamily}`, requestData, config())
-//         .then((response) => {
-//           callback(response);
-//         })
-//         .catch((error) => {
-//           apiErrors(error);
-//           dispatch({ type: API_FAILURE });
-//           callback(error.response);
-//         });
-//     };
-//   }
+    return (dispatch) => {
+      dispatch({ type: API_REQUEST });
+      axiosInstance
+        .put(`${API.activePartFamily}`, requestData, config())
+        .then((response) => {
+          callback(response);
+        })
+        .catch((error) => {
+          apiErrors(error);
+          dispatch({ type: API_FAILURE });
+          callback(error.response);
+        });
+    };
+  }

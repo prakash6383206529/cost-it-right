@@ -155,7 +155,10 @@ class AddAssemblyPart extends Component {
               warningMessageTechnology: Data.IsBOMEditable ? true : false,
               IsTechnologyUpdateRequired: Data?.IsTechnologyUpdateRequired,
               uomSelected: ({ label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }),
-
+              Model: Data.PartModelIdRef ? { 
+                label: Data.PartsModelMaster || "", 
+                value: Data.PartModelIdRef 
+              } : []
             }, () => {
               this.setState({ isLoader: false })
               if (this.state.IsTechnologyUpdateRequired) {
@@ -173,6 +176,10 @@ class AddAssemblyPart extends Component {
               this.dropzone.current.files = files
             }
 
+            // Set form field values
+            this.props.change('SAPCode', Data.SAPCode ?? '')
+            // Add NEP field value
+            this.props.change('NEP', Data.NEPNumber ?? '')
           }, 200)
         }
       })

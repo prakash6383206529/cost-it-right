@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//  const BASE_URL = `http://10.10.1.102:9002/api/v1`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+ const BASE_URL = `http://10.10.1.102:8002/api/v1`;
 
 
 
@@ -209,13 +209,13 @@ export const API = {
 
   //PART FAMILY
 
-  getPartFamilyById: `${BASE_URL}/api/partfamily/get-by-id`,
-  getPartFamilyList: `${BASE_URL}/api/partfamily/list`,
-  addPartFamily: `${BASE_URL}/api/partfamily/add`,
-  updatePartFamily: `${BASE_URL}/api/partfamily/update-part-family`,
-  deletePartFamily: `${BASE_URL}/api/partfamily/delete-part-family`,
-  activePartFamily: `${BASE_URL}/api/partfamily/active`,
-  bulkUploadPartFamily: `${BASE_URL}/api/partfamily/bulk-upload-for-partfamily-json`,
+  getPartFamilyById: `${BASE_URL}/part-family/get-by-id`,
+  getPartFamilyList: `${BASE_URL}/part-family/get-all-part-family-by-filter`,
+  addPartFamily: `${BASE_URL}/part-family/create-part-family`,
+  updatePartFamily: `${BASE_URL}/part-family/update-part-family`,
+  deletePartFamily: `${BASE_URL}/part-family/delete-part-family`,
+  activePartFamily: `${BASE_URL}/part-family/active`,
+  bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-part-family-json`,
 
 
   //BOM API'S

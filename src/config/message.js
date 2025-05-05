@@ -270,6 +270,12 @@ export const MESSAGES = {
   PART_ACTIVE_SUCCESSFULLY: 'Part activated successfully',
   PART_INACTIVE_SUCCESSFULLY: 'Part de-activated successfully',
 
+  //Part Family
+  PART_FAMILY_DEACTIVE_ALERT: 'Are you sure you want to de-activate this part family?',
+  PART_FAMILY_ACTIVE_ALERT: 'Are you sure you want to activate this part family?',
+  PART_FAMILY_ACTIVE_SUCCESSFULLY: 'Part family activated successfully',
+  PART_FAMILY_INACTIVE_SUCCESSFULLY: 'Part family de-activated successfully',
+
   //DEPARTMENT
   DEPARTMENT_DELETE_ALERT: `Are you sure you want to delete this ${handleDepartmentHeader()}?`,
   ADD_DEPARTMENT_SUCCESSFULLY: `${handleDepartmentHeader()} added successfully`,

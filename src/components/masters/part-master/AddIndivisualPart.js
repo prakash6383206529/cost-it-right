@@ -120,8 +120,11 @@ class AddIndivisualPart extends Component {
               isBomEditable: Data.IsBOMEditable,
               TechnologySelected: ({ label: Data.TechnologyName, value: Data.TechnologyIdRef }),
               uomSelected: ({ label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }),
-
-              IsTechnologyUpdateRequired: Data.IsTechnologyUpdateRequired
+              IsTechnologyUpdateRequired: Data.IsTechnologyUpdateRequired,
+              Model: Data.PartModelIdRef ? { 
+                label: Data.PartsModelMaster || "", 
+                value: Data.PartModelIdRef 
+              } : []
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -133,6 +136,9 @@ class AddIndivisualPart extends Component {
             if (this.dropzone.current !== null) {
               this.dropzone.current.files = files
             }
+            this.props.change('SAPCode', Data.SAPCode ?? '')
+            // Add NEP field value
+            this.props.change('NEP', Data.NEPNumber ?? '')
           }, 500)
         }
       })
@@ -1072,6 +1078,11 @@ function mapStateToProps({ comman, part, auth, costing }) {
       DrawingNumber: partData.DrawingNumber,
       RevisionNumber: partData.RevisionNumber,
       Remark: partData.Remark,
+      NEP: partData.NEPNumber,
+      Model: {
+        label: partData.PartsModelMaster || "",
+        value: partData.PartModelIdRef || ""
+      }
     }
   }
 
