@@ -2088,9 +2088,10 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
 
     if (isOverhead) {
       if ("OperationCost" in item) {
-        totals.overheadOperationCost += operation;
         if (ForType === "Welding") {
           totals.overheadWeldingCost += operation;
+        } else {
+          totals.overheadOperationCost += operation;
         }
       }
       if ("ProcessCost" in item) {
@@ -2100,9 +2101,10 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
 
     if (isProfit) {
       if ("OperationCost" in item) {
-        totals.profitOperationCost += operation;
         if (ForType === "Welding") {
           totals.profitWeldingCost += operation;
+        } else {
+          totals.profitOperationCost += operation;
         }
       }
       if ("ProcessCost" in item) {
