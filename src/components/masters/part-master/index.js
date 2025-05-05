@@ -16,6 +16,8 @@ import { MESSAGES } from "../../../config/message";
 import { resetStatePagination } from "../../common/Pagination/paginationAction";
 import ProductHierarchyListing from "./ProductHierarchyListing";
 import AddProductHierarchy from "./AddProductHierarchy";
+import PartFamilyListing from "./PartFamilyListing";
+import AddPartFamily from "./AddPartFamily";
 export const ApplyPermission = React.createContext();
 
 const PartMaster = () => {
@@ -36,6 +38,7 @@ const PartMaster = () => {
     openDrawer: false,
     isHover: false,
     stopApiCallOnCancel: false,
+    isPartFamilyForm: false,
   });
 
   const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData);
@@ -122,6 +125,9 @@ const PartMaster = () => {
   if (state.isProductForm) {
     return (<AddIndivisualProduct hideForm={hideForm} data={state.getDetails} stopApiCallOnCancel={state.stopApiCallOnCancel} />);
   }
+  // if (state.isPartFamilyForm) {
+  //   return (<AddPartFamily hideForm={hideForm} data={state.getDetails} stopApiCallOnCancel={state.stopApiCallOnCancel} />);
+  // }
 
   return (
     <>
@@ -148,6 +154,7 @@ const PartMaster = () => {
                 {initialConfiguration?.IsSAPConfigured && <button type="button" className={`secondary-btn mr5 mt-1 fetch-btn`} title="Fetch" onClick={openFetchDrawer} onMouseOver={handleMouse} onMouseOut={handleMouseOut} >
                   <div className={`${state.isHover ? "swap-hover" : "swap"} mr-0`} ></div>
                 </button>}
+                {initialConfiguration?.IsShowPartFamily && <NavItem> <NavLink className={classnames({ active: state.activeTab === "5" })} onClick={() => toggle("5")} > Part Family </NavLink> </NavItem>}
               </Nav>
               <ApplyPermission.Provider value={permissionData}>
                 <TabContent activeTab={state.activeTab}>
@@ -162,6 +169,9 @@ const PartMaster = () => {
                   )}
                   {state.activeTab === "4" && (
                     <TabPane tabId="4"> <ProductHierarchyListing /> </TabPane>
+                  )}
+                  {state.activeTab === "5" && (
+                    <TabPane tabId="5"> <PartFamilyListing  /> </TabPane>
                   )}
                 </TabContent>
               </ApplyPermission.Provider>

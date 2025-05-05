@@ -24,7 +24,10 @@ import {
     GET_PRODUCT_HIERARCHY_DATA,
     GET_PRODUCT_HIERARCHY_LABELS,
     STORE_HIERARCHY_DATA,
-    API_FAILURE
+    API_FAILURE,
+    GET_PART_FAMILY_LIST_SUCCESS,
+    GET_ALL_PART_FAMILY_LIST_SUCCESS,
+    GET_PART_FAMILY_DETAILS_SUCCESS
 } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper';
 
@@ -227,6 +230,27 @@ export default function partReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 storedHierarachyData: action.payload
+            }
+        case GET_PART_FAMILY_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                partFamilyList: action.payload
+            }   
+        case GET_ALL_PART_FAMILY_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                allPartFamilyList: action.payload
+            }
+        case GET_PART_FAMILY_DETAILS_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                partFamilyDetails: action.payload
             }
         default:
             return state;
