@@ -75,7 +75,7 @@ const RolesListing = (props) => {
     dispatch(getAllRoleAPI(res => {
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
-        setState(prevState => ({ ...prevState, tableData: Data, isLoader: false, }));
+        setState(prevState => ({ ...prevState, tableData: Data, isLoader: false, noData: false}));
       }
       else {
         setState((prevState) => ({ ...prevState, isLoader: false }));

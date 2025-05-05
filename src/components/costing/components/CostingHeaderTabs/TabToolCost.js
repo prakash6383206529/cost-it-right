@@ -36,6 +36,7 @@ function TabToolCost(props) {
   const dispatch = useDispatch()
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
+  const [IsApplicableOverall, setIsApplicableOverall] = useState(false);
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState([])
   const [editIndex, setEditIndex] = useState('')
@@ -118,10 +119,15 @@ function TabToolCost(props) {
       if (ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise) {
         setIsApplicableProcessWise(true)
       }
+      // It will help identify tool cost tab (Applicability: overall) previously saved or not.
+      const toolOperationId = gridData?.[0]?.ToolOperationId || null;
+      if (ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise === false && toolOperationId !== null) {
+          setIsApplicableOverall(true)
+      }
     }
   }, [ToolTabData]);
   useEffect(() => {
-    if (gridData && gridData.length > 0) {
+    if (gridData && gridData?.length > 0) {
       const totalToolInterestCostPerPc = gridData.reduce((sum, item) => sum + (Number(item.ToolInterestCostPerPiece) || 0), 0);
       const totalToolMaintenanceCostPerPc = gridData.reduce((sum, item) => sum + (Number(item.ToolMaintenanceCostPerPiece) || 0), 0);
       const totalToolAmortizationCost = gridData.reduce((sum, item) => sum + (Number(item.ToolAmortizationCost) || 0), 0);
@@ -509,7 +515,7 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={CostingViewMode || state.disableToggle}
+                            disabled={CostingViewMode || state.disableToggle || IsApplicableOverall}
                             //disabled={true}
                             background="#4DC771"
                             onColor="#4DC771"

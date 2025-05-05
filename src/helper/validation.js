@@ -625,3 +625,9 @@ export const innerVsOuterValidation = (getValues) => (value) => {
     }
     return true
 };
+
+export const blockInvalidNumberKeys = (e) => {
+    if (['e', 'E', '+', '-'].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
