@@ -10,12 +10,13 @@ import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCal
 import BoughtOutPart from '../BOP';
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import { findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../../CostingUtil';
-import { getRMCCTabData, gridDataAdded, openCloseStatus, saveAssemblyCostingRMCCTab, saveCostingLabourDetails } from '../../../actions/Costing';
+import { getRMCCTabData, gridDataAdded, openCloseStatus, saveAssemblyCostingRMCCTab, saveCostingLabourDetails, setBopRemark } from '../../../actions/Costing';
 import { EMPTY_GUID, WACTypeId } from '../../../../../config/constants';
 import _ from 'lodash';
 import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
 import Toaster from '../../../../common/Toaster';
 import { PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
+import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 
 function AssemblyTechnology(props) {
     const { children, item, index } = props;
@@ -32,6 +33,10 @@ function AssemblyTechnology(props) {
     const [labourTableData, setLabourTableData] = useState([])
     const [labourObj, setLabourObj] = useState(false)
     const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
+    const [remarkAccept, setRemarkAccept] = useState(false);
+    const [activeRemark, setActiveRemark] = useState(null)
+
+    const [remark, setRemark] = useState("");
     const netPOPrice = useContext(NetPOPriceContext);
 
     const CostingViewMode = useContext(ViewCostingContext);
@@ -40,7 +45,7 @@ function AssemblyTechnology(props) {
     const { CostingEffectiveDate } = useSelector(state => state.costing)
     const dispatch = useDispatch()
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-    const { ToolTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, RMCCTabData, currencySource, exchangeRateData } = useSelector(state => state.costing)
+    const { ToolTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, RMCCTabData, currencySource, exchangeRateData,remark: reduxRemark, bopCostingId: reduxBopCostingId } = useSelector(state => state.costing)
     const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
     const isPartType = useContext(IsPartType);
 
@@ -85,14 +90,14 @@ function AssemblyTechnology(props) {
 
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
                             checkForNull(costPerPieceTotal) +
-                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+                            checkForNull(CostPerAssemblyBOPTotal) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)
 
 
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
                             checkForNull(costPerPieceTotal) +
-                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+                            checkForNull(CostPerAssemblyBOPTotal) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
@@ -172,13 +177,132 @@ function AssemblyTechnology(props) {
             return false
         }
     })
+    const popupInputData = (data) => {
+        setRemark(data);
+    };
+    const openRemarkPopup = (bopItem) => {
+        
+        // Reset states to prevent data leakage between different BOPs
+        setRemark("");
+        setRemarkAccept(false);
+        setActiveRemark(null);
+        const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+        const bopObject = costingArray.find(item => item?.AssemblyPartNumber === bopItem?.AssemblyPartNumber && item?.PartNumber === bopItem?.PartNumber && item?.PartType === 'BOP');
+        const bopCostingId = bopItem?.CostingId || "00000000-0000-0000-0000-000000000000";
+        // Store both part number and assembly part number to identify this BOP uniquely
+        setActiveRemark({ partNumber: bopItem?.PartNumber, assemblyPartNumber: bopItem?.AssemblyPartNumber });
+        const storedRemark = bopObject?.Remark || '';
+        setRemark(storedRemark);
 
-    const nestedBOP = children && children.map(el => {
+        // Open the popup
+        setRemarkAccept(true);
+    }
+
+    /**
+     * @method closePopUp
+     * @description Close the remark popup
+     */
+    const closePopUp = () => {
+        setRemarkAccept(false);
+        setActiveRemark(null);
+        setRemark("");
+    }
+    /**
+ * @method handleRemarkPopupConfirm
+ * @description Handle remark popup confirm and save remark to session storage
+ */
+    const handleRemarkPopupConfirm = () => {
+        if (!activeRemark?.partNumber || !activeRemark?.assemblyPartNumber) {
+            closePopUp();
+            return;
+        }
+        
+        // Get and update subAssemblyTechnologyArray
+        if (subAssemblyTechnologyArray?.[0]?.CostingChildPartDetails?.length > 0) {
+            const tempArray = JSON.parse(JSON.stringify(subAssemblyTechnologyArray));
+            
+            // Find and update target BOP object
+            const childPart = tempArray[0].CostingChildPartDetails.find(part => 
+                part.PartType === 'BOP' && 
+                part.PartNumber === activeRemark?.partNumber && 
+                part.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+            );
+            
+            if (childPart) {
+                childPart.Remark = remark;
+                dispatch(setSubAssemblyTechnologyArray(tempArray, () => {}));
+            }
+        }
+        
+        // Update session storage
+        const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+        const bopIndex = costingArray.findIndex(item =>
+            item.AssemblyPartNumber === activeRemark?.assemblyPartNumber && 
+            item.PartNumber === activeRemark?.partNumber && 
+            item.PartType === 'BOP'
+        );
+        
+        if (bopIndex !== -1) {
+            costingArray[bopIndex].Remark = remark;
+        } else {
+            costingArray.push({
+                PartNumber: activeRemark?.partNumber,
+                AssemblyPartNumber: activeRemark?.assemblyPartNumber,
+                PartType: 'BOP',
+                Remark: remark
+            });
+        }
+        sessionStorage.setItem('costingArray', JSON.stringify(costingArray));
+        
+        // Find BOP item and update Redux for API
+        const bopItem = children?.find(child => 
+            child.PartType === 'BOP' && 
+            child.PartNumber === activeRemark?.partNumber && 
+            child.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+        );
+        
+        if (bopItem) {
+            dispatch(setBopRemark(remark, bopItem?.CostingId || "00000000-0000-0000-0000-000000000000"));
+        }
+        
+        setCallSaveAssemblyApi(true);
+        Toaster.success('Remark saved successfully');
+        closePopUp();
+    }
+ const nestedBOP = children && children.map((el, idx) => {
         if (el.PartType !== 'BOP') return false;
+
+        // Check if this is the active BOP for remarks
+        const isActive = remarkAccept && activeRemark?.partNumber === el?.PartNumber && activeRemark?.assemblyPartNumber === el?.AssemblyPartNumber;
+
+        // Create the remark button that will be passed to the BoughtOutPart component
+        const remarkButton = isActive && (
+            <PopupMsgWrapper
+                setInputData={popupInputData}
+                isOpen={remarkAccept}
+                closePopUp={closePopUp}
+                confirmPopup={handleRemarkPopupConfirm}
+                header={"Remark"}
+                isInputField={true}
+                isDisabled={CostingViewMode}
+                defaultValue={remark}
+            />
+        );
+
+        // Get the remark specific to this BOP item from session storage
+        const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+        const bopObject = costingArray.find(item => item.AssemblyPartNumber === el?.AssemblyPartNumber && item?.PartNumber === el?.PartNumber && item?.PartType === 'BOP');
+
+        const specificRemark = bopObject?.Remark || el?.Remark || '';
+
         return <BoughtOutPart
             index={index}
             item={el}
             children={el.CostingChildPartDetails}
+            editBop={true}
+            remarkButton={remarkButton}
+            onRemarkButtonClick={() => openRemarkPopup(el)}
+            remark={isActive ? remark : specificRemark}
         />
     })
 
@@ -224,7 +348,10 @@ function AssemblyTechnology(props) {
             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost) +
             checkForNull(totalBOPCost) +
             (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
-                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)) +
+            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
+            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
+            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
 
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
@@ -284,7 +411,7 @@ function AssemblyTechnology(props) {
             let stCostingData = findSurfaceTreatmentData(item)
             let basicRate = 0
             if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
-                basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+                basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
                     checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
                     checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
             } else {
@@ -295,36 +422,16 @@ function AssemblyTechnology(props) {
 
             let requestData = {
                 "CostingId": item.CostingId,
-                "CostingNumber": item.CostingNumber,
-                "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-                "PartId": item.PartId,
-                "PartNumber": item.PartNumber,
-                "PartTypeId": item.PartTypeId,
-                "Type": item.PartType,
                 "SubAssemblyCostingId": item.SubAssemblyCostingId,
-                "PlantId": costData.PlantId,
-                "VendorId": costData.VendorId,
-                "VendorCode": costData.VendorCode,
-                "VendorPlantId": costData.VendorPlantId,
-                "TechnologyName": item.Technology,
-                "TechnologyId": item.TechnologyId,
-                "TypeOfCosting": costData.VendorType,
-                "PlantCode": costData.PlantCode,
-                "PlantName": costData.PlantName,
-                "Version": item.Version,
-                "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
                 "NetRawMaterialsCost": item?.CostingPartDetails?.NetRawMaterialsCost,
                 "NetBoughtOutPartCost": item?.CostingPartDetails?.NetBoughtOutPartCost,
                 "NetConversionCost": item?.CostingPartDetails?.NetConversionCost,
                 "NetProcessCost": item?.CostingPartDetails?.NetProcessCost,
                 "NetOperationCost": item?.CostingPartDetails?.NetOperationCost,
+                "NetOtherOperationCost": item?.CostingPartDetails?.NetOtherOperationCost,
                 "NetTotalRMBOPCC": item?.CostingPartDetails?.NetTotalRMBOPCC,
-                "TotalCost": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+                "NetPOPrice": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.NetTotalRMBOPCC,
                 "LoggedInUserId": loggedInUserId(),
-                "EffectiveDate": CostingEffectiveDate,
-                "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
-                "NetOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
-                "NetToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
                 "NetLabourCost": item.NetLabourCost,
                 "IndirectLaborCost": item.IndirectLaborCost,
                 "StaffCost": item.StaffCost,
@@ -334,31 +441,15 @@ function AssemblyTechnology(props) {
                 "NetLabourCRMHead": item?.CostingPartDetails?.NetLabourCRMHead,
                 "IndirectLabourCRMHead": item?.CostingPartDetails?.IndirectLabourCRMHead,
                 "BasicRate": basicRate,
+                "CalculatorType": item?.CostingPartDetails?.CalculatorType ?? '',
+                "NetProcessCostForOverhead": checkForNull(item?.CostingPartDetails?.NetProcessCostForOverhead),
+                "NetProcessCostForProfit": checkForNull(item?.CostingPartDetails?.NetProcessCostForProfit),
+                "NetOperationCostForOverhead": checkForNull(item?.CostingPartDetails?.NetOperationCostForOverhead),
+                "NetOperationCostForProfit": checkForNull(item?.CostingPartDetails?.NetOperationCostForProfit),
                 "CostingPartDetails": {
-                    "CostingId": item.CostingId,
-                    "CostingNumber": item.CostingNumber,
-                    "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-                    "PartId": item.PartId,
-                    "PartNumber": item.PartNumber,
-                    "PartName": item.PartName,
-                    "PartTypeId": item.PartTypeId,
-                    "Type": item.PartType,
-                    "NetRawMaterialsCost": item?.CostingPartDetails?.NetRawMaterialsCost,
-                    "NetBoughtOutPartCost": item?.CostingPartDetails?.NetBoughtOutPartCost,
-                    "NetConversionCost": item?.CostingPartDetails?.NetConversionCost,
-                    "NetTotalRMBOPCC": item?.CostingPartDetails?.NetTotalRMBOPCC,
-                    "TotalRawMaterialsCostWithQuantity": item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-                    "TotalBoughtOutPartCostWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-                    "TotalConversionCostWithQuantity": item?.CostingPartDetails?.TotalConversionCostWithQuantity,
-                    "TotalCalculatedRMBOPCCCostWithQuantity": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-                    "Quantity": item?.CostingPartDetails?.Quantity,
-                    "IsOpen": true,
-                    "TotalOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
-                    "TotalToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
                     "AssemblyCostingOperationCostRequest": item.CostingPartDetails.CostingOperationCostResponse,
-                    "AssemblyCostingToolsCostRequest": item?.CostingPartDetails?.CostingToolCostResponse ? item?.CostingPartDetails?.CostingToolCostResponse : [],
-                    "AssemblyCostingProcessCostResponse": item?.CostingPartDetails?.CostingProcessCostResponse ? item?.CostingPartDetails?.CostingProcessCostResponse : [],
-                    "NetOperationCost": item?.CostingPartDetails?.NetOperationCost,
+                    "AssemblyCostingProcessCostRequest": item?.CostingPartDetails?.CostingProcessCostResponse ? item?.CostingPartDetails?.CostingProcessCostResponse : [],
+
                 }
             }
 
@@ -372,7 +463,8 @@ function AssemblyTechnology(props) {
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
             item.NetOperationCost = item?.CostingPartDetails?.NetOperationCost
-            let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
+            let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost,reduxRemark,reduxBopCostingId)
+
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
             }))
 
@@ -381,7 +473,7 @@ function AssemblyTechnology(props) {
             setCallSaveAssemblyApi(false)
         }
 
-    }, [subAssemblyTechnologyArray])
+    }, [subAssemblyTechnologyArray,callSaveAssemblyApi])
 
 
     /**
@@ -414,7 +506,7 @@ function AssemblyTechnology(props) {
 
                         {(item?.PartType === 'Assembly' && (subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost ||
                             subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost ||
-                            subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)) ?
+                            subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost || subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost)) ?
 
                             <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                                 <span class="tooltiptext">
@@ -423,16 +515,20 @@ function AssemblyTechnology(props) {
                                     {`Process Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost, initialConfiguration?.NoOfDecimalForPrice) : '0'}`}
                                     <br></br>
                                     { }
-                                    {(initialConfiguration?.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && `Labour Cost/Assembly:  ${checkForDecimalAndNull(checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost) + checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) + checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost), initialConfiguration?.NoOfDecimalForPrice)}`}
-                                    {(initialConfiguration?.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <br></br>}
-                                    {`Total Child's Part Cost:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost, initialConfiguration?.NoOfDecimalForPrice)}`}
+                                    {(initialConfiguration?.IsShowCostingLabour) && `Labour Cost/Assembly:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost, initialConfiguration?.NoOfDecimalForPrice)}`}
+                                    {(initialConfiguration?.IsShowCostingLabour) && <br></br>}
+                                    {(initialConfiguration?.IsShowCostingLabour) && `Indirect Labour Cost/Assembly:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost, initialConfiguration?.NoOfDecimalForPrice)}`}
+                                    {(initialConfiguration?.IsShowCostingLabour) && <br></br>}
+                                    {(initialConfiguration?.IsShowCostingLabour) && `Staff Cost/Assembly:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost, initialConfiguration?.NoOfDecimalForPrice)}`}
+                                    {(initialConfiguration?.IsShowCostingLabour) && <br></br>}
+                                    {`Total Child's Part Cost:  ${checkForDecimalAndNull((subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost + subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost), initialConfiguration?.NoOfDecimalForPrice)}`}
 
                                 </span >
                             </div > : ''
                         }
                     </td >
                 </div >
-                {item?.PartType !== 'Assembly' && item?.PartType !== 'BOP' && <td className='text-right'>
+                {item?.PartType !== 'Assembly'/*  && item?.PartType !== 'BOP' */ && <td className='text-right'>
                     <button
                         type="button"
                         className={'Edit mr-2 align-middle'}
@@ -443,7 +539,7 @@ function AssemblyTechnology(props) {
                 {
                     item?.CostingPartDetails?.PartType === 'Assembly' ? <td>
                         <div className='assembly-button-container'>
-                            {(initialConfiguration?.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <><button
+                            {(initialConfiguration?.IsShowCostingLabour) && <><button
                                 type="button"
                                 className={'user-btn add-oprn-btn mr-1'}
                                 onClick={labourHandlingDrawer}>
@@ -539,6 +635,7 @@ function AssemblyTechnology(props) {
                     anchor={'bottom'}
                     tabAssemblyIndividualPartDetail={tabAssemblyIndividualPartDetail}
                     costingSummary={false}
+                    isBopEdit={false}
                 />
             }
 

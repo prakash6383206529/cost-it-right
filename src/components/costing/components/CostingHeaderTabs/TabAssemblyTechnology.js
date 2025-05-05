@@ -284,7 +284,7 @@ function TabAssemblyTechnology(props) {
 
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
       checkForNull(costPerPieceTotal) +
-      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost) +
+      checkForNull(CostPerAssemblyBOPTotal) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
       checkForNull(data.NetLabourCost) + checkForNull(data.IndirectLaborCost) + checkForNull(data.StaffCost)

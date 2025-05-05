@@ -87,7 +87,8 @@ function CostingHeaderTabs(props) {
   const { nfrDetailsForDiscount, exchangeRateData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
-  const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
+  const isRequestForMultiTechnology = IdForMultiTechnology?.includes(String(costData?.TechnologyId))
+const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -434,7 +435,7 @@ function CostingHeaderTabs(props) {
 
   useEffect(() => {
     const operationConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTOPERATION)
-    dispatch(getCostingCondition(null, operationConditionTypeId, (res) => {
+    dispatch(getCostingCondition(null, operationConditionTypeId,isRequestForMultiTechnology, (res) => {
       if (res?.data?.DataList) {
         const operationData = res?.data?.DataList.map(item => ({
           label: item?.CostingConditionNumber,
@@ -445,7 +446,7 @@ function CostingHeaderTabs(props) {
     }))
 
     const processConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTFORPROCESS)
-    dispatch(getCostingCondition(null, processConditionTypeId, (res) => {
+    dispatch(getCostingCondition(null, processConditionTypeId,isRequestForMultiTechnology, (res) => {
       if (res?.data?.DataList) {
         const processData = res?.data?.DataList.map(item => ({
           label: item?.CostingConditionNumber,

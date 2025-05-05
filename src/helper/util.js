@@ -26,7 +26,7 @@ import {
 import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
-import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID } from '../config/masterData';
+import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID, IdForMultiTechnology } from '../config/masterData';
 import Toaster from '../components/common/Toaster';
 /**
  * @method  apiErrors
@@ -665,7 +665,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   }
 
   obj.profitOn = {
-    profitTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '',    profitValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-',
+    profitTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '', profitValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-',
     profitPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitPercentage : '-',
     profitRMPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage : '-',
     profitBOPPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage : '-',
@@ -683,7 +683,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   }
 
   obj.iccOn = {
-    iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '',    iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
+    iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '', iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
     iccPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate : '-',
     ICCCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead : '-',
     ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
@@ -693,7 +693,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
 
   obj.paymentTerms = {
-    paymentTitle: paymentTermDetail?.PaymentTermApplicability || '',   
+    paymentTitle: paymentTermDetail?.PaymentTermApplicability || '',
     paymentValue: paymentTermDetail?.NetCost || 0,
     paymentPercentage: paymentTermDetail?.InterestRate || '-',
     PaymentTermCRMHead: paymentTermDetail?.PaymentTermCRMHead || '-',
@@ -713,15 +713,16 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.nPackagingAndFreight = isBestCost ? (dataFromAPI && dataFromAPI?.NetFreightPackagingCost !== undefined ? dataFromAPI?.NetFreightPackagingCost : 0) :
     dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetFreightPackagingCost ? dataFromAPI?.CostingPartDetails?.NetFreightPackagingCost : 0
 
-
   obj.bopPHandlingCharges = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingCharges !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingCharges : 0
   obj.bopHandlingPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage : 0
   obj.bopHandlingChargeType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType : ''
 
+  obj.netAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost: 0
+  obj.netToolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost: 0
+  obj.netToolInterestCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolInterestCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolInterestCost: 0
   obj.toolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost : 0
   obj.toolPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost : 0
   obj.amortizationQty = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life : 0
-
   obj.toolApplicability = { applicability: 'Applicability', value: 'Value', }
   obj.toolApplicabilityValue = {
     toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : "-",
@@ -891,7 +892,6 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.lineNumber = dataFromAPI?.LineNumber ?? '-'
   obj.partType = dataFromAPI?.CostingPartDetails?.Type
   obj.partTypeId = dataFromAPI?.CostingPartDetails?.PartTypeId
-  obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
   obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
   obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
   obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
@@ -966,7 +966,10 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.OtherCostConversion = dataFromAPI?.OtherCostConversion
   obj.RawMaterialCostWithCutOffConversion = dataFromAPI?.RawMaterialCostWithCutOffConversion
   obj.NetLabourCostConversion = dataFromAPI?.NetLabourCostConversion
+  obj.NetLabourCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetLabourCost ? dataFromAPI?.CostingPartDetails?.NetLabourCost : 0
+  obj.IndirectLaborCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IndirectLaborCost ? dataFromAPI?.CostingPartDetails?.IndirectLaborCost : 0
   obj.IndirectLaborCostConversion = dataFromAPI?.IndirectLaborCostConversion
+  obj.StaffCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.StaffCost ? dataFromAPI?.CostingPartDetails?.StaffCost : 0
   obj.StaffCostConversion = dataFromAPI?.StaffCostConversion
   obj.LocalCurrency = dataFromAPI?.LocalCurrency
   obj.NetPOPriceLocalConversion = dataFromAPI?.NetPOPriceLocalConversion
@@ -1117,7 +1120,7 @@ export function findLostWeight(tableVal, isPlastic = false) {
 
 //THIS FUNCTION TO CHECK WHETHER MASTER APPROVAL IS APPLICALBE AND ON WHICH MASTER IT IS APPLICABLE (ApprovalMasterArrayList COMING FROM PAGE INIT)
 export function CheckApprovalApplicableMaster(number) {
-  const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
+  const isApproval = getConfigurationKey()?.ApprovalMasterArrayList?.includes(number) && getConfigurationKey()?.IsMasterApprovalAppliedConfigure
   return isApproval
 }
 
@@ -1776,6 +1779,8 @@ export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel = '', z
     return customerBasedLabel;
   } else if (cellValue === 'Vendor(Code)') {
     return vendorCodeLabel;
+  }else{
+    return cellValue
   }
 }
 // export const frameBreaker = () => {
@@ -2055,4 +2060,35 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
   });
 
   return totals;
+};
+export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = []) => {
+  const isAssembly = item?.PartType
+  const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  
+  let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
+  let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex(costingItem => costingItem.PartNumber === item?.PartNumber && costingItem.AssemblyPartNumber === item?.AssemblyPartNumber)
+  let objectToGetRMCCData = tempArrForCosting[indexForUpdate]
+  
+  if (isAssembly === "Assembly" || isAssembly === "Sub Assembly") {
+
+    if (isRequestForMultiTechnology) {//run for multi(Assembly) technology
+      const assemblyCostingPartDetails = subAssemblyTechnologyArray[0]?.CostingPartDetails
+      
+      return {
+        netpartCost: checkForNull(assemblyCostingPartDetails?.NetChildPartsCost),
+        conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost)+checkForNull(assemblyCostingPartDetails?.NetProcessCost)
+      };
+    } else {
+      return {
+        rawMaterialsCost: checkForNull(objectToGetRMCCData?.CosingPartDetails?.TotalRawMaterialsCostWithQuantity),
+        conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalConversionCostWithQuantity)
+      };
+    }
+
+  } else {
+    return {
+      rawMaterialsCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.NetRawMaterialsCost),
+      conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.NetConversionCost)
+    };
+  }
 };

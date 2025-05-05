@@ -51,7 +51,7 @@ const FormFieldsRenderer = ({ fields, fieldProps, buttonProps,children }) => {
                                 mandatory={item.mandatory}
                                 rules={{
                                     required: item.mandatory,
-                                    validate: item.mandatory ? { nonZero, number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(5, 2), ...(item.disabled ? {} : {}) } : {},
+                                    validate: item.disabled ? {} : { nonZero, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10, 2), number, checkWhiteSpaces },
                                     max: item.percentageLimit ? {
                                         value: 100,
                                         message: 'Percentage value should be equal to 100'

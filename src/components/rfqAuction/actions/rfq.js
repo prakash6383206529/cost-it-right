@@ -268,22 +268,6 @@ export function getCommunicationHistory(data, callback) {
 }
 
 
-
-export function checkExistCosting(data, callback) {
-    return (dispatch) => {
-        const request = axiosInstance.post(API.checkExistCosting, data, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error)
-        });
-    };
-}
-
 //CHECK FOR VENDOR AND PLANT FOR LPS AND SCN
 export function checkLPSAndSCN(data, callback) {
     return (dispatch) => {

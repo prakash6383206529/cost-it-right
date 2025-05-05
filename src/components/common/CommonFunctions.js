@@ -578,3 +578,8 @@ export const compareRateCommon = (otherCostData, conditionCostData) => {
 export const checkEffectiveDate = (effectiveDate, effectiveDateToChange) => {
     return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
 }
+export const generateUnusedRMsMessage = (unusedRMs) => {
+    const rmStrings = unusedRMs.map(rm => `${rm.RMName}-${rm.RMGrade}`);
+    const rmList = rmStrings.join(', ');
+    return `Raw materials (${rmList}) are not used in the weight calculator. Remove the unused raw materials to save the calculator. Click "OK" to remove.`;
+}

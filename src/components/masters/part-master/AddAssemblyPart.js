@@ -7,7 +7,10 @@ import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect, validateForm } from "../../layout/FormInputs";
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart,
-  getBOMViewerTreeDataByPartIdAndLevel, getPartDescription, getPartData, convertPartToAssembly, getProductGroupSelectList
+  getBOMViewerTreeDataByPartIdAndLevel, getPartDescription, getPartData, convertPartToAssembly, getProductGroupSelectList,
+  getModelList,
+  addModel,
+  editModel
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
@@ -37,7 +40,7 @@ import { AcceptableBOPUOM, LOGISTICS } from '../../../config/masterData';
 import AsyncSelect from 'react-select/async';
 import { subDays } from 'date-fns';
 import TooltipCustom from '../../common/Tooltip';
-
+import AddModel from './AddModel';
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
 
@@ -87,7 +90,11 @@ class AddAssemblyPart extends Component {
       showPopup: false,
       partAssembly: '',
       uomSelected: [],
-      showErrors: false
+      showErrors: false,
+      isModelDrawerOpen: false,
+      Model: [],
+      isModelEditFlag: false,
+      modelOptions: [],
     }
   }
 
@@ -104,7 +111,7 @@ class AddAssemblyPart extends Component {
     }
     this.getDetails()
     this.props.getUOMSelectList(() => { })
-
+    this.getModelList()
   }
 
   /**
@@ -148,7 +155,10 @@ class AddAssemblyPart extends Component {
               warningMessageTechnology: Data.IsBOMEditable ? true : false,
               IsTechnologyUpdateRequired: Data?.IsTechnologyUpdateRequired,
               uomSelected: ({ label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }),
-
+              Model: Data.PartModelIdRef ? { 
+                label: Data.PartsModelMaster || "", 
+                value: Data.PartModelIdRef 
+              } : []
             }, () => {
               this.setState({ isLoader: false })
               if (this.state.IsTechnologyUpdateRequired) {
@@ -166,6 +176,10 @@ class AddAssemblyPart extends Component {
               this.dropzone.current.files = files
             }
 
+            // Set form field values
+            this.props.change('SAPCode', Data.SAPCode ?? '')
+            // Add NEP field value
+            this.props.change('NEP', Data.NEPNumber ?? '')
           }, 200)
         }
       })
@@ -711,22 +725,21 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
+    console.log("values", values);
     this.setState({ showErrors: true });
   
-  // Check for required fields
-  let hasErrors = false;
-  
-  // Check Technology field
-  if (!this.state.TechnologySelected || !this.state.TechnologySelected.value) {
-    hasErrors = true;
-    // Don't show toast here, just let the form validation display the error
-  }
-  
-  
-  // If there are validation errors, stop submission
-  if (hasErrors) {
-    return false;
-  }
+    // Check for required fields
+    let hasErrors = false;
+    
+    // Check Technology field
+    if (!this.state.TechnologySelected || !this.state.TechnologySelected.value) {
+      hasErrors = true;
+    }
+    
+    // If there are validation errors, stop submission
+    if (hasErrors) {
+      return false;
+    }
     const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly, uploadAttachements } = this.state;
     const { partData, initialConfiguration } = this.props;
 
@@ -832,7 +845,9 @@ class AddAssemblyPart extends Component {
         IsConvertedToAssembly: convertPartToAssembly ? true : false,
         IsTechnologyUpdateRequired: false,
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
-
+        NEPNumber: values.NEP,
+        PartModelIdRef: this.state.Model?.value || "",
+        PartsModelMaster: this.state.Model?.label || "",
       }
 
       if (convertPartToAssembly) {
@@ -844,7 +859,6 @@ class AddAssemblyPart extends Component {
           }
         });
       }
-
       else {
         this.props.updateAssemblyPart(updateData, (res) => {
           this.setState({ setDisable: false, isLoader: false })
@@ -854,7 +868,6 @@ class AddAssemblyPart extends Component {
           }
         });
       }
-
 
     } else {
       this.setState({ setDisable: true, isLoader: true })
@@ -879,8 +892,10 @@ class AddAssemblyPart extends Component {
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray,
+        NEPNumber: values.NEP,
+        PartModelIdRef: this.state.Model?.value || "",
+        PartsModelMaster: this.state.Model?.label || "",
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
-
       }
       this.props.createAssemblyPart(formData, (res) => {
         this.setState({ setDisable: false, isLoader: false })
@@ -956,6 +971,76 @@ class AddAssemblyPart extends Component {
 
     }
   };
+  modelToggler = (modelId = '') => {
+    const { isEditFlag, Model } = this.state;
+    
+    if (isEditFlag && Model && Model.value) {
+      // No need to make API call to fetch model data for edit
+      // Just open the drawer with existing model data
+      this.setState({ 
+        isModelDrawerOpen: true,
+        isModelEditFlag: true
+      });
+    } else {
+      // If in add mode, just open the drawer
+      this.setState({ 
+        isModelDrawerOpen: true,
+        isModelEditFlag: false,
+        Model: modelId ? { value: modelId } : null
+      });
+    }
+  }
+  
+  handleModelChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ Model: newValue });
+      
+    } else {
+      // this.setState({ BOPCategory: [], });
+
+    }
+  }
+
+  getModelList = () => {
+    this.setState({ isLoader: true });
+    this.props.getModelList((res) => {
+      this.setState({ isLoader: false });
+      if (res && res.data && res.data.Result) {
+        // Transform the SelectList into the format needed for the dropdown
+        const modelOptions = res.data.SelectList
+          .filter(item => item.Value !== "0") // Filter out the default "Select" option
+          .map(item => ({
+            label: item.Text,
+            value: item.Value
+          }));
+        this.setState({ modelOptions });
+      }
+    });
+  }
+
+  handleModelSubmit = (modelData) => {
+    if (this.state.isModelEditFlag) {
+      this.props.editModel({
+        PartModelId: modelData.Id,
+        PartModelMasterName: modelData.ModelName
+      }, (res) => {
+        if (res && res.data && res.data.Result) {
+          this.getModelList(); // Refresh the model list
+          this.setState({ isModelDrawerOpen: false });
+        }
+      });
+    } else {
+      this.props.addModel({
+        PartModelMasterName: modelData.ModelName
+      }, (res) => {
+        if (res && res.data && res.data.Result) {
+          this.getModelList(); // Refresh the model list
+          this.setState({ isModelDrawerOpen: false });
+        }
+      });
+    }
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -1217,7 +1302,61 @@ class AddAssemblyPart extends Component {
                           </Col>
                         }
                       </Row>
-
+                      <Row>
+                        <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="Model"
+                                  type="text"
+                                  label={`Model`}
+                                  component={searchableSelect}
+                                  placeholder={isEditFlag ? '-' : "Select"}
+                                  options={this.state.modelOptions}
+                                  validate={
+                                    this.state.Model == null || this.state.Model.length === 0 ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={this.handleModelChange}
+                                  valueDescription={this.state.Model}
+                                  disabled={isViewMode}
+                                />
+                              </div>
+                              {!isViewMode && (
+                                isEditFlag && this.state.Model && this.state.Model.value ? 
+                                  <Button
+                                    id="Model-edit"
+                                    className="drawer-edit mt30"
+                                    variant="Edit"
+                                    onClick={() => this.modelToggler(this.state.Model.value)}
+                                  /> :
+                                  <div className='d-flex justify-content-center align-items-center'>
+                                    <Button
+                                      id="Model-add"
+                                      className="mb-3"
+                                      variant="plus-icon-square"
+                                      onClick={() => this.modelToggler('')}
+                                    />
+                                  </div>
+                              )}
+                            </div>
+                          </Col>
+                        <Col md="3">
+                          <span>
+                            <Field
+                              label={`NEP`}
+                              name={"NEP"}
+                              type="text"
+                              placeholder={isViewMode ? '-' : "Enter"}
+                              validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName={"withBorder"}
+                              disabled={isViewMode}
+                            />
+                          </span>
+                        </Col>
+                        </Row>
                       <Row>
                         {initialConfiguration?.IsSAPCodeRequired && <Col md="3">
                           <Field
@@ -1473,7 +1612,16 @@ class AddAssemblyPart extends Component {
               />
             </PartEffectiveDate.Provider>
           )}
-
+  {this.state.isModelDrawerOpen && (
+            <AddModel
+              isOpen={this.state.isModelDrawerOpen}
+              onClose={() => this.setState({ isModelDrawerOpen: false })}
+              onSubmit={this.handleModelSubmit}
+              ID={this?.state?.Model?.value}
+              isEditFlag={this?.state?.isModelEditFlag}
+              refreshModelList={this.getModelList}
+            />
+          )}
         </div>
       </>
     );
@@ -1531,6 +1679,9 @@ export default connect(mapStateToProps, {
   getProductGroupSelectList,
   getPartSelectList,
   getUOMSelectList,
+  getModelList,
+  addModel,
+  editModel,
   change,
   untouch
 })(reduxForm({

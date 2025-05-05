@@ -96,7 +96,7 @@ const AssemblyPartListing = React.memo((props) => {
   const [floatingFilterData, setFloatingFilterData] = useState({
     BOMNumber: "", PartNumber: "", PartName: "", NumberOfParts: "", BOMLevelCount: "", Technology
       : "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", UnitOfMeasurementSymbol: "", EffectiveDateNew
-      : "", isApplyPagination: true, skip: 0, take: 10,
+      : "", NEPNumber: "", PartsModelMaster: "", isApplyPagination: true, skip: 0, take: 10,
   });
 
   const permissions = useContext(ApplyPermission);
@@ -122,6 +122,9 @@ const AssemblyPartListing = React.memo((props) => {
       isApplyPagination: isPagination,
       skip: newSkip ?? 0,
       take: numericPageSize ?? 10,
+      nepNumber: floatingFilterData?.NEPNumber ?? null,
+      partmodelmaster: floatingFilterData?.PartsModelMaster ?? null,
+      
     };
 
     dispatch(
@@ -917,6 +920,8 @@ const AssemblyPartListing = React.memo((props) => {
                   <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                   <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                   <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  {initialConfiguration?.IsPartModelMaster && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                  {initialConfiguration?.IsPartModelMaster && <AgGridColumn field="PartsModelMaster" headerName="Parts Model Master" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                   {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                   {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={'hyphenFormatter'}  ></AgGridColumn>}
                   <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}              ></AgGridColumn>

@@ -1115,7 +1115,10 @@ function RMDomesticListing(props) {
                                         suppressRowClickSelection={true}
                                         enableBrowserTooltips={true}
                                     >
-                                        <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                        <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer} 
+                                            floatingFilterComponentParams={floatingFilterStatus}
+                                            floatingFilterComponent="statusFilter">  
+                                        </AgGridColumn>
                                         {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>}
                                         <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>

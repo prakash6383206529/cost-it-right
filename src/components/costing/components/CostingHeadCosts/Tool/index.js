@@ -18,7 +18,7 @@ import _, { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
-import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalIntegerNumberLimit, decimalNumberLimit13 } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalIntegerNumberLimit, decimalNumberLimit13, nonZero } from "../../../../../helper/validation";
 import { useLabels } from '../../../../../helper/core';
 
 let counter = 0;
@@ -193,52 +193,6 @@ function Tool(props) {
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
       dispatch(isToolDataChange(true))
-    }
-  }
-
-  const handleToolCostChange = (event) => {
-
-    if (!isNaN(event.target.value)) {
-
-      // setValue('ToolCost', event.target.value)
-
-      // const ToolMaintenanceCost = checkForNull(toolObj?.ToolMaintenanceCost)
-      // const ToolCost = checkForNull(event.target.value);
-      // const Life = checkForNull(getValues('Life'))
-      // const ToolAmortizationCost = checkForNull(ToolCost / Life)
-
-      // setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
-      // setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost), initialConfiguration?.NoOfDecimalForPrice))
-
-      // const zeroIndex = 0;
-      // let rowArray = {
-      //   "ToolOperationId": null,
-      //   "ProcessOrOperation": null,
-      //   "ToolCategory": null,
-      //   "ToolName": null,
-      //   "Quantity": null,
-      //   "ToolCost": ToolCost,
-      //   "Life": Life,
-      //   "NetToolCost": checkForNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)+state.ToolInterestCost)),
-      //   "TotalToolCost": null,
-      //   "ToolMaintenanceCost": toolObj?.ToolMaintenanceCost,
-      //   "ToolCostType": toolObj?.ToolApplicability,
-      //   "ToolApplicabilityTypeId": toolObj?.ToolApplicabilityId,
-      //   "ToolMaintenancePercentage": toolObj?.MaintanencePercentage,
-      //   "ToolApplicabilityCost": toolObj?.ToolApplicabilityCost,
-      //   "ToolAmortizationCost": ToolAmortizationCost,
-      //   "IsCostForPerAssembly": null,
-      //   "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : '',
-      //   "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
-      //   "ToolInterestCost": state.ToolInterestCost,
-      //   "ToolInterestCostPerPiece": state.ToolInterestCostPerPc,
-      //   "ToolMaintenanceCostPerPiece": ToolMaintenanceCost / Life
-      // }
-      // let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-      // setGridData(tempArr)
-      dispatch(isToolDataChange(true))
-    } else {
-      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -509,7 +463,7 @@ function Tool(props) {
       ToolInterestCost: toolInterestCost,
       ToolInterestCostPerPc: toolInterestCostPerPc
     }))
-    const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(fieldValues.ToolInterestCostPerPc)
+    const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(toolInterestCostPerPc)
     if (netToolValue) {
       setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
       setValue('NetToolCost', checkForDecimalAndNull(netToolValue, initialConfiguration.NoOfDecimalForPrice))
@@ -524,7 +478,7 @@ function Tool(props) {
         "Life": Life,
         "NetToolCost": netToolValue,
         "TotalToolCost": null,
-        "ToolMaintenanceCost": ToolMaintenanceCostPerPiece,
+        "ToolMaintenanceCost": toolObj?.ToolMaintenanceCost,
         "ToolCostType": applicability.label,
         "ToolApplicabilityTypeId": applicability.value,
         "ToolMaintenancePercentage": getValues('maintanencePercentage'),
@@ -651,9 +605,7 @@ function Tool(props) {
                       className=""
                       customClassName={'withBorder'}
                       handleChange={(e) => {
-                        e.preventDefault()
-                        handleToolCostChange(e)
-                      }}
+                        e.preventDefault()}}
                       errors={errors && errors.ToolCost}
                       disabled={CostingViewMode ? true : false}
                     />
@@ -665,10 +617,10 @@ function Tool(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={false}
+                      mandatory={true}
                       rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
+                        required: true,
+                        validate: { number,nonZero, checkWhiteSpaces,  decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
                       }}
                       defaultValue={''}
                       className=""
@@ -734,7 +686,7 @@ function Tool(props) {
                             setValueByAPI(false)
                           }}
                           rules={{
-                            required: true,
+                            required: false,
                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                             max: {
                               value: 100,
@@ -857,7 +809,7 @@ function Tool(props) {
                             setValueByAPI(false)
                           }}
                           rules={{
-                            required: true,
+                            required: false,
                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                             max: {
                               value: 100,
@@ -867,7 +819,7 @@ function Tool(props) {
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
-                          errors={errors.maintanencePercentage}
+                          errors={errors.ToolInterestRatePercent}
                           disabled={!getValues('ToolCost')|| CostingViewMode ? true : false}
                         />
                   </Col>
@@ -909,9 +861,9 @@ function Tool(props) {
                     />
                   </Col>
                   <Col md="3">
-                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={`Net Tool Cost = (${toolMaintenanceCostLabel}+ Tool Amortization)`} />
+                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={`Total Tool Cost = (Tool Amortization Cost + ${toolMaintenanceCostPerPcLabel} + ${toolInterestCostPerPcLabel})`} />
                     <TextFieldHookForm
-                      label="Net Tool Cost"
+                      label="Total Tool Cost"
                       name={`NetToolCost`}
                       id="tool-cost"
                       Controller={Controller}
