@@ -94,6 +94,7 @@ const AssociateHierarchy = (props) => {
         const finalDataSubmit = {
             ProductHierarchyId: state.levelData?.ProductHierarchyId,
             ProductHierarchyValue: data[state?.labelName],
+            ProductHierarchyCode: data[`${state?.labelName}Code`],
             ProductHierarchyValueDetailsId: state[`ProductHierarchyName${state.levelData?.ProductHierarchyId - 1}`] ? state[`ProductHierarchyName${state.levelData?.ProductHierarchyId - 1}`]?.value : null,
             LoggedInUserId: loggedInUserId(),
         }
@@ -111,9 +112,7 @@ const AssociateHierarchy = (props) => {
                     }
                 }))
             }
-
         }))
-
     }
 
     const handleLevelChange = (e, item) => {
@@ -263,7 +262,26 @@ const AssociateHierarchy = (props) => {
                                     errors={errorsAddLabels[state?.labelName]}
                                     disabled={false}
                                 />
-
+                            </Col>
+                            <Col md="12" >
+                                <TextFieldHookForm
+                                    label={`${state?.labelName} Code`}
+                                    name={`${state?.labelName}Code`}
+                                    Controller={Controller}
+                                    control={controlAddLabels}
+                                    register={registerAddLabels}
+                                    mandatory={true}
+                                    rules={{
+                                        required: true,
+                                        validate: { required, checkWhiteSpaces, maxLength80 },
+                                    }}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errorsAddLabels[`${state?.labelName}Code`]}
+                                    disabled={false}
+                                />
                             </Col>
                         </Row>
                         <Row className="sf-btn-footer no-gutters justify-content-between px-3">
@@ -272,7 +290,6 @@ const AssociateHierarchy = (props) => {
                                     type={"button"}
                                     className=" mr15 cancel-btn"
                                     onClick={cancelDrawer}
-                                // disabled={setDisable}
                                 >
                                     <div className={"cancel-icon"}></div>
                                     {"Cancel"}
@@ -280,7 +297,6 @@ const AssociateHierarchy = (props) => {
                                 <button
                                     type="submit"
                                     className="user-btn save-btn"
-                                // disabled={setDisable}
                                 >
                                     <div className={"save-icon"}></div>
                                     {"Save"}
