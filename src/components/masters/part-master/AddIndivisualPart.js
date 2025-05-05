@@ -12,7 +12,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, GUIDE_BUTTON_SHOW } from '../../../config/constants';
+import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
@@ -23,12 +23,11 @@ import { AcceptableBOPUOM, ASSEMBLY, LOGISTICS } from '../../../config/masterDat
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
-import { subDays } from 'date-fns';
 import { getUOMSelectList } from '../../../actions/Common';
 import TooltipCustom from '../../common/Tooltip';
-import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import Button from '../../layout/Button';
 import AddModel from './AddModel';
+import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -72,13 +71,13 @@ class AddIndivisualPart extends Component {
   * @description 
   */
   componentDidMount() {
-    if (!this.state.isViewMode) {
-      this.props.getProductGroupSelectList(() => { })
-      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
+    if (!this?.state?.isViewMode) {
+      this?.props?.getProductGroupSelectList(() => { })
+      this?.props?.getCostingSpecificTechnology(loggedInUserId(), () => { })
     }
     this.getModelList()
     this.getDetails()
-    this.props.getUOMSelectList(() => { })
+    this?.props?.getUOMSelectList(() => { })
     this.getModelList()
 
   }
@@ -89,56 +88,56 @@ class AddIndivisualPart extends Component {
   */
   getDetails = () => {
     const { data } = this.props;
-    if (data && data.isEditFlag) {
+    if (data && data?.isEditFlag) {
       this.setState({
         isEditFlag: false,
         isLoader: true,
         PartId: data?.Id,
       })
-      this.props.getPartData(data.Id, res => {
+      this?.props?.getPartData(data?.Id, res => {
         if (res && res?.data && res?.data?.Result) {
-          const Data = res.data.Data;
+          const Data = res?.data?.Data;
 
 
           let productArray = []
-          Data && Data.GroupCodeList.map((item) => {
-            productArray.push({ Text: item.GroupCode, Value: item.ProductId })
+          Data && Data?.GroupCodeList.map((item) => {
+            productArray.push({ Text: item?.GroupCode, Value: item?.ProductId })
             return productArray
           })
           this.setState({ DataToCheck: Data })
-          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.props.change("SAPCode", Data.SAPCode ?? '')
-          this.setState({ minEffectiveDate: Data.LatestEffectiveDate })
+          this?.props?.change("EffectiveDate", DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '')
+          this?.props?.change("SAPCode", Data?.SAPCode ?? '')
+          this.setState({ minEffectiveDate: Data?.LatestEffectiveDate })
 
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
-              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              files: Data.Attachements,
+              effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '',
+              files: Data?.Attachements,
               ProductGroup: productArray,
               oldProductGroup: productArray,
-              isBomEditable: Data.IsBOMEditable,
-              TechnologySelected: ({ label: Data.TechnologyName, value: Data.TechnologyIdRef }),
+              isBomEditable: Data?.IsBOMEditable,
+              TechnologySelected: ({ label: Data?.TechnologyName, value: Data?.TechnologyIdRef }),
               uomSelected: ({ label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }),
-              IsTechnologyUpdateRequired: Data.IsTechnologyUpdateRequired,
-              Model: Data.PartModelIdRef ? { 
-                label: Data.PartsModelMaster || "", 
-                value: Data.PartModelIdRef 
+              IsTechnologyUpdateRequired: Data?.IsTechnologyUpdateRequired,
+              Model: Data?.PartModelIdRef ? { 
+                label: Data?.PartsModelMaster || "", 
+                value: Data?.PartModelIdRef 
               } : []
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-            let files = Data.Attachements && Data.Attachements.map((item) => {
+            let files = Data?.Attachements && Data?.Attachements?.map((item) => {
               item.meta = {}
-              item.meta.id = item.FileId
+              item.meta.id = item?.FileId
               item.meta.status = 'done'
               return item
             })
             if (this.dropzone.current !== null) {
               this.dropzone.current.files = files
             }
-            this.props.change('SAPCode', Data.SAPCode ?? '')
+            this?.props?.change('SAPCode', Data?.SAPCode ?? '')
             // Add NEP field value
-            this.props.change('NEP', Data.NEPNumber ?? '')
+            this?.props?.change('NEP', Data?.NEPNumber ?? '')
           }, 500)
         }
       })
@@ -146,27 +145,27 @@ class AddIndivisualPart extends Component {
       this.setState({
         isLoader: false,
       })
-      this.props.getPartData('', res => { })
+      this?.props?.getPartData('', res => { })
     }
   }
 
 
   onPartNoChange = debounce((e) => {
 
-    if (!this.state.isEditFlag) {
-      this.props.getPartDescription(e?.target?.value, 2, (res) => {
+    if (!this?.state?.isEditFlag) {
+      this?.props?.getPartDescription(e?.target?.value, 2, (res) => {
         if (res?.data?.Data) {
-          let finalData = res.data.Data
-          this.props.change("Description", finalData.Description)
-          this.props.change("PartName", finalData.PartName)
+          let finalData = res?.data?.Data
+          this?.props?.change("Description", finalData.Description)
+          this?.props?.change("PartName", finalData.PartName)
           this.setState({
             disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: {
               label: finalData.Technology, value: finalData.TechnologyId,
             }, uomSelected: { label: finalData?.UnitOfMeasurementSymbol, value: finalData?.UnitOfMeasurementId }
           })
         } else {
-          this.props.change("Description", "")
-          this.props.dispatch(clearFields('AddIndivisualPart', false, false, 'PartName'));
+          this?.props?.change("Description", "")
+          this?.props?.dispatch(clearFields('AddIndivisualPart', false, false, 'PartName'));
           this.setState({ disablePartName: false, minEffectiveDate: "", TechnologySelected: [] })
         }
       })
@@ -205,16 +204,16 @@ class AddIndivisualPart extends Component {
     const temp = [];
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        if (item?.Value === '0') return false;
+        temp.push({ Text: item?.Text, Value: item?.Value })
         return null;
       });
       return temp;
     }
     if (label === 'ProductGroup') {
       productGroupSelectList && productGroupSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        if (item?.Value === '0') return false;
+        temp.push({ Text: item?.Text, Value: item?.Value })
         return null;
       })
       return temp;
@@ -223,19 +222,19 @@ class AddIndivisualPart extends Component {
     if (label === 'technology') {
       costingSpecifiTechnology &&
         costingSpecifiTechnology.map((item) => {
-          if (item.Value === '0' || Number(item.Value) === Number(ASSEMBLY) || item.Value === String(LOGISTICS)) return false
-          temp.push({ label: item.Text, value: item.Value })
+          if (item?.Value === '0' || Number(item?.Value) === Number(ASSEMBLY) || item?.Value === String(LOGISTICS)) return false
+          temp.push({ label: item?.Text, value: item?.Value })
           return null
         })
       return temp
     }
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
-        const accept = AcceptableBOPUOM.includes(item.Type)
+        const accept = AcceptableBOPUOM.includes(item?.Type)
         if (accept === false) return false
-        if (item.Value === '0') return false;
-        // let display = this.applySuperScriptFormatter(item.Display)
-        temp.push({ label: item.Display, value: item.Value })
+        if (item?.Value === '0') return false;
+        // let display = this.applySuperScriptFormatter(item?.Display)
+        temp.push({ label: item?.Display, value: item?.Value })
         return null
       });
       return temp;
@@ -252,8 +251,8 @@ class AddIndivisualPart extends Component {
   * @description setDisableFalseFunction
   */
   setDisableFalseFunction = () => {
-    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
+    const loop = Number(this.dropzone.current.files.length) - Number(this?.state?.files.length)
+    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this?.state?.files.length)) {
       this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
@@ -266,19 +265,19 @@ class AddIndivisualPart extends Component {
 
     if (status === 'removed') {
       const removedFileName = file.name;
-      let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
+      let tempArr = files.filter(item => item?.OriginalFileName !== removedFileName)
       this.setState({ files: tempArr })
     }
 
     if (status === 'done') {
       let data = new FormData()
-      data.append('file', file)
+      data?.append('file', file)
       if (!validateFileName(file.name)) {
         this.dropzone.current.files.pop()
         this.setDisableFalseFunction()
         return false;
       }
-      this.props.fileUploadPart(data, (res) => {
+      this?.props?.fileUploadPart(data, (res) => {
         if (res && res?.status !== 200) {
           this.dropzone.current.files.pop()
           this.setDisableFalseFunction()
@@ -290,11 +289,11 @@ class AddIndivisualPart extends Component {
           this.dropzone.current.files.pop()
           this.setState({ attachmentLoader: false })
           this.dropzone.current.files.pop() // Remove the failed file from dropzone
-          this.setState({ files: [...this.state.files] }) // Trigger re-render with current files
+          this.setState({ files: [...this?.state?.files] }) // Trigger re-render with current files
           Toaster.warning('File upload failed. Please try again.')
         }
         else {
-          let Data = res.data[0]
+          let Data = res?.data[0]
           const { files } = this.state;
           let attachmentFileArray = [...files]
           attachmentFileArray.push(Data)
@@ -332,7 +331,7 @@ class AddIndivisualPart extends Component {
     }
   };
   renderImages = () => {
-    this.state.files && this.state.files.map(f => {
+    this?.state?.files && this?.state?.files.map(f => {
       const withOutTild = f.FileURL.replace('~', '')
       const fileURL = `${FILE_URL}${withOutTild}`;
       return (
@@ -348,12 +347,12 @@ class AddIndivisualPart extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      let tempArr = this?.state?.files.filter((item) => item?.FileId !== FileId)
       this.setState({ files: tempArr })
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(
-        (item) => item.FileName !== OriginalFileName,
+      let tempArr = this?.state?.files.filter(
+        (item) => item?.FileName !== OriginalFileName,
       )
       this.setState({ files: tempArr })
     }
@@ -382,11 +381,11 @@ class AddIndivisualPart extends Component {
       RawMaterial: [],
       selectedPlants: [],
     })
-    // this.props.getPartData('', res => { })
-    this.props.hideForm(type)
+    // this?.props?.getPartData('', res => { })
+    this?.props?.hideForm(type)
   }
   cancelHandler = () => {
-    if (this.state.isViewMode) {
+    if (this?.state?.isViewMode) {
       this.cancel('cancel')
     } else {
       this.setState({ showPopup: true })
@@ -407,43 +406,43 @@ class AddIndivisualPart extends Component {
     const { PartId, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
     let isStructureChanges;
-    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text, ProductId: item.Value })) : [{ GroupCode: values.GroupCode }];
+    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item?.Text, ProductId: item?.Value })) : [{ GroupCode: values?.GroupCode }];
 
     if (isEditFlag) {
       let isGroupCodeChange;
-      if (!this.state.isBomEditable) {
-        if (this.props.initialConfiguration?.IsProductMasterConfigurable) {
-          let isEqualValue = _.isEqual(this.state.DataToCheck.GroupCodeList, productArray);
+      if (!this?.state?.isBomEditable) {
+        if (this?.props?.initialConfiguration?.IsProductMasterConfigurable) {
+          let isEqualValue = _.isEqual(this?.state?.DataToCheck.GroupCodeList, productArray);
           isGroupCodeChange = isEqualValue ? false : true;
         } else {
-          let isEqualValue = String(this.state.DataToCheck.GroupCode) === String(values.GroupCode);
+          let isEqualValue = String(this?.state?.DataToCheck.GroupCode) === String(values?.GroupCode);
           isGroupCodeChange = isEqualValue ? false : true;
         }
       }
       //THIS CONDITION TO CHECK IF ALL VALUES ARE SAME (IF YES, THEN NO NEED TO CALL UPDATE API JUST SEND IT TO LISTING PAGE)
-      if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
-        String(DataToCheck.ECNNumber) === String(values.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
-        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
-        && String(DataToCheck.Remark) === String(values.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)) {
+      if (DropdownChanged && String(DataToCheck.PartName) === String(values?.PartName) && String(DataToCheck.Description) === String(values?.Description) &&
+        String(DataToCheck.ECNNumber) === String(values?.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
+        String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values?.DrawingNumber)
+        && String(DataToCheck.Remark) === String(values?.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values?.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)) {
         Toaster.warning('Please change data to save Part Details');
         return false;
       }
 
       //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
-      if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
-        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) &&
+      if (this?.state?.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values?.ECNNumber) &&
+        String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values?.DrawingNumber) &&
         String(oldProductGroup) === String(ProductGroup)) {
         isStructureChanges = false;
       }
       //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
-      else if (this.state.isBomEditable === false && (String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
-        String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
+      else if (this?.state?.isBomEditable === false && (String(DataToCheck.ECNNumber) !== String(values?.ECNNumber) ||
+        String(DataToCheck.RevisionNumber) !== String(values?.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values?.DrawingNumber)
       )) {
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
-        if (DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+        if (DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this?.state?.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
           Toaster.warning('Please edit Revision no or ECN no, and Effective date');
           return false;
-        } else if ((DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') !== DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) && (String(DataToCheck.RevisionNumber).toLowerCase() === String(values.RevisionNumber).toLowerCase() && String(DataToCheck.ECNNumber).toLowerCase() === String(values.ECNNumber).toLowerCase())) {
+        } else if ((DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') !== DayTime(this?.state?.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) && (String(DataToCheck.RevisionNumber).toLowerCase() === String(values?.RevisionNumber).toLowerCase() && String(DataToCheck.ECNNumber).toLowerCase() === String(values?.ECNNumber).toLowerCase())) {
           Toaster.warning('Please edit Revision no or ECN no, and Effective date');
           return false;
         } else {
@@ -463,30 +462,30 @@ class AddIndivisualPart extends Component {
       let updateData = {
         LoggedInUserId: loggedInUserId(),
         PartId: PartId,
-        PartName: values.PartName,
-        PartNumber: values.PartNumber,
-        SAPCode: values.SAPCode,
-        Description: values.Description,
-        ECNNumber: values.ECNNumber,
-        RevisionNumber: values.RevisionNumber,
-        DrawingNumber: values.DrawingNumber,
-        GroupCode: values.GroupCode,
-        Remark: values.Remark,
+        PartName: values?.PartName,
+        PartNumber: values?.PartNumber,
+        SAPCode: values?.SAPCode,
+        Description: values?.Description,
+        ECNNumber: values?.ECNNumber,
+        RevisionNumber: values?.RevisionNumber,
+        DrawingNumber: values?.DrawingNumber,
+        GroupCode: values?.GroupCode,
+        Remark: values?.Remark,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
         IsForcefulUpdated: false,
         GroupCodeList: productArray,
         IsStructureChanges: isStructureChanges,
-        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
-        TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
+        TechnologyIdRef: this?.state?.TechnologySelected.value ? this?.state?.TechnologySelected.value : "",
+        TechnologyName: this?.state?.TechnologySelected.label ? this?.state?.TechnologySelected.label : "",
         IsTechnologyUpdateRequired: false,
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
-        NEPNumber: values.NEP,
-        PartModelIdRef: this.state.Model?.value || "",
-        PartsModelMaster: this.state.Model?.label || "",
+        NEPNumber: values?.NEP,
+        PartModelIdRef: this?.state?.Model?.value || "",
+        PartsModelMaster: this?.state?.Model?.label || "",
       };
 
-      this.props.updatePart(updateData, (res) => {
+      this?.props?.updatePart(updateData, (res) => {
         this.setState({ setDisable: false });
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
@@ -499,27 +498,27 @@ class AddIndivisualPart extends Component {
         LoggedInUserId: loggedInUserId(),
         BOMLevel: 0,
         Quantity: 1,
-        Remark: values.Remark,
-        PartNumber: values.PartNumber,
-        PartName: values.PartName,
-        SAPCode: values.SAPCode,
-        Description: values.Description,
-        ECNNumber: values.ECNNumber,
+        Remark: values?.Remark,
+        PartNumber: values?.PartNumber,
+        PartName: values?.PartName,
+        SAPCode: values?.SAPCode,
+        Description: values?.Description,
+        ECNNumber: values?.ECNNumber,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
-        RevisionNumber: values.RevisionNumber,
-        DrawingNumber: values.DrawingNumber,
-        GroupCode: values.GroupCode,
+        RevisionNumber: values?.RevisionNumber,
+        DrawingNumber: values?.DrawingNumber,
+        GroupCode: values?.GroupCode,
         Attachements: files,
         GroupCodeList: productArray,
-        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
-        TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
+        TechnologyIdRef: this?.state?.TechnologySelected.value ? this?.state?.TechnologySelected.value : "",
+        TechnologyName: this?.state?.TechnologySelected.label ? this?.state?.TechnologySelected.label : "",
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
-        NEPNumber: values.NEP,
-        PartModelIdRef: this.state.Model?.value || "",
-        PartsModelMaster: this.state.Model?.label || "",
+        NEPNumber: values?.NEP,
+        PartModelIdRef: this?.state?.Model?.value || "",
+        PartsModelMaster: this?.state?.Model?.label || "",
       };
 
-      this.props.createPart(formData, (res) => {
+      this?.props?.createPart(formData, (res) => {
         this.setState({ setDisable: false, isLoader: false });
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PART_ADD_SUCCESS);
@@ -566,15 +565,15 @@ class AddIndivisualPart extends Component {
 
   getModelList = () => {
     this.setState({ isLoader: true });
-    this.props.getModelList((res) => {
+    this?.props?.getModelList((res) => {
       this.setState({ isLoader: false });
-      if (res && res.data && res.data.Result) {
+      if (res && res?.data && res?.data?.Result) {
         // Transform the SelectList into the format needed for the dropdown
-        const modelOptions = res.data.SelectList
-          .filter(item => item.Value !== "0") // Filter out the default "Select" option
+        const modelOptions = res?.data?.SelectList
+          .filter(item => item?.Value !== "0") // Filter out the default "Select" option
           .map(item => ({
-            label: item.Text,
-            value: item.Value
+            label: item?.Text,
+            value: item?.Value
           }));
         this.setState({ modelOptions });
       }
@@ -582,21 +581,21 @@ class AddIndivisualPart extends Component {
   }
 
   handleModelSubmit = (modelData) => {
-    if (this.state.isModelEditFlag) {
-      this.props.editModel({
+    if (this?.state?.isModelEditFlag) {
+      this?.props?.editModel({
         PartModelId: modelData.Id,
         PartModelMasterName: modelData.ModelName
       }, (res) => {
-        if (res && res.data && res.data.Result) {
+        if (res && res?.data && res?.data?.Result) {
           this.getModelList(); // Refresh the model list
           this.setState({ isModelDrawerOpen: false });
         }
       });
     } else {
-      this.props.addModel({
+      this?.props?.addModel({
         PartModelMasterName: modelData.ModelName
       }, (res) => {
-        if (res && res.data && res.data.Result) {
+        if (res && res?.data && res?.data?.Result) {
           this.getModelList(); // Refresh the model list
           this.setState({ isModelDrawerOpen: false });
         }
@@ -618,7 +617,7 @@ class AddIndivisualPart extends Component {
 
         <div className="container-fluid">
           <div>
-            {this.state.isLoader && <LoaderCustom />}
+            {this?.state?.isLoader && <LoaderCustom />}
             <div className="login-container signup-form">
               <Row>
                 <Col md="12">
@@ -627,7 +626,7 @@ class AddIndivisualPart extends Component {
                       <Col md="6">
                         <div className="form-heading mb-0">
                           <h1>
-                            {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Component/ Part
+                            {this?.state?.isViewMode ? "View" : this?.state?.isEditFlag ? "Update" : "Add"} Component/ Part
                             {!isViewMode && <TourWrapper
                               buttonSpecificProp={{ id: "Add_Indivisual_Part_Form" }}
                               stepsSpecificProp={{
@@ -665,13 +664,13 @@ class AddIndivisualPart extends Component {
                               label={`Part Name`}
                               name={"PartName"}
                               type="text"
-                              placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || isEditFlag ? '-' : "Enter"}
+                              placeholder={isViewMode || (!isEditFlag && this?.state?.disablePartName) || isEditFlag ? '-' : "Enter"}
                               validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85]}
                               component={renderText}
                               required={true}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode || (!isEditFlag && this.state.disablePartName) || isEditFlag}
+                              disabled={isViewMode || (!isEditFlag && this?.state?.disablePartName) || isEditFlag}
                             />
                           </Col>
 
@@ -698,10 +697,10 @@ class AddIndivisualPart extends Component {
                                 label="Group Code"
                                 name="ProductGroup"
                                 type="text"
-                                title={showDataOnHover(this.state.ProductGroup)}
+                                title={showDataOnHover(this?.state?.ProductGroup)}
                                 placeholder={isViewMode ? '-' : "Select"}
                                 selection={
-                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
+                                  this?.state?.ProductGroup == null || this?.state?.ProductGroup.length === 0 ? [] : this?.state?.ProductGroup}
                                 options={this.renderListing("ProductGroup")}
                                 selectionChanged={this.handleProductGroup}
                                 optionValue={(option) => option.Value}
@@ -709,7 +708,7 @@ class AddIndivisualPart extends Component {
                                 component={renderMultiSelectField}
                                 className="multiselect-with-border"
                                 disabled={isViewMode}
-                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                              // disabled={this?.state?.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>
                           ) :
@@ -729,7 +728,7 @@ class AddIndivisualPart extends Component {
                             </Col>
                           }
                         </Row>
-                        <Row>
+                     {initialConfiguration?.IsPartModelMaster&&  ( <Row>
                         <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
@@ -739,22 +738,22 @@ class AddIndivisualPart extends Component {
                                   label={`Model`}
                                   component={searchableSelect}
                                   placeholder={isEditFlag ? '-' : "Select"}
-                                  options={this.state.modelOptions}
+                                  options={this?.state?.modelOptions}
                                   validate={
-                                    this.state.Model == null || this.state.Model.length === 0 ? [required] : []}
+                                    this?.state?.Model == null || this?.state?.Model.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleModelChange}
-                                  valueDescription={this.state.Model}
+                                  valueDescription={this?.state?.Model}
                                   disabled={isViewMode}
                                 />
                               </div>
                               {!isViewMode && (
-                                isEditFlag && this.state.Model && this.state.Model.value ? 
+                                isEditFlag && this?.state?.Model && this?.state?.Model.value ? 
                                   <Button
                                     id="Model-edit"
                                     className="drawer-edit mt30"
                                     variant="Edit"
-                                    onClick={() => this.modelToggler(this.state.Model.value)}
+                                    onClick={() => this.modelToggler(this?.state?.Model.value)}
                                   /> :
                                   <div className='d-flex justify-content-center align-items-center'>
                                     <Button
@@ -783,7 +782,7 @@ class AddIndivisualPart extends Component {
                             />
                           </span>
                         </Col>
-                        </Row>
+                        </Row>)}
 
                         <Row>
                           <Col md="3">
@@ -836,11 +835,11 @@ class AddIndivisualPart extends Component {
                               placeholder={"Select"}
                               options={this.renderListing("uom")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                              //validate={this?.state?.UOM == null || this?.state?.UOM.length === 0 ? [required] : []}
                               // required={true}
                               handleChangeDescription={this.handleUOM}
                               valueDescription={this.state?.uomSelected}
-                              disabled={isEditFlag ? true : false || (!isEditFlag && this.state.disablePartName) || isViewMode}
+                              disabled={isEditFlag ? true : false || (!isEditFlag && this?.state?.disablePartName) || isViewMode}
                             />
                           </Col>}
                           <Col md="3">
@@ -852,13 +851,13 @@ class AddIndivisualPart extends Component {
                               placeholder={isViewMode ? '-' : "Select"}
                               options={this.renderListing("technology")}
                               validate={
-                                this.state.TechnologySelected == null || Object.keys(this.state.TechnologySelected).length === 0 ? [required] : []}
+                                this?.state?.TechnologySelected == null || Object.keys(this?.state?.TechnologySelected).length === 0 ? [required] : []}
                               required={true}
                               handleChangeDescription={
                                 this.handleTechnologyChange
                               }
-                              valueDescription={this.state.TechnologySelected}
-                              disabled={(isViewMode) || (!isEditFlag && this.state.disablePartName) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired && this.state.isBomEditable)))}
+                              valueDescription={this?.state?.TechnologySelected}
+                              disabled={(isViewMode) || (!isEditFlag && this?.state?.disablePartName) || (isEditFlag && !((isEditFlag && this?.state?.IsTechnologyUpdateRequired && this?.state?.isBomEditable)))}
                             />
                           </Col>
 
@@ -875,7 +874,7 @@ class AddIndivisualPart extends Component {
                               onChange={() => { }}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={(isViewMode || (isEditFlag && !this.state.isBomEditable)) ? true : false}
+                              disabled={(isViewMode || (isEditFlag && !this?.state?.isBomEditable)) ? true : false}
                             />
                           </Col>}
 
@@ -886,13 +885,12 @@ class AddIndivisualPart extends Component {
                                   label="Effective Date"
                                   name="EffectiveDate"
                                   placeholder={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? "Enter" : '-' : (isViewMode) ? '-' : "Enter"}
-                                  selected={this.state.effectiveDate}
+                                  selected={this?.state?.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
-                                  // maxDate={getEffectiveDateMaxDate()}
-
-                                  // minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                                  maxDate={getEffectiveDateMaxDate()}
+                                  minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                   autoComplete={'off'}
                                   required={true}
                                   changeHandler={(e) => {
@@ -929,16 +927,16 @@ class AddIndivisualPart extends Component {
                             <label>
                               Upload Files (upload up to 3 files)<AttachmentValidationInfo />
                             </label>
-                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            <div className={`alert alert-danger mt-2 ${this?.state?.files.length === 3 ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div id="AddIndivisualPart_UploadFiles" className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                            <div id="AddIndivisualPart_UploadFiles" className={`${this?.state?.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
-                                initialFiles={this.state.initialFiles}
+                                initialFiles={this?.state?.initialFiles}
                                 maxFiles={3}
                                 disabled={isViewMode}
                                 maxSizeBytes={2000000}
@@ -973,9 +971,9 @@ class AddIndivisualPart extends Component {
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
-                              {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                              {this.state.files &&
-                                this.state.files.map((f) => {
+                              {this?.state?.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                              {this?.state?.files &&
+                                this?.state?.files.map((f) => {
                                   const withOutTild = f.FileURL.replace(
                                     "~",
                                     ""
@@ -1036,12 +1034,12 @@ class AddIndivisualPart extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+            this?.state?.showPopup && <PopupMsgWrapper isOpen={this?.state?.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-          {console.log(this.state.isModelDrawerOpen)}
-          {this.state.isModelDrawerOpen && (
+          {console.log(this?.state?.isModelDrawerOpen)}
+          {this?.state?.isModelDrawerOpen && (
             <AddModel
-              isOpen={this.state.isModelDrawerOpen}
+              isOpen={this?.state?.isModelDrawerOpen}
               onClose={() => this.setState({ isModelDrawerOpen: false })}
               onSubmit={this.handleModelSubmit}
               ID={this?.state?.Model?.value}
