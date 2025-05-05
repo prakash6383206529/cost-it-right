@@ -341,6 +341,47 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
         setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
     }, 300)
+
+    const handleSurfaceAreaForAll = (surfaceArea, parentIndex, childIndex, rm, fieldName, consumption=null) => {
+        let paintDataListTemp = [...calculateState.Coats];
+        if (paintDataListTemp[parentIndex]?.RawMaterials[childIndex]) {
+            const excludedRmId = paintDataListTemp[parentIndex]?.RawMaterials[childIndex]?.RawMaterialId
+            let allMissingSurfaceArea = false;
+            if(paintDataListTemp && paintDataListTemp.length > 0){
+                allMissingSurfaceArea = paintDataListTemp.every(coat =>
+                    coat.RawMaterials.length > 0 && coat.RawMaterials.every(material => 
+                        material.RawMaterialId === excludedRmId || !("SurfaceArea" in material) || material?.SurfaceArea === 0
+                    )
+                );
+            }
+            if (allMissingSurfaceArea) {
+                paintDataListTemp.forEach((coat, parentIndex) => {
+                  coat.RawMaterials.forEach((rm, childIndex) => {
+                    const baseUpdate = {
+                        ...rm,
+                        SurfaceArea: checkForNull(surfaceArea),
+                    };
+                    const fullUpdate = {
+                        ...baseUpdate,
+                    };
+                    paintDataListTemp[parentIndex].RawMaterials[childIndex] = excludedRmId == rm?.RawMaterialId ? fullUpdate : baseUpdate;
+                    if(fieldName && fieldName === "SurfaceArea"){
+                        setValueTableForm(`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForNull(surfaceArea))
+                        delete errorsTableForm[`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`]
+                        const safeConsumption = consumption ? checkForNull(consumption) : 1;
+                        const safeSurfaceArea = checkForNull(surfaceArea);
+                        const surfaceAreaAndConsumption = safeSurfaceArea * safeConsumption;
+                        const rejectionAllowance = surfaceAreaAndConsumption * checkForNull(rm?.RejectionAllowancePercentage / 100)
+                        const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
+                        setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
+                        setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
+                    }
+                  });
+                });
+            }
+        }
+    }
+
     const renderInputBox = ({ item, name, coat, parentIndex, childIndex, required, disabled, onHandleChange, tooltipText = '' }) => {
         return (
             <>
@@ -369,6 +410,17 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                     customClassName={'withBorder mb-0 paint-and-masking'}
                     errors={errorsTableForm[`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
                     disabled={ViewMode || CostingViewMode || disabled || IsLocked}
+                    {...(name === 'SurfaceArea' ? {
+                        onBlur: (e) => {
+                            handleSurfaceAreaForAll(
+                                e.target.value,
+                                parentIndex,
+                                childIndex,
+                                item,
+                                'SurfaceArea'
+                            );
+                        }
+                    } : {})}
                 />
             </>
         )
