@@ -6878,6 +6878,12 @@ export const INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl = [
     { label: "Effective Date", value: "EffectiveDate" },
 ]
 
+export const PART_FAMILY_DOWNLOAD_EXCEl = [
+    { label: "Part Family Code", value: "PartFamilyCode" },
+    { label: "Part Family Name", value: "PartFamilyName" },
+    { label: 'Status', value: 'status' }
+]
+
 export const VBCPLANT_DOWNLOAD_EXCEl = [
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Plant Name", value: "PlantName", },
