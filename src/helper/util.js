@@ -2115,3 +2115,35 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
 // console.log(totals,'totals')
   return totals;
 };
+
+export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = []) => {
+  const isAssembly = item?.PartType
+  const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  
+  let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
+  let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex(costingItem => costingItem.PartNumber === item?.PartNumber && costingItem.AssemblyPartNumber === item?.AssemblyPartNumber)
+  let objectToGetRMCCData = tempArrForCosting[indexForUpdate]
+  
+  if (isAssembly === "Assembly" || isAssembly === "Sub Assembly") {
+
+    if (isRequestForMultiTechnology) {//run for multi(Assembly) technology
+      const assemblyCostingPartDetails = subAssemblyTechnologyArray[0]?.CostingPartDetails
+      
+      return {
+        netpartCost: checkForNull(assemblyCostingPartDetails?.NetChildPartsCost),
+        conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost)+checkForNull(assemblyCostingPartDetails?.NetProcessCost)
+      };
+    } else {
+      return {
+        rawMaterialsCost: checkForNull(objectToGetRMCCData?.CosingPartDetails?.TotalRawMaterialsCostWithQuantity),
+        conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalConversionCostWithQuantity)
+      };
+    }
+
+  } else {
+    return {
+      rawMaterialsCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.NetRawMaterialsCost),
+      conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.NetConversionCost)
+    };
+  }
+};
