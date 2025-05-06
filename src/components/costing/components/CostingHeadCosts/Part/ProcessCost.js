@@ -607,7 +607,7 @@ function ProcessCost(props) {
         rowArr = rowData && rowData.map((item) => {
           let processQuantityMain = 1
           if (item.UOMType === MASS) {
-            processQuantityMain = rmFinishWeight ? rmFinishWeight : 1
+            processQuantityMain = rmGrossWeight ? rmGrossWeight : 1
 
           }
           // THIS IS FOR GROUP PROCESS
@@ -617,7 +617,7 @@ function ProcessCost(props) {
             let processCostResult
 
             if (el.UOMType === MASS) {
-              processQuantity = rmFinishWeight ? rmFinishWeight : 1
+              processQuantity = rmGrossWeight ? rmGrossWeight : 1
             }
             productionPerHour = el.UOMType !== TIME ? '-' : findProductionPerHour(processQuantity)
             if (el.UOMType !== TIME) {
@@ -719,7 +719,7 @@ function ProcessCost(props) {
           let processQuantityMain = 1
           let productionPerHourMain = ''
           if (item?.UOMType === MASS) {
-            processQuantityMain = rmFinishWeight ? rmFinishWeight : 1
+            processQuantityMain = rmGrossWeight ? rmGrossWeight : 1
           }
           productionPerHourMain = el.UOMType !== TIME ? '-' : findProductionPerHour(processQuantityMain)
           let processCostResult;
