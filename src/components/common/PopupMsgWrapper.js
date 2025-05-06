@@ -13,6 +13,12 @@ function PopupMsgWrapper(props) {
   const [formError, setFormError] = useState("");
   const history = useHistory();
   
+  // Get the maximum character length from props or use default values
+  const maxLength = props?.maxLength || 250
+  
+  // Define special characters regex
+  const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]+/;
+  
   // Initialize remark with defaultValue when component mounts or defaultValue changes
   useEffect(() => {
     // This will ensure the remark is updated when a new default value is provided
@@ -23,58 +29,51 @@ function PopupMsgWrapper(props) {
   }, [props?.defaultValue, props?.setInputData]);
 
   function confirmHandler(e) {
+    // Validate input before proceeding
+    if (props?.isInputField || props?.isInputFieldResponse) {
+      if (!remark.trim()) {
+        setFormError("Please enter a remark");
+        return; // Stop execution if validation fails
+      } else if (remark.length > maxLength) {
+        setFormError(`Remark should not exceed ${maxLength} characters`);
+        return; // Stop execution if validation fails
+      }
+      
+      // Check for special characters at start or end
+      if (remark && (specialCharRegex.test(remark[0]) || specialCharRegex.test(remark[remark.length - 1]))) {
+        setFormError("Remark cannot start or end with special characters");
+        return; // Stop execution if validation fails
+      }
+    }
+    
+    // Only if validation passes, proceed with confirmation
     props.confirmPopup(e);
+    
     setTimeout(() => {
       document.querySelector('body').removeAttribute('style')
       if (props.redirectPath !== '' && props?.redirectPath !== null && props?.redirectPath !== undefined) {
         history.push(SUPPLIER_MANAGEMENT, { vendorId: props.vendorId, plantId: props.plantId });
       }
     }, 200);
-    if (props.isInputField) {
-      if (!remark.trim()) {
-        setFormError("Please enter a remark");
-        return;
-      } else if (remark.length > 250) {
-        setFormError("Remark should not exceed 250 characters");
-        return;
-      }
-    }
-    else if (props?.isInputFieldResponse) {
-      if (!remark.trim()) {
-        setFormError("Please enter a remark");
-        return;
-      } else if (remark.length > 500) {
-        setFormError("Remark should not exceed 500 characters");
-        return;
-      }
-    }
   }
+  
   const changeHandler = (e) => {
     const inputValue = e.target.value;
-    const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]+/;
     
-    // Check if first or last character is special character
-    if (inputValue && (specialCharRegex.test(inputValue[0]) || specialCharRegex.test(inputValue[inputValue.length - 1]))) {
+    // Always update remark and pass to parent
+    setRemark(inputValue);
+    props.setInputData(inputValue);
+    
+    // Clear previous error
+    setFormError("");
+    
+    // Validate and show errors but don't prevent setting the value
+    if (!inputValue.trim()) {
+      setFormError("Please enter a remark");
+    } else if (inputValue?.length > maxLength) {
+      setFormError(`Remark should not exceed ${maxLength} characters`);
+    } else if (inputValue && (specialCharRegex.test(inputValue[0]) || specialCharRegex.test(inputValue[inputValue.length - 1]))) {
       setFormError("Remark cannot start or end with special characters");
-      return;
-    }
-
-    if (props.isInputFieldResponse) {
-      if (inputValue.length <= 500) {
-        setRemark(inputValue);
-        props.setInputData(inputValue);
-        setFormError(""); 
-      } else {
-        setFormError("Remark should not exceed 500 characters");
-      }
-    } else {
-      if (inputValue.length <= 250) {
-        setRemark(inputValue);
-        props.setInputData(inputValue);
-        setFormError(""); 
-      } else {
-        setFormError("Remark should not exceed 250 characters");
-      }
     }
   };
 
@@ -88,7 +87,7 @@ function PopupMsgWrapper(props) {
       size={props.size}
     >
       <ModalHeader toggle={props.closePopUp} className="pl-5">
-        {props.header ? props.header : "Confirm"}
+        {props?.header ? props?.header : "Confirm"}
       </ModalHeader>
       {props.isInputField || props.isInputFieldResponse ? (
         <ModalBody>
@@ -115,6 +114,9 @@ function PopupMsgWrapper(props) {
                 )}
               />
               {formError && <p className="text-help">{formError}</p>}
+              <div className="text-right text-muted small">
+                {remark?.length || 0}/{maxLength}
+              </div>
             </div>
           </form>
         </ModalBody>
@@ -142,7 +144,7 @@ function PopupMsgWrapper(props) {
             className={
               "save-btn"
             }
-            disabled={ props.isDisabled}
+            disabled={props?.isDisabled}
           >
             <div className={`save-icon ${props.iconClass}`}></div>
             {props.firstButtonName ? props.firstButtonName : props.nfrPopup ? 'Yes' : 'OK'}

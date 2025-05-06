@@ -905,10 +905,10 @@ function ViewConversionCost(props) {
                   {/* Totals when PDF is not shown */}
                   {(!IsAssemblyCosting && !isPDFShow) || (IsAssemblyCosting && !isPDFShow) ? (
                     <tr className="table-footer">
-                      <td colSpan={!isPDFShow ? 9 : 11} className="text-right">
+                      <td colSpan={!isPDFShow ? 8 : 11} className="text-right">
                         <strong>Total Paint Cost:</strong>
                       </td>
-                      <td>
+                      <td colSpan={!isPDFShow ? 2 : 0}>
                         {checkForDecimalAndNull(PaintCost, getConfigurationKey().NoOfDecimalForInputOutput)}
                       </td>
                     </tr>
