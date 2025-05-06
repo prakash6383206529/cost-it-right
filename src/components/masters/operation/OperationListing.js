@@ -86,7 +86,7 @@ const OperationListing = (props) => {
         showExtraData: false,
         render: false,
         permissionData: {},
-        isImport: false,
+        isImport: props?.isImport ? true : false,
         editSelectedList: false,
 
 
@@ -136,7 +136,7 @@ const OperationListing = (props) => {
         if (!props.stopAPICall && props.isSimulation && props.selectionForListingMasterAPI === 'Combined') {
             fetchData();
         } else if (!props.stopAPICall) {
-            getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData);
+            getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData, state.isImport);
         } else if (props.stopAPICall === true) {
             setState(prevState => ({ ...prevState, tableData: props.operationDataHold }));
         }
@@ -341,7 +341,7 @@ const OperationListing = (props) => {
             //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0, 
             noData: false,
         }));
-        getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData, state.isImport)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     };
 
     const resetState = () => {
@@ -419,7 +419,7 @@ const OperationListing = (props) => {
                 if (state?.gridApi) {
                     state?.gridApi?.deselectAll();
                 }
-                getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData);
+                getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData, state.isImport);
                 setState((prevState) => ({ ...prevState, dataCount: 0 }));
             }
         }));
@@ -536,7 +536,7 @@ const OperationListing = (props) => {
             return "Lorem Ipsum";
         } else {
             const cellValue = props?.valueFormatted || props?.value || '-';
-            return cellValue !== '-' ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+            return (cellValue !== '-' && cellValue.includes('T')) ? DayTime(cellValue).format('DD/MM/YYYY') : cellValue;
         }
     }
 
@@ -653,7 +653,7 @@ const OperationListing = (props) => {
             }, 400);
 
         } else {
-            getTableListData(null, null, null, null, 0, defaultPageSize, false, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+            getTableListData(null, null, null, null, 0, defaultPageSize, false, state.floatingFilterData, state.isImport)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         }
     }
     const OPERATION_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(OPERATION_DOWNLOAD_EXCEl, "MasterLabels")
@@ -797,7 +797,6 @@ const OperationListing = (props) => {
 
             props.apply(uniqueArray, length)
         }
-
         setState(prevState => ({ ...prevState, selectedRowData: selectedRows }))
 
     }
@@ -866,7 +865,7 @@ const OperationListing = (props) => {
             {!state?.editSelectedList && (
                 <div className={`${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                    <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
+                    <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                         <form>
                             {!props?.isSimulation && <Row>
                                 <Col md="4" className="switch mt-3 mb-1">
@@ -924,7 +923,7 @@ const OperationListing = (props) => {
                                                 ""
                                             }
 
-                                            {permissionData?.Add && !props?.isMasterSummaryDrawer && (
+                                            {permissionData?.Add && !props?.isMasterSummaryDrawer &&  !state.isImport && (
                                                 <Button id="operationListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 
                                             )}

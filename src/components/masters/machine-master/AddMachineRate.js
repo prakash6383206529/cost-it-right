@@ -128,7 +128,7 @@ class AddMachineRate extends Component {
       ExchangeSource: '',
       showWarning: false,
       currencyValue: 1,
-      isImport: false,
+      isImport: props?.isImport ? props?.isImport : false,
       currency: [],
       hidePlantCurrency: false,
       settlementCurrency: 1,
@@ -273,7 +273,7 @@ class AddMachineRate extends Component {
             ExchangeSource?.label ?? null,
             res => {
               resolveAPI({
-                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                rate: res.data && res.data.Data && res.data.Data.CurrencyExchangeRate ? checkForNull(res.data.Data.CurrencyExchangeRate): 1,
                 exchangeRateId: res?.data?.Data?.ExchangeRateId,
                 showWarning: Object.keys(res.data.Data).length === 0,
                 showPlantWarning: Object.keys(res.data.Data).length === 0
@@ -1329,7 +1329,7 @@ class AddMachineRate extends Component {
       isFormHide: true,
       IsVendor: false,
       isEditFlag: false,
-    }, () => this.props.hideForm(type))
+    }, () => this.props.hideForm(type, this.state.isImport))
 
   }
   cancelHandler = () => {

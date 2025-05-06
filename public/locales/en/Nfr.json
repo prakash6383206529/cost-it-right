@@ -38,16 +38,22 @@
         "floatingFilterButton": "Here you can filter the data based on different conditions."
     },
     "addNfr": {
-        "nfr_version": "Specify the version of the NFR.",
+        "customer_rfq_no": "Enter the unique RFQ number provided by the customer.",
+        "customer_name": "Click here to select the customer's name from the dropdown.",
+        "customer_part_no": "Click here to select the customer's part number from the dropdown.",
+        "part_name": "Displays the part name. This field is auto-filled.",
+        "part_description": "Displays the description of the part. This field is auto-filled.",
+        "uom": "Displays the uom of the part. This field is auto-filled.",
         "product_code": "Click here to select the product code from the dropdown.",
-        "plant": "Click here to select the plant code.",
-        "header_material": "Specify the header material for the NFR.",
-        "uom": "Click here to select the unit of measurement(UOM) from the dropdown.",
-        "quantity": "Enter the quantity associated with the NFR.",
-        "parttype": "Click here to select the part type.",
-        "reset": "Click here to reset the NFR.",
-        "add": "Click here to add the NFR part.",
-        "cancel": "Click here to cancel.",
+        "segment": "Click here to select the customer or product segment from the dropdown.",
+        "plant": "Click here to select the plant location from the dropdown.",
+        "zbc_date": "Select the ZBC submission date for this RFQ.",
+        "cbc_date": "Select the CBC submission date for this RFQ.",
+        "sop_date": "Select the Start of Production (SOP) date for the part.",
+        "add_forecast": "Click here to add forecast details for this RFQ.",
+        "addRFQ_uploadFile": "Upload relevant RFQ documents. You can upload up to 4 files.",
+        "cancel": "Click here to cancel the NFR.",
+        "add": "Click here to add a new NFR.",
         "submit": "Click here to submit the NFR."
     }
 }

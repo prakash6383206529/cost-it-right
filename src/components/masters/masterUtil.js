@@ -487,3 +487,4 @@ export const divisionApplicableFilter = (columnsArray, valueToExclude) => {
 export const checkEffectiveDate = (effectiveDate, effectiveDateToChange) => {
     return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
 }
+
