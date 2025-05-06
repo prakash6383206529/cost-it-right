@@ -575,6 +575,7 @@ const AddProfitMaster = (props) => {
                       getValues={getValues}
                       errors={errors}
                       isOverHeadMaster={false}
+                      applicabilityLabel="Profit"
                     />
 
                     <Row>
