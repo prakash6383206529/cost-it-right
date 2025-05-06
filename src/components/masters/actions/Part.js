@@ -1055,7 +1055,7 @@ export function getPartFamilyList(skip, take, filterData, isPagination = false, 
         .catch((error) => {
           apiErrors(error);
           dispatch({ type: API_FAILURE });
-          callback(error.response);
+          callback(error?.response);
         });
     };
   }
