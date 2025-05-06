@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
- //const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+ const BASE_URL = `http://10.10.1.102:8002/api/v1`;
 
 
 
@@ -202,6 +202,21 @@ export const API = {
   getChildDrawerBOPData: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-by-id`,
   BOMUploadPart: `${BASE_URL}/masters-part/upload-bom-json`,
   convertPartToAssembly: `${BASE_URL}/masters-part/convert-part-to-assembly`,
+  getModelList: `${BASE_URL}/masters-part/select-list-part-model-master`,
+  addModel: `${BASE_URL}/masters-part/create-part-model-master`,
+  editModel: `${BASE_URL}/masters-part/update-part-model-master`,
+  deleteModel: `${BASE_URL}/masters-part/delete-part-model-master`,
+
+  //PART FAMILY
+
+  getPartFamilyById: `${BASE_URL}/part-family/get-by-id`,
+  getPartFamilyList: `${BASE_URL}/part-family/get-all-part-family-by-filter`,
+  addPartFamily: `${BASE_URL}/part-family/create-part-family`,
+  updatePartFamily: `${BASE_URL}/part-family/update-part-family`,
+  deletePartFamily: `${BASE_URL}/part-family/delete-part-family`,
+  activePartFamily: `${BASE_URL}/part-family/active`,
+  bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-part-family-json`,
+
 
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -1424,6 +1439,11 @@ export const STORE_HIERARCHY_DATA = 'STORE_HIERARCHY_DATA'
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
 export const GET_COMPONENT_PART_SELECTLIST = 'GET_COMPONENT_PART_SELECTLIST'
 export const GET_BOUGHTOUT_PART_SELECTLIST = 'GET_BOUGHTOUT_PART_SELECTLIST'
+
+//PART FAMILY
+export const GET_PART_FAMILY_LIST_SUCCESS = 'GET_PART_FAMILY_LIST_SUCCESS'
+export const GET_ALL_PART_FAMILY_LIST_SUCCESS = 'GET_ALL_PART_FAMILY_LIST_SUCCESS'
+export const GET_PART_FAMILY_DETAILS_SUCCESS = 'GET_PART_FAMILY_DETAILS_SUCCESS'
 
 //SUB ASSEMBLY
 export const SUB_ASSEMBLY_TECHNOLOGY_ARRAY = 'SUB_ASSEMBLY_TECHNOLOGY_ARRAY'
@@ -3416,7 +3436,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.38";
+export const VERSION = "V4.2.31";
 
 
 
