@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Row, Col, Container, Table, } from 'reactstrap'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { number, checkWhiteSpaces, maxLength7, maxLength5, maxLength4, maxLength3, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey, decimalNumberLimit6 } from '../../../../helper'
+import { number, checkWhiteSpaces, maxLength7, maxLength5, maxLength4, maxLength3, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey, decimalNumberLimit6, decimalNumberLimit8And7 } from '../../../../helper'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
@@ -140,7 +140,6 @@ function PackagingCalculator(props) {
         }else{
             totalCostOfCrateWithAddedCost = totalAddedCost
         }
-        console.log(totalCostOfCrateWithAddedCost,'totalCostOfCrateWithAddedCost')
         setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice))
         setState(prev => ({
             ...prev,
@@ -710,7 +709,7 @@ function PackagingCalculator(props) {
                                         register={registerPackaging}
                                         rules={{
                                             required: true,
-                                            validate: { number,decimalNumberLimit6 },
+                                            validate: { number,decimalNumberLimit8And7 },
                                         }}
                                         mandatory={true}
                                         handleChange={() => { }}
@@ -764,7 +763,7 @@ function PackagingCalculator(props) {
                                             mandatory={item.mandatory}
                                             rules={{
                                                 required: item.mandatory,
-                                                validate: { number,decimalNumberLimit6, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
+                                                validate: { number,decimalNumberLimit8And7, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
                                                 max: item.percentageLimit ? {
                                                     value: 100,
                                                     message: 'Percentage value should be equal to 100'
@@ -873,7 +872,7 @@ function PackagingCalculator(props) {
                                             mandatory={item.mandatory}
                                             rules={{
                                                 required: item.mandatory,
-                                                validate: { number,decimalNumberLimit6, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
+                                                validate: { number,decimalNumberLimit8And7, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
                                                 max: item.percentageLimit ? {
                                                     value: 100,
                                                     message: 'Percentage value should be equal to 100'

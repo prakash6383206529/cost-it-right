@@ -2091,15 +2091,17 @@ const CostingSummaryTable = (props) => {
     return valueWithSign; // Return the value with sign component
   };
 
-  const overheadAndProfitTooltipText = <>
-    {viewRejectAndModelType?.isRmCutOffApplicable && <p>RM Cut Off Price {viewRejectAndModelType?.rawMaterialCostWithCutOff} is Applied</p>}
-    {viewRejectAndModelType?.isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
-    {viewRejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
-  </>
-  const iccToolTipText = <>
-    {viewRejectAndModelType?.isIncludeToolCostInCCForICC && <p>Tool Cost Included</p>}
-    {viewRejectAndModelType?.isIncludeOverheadAndProfitInICC && <p>Overhead and Profit Included</p>}
-  </>
+  const overheadAndProfitTooltipText = `
+  ${viewRejectAndModelType?.isRmCutOffApplicable ? `M Cut Off Price ${viewRejectAndModelType?.rawMaterialCostWithCutOff} is Applied.` : ''}
+  ${viewRejectAndModelType?.isIncludeToolCostWithOverheadAndProfit ? 'Tool Cost Included.' : ''}
+  ${viewRejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit ? 'Surface Treatment Cost Included.' : ''}
+`.trim();
+
+const iccToolTipText = `
+  ${viewRejectAndModelType?.isIncludeToolCostInCCForICC ? 'Tool Cost Included.' : ''}
+  ${viewRejectAndModelType?.isIncludeOverheadAndProfitInICC ? 'Overhead and Profit Included.' : ''}
+`.trim();
+
   const highlighter = (key, columnName = '') => {
     const firstInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 1 : 0
     const secondInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 0 : 1
@@ -3105,14 +3107,14 @@ const CostingSummaryTable = (props) => {
                                 <span className={highlighter("sTreatment")}>
                                   Surface Treatment
                                 </span>
-                                <span className={highlighter("tCost")}>
-                                  Other Surface Treatment Cost
+                                <span className={highlighter("TotalPaintCost")}>
+                                  Paint and Masking Cost
                                 </span>
                                 <span className={highlighter("HangerCostPerPart")}>
                                   Hanger Cost
                                 </span>
-                                <span className={highlighter("TotalPaintCost")}>
-                                  Paint and Masking Cost
+                                <span className={highlighter("tCost")}>
+                                  Other Surface Treatment Cost
                                 </span>
                               </td>
                               {viewCostingData &&
@@ -3122,9 +3124,9 @@ const CostingSummaryTable = (props) => {
                                       <span className={highlighter("sTreatment")}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.sTreatment, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.sTreatment, initialConfiguration?.NoOfDecimalForPrice)}</span>) : '')}
                                       </span>
-                                      <span className={highlighter("tCost")}>
+                                      <span className={highlighter("TotalPaintCost")}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                           : '')}
                                       </span>
                                       <span className={highlighter("HangerCostPerPart")}>
@@ -3132,9 +3134,9 @@ const CostingSummaryTable = (props) => {
                                           (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                           : '')}
                                       </span>
-                                      <span className={highlighter("TotalPaintCost")}>
+                                      <span className={highlighter("tCost")}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                           : '')}
                                       </span>
                                     </td>
@@ -3388,54 +3390,39 @@ const CostingSummaryTable = (props) => {
                             (!(checkTechnologyIdAndRfq(viewCostingData)) || (checkTechnologyIdAndRfq(viewCostingData) && !rfqCosting)) && (
                               <>
                                 {!drawerDetailPDF ? (
-                                  <tr>
-                                    <td>
-                                      <span className="d-block small-grey-text pt-3"></span>
-                                      <span className={highlighter("toolMaintenanceCost")}>{`${toolMaintenanceCostLabel} on`}</span>
-                                      <span className={highlighter("toolPrice")}>Tool Price</span>
-                                      <span className={highlighter("amortizationQty")}>Amortization Quantity (Tool Life)</span>
-                                      <span className={highlighter("toolAmortizationCost")}>Tool Amortization Cost</span>
-                                    </td>
-                                    {viewCostingData.map((data) => (
-                                      <td className={`${tableDataClass(data)} ${pdfHead || drawerDetailPDF ? '' : ''}`}>
-                                        <div className={`d-flex`}>
-                                          <span className="d-inline-block p-0 w-50">
-                                            {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.toolApplicability.applicability : ''}
-                                          </span>
-                                          &nbsp;
-                                          <span className="d-inline-block p-0 w-50">
-                                            {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.toolApplicability.value : ''}
-                                          </span>
-                                        </div>
-                                        <div className={`${highlighter("toolMaintenanceCost")} d-flex`}>
-                                          <span className="d-inline-block w-50">
-                                            {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.toolApplicabilityValue.toolTitle : ''}
-                                          </span>
-                                          &nbsp;
-                                          <span className="d-inline-block w-50">
-                                            {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? (
-                                              <span title={checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}>
-                                                {checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}
-                                              </span>
-                                            ) : ''}
-                                          </span>
-                                        </div>
-                                        <span className={highlighter("toolPrice")}>
-                                          {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? (
-                                            <span title={checkForDecimalAndNull(data?.toolPrice, initialConfiguration?.NoOfDecimalForPrice)}>
-                                              {checkForDecimalAndNull(data?.toolPrice, initialConfiguration?.NoOfDecimalForPrice)}
-                                            </span>
-                                          ) : ''}
+                                <tr>
+                                <td>
+                                  <span className={highlighter("sTreatment")}>Net Tool Maintenance Cost (per pcs)</span>
+                                  <span className={highlighter("tCost")}> Net Tool Interest Cost (per pcs) </span>
+                                  <span className={highlighter("HangerCostPerPart")}> Net Tool Amortization Cost </span>
+                                  <span className={highlighter("TotalPaintCost")}> Net Tool Cost </span>
+                                </td>
+                                {viewCostingData &&
+                                  viewCostingData?.map((data) => {
+                                    return (
+                                      <td className={tableDataClass(data)}>
+                                        <span className={highlighter("sTreatment")}>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?  <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                         </span>
-                                        <span className={highlighter("amortizationQty")}>
-                                          {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.amortizationQty : ''}
+                                        <span className={highlighter("tCost")}>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                            (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolInterestCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolInterestCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                            : '')}
                                         </span>
-                                        <span className={highlighter("toolAmortizationCost")}>
-                                          {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.toolAmortizationCost : ''}
+                                        <span className={highlighter("HangerCostPerPart")}>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                            (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                            : '')}
+                                        </span>
+                                        <span className={highlighter("TotalPaintCost")}>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                            (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                            : '')}
                                         </span>
                                       </td>
-                                    ))}
-                                  </tr>
+                                    )
+                                  })}
+                              </tr>
                                 ) : (
                                   <tr>
                                     <th colSpan={2} className="py-0">
@@ -3452,7 +3439,7 @@ const CostingSummaryTable = (props) => {
 
                                 {/* Net Tool Cost Row */}
                                 <tr className={highlighter("totalToolCost", "main-row")}>
-                                  <th>Net Tool Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} </th>
+                                  <th>Net Tool Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} ({viewCostingData?.[0]?.isToolCostProcessWise ? 'Process Wise' : 'Overall'}) </th>
                                   {viewCostingData.map((data, index) => (
                                     <td className={tableDataClass(data)}>
                                       {data?.bestCost === true ?
@@ -3734,18 +3721,18 @@ const CostingSummaryTable = (props) => {
                               return <td className={tableDataClass(data)}>
                                 {data?.CostingHeading === VARIANCE ? (
                                   // For variance column, show only the value without currency
-                                  displayValueWithSign(data, "nPOPrice")
+                                  displayValueWithSign(data, "NetPOPriceConversion")
                                 ) : data?.bestCost === true ? (
                                   // For best cost column
                                   <>
                                     {`${initialConfiguration?.BaseCurrency}: `}
-                                    {showConvertedCurrency ? displayValueWithSign(data, "nPOPrice") : ''}
+                                    {showConvertedCurrency ? displayValueWithSign(data, "NetPOPriceConversion") : displayValueWithSign(data, "NetPOPriceConversion")}
                                   </>
                                 ) : (
                                   // For regular columns
                                   <>
                                     {`${viewCostingData?.[0]?.CostingCurrency || initialConfiguration?.BaseCurrency}: `}
-                                    {displayValueWithSign(data, "nPOPrice")}
+                                    {displayValueWithSign(data, "NetPOPriceConversion")}
                                   </>
                                 )}
                                 {(data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&

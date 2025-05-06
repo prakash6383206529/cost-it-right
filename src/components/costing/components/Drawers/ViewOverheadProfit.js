@@ -45,17 +45,18 @@ function ViewOverheadProfit(props) {
     props.closeDrawer('')
   }
 
-  const overheadAndProfitTooltipText = <>
-    {isRmCutOffApplicable && <p>RM Cut Off Price {checkForDecimalAndNull(rawMaterialCostWithCutOff, initialConfiguration?.NoOfDecimalForPrice)} is Applied</p>}
-    {isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
-    {isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
+  const overheadAndProfitTooltipText = 
+  `
+    ${isRmCutOffApplicable ? `RM Cut Off Price ${checkForDecimalAndNull(rawMaterialCostWithCutOff, initialConfiguration?.NoOfDecimalForPrice)} is Applied` : ''}
+    ${isIncludeToolCostWithOverheadAndProfit ? 'Tool Cost Included' : ''}
+    ${isIncludeSurfaceTreatmentWithOverheadAndProfit ? 'Surface Treatment Cost Included' : ''}
+  `.trim();
+  
 
-  </>
-
-  const iccToolTipText = <>
-    {isIncludeToolCostInCCForICC && <p>Tool Cost Included</p>}
-    {isIncludeOverheadAndProfitInICC && <p>Overhead and Profit Included</p>}
-  </>
+  const iccToolTipText =
+  
+ ` ${isIncludeToolCostInCCForICC ? 'Tool Cost Included' : ''}
+  ${isIncludeOverheadAndProfitInICC ? 'Overhead and Profit Included' : ''}`.trim()
   const modelShowData = () => {
     return <>
       <div className="input-group form-group col-md-4 input-withouticon pdf-download pl-0">
