@@ -665,8 +665,9 @@ function AddRMFinancialDetails(props) {
             }else{
                 setValue('JaliScrapCost', '');
             }
-            updatedState.scrapRatePercentageOfRMRate = ""
-            setValue("scrapRatePercentageOfRMRate", '')
+            // Not required to update scrap rate when base price changes
+            // updatedState.scrapRatePercentageOfRMRate = ""
+            // setValue("scrapRatePercentageOfRMRate", '')
         }
         setState(updatedState)
         dispatch(setRawMaterialDetails({
