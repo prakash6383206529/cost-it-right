@@ -66,7 +66,7 @@ function ViewConversionCost(props) {
   const [viewExtraCost, setViewExtraCost] = useState(false)
   const [coats, setCoats] = useState([])
   const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
-  const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
+  const ConsumptionWithUOM = <span>Consumption (ml/ dm<sup>2</sup>)</span>
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
 

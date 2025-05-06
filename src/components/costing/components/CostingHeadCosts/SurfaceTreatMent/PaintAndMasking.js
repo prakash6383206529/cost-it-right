@@ -17,7 +17,7 @@ import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
 import DayTime from '../../../../common/DayTimeWrapper'
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
-const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
+const ConsumptionWithUOM = <span>Consumption (ml/ dm<sup>2</sup>)</span>
 const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Effective Date', 'Action']
 
 const FORM_DEFAULTS = {
@@ -323,7 +323,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         // Default consumption to 1 if null/undefined/0 to avoid multiplication by 0
         const safeConsumption = consumption ? checkForNull(consumption) : 1;
         const safeSurfaceArea = checkForNull(surfaceArea);
-        const surfaceAreaAndConsumption = safeSurfaceArea * safeConsumption;
+        const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
         //Rejection Allowance = (Surface Area * Consumption) * Rejection Allowance Percentage / 100
         const rejectionAllowance = surfaceAreaAndConsumption * rejectionAllowancePercentage / 100
         //Net Cost = ((Surface Area * Consumption) + Rejection Allowance) * RM Rate
@@ -529,7 +529,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         childIndex,
                         required: false,
                         disabled: true,
-                        tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate (Currency/UOM)'
+                        tooltipText: 'Net Cost = ((Part Surface Area * (Consumption)/1000) + Rejection Allowance) * RM Rate (Currency/UOM)'
                     })}</td>
                     <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                     {childIndex === 0 && !ViewMode && !IsLocked && (
