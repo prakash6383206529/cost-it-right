@@ -8,7 +8,7 @@ import { ASSEMBLY, ASSEMBLYNAME, WACTypeId } from '../../../../../config/constan
 import EditPartCost from '../SubAssembly/EditPartCost';
 
 function BoughtOutPart(props) {
-  const { item } = props;
+  const { item, remarkButton } = props;
   const dispatch = useDispatch()
   const [partCostDrawer, setPartCostDrawer] = useState(false);
   const [tabAssemblyIndividualBopDetail, setTabAssemblyIndividualBopDetail] = useState({})
@@ -66,22 +66,29 @@ function BoughtOutPart(props) {
           {partType && <td>{!editBopForAssemblyTechnology ? item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item?.CostingPartDetails?.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-' : '-'}</td>}
           <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
           {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
-          {partType && <td className='text-right'>{item?.Technology === ASSEMBLYNAME &&
+          <td className='text-right'>
+            {partType && item?.Technology === ASSEMBLYNAME &&
+              <button
+                type="button"
+                className={'Edit mr-2 align-middle'}
+                onClick={() => viewOrEditItemDetails(item)}>
+              </button>
+            }
             <button
               type="button"
-              className={'Edit mr-2 align-middle'}
-              onClick={() => viewOrEditItemDetails(item)}>
-            </button>
-          }</td>}
-          {!partType && <td className='text-right'>{item?.Technology === ASSEMBLYNAME &&
-            <button
-              type="button"
-              className={'Edit mr-2 align-middle'}
-              onClick={() => viewOrEditItemDetails(item)}>
-            </button>
-          }</td>}
-
-        </div >
+              id={`bop_remark_button_${props?.index}`}
+              className="Comment-box mr-2 align-middle"
+              onClick={props?.onRemarkButtonClick}
+              title="Add/Edit Remark"
+            />
+            {(item?.CostingPartDetails?.Remark) &&
+              <span className="remark-indicator">
+                <i className="fa fa-comment text-primary" title={item?.CostingPartDetails?.Remark}></i>
+              </span>
+            }
+            {remarkButton}
+          </td>
+        </div>
         {
           partCostDrawer && <EditPartCost
             isOpen={partCostDrawer}
@@ -94,7 +101,7 @@ function BoughtOutPart(props) {
           />
         }
       </tr>
-    </ >
+    </>
   );
 }
 

@@ -10,6 +10,7 @@ import { validateSpecialChars } from "../../helper";
 import { MESSAGES } from "../../config/message";
 import {  Col } from "reactstrap";
 import Button from "../layout/Button";
+import $ from "jquery"
 
 export const TextFieldHooks = (input) => {
 
@@ -298,7 +299,7 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable, id, tooltipId, isTaxCode = false } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable, id, tooltipId, menuPortalTarget, isTaxCode = false } = field;
 
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
@@ -328,7 +329,7 @@ export const SearchableSelectHookForm = (field) => {
       ...provided,
       marginTop: "7px",
       left: 0,
-      top: 44,
+      // top: 44,
       marginRight: "5px",
       marginLeft: "5px",
       width: 'calc(100% - 10px)',
@@ -337,6 +338,10 @@ export const SearchableSelectHookForm = (field) => {
   const filterConfig = {
     stringify: option => `${option.label}`,
   };
+
+  $('body').on('click', '#costingHeadDropDown_container', function() {
+    $('body').find('.multi-select-container__menu').parent().css('z-index', '9999')
+  })
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`} id={id ? id : containerId}>
       <label className={label === false ? 'd-none' : ''}>
@@ -393,6 +398,7 @@ export const SearchableSelectHookForm = (field) => {
                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                 }}
                 filterOption={createFilter(filterConfig)}
+                menuPortalTarget={menuPortalTarget ? document.body : null}
               />
               {isLoader && <LoaderCustom customClass={"input-loader"} />}
               {buttonCross && <button type="button" className={'btn-cross'} disabled={isDisable} onClick={buttonCross}>

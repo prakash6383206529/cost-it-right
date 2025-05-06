@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, positiveAndDecimalNumber, loggedInUserId } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, decimalNumberLimit8And7, positiveAndDecimalNumber, loggedInUserId, innerVsOuterValidation } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
@@ -18,9 +18,8 @@ import { useSelector } from 'react-redux'
 import { sourceCurrencyFormatter } from '../../Drawers/processCalculatorDrawer/CommonFormula'
 import { saveRawMaterialCalculationForRubberStandard } from '../../../actions/CostWorking'
 import { useLabels } from '../../../../../helper/core'
-
-
-
+import PopupMsgWrapper from '../../../../common/PopupMsgWrapper'
+import { generateUnusedRMsMessage } from '../../../../common/CommonFunctions'
 
 const gridOptions = {};
 function StandardRub(props) {
@@ -46,6 +45,9 @@ function StandardRub(props) {
     const [reRender, setRerender] = useState(false)
     const [isVolumeAutoCalculate, setIsVolumeAutoCalculate] = useState(false)
     const { currencySource } = useSelector((state) => state?.costing);
+		const [showUnusedRMsPopup, setShowUnusedRMsPopup] = useState(false);
+		const [unusedRMsMessage, setUnusedRMsMessage] = useState('');
+		const [pendingObj, setPendingObj] = useState({});
 
     const defaultValues = {
         shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ShotWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
@@ -69,7 +71,6 @@ function StandardRub(props) {
 
         calculateTotalLength()
         calculateVolume()
-        calculateScrapWeight()
 
     }, [fieldValues, isVolumeAutoCalculate])
 
@@ -138,21 +139,27 @@ function StandardRub(props) {
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
             let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
+            calculateScrapWeight(checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) }))
             setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }
     }, 500)
 
 
-    const calculateScrapWeight = () => {
+    const calculateScrapWeight = (scrapWeight) => {
         const FinishWeight = Number(getValues('FinishWeight'))
-        if (Number(getValues('GrossWeight'))) {
-            let ScrapWeight = checkForNull(dataToSend.GrossWeight) - checkForNull(FinishWeight)
+        const GrossWeight = Number(getValues('GrossWeight'))
+        if (Number(getValues('GrossWeight')) || checkForNull(scrapWeight)) {
+            const updatedScrapRate = checkForNull(scrapWeight) ? checkForNull(scrapWeight) : checkForNull(dataToSend.GrossWeight)
+            let ScrapWeight = checkForNull(updatedScrapRate) - checkForNull(FinishWeight)
             setDataToSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
             setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
             setDataToSend(prevState => ({ ...prevState, NetRMCost: NetRmCost }))
             setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
+        } else if (GrossWeight === 0 && FinishWeight === 0) {
+            setDataToSend(prevState => ({ ...prevState, ScrapWeight: 0 })) 
+            setValue('ScrapWeight', checkForDecimalAndNull(0, getConfigurationKey().NoOfDecimalForInputOutput))   
         }
     }
 
@@ -443,7 +450,9 @@ function StandardRub(props) {
     const onSubmit = debounce(handleSubmit(() => {
         setIsDisable(true)
         let obj = {}
-        // obj.LayoutType = 'Default'
+        const usedRmData = rmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
+        const unUsedRmData = rmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));				
+				// obj.LayoutType = 'Default'
         // obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
         // obj.IsChangeApplied = true //NEED TO MAKE IT DYNAMIC how to do
         obj.PartId = costData.PartId
@@ -461,18 +470,16 @@ function StandardRub(props) {
         obj.BaseCostingId = costData.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialRubberStandardWeightCalculator = tableData
+        obj.usedRmData = usedRmData
 
-
-        //APPLY NEW ACTION HERE 
-
-        dispatch(saveRawMaterialCalculationForRubberStandard(obj, (res) => {
-            if (res?.data?.Result) {
-                Toaster.success("Calculation saved successfully")
-                obj.CalculatorType = "Standard"
-                props.toggleDrawer('Standard', obj)
-            }
-        }))
-
+				if (unUsedRmData.length > 0) {
+					const message = generateUnusedRMsMessage(unUsedRmData)
+					setUnusedRMsMessage(message)
+					setShowUnusedRMsPopup(true)
+					setPendingObj(obj)
+				} else {
+					saveRawMaterialCalculationForRubberStandardFunction(obj)
+			}
     }), 500)
 
     const cancel = () => {
@@ -504,6 +511,24 @@ function StandardRub(props) {
         setIsVolumeAutoCalculate((prev) => !prev)
         clearErrors();
     }
+
+		const saveRawMaterialCalculationForRubberStandardFunction = (obj) => {
+			//APPLY NEW ACTION HERE 
+			dispatch(saveRawMaterialCalculationForRubberStandard(obj, (res) => {
+				if (res?.data?.Result) {
+					Toaster.success("Calculation saved successfully")
+					obj.CalculatorType = "Standard"
+					props.toggleDrawer('Standard', obj)
+				}
+			}))
+		}
+		const closeUnusedRMsPopup = () => {
+			setShowUnusedRMsPopup(false)
+		}
+		const confirmRemoveUnusedRMs = () => {
+			setShowUnusedRMsPopup(false)
+			saveRawMaterialCalculationForRubberStandardFunction(pendingObj)
+		}
 
     let volumeFormula = <div>Volume = (π/4) * (Outer Diameter<sup>2</sup> - Inner Diameter <sup>2</sup>) * Total Length</div>
     return (
@@ -566,11 +591,11 @@ function StandardRub(props) {
                                                 mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.InnerDiameter === 0))}
                                                 rules={{
                                                     required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.InnerDiameter === 0)),
-                                                    validate: { number, decimalAndNumberValidation },
-                                                    max: {
-                                                        value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
-                                                        message: 'Inner Diameter should not be greater than outer diameter.'
-                                                    },
+                                                    validate: { number, decimalAndNumberValidation, innerVsOuter: innerVsOuterValidation(getValues)},
+                                                    // max: {
+                                                    //     value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
+                                                    //     message: 'Inner Diameter should not be greater than outer diameter.'
+                                                    // },
                                                 }}
                                                 handleChange={(e) => handleInnerDiameter(e.target.value)}
                                                 defaultValue={''}
@@ -702,7 +727,7 @@ function StandardRub(props) {
                                                 register={register}
                                                 rules={{
                                                     required: !isVolumeAutoCalculate && (Object.keys(rmRowDataState).length > 0),
-                                                    validate: { number, decimalAndNumberValidation },
+                                                    validate: { number, decimalNumberLimit8And7 },
                                                 }}
                                                 mandatory={!isVolumeAutoCalculate && (Object.keys(rmRowDataState).length > 0)}
                                                 handleChange={() => { }}
@@ -890,6 +915,14 @@ function StandardRub(props) {
                                 {'SAVE'}
                             </button>
                         </div>
+                        {showUnusedRMsPopup && (
+													<PopupMsgWrapper
+														isOpen={showUnusedRMsPopup}
+														closePopUp={closeUnusedRMsPopup}
+														confirmPopup={confirmRemoveUnusedRMs}
+														message={unusedRMsMessage}
+													/>
+											  )}
                     </form>
                 </Col >
             </Row >

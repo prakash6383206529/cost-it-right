@@ -6,7 +6,7 @@ import { getAssemblyChildPartbyAsmCostingId, getProcessAndOperationbyAsmAndChild
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
-import { checkWhiteSpaces, number, decimalNumberLimit6, alphaNumericValidation, percentageLimitValidation, decimalIntegerNumberLimit } from "../../../../helper/validation";
+import { checkWhiteSpaces, number, decimalNumberLimit6, alphaNumericValidation, percentageLimitValidation, decimalIntegerNumberLimit ,nonZero} from "../../../../helper/validation";
 import { STRINGMAXLENGTH } from '../../../../config/masterData';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import TooltipCustom from '../../../common/Tooltip';
@@ -33,23 +33,21 @@ function AddTool(props) {
     ToolCost: rowObjData?.ToolCost ? rowObjData.ToolCost : '',
     Life: rowObjData?.Life ? rowObjData.Life : '',
     TotalToolCost: rowObjData?.TotalToolCost ? rowObjData.TotalToolCost : '',
-    PartNumber: rowObjData?.PartNumber ? { label: rowObjData?.PartNumber, value: rowObjData?.PartId } : '',
+    PartNumber: rowObjData?.ChildPartNumber ? { label: rowObjData?.ChildPartNumber, value: rowObjData?.PartId } : '',
     BOMLevel: rowObjData?.BOMLevel ? { label: rowObjData?.BOMLevel, value: rowObjData?.BOMLevel } : '',
     partType: rowObjData?.PartType ? rowObjData?.PartType : '',
     partQuantity: rowObjData?.PartQuantity ? rowObjData?.PartQuantity : '',
     type: rowObjData?.ProcessOrOperationType ? rowObjData?.ProcessOrOperationType : '',
     ToolAmortizationCost: rowObjData?.ToolAmortizationCost ? rowObjData?.ToolAmortizationCost : '',
     ToolMaintenanceApplicability: rowObjData?.ToolMaintenanceApplicability ? { label: rowObjData?.ToolCostType, value: rowObjData?.ToolApplicabilityTypeId } : '',
-    ToolMaintenancePercentage: rowObjData?.ToolMaintenancePercentage ? rowObjData?.ToolMaintenancePercentage : '',
+    MaintenancePercentage: rowObjData?.ToolMaintenancePercentage ? rowObjData?.ToolMaintenancePercentage : '',
     MaintananceCostApplicability: rowObjData?.ToolApplicabilityCost ? rowObjData?.ToolApplicabilityCost : '',
     ToolMaintenanceCost: rowObjData?.ToolMaintenanceCost ? rowObjData?.ToolMaintenanceCost : '',
-    ToolMaintenanceCostPerPiece: rowObjData?.ToolMaintenanceCostPerPiece ? rowObjData?.ToolMaintenanceCostPerPiece : '',
+    ToolMaintenanceCostPerPc: rowObjData?.ToolMaintenanceCostPerPiece ? rowObjData?.ToolMaintenanceCostPerPiece : '',
     ToolInterestRatePercent: rowObjData?.ToolInterestRatePercent ? rowObjData?.ToolInterestRatePercent : '',
     ToolInterestCost: rowObjData?.ToolInterestCost ? rowObjData?.ToolInterestCost : '',
-    ToolInterestCostPerPiece: rowObjData?.ToolInterestCostPerPiece ? rowObjData?.ToolInterestCostPerPiece : '',
-
+    ToolInterestCostPerPc: rowObjData?.ToolInterestCostPerPiece ? rowObjData?.ToolInterestCostPerPiece : '',
   }
-
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -297,6 +295,7 @@ function AddTool(props) {
     if (list?.length === 1) {
       setValue("BOMLevel", { label: list[0]?.Level, value: list[0]?.Level })
       setMultipleBOMLevelCheck(true)
+     delete errors.BOMLevel
     } else {
       setValue("BOMLevel", '')
       setMultipleBOMLevelCheck(false)
@@ -514,11 +513,11 @@ function AddTool(props) {
                       placeholder={'Select'}
                       Controller={Controller}
                       control={control}
-                      rules={{ required: true }}
+                      rules={{ required:  true }}
                       register={register}
                       defaultValue={bomLevel}
                       options={renderListing('BOMLevel')}
-                      mandatory={true}
+                      mandatory={ true}
                       handleChange={handleBOMLevelChange}
                       errors={errors.BOMLevel}
                       disabled={isEditFlag || CostingViewMode || multipleBOMLevelCheck ? true : false}
@@ -715,7 +714,7 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        validate: { number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
+                        validate: { number,nonZero, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -773,7 +772,7 @@ function AddTool(props) {
                           mandatory={false}
                           handleChange={() => { }}
                           rules={{
-                            required: true,
+                            required: false,
                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                             max: {
                               value: 100,
@@ -795,7 +794,10 @@ function AddTool(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{required: false}}
+                        rules={{
+                          required: false,
+                          validate: { number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
+                        }}
                         handleChange={() => { }}
                         defaultValue={state.toolMaintenanceApplicability?.label === "Tool Rate" ? getValues('ToolCost') : ''}
                         className=""
@@ -848,7 +850,7 @@ function AddTool(props) {
                           mandatory={false}
                           handleChange={(e) => {}}
                           rules={{
-                            required: true,
+                            required: false,
                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                             max: {
                               value: 100,

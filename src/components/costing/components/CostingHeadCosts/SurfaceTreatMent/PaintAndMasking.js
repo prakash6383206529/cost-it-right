@@ -15,9 +15,10 @@ import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCa
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
+import DayTime from '../../../../common/DayTimeWrapper'
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
 const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
-const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Action']
+const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Effective Date', 'Action']
 
 const FORM_DEFAULTS = {
     mode: 'onChange',
@@ -340,6 +341,47 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
         setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
     }, 300)
+
+    const handleSurfaceAreaForAll = (surfaceArea, parentIndex, childIndex, rm, fieldName, consumption=null) => {
+        let paintDataListTemp = [...calculateState.Coats];
+        if (paintDataListTemp[parentIndex]?.RawMaterials[childIndex]) {
+            const excludedRmId = paintDataListTemp[parentIndex]?.RawMaterials[childIndex]?.RawMaterialId
+            let allMissingSurfaceArea = false;
+            if(paintDataListTemp && paintDataListTemp.length > 0){
+                allMissingSurfaceArea = paintDataListTemp.every(coat =>
+                    coat.RawMaterials.length > 0 && coat.RawMaterials.every(material => 
+                        material.RawMaterialId === excludedRmId || !("SurfaceArea" in material) || material?.SurfaceArea === 0
+                    )
+                );
+            }
+            if (allMissingSurfaceArea) {
+                paintDataListTemp.forEach((coat, parentIndex) => {
+                  coat.RawMaterials.forEach((rm, childIndex) => {
+                    const baseUpdate = {
+                        ...rm,
+                        SurfaceArea: checkForNull(surfaceArea),
+                    };
+                    const fullUpdate = {
+                        ...baseUpdate,
+                    };
+                    paintDataListTemp[parentIndex].RawMaterials[childIndex] = excludedRmId == rm?.RawMaterialId ? fullUpdate : baseUpdate;
+                    if(fieldName && fieldName === "SurfaceArea"){
+                        setValueTableForm(`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForNull(surfaceArea))
+                        delete errorsTableForm[`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`]
+                        const safeConsumption = consumption ? checkForNull(consumption) : 1;
+                        const safeSurfaceArea = checkForNull(surfaceArea);
+                        const surfaceAreaAndConsumption = safeSurfaceArea * safeConsumption;
+                        const rejectionAllowance = surfaceAreaAndConsumption * checkForNull(rm?.RejectionAllowancePercentage / 100)
+                        const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
+                        setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
+                        setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
+                    }
+                  });
+                });
+            }
+        }
+    }
+
     const renderInputBox = ({ item, name, coat, parentIndex, childIndex, required, disabled, onHandleChange, tooltipText = '' }) => {
         return (
             <>
@@ -368,6 +410,17 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                     customClassName={'withBorder mb-0 paint-and-masking'}
                     errors={errorsTableForm[`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
                     disabled={ViewMode || CostingViewMode || disabled || IsLocked}
+                    {...(name === 'SurfaceArea' ? {
+                        onBlur: (e) => {
+                            handleSurfaceAreaForAll(
+                                e.target.value,
+                                parentIndex,
+                                childIndex,
+                                item,
+                                'SurfaceArea'
+                            );
+                        }
+                    } : {})}
                 />
             </>
         )
@@ -465,6 +518,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         disabled: true,
                         tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate (Currency/UOM)'
                     })}</td>
+                    <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                     {childIndex === 0 && !ViewMode && !IsLocked && (
                         <td width="50" rowSpan={item.RawMaterials.length}>
                             <Button
@@ -495,7 +549,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         <Drawer anchor={anchor} open={isOpen}>
             <div className="ag-grid-react hidepage-size">
                 <Container className="add-bop-drawer">
-                    <div className="drawer-wrapper layout-min-width-1000px">
+                    <div className="drawer-wrapper paint-and-masking layout-min-width-1000px">
                         <Row className="drawer-heading">
                             <Col className="pl-0">
                                 <div className="header-wrapper left">
@@ -573,10 +627,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                             <tbody>
                                 {renderTableRows()}
                                 <tr className="table-footer">
-                                    <td colSpan={TABLE_HEADERS.length - 2} className="text-right">
+                                    <td colSpan={TABLE_HEADERS.length - 3} className="text-right">
                                         Total Paint Cost
                                     </td>
-                                    <td colSpan={2}>
+                                    <td colSpan={3}>
                                         {/* <TooltipCustom
                                             id="totalGSM"
                                             disabledIcon

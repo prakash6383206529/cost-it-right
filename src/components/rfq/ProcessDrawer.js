@@ -1498,6 +1498,7 @@ function ViewDrawer(props) {
                                             {activeTab === "1" && (<th>RM Name</th>)}
                                             {(activeTab === "1" && props.partType !== 'Tooling') && <th>RM Grade</th>}
                                             {(activeTab === "1" && props.partType !== 'Tooling') && <th>RM Specification</th>}
+                                            {(activeTab === "1" && props.partType !== 'Tooling') && <th>RM Code</th>}
 
                                             {props.partType !== 'Tooling' && <th>Action</th>}
                                         </tr>
@@ -1512,6 +1513,7 @@ function ViewDrawer(props) {
                                                     {props.partType !== 'Tooling' && <td>{item.RawMaterialName !== null ? item.RawMaterialName : '-'}</td>}
                                                     {props.partType !== 'Tooling' && <td>{item.RawMaterialGrade !== null ? item.RawMaterialGrade : '-'}</td>}
                                                     {props.partType !== 'Tooling' && <td>{item.RawMaterialSpecification !== null ? item.RawMaterialSpecification : '-'}</td>}
+                                                    {props.partType !== 'Tooling' && <td>{item.RawMaterialCode !== null ? item.RawMaterialCode : '-'}</td>}
                                                     {props.partType !== 'Tooling' &&
                                                         <td>
                                                             <button

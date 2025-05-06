@@ -10,12 +10,13 @@ import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCal
 import BoughtOutPart from '../BOP';
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import { findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../../CostingUtil';
-import { getRMCCTabData, gridDataAdded, openCloseStatus, saveAssemblyCostingRMCCTab, saveCostingLabourDetails } from '../../../actions/Costing';
+import { getRMCCTabData, gridDataAdded, openCloseStatus, saveAssemblyCostingRMCCTab, saveCostingLabourDetails, setBopRemark } from '../../../actions/Costing';
 import { EMPTY_GUID, WACTypeId } from '../../../../../config/constants';
 import _ from 'lodash';
 import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
 import Toaster from '../../../../common/Toaster';
-import { PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
+import { PART_TYPE_ASSEMBLY, REMARKMAXLENGTH } from '../../../../../config/masterData';
+import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 
 function AssemblyTechnology(props) {
     const { children, item, index } = props;
@@ -32,6 +33,10 @@ function AssemblyTechnology(props) {
     const [labourTableData, setLabourTableData] = useState([])
     const [labourObj, setLabourObj] = useState(false)
     const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
+    const [remarkAccept, setRemarkAccept] = useState(false);
+    const [activeRemark, setActiveRemark] = useState(null)
+
+    const [remark, setRemark] = useState("");
     const netPOPrice = useContext(NetPOPriceContext);
 
     const CostingViewMode = useContext(ViewCostingContext);
@@ -40,7 +45,7 @@ function AssemblyTechnology(props) {
     const { CostingEffectiveDate } = useSelector(state => state.costing)
     const dispatch = useDispatch()
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-    const { ToolTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, RMCCTabData, currencySource, exchangeRateData } = useSelector(state => state.costing)
+    const { ToolTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, RMCCTabData, currencySource, exchangeRateData,remark: reduxRemark, bopCostingId: reduxBopCostingId } = useSelector(state => state.costing)
     const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
     const isPartType = useContext(IsPartType);
 
@@ -172,14 +177,134 @@ function AssemblyTechnology(props) {
             return false
         }
     })
+    const popupInputData = (data) => {
+        setRemark(data);
+    };
+    const openRemarkPopup = (bopItem) => {
+        
+        // Reset states to prevent data leakage between different BOPs
+        setRemark("");
+        setRemarkAccept(false);
+        setActiveRemark(null);
+        const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+        const bopObject = costingArray.find(item => item?.AssemblyPartNumber === bopItem?.AssemblyPartNumber && item?.PartNumber === bopItem?.PartNumber && item?.PartType === 'BOP');
+        const bopCostingId = bopItem?.CostingId || "00000000-0000-0000-0000-000000000000";
+        // Store both part number and assembly part number to identify this BOP uniquely
+        setActiveRemark({ partNumber: bopItem?.PartNumber, assemblyPartNumber: bopItem?.AssemblyPartNumber });
+        const storedRemark = bopObject?.Remark || '';
+        setRemark(storedRemark);
 
-    const nestedBOP = children && children.map(el => {
+        // Open the popup
+        setRemarkAccept(true);
+    }
+
+    /**
+     * @method closePopUp
+     * @description Close the remark popup
+     */
+    const closePopUp = () => {
+        setRemarkAccept(false);
+        setActiveRemark(null);
+        setRemark("");
+    }
+    /**
+ * @method handleRemarkPopupConfirm
+ * @description Handle remark popup confirm and save remark to session storage
+ */
+    const handleRemarkPopupConfirm = () => {
+        if (!activeRemark?.partNumber || !activeRemark?.assemblyPartNumber) {
+            closePopUp();
+            return;
+        }
+        
+        // Get and update subAssemblyTechnologyArray
+        if (subAssemblyTechnologyArray?.[0]?.CostingChildPartDetails?.length > 0) {
+            const tempArray = JSON.parse(JSON.stringify(subAssemblyTechnologyArray));
+            
+            // Find and update target BOP object
+            const childPart = tempArray[0].CostingChildPartDetails.find(part => 
+                part.PartType === 'BOP' && 
+                part.PartNumber === activeRemark?.partNumber && 
+                part.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+            );
+            
+            if (childPart) {
+                childPart.Remark = remark;
+                dispatch(setSubAssemblyTechnologyArray(tempArray, () => {}));
+            }
+        }
+        
+        // Update session storage
+        const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+        const bopIndex = costingArray.findIndex(item =>
+            item.AssemblyPartNumber === activeRemark?.assemblyPartNumber && 
+            item.PartNumber === activeRemark?.partNumber && 
+            item.PartType === 'BOP'
+        );
+        
+        if (bopIndex !== -1) {
+            costingArray[bopIndex].Remark = remark;
+        } else {
+            costingArray.push({
+                PartNumber: activeRemark?.partNumber,
+                AssemblyPartNumber: activeRemark?.assemblyPartNumber,
+                PartType: 'BOP',
+                Remark: remark
+            });
+        }
+        sessionStorage.setItem('costingArray', JSON.stringify(costingArray));
+        
+        // Find BOP item and update Redux for API
+        const bopItem = children?.find(child => 
+            child.PartType === 'BOP' && 
+            child.PartNumber === activeRemark?.partNumber && 
+            child.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+        );
+        
+        if (bopItem) {
+            dispatch(setBopRemark(remark, bopItem?.CostingId || "00000000-0000-0000-0000-000000000000"));
+        }
+        
+        setCallSaveAssemblyApi(true);
+        Toaster.success('Remark saved successfully');
+        closePopUp();
+    }
+ const nestedBOP = children && children.map((el, idx) => {
         if (el.PartType !== 'BOP') return false;
+
+        // Check if this is the active BOP for remarks
+        const isActive = remarkAccept && activeRemark?.partNumber === el?.PartNumber && activeRemark?.assemblyPartNumber === el?.AssemblyPartNumber;
+
+        // Create the remark button that will be passed to the BoughtOutPart component
+        const remarkButton = isActive && (
+            <PopupMsgWrapper
+                setInputData={popupInputData}
+                isOpen={remarkAccept}
+                closePopUp={closePopUp}
+                confirmPopup={handleRemarkPopupConfirm}
+                header={"Remark"}
+                isInputField={true}
+                isDisabled={CostingViewMode}
+                defaultValue={remark}
+                maxLength={REMARKMAXLENGTH}
+                
+            />
+        );
+
+        // Get the remark specific to this BOP item from session storage
+        const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+        const bopObject = costingArray.find(item => item.AssemblyPartNumber === el?.AssemblyPartNumber && item?.PartNumber === el?.PartNumber && item?.PartType === 'BOP');
+
+        const specificRemark = bopObject?.Remark || el?.Remark || '';
+
         return <BoughtOutPart
             index={index}
             item={el}
             children={el.CostingChildPartDetails}
             editBop={true}
+            remarkButton={remarkButton}
+            onRemarkButtonClick={() => openRemarkPopup(el)}
+            remark={isActive ? remark : specificRemark}
         />
     })
 
@@ -288,7 +413,7 @@ function AssemblyTechnology(props) {
             let stCostingData = findSurfaceTreatmentData(item)
             let basicRate = 0
             if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
-                basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+                basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
                     checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
                     checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
             } else {
@@ -307,7 +432,7 @@ function AssemblyTechnology(props) {
                 "NetOperationCost": item?.CostingPartDetails?.NetOperationCost,
                 "NetOtherOperationCost": item?.CostingPartDetails?.NetOtherOperationCost,
                 "NetTotalRMBOPCC": item?.CostingPartDetails?.NetTotalRMBOPCC,
-                "NetPOPrice": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+                "NetPOPrice": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.NetTotalRMBOPCC,
                 "LoggedInUserId": loggedInUserId(),
                 "NetLabourCost": item.NetLabourCost,
                 "IndirectLaborCost": item.IndirectLaborCost,
@@ -342,7 +467,7 @@ function AssemblyTechnology(props) {
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
             item.NetOperationCost = item?.CostingPartDetails?.NetOperationCost
-            let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
+            let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost,reduxRemark,reduxBopCostingId)
 
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
             }))
@@ -352,7 +477,7 @@ function AssemblyTechnology(props) {
             setCallSaveAssemblyApi(false)
         }
 
-    }, [subAssemblyTechnologyArray])
+    }, [subAssemblyTechnologyArray,callSaveAssemblyApi])
 
 
     /**

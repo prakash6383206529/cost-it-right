@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getCostingBopAndBopHandlingDetails, getCostingLabourDetails, getRMCCTabData, openCloseStatus, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData } from '../../../actions/Costing';
+import { getCostingBopAndBopHandlingDetails, getCostingLabourDetails, getRMCCTabData, openCloseStatus, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData, setBopRemark } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId, showBopLabel, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { CostingStatusContext, IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
@@ -17,6 +17,9 @@ import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
 import { createToprowObjAndSave } from '../../../CostingUtil';
 import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
 import ViewBOP from '../../Drawers/ViewBOP';
+import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
+import { useForm } from 'react-hook-form';
+import { REMARKMAXLENGTH } from '../../../../../config/masterData';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -32,18 +35,27 @@ function AssemblyPart(props) {
   const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
   const [isProcessDrawerOpen, setIsProcessDrawerOpen] = useState(false)
   const [itemInState, setItemInState] = useState({})
-  const[viewBopDrawer, setViewBopDrawer] = useState(false)
+  const [viewBopDrawer, setViewBopDrawer] = useState(false)
   const [counter, setCounter] = useState(0)
   const [bopAndBopHandlingDetails, setBopAndBopHandlingDetails] = useState([])
+  const [singleBopRemark, setSingleBopRemark] = useState(false)
+  const [remarkAccept, setRemarkAccept] = useState(false);
+  const [remark, setRemark] = useState("");
+
+  const [activeRemark, setActiveRemark] = useState(null)
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange'
+  });
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const isPartType = useContext(IsPartType);
-  
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
-  const { DiscountCostData, CostingEffectiveDate, bomLevel, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, getAssemBOPCharge, openAllTabs, currencySource, exchangeRateData } = useSelector(state => state.costing)
+  const { DiscountCostData, CostingEffectiveDate, bomLevel, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, getAssemBOPCharge, openAllTabs, currencySource, exchangeRateData, remark: reduxRemark, bopCostingId: reduxBopCostingId } = useSelector(state => state.costing)
   const isNFR = useContext(IsNFR);
   const dispatch = useDispatch()
   const toggle = (BOMLevel, PartNumber, AssemblyPartNumber) => {
@@ -87,7 +99,7 @@ function AssemblyPart(props) {
           // let tempArr = setArrayForCosting
           let array = [];
           let obj = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element => element.PartType === 'Assembly' && PartNumber === element?.PartNumber)
-          
+
           if (/* obj?.length === 0 && */ PartNumber === costData?.PartNumber && counter === 0) {
             array = [Data]
             Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
@@ -201,14 +213,15 @@ function AssemblyPart(props) {
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, true, '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost, reduxRemark, reduxBopCostingId
+      )
+      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => {
+        dispatch(setBopRemark('', ''));
+      }));
 
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, true, '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       setCallSaveAssemblyApi(false)
     }
-
-  }, [RMCCTabData])
-
+  }, [RMCCTabData, callSaveAssemblyApi])
 
   const nestedPartComponent = children && children.map(el => {
     if (el.PartType === 'Part') {
@@ -282,13 +295,135 @@ function AssemblyPart(props) {
       setAssemblyProcessCost={props.setAssemblyProcessCost}
     />
   })
+  const popupInputData = (data) => {
+    setRemark(data);
+  };
 
-  const nestedBOP = children && children.map(el => {
+  /**
+    * @method openRemarkPopup
+    * @description Open the remark popup for a specific BOP item and get remark from session storage
+    */
+  const openRemarkPopup = (bopItem) => {
+    // Reset states to prevent data leakage between different BOPs
+    setRemark("");
+    setRemarkAccept(false);
+    setActiveRemark(null);
+    const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+    const bopObject = costingArray.find(item => item?.AssemblyPartNumber === bopItem?.AssemblyPartNumber && item?.PartNumber === bopItem?.PartNumber && item?.PartType === 'BOP');
+    const bopCostingId = bopItem?.CostingId || "00000000-0000-0000-0000-000000000000";
+    // Store both part number and assembly part number to identify this BOP uniquely
+    setActiveRemark({ partNumber: bopItem?.PartNumber, assemblyPartNumber: bopItem?.AssemblyPartNumber });
+    const storedRemark = bopObject?.Remark || '';
+    setRemark(storedRemark);
+
+    // Open the popup
+    setRemarkAccept(true);
+  }
+
+  /**
+   * @method closePopUp
+   * @description Close the remark popup
+   */
+  const closePopUp = () => {
+    setRemarkAccept(false);
+    setActiveRemark(null);
+    setRemark("");
+  }
+
+  /**
+   * @method handleRemarkPopupConfirm
+   * @description Handle remark popup confirm and save remark to session storage
+   */
+  const handleRemarkPopupConfirm = () => {
+    if (!activeRemark || !activeRemark?.partNumber || !activeRemark?.assemblyPartNumber) {
+      closePopUp();
+      return;
+    }
+    // Find the BOP item that matches the activeRemark part number and assembly part number
+    const bopItem = children?.find(child => child?.PartType === 'BOP' && child?.PartNumber === activeRemark?.partNumber && child.AssemblyPartNumber === activeRemark.assemblyPartNumber);
+    if (bopItem) {
+      const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+      const bopIndex = costingArray.findIndex(item =>
+        item.AssemblyPartNumber === activeRemark?.assemblyPartNumber && item?.PartNumber === activeRemark?.partNumber && item.PartType === 'BOP');
+
+      if (bopIndex !== -1) {
+        // Update the remark directly on the BOP object
+        costingArray[bopIndex].Remark = remark;
+        sessionStorage.setItem('costingArray', JSON.stringify(costingArray));
+        const bopCostingId = bopItem?.CostingId || "00000000-0000-0000-0000-000000000000";
+
+        // Save remark and costingId to Redux state for API call
+        dispatch(setBopRemark(remark, bopCostingId));
+        
+        // Update the remark in RMCCTabData as well
+        if (RMCCTabData && RMCCTabData.length > 0) {
+          const updatedRMCCTabData = JSON.parse(JSON.stringify(RMCCTabData));
+          
+          // Search through all items in RMCCTabData to find matching BOP
+          updatedRMCCTabData.forEach(rmccItem => {
+            if (rmccItem?.CostingChildPartDetails && rmccItem?.CostingChildPartDetails?.length > 0) {
+              // Find the BOP within CostingChildPartDetails that matches the PartNumber and AssemblyPartNumber
+              const childBopIndex = rmccItem?.CostingChildPartDetails?.findIndex(
+                childPart => childPart?.PartType === 'BOP' && 
+                             childPart?.PartNumber === activeRemark?.partNumber && 
+                             childPart?.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+              );
+              
+              if (childBopIndex !== -1) {
+                // Update the remark for the matching BOP
+                rmccItem.CostingChildPartDetails[childBopIndex].Remark = remark;
+              }
+            }
+          });
+          
+          // Dispatch updated RMCCTabData to the Redux store
+          dispatch(setRMCCData(updatedRMCCTabData, () => {}));
+        }
+        
+        setCallSaveAssemblyApi(true);
+        Toaster.success('Remark saved successfully');
+      }
+    }
+
+    // Close the popup
+    closePopUp();
+  }
+
+  const nestedBOP = children && children.map((el, idx) => {
     if (el.PartType !== 'BOP') return false;
+
+    // Check if this is the active BOP for remarks
+    const isActive = remarkAccept && activeRemark?.partNumber === el?.PartNumber && activeRemark?.assemblyPartNumber === el?.AssemblyPartNumber;
+
+    // Create the remark button that will be passed to the BoughtOutPart component
+    const remarkButton = isActive && (
+      <PopupMsgWrapper
+        setInputData={popupInputData}
+        isOpen={remarkAccept}
+        closePopUp={closePopUp}
+        confirmPopup={handleRemarkPopupConfirm}
+        header={"Remark"}
+        isInputField={true}
+        isDisabled={CostingViewMode}
+        defaultValue={remark}
+        maxLength={REMARKMAXLENGTH}
+      />
+    );
+
+    // Get the remark specific to this BOP item from session storage
+    const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
+    const bopObject = costingArray.find(item => item.AssemblyPartNumber === el?.AssemblyPartNumber && item?.PartNumber === el?.PartNumber && item?.PartType === 'BOP');
+
+    const specificRemark = bopObject?.Remark || el?.Remark || '';
+
     return <BoughtOutPart
-      index={index}
+      key={`bop-${idx}`}
+      index={idx}
       item={el}
       children={el.CostingChildPartDetails}
+      remarkButton={remarkButton}
+      onRemarkButtonClick={() => openRemarkPopup(el)}
+      remark={isActive ? remark : specificRemark}
     />
   })
 
@@ -304,14 +439,14 @@ function AssemblyPart(props) {
     if (item.PartType !== 'Assembly' || item.BOMLevel !== 'L0') {
       return;
     }
-    
+
     const apiParams = {
       costingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
       subAssemblyCostingId: item.SubAssemblyCostingId ? item.SubAssemblyCostingId : (item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000"),
       assemblyCostingId: item.AssemblyCostingId !== null ? item.AssemblyCostingId : "00000000-0000-0000-0000-000000000000",
       loggedInUserId: loggedInUserId()
     };
-    
+
     dispatch(getCostingBopAndBopHandlingDetails(apiParams, (res) => {
       if (res?.data?.Data) {
         // Separate assembly and child parts BOP handling charges
@@ -321,12 +456,12 @@ function AssemblyPart(props) {
         // Process the data to match the expected format for ViewBOP component
         const processedData = {
           BOPData: res?.data?.Data?.CostingBoughtOutPartCost || [],
-          
+
           // Assembly BOP handling charges
           bopPHandlingCharges: assemblyBOPHandling?.BOPHandlingCharges || 0,
           bopHandlingPercentage: assemblyBOPHandling?.BOPHandlingPercentage || 0,
           bopHandlingChargeType: assemblyBOPHandling?.BOPHandlingChargeType || '',
-          
+
           // Child parts BOP handling charges
           childPartBOPHandlingCharges: childPartsBOPHandling,
           IsAssemblyCosting: true,
@@ -335,6 +470,25 @@ function AssemblyPart(props) {
         setViewBopDrawer(true);
       }
     }))
+  }
+
+
+
+  /**
+   * @method onRemarkPopUpClose
+   * @description Handle remark popup close
+   */
+  const onRemarkPopUpClose = (index, bopItem) => {
+    // Close the popup
+    const popupElement = document.getElementById(`bop_popUpTrigger_${index}`);
+    if (popupElement) {
+      popupElement.click();
+    }
+
+    // Reset errors
+    if (errors && errors[`bop_remark_${index}`]) {
+      setSingleBopRemark(false);
+    }
   }
 
   /**

@@ -1821,10 +1821,10 @@ export function getConditionDetails(costingId, callback) {
   };
 }
 
-export function getCostingCondition(CostingConditionEntryTypeId, costingConditionTypeId, callback) {
+export function getCostingCondition(CostingConditionEntryTypeId, costingConditionTypeId,isRequestForMultiTechnology=false, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingCondition}?loggedInUserId=${loggedInUserId()}&CostingConditionEntryTypeId=${CostingConditionEntryTypeId}&costingConditionTypeId=${costingConditionTypeId}`, config());
+    const request = axios.get(`${API.getCostingCondition}?loggedInUserId=${loggedInUserId()}&CostingConditionEntryTypeId=${CostingConditionEntryTypeId}&costingConditionTypeId=${costingConditionTypeId}&isRequestForMultiTechnology=${isRequestForMultiTechnology}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);

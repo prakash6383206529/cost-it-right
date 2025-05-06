@@ -4,17 +4,18 @@ import { Drawer } from '@material-ui/core'
 import { useForm, Controller } from 'react-hook-form'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { useDispatch, useSelector } from 'react-redux'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation } from '../../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLimit6, getCostValues, hashValidation, maxLength80, number, percentageLimitValidation } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import NoContentFound from '../../../../common/NoContentFound'
-import { CC, COSTINGSURFACETREATMENTEXTRACOST, EMPTY_DATA, HANGER, HANGEROVERHEAD, PAINT, RM, RMCC, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT } from '../../../../../config/constants'
+import { CC, COSTINGSURFACETREATMENTEXTRACOST, EMPTY_DATA, HANGER, HANGEROVERHEAD, PAINT, PART_COST, PART_COST_CC, RM, RMCC, SURFACETREATMENTLABEL, TAPE, TAPEANDPAINT, WACTypeId } from '../../../../../config/constants'
 import { generateCombinations, getCostingConditionTypes } from '../../../../common/CommonFunctions'
 import { getCostingCondition } from '../../../../../actions/Common'
 // import { setSurfaceData } from '../../../actions/Costing'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { ViewCostingContext } from '../../CostingDetails'
 import TooltipCustom from '../../../../common/Tooltip'
+import { IdForMultiTechnology } from '../../../../../config/masterData'
 
 function ExtraCost(props) {
     const { setSurfaceData, item, extraCostDetails } = props
@@ -50,59 +51,62 @@ function ExtraCost(props) {
         applicabilityDropdown: [],
         ApplicabilityCost: 0,
     })
+    const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
-    const getCostValues = () => {
-        const isAssembly = RMCCTabData[0]?.CostingPartDetails?.PartType
-        
-        
-        if (isAssembly) {
-            
-            return {
-                rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
-                conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalConversionCostWithQuantity)
-            };
-        } else {
-            
-            return {
-                rawMaterialsCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetRawMaterialsCost),
-                conversionCost: checkForNull(RMCCTabData[0]?.CostingPartDetails?.NetConversionCost)
-            };
-        }
-    };
+
 
     useEffect(() => {
         let tempData = [...tableData]
+        const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
+        const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
         tempData.map(item => {
             if (item?.CostingConditionMasterId) {
-                if (item.CostingConditionNumber === TAPEANDPAINT) {
-                    item.ApplicabiltyCost = paintAndMaskingDetails?.TotalPaintCost
-                    item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TotalPaintCost, item?.Rate)
-                } else if (item.CostingConditionNumber === HANGER) {
-                    item.ApplicabiltyCost = hangerCostDetails?.HangerCostPerPart
-                    item.TransportationCost = calculatePercentageValue(hangerCostDetails?.HangerCostPerPart, item?.Rate)
-                } else if (item.CostingConditionNumber === SURFACETREATMENTLABEL) {
-                    item.ApplicabiltyCost = surfaceCost
-                    item.TransportationCost = calculatePercentageValue(surfaceCost, item?.Rate)
-                } else if (item.CostingConditionNumber === TAPE) {
-                    item.ApplicabiltyCost = paintAndMaskingDetails?.TapeCost
-                    item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.TapeCost, item?.Rate)
-                } else if (item.CostingConditionNumber === PAINT) {
-                    item.ApplicabiltyCost = paintAndMaskingDetails?.PaintCost
-                    item.TransportationCost = calculatePercentageValue(paintAndMaskingDetails?.PaintCost, item?.Rate)
-                } else if (item.CostingConditionNumber === RMCC) {
-                    const { rawMaterialsCost, conversionCost } = getCostValues();
-item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
-                    item.TransportationCost = calculatePercentageValue(item.ApplicabiltyCost, item?.Rate);
-                } else if (item.CostingConditionNumber === RM) {
-                    const { rawMaterialsCost } = getCostValues();
+                // Get cost values once for all cases that need them
 
-                    item.ApplicabiltyCost = checkForNull(rawMaterialsCost);
-                    item.TransportationCost = calculatePercentageValue(rawMaterialsCost, item?.Rate);
-                } else if (item.CostingConditionNumber === CC) {
-                    const { conversionCost } = getCostValues();
-
-                    item.ApplicabiltyCost = checkForNull(conversionCost);
-                    item.TransportationCost = calculatePercentageValue(conversionCost, item?.Rate);
+                switch (item?.CostingConditionNumber) {
+                    case TAPEANDPAINT:
+                        item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.TotalPaintCost), item?.Rate)
+                        break;
+                    case HANGER:
+                        item.ApplicabiltyCost = checkForNull(hangerCostDetails?.HangerCostPerPart)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(hangerCostDetails?.HangerCostPerPart), item?.Rate)
+                        break;
+                    case SURFACETREATMENTLABEL:
+                        item.ApplicabiltyCost = checkForNull(surfaceCost)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(surfaceCost), item?.Rate)
+                        break;
+                    case TAPE:
+                        item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.TapeCost)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.TapeCost), item?.Rate)
+                        break;
+                    case PAINT:
+                        item.ApplicabiltyCost = checkForNull(paintAndMaskingDetails?.PaintCost)
+                        item.TransportationCost = calculatePercentageValue(checkForNull(paintAndMaskingDetails?.PaintCost), item?.Rate)
+                        break;
+                    case RMCC:
+                        item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
+                        item.TransportationCost = calculatePercentageValue((checkForNull(rawMaterialsCost) + checkForNull(conversionCost)), item?.Rate);
+                        break;
+                    case RM:
+                        item.ApplicabiltyCost = checkForNull(rawMaterialsCost);
+                        item.TransportationCost = calculatePercentageValue(checkForNull(rawMaterialsCost), item?.Rate);
+                        break;
+                    case CC:
+                        item.ApplicabiltyCost = checkForNull(conversionCost);
+                        item.TransportationCost = calculatePercentageValue(checkForNull(conversionCost), item?.Rate);
+                        break;
+                    case PART_COST:
+                        item.ApplicabiltyCost = checkForNull(netpartCost);
+                        item.TransportationCost = calculatePercentageValue(checkForNull(netpartCost), item?.Rate);
+                        break;
+                    case PART_COST_CC:
+                        item.ApplicabiltyCost = checkForNull(netpartCost) + checkForNull(conversionCost);
+                        item.TransportationCost = calculatePercentageValue((checkForNull(netpartCost) + checkForNull(conversionCost)), item?.Rate);
+                        break;
+                    default:
+                        // No action for unknown condition types
+                        break;
                 }
             }
         })
@@ -116,7 +120,9 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
 
     useEffect(() => {
         if (!CostingViewMode) {
-            dispatch(getCostingCondition('', conditionTypeId, (res) => {
+            // Check if the technology ID is included in IdForMultiTechnology
+            const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+            dispatch(getCostingCondition('', conditionTypeId, isRequestForMultiTechnology, (res) => {
                 if (res?.data?.DataList) {
                     const temp = res?.data?.DataList?.map((item) => ({
                         label: item?.CostingConditionNumber,
@@ -210,45 +216,57 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
 
     const applicabilityChange = (e) => {
         setState(prevState => ({ ...prevState, Applicability: e?.label }));
+        // Get cost values once for all cases that need them
+        const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
+        const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
+
         // Handle Basic Rate separately
-        if (e?.label === TAPE) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(paintAndMaskingDetails?.TapeCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: paintAndMaskingDetails?.TapeCost }));
-            return;
-        } else if (e?.label === SURFACETREATMENTLABEL) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCost }));
-            return;
-        } else if (e?.label === PAINT) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(paintAndMaskingDetails?.PaintCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: paintAndMaskingDetails?.PaintCost }));
-            return;
-        } else if (e?.label === TAPEANDPAINT) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(paintAndMaskingDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: paintAndMaskingDetails?.TotalPaintCost }));
-            return;
-        } else if (e?.label === HANGER) {
-            setValue('ApplicabilityCost', checkForDecimalAndNull(hangerCostDetails?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: hangerCostDetails?.HangerCostPerPart }));
-            return;
-        } else if (e?.label === RM) {
-            const { rawMaterialsCost } = getCostValues();
- setValue('ApplicabilityCost', checkForDecimalAndNull(rawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: rawMaterialsCost }));
-            return;
-        } else if (e?.label === CC) {
-            const { conversionCost } = getCostValues();
-
-            setValue('ApplicabilityCost', checkForDecimalAndNull(conversionCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: conversionCost }));
-            return;
-        } else if (e?.label === RMCC) {
-            const { rawMaterialsCost, conversionCost } = getCostValues();
-
-            let totalCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
-            setValue('ApplicabilityCost', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, ApplicabilityCost: totalCost }));
-            return;
+        switch (e?.label) {
+            case TAPE:
+                setValue('ApplicabilityCost', checkForDecimalAndNull(paintAndMaskingDetails?.TapeCost, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: paintAndMaskingDetails?.TapeCost }));
+                break;
+            case SURFACETREATMENTLABEL:
+                setValue('ApplicabilityCost', checkForDecimalAndNull(surfaceCost, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: surfaceCost }));
+                break;
+            case PAINT:
+                setValue('ApplicabilityCost', checkForDecimalAndNull(paintAndMaskingDetails?.PaintCost, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: paintAndMaskingDetails?.PaintCost }));
+                break;
+            case TAPEANDPAINT:
+                setValue('ApplicabilityCost', checkForDecimalAndNull(paintAndMaskingDetails?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: paintAndMaskingDetails?.TotalPaintCost }));
+                break;
+            case HANGER:
+                setValue('ApplicabilityCost', checkForDecimalAndNull(hangerCostDetails?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: hangerCostDetails?.HangerCostPerPart }));
+                break;
+            case RM:
+                setValue('ApplicabilityCost', checkForDecimalAndNull(rawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: rawMaterialsCost }));
+                break;
+            case CC:
+                setValue('ApplicabilityCost', checkForDecimalAndNull(conversionCost, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: conversionCost }));
+                break;
+            case RMCC:
+                let totalCost = checkForNull(rawMaterialsCost) + checkForNull(conversionCost);
+                setValue('ApplicabilityCost', checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: totalCost }));
+                break;
+            case PART_COST:
+                setValue('ApplicabilityCost', checkForDecimalAndNull(netpartCost, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: netpartCost }));
+                break;
+            case PART_COST_CC:
+                let partCostTotal = checkForNull(netpartCost) + checkForNull(conversionCost);
+                setValue('ApplicabilityCost', checkForDecimalAndNull(partCostTotal, initialConfiguration?.NoOfDecimalForPrice));
+                setState(prevState => ({ ...prevState, ApplicabilityCost: partCostTotal }));
+                break;
+            default:
+                // No action for unknown condition types
+                break;
         }
     }
 
@@ -288,10 +306,22 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
     }
 
     const onSubmit = data => {
-        
+
         // Check if NetCost is 0 or empty
         if (!data?.NetCost || Number(data?.NetCost) === 0) {
             Toaster.warning('Cost cannot be zero. Please enter a valid value.');
+            return;
+        }
+
+        // Check if Applicability already exists in tableData (regardless of description)
+        // During edit mode, exclude the current row being edited from duplicate check
+        const existingCondition = tableData?.find((item, index) => 
+            item.CostingConditionMasterId === data?.Applicability?.value && 
+            (isEditMode ? index !== editIndex : true)
+        );
+
+        if (existingCondition) {
+            Toaster.warning('This applicability is already added in the table');
             return;
         }
 
@@ -323,15 +353,7 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
             resetData();
             return;
         }
-        // Check if CostingConditionMasterId already exists in tableData
-        const existingCondition = tableData.find(item =>
-            item.CostingConditionMasterId === data?.Applicability?.value && item.Description.toLowerCase() === data?.CostDescription.toLowerCase()
-        );
 
-        if (existingCondition) {
-            Toaster.warning('Applicability already exists');
-            return;
-        }
         const existingFixedDescription = tableData.find(item =>
             (item.Description.toLowerCase() === data?.CostDescription.toLowerCase() && item.UOM === type?.label)
         );
@@ -397,7 +419,7 @@ item.ApplicabiltyCost = checkForNull(rawMaterialsCost) + checkForNull(conversion
         //     }
         //     return null;
         // })
-        // console.log(SurfaceTabData, "Coming here in saveExtraCost", newData)
+        // 
         // dispatch(setSurfaceData(SurfaceTabData, () => { }))
         props.closeDrawer('Save', totalCostCurrency)
         setSurfaceData({ Params: { index: props.index }, extraCostObj: { TransportationDetails: tableData, TransportationCost: totalCostCurrency }, type: 'ExtraCost' }, errors)
