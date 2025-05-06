@@ -114,10 +114,17 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalTransportationCostPerSubAssembly": item?.CostingPartDetails?.TotalTransportationCostPerSubAssembly,
           "TotalTransportationCostWithQuantity": item?.CostingPartDetails?.TotalTransportationCostWithQuantity,
           "TotalTransportationCostComponent": item?.CostingPartDetails?.TotalTransportationCostComponent,
+
           "PaintCostComponent": item?.CostingPartDetails?.PaintCostComponent,
           "PaintCostPerAssembly": item?.CostingPartDetails?.PaintCostPerAssembly,
           "PaintCostPerSubAssembly": item?.CostingPartDetails?.PaintCostPerSubAssembly,
           "PaintCostWithQuantity": item?.CostingPartDetails?.PaintCostWithQuantity,
+
+          "PaintConsumptionCostComponent": item?.CostingPartDetails?.PaintConsumptionCostComponent,
+          "PaintConsumptionCostPerAssembly": item?.CostingPartDetails?.PaintConsumptionCostPerAssembly,
+          "PaintConsumptionCostPerSubAssembly": item?.CostingPartDetails?.PaintConsumptionCostPerSubAssembly,
+          "PaintConsumptionCostWithQuantity": item?.CostingPartDetails?.PaintConsumptionCostWithQuantity,
+
           "TapeCostComponent": item?.CostingPartDetails?.TapeCostComponent,
           "TapeCostPerAssembly": item?.CostingPartDetails?.TapeCostPerAssembly,
           "TapeCostPerSubAssembly": item?.CostingPartDetails?.TapeCostPerSubAssembly,
@@ -239,6 +246,13 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "PaintCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintCostPerAssembly,
       "PaintCostPerSubAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintCostPerSubAssembly,
       "PaintCostWithQuantity": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintCostWithQuantity,
+
+      "PaintConsumptionCost": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCost,
+      "PaintConsumptionCostComponent": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCostComponent,
+      "PaintConsumptionCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCostPerAssembly,
+      "PaintConsumptionCostPerSubAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCostPerSubAssembly,
+      "PaintConsumptionCostWithQuantity": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCostWithQuantity,
+
       "TapeCost": surfaceTabData && surfaceTabData?.CostingPartDetails?.TapeCost,
       "TapeCostComponent": surfaceTabData && surfaceTabData?.CostingPartDetails?.TapeCostComponent,
       "TapeCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.TapeCostPerAssembly,
@@ -457,7 +471,7 @@ export const clearCosting = (dispatch) => {
 
 export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false, remark = "", bopCostingId = "") => {
   let Arr = tabData
-  console.log("Arr", Arr)
+
   let assemblyWorkingRow = []
 
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
@@ -527,11 +541,20 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "IndirectLaborCostPercentage": tabData?.CostingPartDetails?.IndirectLaborCostPercentage,
       "BasicRate": basicRate,
       "RawMaterialCostWithCutOff": tabData?.CostingPartDetails?.NetChildPartsCost,
-      "NetOtherOperationCost": 0,               // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
+      "NetOtherOperationCost": 0,
+      "PaintConsumptionCost": surfaceTabData?.CostingPartDetails?.PaintConsumptionCost,
+      "PaintCost": surfaceTabData?.CostingPartDetails?.PaintCost,
+      "TapeCost": surfaceTabData?.CostingPartDetails?.TapeCost,
+      "TotalPaintCost": surfaceTabData?.CostingPartDetails?.TotalPaintCost,
+      "HangerRate": surfaceTabData?.CostingPartDetails?.HangerRate,
+      "HangerCostPerPart": surfaceTabData?.CostingPartDetails?.HangerCostPerPart,
+      "NumberOfPartsPerHanger": surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger
+      // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,
     "LoggedInUserId": loggedInUserId()
   }
+
   return temp
 }
 
