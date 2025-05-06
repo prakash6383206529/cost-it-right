@@ -79,6 +79,9 @@ function ViewConversionCost(props) {
       CostingOtherOperationCostResponse?.forEach(item => temp.push(item.PartNumber));
       netTransportationCostView?.forEach(item => temp.push(item.PartNumber));
       surfaceTreatmentDetails?.forEach(item => temp.push(item.PartNumber));
+      PaintAndTapeDetails?.forEach(item => temp.push(item.PartNumber));
+      HangerCostDetails?.forEach(item => temp.push(item.PartNumber));
+
 
       const uniqueTemp = Array.from(new Set(temp));
       setPartNumberList(uniqueTemp);
@@ -787,15 +790,15 @@ function ViewConversionCost(props) {
       : hangerCostDetails && typeof hangerCostDetails === 'object'
         ? [hangerCostDetails]
         : [];
-  
+
     const filteredData = hangerData.filter(item =>
       item?.HangerRate != null &&
       item?.NumberOfPartsPerHanger != null &&
       item?.HangerCostPerPart != null
     );
-  
+
     if (filteredData.length === 0) return null;
-  
+
     return (
       <>
         <Row>
@@ -811,7 +814,7 @@ function ViewConversionCost(props) {
                   <th>No. of Parts per Hanger</th>
                   <th>Hanger Cost per Part</th>
                 </tr>
-  
+
                 {filteredData.map((item, index) => (
                   <tr key={index}>
                     {IsAssemblyCosting && <td>{item?.PartNumber ?? '-'}</td>}
@@ -839,119 +842,126 @@ function ViewConversionCost(props) {
         TapeCost,
         TotalPaintCost,
         PaintCost,
+        PaintConsumptionCost,
       } = details || {};
-  
+
       // Don't render if Coats is empty or undefined
       if (!Coats || Coats.length === 0) return null;
-  
+
       return (
-          <Row className="firefox-spaces mb-4">
-            <Col md="12">
-              <div className="left-border">{`Paint and Masking:`}</div>
-            </Col>
-            <Col md="12">
-              <Table className="table cr-brdr-main table-bordered" size="sm">
-                <tbody>
-                  <tr className="thead">
-                    {IsAssemblyCosting && isPDFShow && <th>Part No</th>}
-                    <th>Paint Coat</th>
-                    <th>Raw Material</th>
-                    <th>UOM</th>
-                    <th>{PartSurfaceAreaWithUOM}</th>
-                    <th>{ConsumptionWithUOM}</th>
-                    <th>Rejection Allowance (%)</th>
-                    <th>Rejection Allowance</th>
-                    <th>RM Rate (Currency)</th>
-                    <th>Paint Cost</th>
-                    {isPDFShow && <th>Masking/Tape Cost</th>}
-                    {isPDFShow && <th>Total Paint & Masking Cost</th>}
-                    <th>Effective Date</th>
-                  </tr>
-  
-                  {Coats.map((coat, parentIndex) =>
-                    coat?.RawMaterials?.map((rm, childIndex) => (
-                      <tr key={`${PartNumber}-${parentIndex}-${childIndex}`}>
-                        {IsAssemblyCosting && isPDFShow && childIndex === 0 && (
-                          <td rowSpan={coat?.RawMaterials?.length}>{PartNumber ?? '-'}</td>
-                        )}
-                        {childIndex === 0 && (
-                          <td rowSpan={coat?.RawMaterials?.length}>
-                            {coat?.PaintCoat || '-'}
-                          </td>
-                        )}
-                        <td>{rm?.RawMaterial || '-'}</td>
-                        <td>{rm?.UOM || '-'}</td>
-                        <td>{checkForDecimalAndNull(rm?.SurfaceArea, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                        <td>{checkForDecimalAndNull(rm?.Consumption, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                        <td>{checkForDecimalAndNull(rm?.RejectionAllowancePercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                        <td>{checkForDecimalAndNull(rm?.RejectionAllowance, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                        <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                        <td>{checkForDecimalAndNull(rm?.NetCost, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                        { isPDFShow && childIndex === 0 && (
-                          <td rowSpan={coat?.RawMaterials?.length}>
-                            {checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
-                          </td>
-                        )}
-                        {isPDFShow && childIndex === 0 && (
-                          <td rowSpan={coat?.RawMaterials?.length}>
-                            {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
-                          </td>
-                        )}
-                        <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
-                      </tr>
-                    ))
-                  )}
-  
-                  {/* Totals when PDF is not shown */}
-                  {(!IsAssemblyCosting && !isPDFShow) || (IsAssemblyCosting && !isPDFShow) ? (
-                    <tr className="table-footer">
-                      <td colSpan={!isPDFShow ? 8 : 11} className="text-right">
-                        <strong>Total Paint Cost:</strong>
-                      </td>
-                      <td colSpan={!isPDFShow ? 2 : 0}>
-                        {checkForDecimalAndNull(PaintCost, getConfigurationKey().NoOfDecimalForInputOutput)}
-                      </td>
+        <Row className="firefox-spaces mb-4">
+          <Col md="12">
+            <div className="left-border">{`Paint and Masking:`}</div>
+          </Col>
+          <Col md="12">
+            <Table className="table cr-brdr-main table-bordered" size="sm">
+              <tbody>
+                <tr className="thead">
+                  {IsAssemblyCosting && isPDFShow && <th>Part No</th>}
+                  <th>Paint Coat</th>
+                  <th>Raw Material</th>
+                  <th>UOM</th>
+                  <th>{PartSurfaceAreaWithUOM}</th>
+                  <th>{ConsumptionWithUOM}</th>
+                  <th>Rejection Allowance (%)</th>
+                  <th>Rejection Allowance</th>
+                  <th>RM Rate (Currency)</th>
+                  <th>Paint Cost</th>
+                  {isPDFShow && <th>Masking/Tape Cost</th>}
+                  {isPDFShow && <th>Total Paint & Masking Cost</th>}
+                  <th>Effective Date</th>
+                </tr>
+
+                {Coats.map((coat, parentIndex) =>
+                  coat?.RawMaterials?.map((rm, childIndex) => (
+                    <tr key={`${PartNumber}-${parentIndex}-${childIndex}`}>
+                      {IsAssemblyCosting && isPDFShow && childIndex === 0 && (
+                        <td rowSpan={coat?.RawMaterials?.length}>{PartNumber ?? '-'}</td>
+                      )}
+                      {childIndex === 0 && (
+                        <td rowSpan={coat?.RawMaterials?.length}>
+                          {coat?.PaintCoat || '-'}
+                        </td>
+                      )}
+                      <td>{rm?.RawMaterial || '-'}</td>
+                      <td>{rm?.UOM || '-'}</td>
+                      <td>{checkForDecimalAndNull(rm?.SurfaceArea, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                      <td>{checkForDecimalAndNull(rm?.Consumption, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                      <td>{checkForDecimalAndNull(rm?.RejectionAllowancePercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                      <td>{checkForDecimalAndNull(rm?.RejectionAllowance, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                      <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                      <td>{checkForDecimalAndNull(rm?.NetCost, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                      {isPDFShow && childIndex === 0 && (
+                        <td rowSpan={coat?.RawMaterials?.length}>
+                          {checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
+                        </td>
+                      )}
+                      {isPDFShow && childIndex === 0 && (
+                        <td rowSpan={coat?.RawMaterials?.length}>
+                          {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
+                        </td>
+                      )}
+                      <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                     </tr>
-                  ) : null}
-                </tbody>
-              </Table>
-  
-              {/* Masking/Total input fields (non-PDF mode) */}
-              {!isPDFShow && (
-                <Row className="mb-4">
-                  <Col md="4">
-                    <label>Masking/Tape Cost</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
-                      disabled
-                    />
-                  </Col>
-                  <Col md="4">
-                    <label>Total Paint & Masking Cost</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
-                      disabled
-                    />
-                  </Col>
-                </Row>
-              )}
-            </Col>
-          </Row>
+                  ))
+                )}
+
+                {/* Totals when PDF is not shown */}
+                {(!IsAssemblyCosting && !isPDFShow) || (IsAssemblyCosting && !isPDFShow) ? (
+                  <tr className="table-footer">
+                    <td colSpan={!isPDFShow ? 3 : 11} className="text-right">
+                      <strong>Total Norm (Consumption) Cost:</strong>
+                    </td>
+                    <td colSpan={!isPDFShow ? 2 : 0}>
+                      {checkForDecimalAndNull(PaintConsumptionCost, getConfigurationKey().NoOfDecimalForPrice)}
+                    </td>
+                    <td colSpan={!isPDFShow ? 3 : 11} className="text-right">
+                      <strong>Total Paint Cost:</strong>
+                    </td>
+                    <td colSpan={!isPDFShow ? 2 : 0}>
+                      {checkForDecimalAndNull(PaintCost, getConfigurationKey().NoOfDecimalForPrice)}
+                    </td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </Table>
+
+            {/* Masking/Total input fields (non-PDF mode) */}
+            {!isPDFShow && (
+              <Row className="mb-4">
+                <Col md="4">
+                  <label>Masking/Tape Cost</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
+                    disabled
+                  />
+                </Col>
+                <Col md="4">
+                  <label>Total Paint & Masking Cost</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
+                    disabled
+                  />
+                </Col>
+              </Row>
+            )}
+          </Col>
+        </Row>
       );
     };
-  
+
     if (Array.isArray(paintAndTapeDetails)) {
       const filtered = paintAndTapeDetails.filter((item) => item?.Coats?.length > 0);
-  
+
       return filtered.map((item, index) => (
         <div key={index}>{renderPaintTable(item)}</div>
       ));
     }
-  
+
     return paintAndTapeDetails?.Coats?.length > 0 ? renderPaintTable(paintAndTapeDetails) : null;
   };
   return (
