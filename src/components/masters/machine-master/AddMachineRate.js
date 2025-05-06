@@ -2178,8 +2178,10 @@ class AddMachineRate extends Component {
                             disabled={true}
                             className=" "
                             customClassName="withBorder mb-1"
+                            warningMessage={this.state.showPlantWarning && `${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`}
+                            warningMessageClass={"mb-3 mt-1"}
                           />
-                          {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                          {/* {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />} */}
                         </Col>
 
                         {this.state?.isImport && <Col md="3">

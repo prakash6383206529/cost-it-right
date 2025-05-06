@@ -96,7 +96,7 @@ function AddOtherCostDrawer(props) {
         }
     }, [props.RowData, props.tableData]);
     useEffect(() => {
-        dispatch(getCostingCondition('', conditionTypeId, (res) => {
+        dispatch(getCostingCondition('', conditionTypeId,false, (res) => {
             if (res?.data?.DataList) {
                 const temp = res?.data?.DataList?.map((item) => ({
                     label: item?.CostingConditionNumber,

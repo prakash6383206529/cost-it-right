@@ -112,6 +112,8 @@ import {
   INDEXATION,
   ADD_AUCTION,
   COSTING_BULKUPLOAD,
+  COST_VARIANCE_REPORT,
+  COST_DEVIATION_REPORT,
 } from "../config/constants";
 import ApprovalSummary from "./costing/components/approval/ApprovalSummary";
 import CostingSummaryBulkUpload from "./costing/components/CostingSummaryBulkUpload";
@@ -159,6 +161,7 @@ import AuctionIndex from "./rfqAuction/AuctionIndex";
 import AddAuction from "./rfqAuction/AddAuction";
 import CostVariance from "./report/components/CostVariance/CostVariance";
 import setupAxiosInterceptors from "../axiosInterceptor";
+import CostDeviation from "./report/components/CostVariance/CostDeviation";
 
 const CustomHeader = {
   "Content-Type": "application/x-www-form-urlencoded",
@@ -685,13 +688,19 @@ class Main extends Component {
                       component={GotGivenReport}
                     />
                     <Route
+                      path="/cost-deviation"
+                      component={AuthMiddleware(CostDeviation,COST_DEVIATION_REPORT )}
+                    />
+
+                    <Route
                       path="/out-sourcing-master"
                       component={AuthMiddleware(
                         OutsourcingListing,
                         OUTSOURCING
                       )}
                     />
-                    <Route path="/cost-variance" component={CostVariance} />
+                    <Route path="/cost-variance" component={AuthMiddleware(CostVariance, COST_VARIANCE_REPORT)} />
+                    
                     <Route path="/sap-push-detail" component={SAPDetailList} />
                     <Route
                       path="/nfr-insights-details"

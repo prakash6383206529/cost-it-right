@@ -79,7 +79,8 @@ import {
   SET_OPERATION_APPLICABILITY_SELECT,
   SET_PROCESS_APPLICABILITY_SELECT,
   GET_PAINT_COAT_LIST,
-  GET_TOOL_TAB_DATA
+  GET_TOOL_TAB_DATA,
+  SET_BOP_REMARK,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -3290,4 +3291,16 @@ export function getCostingBopAndBopHandlingDetails(data, callback) {
     })
 
   }
+}
+/**
+ * @method setBopRemark
+ * @description Set the BOP remark and costingId in Redux store
+ */
+export function setBopRemark(remark, bopCostingId) {
+  return (dispatch) => {
+    dispatch({
+      type:SET_BOP_REMARK,
+      payload: { remark, bopCostingId }
+    });
+  };
 }

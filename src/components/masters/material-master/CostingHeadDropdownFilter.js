@@ -101,6 +101,7 @@ function CostingHeadDropdownFilter(props) {
                 dropDownClass={true}
                 handleChange={valueChanged}
                 value={currentValue}
+                menuPortalTarget={true}
             />
         </div>
     );

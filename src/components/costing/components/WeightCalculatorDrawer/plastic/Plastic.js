@@ -36,18 +36,21 @@ function Plastic(props) {
     } else {
         totalRM = Number(rmRowData.RMRate)
     }
+    const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const { IsShowFinishedWeightInPlasticTechCostingCalculator } = getConfigurationKey()
     const LocalizedGrossWeight = !IsShowFinishedWeightInPlasticTechCostingCalculator ? 'Net Weight' : 'Gross Weight'
+    const localizedGrossWeightValue = !IsShowFinishedWeightInPlasticTechCostingCalculator ? WeightCalculatorRequest && WeightCalculatorRequest?.FinishWeight!== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '' : WeightCalculatorRequest && WeightCalculatorRequest?.NetWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.NetWeight, getConfigurationKey().NoOfDecimalForInputOutput) : ''
     const LocalizedInputWeight = !IsShowFinishedWeightInPlasticTechCostingCalculator ? 'Gross Weight' : 'Input Weight'
+    const localizedInputWeightValue = !IsShowFinishedWeightInPlasticTechCostingCalculator ? WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '' : WeightCalculatorRequest && WeightCalculatorRequest?.NetWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.NetWeight, getConfigurationKey().NoOfDecimalForInputOutput) : ''
 
-        const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
+        
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
     const { getPlasticData } = useSelector(state => state.costing)
     const defaultValues = {
-        netWeight: WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        netWeight: localizedGrossWeightValue,
         runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest?.RunnerWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.RunnerWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest?.NetWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.NetWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        grossWeight: localizedInputWeightValue,
         finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest?.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
         scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
         scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
@@ -69,7 +72,7 @@ function Plastic(props) {
         scrapCost: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapCost !== undefined ? WeightCalculatorRequest?.ScrapCost : '',
         materialCost: WeightCalculatorRequest && WeightCalculatorRequest?.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest?.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
         burningValue: WeightCalculatorRequest && WeightCalculatorRequest?.BurningValue !== undefined ? WeightCalculatorRequest?.BurningValue : '',
-        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? WeightCalculatorRequest?.GrossWeight : '',
+        grossWeight: localizedInputWeightValue,
         reUseInputWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapReUseInputWeight !== undefined ? WeightCalculatorRequest?.ScrapReUseInputWeight : '',
         inputWeightWithReuse: WeightCalculatorRequest && WeightCalculatorRequest?.NetInputWeight !== undefined ? WeightCalculatorRequest?.NetInputWeight : '',
     })
@@ -119,16 +122,24 @@ function Plastic(props) {
     }, [getPlasticData])
 
     useEffect(() => {
-        setValue('grossWeight', WeightCalculatorRequest && WeightCalculatorRequest?.NetWeight !== undefined ? WeightCalculatorRequest?.NetWeight : '')
+        setValue('grossWeight', localizedInputWeightValue)
         setValue('scrapRecoveryPercent', WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? WeightCalculatorRequest?.RecoveryPercentage : '')
     }, [])
 
     useEffect(() => {
-        if (Number(getValues('finishedWeight')) < Number(dataToSend.grossWeight)) {
-            delete errors.finishedWeight
-            setRerender(!reRender)
+        if(!IsShowFinishedWeightInPlasticTechCostingCalculator){
+            if (Number(getValues('grossWeight')) < Number(localizedInputWeightValue)) {
+                delete errors.finishedWeight
+                setRerender(!reRender)
+            }
         }
-    }, [dataToSend.grossWeight])
+        else{
+            if (Number(getValues('finishedWeight')) < Number(dataToSend.grossWeight)) {
+                delete errors.finishedWeight
+                setRerender(!reRender)
+            }
+        }
+    }, [dataToSend.grossWeight, localizedInputWeightValue])
 
     /**
      * @method calculateGrossWeight
@@ -228,8 +239,8 @@ function Plastic(props) {
         obj.NetRMCost = dataToSend.NetRMCost
         obj.NetWeight = dataToSend.grossWeight
         obj.RunnerWeight = getValues('runnerWeight')
-        obj.GrossWeight = getValues('netWeight')
-        obj.FinishWeight = getValues('finishedWeight')
+        obj.GrossWeight = values?.grossWeight
+        obj.FinishWeight =!IsShowFinishedWeightInPlasticTechCostingCalculator ? getValues('netWeight') : getValues('finishedWeight')
         obj.RecoveryPercentage = getValues('scrapRecoveryPercent')
         obj.ScrapWeight = dataToSend.scrapWeight
         obj.RMCost = dataToSend.rmCost
@@ -354,8 +365,8 @@ function Plastic(props) {
                                 calculation={calculateRemainingCalculation}
                                 weightValue={Number(getValues('netWeight'))}
                                 runnerWeight={Number(getValues('runnerWeight'))}
-                                netWeight={WeightCalculatorRequest && WeightCalculatorRequest?.NetLossWeight !== null ? WeightCalculatorRequest?.NetLossWeight : ''}
                                 sendTable={WeightCalculatorRequest && WeightCalculatorRequest?.LossOfTypeDetails !== null ? WeightCalculatorRequest?.LossOfTypeDetails : []}
+                                netWeight={WeightCalculatorRequest && WeightCalculatorRequest?.NetLossWeight !== null ? WeightCalculatorRequest?.NetLossWeight : ''}
                                 tableValue={tableData}
                                 CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                                 burningLoss={setBurningAllowance}
