@@ -137,7 +137,7 @@ export const RMDomesticZBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -145,7 +145,7 @@ export const RMDomesticZBCTempData = [
         "FreightCost": "10",    // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",    // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -349,7 +349,7 @@ export const RMDomesticVBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -357,7 +357,7 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",// KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",// KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -561,7 +561,7 @@ export const RMImportZBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -569,7 +569,7 @@ export const RMImportZBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -763,7 +763,7 @@ export const RMDomesticCBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -771,7 +771,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "1032",
@@ -967,7 +967,7 @@ export const RMImportVBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -975,7 +975,7 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1170,7 +1170,7 @@ export const RMImportCBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -1178,7 +1178,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
