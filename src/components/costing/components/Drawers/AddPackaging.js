@@ -360,8 +360,8 @@ function AddPackaging(props) {
   }
 
   const calculatePerKg = (rate, weight) => {
-    if (checkForNull(totalRMGrossWeight) !== 0 && applicability?.label === PACK_AND_FREIGHT_PER_KG && weight > totalRMGrossWeight) {
-      Toaster.warning("Enter value less than gross weight.")
+    if (checkForNull(originalQuantity) !== 0 && applicability?.label === PACK_AND_FREIGHT_PER_KG && weight > originalQuantity) {
+      Toaster.warning("Enter value less than net weight.")
       setTimeout(() => {
         setValue('Quantity', '')
       }, 50);
