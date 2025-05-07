@@ -50,7 +50,7 @@ function ViewBOP(props) {
                 <th>{`${showBopLabel()} Part Name`}</th>
                 {checkTechnologyIdAndRfq(viewCostingData) && <th>{`${showBopLabel()} Updated Part Name`}</th>}
 
-                <th>{`Landed Cost `}</th>
+                <th>{`Landed Costt `}</th>
                 <th>{`Quantity`}</th>
                 <th >{`Net ${showBopLabel()} Cost`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
@@ -76,7 +76,7 @@ function ViewBOP(props) {
                       </td>
                       {initialConfiguration?.IsShowCRMHead && <td>{item.BoughtOutPartCRMHead}</td>}
                       <td>{item.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-'}</td>
-                      <td>{item?.Remark}</td>
+                      <td>{item?.Remark || '-'}</td>
                     </tr>
                   )
                 })}
