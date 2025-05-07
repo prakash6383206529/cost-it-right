@@ -1434,6 +1434,150 @@ export const VendorTempData = [
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
+
+export const RejectionCBC = [
+    { label: 'Note', value: 'Note', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'OverheadApplicability', value: 'OverheadApplicability', },
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'PlantCode', value: 'PlantCode' },
+    { label: "CustomerCode", value: "CustomerCode" },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const RejectionCBC_TempData = [
+    {
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'RM',
+        'OverheadPercentage': '',
+        "PlantCode": '3456',
+        "CustomerCode": 'C-10006',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        "PlantCode": '3456',
+        "CustomerCode": 'C-10006',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    },
+    {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'Part Cost',
+        'OverheadPercentage': '',
+        "PlantCode": '3456',
+        "CustomerCode": 'C-10006',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }
+
+]
+
+
+export const Rejection = [
+    { label: 'Note', value: 'Note', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'OverheadApplicability', value: 'OverheadApplicability', },
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'PlantCode', value: 'PlantCode', },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const RejectionTempData = [
+    {
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'RM',
+        'OverheadPercentage': '',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    },
+    {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'Part Cost',
+        'OverheadPercentage': '',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    }
+]
+
+export const RejectionVBC = [
+    { label: 'Note', value: 'Note', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'OverheadApplicability', value: 'OverheadApplicability', },
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const RejectionVBC_TempData = [
+    {
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'RM',
+        'OverheadPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    },
+    {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'Part Cost',
+        'OverheadPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    }
+]
+
+
+/**
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Overhead = [
     { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
@@ -1472,7 +1616,6 @@ export const OverheadTempData = [
         'Remark': 'Remark Text',
     }
 ]
-
 
 export const OverheadVBC = [
     { label: 'Note', value: 'Note', },

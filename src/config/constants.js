@@ -509,6 +509,7 @@ export const API = {
   overheadBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-overhead-json`,
   getVendorFilterByModelTypeSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-vendor-with-code-by-model-type-select-list`,
   getModelTypeFilterByVendorSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-model-type-by-vendor-select-list`,
+  rejectionBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-rejection-json`,
 
   createProfit: `${BASE_URL}/masters-overhead-and-profit/create-profit`,
   updateProfit: `${BASE_URL}/masters-overhead-and-profit/update-profit`,
@@ -1053,6 +1054,9 @@ export const API = {
   checkAndGetCustomerCode: `${BASE_URL}/client/generate-customer-company-code`,
   getPoamStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
 
+  //PART FAMILY
+  getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
+
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
   getExchangeRateDataList: `${BASE_URL}/masters-exchange-rate/get-all-exchange-rate`,
@@ -1447,6 +1451,7 @@ export const GET_BOUGHTOUT_PART_SELECTLIST = 'GET_BOUGHTOUT_PART_SELECTLIST'
 export const GET_PART_FAMILY_LIST_SUCCESS = 'GET_PART_FAMILY_LIST_SUCCESS'
 export const GET_ALL_PART_FAMILY_LIST_SUCCESS = 'GET_ALL_PART_FAMILY_LIST_SUCCESS'
 export const GET_PART_FAMILY_DETAILS_SUCCESS = 'GET_PART_FAMILY_DETAILS_SUCCESS'
+export const GET_PART_FAMILY_SELECTLIST = 'GET_PART_FAMILY_SELECTLIST'
 
 //SUB ASSEMBLY
 export const SUB_ASSEMBLY_TECHNOLOGY_ARRAY = 'SUB_ASSEMBLY_TECHNOLOGY_ARRAY'
@@ -1721,7 +1726,7 @@ export const GET_LABOUR_DATA_LIST = 'GET_LABOUR_DATA_LIST'
 export const GET_LABOUR_TYPE_FOR_MACHINE_TYPE = 'GET_LABOUR_TYPE_FOR_MACHINE_TYPE'
 export const UPDATE_LABOUR_FOR_MACHINE_TYPE = 'UPDATE_LABOUR_FOR_MACHINE_TYPE'
 
-//OVERHEAD AND PROFIT
+//OVERHEAD AND PROFIT AND REJECTION
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS'
 export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS'
 export const GET_OVERHEAD_PROFIT_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_DATA_SUCCESS'
@@ -2310,6 +2315,9 @@ export const MODULE_SIMULATION = 'Simulation'
 export const MODULE_MASTER = 'Master'
 export const MODULE_ONBOARDING = 'Onboarding&Management'
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
+
+export const REJECTION = 'Rejection'
+
 export const LABOUR = 'Labour'
 export const REASON = 'Reason'
 export const OPERATION = 'Operation'
@@ -3155,6 +3163,7 @@ export const VOLUMEBULKUPLOAD = 'Volume'
 export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
+export const REJECTIONBULKUPLOAD = 'Rejection'
 export const PROFITBULKUPLOAD = 'Profit'
 export const ASSEMBLYORCOMPONENTSRFQ = "AssemblyOrComponentsRFQ"
 export const BOUGHTOUTPARTSRFQ = "BoughtOutPartsRFQ"
@@ -3427,6 +3436,7 @@ export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Ope
 export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra Cost"
 export const OVERHEADMASTER = "Overhead Master"
 export const PROFITMASTER = "Profit Master"
+export const REJECTIONMASTER = "Rejection Master"
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"

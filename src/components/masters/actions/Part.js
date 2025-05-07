@@ -23,7 +23,8 @@ import {
     STORE_HIERARCHY_DATA,
     GET_PART_FAMILY_LIST_SUCCESS,
     GET_ALL_PART_FAMILY_LIST_SUCCESS,
-    GET_PART_FAMILY_DETAILS_SUCCESS
+    GET_PART_FAMILY_DETAILS_SUCCESS,
+    GET_PART_FAMILY_SELECTLIST
 } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -1174,3 +1175,29 @@ export function getPartFamilyList(skip, take, filterData, isPagination = false, 
         });
     };
   }
+
+
+  
+  /**
+ * @method getPartFamilySelectList
+ * @description Used to Part Family selectlist
+ */
+export function getPartFamilySelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPartFamilySelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PART_FAMILY_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
