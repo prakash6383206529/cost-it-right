@@ -10,7 +10,7 @@ import { KG, EMPTY_DATA } from '../../../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import LoaderCustom from '../../../../common/LoaderCustom';
 import TooltipCustom from '../../../../common/Tooltip'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -449,9 +449,15 @@ function StandardRub(props) {
 
     const onSubmit = debounce(handleSubmit(() => {
         setIsDisable(true)
-        let obj = {}
-        const usedRmData = rmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
-        const unUsedRmData = rmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));				
+        let obj = {}				
+        let clonedRmData = _.cloneDeep(rmData);
+        let usedRmData = []
+        let unUsedRmData = []
+        if(clonedRmData && clonedRmData.length > 0){
+            usedRmData = clonedRmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
+            unUsedRmData = clonedRmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
+        }
+        				
 				// obj.LayoutType = 'Default'
         // obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
         // obj.IsChangeApplied = true //NEED TO MAKE IT DYNAMIC how to do
