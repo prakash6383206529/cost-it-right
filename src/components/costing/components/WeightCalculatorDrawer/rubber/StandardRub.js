@@ -363,7 +363,6 @@ function StandardRub(props) {
             Tonnage: calculateTonnage()
         }
 
-        console.log("obj",obj)
         const lastRow = tableData[tableData.length - 1]
         const validationFields = [
             ...(isVolumeAutoCalculate ? ["OuterDiameter"] : ["Volume"]),
@@ -493,7 +492,7 @@ function StandardRub(props) {
             return Math.max(max, item.Tonnage);
         }, 0);
         obj.usedRmData = usedRmData
-        console.log("OBJ,OBJ",obj)
+
 				if (unUsedRmData.length > 0) {
 					const message = generateUnusedRMsMessage(unUsedRmData)
 					setUnusedRMsMessage(message)
