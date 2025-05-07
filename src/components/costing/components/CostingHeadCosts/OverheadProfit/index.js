@@ -799,24 +799,22 @@ function OverheadProfit(props) {
                 </Col>
               } */}
 
-              <Col md={overheadObj?.OverheadApplicability ? "11" : "12"} className='first-section'>
-                <OverheadProfitTable
-                  data={overheadObj}
-                  type="Overhead"
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  setValue={setValue}
-                  getValues={getValues}
-                  errors={errors}
-                  CostingViewMode={CostingViewMode}
-                  initialConfiguration={initialConfiguration}
-                  onCostChange={(e, item) => handleCostChange(e, item, 'Overhead')}
-                  isFixedApplicable={overheadObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
-                  onRemarkPopUpClick={onRemarkPopUpClickOverHead}
-                  onRemarkPopUpClose={onRemarkPopUpCloseOverHead}
-                />
-              </Col>
+              <OverheadProfitTable
+                data={overheadObj}
+                type="Overhead"
+                Controller={Controller}
+                control={control}
+                register={register}
+                setValue={setValue}
+                getValues={getValues}
+                errors={errors}
+                CostingViewMode={CostingViewMode}
+                initialConfiguration={initialConfiguration}
+                onCostChange={(e, item) => handleCostChange(e, item, 'Overhead')}
+                isFixedApplicable={overheadObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
+                onRemarkPopUpClick={onRemarkPopUpClickOverHead}
+                onRemarkPopUpClose={onRemarkPopUpCloseOverHead}
+              />
 
 
               {/* new section from below with heasing */}
@@ -845,24 +843,22 @@ function OverheadProfit(props) {
                   disabled={CostingViewMode}
                 />
               </Col>}
-              <Col md={profitObj?.ProfitApplicability ? "11" : "12"} className='first-section'>
-                <OverheadProfitTable
-                  data={profitObj}
-                  type="Profit"
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  setValue={setValue}
-                  getValues={getValues}
-                  errors={errors}
-                  CostingViewMode={CostingViewMode}
-                  initialConfiguration={initialConfiguration}
-                  onCostChange={(e, item) => handleCostChange(e, item, 'Profit')}
-                  isFixedApplicable={profitObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
-                  onRemarkPopUpClick={onRemarkPopUpClickProfit}
-                  onRemarkPopUpClose={onRemarkPopUpCloseProfit}
-                />
-              </Col>
+              <OverheadProfitTable
+                data={profitObj}
+                type="Profit"
+                Controller={Controller}
+                control={control}
+                register={register}
+                setValue={setValue}
+                getValues={getValues}
+                errors={errors}
+                CostingViewMode={CostingViewMode}
+                initialConfiguration={initialConfiguration}
+                onCostChange={(e, item) => handleCostChange(e, item, 'Profit')}
+                isFixedApplicable={profitObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
+                onRemarkPopUpClick={onRemarkPopUpClickProfit}
+                onRemarkPopUpClose={onRemarkPopUpCloseProfit}
+              />
               {/* {
                 profitObj && profitObj.ProfitApplicability &&
                 <Col md="1" className='second-section profit'>
