@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
- const BASE_URL = `http://10.10.1.102:8002/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+//  const BASE_URL = `http://10.10.1.102:8002/api/v1`;
 
 
 
@@ -206,7 +206,7 @@ export const API = {
   addModel: `${BASE_URL}/masters-part/create-part-model-master`,
   editModel: `${BASE_URL}/masters-part/update-part-model-master`,
   deleteModel: `${BASE_URL}/masters-part/delete-part-model-master`,
-
+  getModelById: `${BASE_URL}/masters-part/get-part-model-master-by-id`,
   //PART FAMILY
 
   getPartFamilyById: `${BASE_URL}/part-family/get-by-id`,
@@ -216,6 +216,7 @@ export const API = {
   deletePartFamily: `${BASE_URL}/part-family/delete-part-family`,
   activePartFamily: `${BASE_URL}/part-family/active`,
   bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-part-family-json`,
+  getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
 
 
   //BOM API'S
@@ -1444,6 +1445,7 @@ export const GET_BOUGHTOUT_PART_SELECTLIST = 'GET_BOUGHTOUT_PART_SELECTLIST'
 export const GET_PART_FAMILY_LIST_SUCCESS = 'GET_PART_FAMILY_LIST_SUCCESS'
 export const GET_ALL_PART_FAMILY_LIST_SUCCESS = 'GET_ALL_PART_FAMILY_LIST_SUCCESS'
 export const GET_PART_FAMILY_DETAILS_SUCCESS = 'GET_PART_FAMILY_DETAILS_SUCCESS'
+export const GET_PART_FAMILY_SELECTLIST = 'GET_PART_FAMILY_SELECTLIST'
 
 //SUB ASSEMBLY
 export const SUB_ASSEMBLY_TECHNOLOGY_ARRAY = 'SUB_ASSEMBLY_TECHNOLOGY_ARRAY'
@@ -3436,7 +3438,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.31";
+export const VERSION = "V4.2.33";
 
 
 

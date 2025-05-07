@@ -78,6 +78,7 @@ const IndivisualPartListing = (props) => {
   const { newPartsListing, allNewPartsListing } = useSelector((state) => state.part);
   const { initialConfiguration } = useSelector((state) => state.auth);
   const { currentRowIndex, globalTakes } = useSelector((state) => state.pagination);
+  const PartMasterConfigurable = initialConfiguration?.PartAdditionalMasterFields
   const [skipRecord, setSkipRecord] = useState(0)
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const permissions = useContext(ApplyPermission);
@@ -852,9 +853,10 @@ const IndivisualPartListing = (props) => {
                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
-                {initialConfiguration?.IsPartModelMaster && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
-                {initialConfiguration?.IsPartModelMaster && <AgGridColumn field="PartsModelMaster" headerName="Parts Model Master" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
-                {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
+                {PartMasterConfigurable?.IsShowPartModel && <AgGridColumn field="PartsModelMaster" headerName="Parts Model Master" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamilyName" headerName="Part Family" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                {PartMasterConfigurable?.IsShowNepNumber && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                {PartMasterConfigurable?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                 <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                 <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>

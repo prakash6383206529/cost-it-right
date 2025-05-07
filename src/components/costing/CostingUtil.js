@@ -457,7 +457,6 @@ export const clearCosting = (dispatch) => {
 
 export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false, remark = "", bopCostingId = "") => {
   let Arr = tabData
-  console.log("Arr", Arr)
   let assemblyWorkingRow = []
 
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {

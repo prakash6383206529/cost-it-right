@@ -359,7 +359,7 @@ const PartFamilyListing = (props) => {
             onClick={() => viewOrEditItemDetails(cellValue, rowData)}
           />
         )}
-        {permissions.View && (
+        {permissions.Edit && (
           <button
             title="Edit"
             className="Edit mr-2 Tour_List_Edit"

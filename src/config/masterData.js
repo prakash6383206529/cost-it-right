@@ -6881,7 +6881,7 @@ export const INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl = [
 export const PART_FAMILY_DOWNLOAD_EXCEl = [
     { label: "Part Family Code", value: "PartFamilyCode" },
     { label: "Part Family Name", value: "PartFamilyName" },
-    { label: 'Status', value: 'status' }
+    { label: 'Status', value: 'IsActive' }
 ]
 
 export const VBCPLANT_DOWNLOAD_EXCEl = [
