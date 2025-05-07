@@ -981,7 +981,7 @@ class AddMachineRate extends Component {
       selectedEffectiveDate: this.props.fieldsObj.EffectiveDate,
       selectedCustomer: client ?? [],
       fieldsObj: this.props.fieldsObj,
-      ExchangeSource: this.state.ExchangeSource || null,
+      ExchangeSource: this.state.ExchangeSource || "",
       plantCurrency: plantCurrency,
       settlementCurrency: settlementCurrency,
       plantExchangeRateId: plantExchangeRateId,
