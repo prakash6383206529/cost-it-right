@@ -11,7 +11,9 @@ import {
   getModelList,
   addModel,
   editModel,
-  getPartFamilyList
+  getPartFamilyList,
+  getPartFamilySelectList,
+  getModelById
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
@@ -118,10 +120,10 @@ class AddAssemblyPart extends Component {
   }
 
   getPartFamilyList = () => {
-    this?.props?.getPartFamilyList(0, 10, {}, false, (res) => {
+    this?.props?.getPartFamilySelectList((res) => {
       if (res && res?.data && res?.data?.Result) {
         // Transform the part family data into the format needed for the dropdown
-        const partFamilyOptions = res?.data?.DataList
+        const partFamilyOptions = res?.data?.SelectList
           .map(item => ({
             label: item?.PartFamilyName,
             value: item?.PartFamilyId
@@ -131,12 +133,13 @@ class AddAssemblyPart extends Component {
     })
   }
 
-  // Add handlePartFamilyChange method 
+
+
   handlePartFamilyChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ PartFamilySelected: newValue });
     } else {
-      this.setState({ PartFamilySelected: [] });
+      this.setState({ PartFamilySelected: null });
     }
   }
 
@@ -441,9 +444,18 @@ class AddAssemblyPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology, UOMSelectList } = this.props;
+    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology, UOMSelectList, partFamilySelectList } = this.props;
     const temp = [];
 
+    if (label === 'PartFamily') {
+      partFamilySelectList && partFamilySelectList.map((item) => {
+        
+        if (item.Value === '--0--') return false
+        temp.push({ label: item.Text, value: item.Value })
+            return temp
+      })
+      return temp
+  }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
         if (item?.PlantId === '0') return false;
@@ -1013,11 +1025,18 @@ class AddAssemblyPart extends Component {
     const { isEditFlag, Model } = this.state;
 
     if (isEditFlag && Model && Model.value) {
-      // No need to make API call to fetch model data for edit
-      // Just open the drawer with existing model data
-      this.setState({
-        isModelDrawerOpen: true,
-        isModelEditFlag: true
+      // Fetch model data for edit
+      this.setState({ isLoader: true });
+      this.props.getModelById(Model.value, (res) => {
+        this.setState({ isLoader: false });
+        if (res && res.data && res.data.Result) {
+          const modelData = res.data.Data;
+          this.props.change('ModelName', modelData.PartModelMasterName);
+          this.setState({
+            isModelDrawerOpen: true,
+            isModelEditFlag: true
+          });
+        }
       });
     } else {
       // If in add mode, just open the drawer
@@ -1100,6 +1119,7 @@ class AddAssemblyPart extends Component {
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
+    const PartMasterConfigurable = initialConfiguration?.PartAdditionalMasterFields
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1355,11 +1375,11 @@ class AddAssemblyPart extends Component {
                         }
                       </Row>
                    <Row>
-                   {initialConfiguration?.IsPartModelMaster && (   <Col md="3">
+                   {PartMasterConfigurable?.IsShowPartModel && (   <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
                               <Field
-                                name="Model"
+                                name="model"
                                 type="text"
                                 label={`Model`}
                                 component={searchableSelect}
@@ -1367,7 +1387,7 @@ class AddAssemblyPart extends Component {
                                 options={this?.state?.modelOptions}
                                 validate={
                                   this?.state?.Model == null || this?.state?.Model.length === 0 ? [required] : []}
-                                required={true}
+                                required={PartMasterConfigurable?.IsPartModelMandatory}
                                 handleChangeDescription={this.handleModelChange}
                                 valueDescription={this?.state?.Model}
                                 disabled={isViewMode}
@@ -1380,6 +1400,7 @@ class AddAssemblyPart extends Component {
                                   className="drawer-edit mt30"
                                   variant="Edit"
                                   onClick={() => this.modelToggler(this?.state?.Model.value)}
+                                  disabled={PartMasterConfigurable?.IsPartModelMandatory}
                                 /> :
                                 <div className='d-flex justify-content-center align-items-center'>
                                   <Button
@@ -1387,33 +1408,30 @@ class AddAssemblyPart extends Component {
                                     className="mb-3"
                                     variant="plus-icon-square"
                                     onClick={() => this.modelToggler('')}
+                                    disabled={PartMasterConfigurable?.IsPartModelMandatory}
                                   />
                                 </div>
                             )}
                           </div>
                         </Col>)}
-                        {initialConfiguration?.IsShowPartFamily && (<Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="PartFamily"
-                                  type="text"
-                                  label={`Part Family`}
-                                  component={searchableSelect}
-                                  placeholder={isEditFlag ? '-' : "Select"}
-                                  options={this?.state?.partFamilyOptions} // Changed from modelOptions to partFamilyOptions
-                                  validate={
-                                    this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handlePartFamilyChange} // You'll need to add this method
-                                  valueDescription={this?.state?.PartFamilySelected}
-                                  disabled={isViewMode}
-                                />
-                              </div>
-
-                            </div>
-                          </Col>)}
-                          {initialConfiguration?.IsPartModelMaster && (  <Col md="3">
+                        {PartMasterConfigurable?.IsShowPartFamily && (<Col md="3">
+                          
+                          <Field
+                          name="partFamily"
+                          type="text"
+                          label="Part Family"
+                          component={searchableSelect}
+                          placeholder={"Select"}
+                          options={this.renderListing("PartFamily")}
+                          validate={this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0 ? [required] : []}
+                          required={true}
+                          handleChangeDescription={this.handlePartFamilyChange}
+                          valueDescription={this?.state?.PartFamilySelected}
+                          disabled={false}
+                        />
+                       
+                      </Col>)}
+                          {PartMasterConfigurable?.IsShowNepNumber && (  <Col md="3">
                           <span>
                             <Field
                               label={`NEP`}
@@ -1422,7 +1440,7 @@ class AddAssemblyPart extends Component {
                               placeholder={isViewMode ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                               component={renderText}
-                              required={false}
+                              required={PartMasterConfigurable?.IsNepNumberMandatory}
                               className=""
                               customClassName={"withBorder"}
                               disabled={isViewMode}
@@ -1708,10 +1726,10 @@ class AddAssemblyPart extends Component {
 */
 function mapStateToProps(state) {
   const fieldsObj = selector(state, 'BOMNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'ECNNumber', 'RevisionNumber',
-    'Description', 'DrawingNumber', 'GroupCode', 'Remark', 'TechnologyId')
+    'Description', 'DrawingNumber', 'GroupCode', 'Remark', 'TechnologyId', 'PartFamily')
   const { comman, part, auth, costing } = state;
   const { plantSelectList, UOMSelectList } = comman;
-  const { partData, actualBOMTreeData, productGroupSelectList } = part;
+  const { partData, actualBOMTreeData, productGroupSelectList, partFamilySelectList } = part;
   const { initialConfiguration } = auth;
   const { costingSpecifiTechnology } = costing
   let initialValues = {};
@@ -1726,10 +1744,19 @@ function mapStateToProps(state) {
       DrawingNumber: partData.DrawingNumber,
       GroupCode: partData !== null && partData.GroupCodeList[0]?.GroupCode,
       Remark: partData.Remark,
+      NEP: partData?.NEPNumber,
+      Model: {
+          label: partData?.PartsModelMaster || "",
+          value: partData?.PartModelIdRef || ""
+      },
+      PartFamily: {
+        label: partData?.PartFamilyName || "",
+        value: partData?.PartFamilyId || ""
+      }
     }
   }
 
-  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology, UOMSelectList }
+  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology, UOMSelectList, partFamilySelectList }
 
 }
 
@@ -1755,9 +1782,10 @@ export default connect(mapStateToProps, {
   getModelList,
   addModel,
   editModel,
+  getModelById,
   change,
   untouch,
-  getPartFamilyList
+  getPartFamilySelectList
 })(reduxForm({
   form: 'AddAssemblyPart',
   validate: validateForm,

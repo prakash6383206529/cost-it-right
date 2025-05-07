@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3, validateFileName } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect, validateForm } from "../../layout/FormInputs";
-import { createPart, updatePart, getPartData, fileUploadPart, getProductGroupSelectList, getPartDescription, getModelList, editModel, addModel, getPartFamilyList } from '../actions/Part';
+import { createPart, updatePart, getPartData, fileUploadPart, getProductGroupSelectList, getPartDescription, getModelList, editModel, addModel, getPartFamilyList, getPartFamilySelectList, getModelById } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -81,15 +81,15 @@ class AddIndivisualPart extends Component {
     this.getDetails()
     this?.props?.getUOMSelectList(() => { })
     this.getModelList()
-    this.getPartFamilyList()
+    this.getPartFamilySelectList()
 
   }
 
-  getPartFamilyList = () => {
-    this?.props?.getPartFamilyList(0, 10, {}, false, (res) => {
+  getPartFamilySelectList = () => {
+    this?.props?.getPartFamilySelectList((res) => {
       if (res && res?.data && res?.data?.Result) {
         // Transform the part family data into the format needed for the dropdown
-        const partFamilyOptions = res?.data?.DataList
+        const partFamilyOptions = res?.data?.SelectList
           .map(item => ({
             label: item?.PartFamilyName,
             value: item?.PartFamilyId
@@ -98,6 +98,7 @@ class AddIndivisualPart extends Component {
       }
     })
   }
+
 
   /**
   * @method getDetails
@@ -114,6 +115,7 @@ class AddIndivisualPart extends Component {
       this?.props?.getPartData(data?.Id, res => {
         if (res && res?.data && res?.data?.Result) {
           const Data = res?.data?.Data;
+
 
 
           let productArray = []
@@ -140,7 +142,12 @@ class AddIndivisualPart extends Component {
               Model: Data?.PartModelIdRef ? {
                 label: Data?.PartsModelMaster || "",
                 value: Data?.PartModelIdRef
-              } : []
+              } : [],
+              PartFamilySelected: Data?.PartFamilyId ? {
+                label: Data?.PartFamilyName || "",
+                value: Data?.PartFamilyId
+              } : null,
+             
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data?.Attachements && Data?.Attachements?.map((item) => {
@@ -216,9 +223,21 @@ class AddIndivisualPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology, UOMSelectList } = this.props;
-
+    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology, UOMSelectList,partFamilySelectList } = this.props;
+    
+    
+    
     const temp = [];
+    if (label === 'PartFamily') {
+      partFamilySelectList && partFamilySelectList.map((item) => {
+        
+        if (item.Value === '--0--') return false
+        temp.push({ label: item.Text, value: item.Value })
+            return temp
+      })
+      return temp
+  }
+
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
         if (item?.Value === '0') return false;
@@ -476,6 +495,7 @@ class AddIndivisualPart extends Component {
         return { ...file, ContextId: PartId };
       });
 
+
       let updateData = {
         LoggedInUserId: loggedInUserId(),
         PartId: PartId,
@@ -500,7 +520,11 @@ class AddIndivisualPart extends Component {
         NEPNumber: values?.NEP,
         PartModelIdRef: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
+        PartFamilyId: this?.state?.PartFamilySelected?.value || "",
+        PartFamilyName: this?.state?.PartFamilySelected?.label || "",
       };
+
+
 
       this?.props?.updatePart(updateData, (res) => {
         this.setState({ setDisable: false });
@@ -533,9 +557,10 @@ class AddIndivisualPart extends Component {
         NEPNumber: values?.NEP ? values?.NEP : "",
         PartModelIdRef: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
-        PartFamilyIdRef: this?.state?.PartFamilySelected?.value || "",
+        PartFamilyId: this?.state?.PartFamilySelected?.value || "",
         PartFamilyName: this?.state?.PartFamilySelected?.label || "",
       };
+
 
       this?.props?.createPart(formData, (res) => {
         this.setState({ setDisable: false, isLoader: false });
@@ -555,14 +580,22 @@ class AddIndivisualPart extends Component {
   modelToggler = (modelId = '') => {
     const { isEditFlag, Model } = this.state;
 
-    if (isEditFlag && Model && Model.value) {
-      // No need to make API call to fetch model data for edit
-      // Just open the drawer with existing model data
-      this.setState({
-        isModelDrawerOpen: true,
-        isModelEditFlag: true
+
+    if (isEditFlag && modelId !== '') {
+      // Fetch model data for edit
+      this.setState({ isLoader: true });
+      this.props.getModelById(modelId, (res) => {
+        this.setState({ isLoader: false });
+        if (res && res.data && res.data.Result) {
+          const modelData = res.data.Data;
+          this.props.change('ModelName', modelData.PartModelMasterName);
+          this.setState({
+            isModelDrawerOpen: true,
+            isModelEditFlag: true
+          });
+        }
       });
-    } else {
+    }  else {
       // If in add mode, just open the drawer
       this.setState({
         isModelDrawerOpen: true,
@@ -602,7 +635,7 @@ class AddIndivisualPart extends Component {
     if (newValue && newValue !== '') {
       this.setState({ PartFamilySelected: newValue });
     } else {
-      this.setState({ PartFamilySelected: [] });
+      this.setState({ PartFamilySelected: null });
     }
   }
   handleModelSubmit = (modelData) => {
@@ -621,8 +654,22 @@ class AddIndivisualPart extends Component {
         PartModelMasterName: modelData.ModelName
       }, (res) => {
         if (res && res?.data && res?.data?.Result) {
+          // Set the newly added model in the state and form field
+          const newModel = {
+            label: modelData.ModelName,
+            value: res.data.Data.Id || res.data.Data.PartModelId
+          };
+          
+          // Update both state and form field
+          this.setState({
+            Model: newModel,
+            isModelDrawerOpen: false
+          });
+          
+          // Update the form field value
+          this.props.change('Model', newModel);
+          
           this.getModelList(); // Refresh the model list
-          this.setState({ isModelDrawerOpen: false });
         }
       });
     }
@@ -635,7 +682,9 @@ class AddIndivisualPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
+    const PartMasterConfigurable = initialConfiguration?.PartAdditionalMasterFields
     const { isEditFlag, isViewMode, setDisable } = this.state;
+    
 
     return (
       <>
@@ -754,11 +803,11 @@ class AddIndivisualPart extends Component {
                           }
                         </Row>
                         <Row>
-                          {initialConfiguration?.IsPartModelMaster && (<Col md="3">
+                          {PartMasterConfigurable?.IsShowPartModel && (<Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
-                                  name="Model"
+                                  name="model"
                                   type="text"
                                   label={`Model`}
                                   component={searchableSelect}
@@ -779,6 +828,7 @@ class AddIndivisualPart extends Component {
                                     className="drawer-edit mt30"
                                     variant="Edit"
                                     onClick={() => this.modelToggler(this?.state?.Model.value)}
+                                    disabled={PartMasterConfigurable?.IsPartModelMandatory}
                                   /> :
                                   <div className='d-flex justify-content-center align-items-center'>
                                     <Button
@@ -786,33 +836,30 @@ class AddIndivisualPart extends Component {
                                       className="mb-3"
                                       variant="plus-icon-square"
                                       onClick={() => this.modelToggler('')}
+                                      disabled={PartMasterConfigurable?.IsPartModelMandatory}
                                     />
                                   </div>
                               )}
                             </div>
                           </Col>)}
-                          {initialConfiguration?.IsShowPartFamily && (<Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="PartFamily"
-                                  type="text"
-                                  label={`Part Family`}
-                                  component={searchableSelect}
-                                  placeholder={isEditFlag ? '-' : "Select"}
-                                  options={this?.state?.partFamilyOptions} // Changed from modelOptions to partFamilyOptions
-                                  validate={
-                                    this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handlePartFamilyChange} // You'll need to add this method
-                                  valueDescription={this?.state?.PartFamilySelected}
-                                  disabled={isViewMode}
-                                />
-                              </div>
-
-                            </div>
+                          {PartMasterConfigurable?.IsShowPartFamily && (<Col md="3">
+                          
+                              <Field
+                              name="partFamily"
+                              type="text"
+                              label="Part Family"
+                              component={searchableSelect}
+                              placeholder={"Select"}
+                              options={this.renderListing("PartFamily")}
+                              validate={this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handlePartFamilyChange}
+                              valueDescription={this?.state?.PartFamilySelected}
+                              disabled={false}
+                            />
+                           
                           </Col>)}
-                          {initialConfiguration?.IsPartModelMaster && (<Col md="3">
+                          {PartMasterConfigurable?.IsShowNepNumber && (<Col md="3">
                             <span>
                               <Field
                                 label={`NEP`}
@@ -821,7 +868,7 @@ class AddIndivisualPart extends Component {
                                 placeholder={isViewMode ? '-' : "Enter"}
                                 validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                                 component={renderText}
-                                required={false}
+                                required={PartMasterConfigurable?.IsNepNumberMandatory  }
                                 className=""
                                 customClassName={"withBorder"}
                                 disabled={isViewMode}
@@ -1082,7 +1129,6 @@ class AddIndivisualPart extends Component {
           {
             this?.state?.showPopup && <PopupMsgWrapper isOpen={this?.state?.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-          {console.log(this?.state?.isModelDrawerOpen)}
           {this?.state?.isModelDrawerOpen && (
             <AddModel
               isOpen={this?.state?.isModelDrawerOpen}
@@ -1106,31 +1152,36 @@ class AddIndivisualPart extends Component {
 */
 function mapStateToProps({ comman, part, auth, costing }) {
   const { plantSelectList, UOMSelectList } = comman;
-  const { partData, productGroupSelectList } = part;
+  const { partData, productGroupSelectList,partFamilySelectList } = part;
   const { initialConfiguration } = auth;
   const { costingSpecifiTechnology } = costing
 
   let initialValues = {};
+  
   if (partData && Object.keys(partData).length > 0) {
     initialValues = {
-      PartNumber: partData.PartNumber,
-      PartName: partData.PartName,
-      BOMNumber: partData.BOMNumber,
-      Description: partData.Description,
-      GroupCode: partData !== null && partData.GroupCodeList[0]?.GroupCode,
-      ECNNumber: partData.ECNNumber,
-      DrawingNumber: partData.DrawingNumber,
-      RevisionNumber: partData.RevisionNumber,
-      Remark: partData.Remark,
-      NEP: partData.NEPNumber,
+      PartNumber: partData?.PartNumber,
+      PartName: partData?.PartName,
+      BOMNumber: partData?.BOMNumber,
+      Description: partData?.Description,
+      GroupCode: partData !== null && partData?.GroupCodeList[0]?.GroupCode,
+      ECNNumber: partData?.ECNNumber,
+      DrawingNumber: partData?.DrawingNumber,
+      RevisionNumber: partData?.RevisionNumber,
+      Remark: partData?.Remark,
+      NEP: partData?.NEPNumber,
       Model: {
-        label: partData.PartsModelMaster || "",
-        value: partData.PartModelIdRef || ""
+          label: partData?.PartsModelMaster || "",
+          value: partData?.PartModelIdRef || ""
+      },
+      PartFamily: {
+        label: partData?.PartFamilyName || "",
+        value: partData?.PartFamilyId || ""
       }
     }
   }
 
-  return { plantSelectList, partData, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology, UOMSelectList }
+  return { plantSelectList, partData,partFamilySelectList, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology, UOMSelectList }
 }
 
 /**
@@ -1150,8 +1201,9 @@ export default connect(mapStateToProps, {
   getUOMSelectList,
   getModelList,
   addModel,
-  getPartFamilyList,
+  getPartFamilySelectList,
   editModel,
+  getModelById,
 })(reduxForm({
   form: 'AddIndivisualPart',
   validate: validateForm,
