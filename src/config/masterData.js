@@ -137,7 +137,7 @@ export const RMDomesticZBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -145,7 +145,7 @@ export const RMDomesticZBCTempData = [
         "FreightCost": "10",    // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",    // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -349,7 +349,7 @@ export const RMDomesticVBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -357,7 +357,7 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",// KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",// KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -561,7 +561,7 @@ export const RMImportZBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -569,7 +569,7 @@ export const RMImportZBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -763,7 +763,7 @@ export const RMDomesticCBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -771,7 +771,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "1032",
@@ -967,7 +967,7 @@ export const RMImportVBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -975,7 +975,7 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1170,7 +1170,7 @@ export const RMImportCBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -1178,7 +1178,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
@@ -2607,7 +2607,9 @@ export const Labour = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'EmploymentTerms', value: 'EmploymentTerms', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'Country', value: 'Country', }, //*
     { label: 'State', value: 'State', }, //*
+    { label: 'City', value: 'City', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineType', value: 'MachineType', }, //*
     { label: 'LabourType', value: 'LabourType', }, //*
@@ -2616,7 +2618,7 @@ export const Labour = [
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'ProductNumber', value: 'ProductNumber', },
     { label: 'Efficiency', value: 'Efficiency', },
-    { label: 'WorkingTime', value: 'WorkingTime', },
+    { label: 'WorkingHours', value: 'WorkingTime', },
 
 ]
 export const LabourTempData = [
@@ -2624,7 +2626,9 @@ export const LabourTempData = [
         "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Contractual',
         'VendorCode': 'VC123',
+        'Country': 'India',
         'State': 'Madhya Pradesh',
+        'City': 'Indore',
         'PlantCode': 'Plant01',
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
@@ -2639,7 +2643,9 @@ export const LabourTempData = [
         "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Employed',
         'VendorCode': 'VC124',
+        'Country': 'India',
         'State': 'Madhya Pradesh',
+        'City': 'Indore',
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',

@@ -40,7 +40,7 @@ function FreightCalculator(props) {
     const costingViewMode = useContext(ViewCostingContext);
     const CostingViewMode = costingViewMode ?? props?.CostingViewMode
     const carrierTypeList = useSelector(state => state.costWorking.carrierTypeList)
-    const FreightCalculationId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingFreightCalculationDetailsId : props?.costingFreightCalculationDetailsId ?? null
+    const FreightCalculationId = props?.costingFreightCalculationDetailsId ? props?.costingFreightCalculationDetailsId:rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingFreightCalculationDetailsId:null
     const dispatch = useDispatch()
     const {
         register,
@@ -170,7 +170,8 @@ function FreightCalculator(props) {
             }))
         }
         const tempData = props.simulationMode ? rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.SimulationTempData && rowObjData?.SimulationTempData[props.mainIndex] : {} : {}
-        const costingId = props.simulationMode ? rowObjData?.CostingId : tempData?.costingId
+ 
+        const costingId = props.simulationMode ? rowObjData?.CostingId : costingData?.CostingId
         let calculatorId = FreightCalculationId
         let freightDetailId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.FreightDetailId : null
         
@@ -306,7 +307,7 @@ function FreightCalculator(props) {
             "BinHeight": checkForNull(getValues('BinHeight')),
             "BinLength": checkForNull(getValues('BinLength')),
             "CarrierType": state?.carrierType?.label,
-            "CostingFreightCalculationDetailsId": rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingFreightCalculationDetailsId : props?.CostingFreightCalculationDetailsId ?? null,
+            "CostingFreightCalculationDetailsIdc": props?.costingFreightCalculationDetailsId ? props?.costingFreightCalculationDetailsId:rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingFreightCalculationDetailsId:null,
             "CostingFreightDetailsId": rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingFreightDetailsId : null,
             "IsAlignment": state?.isShowAlignment,
             "LoggedInUserId": loggedInUserId(),

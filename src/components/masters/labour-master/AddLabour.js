@@ -1468,6 +1468,7 @@ class AddLabour extends Component {
                         </Col>
                         <Col md="3">
                           <div className="form-group">
+                            <TooltipCustom width="350px" id="ratePerPerson" customClass={"mr-n4"} tooltipText={'Rate per Person/Month = Rate per Person/Annum /12'}/>
                             <Field
                               label={this.DisplayLabourRatePlantCurrencyLabel("Month")}
                               name={"LabourRatePerMonth"}
@@ -1487,6 +1488,7 @@ class AddLabour extends Component {
                         </Col>
                         <Col md="3">
                           <div className="form-group">
+                            <TooltipCustom width="350px" id="LabourRate" tooltipText={'Rate per Person/Annum = Rate per Person/Month*12'}/>
                             <Field
                               label={this.DisplayLabourRatePlantCurrencyLabel("Annum")}
                               name={"LabourRate"}

@@ -1497,7 +1497,7 @@ export function showRMScrapKeys(technology) {
       obj.showForging = false
       obj.showCircleJali = true
       obj.showScrap = false
-      obj.name = 'Circle Jali Scrap Rate'
+      obj.name = 'Scrap Rate'
       break;
     default:
       obj.showForging = false

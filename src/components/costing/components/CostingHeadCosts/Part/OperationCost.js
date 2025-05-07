@@ -17,7 +17,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import { AcceptableOperationUOM, STRINGMAXLENGTH, TEMPOBJECTOPERATION } from '../../../../../config/masterData';
 import { required, maxLength15 } from "../../../../../helper/validation";
 import { number, decimalNumberLimit6, checkWhiteSpaces, alphaNumericValidation, noDecimal, numberLimit6 } from "../../../../../helper/validation";
-import { swappingLogicCommon } from '../../../CostingUtil';
+import { swappingLogicCommon, handleRemarkPopup } from '../../../CostingUtil';
 import Button from '../../../../layout/Button';
 import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
@@ -709,7 +709,10 @@ function OperationCost(props) {
                                 {(!CostingViewMode && !IsLocked) && <button title='Edit' id={`operationCost_edit${index}`} className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
                                 {(!CostingViewMode && !IsLocked) && <button title='Delete' id={`operationCost_delete${index}`} className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
                                 <Popup trigger={<button id={`operationCost_popUpTriggerss${props.IsAssemblyCalculation}${index}`} title="Remark" className="operation Comment-box align-middle" type={'button'} />}
-                                  position={'top right'}>
+                                  position={'top right'}
+                                  onOpen={() => handleRemarkPopup("open", `${OperationGridFields}.${index}.remarkPopUp`)}
+                                  onClose={() => handleRemarkPopup()}
+                                  >
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${OperationGridFields}.${index}.remarkPopUp`}
@@ -723,7 +726,7 @@ function OperationCost(props) {
                                     handleChange={(e) => { setOperationRemark(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
-                                    customClassName={"withBorder"}
+                                    customClassName={"withBorder text-area-focus"}
                                     errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                                     disabled={(CostingViewMode || IsLocked) ? true : false}
