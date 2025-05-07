@@ -19,7 +19,6 @@ function ViewOverheadProfit(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-
   const [viewOverheadData, setViewOverheadData] = useState(overheadData)
   const [viewProfitData, setViewProfitData] = useState(profitData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -29,7 +28,6 @@ function ViewOverheadProfit(props) {
   useEffect(() => {
     setViewOverheadData(overheadData)
     setViewProfitData(profitData)
-
   }, [])
   /**
   * @method toggleDrawer
@@ -92,101 +90,31 @@ function ViewOverheadProfit(props) {
             <thead>
               <tr>
                 <th>{`Overhead On`}</th>
-                <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && viewOverheadData.OverheadApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
+                <th>{'Percentage (%)'}</th>
+                <th>{'Cost (Applicability)'}</th>
                 <th>{`Overhead`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
-
               </tr>
             </thead>
             <tbody>
-              {viewOverheadData && (
-                <>
-                  {viewOverheadData.IsOverheadFixedApplicable && (
-                    <tr>
-
-                      <td>{`Fixed`}</td>
-                      <td>
-                        {viewOverheadData.OverheadFixedPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadFixedCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadFixedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewOverheadData.OverheadCRMHead}</td>}
-                      <td>{viewOverheadData.Remark ? viewOverheadData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                  {viewOverheadData.IsOverheadRMApplicable && (
-                    <tr>
-                      <td>{partType ? 'Part Cost' : 'RM'}</td>
-                      <td>
-                        {viewOverheadData.OverheadRMPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadRMPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadRMCost ? checkForDecimalAndNull(viewOverheadData.OverheadRMCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadRMTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadRMTotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewOverheadData.OverheadCRMHead}</td>}
-                      <td>{viewOverheadData.Remark ? viewOverheadData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                  {viewOverheadData.IsOverheadBOPApplicable && (
-                    <tr>
-                      <td>{`${showBopLabel()}`}</td>
-                      <td>
-                        {viewOverheadData.OverheadBOPPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadBOPPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadBOPCost ? checkForDecimalAndNull(viewOverheadData.OverheadBOPCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadBOPTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewOverheadData.OverheadCRMHead}</td>}
-                      <td>{viewOverheadData.Remark ? viewOverheadData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                  {viewOverheadData.IsOverheadCCApplicable && (
-                    <tr>
-                      <td>{`CC`}</td>
-                      <td>
-                        {viewOverheadData.OverheadCCPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadCCPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadCCCost ? checkForDecimalAndNull(viewOverheadData.OverheadCCCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadCCTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadCCTotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewOverheadData.OverheadCRMHead}</td>}
-                      <td>{viewOverheadData.Remark ? viewOverheadData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                  {viewOverheadData.IsOverheadCombined && (
-                    <tr>
-                      <td>{viewOverheadData.OverheadApplicability}</td>
-                      <td>
-                        {viewOverheadData.OverheadPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadCombinedCost ? checkForDecimalAndNull(viewOverheadData.OverheadCombinedCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewOverheadData.OverheadCombinedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadCombinedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewOverheadData.OverheadCRMHead}</td>}
-                      <td>{viewOverheadData.Remark ? viewOverheadData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                </>
-              )}
-              {(viewOverheadData.IsOverheadFixedApplicable === null && viewOverheadData.IsOverheadRMApplicable === null && viewOverheadData.IsOverheadBOPApplicable === null && viewOverheadData.IsOverheadCCApplicable === null && viewOverheadData.IsOverheadCombined === null) && (
+              {overheadData?.CostingApplicabilityDetails?.map(item => (
+                <tr key={item.ApplicabilityDetailsId}>
+                  <td>{item.Applicability}</td>
+                  <td>
+                    {item.Percentage ? checkForDecimalAndNull(item.Percentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
+                  </td>
+                  <td>
+                    {item.Cost ? checkForDecimalAndNull(item.Cost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
+                  </td>
+                  <td>
+                    {item.TotalCost ? checkForDecimalAndNull(item.TotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
+                  </td>
+                  {initialConfiguration?.IsShowCRMHead && <td>{overheadData.OverheadCRMHead || '-'}</td>}
+                  <td>{overheadData.Remark || '-'}</td>
+                </tr>
+              ))}
+              {!overheadData?.CostingApplicabilityDetails?.length && (
                 <tr>
                   <td colSpan={12}>
                     <NoContentFound title={EMPTY_DATA} />
@@ -214,105 +142,31 @@ function ViewOverheadProfit(props) {
             <thead>
               <tr>
                 <th>{`Profit On`}</th>
-                <th>{viewProfitData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && viewProfitData.ProfitApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
+                <th>{'Percentage (%)'}</th>
+                <th>{'Cost (Applicability)'}</th>
                 <th>{`Profit`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
               </tr>
             </thead>
             <tbody>
-              {viewProfitData && (
-                <>
-                  {viewProfitData.IsProfitFixedApplicable && (
-                    <tr>
-
-                      <td>{`Fixed`}</td>
-                      <td>
-                        {viewProfitData.ProfitFixedPercentage ? checkForDecimalAndNull(viewProfitData.ProfitFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitFixedCost ? checkForDecimalAndNull(viewProfitData.ProfitFixedCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitFixedTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitFixedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewProfitData.ProfitCRMHead}</td>}
-                      <td>{viewProfitData.Remark ? viewProfitData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                  {viewProfitData.IsProfitRMApplicable && (
-                    <tr>
-                      <td>{partType ? 'Part Cost' : 'RM'}</td>
-                      <td>
-                        {viewProfitData.ProfitRMPercentage ? checkForDecimalAndNull(viewProfitData.ProfitRMPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitRMCost ? checkForDecimalAndNull(viewProfitData.ProfitRMCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitRMTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitRMTotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewProfitData.ProfitCRMHead}</td>}
-                      <td>{viewProfitData.Remark ? viewProfitData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                  {viewProfitData.IsProfitBOPApplicable && (
-                    <tr>
-                      <td>{`${showBopLabel()}`}</td>
-                      <td>
-                        {viewProfitData.ProfitBOPPercentage ? checkForDecimalAndNull(viewProfitData.ProfitBOPPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitBOPCost ? checkForDecimalAndNull(viewProfitData.ProfitBOPCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitBOPTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewProfitData.ProfitCRMHead}</td>}
-                      <td>{viewProfitData.Remark ? viewProfitData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                  {viewProfitData.IsProfitCCApplicable && (
-                    <tr>
-                      <td>{`CC`}</td>
-                      <td>
-
-                        {viewProfitData.ProfitCCPercentage ? checkForDecimalAndNull(viewProfitData.ProfitCCPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitCCCost ? checkForDecimalAndNull(viewProfitData.ProfitCCCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitCCTotalCost
-                          ? checkForDecimalAndNull(viewProfitData.ProfitCCTotalCost, initialConfiguration?.NoOfDecimalForPrice)
-                          : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewProfitData.ProfitCRMHead}</td>}
-                      <td>{viewProfitData.Remark ? viewProfitData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                  {viewProfitData.IsProfitCombined && (
-                    <tr>
-                      <td>{viewProfitData.ProfitApplicability}</td>
-                      <td>
-                        {viewProfitData.ProfitPercentage ? checkForDecimalAndNull(viewProfitData.ProfitPercentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitCombinedCost ? checkForDecimalAndNull(viewProfitData.ProfitCombinedCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                      </td>
-                      <td>
-                        {viewProfitData.ProfitCombinedTotalCost
-                          ? checkForDecimalAndNull(viewProfitData.ProfitCombinedTotalCost, initialConfiguration?.NoOfDecimalForPrice)
-                          : "-"}
-                      </td>
-                      {initialConfiguration?.IsShowCRMHead && <td>{viewProfitData.ProfitCRMHead}</td>}
-                      <td>{viewProfitData.Remark ? viewProfitData.Remark : '-'}</td>
-                    </tr>
-                  )}
-                </>
-              )}
-              {(viewProfitData.IsProfitFixedApplicable === null && viewProfitData.IsProfitRMApplicable === null && viewProfitData.IsProfitBOPApplicable === null && viewProfitData.IsProfitCCApplicable === null && viewProfitData.IsProfitCombined === null) && (
+              {profitData?.CostingApplicabilityDetails?.map(item => (
+                <tr key={item.ApplicabilityDetailsId}>
+                  <td>{item.Applicability}</td>
+                  <td>
+                    {item.Percentage ? checkForDecimalAndNull(item.Percentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
+                  </td>
+                  <td>
+                    {item.Cost ? checkForDecimalAndNull(item.Cost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
+                  </td>
+                  <td>
+                    {item.TotalCost ? checkForDecimalAndNull(item.TotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
+                  </td>
+                  {initialConfiguration?.IsShowCRMHead && <td>{profitData.ProfitCRMHead || '-'}</td>}
+                  <td>{profitData.Remark || '-'}</td>
+                </tr>
+              ))}
+              {!profitData?.CostingApplicabilityDetails?.length && (
                 <tr>
                   <td colSpan={12}>
                     <NoContentFound title={EMPTY_DATA} />
@@ -557,12 +411,12 @@ function ViewOverheadProfit(props) {
             </div>
           </Container>
         </Drawer> : <>
-          {(viewOverheadData.IsOverheadFixedApplicable || viewOverheadData.IsOverheadRMApplicable || viewOverheadData.IsOverheadBOPApplicable || viewOverheadData.IsOverheadCCApplicable || viewOverheadData.IsOverheadCombined || viewProfitData.IsProfitFixedApplicable || viewProfitData.IsProfitRMApplicable || viewProfitData.IsProfitBOPApplicable || viewProfitData.IsProfitCCApplicable || viewProfitData.IsProfitCombined) && modelShowData()}
+          {(viewOverheadData?.CostingApplicabilityDetails?.length > 0 || viewProfitData?.CostingApplicabilityDetails?.length > 0) && modelShowData()}
           <div>
-            {(viewOverheadData.IsOverheadFixedApplicable || viewOverheadData.IsOverheadRMApplicable || viewOverheadData.IsOverheadBOPApplicable || viewOverheadData.IsOverheadCCApplicable || viewOverheadData.IsOverheadCombined) && overheadTableData()}
+            {viewOverheadData?.CostingApplicabilityDetails?.length > 0 && overheadTableData()}
           </div>
           <div>
-            {(viewProfitData.IsProfitFixedApplicable || viewProfitData.IsProfitRMApplicable || viewProfitData.IsProfitBOPApplicable || viewProfitData.IsProfitCCApplicable || viewProfitData.IsProfitCombined) ? profitTableData() : ""}
+            {viewProfitData?.CostingApplicabilityDetails?.length > 0 ? profitTableData() : ""}
           </div>
           {rejectData.RejectionApplicability != null && rejectTableData()}
           {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}

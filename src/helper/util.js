@@ -689,7 +689,10 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
   }
 
-
+  obj.netOverheadCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : 0
+  obj.netProfitCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : 0
+  obj.netRejectionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetRejectionCost !== null ? dataFromAPI?.CostingPartDetails?.NetRejectionCost : 0
+  obj.netICCCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetICCCost !== null ? dataFromAPI?.CostingPartDetails?.NetICCCost : 0
   const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
 
   obj.paymentTerms = {
