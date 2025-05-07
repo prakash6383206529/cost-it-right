@@ -828,7 +828,6 @@ class AddIndivisualPart extends Component {
                                     className="drawer-edit mt30"
                                     variant="Edit"
                                     onClick={() => this.modelToggler(this?.state?.Model.value)}
-                                    disabled={PartMasterConfigurable?.IsPartModelMandatory}
                                   /> :
                                   <div className='d-flex justify-content-center align-items-center'>
                                     <Button
@@ -836,7 +835,6 @@ class AddIndivisualPart extends Component {
                                       className="mb-3"
                                       variant="plus-icon-square"
                                       onClick={() => this.modelToggler('')}
-                                      disabled={PartMasterConfigurable?.IsPartModelMandatory}
                                     />
                                   </div>
                               )}
