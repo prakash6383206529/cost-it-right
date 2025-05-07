@@ -1149,7 +1149,6 @@ class AddOperation extends Component {
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
     else {
-      console.log("formData", formData)
       formData.IsSendForApproval = false;
       this.handleOperationAPI(formData, isEditFlag);
     }
