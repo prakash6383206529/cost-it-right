@@ -141,7 +141,7 @@ function AddRMFinancialDetails(props) {
     useEffect(() => {
         calculateScrapRate()
         let machineScrapPercentage = getValues("machineScrapRatePercentageOfRMRate");
-        if(state.IsCalculateMachineScrapRate && machineScrapPercentage){
+        if (state.IsCalculateMachineScrapRate && machineScrapPercentage) {
             calculateMachineScrapRate(machineScrapPercentage);
         }
     }, [values])
@@ -622,45 +622,45 @@ function AddRMFinancialDetails(props) {
     }
 
     const calculateScrapRate = () => {
-        let scrapRatePercentage = getValues('scrapRatePercentageOfRMRate');        
-        let basicRate = getValues('BasicRate');    
-        if(scrapRatePercentage) {
+        let scrapRatePercentage = getValues('scrapRatePercentageOfRMRate');
+        let basicRate = getValues('BasicRate');
+        if (scrapRatePercentage) {
             handleScrapRatePercentageChange(scrapRatePercentage);
-        }      
+        }
     }
 
     const handleScrapRatePercentageChange = (val) => {
         // let scrapPercentage = Number(e.target.value); 
-        let scrapPercentage = Number(val); 
+        let scrapPercentage = Number(val);
         let basicRmRate = checkForNull(Number(getValues('BasicRate')));
         const updatedState = {
             ...state,
             scrapRatePercentageOfRMRate: scrapPercentage,
         };
-        if(scrapPercentage < 0 || scrapPercentage > 100){
+        if (scrapPercentage < 0 || scrapPercentage > 100) {
             scrapPercentage = 0
         }
-        if(basicRmRate){
+        if (basicRmRate) {
             // let scrapRate = (basicRmRate * scrapPercentage)/100
             let scrapRate = basicRmRate * calculatePercentage(scrapPercentage)
-            if(state.IsApplyHasDifferentUOM){
+            if (state.IsApplyHasDifferentUOM) {
                 setValue('ScrapRatePerScrapUOM', scrapRate ? checkForDecimalAndNull(scrapRate, getConfigurationKey().NoOfDecimalForPrice) : '');
                 calculateNetCostDomestic()
-            }else{
-                if(showScrapKeys?.showForging){
+            } else {
+                if (showScrapKeys?.showForging) {
                     setValue('ForgingScrap', scrapRate ? checkForDecimalAndNull(scrapRate, getConfigurationKey().NoOfDecimalForPrice) : '');
-                }else if(showScrapKeys?.showScrap){
+                } else if (showScrapKeys?.showScrap) {
                     setValue('ScrapRate', scrapRate ? checkForDecimalAndNull(scrapRate, getConfigurationKey().NoOfDecimalForPrice) : '');
-                } else{
+                } else {
                     setValue('JaliScrapCost', scrapRate ? checkForDecimalAndNull(scrapRate, getConfigurationKey().NoOfDecimalForPrice) : '');
                 }
             }
-        }else{
-            if(showScrapKeys?.showForging){
+        } else {
+            if (showScrapKeys?.showForging) {
                 setValue('ForgingScrap', '');
-            }else if(showScrapKeys?.showScrap){
+            } else if (showScrapKeys?.showScrap) {
                 setValue('ScrapRate', '');
-            }else{
+            } else {
                 setValue('JaliScrapCost', '');
             }
             updatedState.scrapRatePercentageOfRMRate = ""
@@ -673,15 +673,15 @@ function AddRMFinancialDetails(props) {
         }, () => { }));
     }
 
-    
+
 
     const calculateMachineScrapRate = (val) => {
-        let scrapPercentage = Number(val); 
+        let scrapPercentage = Number(val);
         let basicRmRate = checkForNull(Number(getValues('BasicRate')));
-        if(scrapPercentage < 0 || scrapPercentage > 100){
+        if (scrapPercentage < 0 || scrapPercentage > 100) {
             scrapPercentage = 0
         }
-        if(basicRmRate){
+        if (basicRmRate) {
             let scrapRate = basicRmRate * calculatePercentage(scrapPercentage)
             setValue('MachiningScrap', scrapRate ? checkForDecimalAndNull(scrapRate, getConfigurationKey().NoOfDecimalForPrice) : '');
         }
@@ -706,7 +706,7 @@ function AddRMFinancialDetails(props) {
         setValue("ScrapRate", "");
         delete errors.JaliScrapCost
         delete errors.ForgingScrap
-        delete errors.ScrapRate 
+        delete errors.ScrapRate
         delete errors.scrapRatePercentageOfRMRate
         setValue("scrapRatePercentageOfRMRate", "");
         setValue('ScrapRatePerScrapUOM', '');
@@ -818,7 +818,7 @@ function AddRMFinancialDetails(props) {
         } else {
             setState(prevState => ({ ...prevState, frequencyOfSettlement: [] }));
         }
-    };  
+    };
 
     const handleFromEffectiveDateChange = (date) => {
         const { frequencyOfSettlement } = state;
@@ -1461,7 +1461,7 @@ function AddRMFinancialDetails(props) {
                                 handleChange={() => { }}
                                 errors={errors.plantCurrency}
                             />
-                            {state.showPlantWarning && !isViewFlag &&<WarningMessage dClass="mt-1" message={`${getValues('plantCurrency')} rate is not present in the Exchange Master`} />}
+                            {state.showPlantWarning && !isViewFlag && <WarningMessage dClass="mt-1" message={`${getValues('plantCurrency')} rate is not present in the Exchange Master`} />}
                         </Col>
                         <Col className="col-md-15">
                             <div className="inputbox date-section mb-5">
@@ -1594,7 +1594,7 @@ function AddRMFinancialDetails(props) {
                                         </span>
                                     </div>
                                 </Col>
-                            } 
+                            }
 
                             {state.IsApplyHasDifferentUOM && !isRMAssociated &&
                                 <Col className="col-md-15">
@@ -1654,7 +1654,7 @@ function AddRMFinancialDetails(props) {
                                     />
                                 </Col>
 
-                                </>
+                            </>
                             }
                             {state.IsApplyHasDifferentUOM && state.ScrapRateUOM?.value &&
                                 <Col className="col-md-15">
@@ -1687,43 +1687,71 @@ function AddRMFinancialDetails(props) {
                                 </Col>
                             }
 
+                            <Col className="col-md-15">
+                                {/* {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon('Jali Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />} */}
+                                <TextFieldHookForm
+                                    label={'Scrap (%)'}
+                                    name={"scrapRatePercentageOfRMRate"}
+                                    // id="jali-scrap-cost-base-currency"
+                                    placeholder={isViewFlag ? '-' : "Enter"}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    rules={{
+                                        required: state.IsCalculateScrapRate,
+                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                        max: {
+                                            value: 100,
+                                            message: 'Percentage cannot be greater than 100'
+                                        },
+                                    }}
+                                    // disabled={isViewFlag || state.IsApplyHasDifferentUOM || !state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
+                                    disabled={isViewFlag || !state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
+                                    className=" "
+                                    // handleChange={() => { }}
+                                    handleChange={(e) => handleScrapRatePercentageChange(e.target.value)}
+                                    customClassName=" withBorder"
+                                    errors={errors.scrapRatePercentageOfRMRate}
+                                    mandatory={state.IsCalculateScrapRate}
+                                />
+                            </Col>
+
+                            {state.IsApplyHasDifferentUOM && state.ScrapRateUOM?.value &&
                                 <Col className="col-md-15">
-                                    {/* {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon('Jali Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />} */}
+                                    {(state.IsApplyHasDifferentUOM === true && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="scrap-rate-per-scrap-uom-base-currency" width={'350px'} tooltipText={<>{labelForScrapRate()?.labelBaseCurrency} = (Basic Rate * Scrap %) / 100</>} />}
                                     <TextFieldHookForm
-                                        label={'Scrap (%)'}
-                                        name={"scrapRatePercentageOfRMRate"}
-                                        // id="jali-scrap-cost-base-currency"
+                                        label={labelForScrapRate()?.labelBaseCurrency}
+                                        name={'ScrapRatePerScrapUOM'}
+                                        id="scrap-rate-per-scrap-uom-base-currency"
                                         placeholder={isViewFlag ? '-' : "Enter"}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         rules={{
-                                            required: state.IsCalculateScrapRate,
-                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                            max: {
-                                                value: 100,
-                                                message: 'Percentage cannot be greater than 100'
-                                            },
+                                            required: !state.IsCalculateScrapRate,
+                                            validate: { positiveAndDecimalNumber, decimalLengthsix, number },
                                         }}
-                                        // disabled={isViewFlag || state.IsApplyHasDifferentUOM || !state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
-                                        disabled={isViewFlag || !state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
-                                        className=" "
-                                        // handleChange={() => { }}
-                                        handleChange={(e) => handleScrapRatePercentageChange(e.target.value)}
+                                        mandatory={!state.IsCalculateScrapRate}
+                                        className=""
                                         customClassName=" withBorder"
-                                        errors={errors.scrapRatePercentageOfRMRate}
-                                        mandatory={state.IsCalculateScrapRate}
+                                        handleChange={(e) => { handleScrapRateDomestic(e.target.value) }}
+                                        disabled={isViewFlag || state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
                                     />
                                 </Col>
+                            }
 
-                                {state.IsApplyHasDifferentUOM && state.ScrapRateUOM?.value &&
+                            {showScrapKeys?.showScrap &&
+                                <>
                                     <Col className="col-md-15">
-                                        {(state.IsApplyHasDifferentUOM === true && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="scrap-rate-per-scrap-uom-base-currency" width={'350px'} tooltipText={<>{labelForScrapRate()?.labelBaseCurrency} = (Basic Rate * Scrap %) / 100</>} />}
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" tooltipText={allFieldsInfoIcon('Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />}
+                                        {(!state.IsApplyHasDifferentUOM && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" width={'350px'}
+                                            tooltipText={allFieldsInfoIcon('Scrap Rate')?.toolTipTextScrapCostPerOldUOMWithAutoCalculate}
+                                        />}
                                         <TextFieldHookForm
-                                            label={labelForScrapRate()?.labelBaseCurrency}
-                                            name={'ScrapRatePerScrapUOM'}
-                                            id="scrap-rate-per-scrap-uom-base-currency"
-                                            placeholder={isViewFlag ? '-' : "Enter"}
+                                            label={labelWithUOMAndCurrency("Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
+                                            name={"ScrapRate"}
+                                            id="scrap-rate-base-currency"
+                                            placeholder={props.isViewFlag ? '-' : "Enter"}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -1733,49 +1761,21 @@ function AddRMFinancialDetails(props) {
                                             }}
                                             mandatory={!state.IsCalculateScrapRate}
                                             className=""
+                                            maxLength="15"
                                             customClassName=" withBorder"
-                                            handleChange={(e) => { handleScrapRateDomestic(e.target.value) }}
-                                            disabled={isViewFlag || state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
+                                            handleChange={() => { }}
+                                            disabled={isViewFlag || state.IsApplyHasDifferentUOM || state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
+                                            errors={errors.ScrapRate}
                                         />
                                     </Col>
-                                }
-
-                                {showScrapKeys?.showScrap &&
-                                    <>
-                                        <Col className="col-md-15">
-                                            {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" tooltipText={allFieldsInfoIcon('Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />}
-                                            {(!state.IsApplyHasDifferentUOM && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" width={'350px'} 
-                                            tooltipText={allFieldsInfoIcon('Scrap Rate')?.toolTipTextScrapCostPerOldUOMWithAutoCalculate}
-                                            />}
-                                            <TextFieldHookForm
-                                                label={labelWithUOMAndCurrency("Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
-                                                name={"ScrapRate"}
-                                                id="scrap-rate-base-currency"
-                                                placeholder={props.isViewFlag ? '-' : "Enter"}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{
-                                                    required: !state.IsCalculateScrapRate,
-                                                    validate: { positiveAndDecimalNumber, decimalLengthsix, number },
-                                                }}
-                                                mandatory={!state.IsCalculateScrapRate}
-                                                className=""
-                                                maxLength="15"
-                                                customClassName=" withBorder"
-                                                handleChange={() => { }}
-                                                disabled={isViewFlag || state.IsApplyHasDifferentUOM || state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
-                                                errors={errors.ScrapRate}
-                                            />
-                                        </Col>
-                                    </>
-                                }
+                                </>
+                            }
                             {showScrapKeys?.showForging &&
                                 <>
                                     <Col className="col-md-15">
                                         {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'450px'} tooltipText={allFieldsInfoIcon('Forging Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />}
-                                        {(!state.IsApplyHasDifferentUOM && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'350px'} 
-                                            tooltipText={<>{labelWithUOMAndCurrency("Forging Scrap Rate", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = (Basic Rate * Scrap %) / 100</>} 
+                                        {(!state.IsApplyHasDifferentUOM && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'350px'}
+                                            tooltipText={<>{labelWithUOMAndCurrency("Forging Scrap Rate", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = (Basic Rate * Scrap %) / 100</>}
                                         />}
                                         <TextFieldHookForm
                                             label={labelWithUOMAndCurrency("Forging Scrap Rate", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
@@ -1828,7 +1828,7 @@ function AddRMFinancialDetails(props) {
                                             </span>
                                         </div>
                                     </Col>
-                                    
+
                                     <Col className="col-md-15">
                                         <TextFieldHookForm
                                             label={'Machining Scrap (%)'}
@@ -1855,11 +1855,11 @@ function AddRMFinancialDetails(props) {
                                             mandatory={false}
                                         />
                                     </Col>
-                                  
+
 
                                     <Col className="col-md-15">
-                                        {(state.IsCalculateMachineScrapRate) && <TooltipCustom disabledIcon={true} id="rm-machining-base-currency" width={'350px'} 
-                                        tooltipText={<>{labelWithUOMAndCurrency("Machining Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = (Basic Rate * Scrap %) / 100</>} 
+                                        {(state.IsCalculateMachineScrapRate) && <TooltipCustom disabledIcon={true} id="rm-machining-base-currency" width={'350px'}
+                                            tooltipText={<>{labelWithUOMAndCurrency("Machining Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = (Basic Rate * Scrap %) / 100</>}
                                         />}
                                         <TextFieldHookForm
                                             label={labelWithUOMAndCurrency("Machining Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
@@ -1889,8 +1889,8 @@ function AddRMFinancialDetails(props) {
                                 <>
                                     <Col className="col-md-15">
                                         {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon('Jali Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />}
-                                        {(!state.IsApplyHasDifferentUOM && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} 
-                                        tooltipText={<>{labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = (Basic Rate * Scrap %) / 100</>} 
+                                        {(!state.IsApplyHasDifferentUOM && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'}
+                                            tooltipText={<>{labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = (Basic Rate * Scrap %) / 100</>}
                                         />}
                                         <TextFieldHookForm
                                             label={labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
@@ -2115,7 +2115,7 @@ function AddRMFinancialDetails(props) {
                     closeDrawer={closeOtherCostToggle}
                     anchor={'right'}
                     rawMaterial={true}
-                    rmBasicRate={states.isImport ? getValues('BasicRateSelectedCurrency') : state.totalBasicRate}
+                    rmBasicRate={states.isImport ? getValues('BasicRate') : state.totalBasicRate}
                     ViewMode={isViewFlag}
                     uom={state.UOM}
                     isImport={states.isImport}
