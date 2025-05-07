@@ -10,7 +10,7 @@ import { KG, EMPTY_DATA, DEFAULTRMPRESSURE } from '../../../../../config/constan
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import LoaderCustom from '../../../../common/LoaderCustom';
 import TooltipCustom from '../../../../common/Tooltip'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -363,6 +363,7 @@ function StandardRub(props) {
             Tonnage: calculateTonnage()
         }
 
+        console.log("obj",obj)
         const lastRow = tableData[tableData.length - 1]
         const validationFields = [
             ...(isVolumeAutoCalculate ? ["OuterDiameter"] : ["Volume"]),
@@ -467,8 +468,9 @@ function StandardRub(props) {
     const onSubmit = debounce(handleSubmit(() => {
         setIsDisable(true)
         let obj = {}
-        const usedRmData = rmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
-        const unUsedRmData = rmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));				
+        let clonedRmData = _.cloneDeep(rmData);
+        const usedRmData = clonedRmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
+        const unUsedRmData = clonedRmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));    			
 				// obj.LayoutType = 'Default'
         // obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
         // obj.IsChangeApplied = true //NEED TO MAKE IT DYNAMIC how to do
@@ -491,7 +493,7 @@ function StandardRub(props) {
             return Math.max(max, item.Tonnage);
         }, 0);
         obj.usedRmData = usedRmData
-
+        console.log("OBJ,OBJ",obj)
 				if (unUsedRmData.length > 0) {
 					const message = generateUnusedRMsMessage(unUsedRmData)
 					setUnusedRMsMessage(message)
