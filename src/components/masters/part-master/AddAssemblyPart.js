@@ -122,10 +122,13 @@ class AddAssemblyPart extends Component {
   getPartFamilyList = () => {
     this?.props?.getPartFamilySelectList((res) => {
       if (res && res?.data && res?.data?.Result) {
+        console.log(res?.data?.SelectList);
+        
         // Transform the part family data into the format needed for the dropdown
         const partFamilyOptions = res?.data?.SelectList
+
           .map(item => ({
-            label: item?.PartFamilyName,
+            label: item?.PartFamily,
             value: item?.PartFamilyId
           }));
         this.setState({ partFamilyOptions });
@@ -192,7 +195,7 @@ class AddAssemblyPart extends Component {
                 value: Data?.PartModelId
               } : [],
               PartFamilySelected: Data?.PartFamilyId ? {
-                label: Data?.PartFamilyName || "",
+                label: Data?.PartFamily || "",
                 value: Data?.PartFamilyId
               } : []
             }, () => {
@@ -895,7 +898,7 @@ class AddAssemblyPart extends Component {
         PartModelId: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
         PartFamilyIdRef: this?.state?.PartFamilySelected?.value || "",
-        PartFamilyName: this?.state?.PartFamilySelected?.label || "",
+        PartFamily: this?.state?.PartFamilySelected?.label || "",
       }
 
       if (convertPartToAssembly) {
@@ -945,7 +948,7 @@ class AddAssemblyPart extends Component {
         PartsModelMaster: this?.state?.Model?.label || "",
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
         PartFamilyId: this.state?.PartFamilySelected?.value || "",
-        PartFamilyName: this.state?.PartFamilySelected?.label || "",
+        PartFamily: this.state?.PartFamilySelected?.label || "",
       }
       this?.props?.createAssemblyPart(formData, (res) => {
         this.setState({ setDisable: false, isLoader: false })
@@ -1750,7 +1753,7 @@ function mapStateToProps(state) {
           value: partData?.PartModelId || ""
       },
       PartFamily: {
-        label: partData?.PartFamilyName || "",
+        label: partData?.PartFamily || "",
         value: partData?.PartFamilyId || ""
       }
     }

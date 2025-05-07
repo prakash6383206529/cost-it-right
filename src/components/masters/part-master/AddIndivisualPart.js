@@ -91,7 +91,7 @@ class AddIndivisualPart extends Component {
         // Transform the part family data into the format needed for the dropdown
         const partFamilyOptions = res?.data?.SelectList
           .map(item => ({
-            label: item?.PartFamilyName,
+            label: item?.PartFamily,
             value: item?.PartFamilyId
           }));
         this.setState({ partFamilyOptions });
@@ -144,7 +144,7 @@ class AddIndivisualPart extends Component {
                 value: Data?.PartModelId
               } : [],
               PartFamilySelected: Data?.PartFamilyId ? {
-                label: Data?.PartFamilyName || "",
+                label: Data?.PartFamily || "",
                 value: Data?.PartFamilyId
               } : null,
              
@@ -521,7 +521,7 @@ class AddIndivisualPart extends Component {
         PartModelId: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
         PartFamilyId: this?.state?.PartFamilySelected?.value || "",
-        PartFamilyName: this?.state?.PartFamilySelected?.label || "",
+        PartFamily: this?.state?.PartFamilySelected?.label || "",
       };
 
 
@@ -558,7 +558,7 @@ class AddIndivisualPart extends Component {
         PartModelId: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
         PartFamilyId: this?.state?.PartFamilySelected?.value || "",
-        PartFamilyName: this?.state?.PartFamilySelected?.label || "",
+        PartFamily: this?.state?.PartFamilySelected?.label || "",
       };
 
 
@@ -1175,7 +1175,7 @@ function mapStateToProps({ comman, part, auth, costing }) {
           value: partData?.PartModelId || ""
       },
       PartFamily: {
-        label: partData?.PartFamilyName || "",
+        label: partData?.PartFamily || "",
         value: partData?.PartFamilyId || ""
       }
     }
