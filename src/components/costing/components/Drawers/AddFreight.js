@@ -449,7 +449,7 @@ function AddFreight(props) {
   // MAY BE USED LATER 
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
-      if (checkForNull(totalRMGrossWeight) !== 0 && (freightType === FullTruckLoad || freightType === PartTruckLoad) && event.target.value > totalRMGrossWeight) {
+      if (criteria?.value === "INR/Kg" && checkForNull(totalRMGrossWeight) !== 0 && (freightType === FullTruckLoad || freightType === PartTruckLoad) && event.target.value > totalRMGrossWeight) {
         Toaster.warning("Enter value less than gross weight.")
         setTimeout(() => {
           setValue('Quantity', '')
@@ -892,7 +892,7 @@ function AddFreight(props) {
 
                   <Col md="12">
                     <div className="packaging-cost-warpper">
-                      {((freightType === 3) || (freightType === 4)) && <TooltipCustom tooltipClass='freight-cost' disabledIcon={true} id={'freight-cost'} tooltipText={`Cost = ${(criteria?.value === "INR/Trip") ? "Rate / Quantity" : "Rate * Quantity" }`} />}
+                      {((freightType === 3) || (freightType === 4)) && <TooltipCustom tooltipClass='freight-cost' disabledIcon={true} id={'freight-cost'} tooltipText={`Cost = ${(criteria?.value === "INR/Trip") ? "Rate / Quantity" : "Rate * Quantity"}`} />}
                       <TextFieldHookForm
                         label="Cost"
                         name={'FreightCost'}
