@@ -154,7 +154,7 @@ const PartMaster = () => {
                 {initialConfiguration?.IsSAPConfigured && <button type="button" className={`secondary-btn mr5 mt-1 fetch-btn`} title="Fetch" onClick={openFetchDrawer} onMouseOver={handleMouse} onMouseOut={handleMouseOut} >
                   <div className={`${state.isHover ? "swap-hover" : "swap"} mr-0`} ></div>
                 </button>}
-                {initialConfiguration?.IsShowPartFamily && <NavItem> <NavLink className={classnames({ active: state.activeTab === "5" })} onClick={() => toggle("5")} > Part Family </NavLink> </NavItem>}
+                {initialConfiguration?.PartAdditionalMasterFields?.IsShowPartFamily && <NavItem> <NavLink className={classnames({ active: state.activeTab === "5" })} onClick={() => toggle("5")} > Part Family </NavLink> </NavItem>}
               </Nav>
               <ApplyPermission.Provider value={permissionData}>
                 <TabContent activeTab={state.activeTab}>
