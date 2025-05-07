@@ -32,7 +32,13 @@ import {
     AddAssemblyOrComponentAdditionalInfoTempData,
     AddAssemblyOrComponentAdditionalInfoHeaderData,
     SAP_PUSH_HEADER_DATA,
-    SAP_PUSH_TEMP_DATA
+    SAP_PUSH_TEMP_DATA,
+    RejectionTempData,
+    RejectionVBC_TempData,
+    RejectionCBC,
+    RejectionCBC_TempData,
+    Rejection,
+    RejectionVBC
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, RFQ_KEYS, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -363,6 +369,9 @@ class Downloadxls extends React.Component {
             case `Overhead`:
                 const localizedOverheadHeaders = this.localizeHeaders(Overhead);
                 return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadTempData, this.props?.modelText));
+            case `Rejection`:
+                const localizedRejectionHeaders = this.localizeHeaders(Rejection);
+                return this.returnExcelColumn(localizedRejectionHeaders, addDynamicModelType(RejectionTempData, this.props?.modelText));
             case `Profit`:
                 const localizedProfitHeaders = this.localizeHeaders(Profit);
                 return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempData, this.props?.modelText));
@@ -437,6 +446,9 @@ class Downloadxls extends React.Component {
             case `Overhead`:
                 const localizedOverheadHeaders = this.localizeHeaders(OverheadVBC);
                 return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadVBC_TempData, this.props?.modelText));
+            case `Rejection`:
+                const localizedRejectionHeaders = this.localizeHeaders(RejectionVBC);
+                return this.returnExcelColumn(localizedRejectionHeaders, addDynamicModelType(RejectionVBC_TempData, this.props?.modelText));
             case `Profit`:
                 const localizedProfitHeaders = this.localizeHeaders(ProfitVBC);
                 return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempDataVBC, this.props?.modelText));
@@ -496,6 +508,9 @@ class Downloadxls extends React.Component {
             case `Overhead`:
                 const localizedOverheadHeaders = this.localizeHeaders(OverheadCBC);
                 return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadCBC_TempData, this.props?.modelText));
+            case `Rejection`:
+                const localizedRejectionHeaders = this.localizeHeaders(RejectionCBC);
+                return this.returnExcelColumn(localizedRejectionHeaders, addDynamicModelType(RejectionCBC_TempData, this.props?.modelText));
             case `Profit`:
                 const localizedProfitHeaders = this.localizeHeaders(ProfitCBC);
                 return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempDataCBC, this.props?.modelText));

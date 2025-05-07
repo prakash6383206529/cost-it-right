@@ -260,7 +260,6 @@ export default function partReducer(state = initialState, action) {
                 error: true,
                 partFamilySelectList: action.payload
             }
-
         default:
             return state;
     }

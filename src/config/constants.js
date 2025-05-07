@@ -501,6 +501,8 @@ export const API = {
   createOverhead: `${BASE_URL}/masters-overhead-and-profit/create-overhead`,
   updateOverhead: `${BASE_URL}/masters-overhead-and-profit/update-overhead`,
   getOverheadData: `${BASE_URL}/masters-overhead-and-profit/get`,
+  getOverheadDataCheck: `${BASE_URL}/masters-overhead-and-profit/get-overhead-data`,
+  getProfitDataCheck: `${BASE_URL}/masters-overhead-and-profit/get-profit-data`,
   getOverheadDataList: `${BASE_URL}/masters-overhead-and-profit/get-all-overhead-by-filter`,
   deleteOverhead: `${BASE_URL}/masters-overhead-and-profit/delete-overhead`,
   activeInactiveOverhead: `${BASE_URL}/masters-overhead-and-profit/active-inactive-overhead`,
@@ -508,6 +510,7 @@ export const API = {
   overheadBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-overhead-json`,
   getVendorFilterByModelTypeSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-vendor-with-code-by-model-type-select-list`,
   getModelTypeFilterByVendorSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-model-type-by-vendor-select-list`,
+  rejectionBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-rejection-json`,
 
   createProfit: `${BASE_URL}/masters-overhead-and-profit/create-profit`,
   updateProfit: `${BASE_URL}/masters-overhead-and-profit/update-profit`,
@@ -639,6 +642,7 @@ export const API = {
   saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
   getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
   getCostingBopAndBopHandlingDetails: `${BASE_URL}/costing/get-costing-bop-and-bop-handling-details`,
+  getApplicabilityList: `${BASE_URL}/costing/select-list-get-applicability-data`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1050,6 +1054,9 @@ export const API = {
   getClientSelectList: `${BASE_URL}/client/select-list-client`,
   checkAndGetCustomerCode: `${BASE_URL}/client/generate-customer-company-code`,
   getPoamStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
+
+  //PART FAMILY
+  getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
 
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
@@ -1666,6 +1673,7 @@ export const GET_STATE_WHILE_DOWNLOADING = 'GET_STATE_WHILE_DOWNLOADING';
 export const GET_DATA_WHILE_LOADING = 'GET_DATA_WHILE_LOADING';
 export const CORRUGATED_DATA = 'CORRUGATED_DATA';
 export const TOUR_START_DATA = 'TOUR_START_DATA';
+export const GET_APPLICABILITY_LIST_SUCCESS = 'GET_APPLICABILITY_LIST_SUCCESS';
 export const GUIDE_BUTTON_SHOW = true;
 
 //PAGINATION CONTROLS
@@ -1719,7 +1727,7 @@ export const GET_LABOUR_DATA_LIST = 'GET_LABOUR_DATA_LIST'
 export const GET_LABOUR_TYPE_FOR_MACHINE_TYPE = 'GET_LABOUR_TYPE_FOR_MACHINE_TYPE'
 export const UPDATE_LABOUR_FOR_MACHINE_TYPE = 'UPDATE_LABOUR_FOR_MACHINE_TYPE'
 
-//OVERHEAD AND PROFIT
+//OVERHEAD AND PROFIT AND REJECTION
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS'
 export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS'
 export const GET_OVERHEAD_PROFIT_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_DATA_SUCCESS'
@@ -1785,7 +1793,7 @@ export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
 export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
 export const CHECK_IS_PAYMENT_TERMS_DATA_CHANGE = 'CHECK_IS_PAYMENT_TERMS_DATA_CHANGE'
 export const CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE = 'CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE'
-export const SET_BOP_REMARK="SET_BOP_REMARK"
+export const SET_BOP_REMARK = "SET_BOP_REMARK"
 
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
 export const GET_FG_WISE_IMPACT_DATA_FOR_COSTING = 'GET_FG_WISE_IMPACT_DATA_FOR_COSTING'
@@ -2308,6 +2316,9 @@ export const MODULE_SIMULATION = 'Simulation'
 export const MODULE_MASTER = 'Master'
 export const MODULE_ONBOARDING = 'Onboarding&Management'
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
+
+export const REJECTION = 'Rejection'
+
 export const LABOUR = 'Labour'
 export const REASON = 'Reason'
 export const OPERATION = 'Operation'
@@ -2340,10 +2351,10 @@ export const CUSTOMER_POAM_REPORT = 'Customer POAM Summary'
 export const BUDGETING = 'Budgeting'
 export const SALES_PROVISION_FILE_NAME = 'Sales Provision Report'
 export const PURCHASE_PROVISION_FILE_NAME = 'Purchase Provision Report'
-export const SALES_PROVISION_REPORT = 'Sales Provision Report'    
+export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const COST_DEVIATION_REPORT = 'Cost Deviation'
 export const COST_VARIANCE_REPORT = 'Cost Variance'
-      						//RE
+//RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
 export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
 export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
@@ -3153,6 +3164,7 @@ export const VOLUMEBULKUPLOAD = 'Volume'
 export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
+export const REJECTIONBULKUPLOAD = 'Rejection'
 export const PROFITBULKUPLOAD = 'Profit'
 export const ASSEMBLYORCOMPONENTSRFQ = "AssemblyOrComponentsRFQ"
 export const BOUGHTOUTPARTSRFQ = "BoughtOutPartsRFQ"
@@ -3423,6 +3435,9 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const COSTINGOVERHEADANDPROFTFORPROCESS = "Costing Overhead Profit For Process"
 export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Operation"
 export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra Cost"
+export const OVERHEADMASTER = "Overhead Master"
+export const PROFITMASTER = "Profit Master"
+export const REJECTIONMASTER = "Rejection Master"
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
@@ -3438,7 +3453,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.33";
+export const VERSION = "V4.2.34";
 
 
 
