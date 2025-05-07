@@ -187,9 +187,9 @@ class AddAssemblyPart extends Component {
               warningMessageTechnology: Data?.IsBOMEditable ? true : false,
               IsTechnologyUpdateRequired: Data?.IsTechnologyUpdateRequired,
               uomSelected: ({ label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }),
-              Model: Data?.PartModelIdRef ? {
+              Model: Data?.PartModelId ? {
                 label: Data?.PartsModelMaster || "",
-                value: Data?.PartModelIdRef
+                value: Data?.PartModelId
               } : [],
               PartFamilySelected: Data?.PartFamilyId ? {
                 label: Data?.PartFamilyName || "",
@@ -892,7 +892,7 @@ class AddAssemblyPart extends Component {
         IsTechnologyUpdateRequired: false,
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
         NEPNumber: values?.NEP || "",
-        PartModelIdRef: this?.state?.Model?.value || "",
+        PartModelId: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
         PartFamilyIdRef: this?.state?.PartFamilySelected?.value || "",
         PartFamilyName: this?.state?.PartFamilySelected?.label || "",
@@ -941,7 +941,7 @@ class AddAssemblyPart extends Component {
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray,
         NEPNumber: values?.NEP,
-        PartModelIdRef: this?.state?.Model?.value || "",
+        PartModelId: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
         PartFamilyId: this.state?.PartFamilySelected?.value || "",
@@ -1747,7 +1747,7 @@ function mapStateToProps(state) {
       NEP: partData?.NEPNumber,
       Model: {
           label: partData?.PartsModelMaster || "",
-          value: partData?.PartModelIdRef || ""
+          value: partData?.PartModelId || ""
       },
       PartFamily: {
         label: partData?.PartFamilyName || "",

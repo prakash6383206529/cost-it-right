@@ -139,9 +139,9 @@ class AddIndivisualPart extends Component {
               TechnologySelected: ({ label: Data?.TechnologyName, value: Data?.TechnologyIdRef }),
               uomSelected: ({ label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }),
               IsTechnologyUpdateRequired: Data?.IsTechnologyUpdateRequired,
-              Model: Data?.PartModelIdRef ? {
+              Model: Data?.PartModelId ? {
                 label: Data?.PartsModelMaster || "",
-                value: Data?.PartModelIdRef
+                value: Data?.PartModelId
               } : [],
               PartFamilySelected: Data?.PartFamilyId ? {
                 label: Data?.PartFamilyName || "",
@@ -518,7 +518,7 @@ class AddIndivisualPart extends Component {
         IsTechnologyUpdateRequired: false,
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
         NEPNumber: values?.NEP,
-        PartModelIdRef: this?.state?.Model?.value || "",
+        PartModelId: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
         PartFamilyId: this?.state?.PartFamilySelected?.value || "",
         PartFamilyName: this?.state?.PartFamilySelected?.label || "",
@@ -555,7 +555,7 @@ class AddIndivisualPart extends Component {
         TechnologyName: this?.state?.TechnologySelected.label ? this?.state?.TechnologySelected.label : "",
         UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
         NEPNumber: values?.NEP ? values?.NEP : "",
-        PartModelIdRef: this?.state?.Model?.value || "",
+        PartModelId: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
         PartFamilyId: this?.state?.PartFamilySelected?.value || "",
         PartFamilyName: this?.state?.PartFamilySelected?.label || "",
@@ -1172,7 +1172,7 @@ function mapStateToProps({ comman, part, auth, costing }) {
       NEP: partData?.NEPNumber,
       Model: {
           label: partData?.PartsModelMaster || "",
-          value: partData?.PartModelIdRef || ""
+          value: partData?.PartModelId || ""
       },
       PartFamily: {
         label: partData?.PartFamilyName || "",
