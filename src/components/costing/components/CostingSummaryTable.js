@@ -2920,7 +2920,7 @@ const iccToolTipText = `
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.YieldPercentage)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.YieldPercentage, initialConfiguration?.NoOfDecimalForInputOutput)}</span> : '-')}
                                           </span>}
                                           {data?.technologyId === SHEETMETAL && <span className={highlighter("EffectiveDate")}>
-                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.EffectiveDate)}>{DayTime(data?.netRMCostView[0]?.EffectiveDate).isValid() ? DayTime(data?.netRMCostView[0]?.EffectiveDate) : ''}</span> : '-')}
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.EffectiveDate)}>{DayTime(data?.netRMCostView[0]?.EffectiveDate).isValid() ? DayTime(data?.netRMCostView[0]?.EffectiveDate).format('YYYY-MM-DD') : ''}</span> : '-')}
                                           </span>}
                                         </td>
                                       )

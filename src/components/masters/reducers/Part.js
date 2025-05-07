@@ -253,7 +253,7 @@ export default function partReducer(state = initialState, action) {
                 error: true,
                 partFamilyDetails: action.payload
             }
-        case GET_PART_FAMILY_SELECTLIST:
+            case GET_PART_FAMILY_SELECTLIST:
             return {
                 ...state,
                 loading: false,
