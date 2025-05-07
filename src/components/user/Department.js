@@ -80,6 +80,7 @@ class Department extends Component {
 
 			if (this.props.isDivision) {
 				this.props.getDivisionAPI(DepartmentId, (res) => {
+					
 					let Data = res?.data?.Data
 					if (res?.status === 204) {
 						this.setState({ DataToChange: null, selectedPlants: [] });
@@ -94,6 +95,7 @@ class Department extends Component {
 				})
 			} else {
 				this.props.getDepartmentAPI(DepartmentId, (res) => {
+					
 					
 					if (res?.status === 204) {
 						this.setState({ DataToChange: null, selectedPlants: [] });

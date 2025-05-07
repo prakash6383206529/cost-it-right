@@ -14,7 +14,7 @@ import { useLabels } from '../../../helper/core';
 import { useTranslation } from 'react-i18next';
 
 const PartFamilyDrawer = (props) => {
-  const { isOpen, anchor = 'right', onClose, isEditFlag, ID, refreshFamilyList } = props;
+  const { isOpen, anchor = 'right', onClose, isEditFlag, isViewFlag, ID, refreshFamilyList } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [partFamilyData, setPartFamilyData] = useState(null);
@@ -26,9 +26,9 @@ const PartFamilyDrawer = (props) => {
     reValidateMode: 'onChange',
   });
 
-  // Fetch part family data when in edit mode
+  // Fetch part family data when in edit mode or view mode
   useEffect(() => {
-    if (isEditFlag && ID) {
+    if ((isEditFlag || isViewFlag) && ID) {
       setIsLoading(true);
       dispatch(getPartFamilyById(ID, (res) => {
         setIsLoading(false);
@@ -45,7 +45,7 @@ const PartFamilyDrawer = (props) => {
         }
       }));
     }
-  }, [isEditFlag, ID, dispatch, setValue]);
+  }, [isEditFlag, isViewFlag, ID, dispatch, setValue, t]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -58,6 +58,11 @@ const PartFamilyDrawer = (props) => {
   };
 
   const onSubmit = (values) => {
+    if (isViewFlag) {
+      handleCancel();
+      return;
+    }
+    
     if (!values?.PartFamilyCode || !values?.PartFamilyName) {
       Toaster.warning(t('CommonLabels:requiredFieldsMessage', 'Please fill all required fields'));
       return;
@@ -116,9 +121,11 @@ const PartFamilyDrawer = (props) => {
             <Row className="drawer-heading">
               <Col>
                 <div className="header-wrapper left">
-                  <h3>{isEditFlag 
-                    ? t('PartMaster:updatePartFamily', 'Update Part Family')
-                    : t('PartMaster:addPartFamily', 'Add Part Family')}
+                  <h3>{isViewFlag
+                    ? t('PartMaster:viewPartFamily', 'View Part Family')
+                    : isEditFlag 
+                      ? t('PartMaster:updatePartFamily', 'Update Part Family')
+                      : t('PartMaster:addPartFamily', 'Add Part Family')}
                   </h3>
                 </div>
                 <div
@@ -149,6 +156,7 @@ const PartFamilyDrawer = (props) => {
                   errors={errors.PartFamilyCode}
                   handleChange={() => {}}
                   customClassName="withBorder"
+                  disabled={isViewFlag}
                 />
               </Col>
             </Row>
@@ -174,6 +182,7 @@ const PartFamilyDrawer = (props) => {
                   errors={errors.PartFamilyName}
                   handleChange={() => {}}
                   customClassName="withBorder"
+                  disabled={isViewFlag}
                 />
               </Col>
             </Row>
@@ -201,6 +210,7 @@ const PartFamilyDrawer = (props) => {
                   defaultValue=""
                   customClassName="textAreaWithBorder"
                   errors={errors.Remarks}
+                  disabled={isViewFlag}
                 />
               </Col>
             </Row>
@@ -211,18 +221,21 @@ const PartFamilyDrawer = (props) => {
                     onClick={handleCancel}
                     variant="mr15 cancel-btn"
                     icon="cancel-icon"
-                    buttonName={t('CommonLabels:cancel', 'Cancel')}
+                    buttonName={isViewFlag 
+                      ? t('CommonLabels:close', 'Close') 
+                      : t('CommonLabels:cancel', 'Cancel')}
                   />
-                  <Button
-                    type="submit"
-                    className="save-btn"
-                    icon="save-icon"
-                    buttonName={isEditFlag 
-                      ? t('CommonLabels:update', 'Update') 
-                      : t('CommonLabels:save', 'Save')
-                    }
-                    disabled={isSubmitting || isLoading}
-                  />
+                  {!isViewFlag && (
+                    <Button
+                      type="submit"
+                      className="save-btn"
+                      icon="save-icon"
+                      buttonName={isEditFlag 
+                        ? t('CommonLabels:update', 'Update') 
+                        : t('CommonLabels:save', 'Save')}
+                      disabled={isSubmitting || isLoading}
+                    />
+                  )}
                 </div>
               </div>
             </Row>
