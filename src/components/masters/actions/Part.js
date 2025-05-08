@@ -1031,7 +1031,7 @@ export function deleteModel(modelId, callback) {
 }
 export function getModelById(modelId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getModelById}?modelId=${modelId}&loggedInUserId=${loggedInUserId()}`, config());
+        const request = axios.get(`${API.getModelById}/${modelId}/${loggedInUserId()}`, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {

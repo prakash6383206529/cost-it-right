@@ -206,7 +206,7 @@ export const API = {
   addModel: `${BASE_URL}/masters-part/create-part-model-master`,
   editModel: `${BASE_URL}/masters-part/update-part-model-master`,
   deleteModel: `${BASE_URL}/masters-part/delete-part-model-master`,
-  getModelById: `${BASE_URL}/masters-part/get-part-model-master-by-id`,
+  getModelById: `${BASE_URL}/masters-part/get-part-model-by-id`,
   //PART FAMILY
 
   getPartFamilyById: `${BASE_URL}/part-family/get-by-id`,
