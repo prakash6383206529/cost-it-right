@@ -229,8 +229,10 @@ function AddRMFinancialDetails(props) {
     useEffect(() => {
         if (rawMaterailDetailsRefFinancial.current && rawMaterailDetailsRefFinancial.current?.Technology && Object.keys(rawMaterailDetailsRefFinancial.current?.Technology).length > 0) {
             checkTechnology()
-            setState(prevState => ({ ...prevState, IsCalculateScrapRate: rawMaterailDetailsRefFinancial?.current?.states?.IsCalculateScrapRate ?? false, IsCalculateMachineScrapRate: rawMaterailDetailsRefFinancial?.current?.states?.IsCalculateMachineScrapRate ?? false }));
-            setValue("scrapRatePercentageOfRMRate", rawMaterailDetailsRefFinancial?.current?.states?.scrapRatePercentageOfRMRate ?? '')
+            if (!isViewFlag) { // Below setState creating issues in view mode getting blank values
+                setState(prevState => ({ ...prevState, IsCalculateScrapRate: rawMaterailDetailsRefFinancial?.current?.states?.IsCalculateScrapRate ?? false, IsCalculateMachineScrapRate: rawMaterailDetailsRefFinancial?.current?.states?.IsCalculateMachineScrapRate ?? false }));
+                setValue("scrapRatePercentageOfRMRate", rawMaterailDetailsRefFinancial?.current?.states?.scrapRatePercentageOfRMRate ?? '')
+            }
         }
     }, [rawMaterailDetailsRefFinancial.current?.Technology])
     useEffect(() => {
@@ -663,8 +665,9 @@ function AddRMFinancialDetails(props) {
             } else {
                 setValue('JaliScrapCost', '');
             }
-            updatedState.scrapRatePercentageOfRMRate = ""
-            setValue("scrapRatePercentageOfRMRate", '')
+            // Not required to update scrap rate when base price changes
+            // updatedState.scrapRatePercentageOfRMRate = ""
+            // setValue("scrapRatePercentageOfRMRate", '')
         }
         setState(updatedState)
         dispatch(setRawMaterialDetails({
