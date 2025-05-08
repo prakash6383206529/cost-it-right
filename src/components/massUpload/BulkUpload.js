@@ -12,7 +12,7 @@ import { bulkUploadMachine, bulkUploadMachineMoreZBC } from '../masters/actions/
 import { fuelBulkUpload } from '../masters/actions/Fuel';
 import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
-import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/OverheadProfit';
+import { overheadBulkUpload, profitBulkUpload, rejectionBulkUpload } from '../masters/actions/OverheadProfit';
 import { operationBulkUpload } from '../masters/actions/OtherOperation';
 import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
@@ -36,7 +36,8 @@ import {
     RAWMATERIALSRFQ,
     BOUGHTOUTPARTSRFQ,
     FILE_URL,
-    SAP_PUSH
+    SAP_PUSH,
+    REJECTIONBULKUPLOAD
 } from '../../config/constants';
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
@@ -54,7 +55,10 @@ import {
     AddRawMaterialHeaderData,
     AddBoughtOutPartsHeaderData,
     AddAssemblyOrComponentHeaderData,
-    SAP_PUSH_HEADER_DATA
+    SAP_PUSH_HEADER_DATA,
+    RejectionVBC,
+    Rejection,
+    RejectionCBC
 } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, RFQ_KEYS, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -313,7 +317,7 @@ class BulkUpload extends Component {
      * @method fileChangedHandler
      * @description called for profile pic change
      */
-    fileHandler = event => {
+    fileHandler = event => {    
         this.setState({ bulkUploadLoader: true })
         let fileObj = event.target.files[0];
         let masterDataArray = []
@@ -640,6 +644,23 @@ class BulkUpload extends Component {
                                 const localizedProfitCBC = this.localizeHeaders(ProfitCBC);
                                 masterDataArray = localizedProfitCBC
                                 checkForFileHead = checkForSameFileUpload(localizedProfitCBC, fileHeads)
+                            }
+                            break;
+                        case String(REJECTIONBULKUPLOAD):
+                            if (this.state.costingTypeId === VBCTypeId) {
+                                const localizedOverheadVBC = this.localizeHeaders(RejectionVBC);
+                                masterDataArray = localizedOverheadVBC
+                                checkForFileHead = checkForSameFileUpload(localizedOverheadVBC, fileHeads)
+                            }
+                            else if (this.state.costingTypeId === ZBCTypeId) {
+                                const localizedOverheadZBC = this.localizeHeaders(Rejection);
+                                masterDataArray = localizedOverheadZBC
+                                checkForFileHead = checkForSameFileUpload(localizedOverheadZBC, fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                const localizedOverheadCBC = this.localizeHeaders(RejectionCBC);
+                                masterDataArray = localizedOverheadCBC
+                                checkForFileHead = checkForSameFileUpload(localizedOverheadCBC, fileHeads)
                             }
                             break;
                         case String(RMMATERIALBULKUPLOAD):
@@ -1051,6 +1072,12 @@ class BulkUpload extends Component {
 
             } else if (fileName === 'Overhead') {
                 this.props.overheadBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+
+            } else if (fileName === 'Rejection') {
+                this.props.rejectionBulkUpload(uploadData, (res) => {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
                 });
@@ -1605,6 +1632,7 @@ export default connect(mapStateToProps, {
     vendorBulkUpload,
     bulkUploadRM,
     overheadBulkUpload,
+    rejectionBulkUpload,
     profitBulkUpload,
     operationBulkUpload,
     labourBulkUpload,

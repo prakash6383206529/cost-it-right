@@ -28,6 +28,7 @@ import ReasonListing from "./masters/reason-master/ReasonListing";
 import VolumeListing from "./masters/volume-master/VolumeListing";
 import ClientMaster from "./masters/client-master/AddClient";
 import ExchangeRateListing from "./masters/exchange-rate-master/ExchangeRateListing";
+import RejectionMaster from "./masters/rejection-master";
 import TaxListing from "./masters/tax-master/TaxListing";
 import LeftMenu from "./nav/Leftsidemenu";
 import Breadcrumb from "./nav/Breadcrumb";
@@ -114,6 +115,7 @@ import {
   COSTING_BULKUPLOAD,
   COST_VARIANCE_REPORT,
   COST_DEVIATION_REPORT,
+  REJECTION,
 } from "../config/constants";
 import ApprovalSummary from "./costing/components/approval/ApprovalSummary";
 import CostingSummaryBulkUpload from "./costing/components/CostingSummaryBulkUpload";
@@ -490,7 +492,13 @@ class Main extends Component {
                         OVERHEAD_AND_PROFIT
                       )}
                     />
-
+                    <Route
+                      path="/rejection-master"
+                      component={AuthMiddleware(
+                        RejectionMaster,
+                        REJECTION
+                      )}
+                    />
                     <Route
                       path="/interest-rate-master"
                       component={AuthMiddleware(InterestRate, INTEREST_RATE)}

@@ -23,7 +23,8 @@ import {
     STORE_HIERARCHY_DATA,
     GET_PART_FAMILY_LIST_SUCCESS,
     GET_ALL_PART_FAMILY_LIST_SUCCESS,
-    GET_PART_FAMILY_DETAILS_SUCCESS
+    GET_PART_FAMILY_DETAILS_SUCCESS,
+    GET_PART_FAMILY_SELECTLIST
 } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -39,6 +40,8 @@ import axiosInstance from '../../../utils/axiosInstance';
  * @description create New Part
  */
 export function createPart(data, callback) {
+    
+    
     return (dispatch) => {
         const request = axiosInstance.post(API.createPart, data, config());
         request.then((response) => {
@@ -58,6 +61,7 @@ export function createPart(data, callback) {
  * @description update Part
  */
 export function updatePart(requestData, callback) {
+    
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         axiosInstance.put(`${API.updatePart}`, requestData, config())
@@ -268,6 +272,7 @@ export function checkStatusCodeAPI(CODE, callback) {
 * @description CREATE NEW ASSEMBLY PART
 */
 export function createAssemblyPart(data, callback) {
+    
     return (dispatch) => {
         const request = axiosInstance.post(API.createAssemblyPart, data, config());
         request.then((response) => {
@@ -289,6 +294,7 @@ export function createAssemblyPart(data, callback) {
 */
 
 export function getAssemblyPartDataList(params, callback) {
+    
     const requestData = { LoggedInUserId: loggedInUserId(), ...params }
     return async (dispatch) => {
         try {
@@ -357,6 +363,7 @@ export function getAssemblyPartDetail(PartId, callback) {
 * @description UPDATE ASSEMBLY PART
 */
 export function updateAssemblyPart(requestData, callback) {
+    
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         axiosInstance.put(`${API.updateAssemblyPart}`, requestData, config())
@@ -977,7 +984,7 @@ export function getModelList(callback) {
  * @description Add a new model
  */
 export function addModel(data, callback) {
-    console.log("data", data);
+    
     const requestData = { loggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
         const request = axiosInstance.post(API.addModel, requestData, config());
@@ -1022,6 +1029,17 @@ export function deleteModel(modelId, callback) {
         });
     };
 }
+export function getModelById(modelId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getModelById}?modelId=${modelId}&loggedInUserId=${loggedInUserId()}`, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 
 
 /**
@@ -1055,7 +1073,7 @@ export function getPartFamilyList(skip, take, filterData, isPagination = false, 
         .catch((error) => {
           apiErrors(error);
           dispatch({ type: API_FAILURE });
-          callback(error.response);
+          callback(error?.response);
         });
     };
   }
@@ -1174,3 +1192,23 @@ export function getPartFamilyList(skip, take, filterData, isPagination = false, 
         });
     };
   }
+  export function getPartFamilySelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPartFamilySelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PART_FAMILY_SELECTLIST,
+                    payload: response?.data?.SelectList || [],
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+  
