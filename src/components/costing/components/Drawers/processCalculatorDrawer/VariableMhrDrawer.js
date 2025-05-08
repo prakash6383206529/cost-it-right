@@ -182,7 +182,7 @@ function VariableMhrDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Process Calculatorr'}</h3>
+                  <h3>{'Process Calculator'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
