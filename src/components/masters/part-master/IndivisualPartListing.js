@@ -864,7 +864,7 @@ const IndivisualPartListing = (props) => {
                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
-                {PartMasterConfigurable?.IsShowPartModel && <AgGridColumn field="PartsModelMaster" headerName="Parts Model Master" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                {PartMasterConfigurable?.IsShowPartModel && <AgGridColumn field="PartsModelMaster" headerName="Parts Model" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowNepNumber && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
