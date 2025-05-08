@@ -525,7 +525,7 @@ function AssemblyPart(props) {
             {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
             {(item?.CostingPartDetails?.TotalOperationCostPerAssembly || item?.CostingPartDetails?.TotalProcessCostPerAssembly ||
               item?.CostingPartDetails?.TotalOperationCostSubAssembly || item?.CostingPartDetails?.TotalProcessCostSubAssembly ||
-              item?.CostingPartDetails?.TotalOperationCostComponent || item?.CostingPartDetails?.TotalProcessCostComponent ||
+              item?.CostingPartDetails?.TotalOperationCostComponent || item?.CostingPartDetails?.TotalProcessCostComponent ||item?.CostingPartDetails?.TotalWeldingCostComponent||
               item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly || item?.CostingPartDetails?.TotalOtherOperationCostComponent) ?
               <div class="tooltip-n ml-2 assembly-tooltip"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                 <span class="tooltiptext">
