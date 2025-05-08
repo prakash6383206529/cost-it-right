@@ -57,7 +57,7 @@ const PartFamilyListing = (props) => {
     warningMessage: false,
     searchText: "",
     isFilterButtonClicked: false,
-    floatingFilterData: { PartFamilyCode: "", PartFamilyName: "" , description: "", effectiveDate: ""},
+    floatingFilterData: { PartFamilyCode: "", PartFamilyName: "", description: "", effectiveDate: "" },
     tableData: [],
     isBulkUpload: false,
     deletedId: "",
@@ -475,6 +475,7 @@ const PartFamilyListing = (props) => {
       gridApi: params.api,
       gridColumnApi: params.columnApi
     }));
+    params.api.sizeColumnsToFit();
     params.api.paginationGoToPage(0);
   };
 
@@ -591,7 +592,7 @@ const PartFamilyListing = (props) => {
   return (
     <>
       <div
-        className={`ag-grid-react custom-pagination p-relative  ${permissions.Download ? "show-table-btn" : ""}`}
+        className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`}
       >
         {state.isLoader && <LoaderCustom />}
         {state.disableDownload && (
@@ -674,7 +675,7 @@ const PartFamilyListing = (props) => {
           </Col>
         </Row>
         <div
-          className={`ag-grid-wrapper height-width-wrapper ${(partFamilyList && partFamilyList?.length <= 0) || state.noData
+          className={`ag-grid-wrapper  height-width-wrapper ${(partFamilyList && partFamilyList?.length <= 0) || state.noData
             ? "overlay-contain"
             : ""}`}
         >
@@ -709,7 +710,7 @@ const PartFamilyListing = (props) => {
             /> */}
           </div>
           <div
-            className={`ag-grid-wrapper height-width-wrapper ${(partFamilyList && partFamilyList?.length <= 0) || state?.noData
+            className={`ag-grid-wrapper overlay-contain height-width-wrapper ${(partFamilyList && partFamilyList?.length <= 0) || state?.noData
               ? "overlay-contain"
               : ""
               }`}
@@ -747,7 +748,7 @@ const PartFamilyListing = (props) => {
                 >
                   <AgGridColumn field="PartFamilyCode" headerName="Part Family Code" cellRenderer={checkBoxRenderer} />
                   <AgGridColumn field="PartFamilyName" headerName="Part Family Name" />
-                  <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} />
+                  <AgGridColumn pinned="right" cellClass="ag-grid-action-container" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} />
                   <AgGridColumn
                     field="PartFamilyId"
                     pinned="right"

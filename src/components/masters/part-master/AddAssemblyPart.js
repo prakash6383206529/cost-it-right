@@ -1027,19 +1027,12 @@ class AddAssemblyPart extends Component {
   modelToggler = (modelId = '') => {
     const { isEditFlag, Model } = this.state;
 
-    if (isEditFlag && Model && Model.value) {
-      // Fetch model data for edit
-      this.setState({ isLoader: true });
-      this.props.getModelById(Model.value, (res) => {
-        this.setState({ isLoader: false });
-        if (res && res.data && res.data.Result) {
-          const modelData = res.data.Data;
-          this.props.change('ModelName', modelData.PartModelMasterName);
-          this.setState({
-            isModelDrawerOpen: true,
-            isModelEditFlag: true
-          });
-        }
+    if (isEditFlag && modelId !== '') {
+      // Just open the drawer with existing model data
+      this.setState({
+        isModelDrawerOpen: true,
+        isModelEditFlag: true,
+        Model: { value: modelId }
       });
     } else {
       // If in add mode, just open the drawer
