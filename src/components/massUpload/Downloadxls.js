@@ -38,7 +38,9 @@ import {
     RejectionCBC,
     RejectionCBC_TempData,
     Rejection,
-    RejectionVBC
+    RejectionVBC,
+    PartFamily,
+    PartFamilyTempData
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, RFQ_KEYS, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -258,6 +260,9 @@ class Downloadxls extends React.Component {
             case 'Part Component':
                 const localizedPartComponentHeaders = this.localizeHeaders(PartComponent);
                 return this.returnExcelColumn(checkSAPCodeinExcel(localizedPartComponentHeaders), checkSAPCodeinExcel(PartComponentTempData));
+            case 'Part Family':
+                const localizedPartFamilyHeaders = this.localizeHeaders(PartFamily);
+                return this.returnExcelColumn(checkSAPCodeinExcel(localizedPartFamilyHeaders), checkSAPCodeinExcel(PartFamilyTempData));
             case SAP_PUSH:
                 const localizedSAPPushHeaders = this.localizeHeaders(SAP_PUSH_HEADER_DATA);
                 return this.returnExcelColumn(localizedSAPPushHeaders, SAP_PUSH_TEMP_DATA);
@@ -548,6 +553,7 @@ class Downloadxls extends React.Component {
     * @description Used to get excel column names
     */
     returnExcelColumn = (data = [], TempData, isNoteColExist = false) => {
+        
         const { fileName, failedData, isFailedFlag } = this.props;
 
         let dataList = [...data]

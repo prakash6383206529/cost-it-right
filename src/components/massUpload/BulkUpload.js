@@ -14,7 +14,7 @@ import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
 import { overheadBulkUpload, profitBulkUpload, rejectionBulkUpload } from '../masters/actions/OverheadProfit';
 import { operationBulkUpload } from '../masters/actions/OtherOperation';
-import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
+import { partComponentBulkUpload, partFamilyBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
 import { volumeBulkUpload } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
@@ -37,7 +37,8 @@ import {
     BOUGHTOUTPARTSRFQ,
     FILE_URL,
     SAP_PUSH,
-    REJECTIONBULKUPLOAD
+    REJECTIONBULKUPLOAD,
+    PARTFAMILYBULKUPLOAD
 } from '../../config/constants';
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
@@ -58,7 +59,8 @@ import {
     SAP_PUSH_HEADER_DATA,
     RejectionVBC,
     Rejection,
-    RejectionCBC
+    RejectionCBC,
+    PartFamily
 } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, RFQ_KEYS, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -455,6 +457,11 @@ class BulkUpload extends Component {
                             const localizedPartComponent = this.localizeHeaders(PartComponent);
                             masterDataArray = localizedPartComponent
                             checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(localizedPartComponent), fileHeads)
+                            break;
+                        case String(PARTFAMILYBULKUPLOAD):
+                            const localizedPartFamily = this.localizeHeaders(PartFamily);
+                            masterDataArray = localizedPartFamily
+                            checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(localizedPartFamily), fileHeads)
                             break;
                         case String(PRODUCTCOMPONENTBULKUPLOAD):
                             const localizedProductComponent = this.localizeHeaders(ProductComponent);
@@ -1109,7 +1116,14 @@ class BulkUpload extends Component {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
                 });
-            } else if (fileName === SAP_PUSH) {
+                
+            } else if (fileName === 'Part Family') {
+                this.props.partFamilyBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+            }
+            else if (fileName === SAP_PUSH) {
                 this.props.sapPushBulkUpload(uploadData, (res) => {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
@@ -1639,6 +1653,7 @@ export default connect(mapStateToProps, {
     bulkUploadMachine,
     bulkUploadMachineMoreZBC,
     partComponentBulkUpload,
+    partFamilyBulkUpload,
     productComponentBulkUpload,
     bulkUploadBOP,
     volumeBulkUpload,

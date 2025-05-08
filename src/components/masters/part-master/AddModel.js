@@ -18,7 +18,18 @@ class ModelDrawer extends Component {
       isSubmitting: false
     };
   }
-
+  componentDidMount() {
+    // If we're in edit mode and have an ID, fetch the model data
+    if (this.props.isEditFlag && this.props.ID) {
+      this.props.getModelById(this.props.ID, (res) => {
+        if (res && res.data && res.data.Result) {
+          const modelData = res.data.Data;
+          // Set the form field value using redux-form's change function
+          this.props.change('ModelName', modelData.PartModelName);
+        }
+      });
+    }
+  }
   handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();

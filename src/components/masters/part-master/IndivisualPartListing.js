@@ -61,7 +61,7 @@ const IndivisualPartListing = (props) => {
     searchText: "",
     isFilterButtonClicked: false,
     // : { pageSize10: true, pageSize50: false, pageSize100: false, },
-    floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "", NEPNumber: "", PartsModelMaster: "" },
+    floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "", NEPNumber: "", PartFamily: "", PartsModelMaster: "" },
     tableData: [],
     isBulkUpload: false,
     deletedId: "",
@@ -571,6 +571,17 @@ const IndivisualPartListing = (props) => {
       if (column.value === "SAPCode") {
         return initialConfiguration?.IsSAPCodeRequired
       }
+      if (column.value === "PartFamily") {
+        return PartMasterConfigurable?.IsShowPartFamily
+    }
+    // Check for Part Model
+    if (column.value === "PartsModelMaster") {
+        return PartMasterConfigurable?.IsShowPartModel
+    }
+    // Check for NEP Number
+    if (column.value === "NEPNumber") {
+        return PartMasterConfigurable?.IsShowNepNumber
+    }
       return true;
     })
     return returnExcelColumn(filteredLabels, tempArr);
@@ -853,8 +864,8 @@ const IndivisualPartListing = (props) => {
                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
-                {PartMasterConfigurable?.IsShowPartModel && <AgGridColumn field="PartsModelMaster" headerName="Parts Model Master" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
-                {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                {PartMasterConfigurable?.IsShowPartModel && <AgGridColumn field="PartsModelMaster" headerName="Parts Model" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowNepNumber && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                 <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
