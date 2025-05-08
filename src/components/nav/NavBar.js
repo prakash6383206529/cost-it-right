@@ -890,7 +890,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeRFQ : RFQ}
                   alt={module + " icon"}
                 />
-                <span className="rfq">{el.ModuleName}</span>
+                <span className="rfq">Customer RFQ</span>
               </Link>
             </li>
           );
