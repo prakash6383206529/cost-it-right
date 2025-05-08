@@ -623,51 +623,51 @@ class BulkUpload extends Component {
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedOverheadVBC = this.localizeHeaders(OverheadVBC);
                                 masterDataArray = localizedOverheadVBC
-                                checkForFileHead = checkForSameFileUpload(localizedOverheadVBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadVBC), fileHeads);
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedOverheadZBC = this.localizeHeaders(Overhead);
                                 masterDataArray = localizedOverheadZBC
-                                checkForFileHead = checkForSameFileUpload(localizedOverheadZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadZBC), fileHeads);
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedOverheadCBC = this.localizeHeaders(OverheadCBC);
                                 masterDataArray = localizedOverheadCBC
-                                checkForFileHead = checkForSameFileUpload(localizedOverheadCBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadCBC), fileHeads);
                             }
                             break;
                         case String(PROFITBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedProfitVBC = this.localizeHeaders(ProfitVBC);
                                 masterDataArray = localizedProfitVBC
-                                checkForFileHead = checkForSameFileUpload(localizedProfitVBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedProfitVBC), fileHeads);
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedProfitZBC = this.localizeHeaders(Profit);
                                 masterDataArray = localizedProfitZBC
-                                checkForFileHead = checkForSameFileUpload(localizedProfitZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedProfitZBC), fileHeads);
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedProfitCBC = this.localizeHeaders(ProfitCBC);
                                 masterDataArray = localizedProfitCBC
-                                checkForFileHead = checkForSameFileUpload(localizedProfitCBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedProfitCBC), fileHeads);
                             }
                             break;
                         case String(REJECTIONBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedOverheadVBC = this.localizeHeaders(RejectionVBC);
                                 masterDataArray = localizedOverheadVBC
-                                checkForFileHead = checkForSameFileUpload(localizedOverheadVBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadVBC), fileHeads)
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedOverheadZBC = this.localizeHeaders(Rejection);
                                 masterDataArray = localizedOverheadZBC
-                                checkForFileHead = checkForSameFileUpload(localizedOverheadZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadZBC), fileHeads);
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedOverheadCBC = this.localizeHeaders(RejectionCBC);
                                 masterDataArray = localizedOverheadCBC
-                                checkForFileHead = checkForSameFileUpload(localizedOverheadCBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadCBC), fileHeads);
                             }
                             break;
                         case String(RMMATERIALBULKUPLOAD):

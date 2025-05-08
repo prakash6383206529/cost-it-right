@@ -1584,6 +1584,7 @@ export const Overhead = [
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
     { label: 'PlantCode', value: 'PlantCode', },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
 ]
@@ -1624,6 +1625,7 @@ export const OverheadVBC = [
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
     { label: 'VendorCode', value: 'VendorCode', },
     { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
 ]
@@ -1666,6 +1668,7 @@ export const OverheadCBC = [
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: "CustomerCode", value: "CustomerCode" },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
 ]
@@ -2541,6 +2544,7 @@ export const Profit = [
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
     { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
 ]
@@ -2581,6 +2585,7 @@ export const ProfitVBC = [
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
     { label: 'VendorCode', value: 'VendorCode', },
     { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', }
 ]
@@ -2623,6 +2628,7 @@ export const ProfitCBC = [
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'CustomerCode', value: 'CustomerCode' },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', }
 ]
@@ -2798,6 +2804,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -2826,6 +2833,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -2851,6 +2859,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -2876,6 +2885,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
@@ -2907,6 +2917,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -2938,6 +2949,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -2968,6 +2980,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -2998,6 +3011,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
@@ -3031,6 +3045,7 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -3050,6 +3065,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -3068,6 +3084,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -3086,6 +3103,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
@@ -3110,6 +3128,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -3141,6 +3160,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -3170,6 +3190,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -3199,6 +3220,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
@@ -3230,6 +3252,7 @@ export const BOP_CBC_DOMESTIC = [
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -3258,6 +3281,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -3283,6 +3307,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -3308,6 +3333,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
@@ -3339,6 +3365,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -3364,6 +3391,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -3385,6 +3413,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -3406,6 +3435,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
@@ -3433,6 +3463,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -3469,6 +3500,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -3500,6 +3532,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -3531,6 +3564,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
@@ -3564,6 +3598,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -3596,6 +3631,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -3625,6 +3661,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -3654,6 +3691,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
+        'PartFamilyCode': '111',
         'Specification': '20 mm',
         'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
@@ -6563,6 +6601,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
     { label: "BOP Part Category", value: "BoughtOutPartCategory", },
+    { label: "Part Family (Code)", value: "PartFamily" },
     { label: "Division", value: "Division", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
@@ -6593,6 +6632,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
     { label: "BOP Part Name", value: "BoughtOutPartName" },
     { label: "BOP Category", value: "BoughtOutPartCategory" },
+    { label: "Part Family", value: "PartFamily" },
     { label: "Division", value: "Division", },
     { label: "UOM", value: "UOM" },
     { label: "Specification", value: "Specification" },
@@ -6926,6 +6966,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
+    { label: "Part Family (Code)", value: "PartFamily" },
     { label: "Model Type", value: "ModelType", },
     { label: "Overhead Applicability", value: "Applicability", },
     { label: "Effective Date", value: "EffectiveDate", },
