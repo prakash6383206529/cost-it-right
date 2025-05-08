@@ -142,7 +142,7 @@ class AddIndivisualPart extends Component {
               Model: Data?.PartModelId ? {
                 label: Data?.PartsModelMaster || "",
                 value: Data?.PartModelId
-              } : [],
+              } : null,
               PartFamilySelected: Data?.PartFamilyId ? {
                 label: Data?.PartFamily || "",
                 value: Data?.PartFamilyId
@@ -580,22 +580,14 @@ class AddIndivisualPart extends Component {
   modelToggler = (modelId = '') => {
     const { isEditFlag, Model } = this.state;
 
-
     if (isEditFlag && modelId !== '') {
-      // Fetch model data for edit
-      this.setState({ isLoader: true });
-      this.props.getModelById(modelId, (res) => {
-        this.setState({ isLoader: false });
-        if (res && res.data && res.data.Result) {
-          const modelData = res.data.Data;
-          this.props.change('ModelName', modelData.PartModelMasterName);
-          this.setState({
-            isModelDrawerOpen: true,
-            isModelEditFlag: true
-          });
-        }
+      // Just open the drawer with existing model data
+      this.setState({
+        isModelDrawerOpen: true,
+        isModelEditFlag: true,
+        Model: { value: modelId }
       });
-    }  else {
+    } else {
       // If in add mode, just open the drawer
       this.setState({
         isModelDrawerOpen: true,
@@ -645,8 +637,22 @@ class AddIndivisualPart extends Component {
         PartModelMasterName: modelData.ModelName
       }, (res) => {
         if (res && res?.data && res?.data?.Result) {
+          // Update the model in state with the edited data
+          const updatedModel = {
+            label: modelData.ModelName,
+            value: modelData.Id
+          };
+          
+          // Update both state and form field
+          this.setState({
+            Model: updatedModel,
+            isModelDrawerOpen: false
+          });
+          
+          // Update the form field value
+          this.props.change('Model', updatedModel);
+          
           this.getModelList(); // Refresh the model list
-          this.setState({ isModelDrawerOpen: false });
         }
       });
     } else {
@@ -1129,7 +1135,7 @@ class AddIndivisualPart extends Component {
             <AddModel
               isOpen={this?.state?.isModelDrawerOpen}
               onClose={() => this.setState({ isModelDrawerOpen: false })}
-              onSubmit={this.handleModelSubmit}
+              handleModelSubmit={this.handleModelSubmit()}
               ID={this?.state?.Model?.value}
               isEditFlag={this?.state?.isModelEditFlag}
               refreshModelList={this.getModelList}
