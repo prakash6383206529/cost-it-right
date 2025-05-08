@@ -153,7 +153,6 @@ const AddOverheadMasterDetails = (props) => {
     }
 
     const handleAddApplicability = async () => {
-        debugger
         const applicability = getValues("OverheadApplicability");
         const isApplicabilityValid = await trigger("OverheadApplicability");
         if (!applicability?.label || !isApplicabilityValid) return;
