@@ -1793,7 +1793,7 @@ export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
 export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
 export const CHECK_IS_PAYMENT_TERMS_DATA_CHANGE = 'CHECK_IS_PAYMENT_TERMS_DATA_CHANGE'
 export const CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE = 'CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE'
-export const SET_BOP_REMARK="SET_BOP_REMARK"
+export const SET_BOP_REMARK = "SET_BOP_REMARK"
 
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
 export const GET_FG_WISE_IMPACT_DATA_FOR_COSTING = 'GET_FG_WISE_IMPACT_DATA_FOR_COSTING'
@@ -2351,10 +2351,10 @@ export const CUSTOMER_POAM_REPORT = 'Customer POAM Summary'
 export const BUDGETING = 'Budgeting'
 export const SALES_PROVISION_FILE_NAME = 'Sales Provision Report'
 export const PURCHASE_PROVISION_FILE_NAME = 'Purchase Provision Report'
-export const SALES_PROVISION_REPORT = 'Sales Provision Report'    
+export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const COST_DEVIATION_REPORT = 'Cost Deviation'
 export const COST_VARIANCE_REPORT = 'Cost Variance'
-      						//RE
+//RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
 export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
 export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
@@ -3453,7 +3453,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.33";
+export const VERSION = "V4.2.34";
 
 
 
