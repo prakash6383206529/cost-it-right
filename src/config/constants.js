@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
- const BASE_URL = `http://10.10.1.102:3002/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+//  const BASE_URL = `http://10.10.1.102:8002/api/v1`;
 
 
 
@@ -202,6 +202,22 @@ export const API = {
   getChildDrawerBOPData: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-by-id`,
   BOMUploadPart: `${BASE_URL}/masters-part/upload-bom-json`,
   convertPartToAssembly: `${BASE_URL}/masters-part/convert-part-to-assembly`,
+  getModelList: `${BASE_URL}/masters-part/select-list-part-model-master`,
+  addModel: `${BASE_URL}/masters-part/create-part-model-master`,
+  editModel: `${BASE_URL}/masters-part/update-part-model-master`,
+  deleteModel: `${BASE_URL}/masters-part/delete-part-model-master`,
+  getModelById: `${BASE_URL}/masters-part/get-part-model-master-by-id`,
+  //PART FAMILY
+
+  getPartFamilyById: `${BASE_URL}/part-family/get-by-id`,
+  getPartFamilyList: `${BASE_URL}/part-family/get-all-part-family-by-filter`,
+  addPartFamily: `${BASE_URL}/part-family/create-part-family`,
+  updatePartFamily: `${BASE_URL}/part-family/update-part-family`,
+  deletePartFamily: `${BASE_URL}/part-family/delete-part-family`,
+  activePartFamily: `${BASE_URL}/part-family/active`,
+  bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-partfamily-json`,
+  getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
+
 
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -494,6 +510,7 @@ export const API = {
   overheadBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-overhead-json`,
   getVendorFilterByModelTypeSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-vendor-with-code-by-model-type-select-list`,
   getModelTypeFilterByVendorSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-model-type-by-vendor-select-list`,
+  rejectionBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-rejection-json`,
 
   createProfit: `${BASE_URL}/masters-overhead-and-profit/create-profit`,
   updateProfit: `${BASE_URL}/masters-overhead-and-profit/update-profit`,
@@ -1038,6 +1055,9 @@ export const API = {
   checkAndGetCustomerCode: `${BASE_URL}/client/generate-customer-company-code`,
   getPoamStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
 
+  //PART FAMILY
+  getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
+
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
   getExchangeRateDataList: `${BASE_URL}/masters-exchange-rate/get-all-exchange-rate`,
@@ -1428,6 +1448,12 @@ export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
 export const GET_COMPONENT_PART_SELECTLIST = 'GET_COMPONENT_PART_SELECTLIST'
 export const GET_BOUGHTOUT_PART_SELECTLIST = 'GET_BOUGHTOUT_PART_SELECTLIST'
 
+//PART FAMILY
+export const GET_PART_FAMILY_LIST_SUCCESS = 'GET_PART_FAMILY_LIST_SUCCESS'
+export const GET_ALL_PART_FAMILY_LIST_SUCCESS = 'GET_ALL_PART_FAMILY_LIST_SUCCESS'
+export const GET_PART_FAMILY_DETAILS_SUCCESS = 'GET_PART_FAMILY_DETAILS_SUCCESS'
+export const GET_PART_FAMILY_SELECTLIST = 'GET_PART_FAMILY_SELECTLIST'
+
 //SUB ASSEMBLY
 export const SUB_ASSEMBLY_TECHNOLOGY_ARRAY = 'SUB_ASSEMBLY_TECHNOLOGY_ARRAY'
 export const GET_EDIT_PART_COST_DETAILS = 'GET_EDIT_PART_COST_DETAILS'
@@ -1701,7 +1727,7 @@ export const GET_LABOUR_DATA_LIST = 'GET_LABOUR_DATA_LIST'
 export const GET_LABOUR_TYPE_FOR_MACHINE_TYPE = 'GET_LABOUR_TYPE_FOR_MACHINE_TYPE'
 export const UPDATE_LABOUR_FOR_MACHINE_TYPE = 'UPDATE_LABOUR_FOR_MACHINE_TYPE'
 
-//OVERHEAD AND PROFIT
+//OVERHEAD AND PROFIT AND REJECTION
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS'
 export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS'
 export const GET_OVERHEAD_PROFIT_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_DATA_SUCCESS'
@@ -1767,7 +1793,7 @@ export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
 export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
 export const CHECK_IS_PAYMENT_TERMS_DATA_CHANGE = 'CHECK_IS_PAYMENT_TERMS_DATA_CHANGE'
 export const CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE = 'CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE'
-export const SET_BOP_REMARK="SET_BOP_REMARK"
+export const SET_BOP_REMARK = "SET_BOP_REMARK"
 
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
 export const GET_FG_WISE_IMPACT_DATA_FOR_COSTING = 'GET_FG_WISE_IMPACT_DATA_FOR_COSTING'
@@ -2290,6 +2316,9 @@ export const MODULE_SIMULATION = 'Simulation'
 export const MODULE_MASTER = 'Master'
 export const MODULE_ONBOARDING = 'Onboarding&Management'
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
+
+export const REJECTION = 'Rejection'
+
 export const LABOUR = 'Labour'
 export const REASON = 'Reason'
 export const OPERATION = 'Operation'
@@ -2322,10 +2351,10 @@ export const CUSTOMER_POAM_REPORT = 'Customer POAM Summary'
 export const BUDGETING = 'Budgeting'
 export const SALES_PROVISION_FILE_NAME = 'Sales Provision Report'
 export const PURCHASE_PROVISION_FILE_NAME = 'Purchase Provision Report'
-export const SALES_PROVISION_REPORT = 'Sales Provision Report'    
+export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const COST_DEVIATION_REPORT = 'Cost Deviation'
 export const COST_VARIANCE_REPORT = 'Cost Variance'
-      						//RE
+//RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
 export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
 export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
@@ -3121,6 +3150,7 @@ export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " I
 export const INSERTIMPORTBULKUPLOAD = 'Insert Import';
 export const BOMBULKUPLOAD = 'BOM';
 export const PARTCOMPONENTBULKUPLOAD = 'Part Component';
+export const PARTFAMILYBULKUPLOAD = 'Part Family';
 export const PRODUCTCOMPONENTBULKUPLOAD = 'Product Component';
 export const MACHINEBULKUPLOAD = 'Machine';
 export const VENDORBULKUPLOAD = 'Vendor';
@@ -3135,6 +3165,7 @@ export const VOLUMEBULKUPLOAD = 'Volume'
 export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
+export const REJECTIONBULKUPLOAD = 'Rejection'
 export const PROFITBULKUPLOAD = 'Profit'
 export const ASSEMBLYORCOMPONENTSRFQ = "AssemblyOrComponentsRFQ"
 export const BOUGHTOUTPARTSRFQ = "BoughtOutPartsRFQ"
@@ -3407,6 +3438,7 @@ export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Ope
 export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra Cost"
 export const OVERHEADMASTER = "Overhead Master"
 export const PROFITMASTER = "Profit Master"
+export const REJECTIONMASTER = "Rejection Master"
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
@@ -3422,7 +3454,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.38";
+export const VERSION = "V4.2.34";
 
 
 

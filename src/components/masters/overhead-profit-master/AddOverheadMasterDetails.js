@@ -25,6 +25,7 @@ const AddOverheadMasterDetails = (props) => {
     const [editItemId, setEditItemId] = useState("")
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
     const plantSelectList = useSelector((state) => state.comman.plantSelectList)
+    const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
     const modelTypes = useSelector((state) => state.comman.modelTypes)
     const costingHead = useSelector((state) => state.comman.applicabilityList)
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
@@ -91,6 +92,15 @@ const AddOverheadMasterDetails = (props) => {
             plantSelectList && plantSelectList.map((item) => {
               if (item.PlantId === '0') return false
               temp.push({ label: item.PlantNameCode, value: item.PlantId })
+              return null
+            })
+            return temp
+        }
+
+        if (label === 'PartFamily') {
+            partFamilySelectList && partFamilySelectList.map((item) => {
+              if (item.Value === '--0--') return false
+              temp.push({ label: item.Text, value: item.Value })
               return null
             })
             return temp
@@ -204,6 +214,11 @@ const AddOverheadMasterDetails = (props) => {
     const handlePlant = (e) => {
         setState(prev => ({ ...prev, selectedPlants: e, DropdownNotChanged: false }));
         setValue("Plant", e);
+    }
+
+    const handlePartFamily = (e) => {
+        setState(prev => ({ ...prev, selectedPartFamily: e }));
+        setValue("PartFamily", e);
     }
 
     const handleSinglePlant = (newValue) => {
@@ -441,6 +456,50 @@ const AddOverheadMasterDetails = (props) => {
                         </Col>
                     ) }
 
+                    {props?.applicabilityLabel === "Rejection" &&
+                        <Col md="3">
+                            {/* <div className='d-flex align-items-center'>
+                                <SearchableSelectHookForm
+                                    label={`Part Family (Code)`}
+                                    name={'PartFamily'}
+                                    placeholder={'Select'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    rules={{ required: true }}
+                                    mandatory={true}
+                                    options={renderListing("PartFamily")}
+                                    handleChange={handlePartFamily}
+                                    // isMulti={true}
+                                    isMulti={(state?.isEditFlag || state?.isViewMode) ? false : true}
+                                    selection={state.selectedPartFamily == null || state.selectedPartFamily.length === 0 ? [] : state.selectedPartFamily}
+                                    // className="multiselect-with-border"
+                                    // customClassName={'withBorder'}
+                                    errors={errors.PartFamily}
+                                    disabled={state?.isEditFlag || state?.isViewMode}
+                                />
+                            </div> */}
+
+                            <SearchableSelectHookForm
+                                label={`Part Family (Code)`}
+                                name={'PartFamily'}
+                                placeholder={'Select'}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{ required: true }}
+                                mandatory={true}
+                                options={renderListing("PartFamily")}
+                                handleChange={handlePartFamily}
+                                // defaultValue={''}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.PartFamily}
+                                disabled={state?.isEditFlag || state?.isViewMode}
+                            />
+                        </Col>
+                    }
+
                     <Col md="3" className="st-operation mt-4 pt-2">
                         <label id="AddOverhead_ApplyPartCheckbox"
                             className={`custom-checkbox ${state?.isEditFlag ? "disabled" : ""}`}
@@ -500,7 +559,8 @@ const AddOverheadMasterDetails = (props) => {
 
                     <Col md="3">
                         <SearchableSelectHookForm
-                            label={`${props?.isOverHeadMaster ? "Overhead" : "Profit"} Applicability`}
+                            // label={`${props?.isOverHeadMaster ? "Overhead" : "Profit"} Applicability`}
+                            label={`${props?.applicabilityLabel ?? ''} Applicability`}
                             name={"OverheadApplicability"}
                             tooltipId={"RawMaterial"}
                             placeholder={"Select"}
@@ -521,7 +581,7 @@ const AddOverheadMasterDetails = (props) => {
                     {state?.OverheadApplicability?.label != "Fixed" &&
                     <Col md="3">
                         <TextFieldHookForm
-                            label={`${props?.isOverHeadMaster ? "Overhead" : "Profit"} (%)`}
+                            label={`${props?.applicabilityLabel ?? ''} (%)`}
                             name={'OverheadPercentage'}
                             Controller={Controller}
                             id={'overhead-percentage'}

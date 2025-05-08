@@ -3,11 +3,12 @@ import { Row, Col, Label } from 'reactstrap';
 import { required, getCodeBySplitting, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, maxLength512, acceptAllExceptSingleSpecialCharacter, validateFileName } from "../../../helper";
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, OVERHEADMASTER, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, REJECTIONMASTER, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { TextAreaHookForm } from '../../layout/HookFormInputs';
 import { debounce } from 'lodash'
 import { LabelsClass } from '../../../helper/core';
-import AddOverheadMasterDetails from './AddOverheadMasterDetails';
+// import AddOverheadMasterDetails from './AddOverheadMasterDetails';
+import AddOverheadMasterDetails from '../overhead-profit-master/AddOverheadMasterDetails';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper/auth";
@@ -28,17 +29,18 @@ import { ASSEMBLY } from '../../../config/masterData';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useTranslation } from 'react-i18next';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from './TourMessages';
+// import { Steps } from './TourMessages';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkEffectiveDate } from '../masterUtil';
+import { getPartFamilySelectList } from '../actions/Part';
 
 
-const AddOverheadMaster = (props) => {
+const AddRejectionMaster = (props) => {
     const dropzoneRef = useRef(null);
     const { t } = useTranslation("MasterLabels");
     const { plantSelectList, modelType, handleModelTypeChange } = props
     const dispatch = useDispatch();
-    const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
+    const conditionTypeId = getCostingConditionTypes(REJECTIONMASTER);
     // const menu = useSelector((state) => state.menu);
     const clientSelectList = useSelector((state) => state.client.clientSelectList);
 
@@ -53,6 +55,7 @@ const AddOverheadMaster = (props) => {
         isAssemblyCheckbox: false,
         costingTypeId: ZBCTypeId,
         selectedPlants: [],
+        selectedPartFamily: [],
         vendorName: [],
         vendorCode: '',
         client: [],
@@ -94,6 +97,7 @@ const AddOverheadMaster = (props) => {
         if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
           dispatch(getRawMaterialNameChild(() => { }));
         }
+        dispatch(getPartFamilySelectList(() => {}));
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }));
         dispatch(fetchApplicabilityList(null, conditionTypeId, false, res => {
 
@@ -117,7 +121,8 @@ const AddOverheadMaster = (props) => {
               vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
               customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
               effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-              technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null
+              technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
+              isRejection: true
             }
             dispatch(getOverheadDataCheck(data, (res) => {
               if (res?.status === 200) {
@@ -163,6 +168,7 @@ const AddOverheadMaster = (props) => {
           setValue("Remark", Data.Remark)
           setValue("costingTypeId", Data.CostingTypeId)
           setValue("clientName", Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [])
+          setValue("PartFamily", Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : [])
           setValue("vendorName", Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [])
           setValue("Plant", Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [])
           setValue("DestinationPlant", Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {})
@@ -184,6 +190,7 @@ const AddOverheadMaster = (props) => {
               RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
               isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false ,
               ApplicabilityDetails: Data.ApplicabilityDetails,
+              selectedPartFamily: Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : [],
               isLoader: false
           }));
           let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -223,7 +230,7 @@ const AddOverheadMaster = (props) => {
     };
 
   const onSubmit = debounce(handleSubmit((values) => {
-      const { client, costingTypeId, ModelType, vendorName, selectedPlants, remarks, OverheadID, RMGrade, ApplicabilityDetails,
+      const { client, costingTypeId, ModelType, vendorName, selectedPlants, remarks, OverheadID, RMGrade, ApplicabilityDetails, selectedPartFamily,
         singlePlantSelected, isEditFlag, files, EffectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged } = state;
       const userDetailsOverhead = JSON.parse(localStorage.getItem('userDetail'))
       let plantArray = []
@@ -289,7 +296,10 @@ const AddOverheadMaster = (props) => {
           RawMaterialGradeId: RMGrade?.value,
           RawMaterialGrade: RMGrade?.label,
           IsFinancialDataChanged: IsFinancialDataChanged,
-          ApplicabilityDetails: ApplicabilityDetails
+          ApplicabilityDetails: ApplicabilityDetails,
+          IsRejection: true,
+          PartFamilyId: selectedPartFamily?.value,
+          PartFamily: selectedPartFamily?.label
         }
 
         if (IsFinancialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props.IsOverheadAssociated) {
@@ -301,7 +311,7 @@ const AddOverheadMaster = (props) => {
         dispatch(updateOverhead(requestData, (res) => {
           setState(prev => ({ ...prev, setDisable: false }));
           if (res?.data?.Result) {
-            Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
+            Toaster.success(MESSAGES.REJECTION_UPDATE_SUCCESS);
             cancel('submit')
           }
         }));
@@ -327,19 +337,22 @@ const AddOverheadMaster = (props) => {
           RawMaterialGrade: RMGrade?.label,
           IsFinancialDataChanged: IsFinancialDataChanged,
           TechnologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
-          ApplicabilityDetails: ApplicabilityDetails
+          ApplicabilityDetails: ApplicabilityDetails,
+          IsRejection: true,
+          PartFamilyId: selectedPartFamily?.value,
+          PartFamily: selectedPartFamily?.label
         }
 
         dispatch(createOverhead(formData, (res) => {
           setState(prev => ({ ...prev, setDisable: false }));
           if (res?.data?.Result) {
-            Toaster.success(MESSAGES.OVERHEAD_ADDED_SUCCESS);
+            Toaster.success(MESSAGES.REJECTION_ADDED_SUCCESS);
             cancel('submit');
           }
         }));
       }
   }, (errors) => {  // Handle form errors
-    // console.log( errors);  // Check if there are validation errors
+    // console.log( "errors:", errors);  // Check if there are validation errors
 }),  500);
 
     const handleMessageChange = (e) => {
@@ -507,7 +520,7 @@ const AddOverheadMaster = (props) => {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Overhead Details
+                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Rejection Details
                       {/* {!isViewMode && <TourWrapper
                         buttonSpecificProp={{ id: "Add_Overhead_Form" }}
                         stepsSpecificProp={{
@@ -578,7 +591,7 @@ const AddOverheadMaster = (props) => {
                       getValues={getValues}
                       errors={errors}
                       isOverHeadMaster={true}
-                      applicabilityLabel="Overhead"
+                      applicabilityLabel="Rejection"
                   />
 
                     <Row>
@@ -729,4 +742,4 @@ const AddOverheadMaster = (props) => {
 }
 
 
-export default AddOverheadMaster;
+export default AddRejectionMaster;

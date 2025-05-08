@@ -457,13 +457,12 @@ export const clearCosting = (dispatch) => {
 
 export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false, remark = "", bopCostingId = "") => {
   let Arr = tabData
-  console.log("Arr", Arr)
   let assemblyWorkingRow = []
 
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
     // let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
     if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part' || item.PartType === 'BOP')) {
-     
+
       let subAssemblyObj = {
         "CostingId": item?.CostingId,
         "NetPOPrice": item?.CostingPartDetails?.NetPOPrice,

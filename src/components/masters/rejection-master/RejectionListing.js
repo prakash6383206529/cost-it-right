@@ -43,7 +43,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-function OverheadListing(props) {
+function RejectionListing(props) {
 
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
     const { t } = useTranslation("common")
@@ -199,7 +199,7 @@ function OverheadListing(props) {
         if (isPagination === true) {
             setIsLoader(true)
         }
-        dispatch(getOverheadDataList(filterData, skip, take, isPagination, cleanedDataObj, false, (res) => {
+        dispatch(getOverheadDataList(filterData, skip, take, isPagination, cleanedDataObj, true, (res) => {
             setIsLoader(false)
             if (res && res.status === 204) {
                 setTotalRecordCount(0)
@@ -313,14 +313,11 @@ function OverheadListing(props) {
     }
 
     const toggleExtraData = (showTour) => {
-
         setRender(true)
         setTimeout(() => {
             setShowExtraData(showTour)
             setRender(false)
         }, 100);
-
-
     }
     const onSearch = () => {
         setNoData(false)
@@ -805,6 +802,7 @@ function OverheadListing(props) {
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                                             <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                            {<AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="Applicability" headerName="Overhead Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
@@ -820,7 +818,7 @@ function OverheadListing(props) {
 
                             </Col>
                         </Row>
-                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Overhead`} isZBCVBCTemplate={true} messageLabel={`Overhead`} anchor={'right'} modelText={modelText} />}
+                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Rejection`} isZBCVBCTemplate={true} messageLabel={`Rejection`} anchor={'right'} modelText={modelText} />}
                         {
                             showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`} />
                         }
@@ -833,4 +831,4 @@ function OverheadListing(props) {
 
 }
 
-export default OverheadListing
+export default RejectionListing

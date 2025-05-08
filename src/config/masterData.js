@@ -1434,6 +1434,150 @@ export const VendorTempData = [
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
+
+export const RejectionCBC = [
+    { label: 'Note', value: 'Note', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'OverheadApplicability', value: 'OverheadApplicability', },
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'PlantCode', value: 'PlantCode' },
+    { label: "CustomerCode", value: "CustomerCode" },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const RejectionCBC_TempData = [
+    {
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'RM',
+        'OverheadPercentage': '',
+        "PlantCode": '3456',
+        "CustomerCode": 'C-10006',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        "PlantCode": '3456',
+        "CustomerCode": 'C-10006',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    },
+    {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'Part Cost',
+        'OverheadPercentage': '',
+        "PlantCode": '3456',
+        "CustomerCode": 'C-10006',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }
+
+]
+
+
+export const Rejection = [
+    { label: 'Note', value: 'Note', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'OverheadApplicability', value: 'OverheadApplicability', },
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'PlantCode', value: 'PlantCode', },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const RejectionTempData = [
+    {
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'RM',
+        'OverheadPercentage': '',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    },
+    {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'Part Cost',
+        'OverheadPercentage': '',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    }
+]
+
+export const RejectionVBC = [
+    { label: 'Note', value: 'Note', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'OverheadApplicability', value: 'OverheadApplicability', },
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const RejectionVBC_TempData = [
+    {
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'RM',
+        'OverheadPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    },
+    {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'Part Cost',
+        'OverheadPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "PartFamilyCode": '1234',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+    }
+]
+
+
+/**
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Overhead = [
     { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
@@ -1472,7 +1616,6 @@ export const OverheadTempData = [
         'Remark': 'Remark Text',
     }
 ]
-
 
 export const OverheadVBC = [
     { label: 'Note', value: 'Note', },
@@ -4621,6 +4764,9 @@ export const PartComponent = [
     { label: 'ECNNumber', value: 'ECNNumber', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
+    { label: 'PartsModelMaster', value: 'PartsModelMaster', },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
+    { label: 'NEPNumber', value: 'NEPNumber', },
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
@@ -4637,6 +4783,9 @@ export const PartComponentTempData = [
         'ECNNumber': '1',
         'RevisionNo': '1',
         'DrawingNo': '1',
+        'PartsModelMaster': 'PartModel123',
+        'PartFamilyCode': 'PartFamily123',
+        'NEPNumber': 'NEP123',
         'SAPCode': 'sap-1001',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'TechnologyName': 'Sheet Metal',
@@ -4645,7 +4794,24 @@ export const PartComponentTempData = [
     }
 ]
 
+//Part Family
+export const PartFamily = [
+    {label: 'PartFamilyName', value: 'PartFamilyName', },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode', },
+    { label: 'Description', value: 'Description', },
+        { label: 'EffectiveDate', value: 'EffectiveDate', },
 
+
+]
+
+export const PartFamilyTempData = [
+    {
+        'PartFamilyName': 'PartFamilyName123',
+        'PartFamilyCode': '123',
+        'Description': 'Part Family Description',
+        'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+    }
+]
 // USED IN BULK UPLOAD FOR PRODUCT COMPONENT
 
 export const ProductComponent = [
@@ -4782,6 +4948,9 @@ export const BOMUpload = [
     { label: "ECNNumber", value: "ECNNumber" },
     { label: "RevisionNo", value: "RevisionNo" },
     { label: "DrawingNo", value: "DrawingNo" },
+    { label: "PartsModelMaster", value: "PartsModelMaster" },
+    { label: "PartFamilyCode", value: "PartFamilyCode" },
+    { label: "NEPNumber", value: "NEPNumber" },
     { label: "SAPCode", value: "SAPCode", },
     { label: "IsAssembly", value: "IsAssembly" }, //NOUI,*
     { label: "BOMLevel", value: "BOMLevel" }, //NOUI,*
@@ -4806,6 +4975,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1001",
         "IsAssembly": "YES",
         "BOMLevel": 0,
@@ -4830,6 +5002,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1002",
         "IsAssembly": "NO",
         "BOMLevel": 1,
@@ -4854,6 +5029,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1003",
         "IsAssembly": "NO",
         "BOMLevel": 1,
@@ -4878,6 +5056,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1004",
         "IsAssembly": "YES",
         "BOMLevel": 1,
@@ -4902,6 +5083,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1005",
         "IsAssembly": "NO",
         "BOMLevel": 2,
@@ -6758,6 +6942,9 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
+    { label: "Part Model (Code)", value: "PartsModelMaster", },
+    { label: "Part Family (Code)", value: "PartFamily", },
+    { label: "NEP Number", value: "NEPNumber", },
     { label: "Division", value: "Division", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -6773,6 +6960,9 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
+    { label: "Part Model (Code)", value: "PartsModelMaster", },
+    { label: "Part Family (Code)", value: "PartFamily", },
+    { label: "NEP Number", value: "NEPNumber", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Status", value: "IsActive", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', },
@@ -6788,6 +6978,12 @@ export const INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl = [
     { label: "Drawing No.", value: "DrawingNumber" },
     { label: "Preferred for Impact Calculation", value: "IsConsideredForMBOM" },
     { label: "Effective Date", value: "EffectiveDate" },
+]
+
+export const PART_FAMILY_DOWNLOAD_EXCEl = [
+    { label: "Part Family Code", value: "PartFamilyCode" },
+    { label: "Part Family Name", value: "PartFamilyName" },
+    { label: 'Status', value: 'IsActive' }
 ]
 
 export const VBCPLANT_DOWNLOAD_EXCEl = [
