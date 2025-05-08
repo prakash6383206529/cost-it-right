@@ -97,7 +97,7 @@ const AssemblyPartListing = React.memo((props) => {
   const [floatingFilterData, setFloatingFilterData] = useState({
     BOMNumber: "", PartNumber: "", PartName: "", NumberOfParts: "", BOMLevelCount: "", Technology
       : "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", UnitOfMeasurementSymbol: "", EffectiveDateNew
-      : "", NEPNumber: "", PartsModelMaster: "", isApplyPagination: true, skip: 0, take: 10,
+      : "", NEPNumber: "", PartFamily: "", PartsModelMaster: "", isApplyPagination: true, skip: 0, take: 10,
   });
 
   const permissions = useContext(ApplyPermission);
@@ -124,6 +124,7 @@ const AssemblyPartListing = React.memo((props) => {
       skip: newSkip ?? 0,
       take: numericPageSize ?? 10,
       nepNumber: floatingFilterData?.NEPNumber ?? null,
+      partFamily: floatingFilterData?.PartFamily ?? null,
       partmodelmaster: floatingFilterData?.PartsModelMaster ?? null,
       
     };
@@ -663,6 +664,16 @@ const AssemblyPartListing = React.memo((props) => {
         if (column?.value === "SAPCode") {
           return initialConfiguration?.IsSAPCodeRequired;
         }
+        if (column?.value === "PartFamily") {
+          return PartMasterConfigurable?.IsShowPartFamily
+        }
+        if (column?.value === "PartsModelMaster") {
+          return !PartMasterConfigurable?.IsShowPartModel
+        }
+        if (column?.value === "NEPNumber") {
+          return PartMasterConfigurable?.IsShowNepNumber
+        }
+        
         return true;
       });
       return returnExcelColumn(filteredLabels, tempArr);
@@ -922,7 +933,7 @@ const AssemblyPartListing = React.memo((props) => {
                   <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                   <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
                   {PartMasterConfigurable?.IsShowPartModel && <AgGridColumn field="PartsModelMaster" headerName="Parts Model Master" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
-                {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowNepNumber && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                   {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                   {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={'hyphenFormatter'}  ></AgGridColumn>}
