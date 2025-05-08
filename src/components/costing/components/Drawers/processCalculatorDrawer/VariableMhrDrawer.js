@@ -68,7 +68,7 @@ function VariableMhrDrawer(props) {
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
               item={item}
-              rmFinishWeight={props.rmFinishWeight}
+              rmFinishWeight={props?.calculatorData?.Quantity || ''} // Pass Gross Weight instead of Net Weight.
               calculatorData={calculatorData}
             />
           );
@@ -104,7 +104,7 @@ function VariableMhrDrawer(props) {
             calculateMachineTime={calculateMachineTime}
             tonnage={tonnage}
             item={item}
-            rmFinishWeight={props.rmFinishWeight}
+            rmFinishWeight={props?.calculatorData?.Quantity || ''} // Pass Gross Weight instead of Net Weight.
             calculatorData={calculatorData}
           />
         )
@@ -129,7 +129,7 @@ function VariableMhrDrawer(props) {
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
               item={item}
-              rmFinishWeight={props.rmFinishWeight}
+              rmFinishWeight={props?.calculatorData?.Quantity || ''} // Pass Gross Weight instead of Net Weight.
               calculatorData={calculatorData}
             />
           )
@@ -148,7 +148,7 @@ function VariableMhrDrawer(props) {
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
               item={item}
-              rmFinishWeight={props.rmFinishWeight}
+              rmFinishWeight={props?.calculatorData?.Quantity || ''} // Pass Gross Weight instead of Net Weight.
               calculatorData={calculatorData}
             />
           )
@@ -161,7 +161,7 @@ function VariableMhrDrawer(props) {
           calculateMachineTime={calculateMachineTime}
           tonnage={tonnage}
           item={item}
-          rmFinishWeight={props.rmFinishWeight}
+          rmFinishWeight={props?.calculatorData?.Quantity || ''} // Pass Gross Weight instead of Net Weight.
           calculatorData={calculatorData}
         />
       )
@@ -182,7 +182,7 @@ function VariableMhrDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Process Calculator'}</h3>
+                  <h3>{'Process Calculatorr'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
