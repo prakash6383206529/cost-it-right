@@ -101,11 +101,11 @@ function AddPackaging(props) {
       if (applicability?.label === 'Crate/Trolley') {
         setShowCalculator(true)
       }
-      
+
       setValue("Quantity", totalFinishWeight ? checkForDecimalAndNull(totalFinishWeight, getConfigurationKey().NoOfDecimalForPrice) : '')
-      
+
       setOriginalQuantity(totalFinishWeight)
-      
+
       setTotalRMGrossWeight(totalGrossWeight)
     }
   }, [RMCCTabData, applicability])
@@ -360,8 +360,8 @@ function AddPackaging(props) {
   }
 
   const calculatePerKg = (rate, weight) => {
-    if (checkForNull(originalQuantity) !== 0 && applicability?.label === PACK_AND_FREIGHT_PER_KG && weight > originalQuantity) {
-      Toaster.warning("Enter value less than net weight.")
+    if (checkForNull(totalRMGrossWeight) !== 0 && applicability?.label === PACK_AND_FREIGHT_PER_KG && weight > totalRMGrossWeight) {
+      Toaster.warning("Enter value less than gross weight.")
       setTimeout(() => {
         setValue('Quantity', '')
       }, 50);
