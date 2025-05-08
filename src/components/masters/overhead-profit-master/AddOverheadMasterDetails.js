@@ -20,7 +20,7 @@ import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../a
 const AddOverheadMasterDetails = (props) => {
     const dispatch = useDispatch();
     const { t } = useTranslation("MasterLabels");
-    const { costingTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors} = props
+    const { costingTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors, trigger, clearErrors} = props
     const [isEditIndex, setIsEditIndex] = useState(false)
     const [editItemId, setEditItemId] = useState("")
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
@@ -152,13 +152,21 @@ const AddOverheadMasterDetails = (props) => {
           }));
     }
 
-    const handleAddApplicability = () => {
+    const handleAddApplicability = async () => {
+        debugger
+        const applicability = getValues("OverheadApplicability");
+        const isApplicabilityValid = await trigger("OverheadApplicability");
+        if (!applicability?.label || !isApplicabilityValid) return;
         const percentage = getValues("OverheadPercentage");
-        if(!checkForNull(percentage) && state?.OverheadApplicability?.label != "Fixed"){
+        
+        if (applicability?.label !== "Fixed") {
+            const isPercentageValid = await trigger("OverheadPercentage");
+            if (!isPercentageValid) return;
+        }
+        if(!checkForNull(percentage) && state?.OverheadApplicability?.label != "Fixed"){ 
             setValue("OverheadPercentage", "")
             return false
         }      
-        const applicability = getValues("OverheadApplicability");
         if((state?.OverheadApplicability?.label === "Fixed" || percentage) && applicability){
             let prevApplicability = [...state.ApplicabilityDetails]
             let obj = {
@@ -177,7 +185,7 @@ const AddOverheadMasterDetails = (props) => {
             setState(prev => ({ ...prev, ApplicabilityDetails: prevApplicability, OverheadApplicability: {}, OverheadPercentage: "" }));
             setValue("OverheadPercentage", "");
             setValue("OverheadApplicability", "");
-            delete errors.OverheadPercentage
+            clearErrors(["OverheadApplicability", "OverheadPercentage"]);
         }
     }
 
@@ -185,6 +193,7 @@ const AddOverheadMasterDetails = (props) => {
         setState(prev => ({ ...prev, OverheadApplicability: {}, OverheadPercentage: "" }));
         setValue("OverheadPercentage", "");
         setValue("OverheadApplicability", "");
+        clearErrors(["OverheadApplicability", "OverheadPercentage"]);
     }
 
     const deleteApplicability = (id) => {
@@ -456,30 +465,8 @@ const AddOverheadMasterDetails = (props) => {
                         </Col>
                     ) }
 
-                    {props?.applicabilityLabel === "Rejection" &&
+                    {props?.isShowPartFamily && getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&
                         <Col md="3">
-                            {/* <div className='d-flex align-items-center'>
-                                <SearchableSelectHookForm
-                                    label={`Part Family (Code)`}
-                                    name={'PartFamily'}
-                                    placeholder={'Select'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{ required: true }}
-                                    mandatory={true}
-                                    options={renderListing("PartFamily")}
-                                    handleChange={handlePartFamily}
-                                    // isMulti={true}
-                                    isMulti={(state?.isEditFlag || state?.isViewMode) ? false : true}
-                                    selection={state.selectedPartFamily == null || state.selectedPartFamily.length === 0 ? [] : state.selectedPartFamily}
-                                    // className="multiselect-with-border"
-                                    // customClassName={'withBorder'}
-                                    errors={errors.PartFamily}
-                                    disabled={state?.isEditFlag || state?.isViewMode}
-                                />
-                            </div> */}
-
                             <SearchableSelectHookForm
                                 label={`Part Family (Code)`}
                                 name={'PartFamily'}
@@ -588,14 +575,14 @@ const AddOverheadMasterDetails = (props) => {
                             control={control}
                             register={register}
                             rules={{
-                                required: false,
+                                required: (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed",
                                 validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                 max: {
                                     value: 100,
                                     message: 'Percentage cannot be greater than 100'
                                 },
                             }}
-                            mandatory={false}
+                            mandatory={(Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed"}
                             handleChange={handleOverheadPercentageChange}
                             defaultValue={''}
                             className=""
