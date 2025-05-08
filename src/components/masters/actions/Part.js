@@ -118,7 +118,7 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
 
         var additionalQueryParams = encodeQueryParams({
             effectiveDate: obj?.newDate !== null && obj?.newDate !== undefined ? obj?.newDate : "", partNumber: obj.PartNumber !== null && obj.PartNumber !== "" ? obj.PartNumber : "", partName: obj.PartName !== null && obj.PartName !== "" ? obj.PartName : "", ecnNumber: obj.ECNNumber !== null && obj.ECNNumber !== "" ? obj.ECNNumber : "", revisionNumber: obj.RevisionNumber !== null && obj.RevisionNumber !== "" ? obj.RevisionNumber : "", drawingNumber: obj.DrawingNumber !== null && obj.DrawingNumber !== "" ? obj.DrawingNumber : "", technology: obj.Technology ? obj.Technology : "", sapCode: obj.SAPCode ? obj.SAPCode : ""
-        ,nepNumber: obj.NEPNumber !== null && obj.NEPNumber !== "" ? obj.NEPNumber : "", partmodelmaster: obj.PartsModelMaster !== null && obj.PartsModelMaster !== "" ? obj.PartsModelMaster : ""});
+        ,nepNumber: obj.NEPNumber !== null && obj.NEPNumber !== "" ? obj.NEPNumber : "", partFamily: obj.PartFamily !== null && obj.PartFamily !== "" ? obj.PartFamily : "", partmodelmaster: obj.PartsModelMaster !== null && obj.PartsModelMaster !== "" ? obj.PartsModelMaster : ""});
         const queryParams = `loggedInUserId=${loggedInUserId()}&${baseQueryParams}&${additionalQueryParams}`;
 
         const request = axios.get(`${API.getPartDataList}?${queryParams}`, config());
@@ -1211,4 +1211,22 @@ export function getPartFamilyList(skip, take, filterData, isPagination = false, 
         });
     };
 }
+
+
   
+/**
+ * @method partFamilyBulkUpload
+ * @description create Part Family by Bulk Upload
+ */
+export function partFamilyBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axiosInstance.post(API.bulkUploadPartFamily, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}

@@ -1393,7 +1393,7 @@ class AddAssemblyPart extends Component {
                                 required={PartMasterConfigurable?.IsPartModelMandatory}
                                 handleChangeDescription={this.handleModelChange}
                                 valueDescription={this?.state?.Model}
-                                disabled={isViewMode}
+                                disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)}
                               />
                             </div>
                             {!isViewMode && (
@@ -1430,7 +1430,7 @@ class AddAssemblyPart extends Component {
                           required={true}
                           handleChangeDescription={this.handlePartFamilyChange}
                           valueDescription={this?.state?.PartFamilySelected}
-                          disabled={false}
+                          disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)}
                         />
                        
                       </Col>)}
@@ -1446,7 +1446,7 @@ class AddAssemblyPart extends Component {
                               required={PartMasterConfigurable?.IsNepNumberMandatory}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode}
+                              disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)}
                             />
                           </span>
                         </Col>)}

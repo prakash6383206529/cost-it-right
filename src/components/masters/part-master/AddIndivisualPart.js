@@ -818,8 +818,8 @@ class AddIndivisualPart extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleModelChange}
                                   valueDescription={this?.state?.Model}
-                                  disabled={isViewMode}
-                                />
+                                  disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)} // Add disabling logic
+                                  />
                               </div>
                               {!isViewMode && (
                                 isEditFlag && this?.state?.Model && this?.state?.Model.value ?
@@ -841,8 +841,7 @@ class AddIndivisualPart extends Component {
                             </div>
                           </Col>)}
                           {PartMasterConfigurable?.IsShowPartFamily && (<Col md="3">
-                          
-                              <Field
+                            <Field
                               name="partFamily"
                               type="text"
                               label="Part Family"
@@ -853,9 +852,8 @@ class AddIndivisualPart extends Component {
                               required={true}
                               handleChangeDescription={this.handlePartFamilyChange}
                               valueDescription={this?.state?.PartFamilySelected}
-                              disabled={false}
+                              disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)}
                             />
-                           
                           </Col>)}
                           {PartMasterConfigurable?.IsShowNepNumber && (<Col md="3">
                             <span>
@@ -869,7 +867,7 @@ class AddIndivisualPart extends Component {
                                 required={PartMasterConfigurable?.IsNepNumberMandatory  }
                                 className=""
                                 customClassName={"withBorder"}
-                                disabled={isViewMode}
+      disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)} // Add disabling logic
                               />
                             </span>
                           </Col>)}
