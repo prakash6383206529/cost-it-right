@@ -120,7 +120,7 @@ function AddTool(props) {
     const processRunCount=checkForNull(getValues('Quantity'))
     const partQuantity=checkForNull(getValues('partQuantity'))
     const costApplicability=checkForNull(getValues('MaintananceCostApplicability'))
-    const toolAmortizationCost = toolCost/life
+    const toolAmortizationCost = (toolCost * partQuantity * processRunCount) /life
     const toolInterestCost = (toolCost * interestRatePercent * processRunCount * partQuantity) / 100
     const toolInterestCostPerPc = toolInterestCost / life
     let toolMaintenanceCost = 0
@@ -725,7 +725,7 @@ function AddTool(props) {
                     />
                   </Col>
                   <Col md="4">
-                    <TooltipCustom disabledIcon={true} id={'tool-amortization-cost'} tooltipText={'Tool Amortization Cost = Tool Cost/Life'} />
+                    <TooltipCustom disabledIcon={true} id={'tool-amortization-cost'} tooltipText={'Tool Amortization Cost = Tool Rate * Part Quantity * Process Run Count / Tool Life'} />
                     <TextFieldHookForm
                       label="Tool Amortization Cost"
                       name={'ToolAmortizationCost'}

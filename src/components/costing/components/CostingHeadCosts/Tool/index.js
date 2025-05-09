@@ -310,6 +310,7 @@ function Tool(props) {
       setValue('ToolAmortizationCost', 0)
       setValue('NetToolCost', 0)
       setValue('crmHeadTool', '')
+      setValue('ToolMaintenanceCostPerPc', 0);
     }
     setValue('maintanencePercentage', 0)
     setValue('maintanenceToolCost', 0)
@@ -428,13 +429,15 @@ function Tool(props) {
       case 'Fixed':
         setValue('MaintananceCostApplicability', '-');
         setValue('ToolMaintenanceCost', checkForDecimalAndNull(maintanenceToolCost, noOfDecimal));
+        setValue('ToolMaintenanceCostPerPc', 0);
         setToolObj({
           ...toolObj,
           ToolApplicabilityId: applicability.value,
           ToolApplicability: applicability.label,
           MaintanencePercentage: maintanencePercentage,
           ToolApplicabilityCost: maintanenceToolCost,
-          ToolMaintenanceCost: checkForNull(maintanenceToolCost)
+          ToolMaintenanceCost: checkForNull(maintanenceToolCost),
+          ToolMaintenanceCostPerPiece: 0
         });
         break;
   
@@ -463,7 +466,7 @@ function Tool(props) {
       ToolInterestCost: toolInterestCost,
       ToolInterestCostPerPc: toolInterestCostPerPc
     }))
-    const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(toolInterestCostPerPc)
+    const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(toolInterestCostPerPc)    
     if (netToolValue) {
       setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
       setValue('NetToolCost', checkForDecimalAndNull(netToolValue, initialConfiguration.NoOfDecimalForPrice))
@@ -634,7 +637,7 @@ function Tool(props) {
                     />
                   </Col>
                   <Col md="3">
-                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = (Tool Cost / Amortization Quantity)"} />
+                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = (Tool Rate / Amortization Quantity)"} />
                     <TextFieldHookForm
                       label="Tool Amortization Cost"
                       name={`ToolAmortizationCost`}
