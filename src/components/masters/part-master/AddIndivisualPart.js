@@ -441,6 +441,7 @@ class AddIndivisualPart extends Component {
   onSubmit = debounce((values) => {
     const { PartId, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
+    const partPermissions = initialConfiguration?.PartAdditionalMasterFields;
     let isStructureChanges;
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item?.Text, ProductId: item?.Value })) : [{ GroupCode: values?.GroupCode }];
 
@@ -459,8 +460,15 @@ class AddIndivisualPart extends Component {
       if (DropdownChanged && String(DataToCheck.PartName) === String(values?.PartName) && String(DataToCheck.Description) === String(values?.Description) &&
         String(DataToCheck.ECNNumber) === String(values?.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
         String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values?.DrawingNumber)
-        && String(DataToCheck.Remark) === String(values?.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values?.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)) {
-        Toaster.warning('Please change data to save Part Details');
+        && String(DataToCheck.Remark) === String(values?.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values?.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)
+         && partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartModelId) === String(values?.Model?.value) : true &&
+         partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartsModelMaster) === String(values?.Model?.label) : true &&
+         partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamilyId) === String(values?.PartFamily?.value) : true &&
+         partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamily) === String(values?.PartFamily?.label) : true &&
+         partPermissions?.IsNepNumberMandatory ? String(DataToCheck?.NEPNumber) === String(values?.NEP) : true
+      ) {
+       
+          Toaster.warning('Please change data to save Part Details');
         return false;
       }
 
@@ -626,10 +634,15 @@ class AddIndivisualPart extends Component {
   handlePartFamilyChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ PartFamilySelected: newValue });
+      // Update the form value
+      this.props.change('PartFamily', newValue);
     } else {
       this.setState({ PartFamilySelected: null });
+      // Clear the form value
+      this.props.change('PartFamily', null);
     }
   }
+
   handleModelSubmit = (modelData) => {
     if (this?.state?.isModelEditFlag) {
       this?.props?.editModel({
@@ -1176,10 +1189,10 @@ function mapStateToProps({ comman, part, auth, costing }) {
           label: partData?.PartsModelMaster || "",
           value: partData?.PartModelId || ""
       },
-      PartFamily: {
-        label: partData?.PartFamily || "",
-        value: partData?.PartFamilyId || ""
-      }
+      PartFamily: partData.PartFamilyId ? {
+      label: partData.PartFamily || "",
+      value: partData.PartFamilyId || ""
+    } : null,
     }
   }
 
