@@ -429,13 +429,20 @@ function AddTool(props) {
    * @method handleToolApplicabilityChange
    * @description This is for handling the tool applicability change
   */
-  const handleToolApplicabilityChange = (newValue) => {
-    setState(prevState => ({ ...prevState, toolMaintenanceApplicability: newValue }))
+  const handleToolApplicabilityChange = (newValue) => {    
     if(newValue?.label==='Tool Rate'){
       setValue('MaintananceCostApplicability', getValues('ToolCost'))
+    } else {
+      setValue('MaintananceCostApplicability', 0)
     }
+    setValue('ToolInterestRatePercent', 0)
+    setValue('MaintenancePercentage', 0)
+    setState(prevState => {
+      const newState = {...prevState, toolMaintenanceApplicability: newValue, toolMaintenanceCost: 0, toolMaintenanceCostPerPc: 0, toolInterestCost: 0, toolInterestCostPerPc:0 }
+      return newState 
+    })
   }
-
+  
   /**
   * @method render
   * @description Renders the component

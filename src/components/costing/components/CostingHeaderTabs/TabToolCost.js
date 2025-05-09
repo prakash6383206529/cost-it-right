@@ -278,7 +278,6 @@ function TabToolCost(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit((formData) => {
-    console.log(checkIsToolTabChange,"checkIsToolTabChange")
     if (checkIsToolTabChange) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
@@ -533,7 +532,7 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md={IsApplicableProcessWise ? "8" : "3"} className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
+                <Col md={IsApplicableProcessWise ? "8" : "3"} className="border-section d-flex justify-content-between align-items-center text-dark-blue">
                   {IsApplicableProcessWise && <><div>
                     {"Net Tool Maintenance Cost (per pcs):"}
                     <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(state?.toolmaintenanceCostPerPc, initialConfiguration?.NoOfDecimalForPrice)}</span>
@@ -554,7 +553,7 @@ function TabToolCost(props) {
                     <>
                       {!CostingViewMode && <button
                         type="button"
-                        className={'user-btn'}
+                        className={'user-btn tool-btn'}
                         onClick={DrawerToggle}
                       >
                         <div className={'plus'}></div>ADD TOOL</button>}
