@@ -1731,14 +1731,14 @@ function AddRMFinancialDetails(props) {
                                             control={control}
                                             register={register}
                                             rules={!state.IsApplyHasDifferentUOM ? {
-                                                required: true,
+                                                required:  !state.IsCalculateScrapRate,
                                                 validate: { positiveAndDecimalNumber, decimalLengthsix, number },
                                             } : {}}
-                                            mandatory={true}
+                                            mandatory={ !state.IsCalculateScrapRate}
                                             className=""
                                             customClassName=" withBorder"
-                                            handleChange={() => { }}
-                                            disabled={isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                            handleChange={(e) => { handleScrapRateDomestic(e.target.value) }}
+                                            disabled={isViewFlag || state.IsApplyHasDifferentUOM ||state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
                                             errors={!state.IsApplyHasDifferentUOM ? errors.ScrapRate : ""}
                                         />
                                     </Col>
@@ -1790,10 +1790,10 @@ function AddRMFinancialDetails(props) {
                                             control={control}
                                             register={register}
                                             rules={!state.IsApplyHasDifferentUOM ? {
-                                                required: true,
+                                                required:  !state.IsCalculateScrapRate ?? true,
                                                 validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
                                             } : {}}
-                                            mandatory={true}
+                                            mandatory={!state.IsCalculateScrapRate ?? true}
                                             className=""
                                             customClassName=" withBorder"
                                             maxLength="15"
@@ -1905,15 +1905,15 @@ function AddRMFinancialDetails(props) {
                                             control={control}
                                             register={register}
                                             rules={!state.IsApplyHasDifferentUOM ? {
-                                                required: true,
+                                                required: !state.IsCalculateScrapRate,
                                                 validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
                                             } : {}}
-                                            disabled={isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                            disabled={isViewFlag || state.IsApplyHasDifferentUOM || state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
                                             className=" "
                                             handleChange={() => { }}
                                             customClassName=" withBorder"
                                             errors={!state.IsApplyHasDifferentUOM ? errors.JaliScrapCost :""}
-                                            mandatory={true}
+                                            mandatory={!state.IsCalculateScrapRate}
                                         />
                                     </Col>
 
