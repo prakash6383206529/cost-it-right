@@ -23,7 +23,7 @@ import { generateUnusedRMsMessage } from '../../../../common/CommonFunctions'
 
 const gridOptions = {};
 function StandardRub(props) {
-    const { finishedWeightLabel,finishWeightLabel } = useLabels()
+    const { finishedWeightLabel, finishWeightLabel } = useLabels()
 
     const dispatch = useDispatch();
     const { rmRowData, rmData, CostingViewMode } = props
@@ -31,7 +31,7 @@ function StandardRub(props) {
     // const isVolumeEditable = getConfigurationKey()?.IsVolumeEditableInRubberRMWeightCalculator ?? false
 
     const costData = useContext(costingInfoContext)
-    const [tableData, setTableData] = useState(WeightCalculatorRequest &&WeightCalculatorRequest?.RawMaterialRubberStandardWeightCalculator?.length>0 ?WeightCalculatorRequest?.RawMaterialRubberStandardWeightCalculator:[])
+    const [tableData, setTableData] = useState(WeightCalculatorRequest && WeightCalculatorRequest?.RawMaterialRubberStandardWeightCalculator?.length > 0 ? WeightCalculatorRequest?.RawMaterialRubberStandardWeightCalculator : [])
     const [disableCondition, setDisableCondition] = useState(true)
     const [agGridTable, setAgGridTable] = useState(true)
     const [totalRMCost, setTotalRMCost] = useState("")
@@ -45,9 +45,9 @@ function StandardRub(props) {
     const [reRender, setRerender] = useState(false)
     const [isVolumeAutoCalculate, setIsVolumeAutoCalculate] = useState(false)
     const { currencySource } = useSelector((state) => state?.costing);
-		const [showUnusedRMsPopup, setShowUnusedRMsPopup] = useState(false);
-		const [unusedRMsMessage, setUnusedRMsMessage] = useState('');
-		const [pendingObj, setPendingObj] = useState({});
+    const [showUnusedRMsPopup, setShowUnusedRMsPopup] = useState(false);
+    const [unusedRMsMessage, setUnusedRMsMessage] = useState('');
+    const [pendingObj, setPendingObj] = useState({});
 
     const defaultValues = {
         shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ShotWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
@@ -64,7 +64,7 @@ function StandardRub(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'FinishWeight', ...(!isVolumeAutoCalculate ? ['Volume']: [])],
+        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'FinishWeight', ...(!isVolumeAutoCalculate ? ['Volume'] : [])],
     })
 
     useEffect(() => {
@@ -78,7 +78,7 @@ function StandardRub(props) {
     useEffect(() => {
         try {
             if (!Array.isArray(rmData)) return;
-            
+
             const arr = rmData.map(item => ({
                 // Only show RMName and Grade in label, but keep ID in value/code
                 label: `${item.RMName || ''}${item.Grade ? ` (${item.Grade})` : ''}`,
@@ -86,7 +86,7 @@ function StandardRub(props) {
                 code: item.RawMaterialId,
                 originalData: item
             })).filter(item => item.code);
-            
+
             setRmDropDownData(arr);
         } catch (error) {
             console.error('Error populating RM dropdown:', error);
@@ -134,8 +134,8 @@ function StandardRub(props) {
             const Length = Number(getValues('Length'))
             const CuttingAllowance = Number(getValues('CuttingAllowance'))
             let Volume = Number(getValues('Volume'));
-            if(isVolumeAutoCalculate){
-                Volume = (Math.PI/4 )* (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
+            if (isVolumeAutoCalculate) {
+                Volume = (Math.PI / 4) * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
             let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
@@ -158,22 +158,22 @@ function StandardRub(props) {
             setDataToSend(prevState => ({ ...prevState, NetRMCost: NetRmCost }))
             setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
         } else if (GrossWeight === 0 && FinishWeight === 0) {
-            setDataToSend(prevState => ({ ...prevState, ScrapWeight: 0 })) 
-            setValue('ScrapWeight', checkForDecimalAndNull(0, getConfigurationKey().NoOfDecimalForInputOutput))   
+            setDataToSend(prevState => ({ ...prevState, ScrapWeight: 0 }))
+            setValue('ScrapWeight', checkForDecimalAndNull(0, getConfigurationKey().NoOfDecimalForInputOutput))
         }
     }
 
     const calculateArea = () => {
         const InnerDiameter = Number(getValues('InnerDiameter'))
         const OuterDiameter = Number(getValues('OuterDiameter'))
-        const Area = (Math.PI/4 )* (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2))/100;
+        const Area = (Math.PI / 4) * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) / 100;
         return Area;
     }
 
     const calculateTonnage = () => {
         const Area = calculateArea();
-        const Tonnage = (Area * DEFAULTRMPRESSURE)/1000;
-        if(Tonnage){
+        const Tonnage = (Area * DEFAULTRMPRESSURE) / 1000;
+        if (Tonnage) {
             return Tonnage;
         }
     }
@@ -253,7 +253,7 @@ function StandardRub(props) {
                 const availableRMs = rmData
                     .filter(item => {
                         if (!item.RawMaterialId) return false;
-                        return !newGridData.some(gridItem => 
+                        return !newGridData.some(gridItem =>
                             gridItem.RawMaterialId === item.RawMaterialId
                         );
                     })
@@ -372,9 +372,9 @@ function StandardRub(props) {
             ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.Length === 0) ? ["Length"] : []),
         ];
         const isValid = await trigger(validationFields);
-        if(!isValid){
+        if (!isValid) {
             return false;
-        }else if((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0))   ){
+        } else if ((!isVolumeAutoCalculate && obj.Volume === 0) || (isVolumeAutoCalculate && (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0))) {
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
@@ -426,7 +426,7 @@ function StandardRub(props) {
 
         try {
             if (obj && obj.RawMaterialId) {
-                const updatedDropdown = rmDropDownData.filter(item => 
+                const updatedDropdown = rmDropDownData.filter(item =>
                     item.code !== obj.RawMaterialId
                 );
                 setRmDropDownData(updatedDropdown);
@@ -468,9 +468,14 @@ function StandardRub(props) {
         setIsDisable(true)
         let obj = {}
         let clonedRmData = _.cloneDeep(rmData);
-        const usedRmData = clonedRmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
-        const unUsedRmData = clonedRmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));    			
-				// obj.LayoutType = 'Default'
+        let usedRmData = []
+        let unUsedRmData = []
+        if (clonedRmData && clonedRmData.length > 0) {
+            usedRmData = clonedRmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
+            unUsedRmData = clonedRmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
+        }
+
+        // obj.LayoutType = 'Default'
         // obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
         // obj.IsChangeApplied = true //NEED TO MAKE IT DYNAMIC how to do
         obj.PartId = costData.PartId
@@ -493,14 +498,14 @@ function StandardRub(props) {
         }, 0);
         obj.usedRmData = usedRmData
 
-				if (unUsedRmData.length > 0) {
-					const message = generateUnusedRMsMessage(unUsedRmData)
-					setUnusedRMsMessage(message)
-					setShowUnusedRMsPopup(true)
-					setPendingObj(obj)
-				} else {
-					saveRawMaterialCalculationForRubberStandardFunction(obj)
-			}
+        if (unUsedRmData.length > 0) {
+            const message = generateUnusedRMsMessage(unUsedRmData)
+            setUnusedRMsMessage(message)
+            setShowUnusedRMsPopup(true)
+            setPendingObj(obj)
+        } else {
+            saveRawMaterialCalculationForRubberStandardFunction(obj)
+        }
     }), 500)
 
     const cancel = () => {
@@ -533,23 +538,23 @@ function StandardRub(props) {
         clearErrors();
     }
 
-		const saveRawMaterialCalculationForRubberStandardFunction = (obj) => {
-			//APPLY NEW ACTION HERE 
-			dispatch(saveRawMaterialCalculationForRubberStandard(obj, (res) => {
-				if (res?.data?.Result) {
-					Toaster.success("Calculation saved successfully")
-					obj.CalculatorType = "Standard"
-					props.toggleDrawer('Standard', obj)
-				}
-			}))
-		}
-		const closeUnusedRMsPopup = () => {
-			setShowUnusedRMsPopup(false)
-		}
-		const confirmRemoveUnusedRMs = () => {
-			setShowUnusedRMsPopup(false)
-			saveRawMaterialCalculationForRubberStandardFunction(pendingObj)
-		}
+    const saveRawMaterialCalculationForRubberStandardFunction = (obj) => {
+        //APPLY NEW ACTION HERE 
+        dispatch(saveRawMaterialCalculationForRubberStandard(obj, (res) => {
+            if (res?.data?.Result) {
+                Toaster.success("Calculation saved successfully")
+                obj.CalculatorType = "Standard"
+                props.toggleDrawer('Standard', obj)
+            }
+        }))
+    }
+    const closeUnusedRMsPopup = () => {
+        setShowUnusedRMsPopup(false)
+    }
+    const confirmRemoveUnusedRMs = () => {
+        setShowUnusedRMsPopup(false)
+        saveRawMaterialCalculationForRubberStandardFunction(pendingObj)
+    }
 
     let volumeFormula = <div>Volume = (π/4) * (Outer Diameter<sup>2</sup> - Inner Diameter <sup>2</sup>) * Total Length</div>
     return (
@@ -612,7 +617,7 @@ function StandardRub(props) {
                                                 mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.InnerDiameter === 0))}
                                                 rules={{
                                                     required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.InnerDiameter === 0)),
-                                                    validate: { number, decimalAndNumberValidation, innerVsOuter: innerVsOuterValidation(getValues)},
+                                                    validate: { number, decimalAndNumberValidation, innerVsOuter: innerVsOuterValidation(getValues) },
                                                     // max: {
                                                     //     value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
                                                     //     message: 'Inner Diameter should not be greater than outer diameter.'
@@ -714,31 +719,31 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <div className="mt-3">
-                                            <span className="d-inline-block mt15">
-                                                <label
-                                                className={`custom-checkbox mb-0`}
-                                                onChange={onPressAutoCalculateVolume}
-                                                >
-                                                Auto Calculate Volume ?
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isVolumeAutoCalculate}
-                                                    disabled={CostingViewMode || (Object.keys(rmRowDataState).length > 0 ? false : true)}
-                                                />
-                                                <span
-                                                    className=" before-box"
-                                                    checked={isVolumeAutoCalculate}
-                                                    onChange={onPressAutoCalculateVolume}
-                                                />
-                                                </label>
-                                            </span>
+                                                <span className="d-inline-block mt15">
+                                                    <label
+                                                        className={`custom-checkbox mb-0`}
+                                                        onChange={onPressAutoCalculateVolume}
+                                                    >
+                                                        Auto Calculate Volume ?
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isVolumeAutoCalculate}
+                                                            disabled={CostingViewMode || (Object.keys(rmRowDataState).length > 0 ? false : true)}
+                                                        />
+                                                        <span
+                                                            className=" before-box"
+                                                            checked={isVolumeAutoCalculate}
+                                                            onChange={onPressAutoCalculateVolume}
+                                                        />
+                                                    </label>
+                                                </span>
                                             </div>
                                         </Col>
 
-                                        <Col md="3">                                       
-                                        {isVolumeAutoCalculate &&
-                                            <TooltipCustom disabledIcon={true} tooltipClass={'weight-of-sheet'} id={'rubber-volume'} tooltipText={volumeFormula} />
-                                        }
+                                        <Col md="3">
+                                            {isVolumeAutoCalculate &&
+                                                <TooltipCustom disabledIcon={true} tooltipClass={'weight-of-sheet'} id={'rubber-volume'} tooltipText={volumeFormula} />
+                                            }
                                             <TextFieldHookForm
                                                 label={UnitFormat()}
                                                 name={'Volume'}
@@ -937,13 +942,13 @@ function StandardRub(props) {
                             </button>
                         </div>
                         {showUnusedRMsPopup && (
-													<PopupMsgWrapper
-														isOpen={showUnusedRMsPopup}
-														closePopUp={closeUnusedRMsPopup}
-														confirmPopup={confirmRemoveUnusedRMs}
-														message={unusedRMsMessage}
-													/>
-											  )}
+                            <PopupMsgWrapper
+                                isOpen={showUnusedRMsPopup}
+                                closePopUp={closeUnusedRMsPopup}
+                                confirmPopup={confirmRemoveUnusedRMs}
+                                message={unusedRMsMessage}
+                            />
+                        )}
                     </form>
                 </Col >
             </Row >

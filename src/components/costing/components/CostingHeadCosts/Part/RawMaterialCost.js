@@ -164,8 +164,10 @@ function RawMaterialCost(props) {
         return setGridLength(0)
       case Ferrous_Casting:
       case RUBBER:
-        let arr = [...gridData]
-        setGridData(arr)
+        if(gridData && gridData.length > 0){
+          let arr = [...gridData]
+          setGridData(arr)
+        }
       case CORRUGATEDBOX:
         if (props.data && props.data[0]?.RawMaterialCalculatorId) {
           setIsMultiCalculatorData(true)

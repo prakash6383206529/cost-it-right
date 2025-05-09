@@ -1399,7 +1399,7 @@ class AddOperation extends Component {
                     </Row>
                     <Row>
 
-                      {getConfigurationKey().IsShowDetailedOperationBreakup && <Col md="3">
+                      { <Col md="3">
                         <Field
                           name="operationType"
                           type="text"
