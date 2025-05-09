@@ -291,7 +291,8 @@ const PartFamilyListing = (props) => {
       ...prevState,
       isOpen: true,
       isEditFlag: true,
-      ID: Id
+      ID: Id,
+      isViewFlag: isViewMode
     }));
   };
 
@@ -312,6 +313,7 @@ const PartFamilyListing = (props) => {
         setState((prevState) => ({ ...prevState, dataCount: 0 }));
       }
     }));
+    getTableListData(0, defaultPageSize, state.floatingFilterData, true);
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
 
@@ -356,7 +358,7 @@ const PartFamilyListing = (props) => {
             title="View"
             className="View Tour_List_View mr-2"
             type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, rowData)}
+            onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
         )}
         {permissions.Edit && (
