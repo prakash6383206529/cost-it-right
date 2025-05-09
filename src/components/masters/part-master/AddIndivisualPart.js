@@ -439,6 +439,9 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
+    console.log(values,'values');
+    console.log(this?.state?.DataToCheck,'this?.state?.DataToCheck');
+    console.log(this?.state,'this?.state');
     const { PartId, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
     let isStructureChanges;
@@ -828,7 +831,6 @@ class AddIndivisualPart extends Component {
                                     className="drawer-edit mt30"
                                     variant="Edit"
                                     onClick={() => this.modelToggler(this?.state?.Model.value)}
-                                    disabled={PartMasterConfigurable?.IsPartModelMandatory}
                                   /> :
                                   <div className='d-flex justify-content-center align-items-center'>
                                     <Button
@@ -836,7 +838,6 @@ class AddIndivisualPart extends Component {
                                       className="mb-3"
                                       variant="plus-icon-square"
                                       onClick={() => this.modelToggler('')}
-                                      disabled={PartMasterConfigurable?.IsPartModelMandatory}
                                     />
                                   </div>
                               )}

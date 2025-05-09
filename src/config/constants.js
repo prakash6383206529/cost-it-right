@@ -216,7 +216,6 @@ export const API = {
   deletePartFamily: `${BASE_URL}/part-family/delete-part-family`,
   activePartFamily: `${BASE_URL}/part-family/active`,
   bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-part-family-json`,
-  getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
 
 
   //BOM API'S
@@ -594,6 +593,7 @@ export const API = {
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
   getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
+  getRejectionDataByModelType: `${BASE_URL}/costing/get-costing-rejection-details`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,

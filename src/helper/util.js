@@ -2032,13 +2032,16 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
   return result;
 };
 export const getOverheadAndProfitCostTotal = (arr = []) => {
+  console.log(arr,'arr')
   const totals = {
     overheadOperationCost: 0,
     overheadProcessCost: 0,
     profitOperationCost: 0,
     profitProcessCost: 0,
     overheadWeldingCost: 0,
-    profitWeldingCost: 0
+    profitWeldingCost: 0,
+    NetCCForOtherTechnologyCostForOverhead:0,
+    NetCCForOtherTechnologyCostForProfit:0
   };
 
   arr.forEach(item => {

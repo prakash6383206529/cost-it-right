@@ -459,6 +459,7 @@ function TabRMCC(props) {
    * @description PART/ COMPONENT CALCULATION FOR RM,BOP,CC BASED ON THE TYPE RECEIVED IN FUNCTION CALLING
   */
   const calculationForPart = (gridData, obj, type, checkboxFields = {}) => {
+    console.log(obj,'obj')
     let partObj = obj
     let GrandTotalCost = 0
     let sumForBasicRate = (checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost) + checkForNull(CostingDataList[0]?.NetOverheadAndProfitCost) + checkForNull(CostingDataList[0]?.NetPackagingAndFreight) + checkForNull(CostingDataList[0]?.ToolCost) + checkForNull(CostingDataList[0]?.NetOtherCost)) - checkForNull(CostingDataList[0]?.NetDiscountsCost)

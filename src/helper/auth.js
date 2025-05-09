@@ -109,3 +109,7 @@ export function showApprovalDropdown() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey?.IsSelectApproverFromList
 }
+export function fetchRejectionDataFromMaster() {
+  const configurationKey = getConfigurationKey()?.IsFetchRejectionDataFromMaster
+  return true
+}
