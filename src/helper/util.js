@@ -2031,8 +2031,7 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
 
   return result;
 };
-export const getOverheadAndProfitCostTotal = (arr = []) => {
-  console.log(arr,'arr')
+export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
   const totals = {
     overheadOperationCost: 0,
     overheadProcessCost: 0,
@@ -2052,7 +2051,8 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
       IsDetailed,
       UOMType,
       CostingConditionNumber: type,
-      ForType
+      ForType,
+
     } = item;
 
     const operation = checkForNull(OperationCost);
