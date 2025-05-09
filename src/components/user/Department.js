@@ -44,7 +44,6 @@ class Department extends Component {
 		const { DepartmentId, isEditFlag } = this.props;
 		this.setState({ isLoader: true });
 
-
 		this.props.getPlantSelectListByType(ZBC, "", '', (res) => {
 			if (res?.status === 204) {
 				this.setState({ plantSelectAll: [] });

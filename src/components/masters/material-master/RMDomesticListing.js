@@ -888,7 +888,6 @@ function RMDomesticListing(props) {
         setAnalyticsDrawer(false)
     }
 
-
     const floatingFilterStatus = {
         maxValue: 1,
         suppressFilterButton: true,

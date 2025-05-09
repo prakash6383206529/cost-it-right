@@ -166,7 +166,7 @@ class BOMViewer extends Component {
 
     let tempArray = [];
     let outputArray = [];
-    const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length) : 50;
+    const posX = flowpoints?.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length) : 50;
 
     if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLYNAME) {
 
@@ -231,7 +231,7 @@ class BOMViewer extends Component {
         selectedPartType: childData.selectedPartType,
         PartId: childData.PartId,
         Input: childData.Input,
-        Technology: childData && childData?.Technology !== undefined ? childData?.Technology?.label ?? childData?.Technology : '',
+        Technology: childData && childData?.Technology !== undefined ? childData?.Technology?.label : '',
         RevisionNo: childData?.RevisionNo || null,
         IsBreakupBoughtOutPart: childData?.IsBreakupBoughtOutPart
 
@@ -390,7 +390,7 @@ class BOMViewer extends Component {
                   {(!isEditFlag || initialConfiguration?.IsBOMEditable) &&
                     !isFromVishualAd && (
                       <Col md="auto" className="bg-white" >
-                        {flowpoints.length > 1 &&
+                        {flowpoints?.length > 1 &&
                           <>
                             <button
                               type={"button"}
