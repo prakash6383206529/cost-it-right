@@ -356,8 +356,9 @@ const AddRejectionMaster = (props) => {
 }),  500);
 
     const handleMessageChange = (e) => {
-      setValue("Remark", e?.target?.value);
-      setState(prev => ({ ...prev, remarks: e?.target?.value }));
+      const value = e?.target?.value;
+      setValue("Remark", value);
+      setState(prev => ({ ...prev, remarks: value }));
     }
 
     const deleteFile = (FileId, OriginalFileName) => {
@@ -584,6 +585,8 @@ const AddRejectionMaster = (props) => {
                   <AddOverheadMasterDetails 
                       costingTypeId={costingTypeId}
                       state={state}
+                      trigger={trigger}
+                      clearErrors={clearErrors}
                       setState={setState}
                       setValue={setValue}
                       register={register}
@@ -591,6 +594,7 @@ const AddRejectionMaster = (props) => {
                       getValues={getValues}
                       errors={errors}
                       isOverHeadMaster={true}
+                      isShowPartFamily={true}
                       applicabilityLabel="Rejection"
                   />
 

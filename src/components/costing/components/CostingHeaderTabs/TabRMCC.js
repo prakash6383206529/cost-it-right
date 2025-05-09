@@ -70,6 +70,7 @@ function TabRMCC(props) {
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
+
       let TopHeaderValues = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0]?.CostingPartDetails !== undefined ? RMCCTabData[0]?.CostingPartDetails : null;
 
       let topHeaderData = {};
@@ -112,9 +113,10 @@ function TabRMCC(props) {
           NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
           NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
           NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
+          NetWeldingCostForOverhead:TopHeaderValues?.NetWeldingCostForOverhead??0,
+          NetWeldingCostForProfit:TopHeaderValues?.NetWeldingCostForProfit??0,
         }
       }
-
       props.setHeaderCost(topHeaderData)
     }
     else {
@@ -521,6 +523,8 @@ function TabRMCC(props) {
         partObj.CostingPartDetails.NetProcessCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Profit")?.profitProcessCost;
         partObj.CostingPartDetails.NetOperationCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Overhead")?.overheadOperationCost;
         partObj.CostingPartDetails.NetOperationCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Profit")?.profitOperationCost;
+        partObj.CostingPartDetails.NetWeldingCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Overhead")?.overheadWeldingCost;
+        partObj.CostingPartDetails.NetWeldingCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Profit")?.profitWeldingCost;
 
         // partObj.CostingPartDetails.NetOperationCostForOverheadExcl = gridData?.NetOperationCostForOverheadExcl
         // partObj.CostingPartDetails.NetOperationCostForProfitExcl = gridData?.NetOperationCostForProfitExcl

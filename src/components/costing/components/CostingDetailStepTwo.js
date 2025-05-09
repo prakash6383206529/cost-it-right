@@ -202,6 +202,8 @@ function CostingDetailStepTwo(props) {
         NetProcessCostForProfit: data?.NetProcessCostForProfit,
         NetOperationCostForOverhead: data?.NetOperationCostForOverhead,
         NetOperationCostForProfit: data?.NetOperationCostForProfit,
+        NetWeldingCostForOverhead:data?.NetWeldingCostForOverhead,
+        NetWeldingCostForProfit:data?.NetWeldingCostForProfit,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
@@ -259,7 +261,6 @@ function CostingDetailStepTwo(props) {
       let tempData = CostingDataList && CostingDataList[headerIndex];
       if (tempData === undefined) return false
       const { totalCost, basicRate } = calculateCostAndRate(data, tempData, "OverheadProfitTab")
-
       tempData = {
         ...tempData,
         NetOverheadAndProfitCost: data.NetOverheadProfitCost,

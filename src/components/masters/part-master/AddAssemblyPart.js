@@ -1027,19 +1027,12 @@ class AddAssemblyPart extends Component {
   modelToggler = (modelId = '') => {
     const { isEditFlag, Model } = this.state;
 
-    if (isEditFlag && Model && Model.value) {
-      // Fetch model data for edit
-      this.setState({ isLoader: true });
-      this.props.getModelById(Model.value, (res) => {
-        this.setState({ isLoader: false });
-        if (res && res.data && res.data.Result) {
-          const modelData = res.data.Data;
-          this.props.change('ModelName', modelData.PartModelMasterName);
-          this.setState({
-            isModelDrawerOpen: true,
-            isModelEditFlag: true
-          });
-        }
+    if (isEditFlag && modelId !== '') {
+      // Just open the drawer with existing model data
+      this.setState({
+        isModelDrawerOpen: true,
+        isModelEditFlag: true,
+        Model: { value: modelId }
       });
     } else {
       // If in add mode, just open the drawer
@@ -1393,7 +1386,7 @@ class AddAssemblyPart extends Component {
                                 required={PartMasterConfigurable?.IsPartModelMandatory}
                                 handleChangeDescription={this.handleModelChange}
                                 valueDescription={this?.state?.Model}
-                                disabled={isViewMode}
+                                disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)}
                               />
                             </div>
                             {!isViewMode && (
@@ -1430,7 +1423,7 @@ class AddAssemblyPart extends Component {
                           required={true}
                           handleChangeDescription={this.handlePartFamilyChange}
                           valueDescription={this?.state?.PartFamilySelected}
-                          disabled={false}
+                          disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)}
                         />
                        
                       </Col>)}
@@ -1446,7 +1439,7 @@ class AddAssemblyPart extends Component {
                               required={PartMasterConfigurable?.IsNepNumberMandatory}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode}
+                              disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)}
                             />
                           </span>
                         </Col>)}

@@ -206,7 +206,7 @@ export const API = {
   addModel: `${BASE_URL}/masters-part/create-part-model-master`,
   editModel: `${BASE_URL}/masters-part/update-part-model-master`,
   deleteModel: `${BASE_URL}/masters-part/delete-part-model-master`,
-  getModelById: `${BASE_URL}/masters-part/get-part-model-master-by-id`,
+  getModelById: `${BASE_URL}/masters-part/get-part-model-by-id`,
   //PART FAMILY
 
   getPartFamilyById: `${BASE_URL}/part-family/get-by-id`,
@@ -215,7 +215,7 @@ export const API = {
   updatePartFamily: `${BASE_URL}/part-family/update-part-family`,
   deletePartFamily: `${BASE_URL}/part-family/delete-part-family`,
   activePartFamily: `${BASE_URL}/part-family/active`,
-  bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-part-family-json`,
+  bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-partfamily-json`,
   getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
 
 
@@ -3150,6 +3150,7 @@ export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " I
 export const INSERTIMPORTBULKUPLOAD = 'Insert Import';
 export const BOMBULKUPLOAD = 'BOM';
 export const PARTCOMPONENTBULKUPLOAD = 'Part Component';
+export const PARTFAMILYBULKUPLOAD = 'Part Family';
 export const PRODUCTCOMPONENTBULKUPLOAD = 'Product Component';
 export const MACHINEBULKUPLOAD = 'Machine';
 export const VENDORBULKUPLOAD = 'Vendor';
