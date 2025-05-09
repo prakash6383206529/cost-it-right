@@ -2052,7 +2052,7 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
       UOMType,
       CostingConditionNumber: type,
       ForType,
-
+      ProcessTechnologyId
     } = item;
 
     const operation = checkForNull(OperationCost);
@@ -2102,6 +2102,11 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
       }
       if ("ProcessCost" in item) {
         totals.overheadProcessCost += useExclForOverhead ? processExcl : process;
+        console.log(ProcessTechnologyId,'ProcessTechnologyId')
+        console.log(technologyId,'technologyId')
+        if(ProcessTechnologyId !== technologyId){
+          totals.ccForOtherTechnologyCostForOverhead += useExclForOverhead ? processExcl : process;
+        }
       }
     }
 
@@ -2115,6 +2120,9 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
       }
       if ("ProcessCost" in item) {
         totals.profitProcessCost += useExclForProfit ? processExcl : process;
+        if(ProcessTechnologyId !== technologyId){
+          totals.ccForOtherTechnologyCostForProfit += useExclForProfit ? processExcl : process;
+        }
       }
     }
   });
