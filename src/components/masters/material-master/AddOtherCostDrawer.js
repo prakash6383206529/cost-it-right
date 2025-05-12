@@ -48,6 +48,7 @@ function AddOtherCostDrawer(props) {
     })
     const conditionTypeId = getCostingConditionTypes(props.rawMaterial ? RAWMATERIALCOST : COMMODITYCOST)
     useEffect(() => {
+        console.log("tableData", tableData)
         if (!tableData || tableData.length === 0) {
             setTotalCostBase(0);
             setTotalCostCurrency(0);
@@ -380,8 +381,8 @@ function AddOtherCostDrawer(props) {
                 Toaster.warning('Discount should not be equal to Basic rate')
                 return false
             }
-            newData.NetCost = `-${newData.NetCost}`;
-            newData.NetCostConversion = `-${newData.NetCostConversion}`;
+            newData.NetCost = `${newData.NetCost}`;
+            newData.NetCostConversion = `${newData.NetCostConversion}`;
         }
         // Assuming 'tableData' is an array of objects and you want to add MaterialCommodityStandardDetailsId separately,
         // you can structure your updated data as follows:
