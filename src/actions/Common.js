@@ -1425,7 +1425,6 @@ export function getSegmentSelectList(callback) {
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getSegmentSelectList}?loggedInUserId=${loggedInUserId()}`, config());
     request.then((response) => {
-      console.log("response", response)
       if (response.data.Result) {
         dispatch({
           type: GET_SEGMENT_SELECTLIST,
@@ -1434,7 +1433,6 @@ export function getSegmentSelectList(callback) {
         callback(response);
       }
     }).catch((error) => {
-      console.log("error", error)
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
       apiErrors(error);
     });
