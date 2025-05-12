@@ -404,6 +404,18 @@ function AddTool(props) {
           item.Life = getValues('Life')
           item.NetToolCost = totalToolCost
           item.ToolCRMHead = getValues('crmHead')?.label
+          item.ToolLife = getValues('Life')
+          item.ProcessOrOperationQuantity = getValues('Quantity')
+          item.ToolMaintenancePercentage = getValues('MaintenancePercentage')
+          item.ToolApplicabilityCost = getValues('MaintananceCostApplicability')
+          item.ToolInterestRatePercent = getValues('ToolInterestRatePercent')
+          item.ToolAmortizationCost = state.toolAmortizationCost
+          item.ToolApplicabilityTypeId= state.toolMaintenanceApplicability?.value
+          item.ToolCostType= state.toolMaintenanceApplicability?.label
+          item.ToolMaintenanceCost = state.toolMaintenanceCost
+          item.ToolMaintenanceCostPerPiece = state.toolMaintenanceCostPerPc
+          item.ToolInterestCost = state.toolInterestCost
+          item.ToolInterestCostPerPiece = state.toolInterestCostPerPc
           // Here you can add any other property updates as needed
         } else if (rowObjData?.ProcessOrOperationType === 'Process' && item.ProcessIdRef === ProcessIdRef && item.ToolName === ToolName) {
 
@@ -417,6 +429,18 @@ function AddTool(props) {
           item.Life = getValues('Life')
           item.NetToolCost = totalToolCost
           item.ToolCRMHead = getValues('crmHead')?.label
+          item.ToolLife = getValues('Life')
+          item.ProcessOrOperationQuantity = getValues('Quantity')
+          item.ToolMaintenancePercentage = getValues('MaintenancePercentage')
+          item.ToolApplicabilityCost = getValues('MaintananceCostApplicability')
+          item.ToolInterestRatePercent = getValues('ToolInterestRatePercent')
+          item.ToolAmortizationCost = state.toolAmortizationCost
+          item.ToolApplicabilityTypeId= state.toolMaintenanceApplicability?.value
+          item.ToolCostType= state.toolMaintenanceApplicability?.label
+          item.ToolMaintenanceCost = state.toolMaintenanceCost
+          item.ToolMaintenanceCostPerPiece = state.toolMaintenanceCostPerPc
+          item.ToolInterestCost = state.toolInterestCost
+          item.ToolInterestCostPerPiece = state.toolInterestCostPerPc
           // Here you can add any other property updates as needed
         }
       }
