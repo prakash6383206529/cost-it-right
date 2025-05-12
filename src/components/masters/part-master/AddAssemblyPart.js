@@ -1083,42 +1083,21 @@ class AddAssemblyPart extends Component {
     });
   }
 
-  handleModelSubmit = (modelData) => {
-    if (this.state.isModelEditFlag) {
-      this.props.editModel({
-        PartModelId: modelData.Id || this.state.Model.value,
-        PartModelMasterName: modelData?.ModelName
-      }, (res) => {
-        if (res && res.data && res.data.Result) {
-          // Set the edited model in the state
-          this.setState({
-            Model: {
-              label: modelData.ModelName,
-              value: modelData.Id || this.state.Model.value
-            },
-            isModelDrawerOpen: false
-          });
-          this.getModelList(); // Refresh the model list
+ 
+  handleDrawerClose = (modelData) => {
+    console.log("modelData", modelData)
+    this.setState({ isModelDrawerOpen: false });
+    if (modelData) {
+      // Set the new/edited model in state
+      this.setState({
+        Model: {
+          label: modelData.PartModelMasterName || modelData.ModelName, // adjust field as per your API
+          value: modelData.PartModelId || modelData.Id
         }
       });
-    } else {
-      this.props.addModel({
-        PartModelMasterName: modelData?.ModelName
-      }, (res) => {
-        if (res && res.data && res.data.Result) {
-          // Set the newly added model in the state
-          this.setState({
-            Model: {
-              label: modelData.ModelName,
-              value: res.data.Data.Id || res.data.Data.PartModelId
-            },
-            isModelDrawerOpen: false
-          });
-          this.getModelList(); // Refresh the model list
-        }
-      });
+      this.getModelList(); // Optionally refresh the model list
     }
-  }
+  };
 
   /**
   * @method render
@@ -1714,8 +1693,7 @@ class AddAssemblyPart extends Component {
           {this?.state?.isModelDrawerOpen && (
             <AddModel
               isOpen={this?.state?.isModelDrawerOpen}
-              onClose={() => this.setState({ isModelDrawerOpen: false })}
-              onSubmit={this.handleModelSubmit}
+              onClose={this.handleDrawerClose}
               ID={this?.state?.Model?.value}
               isEditFlag={this?.state?.isModelEditFlag}
               refreshModelList={this.getModelList}

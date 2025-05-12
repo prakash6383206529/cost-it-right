@@ -733,7 +733,7 @@ const PartFamilyListing = (props) => {
                   floatingFilter={true}
                   domLayout="autoHeight"
                   rowData={state.showExtraData && partFamilyList ? [...setLoremIpsum(partFamilyList[0]), ...partFamilyList] : partFamilyList}
-                  pagination={true}
+                  // pagination={true}
                   paginationPageSize={globalTakes}
                   onGridReady={onGridReady}
                   gridOptions={gridOptions}

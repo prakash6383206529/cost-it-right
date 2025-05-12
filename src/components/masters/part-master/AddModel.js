@@ -6,7 +6,7 @@ import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required } from '../../../helper';
 import { renderText } from '../../layout/FormInputs';
-import { addModel, editModel } from '../actions/Part';
+import { addModel, editModel, getModelById } from '../actions/Part';
 import { loggedInUserId } from "../../../helper/auth";
 import Toaster from '../../common/Toaster';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -62,8 +62,10 @@ class ModelDrawer extends Component {
         if (res && res.data && res.data.Result) {
           Toaster.success("Model updated successfully");
           if (this.props.refreshModelList) this.props.refreshModelList();
-          if (this.props.onClose) this.props.onClose();
-        }
+          if (this.props.onClose) this.props.onClose({
+            ...res.data.Data,
+            ModelName: ModelName
+          });        }
       });
     } else {
       const addData = {
@@ -73,9 +75,12 @@ class ModelDrawer extends Component {
       this.props.addModel(addData, (res) => {
         this.setState({ isSubmitting: false });
         if (res && res.data && res.data.Result) {
-          Toaster.success("Model added successfully");
-          if (this.props.refreshModelList) this.props.refreshModelList();
-          if (this.props.onClose) this.props.onClose();
+          Toaster.success(res?.data?.Message);
+          if (this?.props?.refreshModelList) this?.props?.refreshModelList();
+          if (this.props.onClose) this.props.onClose({
+            ...res.data.Data,
+            ModelName: ModelName // <-- add this line
+          });
         }
       });
     }
@@ -156,7 +161,8 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   addModel,
   editModel,
-  loggedInUserId
+  loggedInUserId,
+  getModelById
 })(reduxForm({
   form: 'ModelForm',
   enableReinitialize: true,
