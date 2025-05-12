@@ -40,6 +40,7 @@ export const API = {
   getModelTypes: `${BASE_URL}/configuration/select-list-get-costing-model-type`,
   getTechnologySelectList: `${BASE_URL}/configuration/select-list-get-technology`,
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
+  getSegmentSelectList: `${BASE_URL}/nfr/get-selected-segment-list`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
   getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
 
@@ -1192,6 +1193,7 @@ export const API = {
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
   rfqGetBestCostingDetails: `${BASE_URL}/rfq-costing/rfq-get-best-costing-details`,
   getAllNfrList: `${BASE_URL}/nfr/get-all-nfr-list`,
+  getCustomerRfqListing: `${BASE_URL}/nfr/get-customer-rfq-list`,
   getNfrPartDetails: `${BASE_URL}/nfr/get-nfr-part-details`,
   getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
   getBOPCostMovement: `${BASE_URL}/reports/get-bought-out-part-cost-movement`,
@@ -1363,6 +1365,7 @@ export const GET_SUPPLIER_SELECTLIST_SUCCESS = 'GET_SUPPLIER_SELECTLIST_SUCCESS'
 export const GET_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_TECHNOLOGY_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_BY_TYPE = 'GET_PLANT_SELECTLIST_BY_TYPE'
+export const GET_SEGMENT_SELECTLIST = 'GET_SEGMENT_SELECTLIST'
 export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST'
 export const GET_USERS_MASTER_LEVEL_API = 'GET_USERS_MASTER_LEVEL_API'
 

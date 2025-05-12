@@ -16,7 +16,7 @@ import { checkPermission, loggedInUserId, searchNocontentFilter } from '../../..
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import NfrPartsListing from './NfrPartsListing';
-import { deleteNFRDetailAPI, fetchNfrDetailFromSap, getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
+import { deleteNFRDetailAPI, fetchNfrDetailFromSap, getAllNfrList, getCustomerRfqListing, nfrDetailsForDiscountAction } from './actions/nfr';
 import { StatusTooltip, hyphenFormatter } from '../masterUtil';
 import Toaster from '../../common/Toaster';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
@@ -146,10 +146,10 @@ function NfrListing(props) {
     */
     const getDataList = (skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
         const requestOBj = { skip, take, isPagination, dataObj, isReset }
-        dispatch(getAllNfrList(requestOBj, (res) => {
-            if (res?.data?.DataList?.length > 0) {
-                setRowData(StatusTooltip(res?.data?.DataList));
-                setTotalRecordCount(res?.data?.DataList?.length);
+        dispatch(getCustomerRfqListing(requestOBj, (res) => {
+            if (res?.data?.Data?.length > 0) {
+                setRowData(StatusTooltip(res?.data?.Data));
+                setTotalRecordCount(res?.data?.Data?.length);
             } else {
                 setRowData([]);
                 setTotalRecordCount(0);
@@ -689,7 +689,7 @@ function NfrListing(props) {
                                             >
                                                 {/* <AgGridColumn field="NfrRefNumber" headerName='Nfr Ref. Number' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
                                                 {/* <AgGridColumn field="CustomerRfqId" headerName="Customer RFQ ID" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
-                                                <AgGridColumn field="CustomerRfqNo" headerName="Customer RFQ No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="CustomerRFQNumber" headerName="Customer RFQ No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CustomerName" headerName="Customer Name" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CustomerPartNo" headerName="Customer Part No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="GroupCode" headerName='Group Code' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
@@ -697,8 +697,8 @@ function NfrListing(props) {
                                                 <AgGridColumn field="UOM" headerName='UOM' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="Segment" headerName="Segment" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant Name' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="ZBCSubmissionDate" headerName="ZBC Submission Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                                <AgGridColumn field="QuotationSubmissionDate" headerName="Quotation Submission Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridColumn field="ZBCLastSubmissionDate" headerName="ZBC Submission Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridColumn field="QuotationLastSubmissionDate" headerName="Quotation Submission Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="SopDate" headerName="SOP Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 {/* <AgGridColumn field="LastSubmissionDate" headerName="Last Submission Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn> */}
                                                 {/* <AgGridColumn field="AttachmentPresent" headerName="Attachment Present" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
