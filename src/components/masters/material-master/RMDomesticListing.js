@@ -1131,7 +1131,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
                                         <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName={vendorLabel + " (Code)"}></AgGridColumn>
-                                        {true && <AgGridColumn field="Division" headerName="Division"></AgGridColumn>}
+                                        {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division"></AgGridColumn>}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                         {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
