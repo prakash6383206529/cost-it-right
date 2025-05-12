@@ -224,12 +224,15 @@ const SendForApproval = (props) => {
     setCostingIdArray(requestObject)
   }, [])
 
+  const apiCallRef = useRef(false);
+
   useEffect(() => {
-    if (deptList && deptList.length > 1 && approvalType && !getConfigurationKey().IsDivisionAllowedForDepartment) {
-      const filterDeprtment = deptList.filter(item => item.Value === userData.DepartmentId)
-      callCheckFinalUserApi(filterDeprtment[0]?.Value, approvalType)
+    if (!apiCallRef.current && deptList?.length > 1 && approvalType && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+      const filterDeprtment = deptList.filter(item => item.Value === userData.DepartmentId);
+      callCheckFinalUserApi(filterDeprtment[0]?.Value, approvalType);
+      apiCallRef.current = true;
     }
-  }, [deptList, approvalType])
+  }, [deptList, approvalType, userData.DepartmentId])
   const userTechnology = (approvalTypeId, levelsList) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(approvalTypeId, levelsList?.TechnologyLevels)
