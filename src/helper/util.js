@@ -700,7 +700,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     PaymentTermRemark: paymentTermDetail?.Remark || '-',
   };
 
-  obj.CostingRejectionRecoveryDetails = (dataFromAPI?.CostingPartDetails && dataFromAPI?.ICCApplicabilityDetail?.CostingRejectionDetail && dataFromAPI?.ICCApplicabilityDetail?.CostingRejectionDetail?.CostingRejectionRecoveryDetails) ?? {}
+  obj.CostingRejectionRecoveryDetails = (dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail?.CostingRejectionRecoveryDetails) ?? {}
 
   obj.nOverheadProfit = isBestCost ? (dataFromAPI && dataFromAPI?.NetOverheadAndProfitCost !== undefined ? dataFromAPI?.NetOverheadAndProfitCost : 0) :
     dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost : 0
