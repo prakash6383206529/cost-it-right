@@ -12,7 +12,7 @@ import { MESSAGES } from "../../config/message";
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}, IsAddPaymentTermInNetCost = false, remark = '', bopCostingIdForRemark = '') => {
   let Arr = JSON.parse(sessionStorage.getItem('costingArray'))
-  
+
   let surfaceTreatmentArr = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
   let assemblyWorkingRow = []
 
@@ -484,6 +484,7 @@ export const clearCosting = (dispatch) => {
 }
 
 export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false, remark = "", bopCostingId = "") => {
+  console.log("totalCost-formatMultiTechnologyUpdate-NetPOPrice",totalCost)
   let Arr = tabData
   
   let assemblyWorkingRow = []
@@ -523,12 +524,13 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
     "TopRow": {
       "CostingId": tabData?.CostingId,
       "NetOperationCost": tabData?.CostingPartDetails?.NetOperationCost,
+      "NetWeldingCost": tabData?.CostingPartDetails?.NetWeldingCost,
       "NetProcessCost": tabData?.CostingPartDetails?.NetProcessCost,
       "NetChildPartsCost": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetRawMaterialsCost": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetBoughtOutPartCost": tabData?.CostingPartDetails?.NetBoughtOutPartCost,
-      "NetConversionCost": checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
-      "NetTotalRMBOPCC": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
+      "NetConversionCost": checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost) + checkForNull(tabData?.CostingPartDetails?.NetWeldingCost),
+      "NetTotalRMBOPCC": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost) + checkForNull(tabData?.CostingPartDetails?.NetWeldingCost),
       "NetSurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost,
       "NetOverheadAndProfitCost": totalOverheadPrice,
       "NetPackagingAndFreightCost": packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost,
@@ -555,7 +557,13 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "IndirectLaborCostPercentage": tabData?.CostingPartDetails?.IndirectLaborCostPercentage,
       "BasicRate": basicRate,
       "RawMaterialCostWithCutOff": tabData?.CostingPartDetails?.NetChildPartsCost,
-      "NetOtherOperationCost": 0,               // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
+      "NetOtherOperationCost": 0,                      // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
+      "NetProcessCostForOverhead": tabData?.CostingPartDetails?.NetProcessCostForOverhead,
+      "NetProcessCostForProfit": tabData?.CostingPartDetails?.NetProcessCostForProfit,
+      "NetWeldingCostForOverhead": tabData?.CostingPartDetails?.NetWeldingCostForOverhead,
+      "NetWeldingCostForProfit": tabData?.CostingPartDetails?.NetWeldingCostForProfit,
+      "NetOperationCostForOverhead": tabData?.CostingPartDetails?.NetOperationCostForOverhead,
+      "NetOperationCostForProfit": tabData?.CostingPartDetails?.NetOperationCostForProfit,
     },
     "WorkingRows": assemblyWorkingRow,
     "LoggedInUserId": loggedInUserId()

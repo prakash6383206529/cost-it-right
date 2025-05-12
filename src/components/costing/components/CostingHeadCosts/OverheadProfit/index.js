@@ -112,7 +112,7 @@ function OverheadProfit(props) {
     setOverheadValues(overheadObj, false)
     setProfitValues(profitObj, false)
     setIsSurfaceTreatmentAdded(false)
-  }, [IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost,SurfaceTreatmentCost.NetSurfaceTreatmentCost])
+  }, [IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, SurfaceTreatmentCost.NetSurfaceTreatmentCost])
 
   // useEffect(() => {
   //   IncludeSurfaceTreatmentCall()
@@ -174,7 +174,7 @@ function OverheadProfit(props) {
     setTimeout(() => {
       let tempObj = {
         "OverheadDetailId": overheadObj?.OverheadDetailId || "00000000-0000-0000-0000-000000000000",
-        "OverheadId": overheadObj?.OverheadId || "00000000-0000-0000-0000-000000000000", 
+        "OverheadId": overheadObj?.OverheadId || "00000000-0000-0000-0000-000000000000",
         "OverheadCRMHead": overheadObj?.OverheadCRMHead || "",
         "Remark": overheadObj?.Remark || "",
         "CostingApplicabilityDetails": tempOverheadObj?.CostingApplicabilityDetails || []
@@ -395,9 +395,7 @@ function OverheadProfit(props) {
             break;
 
           case 'Welding':
-            console.log(headerCosts?.NetWeldingCostForOverhead, 'headerCosts?.NetWeldingCostForOverhead')
-            console.log(headerCosts, 'headerCosts')
-            const weldingCost = checkForNull(headerCosts?.NetWeldingCostForOverhead)
+           const weldingCost = checkForNull(headerCosts?.NetWeldingCostForOverhead)
             const weldingTotalCost = weldingCost * calculatePercentage(Percentage)
 
             setValue('OverheadWeldingPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
@@ -428,7 +426,7 @@ function OverheadProfit(props) {
           TotalCost: totalCost
         };
       });
-      
+
       setTempOverheadObj({
         ...tempOverheadObj,
         CostingApplicabilityDetails: costingApplicabilityDetails
@@ -532,15 +530,17 @@ function OverheadProfit(props) {
     const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost?.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost?.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost);
     const NetToolCost = IsIncludedToolCost ? checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) : 0;
     if (type === 'overhead') {
-      return checkForNull(headerCosts?.NetProcessCostForOverhead) + 
-             checkForNull(headerCosts?.NetOperationCostForOverhead) + 
-             (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) + 
-             (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
+      return checkForNull(headerCosts?.NetProcessCostForOverhead) +
+        checkForNull(headerCosts?.NetOperationCostForOverhead) +
+        checkForNull(headerCosts?.NetWeldingCostForOverhead) +
+        (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) +
+        (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
     } else if (type === 'profit') {
-      return checkForNull(headerCosts?.NetProcessCostForProfit) + 
-      checkForNull(headerCosts?.NetOperationCostForProfit) + 
-      (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) + 
-      (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
+      return checkForNull(headerCosts?.NetProcessCostForProfit) +
+        checkForNull(headerCosts?.NetOperationCostForProfit) +
+        checkForNull(headerCosts?.NetWeldingCostForProfit) +
+        (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) +
+        (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
     }
   }
 
