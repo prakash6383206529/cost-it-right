@@ -122,7 +122,6 @@ class AddAssemblyPart extends Component {
   getPartFamilyList = () => {
     this?.props?.getPartFamilySelectList((res) => {
       if (res && res?.data && res?.data?.Result) {
-        console.log(res?.data?.SelectList);
         
         // Transform the part family data into the format needed for the dropdown
         const partFamilyOptions = res?.data?.SelectList
@@ -1085,7 +1084,6 @@ class AddAssemblyPart extends Component {
 
  
   handleDrawerClose = (modelData) => {
-    console.log("modelData", modelData)
     this.setState({ isModelDrawerOpen: false });
     if (modelData) {
       // Set the new/edited model in state

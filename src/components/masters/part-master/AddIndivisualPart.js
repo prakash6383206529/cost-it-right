@@ -644,7 +644,6 @@ class AddIndivisualPart extends Component {
   }
 
   handleDrawerClose = (modelData) => {
-    console.log("modelData", modelData)
     this.setState({ isModelDrawerOpen: false });
     if (modelData) {
       // Set the new/edited model in state
