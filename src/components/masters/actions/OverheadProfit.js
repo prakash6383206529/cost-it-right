@@ -166,7 +166,7 @@ export function getOverheadData(ID, callback) {
 export function getOverheadDataCheck(data, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        axios.get(`${API.getOverheadDataCheck}?overheadId=${data?.overheadId??null}&modelTypeId=${data?.modelTypeId??null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId??null}`, config())
+        axios.get(`${API.getOverheadDataCheck}?overheadId=${data?.overheadId??null}&modelTypeId=${data?.modelTypeId??null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId??null}&isRejection=${data?.isRejection ?? false}`, config())
             .then((response) => {
                 if (response.data.Result === true || response.status === 204) {
                     dispatch({
@@ -241,7 +241,7 @@ export function getProfitData(ID, callback) {
  * @method getOverheadDataList
  * @description get Overhead all record.
  */
-export function getOverheadDataList(data, skip, take, isPagination, obj, callback) {
+export function getOverheadDataList(data, skip, take, isPagination, obj, isRejection=false, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = encodeQueryParamsAndLog({
@@ -253,7 +253,8 @@ export function getOverheadDataList(data, skip, take, isPagination, obj, callbac
             skip: skip, take: take, CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '', RawMaterialName: obj.RawMaterialName !== undefined ? obj.RawMaterialName : '',
             RawMaterialGrade: obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : '', TechnologyName: obj.TechnologyName !== undefined ? obj.TechnologyName : '',
             IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
-            IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc, IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc
+            IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc, IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
+            IsRejection: isRejection
         });
 
         // const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&overhead_applicability_type_id=${data.overhead_applicability_type_id}&model_type_id=${data.model_type_id}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&VendorName=${obj.VendorName ? obj.VendorName : ""}&ClientName=${obj.ClientName ? obj.ClientName : ""}&ModelType=${obj.ModelType ? obj.ModelType : ""}&OverheadApplicability=${obj.OverheadApplicabilityType ? obj.OverheadApplicabilityType : ""}&OverheadApplicabilityPercentage=${obj.OverheadPercentage ? obj.OverheadPercentage : ""}&OverheadOnRMPercentage=${obj.OverheadRMPercentage ? obj.OverheadRMPercentage : ""}&OverheadOnBOPPercentage=${obj.OverheadBOPPercentage ? obj.OverheadBOPPercentage : ""}&OverheadOnCCPercentage=${obj.OverheadMachiningCCPercentage ? obj.OverheadMachiningCCPercentage : ""}&EffectiveDate=${obj.EffectiveDateNew ? obj.EffectiveDateNew : ""}&Plant=${obj.PlantName ? obj.PlantName : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&RawMaterialName=${obj.RawMaterialName !== undefined ? obj.RawMaterialName : ''}&RawMaterialGrade=${obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : ''}&TechnologyName=${obj.TechnologyName !== undefined ? obj.TechnologyName : ''}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}`
@@ -437,6 +438,25 @@ export function fileUploadProfit(data, callback) {
 export function overheadBulkUpload(data, callback) {
     return (dispatch) => {
         const request = axiosInstance.post(API.overheadBulkUpload, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+/**
+ * @method rejectionBulkUpload
+ * @description create Overhead by Bulk Upload
+ */
+export function rejectionBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axiosInstance.post(API.rejectionBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

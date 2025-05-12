@@ -28,7 +28,8 @@ class OperationsMaster extends Component {
             DownloadAccessibility: false,
             data: {},
             isOperationAssociated: false,
-            stopAPICall: false
+            stopAPICall: false,
+            isImport: false
         }
     }
 
@@ -36,8 +37,8 @@ class OperationsMaster extends Component {
         this.setState({ isOperation: true, data: { isEditFlag: false } })
     }
 
-    hideForm = (type) => {
-        this.setState({ isOperation: false, data: {}, stopAPICall: false })
+    hideForm = (type, isImport) => {
+        this.setState({ isOperation: false, data: {}, stopAPICall: false, isImport: isImport })
         if (type === 'Cancel') {
             this.setState({ stopAPICall: true })
         }
@@ -116,6 +117,7 @@ class OperationsMaster extends Component {
                                                 selectionForListingMasterAPI='Master'
                                                 stopAPICall={this.state.stopAPICall}
                                                 approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
+                                                isImport={this.state.isImport}
                                             //MINDA
                                             // approvalStatus={APPROVED_STATUS_MASTER}
                                             />

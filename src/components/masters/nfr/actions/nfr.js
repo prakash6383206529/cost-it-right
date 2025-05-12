@@ -14,10 +14,10 @@ import { loggedInUserId, userDepartmetList } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import axiosInstance from '../../../../utils/axiosInstance';
 
-export function getAllNfrList(callback) {
+export function getAllNfrList(requestObj, callback) {
     return (dispatch) => {
         const loggedInUser = { loggedInUserId: loggedInUserId() }
-        const request = axios.get(`${API.getAllNfrList}?loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
+        const request = axios.get(`${API.getAllNfrList}?loggedInUserId=${loggedInUser?.loggedInUserId}&skip=${requestObj?.skip}&take=${requestObj?.take}&isPagination=${requestObj?.isPagination}&isReset=${requestObj?.isReset}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -342,6 +342,28 @@ export function createNFRBOMDetails(requestData, callback) {
     }
     return (dispatch) => {
         axiosInstance.post(API.createNFRBOMDetails, requestedData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method createCustomerRfq
+ * @description create Customer RFQ
+ */
+export function createCustomerRfq(requestData, callback) {
+    const requestedData = {
+        loggedInUserId: loggedInUserId(),
+        ...requestData
+    }
+    return (dispatch) => {
+        axiosInstance.post(API.createCustomerRfq, requestedData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);

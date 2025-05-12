@@ -1,41 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect, Fragment, useContext } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import {
-    getProfitDataList, deleteProfit, activeInactiveProfit,
-} from '../actions/OverheadProfit';
-import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
-import { getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, } from '../../../helper';
+import { getOverheadDataList, deleteOverhead } from '../actions/OverheadProfit';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
+import { getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
-import { PROFIT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
-import { ProfitMaster } from '../../../config/constants';
+import { OverheadMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { PaginationWrapper } from '../../common/commonPagination';
-import WarningMessage from '../../common/WarningMessage';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
+import WarningMessage from '../../common/WarningMessage';
+import { disabledClass, fetchModelTypeAPI, setResetCostingHead } from '../../../actions/Common';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchModelTypeAPI, setResetCostingHead } from '../../../actions/Common';
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideColumnFromExcel, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import { updatePageNumber, updateCurrentRowIndex, resetStatePagination } from '../../common/Pagination/paginationAction';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
+import { Steps } from '../../common/Tour/TourMessages';
+import { ApplyPermission } from '.';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -43,24 +43,24 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-function ProfitListing(props) {
+function RejectionListing(props) {
 
-    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props
-    const [showExtraData, setShowExtraData] = useState(false)
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
     const { t } = useTranslation("common")
-    const [tableData, setTableData] = useState([])
-    const dispatch = useDispatch()
+    const permissions = useContext(ApplyPermission);
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [isLoader, setIsLoader] = useState(false)
-    const [noData, setNoData] = useState(false)
+    const dispatch = useDispatch()
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [selectedRowData, setSelectedRowData] = useState([])
-    const [disableDownload, setDisableDownload] = useState(false)
-    //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [disableFilter, setDisableFilter] = useState(true)
+    const [disableDownload, setDisableDownload] = useState(false)
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
+    //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
     // const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
@@ -69,18 +69,55 @@ function ProfitListing(props) {
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     // const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
     const [state, setState] = useState({ isBulkUpload: false })
-    // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "" })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
-    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { selectedRowForPagination } = useSelector((state => state.simulation))
-    const globalTakes = useSelector((state) => state.pagination.globalTakes);
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const { globalTakes } = useSelector((state) => state.pagination)
     const modelTypes = useSelector(state => state.comman?.modelTypes)
     const [modelText, setModelText] = useState('')
     const [pageRecord, setPageRecord] = useState(0)
+
+    // In CostingHeadDropdownFilter.js
+    const onFilterChange = (event) => {
+        // Clean and encode the filter value
+        const filterValue = event.target.value;
+        const cleanedValue = encodeFilterValue(filterValue);
+
+        // Call the parent's filter change handler
+        if (props.onFilterChange) {
+            props.onFilterChange(filterValue, cleanedValue);
+        }
+    };
+
+    // Helper function to clean and encode filter value
+    const encodeFilterValue = (value) => {
+        if (!value) return '';
+
+        // Replace special combinations with encoded versions
+        const encodedValue = value
+            .replace(/\s\+\s/g, '%2B') // Replace ' + ' with encoded plus
+            .replace(/\s/g, '%20');    // Replace spaces with encoded spaces
+
+        return encodedValue;
+    };
+    var floatingFilterOverhead = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: 'overhead',
+        onFilterChange: (originalValue, encodedValue) => {
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                OverheadApplicabilityType: encodedValue
+            }));
+        }
+    }
+
     const { isBulkUpload } = state;
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -108,11 +145,6 @@ function ProfitListing(props) {
         minValidYear: 2000,
     };
 
-    var floatingFilterProfit = {
-        maxValue: 2,
-        suppressFilterButton: true,
-        component: 'profits'
-    }
 
     useEffect(() => {
         setTimeout(() => {
@@ -123,13 +155,13 @@ function ProfitListing(props) {
         dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
+        setSelectedRowForPagination([])
         dispatch(resetStatePagination());
         return () => {
             dispatch(setResetCostingHead(true, "costingHead"))
         }
 
     }, [])
-
 
     useEffect(() => {
         if (overheadProfitList?.length > 0) {
@@ -138,7 +170,7 @@ function ProfitListing(props) {
         else {
             setNoData(false)
         }
-        dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'profit' }))
+        dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'overhead' }))
     }, [overheadProfitList])
 
     useEffect(() => {
@@ -149,48 +181,37 @@ function ProfitListing(props) {
         setModelText(modelText)
     }, [modelTypes])
 
-    useEffect(() => {
-
-        if (statusColumnData?.id) {
-            setDisableFilter(false)
-            setWarningMessage(true)
-            setFloatingFilterData(prevState => ({ ...prevState, ProfitApplicabilityType: encodeURIComponent(statusColumnData.data) }))
-        }
-    }, [statusColumnData])
-
     const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
         setPageRecord(skip)
         const filterData = {
             costing_head: costingHead,
             vendor_id: vendorName,
-            profit_applicability_type_id: overhead,
+            overhead_applicability_type_id: overhead,
             model_type_id: modelType,
         }
+        // Clean up the dataObj filters before sending to API
+        const cleanedDataObj = {
+            ...dataObj,
+            OverheadApplicabilityType: dataObj?.OverheadApplicabilityType
+                ? decodeURIComponent(dataObj?.OverheadApplicabilityType)
+                : ''
+        };
         if (isPagination === true) {
             setIsLoader(true)
         }
-        let obj = { ...dataObj }
-        dispatch(getProfitDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getOverheadDataList(filterData, skip, take, isPagination, cleanedDataObj, true, (res) => {
             setIsLoader(false)
             if (res && res.status === 204) {
                 setTotalRecordCount(0)
                 dispatch(updatePageNumber(0))
                 // setPageNo(0)
             }
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                setTableData(Data)
-            } else if (res && res.response && res.response.status === 412) {
-                setTableData([])
-            } else {
-                setTableData([])
-            }
 
             if (res && isPagination === false) {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads-profit')
+                    let button = document.getElementById('Excel-Downloads-overhead')
                     button && button.click()
                 }, 500);
             }
@@ -198,8 +219,8 @@ function ProfitListing(props) {
             if (res) {
                 let isReset = true
                 setTimeout(() => {
-                    for (var prop in obj) {
-                        if (obj[prop] !== "") {
+                    for (var prop in floatingFilterData) {
+                        if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
                             isReset = false
                         }
                     }
@@ -222,9 +243,19 @@ function ProfitListing(props) {
                     setIsFilterButtonClicked(false)
                 }, 600);
             }
-        }))
+        }
+        ))
     }
 
+
+    useEffect(() => {
+
+        if (statusColumnData?.id) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicabilityType: encodeURIComponent(statusColumnData.data) }))
+        }
+    }, [statusColumnData])
 
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
@@ -261,6 +292,7 @@ function ProfitListing(props) {
                     for (var prop in floatingFilterData) {
 
                         floatingFilterData[prop] = ""
+
                     }
                     setFloatingFilterData(floatingFilterData)
                 }
@@ -281,17 +313,20 @@ function ProfitListing(props) {
     }
 
     const toggleExtraData = (showTour) => {
-        setShowExtraData(showTour)
-
-
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
     }
     const onSearch = () => {
         setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
-        // setPageNo(1)
         dispatch(updateCurrentRowIndex(0))
+        // setPageNo(1)
+        // setPageNoNew(1)
         // setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
         getDataList(null, null, null, null, 0, globalTakes, true, floatingFilterData)
@@ -308,6 +343,7 @@ function ProfitListing(props) {
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
+
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
 
@@ -315,16 +351,15 @@ function ProfitListing(props) {
 
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        dispatch(resetStatePagination())
         // setPageNo(1)
         // setPageNoNew(1)
         // setCurrentRowIndex(0)
         getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
         dispatch(setSelectedRowForPagination([]))
         // setGlobalTake(10)
+        dispatch(resetStatePagination())
         // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
-
     }
 
 
@@ -338,8 +373,9 @@ function ProfitListing(props) {
             Id: Id,
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
+            costingTypeId: rowData.CostingTypeId,
         }
-        props.getDetails(data, rowData?.IsProfitAssociated);
+        props.getDetails(data, rowData?.IsOverheadAssociated);
     }
 
     /**
@@ -347,6 +383,7 @@ function ProfitListing(props) {
     * @description confirm delete
     */
     const deleteItem = (Id) => {
+
         setShowPopup(true)
         setDeletedId(Id)
     }
@@ -357,12 +394,12 @@ function ProfitListing(props) {
     */
     const confirmDelete = (ID) => {
         const loggedInUser = loggedInUserId();
-        dispatch(deleteProfit(ID, loggedInUser, (res) => {
+        dispatch(deleteOverhead(ID, loggedInUser, (res) => {
             if (res?.data?.Result === true) {
-                Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
                 dispatch(setSelectedRowForPagination([]));
                 if (gridApi) {
-                    gridApi.deselectAll();
+                    gridApi?.deselectAll();
                 }
                 getDataList(null, null, null, null, pageRecord, globalTakes, true, floatingFilterData);
                 setDataCount(0);
@@ -376,7 +413,6 @@ function ProfitListing(props) {
     const onPopupConfirm = () => {
         confirmDelete(deletedId);
     }
-
 
     const closePopUp = () => {
         setShowPopup(false)
@@ -403,7 +439,6 @@ function ProfitListing(props) {
         }
     }
 
-    
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -416,26 +451,21 @@ function ProfitListing(props) {
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {EditAccessibility && rowData?.IsEditable && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && !rowData?.IsProfitAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {DeleteAccessibility && !rowData?.IsOverheadAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
-
     /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
+    * @method effectiveDateFormatter
+    * @description Renders buttons
     */
-    const costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let headText = '';
-        if (cellValue === 'ZBC') {
-            headText = 'Zero Based';
-        } if (cellValue === 'VBC') {
-            headText = 'Vendor Based';
-        } if (cellValue === 'CBC') {
-            headText = 'Client Based';
+    const effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        if (showExtraData && props?.rowIndex === 0) {
+            return "Lorem Ipsum";
+        } else {
+            let value = cell.value != null ? DayTime(cell.value).format('DD/MM/YYYY') : '';
+            return value
         }
-        return headText;
     }
 
     /**
@@ -444,19 +474,6 @@ function ProfitListing(props) {
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
-
-    /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
-    const effectiveDateFormatter = (props) => {
-        if (showExtraData && props?.rowIndex === 0) {
-            return "Lorem Ipsum";
-        } else {
-            const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-            return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-        }
     }
 
 
@@ -468,7 +485,6 @@ function ProfitListing(props) {
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
-                    {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => handleChange(cell, row, enumObject, rowIndex)}
                         checked={cell}
@@ -485,26 +501,22 @@ function ProfitListing(props) {
 
     const handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
-            Id: row.ProfitId,
+            Id: row.OverheadId,
             LoggedInUserId: loggedInUserId(),
-            IsActive: !cell, //Status of the Profit.
+            IsActive: !cell, //Status of the UOM.
         }
-        dispatch(activeInactiveProfit(data, res => {
+        this.props.activeInactiveOverhead(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell === true) {
-                    Toaster.success(MESSAGES.PROFIT_INACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.OVERHEAD_INACTIVE_SUCCESSFULLY)
                 } else {
-                    Toaster.success(MESSAGES.PROFIT_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.OVERHEAD_ACTIVE_SUCCESSFULLY)
                 }
-                getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
+                getDataList(null, null, null, null)
             }
-        }))
+        })
     }
 
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
 
     const formToggle = () => {
         if (checkMasterCreateByCostingPermission()) {
@@ -516,14 +528,20 @@ function ProfitListing(props) {
     * @method onSubmit
     * @description Used to Submit the form
     */
+    const onSubmit = (values) => {
+
+    }
 
 
     const onGridReady = (params) => {
         window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
+
         params.api.paginationGoToPage(0);
     };
+
+
 
     const onRowSelect = (event) => {
 
@@ -536,7 +554,7 @@ function ProfitListing(props) {
             if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
                 for (let i = 0; i < selectedRowForPagination.length; i++) {
-                    if (selectedRowForPagination[i].ProfitId === event.data.ProfitId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                    if (selectedRowForPagination[i].OverheadId === event.data.OverheadId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
                         continue;
                     }
                     finalData.push(selectedRowForPagination[i])
@@ -549,10 +567,69 @@ function ProfitListing(props) {
 
         }
 
-        let uniqeArray = _.uniqBy(selectedRows, "ProfitId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        let uniqeArray = _.uniqBy(selectedRows, "OverheadId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
         setDataCount(uniqeArray.length)
-        setSelectedRowData(uniqeArray)
+        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+
+    }
+
+
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+        dispatch(disabledClass(true))
+        let tempArr = selectedRowForPagination
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                dispatch(disabledClass(false))
+                let button = document.getElementById('Excel-Downloads-overhead')
+                button && button.click()
+            }, 400);
+
+        } else {
+            getDataList(null, null, null, null, 0, defaultPageSize, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+
+    }
+    const OVERHEAD_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(OVERHEAD_DOWNLOAD_EXCEl, "MasterLabels")
+    const onBtExport = () => {
+
+        let tempArr = []
+        tempArr = selectedRowForPagination
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (overheadProfitListAll ? overheadProfitListAll : [])
+        return returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+    };
+
+    const returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
+        if (!getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily) {
+            excelData = hideColumnFromExcel(data, "PartFamily");
+        }
+        let temp = []
+        temp = TempData && TempData?.map(item => {
+            Object.keys(item).forEach(field => {
+                if (item[field] === null || item[field] === ' ') {
+                    item[field] = '-';
+                }
+            });
+            if (item?.EffectiveDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY');
+            }
+            return item;
+        });
+        const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
+        const excelColumns = excelData && excelData.map((ele, index) => {
+            if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
+                return null // hide column
+            } else {
+                return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+            }
+        }).filter(Boolean) // remove null columns
+        return <ExcelSheet data={temp} name={OverheadMaster}>{excelColumns}</ExcelSheet>
+    }
+
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
     }
 
     const combinedCostingHeadRenderer = (props) => {
@@ -568,11 +645,9 @@ function ProfitListing(props) {
     };
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
-                if (item.ProfitId === props.node.data.ProfitId) {
+                if (item.OverheadId === props.node.data.OverheadId) {
                     props.node.setSelected(true)
                 }
                 return null
@@ -582,63 +657,12 @@ function ProfitListing(props) {
             return cellValue
         }
     }
-    const PROFIT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(PROFIT_DOWNLOAD_EXCEl, "MasterLabels")
-    const onBtExport = () => {
-        let tempArr = []
-        tempArr = selectedRowForPagination
-        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (overheadProfitListAll ? overheadProfitListAll : [])
-        return returnExcelColumn(PROFIT_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
-    };
 
-    const returnExcelColumn = (data = [], TempData) => {
-        let excelData = hideCustomerFromExcel(data, "CustomerName")
-        let temp = []
-        temp = TempData && TempData?.map(item => {
-            Object.keys(item).forEach(field => {
-                if (item[field] === null || item[field] === '') {
-                    item[field] = '-';
-                }
-            });
-            if (item?.EffectiveDate?.includes('T')) {
-                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY');
-            }
-            return item;
-        });
-        if (!getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily) {
-            excelData = hideColumnFromExcel(data, "PartFamily");
-        }
-        const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
-        const excelColumns = excelData && excelData.map((ele, index) => {
-            if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
-                return null // hide column
-            } else {
-                return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
-            }
-        }).filter(Boolean) // remove null columns
-        return <ExcelSheet data={temp} name={ProfitMaster}>{excelColumns}</ExcelSheet>
-    }
-    const onFilterTextBoxChanged = (e) => {
-        gridApi.setQuickFilter(e.target.value);
-    }
 
-    const onExcelDownload = () => {
-        setDisableDownload(true)
-        dispatch(disabledClass(true))
-        let tempArr = selectedRowForPagination
-        if (tempArr?.length > 0) {
-            setTimeout(() => {
-                setDisableDownload(false)
-                dispatch(disabledClass(false))
-                let button = document.getElementById('Excel-Downloads-profit')
-                button && button.click()
-            }, 400);
-
-        } else {
-            getDataList(null, null, null, null, 0, defaultPageSize, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
-        }
-
-    }
-
+    /**
+    * @method render
+    * @description Renders the component
+    */
 
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = props;
 
@@ -646,6 +670,7 @@ function ProfitListing(props) {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
         return thisIsFirstColumn;
+
     }
 
     const defaultColDef = {
@@ -658,8 +683,7 @@ function ProfitListing(props) {
     const floatingFilterStatus = {
         maxValue: 1,
         suppressFilterButton: true,
-        component: CostingHeadDropdownFilter,
-        onFilterChange: (originalValue, value) => {
+        component: CostingHeadDropdownFilter, onFilterChange: (originalValue, value) => {
             setWarningMessage(true);
             // setSelectedCostingHead(originalValue);
             setDisableFilter(false);
@@ -671,26 +695,25 @@ function ProfitListing(props) {
     };
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
-        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         effectiveDateFormatter: effectiveDateFormatter,
         statusButtonFormatter: statusButtonFormatter,
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         valuesFloatingFilter: SingleDropdownFloationFilter,
         statusFilter: CostingHeadDropdownFilter,
     };
 
+
     return (
-
-
         <>
             {
                 isLoader ? <LoaderCustom customClass={"loader-center"} /> :
-                    <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                    <div className={`ag-grid-react grid-parent-wrapper custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                        <form noValidate>
-                            <Row className="pt-4">
-                                <Col md="9" className="search-user-block mb-3">
+                        <form onSubmit={(onSubmit)} noValidate>
+                            <Row className="pt-4 ">
+                                <Col md="9" className="search-user-block mb-3 pl-0">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div className="warning-message d-flex align-items-center">
                                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
@@ -724,8 +747,8 @@ function ProfitListing(props) {
                                                     {/* DOWNLOAD */}
                                                     {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 </button>
-                                                <ExcelFile filename={'Profit'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads-profit'} className="p-absolute" type="button" >
+                                                <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads-overhead'} className="p-absolute" type="button" >
                                                     </button>}>
                                                     {onBtExport()}
                                                 </ExcelFile>
@@ -735,25 +758,26 @@ function ProfitListing(props) {
                                         <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
+
                                     </div>
                                 </Col>
                             </Row>
                         </form>
                         <Row>
                             <Col>
-
-                                <div className={`ag-grid-wrapper height-width-wrapper grid-parent-wrapper ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <TourWrapper
-                                            buttonSpecificProp={{ id: "Profit_Listing_Tour", onClick: toggleExtraData }}
+                                            buttonSpecificProp={{ id: "Overhead_listing_Tour", onClick: toggleExtraData }}
                                             stepsSpecificProp={{
-                                                steps: Steps(t, { addLimit: false, bulkUpload: false, costMovementButton: false, downloadButton: true, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                                steps: Steps(t, { bulkUpload: false, costMovementButton: false, addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
                                             }} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                        <AgGridReact
+                                        {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
                                             domLayout='autoHeight'
@@ -773,10 +797,8 @@ function ProfitListing(props) {
                                             onRowSelected={onRowSelect}
                                             onFilterModified={onFloatingFilterChanged}
                                             suppressRowClickSelection={true}
-                                        //onFilterModified={(e) => { setNoData(searchNocontentFilter(e)) }}
                                         >
-                                            <AgGridColumn field="CostingHead" minWidth={200} headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer}
-                                                floatingFilterComponentParams={floatingFilterStatus}
+                                            <AgGridColumn field="CostingHead" minWidth={200} headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer} floatingFilterComponentParams={floatingFilterStatus}
                                                 floatingFilterComponent="statusFilter"></AgGridColumn>
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
@@ -785,10 +807,10 @@ function ProfitListing(props) {
                                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                            <AgGridColumn field="Applicability" headerName="Profit Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="Applicability" headerName="Overhead Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                            <AgGridColumn field="ProfitId" width={180} cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                        </AgGridReact>
+                                            <AgGridColumn field="OverheadId" width={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                        </AgGridReact>}
                                         <div className='button-wrapper'>
                                             {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="overHeadAndProfits" />}
                                             {<PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="overHeadAndProfits" />
@@ -799,18 +821,17 @@ function ProfitListing(props) {
 
                             </Col>
                         </Row>
-                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Profit`} isZBCVBCTemplate={true} messageLabel={`Profit`} anchor={'right'} modelText={modelText} />}
+                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Rejection`} isZBCVBCTemplate={true} messageLabel={`Rejection`} anchor={'right'} modelText={modelText} />}
                         {
-                            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PROFIT_DELETE_ALERT}`} />
+                            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`} />
                         }
+
                     </div >
             }
         </>
-    );
 
+    );
 
 }
 
-export default ProfitListing
-
-
+export default RejectionListing

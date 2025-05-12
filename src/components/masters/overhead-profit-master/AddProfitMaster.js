@@ -31,6 +31,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkEffectiveDate } from '../masterUtil';
+import { getPartFamilySelectList } from '../actions/Part';
 
 
 const AddProfitMaster = (props) => {
@@ -55,6 +56,7 @@ const AddProfitMaster = (props) => {
         vendorName: [],
         vendorCode: '',
         client: [],
+        selectedPartFamily: [],
         singlePlantSelected: [],
         ModelType: [],
         DataToChange: [],
@@ -93,6 +95,7 @@ const AddProfitMaster = (props) => {
         if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
           dispatch(getRawMaterialNameChild(() => { }));
         }
+        dispatch(getPartFamilySelectList(() => {}));
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }));
         dispatch(fetchApplicabilityList(null, conditionTypeId, false, res => {
 
@@ -164,6 +167,7 @@ const AddProfitMaster = (props) => {
         setValue("clientName", Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [])
         setValue("vendorName", Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [])
         setValue("Plant", Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [])
+        setValue("PartFamily", Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : []);
         setValue("DestinationPlant", Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {})
         // setValue("EffectiveDate", Data.EffectiveDate && DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '')
         setValue("EffectiveDate", DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '')
@@ -184,6 +188,7 @@ const AddProfitMaster = (props) => {
             RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
             isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false,
             ApplicabilityDetails: Data.ApplicabilityDetails,
+            selectedPartFamily: Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : [],
             isLoader: false
         }));
 
@@ -224,7 +229,7 @@ const AddProfitMaster = (props) => {
     };
 
   const onSubmit = debounce(handleSubmit((values) => {
-      const { client, costingTypeId, ModelType, vendorName, selectedPlants, remarks, ProfitID, RMGrade, ApplicabilityDetails,
+      const { client, costingTypeId, ModelType, vendorName, selectedPlants, remarks, ProfitID, RMGrade, ApplicabilityDetails, selectedPartFamily,
         singlePlantSelected, isEditFlag, files, EffectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged } = state;
       const userDetailsProfit = JSON.parse(localStorage.getItem('userDetail'))
       let plantArray = []
@@ -290,7 +295,9 @@ const AddProfitMaster = (props) => {
           RawMaterialGradeId: RMGrade?.value,
           RawMaterialGrade: RMGrade?.label,
           IsFinancialDataChanged: IsFinancialDataChanged,
-          ApplicabilityDetails: ApplicabilityDetails
+          ApplicabilityDetails: ApplicabilityDetails,
+          PartFamilyId: selectedPartFamily?.value,
+          PartFamily: selectedPartFamily?.label
         }
 
         if (IsFinancialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props.IsProfitAssociated) {
@@ -327,7 +334,9 @@ const AddProfitMaster = (props) => {
           RawMaterialGrade: RMGrade?.label,
           IsFinancialDataChanged: IsFinancialDataChanged,
           TechnologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
-          ApplicabilityDetails: ApplicabilityDetails
+          ApplicabilityDetails: ApplicabilityDetails,
+          PartFamilyId: selectedPartFamily?.value,
+          PartFamily: selectedPartFamily?.label
         }
 
         dispatch(createProfit(formData, (res) => {
@@ -343,8 +352,9 @@ const AddProfitMaster = (props) => {
   }),  500);
 
     const handleMessageChange = (e) => {
-      setValue("Remark", e?.target?.value);
-      setState(prev => ({ ...prev, remarks: e?.target?.value }));
+      const value = e?.target?.value;
+      setValue("Remark", value);
+      setState(prev => ({ ...prev, remarks: value }));
     }
 
     const deleteFile = (FileId, OriginalFileName) => {
@@ -571,10 +581,14 @@ const AddProfitMaster = (props) => {
                       setState={setState}
                       register={register}
                       control={control}
+                      trigger={trigger}
+                      clearErrors={clearErrors}
                       setValue={setValue}
                       getValues={getValues}
                       errors={errors}
                       isOverHeadMaster={false}
+                      isShowPartFamily={true}
+                      applicabilityLabel="Profit"
                     />
 
                     <Row>

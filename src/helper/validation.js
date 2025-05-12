@@ -497,8 +497,7 @@ export const decimalNumberLimit6 = value => {
         ? 'Maximum length for integer is 6 and for decimal is 6' : undefined;
 }
 export const decimalIntegerNumberLimit = (integerLimit, decimalLimit) => value => {
-    let tempValue = value && Number('0' + String(value)?.replace(/^0+/, ''))
-    return tempValue && !(new RegExp(`^[0-9][0-9]{0,${integerLimit - 1}}(\\.\\d{0,${decimalLimit}})?$`).test(tempValue))
+    return value && !(new RegExp(`^[0-9][0-9]{0,${integerLimit - 1}}(\\.\\d{0,${decimalLimit}})?$`).test(value))
         ? `Maximum length for integer is ${integerLimit} and for decimal is ${decimalLimit}` : undefined;
 }
 export const noDecimal = value =>

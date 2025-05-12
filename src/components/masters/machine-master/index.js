@@ -38,6 +38,7 @@ const MachineMaster = () => {
   const [permissionData, setPermissionData] = useState({});
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { disabledClass } = useSelector((state) => state.comman);
+  const [isImport, setIsImport] = useState(false)
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
@@ -69,7 +70,8 @@ const MachineMaster = () => {
   };
   const setData = (data = {}) => { setState((prevState) => ({ ...prevState, data: data })); };
 
-  const hideForm = (type) => {
+  const hideForm = (type, isImport) => {
+    setIsImport(isImport)
     setState((prevState) => ({ ...prevState, isMachineRateForm: false, data: {}, editDetails: {}, stopApiCallOnCancel: false, }));
     if (type === "cancel") {
       setState((prevState) => ({ ...prevState, stopApiCallOnCancel: true }));
@@ -88,13 +90,13 @@ const MachineMaster = () => {
 
   if (isMachineRateForm === true) {
     return (
-      <AddMachineRate editDetails={state.editDetails} data={state.data} setData={setData} hideForm={hideForm} displayMoreDetailsForm={displayMoreDetailsForm} AddAccessibility={state.AddAccessibility} EditAccessibility={state.EditAccessibility} isMachineAssociated={state.isMachineAssociated} />
+      <AddMachineRate editDetails={state.editDetails} data={state.data} setData={setData} hideForm={hideForm} displayMoreDetailsForm={displayMoreDetailsForm} AddAccessibility={state.AddAccessibility} EditAccessibility={state.EditAccessibility} isMachineAssociated={state.isMachineAssociated} isImport={isImport} />
     );
   }
 
   if (isAddMoreDetails === true) {
     return (
-      <AddMoreDetails editDetails={state.editDetails} data={state.data} hideMoreDetailsForm={hideMoreDetailsForm} isMachineAssociated={state.isMachineAssociated} />
+      <AddMoreDetails editDetails={state.editDetails} data={state.data} hideMoreDetailsForm={hideMoreDetailsForm} isMachineAssociated={state.isMachineAssociated} isImport={isImport} />
     );
   }
 
@@ -113,7 +115,7 @@ const MachineMaster = () => {
               </Nav>
               <ApplyPermission.Provider value={permissionData}>
                 <TabContent activeTab={state.activeTab}>
-                  {Number(state.activeTab) === 1 && (<TabPane tabId="1"> <MachineRateListing displayForm={displayForm} getDetails={getDetails} isMasterSummaryDrawer={false} stopApiCallOnCancel={state.stopApiCallOnCancel} selectionForListingMasterAPI="Master" approvalStatus={APPROVAL_CYCLE_STATUS_MASTER} /> </TabPane>)}
+                  {Number(state.activeTab) === 1 && (<TabPane tabId="1"> <MachineRateListing displayForm={displayForm} getDetails={getDetails} isMasterSummaryDrawer={false} stopApiCallOnCancel={state.stopApiCallOnCancel} selectionForListingMasterAPI="Master" approvalStatus={APPROVAL_CYCLE_STATUS_MASTER} isImport={isImport} /> </TabPane>)}
                   {Number(state.activeTab) === 2 && (<TabPane tabId="2"> <ProcessListing stopApiCallOnCancel={state.stopApiCallOnCancel} /></TabPane>)}
                   {Number(state.activeTab) === 3 && (<TabPane tabId="3">  <CommonApproval MasterId={MACHINE_MASTER_ID} OnboardingApprovalId={'0'} /> </TabPane>)}
                 </TabContent>

@@ -272,7 +272,6 @@ function TabToolCost(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit((formData) => {
-    console.log(checkIsToolTabChange,"checkIsToolTabChange")
     if (checkIsToolTabChange) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]

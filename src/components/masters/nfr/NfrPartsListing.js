@@ -29,6 +29,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels } from '../../../helper/core';
+import { useHistory } from 'react-router-dom';
 const gridOptions = {};
 
 
@@ -70,6 +71,7 @@ function NfrPartsListing(props) {
     const [editNfr, setEditNfr] = useState(false)
     const [fetchData, setFetchData] = useState(false)
     const { technologyLabel } = useLabels();
+    const history = useHistory();
     useEffect(() => {
         setloader(true)
         applyPermission(topAndLeftMenuData)
@@ -180,6 +182,13 @@ function NfrPartsListing(props) {
         setConfirmPopup(false)
     }
 
+    const addCosting = (rowData) => {
+        history.push({
+            pathname: '/costing',
+            state: {isNFR: true,partDetails: rowData,costingData: {},isViewMode: false}
+        });
+    }
+
     const formToggle = (data, viewMode) => {
         // setIndexOuter(indexOuter)
         // setIndexInside(indexInside)
@@ -237,10 +246,11 @@ function NfrPartsListing(props) {
                 {showOutsourcing && !rowData?.IsRmAndBopActionEditable && < button type="button" id="viewNfrPart_list" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >}
                 {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >}
                 {showOutsourcing && < button type="button" className={"pushed-action-btn mr-1"} onClick={() => { pushToSap(rowData) }} disabled={!showPush} title={`Please add RM/${showBopLabel()} price in master, to add outsourcing cost and push the price on SAP`}></button >}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title={`Add Costing`} className="create-rfq mr-1" id="nfr_AddCosting" type={"button"} onClick={() => addCosting(rowData)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />}
-                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />}
+                {/* {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />} */}
 
             </>
         )
