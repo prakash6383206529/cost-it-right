@@ -358,7 +358,7 @@ function OverheadProfit(props) {
 
       // Process each applicability type
       dataObj?.CostingApplicabilityDetails?.forEach(detail => {
-        const { Applicability, Percentage} = detail;
+        const { Applicability, Percentage } = detail;
 
         switch (Applicability) {
           case 'Fixed':
@@ -395,7 +395,7 @@ function OverheadProfit(props) {
             break;
 
           case 'Welding':
-           const weldingCost = checkForNull(headerCosts?.NetWeldingCostForOverhead)
+            const weldingCost = checkForNull(headerCosts?.NetWeldingCostForOverhead)
             const weldingTotalCost = weldingCost * calculatePercentage(Percentage)
 
             setValue('OverheadWeldingPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
@@ -532,13 +532,11 @@ function OverheadProfit(props) {
     if (type === 'overhead') {
       return checkForNull(headerCosts?.NetProcessCostForOverhead) +
         checkForNull(headerCosts?.NetOperationCostForOverhead) +
-        checkForNull(headerCosts?.NetWeldingCostForOverhead) +
         (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) +
         (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
     } else if (type === 'profit') {
       return checkForNull(headerCosts?.NetProcessCostForProfit) +
         checkForNull(headerCosts?.NetOperationCostForProfit) +
-        checkForNull(headerCosts?.NetWeldingCostForProfit) +
         (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) +
         (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
     }
