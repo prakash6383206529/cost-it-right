@@ -924,9 +924,9 @@ const AssemblyPartListing = React.memo((props) => {
                   <AgGridColumn field="BOMNumber" headerName="BOM No."              ></AgGridColumn>
                   <AgGridColumn field="PartNumber" headerName="Part No."              ></AgGridColumn>
                   <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
-                  {/* {initialConfiguration?.IsSAPCodeRequired && (
+                  {initialConfiguration?.IsSAPCodeRequired && (
                     <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={"hyphenFormatter"}                ></AgGridColumn>
-                  )} */}
+                  )}
                   <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"              ></AgGridColumn>
                   <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count" ></AgGridColumn>
                   <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>

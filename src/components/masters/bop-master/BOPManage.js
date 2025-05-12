@@ -7,7 +7,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
 import { Sob } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';

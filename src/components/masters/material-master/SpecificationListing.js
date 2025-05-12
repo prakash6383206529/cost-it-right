@@ -21,7 +21,7 @@ import {
   deleteRMSpecificationAPI,
 } from "../actions/Material";
 import { PaginationWrapper } from "../../common/commonPagination";
-import { loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
