@@ -232,8 +232,8 @@ function AddAssemblyOperation(props) {
       if (isAssemblyTechnology) {
         item.NetOperationCost = operationCostAssemblyTechnology
         item.NetWeldingCost = weldingCostAssemblyTechnology
-        item.NetPOPrice = netPOPrice
-        item.NetTotalRMBOPCC = checkForNull(item?.CostingPartDetails?.NetChildPartsCost) + checkForNull(item?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(item?.NetOperationCost) + checkForNull(item?.NetProcessCost) + checkForNull(item?.NetLabourCost) + checkForNull(item?.IndirectLaborCost) + checkForNull(item?.StaffCost) + checkForNull(item?.NetWeldingCost)
+        // item.NetPOPrice = netPOPrice
+        // item.NetTotalRMBOPCC = checkForNull(item?.CostingPartDetails?.NetChildPartsCost) + checkForNull(item?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(item?.NetOperationCost) + checkForNull(item?.NetProcessCost) + checkForNull(item?.NetLabourCost) + checkForNull(item?.IndirectLaborCost) + checkForNull(item?.StaffCost) + checkForNull(item?.NetWeldingCost)
         let request = formatMultiTechnologyUpdate(item, netPOPrice, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
         }))
