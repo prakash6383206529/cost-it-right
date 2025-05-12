@@ -649,7 +649,7 @@ class AddExchangeRate extends Component {
                       </Col>
                       {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col md="3">
                         <Field
-                          name="exchangeSource"
+                          name="ExchangeSource"
                           type="text"
                           label="Exchange Rate Source"
                           component={searchableSelect}

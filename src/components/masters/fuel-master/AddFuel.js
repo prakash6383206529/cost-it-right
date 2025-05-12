@@ -1134,7 +1134,7 @@ class AddFuel extends Component {
                             <Col md="3">
                               <Field
                                 label="Exchange Rate Source"
-                                name="exchangeSource"
+                                name="ExchangeSource"
                                 placeholder="Select"
                                 options={this.renderListing("ExchangeSource")}
                                 handleChangeDescription={this.handleExchangeRateSource}
