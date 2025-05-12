@@ -6,7 +6,7 @@ import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required } from '../../../helper';
 import { renderText } from '../../layout/FormInputs';
-import { addModel, editModel } from '../actions/Part';
+import { addModel, editModel, getModelById } from '../actions/Part';
 import { loggedInUserId } from "../../../helper/auth";
 import Toaster from '../../common/Toaster';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -156,7 +156,8 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   addModel,
   editModel,
-  loggedInUserId
+  loggedInUserId,
+  getModelById
 })(reduxForm({
   form: 'ModelForm',
   enableReinitialize: true,
