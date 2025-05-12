@@ -290,7 +290,7 @@ const validate = values => {
  * @return object{}
  */
 function mapStateToProps(state) {
-  const fieldsObj = selector(state, 'UserName');
+  const fieldsObj = selector(state, 'username');
   const { menusData, leftMenuData, initialConfiguration } = state.auth;
   return { menusData, leftMenuData, initialConfiguration, fieldsObj };
 }
