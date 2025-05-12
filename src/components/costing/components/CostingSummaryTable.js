@@ -2745,6 +2745,8 @@ const iccToolTipText = `
                               </td>
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
+                                  
+                                  
                                   return (
                                     <td className={tableDataClass(data)}>
                                       {data?.bestCost !== true && <>
@@ -2760,7 +2762,7 @@ const iccToolTipText = `
                                           <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netProcessCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                         <span className={highlighter("", "rm-reducer")}>
-                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netOperationCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(checkForNull(data?.netOperationCost)+checkForNull(data?.netWeldingCost), initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                         <span className={highlighter("LabourCost")}>
                                           <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('labour', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.NetLabourCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>

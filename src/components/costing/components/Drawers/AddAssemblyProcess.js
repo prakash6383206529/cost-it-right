@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { checkForNull, loggedInUserId } from '../../../../helper';
+import { checkForNull, getOverheadAndProfitCostTotal, loggedInUserId } from '../../../../helper';
 import ProcessCost from '../CostingHeadCosts/Part/ProcessCost';
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
@@ -129,14 +129,20 @@ function AddAssemblyProcess(props) {
         checkForNull(costPerPieceTotal) +
         checkForNull(CostPerAssemblyBOPTotal) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
+        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost) +
         checkForNull(NetProcessCost)
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
         checkForNull(costPerPieceTotal) +
         checkForNull(CostPerAssemblyBOPTotal) +
         checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
+        checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost) +
         checkForNull(NetProcessCost)
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingProcessCostResponse = processGrid.CostingProcessCostResponse
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetProcessCost = NetProcessCost
+        // Update overhead and profit costs
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetProcessCostForOverhead = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, "Overhead")?.overheadProcessCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetProcessCostForProfit = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, "Profit")?.profitProcessCost;
+      
 
       dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 

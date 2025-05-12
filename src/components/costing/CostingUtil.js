@@ -12,6 +12,7 @@ import { MESSAGES } from "../../config/message";
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}, IsAddPaymentTermInNetCost = false, remark = '', bopCostingIdForRemark = '') => {
   let Arr = JSON.parse(sessionStorage.getItem('costingArray'))
+
   let surfaceTreatmentArr = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
   let assemblyWorkingRow = []
 
@@ -38,18 +39,31 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalOperationCostComponent": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponent),
           "TotalOperationCostWithQuantity": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly),
 
+          "TotalWeldingCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssembly),
+          "TotalWeldingCostSubAssembly": checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssembly),
+          "TotalWeldingCostComponent": checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponent),
+          "TotalWeldingCostWithQuantity": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponent),
+
           "TotalOperationCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead),
           "TotalOperationCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead),
           "TotalOperationCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForOverhead),
           "TotalOperationCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead),
 
 
+          "TotalWeldingCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead),
+          "TotalWeldingCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssemblyForOverhead),
+          "TotalWeldingCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponentForOverhead),
+          "TotalWeldingCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponentForOverhead),
+
           "TotalOperationCostPerAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit),
           "TotalOperationCostSubAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit),
           "TotalOperationCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForProfit),
-          "TotalOperationCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit),
+          "TotalOperationCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForProfit),
 
-
+          "TotalWeldingCostPerAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForProfit),
+          "TotalWeldingCostSubAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssemblyForProfit),
+          "TotalWeldingCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponentForProfit),
+          "TotalWeldingCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponentForProfit),
 
           "TotalOtherOperationCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerAssembly),
           "TotalOtherOperationCostPerSubAssembly": checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly),
@@ -190,16 +204,30 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalOperationCostSubAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssembly),
       "TotalOperationCostComponent": tabData?.CostingPartDetails?.TotalOperationCostComponent,
       "TotalOperationCostWithQuantity": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponent),
+      "TotalWeldingCostPerAssembly": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssembly),
+      "TotalWeldingCostSubAssembly": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssembly),
+      "TotalWeldingCostComponent": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponent),
+      "TotalWeldingCostWithQuantity": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssembly) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssembly) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponent),
 
       "TotalOperationCostPerAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead),
       "TotalOperationCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead),
       "TotalOperationCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForOverhead),
       "TotalOperationCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForOverhead),
 
+      "TotalWeldingCostPerAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead),
+      "TotalWeldingCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssemblyForOverhead),
+      "TotalWeldingCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponentForOverhead),
+      "TotalWeldingCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponentForOverhead),
+
       "TotalOperationCostPerAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit),
       "TotalOperationCostSubAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit),
       "TotalOperationCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForProfit),
       "TotalOperationCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForProfit),
+
+      "TotalWeldingCostPerAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssemblyForProfit),
+      "TotalWeldingCostSubAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssemblyForProfit),
+      "TotalWeldingCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponentForProfit),
+      "TotalWeldingCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponentForProfit),
 
 
 
@@ -456,7 +484,9 @@ export const clearCosting = (dispatch) => {
 }
 
 export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false, remark = "", bopCostingId = "") => {
+  console.log("totalCost-formatMultiTechnologyUpdate-NetPOPrice",totalCost)
   let Arr = tabData
+  
   let assemblyWorkingRow = []
 
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
@@ -494,12 +524,13 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
     "TopRow": {
       "CostingId": tabData?.CostingId,
       "NetOperationCost": tabData?.CostingPartDetails?.NetOperationCost,
+      "NetWeldingCost": tabData?.CostingPartDetails?.NetWeldingCost,
       "NetProcessCost": tabData?.CostingPartDetails?.NetProcessCost,
       "NetChildPartsCost": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetRawMaterialsCost": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetBoughtOutPartCost": tabData?.CostingPartDetails?.NetBoughtOutPartCost,
-      "NetConversionCost": checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
-      "NetTotalRMBOPCC": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
+      "NetConversionCost": checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost) + checkForNull(tabData?.CostingPartDetails?.NetWeldingCost),
+      "NetTotalRMBOPCC": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost) + checkForNull(tabData?.CostingPartDetails?.NetWeldingCost),
       "NetSurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost,
       "NetOverheadAndProfitCost": totalOverheadPrice,
       "NetPackagingAndFreightCost": packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost,
@@ -526,7 +557,13 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "IndirectLaborCostPercentage": tabData?.CostingPartDetails?.IndirectLaborCostPercentage,
       "BasicRate": basicRate,
       "RawMaterialCostWithCutOff": tabData?.CostingPartDetails?.NetChildPartsCost,
-      "NetOtherOperationCost": 0,               // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
+      "NetOtherOperationCost": 0,                      // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
+      "NetProcessCostForOverhead": tabData?.CostingPartDetails?.NetProcessCostForOverhead,
+      "NetProcessCostForProfit": tabData?.CostingPartDetails?.NetProcessCostForProfit,
+      "NetWeldingCostForOverhead": tabData?.CostingPartDetails?.NetWeldingCostForOverhead,
+      "NetWeldingCostForProfit": tabData?.CostingPartDetails?.NetWeldingCostForProfit,
+      "NetOperationCostForOverhead": tabData?.CostingPartDetails?.NetOperationCostForOverhead,
+      "NetOperationCostForProfit": tabData?.CostingPartDetails?.NetOperationCostForProfit,
     },
     "WorkingRows": assemblyWorkingRow,
     "LoggedInUserId": loggedInUserId()
