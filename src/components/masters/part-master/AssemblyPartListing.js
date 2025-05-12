@@ -924,9 +924,9 @@ const AssemblyPartListing = React.memo((props) => {
                   <AgGridColumn field="BOMNumber" headerName="BOM No."              ></AgGridColumn>
                   <AgGridColumn field="PartNumber" headerName="Part No."              ></AgGridColumn>
                   <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
-                  {/* {initialConfiguration?.IsSAPCodeRequired && (
+                  {initialConfiguration?.IsSAPCodeRequired && (
                     <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={"hyphenFormatter"}                ></AgGridColumn>
-                  )} */}
+                  )}
                   <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"              ></AgGridColumn>
                   <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count" ></AgGridColumn>
                   <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
@@ -936,7 +936,7 @@ const AssemblyPartListing = React.memo((props) => {
                 {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowNepNumber && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                   {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
-                  {/* {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={'hyphenFormatter'}  ></AgGridColumn>} */}
+                  {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={'hyphenFormatter'}  ></AgGridColumn>}
                   <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}              ></AgGridColumn>
                   <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
                   <AgGridColumn field="PartId" width={250} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned={window.screen.width < 1920 ? "right" : ""} type="rightAligned" floatingFilter={false} cellRenderer={"buttonFormatter"}              ></AgGridColumn>

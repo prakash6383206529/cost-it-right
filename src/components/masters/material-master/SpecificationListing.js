@@ -21,7 +21,7 @@ import {
   deleteRMSpecificationAPI,
 } from "../actions/Material";
 import { PaginationWrapper } from "../../common/commonPagination";
-import { loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
@@ -475,7 +475,7 @@ const SpecificationListing = (props) => {
                 <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
                 <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
                 <AgGridColumn field="RawMaterialCode" headerName="Code" cellRenderer="hyphenFormatter"></AgGridColumn>
-                {/* <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn> */}
+                {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                 <AgGridColumn field="SpecificationId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>}
               {

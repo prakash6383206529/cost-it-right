@@ -7,7 +7,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
 import { Sob } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -376,7 +376,7 @@ const BOPManage = (props) => {
                                     <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategoryName" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartEntryType" headerName="Entry Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    {/* <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn> */}
+                                    {getConfigurationKey()?.IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                                 </AgGridReact>
                             }
                             {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
