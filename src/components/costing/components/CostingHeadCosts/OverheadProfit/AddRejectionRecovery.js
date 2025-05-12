@@ -47,7 +47,7 @@ function AddRejectionRecovery(props) {
     const dispatch = useDispatch()
     const costingHead = useSelector(state => state.comman.costingHead)
     useEffect(() => {
-        dispatch(fetchCostingHeadsAPI('rejection recovery', false, false, (res) => { }))
+        dispatch(fetchCostingHeadsAPI('rejectionrecovery', false, false, (res) => { }))
     }, [])
     const toggleDrawer = (event, formData = {}) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {

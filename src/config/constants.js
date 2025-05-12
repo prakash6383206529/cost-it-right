@@ -218,7 +218,6 @@ export const API = {
   bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-partfamily-json`,
   getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
 
-
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
   createNewBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-new-bill-of-material`,
@@ -594,6 +593,7 @@ export const API = {
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
   getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
+  getRejectionDataByModelType: `${BASE_URL}/costing/get-costing-rejection-details`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -2533,35 +2533,10 @@ export const VIEW_COSTING_DATA = {
   sTreatment: 'Surface Treatment',
   tCost: 'Extra Surface Treatment Cost',
   netSurfaceTreatmentCost: 'Net Surface Treatment Cost',
-  //tCost: 'Transportation Cost',
-  //nConvCost: 'Net Conversion Cost',
-  modelType: 'Model Type For Overhead/Profit',
-  // aValue: '',
-  // overheadOn: 'Overhead On',
-  // profitOn: 'Profit On',
-  // rejectionOn: 'Rejection On',
-  // iccOn: 'ICC On',
-  // paymentTerms: 'Payment Terms',
-  overHeadApplicablity: 'Overhead Applicability',
-  overHeadPercent: 'Overhead %',
-  overHeadApplicablityValue: 'Overhead Value',
-  // OverheadRemark: 'Overhead Remark',
-  ProfitApplicablity: 'Profit Applicability',
-  profitPercent: 'Profit %',
-  ProfitApplicablityValue: 'Profit Value',
-  // ProfitRemark: 'Profit Remark',
-  rejectionApplicablity: 'Rejection Applicability',
-  rejectionPercent: 'Rejection %',
-  rejectionApplicablityValue: 'Rejection Value',
-  // RejectionRemark: 'Rejection Remark',
-  rejectionRecoveryApplicablity: 'Rejection Recovery Applicability',
-  rejectionRecoveryPercent: 'Rejection Recovery %',
-  rejectionRecoveryApplicablityValue: 'Rejection Recovery Value',
-  // rejectionRecoveryRemark: 'Rejection Recovery Remark',
-  iccApplicablity: 'ICC Applicability',
-  iccPercent: 'ICC %',
-  iccApplicablityValue: 'ICC Value',
-  // ICCRemark: 'Icc Remark',
+  netOverheadCost: 'Net Overhead Cost',
+  netProfitCost: 'Net Profit Cost',
+  netRejectionCost: 'Net Rejection Cost',
+  netICCCost: 'Net ICC Cost',
   nOverheadProfit: 'Net Overhead & Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
@@ -2737,76 +2712,23 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'netSurfaceTreatmentCost'
   },
   {
-    label: 'Model Type For Overhead/Profit',
-    value: 'modelType'
+    label: 'Net Overhead Cost',
+    value: 'netOverheadCost'
   },
   {
-    label: 'Overhead Applicability',
-    value: 'overHeadApplicablity'
+    label: 'Net Profit Cost',
+    value: 'netProfitCost'
   },
   {
-    label: 'Overhead %',
-    value: 'overHeadPercent'
+    label: 'Net Rejection Cost',
+    value: 'netRejectionCost'
   },
   {
-    label: 'Overhead Value',
-    value: 'overHeadApplicablityValue'
+    label: 'Net ICC Cost',
+    value: 'netICCCost'
   },
   {
-    label: 'Overhead Remark',
-    value: 'OverHeadRemark'
-  },
-  {
-    label: 'Profit Applicability',
-    value: 'ProfitApplicablity'
-  },
-  {
-    label: 'Profit %',
-    value: 'profitPercent'
-  },
-  {
-    label: 'Profit Value',
-    value: 'ProfitApplicablityValue'
-  },
-  {
-    label: 'Profit Remark',
-    value: 'ProfitRemark'
-  },
-  {
-    label: 'Rejection Applicability',
-    value: 'rejectionApplicablity'
-  },
-  {
-    label: 'Rejection %',
-    value: 'rejectionPercent'
-  },
-  {
-    label: 'Rejection Value',
-    value: 'rejectionApplicablityValue'
-  },
-  {
-    label: 'Rejection Remark',
-    value: 'RejectionRemark'
-  },
-  {
-    label: 'ICC Applicability',
-    value: 'iccApplicablity'
-  },
-  {
-    label: 'ICC %',
-    value: 'iccPercent'
-  },
-  {
-    label: 'ICC Value',
-    value: 'iccApplicablityValue'
-  },
-  {
-    label: 'ICC Remark',
-    value: 'ICCRemark'
-  },
-
-  {
-    label: 'Net Overhead Profits',
+    label: 'Net Overhead & Profits',
     value: 'nOverheadProfit'
   },
   {
