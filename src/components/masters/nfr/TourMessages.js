@@ -170,47 +170,71 @@ export function Steps(t, config) {
         ],
         ADD_NFR: [
             {
-                element: " #NFRVersion_container",
-                intro: t("addNfr.nfr_version"),
+                element: " #AddNFR_Customer_RFQ_No",
+                intro: t("addNfr.customer_rfq_no"),
             },
 
             {
-                element: "#ProductCode_container",
-                intro: t("addNfr.product_code"),
+                element: "#AddNFR_Customer_Name",
+                intro: t("addNfr.customer_name"),
             },
 
             {
-                element: ".input-container #Plant_container",
-                intro: t("addNfr.plant"),
+                element: ".input-container #AddNFR_Customer_Part_No",
+                intro: t("addNfr.customer_part_no"),
 
             },
             {
-                element: "#HeaderMaterial_container",
-                intro: t("addNfr.header_material"),
+                element: ".input-container #AddNFR_Part_Name",
+                intro: t("addNfr.part_name"),
             },
             {
-                element: ".input-container #PartType_container",
-                intro: t("addNfr.parttype"),
+                element: ".input-container #AddNFR_Part_Description",
+                intro: t("addNfr.part_description"),
             },
             {
-                element: ".input-container #UOM_container",
+                element: ".input-container #AddNFR_UOM",
                 intro: t("addNfr.uom"),
             },
             {
-                element: "#Quantity_container",
-                intro: t("addNfr.quantity"),
+                element: "#AddNFR_Product_Code",
+                intro: t("addNfr.product_code"),
             },
             {
-                element: "#AddNFR_AddData",
-                intro: t("addNfr.add"),
+                element: "#AddNFR_Segment",
+                intro: t("addNfr.segment"),
             },
             {
-                element: "#AddNFR_ResetData",
-                intro: t("addNfr.reset"),
+                element: ".input-container #AddNFR_Plant",
+                intro: t("addNfr.plant"),
+            },
+            {
+                element: "#AddNFR_ZBC_Date",
+                intro: t("addNfr.zbc_date"),
+            },
+            {
+                element: "#AddNFR_CBC_Date",
+                intro: t("addNfr.cbc_date"),
+            },
+            {
+                element: "#AddNFR_SOP_Date",
+                intro: t("addNfr.sop_date"),
+            },
+            {
+                element: "#AddNFR_AddForecast",
+                intro: t("addNfr.add_forecast"),
+            },
+            {
+                element: "#AddNFR_uploadFile",
+                intro: t("addNfr.addRFQ_uploadFile"),
             },
             {
                 element: "#AddNFR_CancelData",
                 intro: t("addNfr.cancel"),
+            },
+            {
+                element: "#SaveNFR_SubmitData",
+                intro: t("addNfr.add"),
             },
 
             {

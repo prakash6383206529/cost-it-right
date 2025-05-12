@@ -24,9 +24,10 @@ function BudgetMaster() {
     const [data, setData] = useState({});
     const [isOperationAssociated, setIsOperationAssociated] = useState(false);
     const [stopAPICall, setStopAPICall] = useState(false);
+    const [isImport, setIsImport] = useState(false);
 
-    const displayBudgetForm = (data) => {
-
+    const displayBudgetForm = (data, isImport) => {
+        setIsImport(isImport)
         setIsOperation(true);
         setData(data);
     }
@@ -114,6 +115,7 @@ function BudgetMaster() {
                                             isMasterSummaryDrawer={false}
                                             selectionForListingMasterAPI='Master'
                                             stopAPICall={stopAPICall}
+                                            isImport={isImport}
                                         />
                                     </TabPane>}
 
@@ -140,6 +142,7 @@ function BudgetMaster() {
                         data={data}
                         hideForm={hideForm}
                         isOperationAssociated={isOperationAssociated}
+                        isImport={isImport}
                     />
 
                 }

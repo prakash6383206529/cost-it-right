@@ -228,31 +228,38 @@ function TabOverheadProfit(props) {
   const dispatchOverheadDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj, modelType } = data;
+    // Extract and sum all TotalCost values from CostingApplicabilityDetails
+    let OverheadCost = 0;
+    overheadObj?.CostingApplicabilityDetails?.forEach(detail => {
+      OverheadCost += checkForNull(detail.TotalCost);
+    });
 
+    // let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
+    //   checkForNull(overheadObj.OverheadBOPTotalCost) +
+    //   checkForNull(overheadObj.OverheadCCTotalCost);
 
-    let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
-      checkForNull(overheadObj.OverheadBOPTotalCost) +
-      checkForNull(overheadObj.OverheadCCTotalCost);
+    // if (overheadObj.IsOverheadFixedApplicable === true) {
+    //   OverheadCost = overheadObj.OverheadFixedTotalCost;
+    // }
 
-    if (overheadObj.IsOverheadFixedApplicable === true) {
-      OverheadCost = overheadObj.OverheadFixedTotalCost;
-    }
+    // if (overheadObj.IsOverheadCombined === true) {
+    //   OverheadCost = overheadObj.OverheadCombinedTotalCost;
+    // }
+    let ProfitCost = 0;
+    profitObj?.CostingApplicabilityDetails?.forEach(detail => {
+      ProfitCost += checkForNull(detail.TotalCost);
+    });
+    // let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
+    //   checkForNull(profitObj.ProfitBOPTotalCost) +
+    //   checkForNull(profitObj.ProfitCCTotalCost);
 
-    if (overheadObj.IsOverheadCombined === true) {
-      OverheadCost = overheadObj.OverheadCombinedTotalCost;
-    }
+    // if (profitObj.IsProfitFixedApplicable === true) {
+    //   ProfitCost = profitObj.ProfitFixedTotalCost;
+    // }
 
-    let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
-      checkForNull(profitObj.ProfitBOPTotalCost) +
-      checkForNull(profitObj.ProfitCCTotalCost);
-
-    if (profitObj.IsProfitFixedApplicable === true) {
-      ProfitCost = profitObj.ProfitFixedTotalCost;
-    }
-
-    if (profitObj.IsProfitCombined === true) {
-      ProfitCost = profitObj.ProfitCombinedTotalCost;
-    }
+    // if (profitObj.IsProfitCombined === true) {
+    //   ProfitCost = profitObj.ProfitCombinedTotalCost;
+    // }
 
     let tempArr = [];
     try {
@@ -273,7 +280,6 @@ function TabOverheadProfit(props) {
           formatData(data, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
           i.CostingPartDetails.CostingOverheadDetail = overheadObj;
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.OverheadCost = OverheadCost;

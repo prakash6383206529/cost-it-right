@@ -2062,7 +2062,7 @@ class AddRMImport extends Component {
                             />
                           </Col>
 
-                          {((costingTypeId === ZBCTypeId && !initialConfiguration?.IsMultipleUserAllowForApproval) && (
+                          {((costingTypeId === ZBCTypeId && !initialConfiguration?.IsApprovalLevelFilterByPlant) && (
                             <Col md="3">
                               <Field
                                 label="Plant (Code)"
@@ -2086,7 +2086,7 @@ class AddRMImport extends Component {
                             </Col>)
                           )}
                           {
-                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration?.IsMultipleUserAllowForApproval) &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration?.IsApprovalLevelFilterByPlant) &&
                             <Col md="3">
                               <Field
                                 label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}

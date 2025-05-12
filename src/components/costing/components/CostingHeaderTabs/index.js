@@ -267,11 +267,9 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
       }))
     }
 
-
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' && checkIsOverheadProfitChange) {
       const discountAndOtherTabData = DiscountCostData
-
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
@@ -570,7 +568,8 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
    * @description date Function
    */
   const dateFunction = () => {
-    let arr = [costData.LastApproveEffectiveDate, costData.PartEffectiveDate, new Date(getEffectiveDateMinDate()).toISOString().split('.')[0]  // Converted format
+
+    let arr = [costData?.LastApproveEffectiveDate, costData?.PartEffectiveDate, new Date(getEffectiveDateMinDate())?.toISOString()?.split('.')[0]  // Converted format
     ]
 
     const largestDate = new Date(Math.max(...arr.filter(Boolean).map(date => Date.parse(date))));
