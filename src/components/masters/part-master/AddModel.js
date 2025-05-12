@@ -13,9 +13,10 @@ import LoaderCustom from '../../common/LoaderCustom';
 
 class ModelDrawer extends Component {
   constructor(props) {
+    
     super(props);
     this.state = {
-      isSubmitting: false
+      isLoader: false
     };
   }
   componentDidMount() {
@@ -49,22 +50,22 @@ class ModelDrawer extends Component {
       return;
     }
     
-    this.setState({ isSubmitting: true });
     
     if (this.props.isEditFlag) {
       const updateData = {
         PartModelId: this.props.ID,
         PartModelMasterName: ModelName,
       };
-      
+      this.setState({ isLoader: true });
       this.props.editModel(updateData, (res) => {
-        this.setState({ isSubmitting: false });
+        this.setState({ isLoader: false });
         if (res && res.data && res.data.Result) {
-          Toaster.success("Model updated successfully");
+          Toaster.success(res?.data?.Message);
           if (this.props.refreshModelList) this.props.refreshModelList();
           if (this.props.onClose) this.props.onClose({
             ...res.data.Data,
-            ModelName: ModelName
+            ModelName: ModelName,
+            PartModelId: this.props.ID
           });        }
       });
     } else {
@@ -72,14 +73,16 @@ class ModelDrawer extends Component {
         PartModelMasterName: ModelName,
       };
       
+      this.setState({ isLoader: true });
       this.props.addModel(addData, (res) => {
-        this.setState({ isSubmitting: false });
+        this.setState({ isLoader: false });
         if (res && res.data && res.data.Result) {
           Toaster.success(res?.data?.Message);
           if (this?.props?.refreshModelList) this?.props?.refreshModelList();
           if (this.props.onClose) this.props.onClose({
             ...res.data.Data,
-            ModelName: ModelName // <-- add this line
+            ModelName: ModelName,
+            PartModelId: res?.data?.Data?.PartModelId
           });
         }
       });
@@ -92,7 +95,7 @@ class ModelDrawer extends Component {
       <Drawer anchor={anchor} open={isOpen} onClose={onClose}>
         <Container>
           <div className="drawer-wrapper">
-            {this.state.isSubmitting && <LoaderCustom />}
+            {this.state.isLoader && <LoaderCustom />}
             <form
               noValidate
               className="form"
@@ -139,7 +142,7 @@ class ModelDrawer extends Component {
                       className="save-btn"
                       icon="save-icon"
                       buttonName={isEditFlag ? "Update" : "Save"}
-                      disabled={this.state.isSubmitting}
+                      disabled={this.state.isLoader}
                     />
                   </div>
                 </div>
