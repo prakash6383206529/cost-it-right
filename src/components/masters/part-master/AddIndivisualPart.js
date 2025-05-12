@@ -644,55 +644,42 @@ class AddIndivisualPart extends Component {
   }
 
   handleModelSubmit = (modelData) => {
-    if (this?.state?.isModelEditFlag) {
-      this?.props?.editModel({
-        PartModelId: modelData.Id,
-        PartModelMasterName: modelData.ModelName
+    if (this.state.isModelEditFlag) {
+      this.props.editModel({
+        PartModelId: modelData.Id || this.state.Model.value,
+        PartModelMasterName: modelData?.ModelName
       }, (res) => {
-        if (res && res?.data && res?.data?.Result) {
-          // Update the model in state with the edited data
-          const updatedModel = {
-            label: modelData.ModelName,
-            value: modelData.Id
-          };
-          
-          // Update both state and form field
+        if (res && res.data && res.data.Result) {
+          // Set the edited model in the state
           this.setState({
-            Model: updatedModel,
+            Model: {
+              label: modelData.ModelName,
+              value: modelData.Id || this.state.Model.value
+            },
             isModelDrawerOpen: false
           });
-          
-          // Update the form field value
-          this.props.change('Model', updatedModel);
-          
           this.getModelList(); // Refresh the model list
         }
       });
     } else {
-      this?.props?.addModel({
-        PartModelMasterName: modelData.ModelName
+      this.props.addModel({
+        PartModelMasterName: modelData?.ModelName
       }, (res) => {
-        if (res && res?.data && res?.data?.Result) {
-          // Set the newly added model in the state and form field
-          const newModel = {
-            label: modelData.ModelName,
-            value: res.data.Data.Id || res.data.Data.PartModelId
-          };
-          
-          // Update both state and form field
+        if (res && res.data && res.data.Result) {
+          // Set the newly added model in the state
           this.setState({
-            Model: newModel,
+            Model: {
+              label: modelData.ModelName,
+              value: res.data.Data.Id || res.data.Data.PartModelId
+            },
             isModelDrawerOpen: false
           });
-          
-          // Update the form field value
-          this.props.change('Model', newModel);
-          
           this.getModelList(); // Refresh the model list
         }
       });
     }
   }
+
 
 
   /**
@@ -1144,16 +1131,16 @@ class AddIndivisualPart extends Component {
           {
             this?.state?.showPopup && <PopupMsgWrapper isOpen={this?.state?.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-          {this?.state?.isModelDrawerOpen && (
-            <AddModel
-              isOpen={this?.state?.isModelDrawerOpen}
-              onClose={() => this.setState({ isModelDrawerOpen: false })}
-              handleModelSubmit={this.handleModelSubmit()}
-              ID={this?.state?.Model?.value}
-              isEditFlag={this?.state?.isModelEditFlag}
-              refreshModelList={this.getModelList}
-            />
-          )}
+    {this?.state?.isModelDrawerOpen && (
+  <AddModel
+    isOpen={this?.state?.isModelDrawerOpen}
+    onClose={() => this.setState({ isModelDrawerOpen: false })}
+    onSubmit={this.handleModelSubmit} // Correctly passed as a function reference
+    ID={this?.state?.Model?.value}
+    isEditFlag={this?.state?.isModelEditFlag}
+    refreshModelList={this.getModelList}
+  />
+)}
         </div>
       </>
     );

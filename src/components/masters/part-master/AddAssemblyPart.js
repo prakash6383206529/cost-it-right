@@ -1087,7 +1087,7 @@ class AddAssemblyPart extends Component {
     if (this.state.isModelEditFlag) {
       this.props.editModel({
         PartModelId: modelData.Id || this.state.Model.value,
-        PartModelMasterName: modelData.ModelName
+        PartModelMasterName: modelData?.ModelName
       }, (res) => {
         if (res && res.data && res.data.Result) {
           // Set the edited model in the state
@@ -1103,7 +1103,7 @@ class AddAssemblyPart extends Component {
       });
     } else {
       this.props.addModel({
-        PartModelMasterName: modelData.ModelName
+        PartModelMasterName: modelData?.ModelName
       }, (res) => {
         if (res && res.data && res.data.Result) {
           // Set the newly added model in the state
