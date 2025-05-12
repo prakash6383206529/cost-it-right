@@ -313,6 +313,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
           InjectDiscountAPICall()
           let arrTemp = [...OverheadProfitTabData]
           arrTemp[0].IsOpen = false
+          console.log(arrTemp,'arrTempfgfg')
           dispatch(setOverheadProfitData(arrTemp, () => { }))
         }))
       }

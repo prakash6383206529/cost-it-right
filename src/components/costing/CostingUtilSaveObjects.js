@@ -33,6 +33,10 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
         "NetOperationCostForProfit": rmccData?.CostingPartDetails?.NetOperationCostForProfit || null,
         "NetWeldingCostForOverhead": rmccData?.CostingPartDetails?.NetWeldingCostForOverhead || null,
         "NetWeldingCostForProfit": rmccData?.CostingPartDetails?.NetWeldingCostForProfit || null,
+        "NetWeldingCost": rmccData?.CostingPartDetails?.NetWeldingCost || null,
+        "NetCCForOtherTechnologyCost": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCost || null,
+        "NetCCForOtherTechnologyCostForOverhead": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCostForOverhead || null,
+        "NetCCForOtherTechnologyCostForProfit": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCostForProfit || null,
         CostingPartDetails: { ...rmccData?.CostingPartDetails, BasicRate: basicRate, NetPOPrice: netPOPrice },
     }
     return requestObj;

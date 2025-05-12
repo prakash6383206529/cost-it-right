@@ -115,6 +115,10 @@ function TabRMCC(props) {
           NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
           NetWeldingCostForOverhead:TopHeaderValues?.NetWeldingCostForOverhead??0,
           NetWeldingCostForProfit:TopHeaderValues?.NetWeldingCostForProfit??0,
+          NetWeldingCost:TopHeaderValues?.NetWeldingCost??0,
+          NetCCForOtherTechnologyCost:TopHeaderValues?.NetCCForOtherTechnologyCost??0,
+          NetCCForOtherTechnologyCostForOverhead:TopHeaderValues?.NetCCForOtherTechnologyCostForOverhead??0,
+          NetCCForOtherTechnologyCostForProfit:TopHeaderValues?.NetCCForOtherTechnologyCostForProfit??0,
         }
       }
       props.setHeaderCost(topHeaderData)
@@ -517,16 +521,18 @@ function TabRMCC(props) {
 
         break;
       case 'CC':
-        console.log(getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId),'getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)')
         partObj.CostingPartDetails.NetConversionCost = gridData?.NetConversionCost
         partObj.CostingPartDetails.NetProcessCost = gridData?.NetProcessCost
         partObj.CostingPartDetails.NetProcessCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.overheadProcessCost;
         partObj.CostingPartDetails.NetProcessCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.profitProcessCost;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.ccForOtherTechnologyCostForOverhead;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.ccForOtherTechnologyCostForProfit;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCost = checkForNull(getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.ccForOtherTechnologyCostForOverhead ) + checkForNull(getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.ccForOtherTechnologyCostForProfit);
         partObj.CostingPartDetails.NetOperationCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.overheadOperationCost;
         partObj.CostingPartDetails.NetOperationCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.profitOperationCost;
+        partObj.CostingPartDetails.NetWeldingCost = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.overheadWeldingCost + getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.profitWeldingCost
         partObj.CostingPartDetails.NetWeldingCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.overheadWeldingCost;
         partObj.CostingPartDetails.NetWeldingCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.profitWeldingCost;
-
         // partObj.CostingPartDetails.NetOperationCostForOverheadExcl = gridData?.NetOperationCostForOverheadExcl
         // partObj.CostingPartDetails.NetOperationCostForProfitExcl = gridData?.NetOperationCostForProfitExcl
         partObj.CostingPartDetails.NetOperationCost = gridData?.NetOperationCost

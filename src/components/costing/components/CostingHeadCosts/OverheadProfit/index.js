@@ -395,8 +395,6 @@ function OverheadProfit(props) {
             break;
 
           case 'Welding':
-            console.log(headerCosts?.NetWeldingCostForOverhead, 'headerCosts?.NetWeldingCostForOverhead')
-            console.log(headerCosts, 'headerCosts')
             const weldingCost = checkForNull(headerCosts?.NetWeldingCostForOverhead)
             const weldingTotalCost = weldingCost * calculatePercentage(Percentage)
 

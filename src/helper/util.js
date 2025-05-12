@@ -2102,10 +2102,13 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
       }
       if ("ProcessCost" in item) {
         totals.overheadProcessCost += useExclForOverhead ? processExcl : process;
-        console.log(ProcessTechnologyId,'ProcessTechnologyId')
-        console.log(technologyId,'technologyId')
-        if(ProcessTechnologyId !== technologyId){
-          totals.ccForOtherTechnologyCostForOverhead += useExclForOverhead ? processExcl : process;
+        if(ProcessTechnologyId !== technologyId) {
+          // Initialize if undefined to prevent NaN
+          if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
+            totals.ccForOtherTechnologyCostForOverhead = 0;
+          }
+          const costToAdd = useExclForOverhead ? processExcl : process;
+          totals.ccForOtherTechnologyCostForOverhead += Number(costToAdd);
         }
       }
     }
@@ -2121,12 +2124,15 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
       if ("ProcessCost" in item) {
         totals.profitProcessCost += useExclForProfit ? processExcl : process;
         if(ProcessTechnologyId !== technologyId){
-          totals.ccForOtherTechnologyCostForProfit += useExclForProfit ? processExcl : process;
+          if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
+            totals.ccForOtherTechnologyCostForOverhead = 0;
+          }
+          const costToAdd = useExclForProfit ? processExcl : process;
+          totals.ccForOtherTechnologyCostForProfit += Number(costToAdd);
         }
       }
     }
   });
-// console.log(totals,'totals')
   return totals;
 };
 
