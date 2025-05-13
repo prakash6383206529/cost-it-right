@@ -115,12 +115,12 @@ function TabToolCost(props) {
       //}, 1500)
     }
 
+    const toolOperationId = gridData?.[0]?.ToolOperationId || null;
     if (ToolTabData) {
-      if (ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise) {
+      if (ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise && toolOperationId !== null) {
         setIsApplicableProcessWise(true)
       }
-      // It will help identify tool cost tab (Applicability: overall) previously saved or not.
-      const toolOperationId = gridData?.[0]?.ToolOperationId || null;
+      // CJ2-I262 It will help identify tool cost tab (Applicability: overall) previously saved or not.
       if (ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise === false && toolOperationId !== null) {
           setIsApplicableOverall(true)
       }
@@ -268,7 +268,12 @@ function TabToolCost(props) {
     }
     if (ToolTabData && ToolTabData.length > 0) {
       setLoader(false)
-      setGridData(ToolTabData && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse)
+      // CJ2-I262 From Backend we are getting CostingToolCostResponse with blank json object and all key values null.
+      if (ToolTabData && ToolTabData?.[0]?.CostingPartDetails?.CostingToolCostResponse.length > 0 && ToolTabData?.[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolOperationId === null) {
+        setGridData([])
+      } else {
+        setGridData(ToolTabData && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse)
+      }
     }
 
   }, [IsApplicableProcessWise, props.activeTab, ToolTabData])
