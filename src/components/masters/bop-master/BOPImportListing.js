@@ -612,13 +612,13 @@ const BOPImportListing = (props) => {
             {permissions?.View && (
               <Button
                 id={`bopImportingListing_View${props.rowIndex}`}
-                title="View" className="View Tour_List_View" variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
+                title="View" className="View Tour_List_View ml-1" variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
 
             )}
             {isEditable && !IsRFQBoughtOutPart && (
 
 
-              <Button id={`bopImportingListing_Edit${props.rowIndex}`} title={"Edit"} className={"Edit Tour_List_Edit"} variant={"Edit"} type={"button"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
+              <Button id={`bopImportingListing_Edit${props.rowIndex}`} title={"Edit"} className={"Edit Tour_List_Edit ml-1"} variant={"Edit"} type={"button"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
               />
             )}
             {isDeleteButton && !IsRFQBoughtOutPart && (
@@ -626,7 +626,7 @@ const BOPImportListing = (props) => {
               <Button
                 id={`bopImportingListing_Delete${props.rowIndex}`}
                 title={"Delete"}
-                className={"Delete Tour_List_Delete"}
+                className={"Delete Tour_List_Delete ml-1"}
                 variant={"Delete"}
                 type={"button"}
                 onClick={() => deleteItem(cellValue)}

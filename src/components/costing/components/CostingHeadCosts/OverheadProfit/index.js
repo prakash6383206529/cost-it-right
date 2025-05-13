@@ -40,7 +40,7 @@ function OverheadProfit(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const defaultValues = {
-    overHeadRemark: CostingOverheadDetail.Remark ? CostingOverheadDetail.Remark : '',
+    overHeadRemark: CostingOverheadDetail?.Remark ? CostingOverheadDetail?.Remark : '',
     crmHeadOverhead: CostingOverheadDetail && CostingOverheadDetail.OverheadCRMHead && { label: CostingOverheadDetail.OverheadCRMHead, value: 1 },
     //REJECTION FIELDS
     Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
@@ -96,12 +96,12 @@ function OverheadProfit(props) {
     }
 
     //GET FIXED VALUE IN GET API
-    if (Object.keys(CostingOverheadDetail).length > 0) {
+    if (CostingOverheadDetail && Object?.keys(CostingOverheadDetail)?.length > 0) {
       setOverheadValues(CostingOverheadDetail, false)
     }
 
     //GET FIXED VALUE IN GET API
-    if (Object.keys(CostingProfitDetail).length > 0) {
+    if (CostingProfitDetail && Object?.keys(CostingProfitDetail)?.length > 0) {
       setProfitValues(CostingProfitDetail, false)
       setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
         label: CostingProfitDetail.ProfitCRMHead, value: 1
