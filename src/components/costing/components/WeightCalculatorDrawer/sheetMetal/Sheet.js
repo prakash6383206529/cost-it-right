@@ -5,7 +5,7 @@ import { Col, Row, Table } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, calculatePercentage, percentageLimitValidation, calculateScrapWeight } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, calculatePercentage, percentageLimitValidation, calculateScrapWeight, blockInvalidNumberKeys, noDecimal } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
@@ -124,13 +124,14 @@ function Sheet(props) {
     
 
     useEffect(() => {
-        setGrossWeight();
+        setGrossWeight()
     }, [grossWeightValue, UOMDimension])
 
     useEffect(() => {
+        setFinishWeight()
         calculateyieldPercentage();
     }, [yieldValue])
-
+    
     useEffect(() => {
         calculateRMCost();
     }, [RMCostValue])
@@ -182,11 +183,10 @@ function Sheet(props) {
         }
     }, [getValues('GrossWeight'), fieldValues])
 
-    const setFinishWeight = (e) => {
-        const FinishWeightOfSheet = e.target.value
-        setFinishWeights(FinishWeightOfSheet)
+    const setFinishWeight = () => {
+        const FinishWeightOfSheet = checkForNull(getValues('FinishWeightOfSheet'))
         const grossWeight = checkForNull(getValues('GrossWeight'))
-        if (e.target.value > grossWeight) {
+        if (FinishWeightOfSheet > grossWeight) {
             setTimeout(() => {
                 setValue('FinishWeightOfSheet', '')
             }, 200);
@@ -211,6 +211,7 @@ function Sheet(props) {
                 }, 200);
                 break;
             default:
+                setFinishWeights(FinishWeightOfSheet)
                 break;
         }
     }
@@ -419,6 +420,7 @@ function Sheet(props) {
                                             required: true,
                                             validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -439,6 +441,7 @@ function Sheet(props) {
                                             required: true,
                                             validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={(e) => { setValue('SheetWidthBottom', e.target.value) }}
                                         defaultValue={''}
                                         className=""
@@ -459,6 +462,7 @@ function Sheet(props) {
                                             required: true,
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -507,6 +511,7 @@ function Sheet(props) {
                                             required: false,
                                             validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -527,6 +532,7 @@ function Sheet(props) {
                                             required: false,
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
+										onKeyDown={blockInvalidNumberKeys}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -558,7 +564,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`NO. of Components`}
+                                        label={`No. of Components`}
                                         // name={'NoOfComponent'}
                                         name={'TotalComponentByWidth'}
                                         id={'total-component-width'}
@@ -568,7 +574,7 @@ function Sheet(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation, noDecimal },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -639,7 +645,8 @@ function Sheet(props) {
                                                 message: `${finishWeightLabel} weight should not be greater than gross weight.`
                                             },
                                         }}
-                                        handleChange={setFinishWeight}
+                                        // handleChange={setFinishWeight}
+                                        handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
@@ -650,7 +657,7 @@ function Sheet(props) {
                                 <Col md="3"> 
                                     <TooltipCustom disabledIcon={true} id={'yield-percentage'} tooltipText={`Yield % = (${finishWeightLabel} Weight(${UOMDimension.label}) / Gross Weight(${UOMDimension.label})) * 100`} />
                                     <TextFieldHookForm
-                                        label={`Yield %`}
+                                        label={`Yield (%)`}
                                         name={'YieldPercentage'}
                                         Controller={Controller}
                                         id={'yield-percentage'}

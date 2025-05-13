@@ -80,7 +80,7 @@ const MasterLevelListing = (props) => {
                    });
                 dispatch(manageLevelTabApi(false))
                 setState((prevState) => ({
-                    ...prevState, tableData: Data,
+                    ...prevState, tableData: Data, noData: false,
                 }))
             }
         }));

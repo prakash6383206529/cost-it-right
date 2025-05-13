@@ -449,7 +449,7 @@ function AddFreight(props) {
   // MAY BE USED LATER 
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
-      if (checkForNull(totalRMGrossWeight) !== 0 && (freightType === FullTruckLoad || freightType === PartTruckLoad) && event.target.value > totalRMGrossWeight) {
+      if (criteria?.value === "INR/Kg" && checkForNull(totalRMGrossWeight) !== 0 && (freightType === FullTruckLoad || freightType === PartTruckLoad) && event.target.value > totalRMGrossWeight) {
         Toaster.warning("Enter value less than gross weight.")
         setTimeout(() => {
           setValue('Quantity', '')
@@ -530,7 +530,8 @@ function AddFreight(props) {
           item.FreightType === 'Full Truck Load' &&
           item.Capacity === obj.Capacity &&
           item.Criteria === obj.Criteria &&
-          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true)
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true) && 
+          item?.CostingFreightCalculationDetailsId === obj?.CostingFreightCalculationDetailsId
         );
 
       case 'Part Truck Load':
@@ -538,7 +539,8 @@ function AddFreight(props) {
         return array.some(item =>
           item.FreightType === 'Part Truck Load' &&
           item.Criteria === obj.Criteria &&
-          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true)
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true) && 
+          item?.CostingFreightCalculationDetailsId === obj?.CostingFreightCalculationDetailsId
         );
 
       default:
@@ -578,6 +580,7 @@ function AddFreight(props) {
       Toaster.warning("Freight Cost cannot be zero.");
       return false;
     }
+
     if (doesObjectExist(gridData, formData)) {
       Toaster.warning("Data already exists in the grid.")
       return false;
@@ -690,7 +693,7 @@ function AddFreight(props) {
                         register={register}
                         checked={(freightType === FullTruckLoad) ? true : false}
                         onClick={() => onPressHeads(FullTruckLoad)}
-                        disabled={isEditFlag ? true : false}
+                        disabled={isEditFlag ? true : false || costingFreightCalculationDetailsId === null ? false : true}
                       />{' '}
                       <span>Full Truck Load</span>
                     </Label>
@@ -701,7 +704,7 @@ function AddFreight(props) {
                         register={register}
                         checked={freightType === PartTruckLoad ? true : false}
                         onClick={() => onPressHeads(PartTruckLoad)}
-                        disabled={isEditFlag ? true : false}
+                        disabled={isEditFlag ? true : false || costingFreightCalculationDetailsId === null ? false : true}
                       />{' '}
                       <span>Part Truck Load</span>
                     </Label>
@@ -712,7 +715,7 @@ function AddFreight(props) {
                         register={register}
                         checked={freightType === Fixed ? true : false}
                         onClick={() => onPressHeads(Fixed)}
-                        disabled={isEditFlag ? true : false}
+                        disabled={isEditFlag ? true : false || costingFreightCalculationDetailsId === null ? false : true}
                       />{' '}
                       <span>Fixed</span>
                     </Label>
@@ -723,7 +726,7 @@ function AddFreight(props) {
                         register={register}
                         checked={freightType === Percentage ? true : false}
                         onClick={() => onPressHeads(Percentage)}
-                        disabled={isEditFlag ? true : false}
+                        disabled={isEditFlag ? true : false || costingFreightCalculationDetailsId === null ? false : true}
                       />{' '}
                       <span>Percentage</span>
                     </Label>
@@ -745,15 +748,14 @@ function AddFreight(props) {
 
                     <div className="d-flex align-items-center">
                       <label id="AddFreight_TruckDimensions"
-                        className={`custom-checkbox w-auto mb-4 mt-4 ${isEditFlag || state?.hideDetailedBreakup ? 'disabled' : ''}`}
+                        className={`custom-checkbox w-auto mb-4 mt-4 ${(isEditFlag || state?.hideDetailedBreakup || (costingFreightCalculationDetailsId === null ? false : true)) ? 'disabled' : ''}`}
                         onChange={onShowDetailedBreakup}
                       >
-                        Detailed Breakup
-
+                        Detailed Breakup                      
                         <input
                           type="checkbox"
                           checked={state.isShowDetailedBreakup}
-                          disabled={isEditFlag || state?.hideDetailedBreakup}
+                          disabled={(isEditFlag || state?.hideDetailedBreakup || (costingFreightCalculationDetailsId === null ? false : true))}
                         />
                         <span
                           className=" before-box p-0"
@@ -784,7 +786,7 @@ function AddFreight(props) {
                       options={renderListing("TruckDimensions")}
                       defaultValue={state?.truckDimensions}
                       handleChange={handleTruckDimensions}
-                      disabled={false}
+                      disabled={costingFreightCalculationDetailsId === null ? false : true}
                       errors={errors?.TruckDimensions}
                     />
                   </Col>}
@@ -802,7 +804,7 @@ function AddFreight(props) {
                       mandatory={true}
                       handleChange={handleCapacityChange}
                       errors={errors.Capacity}
-                      disabled={false}
+                      disabled={costingFreightCalculationDetailsId === null ? false : true}
                     />
                   </Col>}
                   {showFields?.Applicability && <Col md="12">
@@ -836,7 +838,7 @@ function AddFreight(props) {
                       mandatory={true}
                       handleChange={handleCriteriaChange}
                       errors={errors.Criteria}
-                      disabled={false}
+                      disabled={costingFreightCalculationDetailsId === null ? false : true}
                     />
                   </Col>}
                   {showFields?.Rate && <Col md="12">
@@ -892,7 +894,7 @@ function AddFreight(props) {
 
                   <Col md="12">
                     <div className="packaging-cost-warpper">
-                      {((freightType === 3) || (freightType === 4)) && <TooltipCustom tooltipClass='freight-cost' disabledIcon={true} id={'freight-cost'} tooltipText={`Cost = ${(criteria?.value === "INR/Trip") ? "Rate / Quantity" : "Rate * Quantity" }`} />}
+                      {((freightType === 3) || (freightType === 4)) && <TooltipCustom tooltipClass='freight-cost' disabledIcon={true} id={'freight-cost'} tooltipText={`Cost = ${(criteria?.value === "INR/Trip") ? "Rate / Quantity" : "Rate * Quantity"}`} />}
                       <TextFieldHookForm
                         label="Cost"
                         name={'FreightCost'}

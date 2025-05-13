@@ -53,7 +53,7 @@ function SurfaceTreatment(props) {
 
   const [extraCostDetails, setExtraCostDetails] = useState({ TransportationCost: checkForNull(item?.CostingPartDetails?.TransportationCost) ?? 0, TransportationDetails: item?.CostingPartDetails?.TransportationDetails })
 
-  const [paintAndMaskingDetails, setPaintAndMaskingDetails] = useState({ TotalPaintCost: checkForNull(item?.CostingPartDetails?.TotalPaintCost) ?? 0, PaintCost: checkForNull(item?.CostingPartDetails?.PaintCost) ?? 0, TapeCost: checkForNull(item?.CostingPartDetails?.TapeCost) ?? 0 })
+  const [paintAndMaskingDetails, setPaintAndMaskingDetails] = useState({ TotalPaintCost: checkForNull(item?.CostingPartDetails?.TotalPaintCost) ?? 0, PaintCost: checkForNull(item?.CostingPartDetails?.PaintCost) ?? 0, TapeCost: checkForNull(item?.CostingPartDetails?.TapeCost) ?? 0, PaintConsumptionCost: checkForNull(item?.CostingPartDetails?.PaintConsumptionCost) ?? 0 })
 
 
 
@@ -188,6 +188,7 @@ function SurfaceTreatment(props) {
           "TransportationDetails": item?.CostingPartDetails?.TransportationDetails,
           "TotalPaintCost": item?.CostingPartDetails?.TotalPaintCost,
           "PaintCost": item?.CostingPartDetails?.PaintCost,
+          "PaintConsumptionCost": item?.CostingPartDetails?.PaintConsumptionCost,
           "TapeCost": item?.CostingPartDetails?.TapeCost,
           "HangerRate": item?.CostingPartDetails?.HangerRate,
           "HangerCostPerPart": item?.CostingPartDetails?.HangerCostPerPart,
@@ -209,6 +210,7 @@ function SurfaceTreatment(props) {
         } else if (partType) {
           setTimeout(() => {
             let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalPOriceForAssembly, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
+
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
             dispatch(gridDataAdded(true))
           }, 500);
@@ -259,6 +261,7 @@ function SurfaceTreatment(props) {
 
   const SetSurfaceData = (obj, errorObjectSurfaceTreatment) => {
 
+
     let tempArray = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
     let indexForUpdate = _.findIndex(tempArray, tempArrayItem => tempArrayItem.PartNumber === item.PartNumber && tempArrayItem.AssemblyPartNumber === item.AssemblyPartNumber);
     let objectToUpdate = tempArray[indexForUpdate]
@@ -268,7 +271,8 @@ function SurfaceTreatment(props) {
       // objectToUpdate.CostingPartDetails.HangerCostPerPart = obj.hangerObj.HangerCostPerPart
       // objectToUpdate.CostingPartDetails.HangerCostPerPartWithQuantity = obj.hangerObj.HangerCostPerPart
     } else if (obj.type === 'PaintAndMasking') {
-      setPaintAndMaskingDetails({ TotalPaintCost: obj.paintAndMaskingObj.TotalPaintCost, PaintCost: obj.paintAndMaskingObj.PaintCost, TapeCost: obj.paintAndMaskingObj.TapeCost })
+
+      setPaintAndMaskingDetails({ TotalPaintCost: obj?.paintAndMaskingObj?.TotalPaintCost, PaintCost: obj?.paintAndMaskingObj?.PaintCost, TapeCost: obj?.paintAndMaskingObj?.TapeCost, PaintConsumptionCost: obj?.paintAndMaskingObj?.PaintConsumptionCost })
       setValue(`PaintAndMasking`, checkForDecimalAndNull(obj?.paintAndMaskingObj?.TotalPaintCost, initialConfiguration?.NoOfDecimalForPrice))
       // objectToUpdate.CostingPartDetails.TotalPaintCost = obj.paintAndMaskingObj.TotalPaintCost
       // objectToUpdate.CostingPartDetails.PaintCost = obj.paintAndMaskingObj.PaintCost
@@ -443,7 +447,7 @@ function SurfaceTreatment(props) {
             item.TransportationCost = calculatePercentageValue(checkForNull(conversionCost), item?.Rate);
             break;
           case PART_COST:
-            
+
             item.ApplicabiltyCost = checkForNull(netpartCost);
             item.TransportationCost = calculatePercentageValue(checkForNull(netpartCost), item?.Rate);
             break;

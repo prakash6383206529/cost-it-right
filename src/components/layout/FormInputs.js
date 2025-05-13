@@ -433,7 +433,7 @@ export function renderTextInputField(field) {
         )}
       </div>
       {children}
-      {touched || error && (
+      {(touched || error) && (
         <div className="text-help mb-2">
           {touched ? (validateSpecialChars(input.value) || error) : ""}
         </div>
@@ -667,7 +667,7 @@ export function renderText(field) {
         />
       </div>
       {children}
-      {touched || error && (
+      {(touched || error) && (
         <div className="text-help mb-2">
           {touched ? (validateSpecialChars(input.value) || error) : ""}
         </div>

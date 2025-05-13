@@ -23,7 +23,7 @@ import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { updateGlobalTake, updatePageNumber, updatePageSize, updateCurrentRowIndex, resetStatePagination } from "../../common/Pagination/paginationAction";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
-import { loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import { disabledClass } from "../../../actions/Common";
 import { ApplyPermission } from ".";
 import Button from "../../layout/Button";
@@ -867,8 +867,8 @@ const IndivisualPartListing = (props) => {
                 {PartMasterConfigurable?.IsShowPartModel && <AgGridColumn field="PartsModelMaster" headerName="Parts Model" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowNepNumber && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
-                {PartMasterConfigurable?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
-                <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
+                {getConfigurationKey()?.IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                 <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
                 <AgGridColumn field="PartId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>

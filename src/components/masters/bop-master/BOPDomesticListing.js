@@ -657,7 +657,7 @@ const BOPDomesticListing = (props) => {
       return "Lorem Ipsum";
     } else {
       const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-      return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+      return cellValue?.includes('T') ? DayTime(cellValue).format('DD/MM/YYYY') : cellValue;
     }
   }
   const onGridReady = (params) => {

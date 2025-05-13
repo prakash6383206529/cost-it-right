@@ -3299,7 +3299,7 @@ export function getCostingBopAndBopHandlingDetails(data, callback) {
 export function setBopRemark(remark, bopCostingId) {
   return (dispatch) => {
     dispatch({
-      type:SET_BOP_REMARK,
+      type: SET_BOP_REMARK,
       payload: { remark, bopCostingId }
     });
   };
