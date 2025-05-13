@@ -466,6 +466,7 @@ function PackagingCalculator(props) {
 
         switch (calculationCriteria?.label) {
             case "Bin/Trolley Life Basis":
+                case "Non-returnable packaging":
                 packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (amortizedYears * noOfComponentsPerCrate))
                     + coverCost
                     + spacerCostChecked;
