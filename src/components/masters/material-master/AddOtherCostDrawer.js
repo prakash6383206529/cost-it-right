@@ -48,7 +48,6 @@ function AddOtherCostDrawer(props) {
     })
     const conditionTypeId = getCostingConditionTypes(props.rawMaterial ? RAWMATERIALCOST : COMMODITYCOST)
     useEffect(() => {
-        console.log("tableData", tableData)
         if (!tableData || tableData.length === 0) {
             setTotalCostBase(0);
             setTotalCostCurrency(0);
