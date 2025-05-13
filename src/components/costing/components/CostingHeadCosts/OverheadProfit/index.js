@@ -92,13 +92,13 @@ function OverheadProfit(props) {
       handleModelTypeChange({ label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId }, false)
     }
 
-    // GET FIXED VALUE IN GET API
-    if (CostingOverheadDetail && (CostingOverheadDetail)?.length > 0) {
+    //GET FIXED VALUE IN GET API
+    if (CostingOverheadDetail && Object?.keys(CostingOverheadDetail)?.length > 0) {
       setOverheadValues(CostingOverheadDetail, false)
     }
 
     //GET FIXED VALUE IN GET API
-    if (CostingProfitDetail && (CostingProfitDetail)?.length > 0) {
+    if (CostingProfitDetail && Object?.keys(CostingProfitDetail)?.length > 0) {
       setProfitValues(CostingProfitDetail, false)
       setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
         label: CostingProfitDetail.ProfitCRMHead, value: 1

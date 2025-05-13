@@ -787,7 +787,7 @@ function AddRMDetails(props) {
                         )}
                         {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col className="col-md-15">
                             <SearchableSelectHookForm
-                                name="ExchangeSource"
+                                name="exchangeSource"
                                 label="Exchange Rate Source"
                                 Controller={Controller}
                                 control={control}

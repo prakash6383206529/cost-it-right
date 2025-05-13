@@ -592,7 +592,7 @@ NetCost = tempArr.reduce((accumulator, el) => {
 
         subAssemObj.CostingPartDetails.TotalProcessCostComponent = checkForNull(getProcessTotalCostForAssembly(tempArr))
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssembly = setProcessCostForAssembly(tempArr)
-
+        
         subAssemObj.CostingPartDetails.TotalProcessCostComponentForOverhead = checkForNull(getOverheadAndProfitTotalCostForAssembly(tempArr, 'Overhead', 'Process'))
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Overhead', 'Process'))
 
@@ -1989,6 +1989,8 @@ tempArrForCosting[0].CostingPartDetails.TotalConversionCostWithQuantity = checkF
                 subAssembObj.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostPerSubAssembly) + checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostPerAssembly)
                 subAssembObj.CostingPartDetails.NetConversionCost = checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostWithQuantity)
                 
+                subAssembObj.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostPerAssembly) + checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostSubAssembly)
+
                 // Calculating Grand Total Cost
                 let GrandTotalCost = checkForNull(subAssembObj?.CostingPartDetails?.NetRawMaterialsCost) + checkForNull(subAssembObj?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(subAssembObj?.CostingPartDetails?.NetConversionCost)
                 subAssembObj.CostingPartDetails.NetTotalRMBOPCC = GrandTotalCost;

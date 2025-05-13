@@ -8,6 +8,7 @@ import { PART_TYPE_ASSEMBLY, PLASTIC } from "../../config/masterData";
 import { checkDivisionByPlantAndGetDivisionIdByPart } from "../../actions/Common";
 import Toaster from "../common/Toaster";
 import { MESSAGES } from "../../config/message";
+import $ from "jquery"
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}, IsAddPaymentTermInNetCost = false, remark = '', bopCostingIdForRemark = '') => {
@@ -128,10 +129,17 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalTransportationCostPerSubAssembly": item?.CostingPartDetails?.TotalTransportationCostPerSubAssembly,
           "TotalTransportationCostWithQuantity": item?.CostingPartDetails?.TotalTransportationCostWithQuantity,
           "TotalTransportationCostComponent": item?.CostingPartDetails?.TotalTransportationCostComponent,
+
           "PaintCostComponent": item?.CostingPartDetails?.PaintCostComponent,
           "PaintCostPerAssembly": item?.CostingPartDetails?.PaintCostPerAssembly,
           "PaintCostPerSubAssembly": item?.CostingPartDetails?.PaintCostPerSubAssembly,
           "PaintCostWithQuantity": item?.CostingPartDetails?.PaintCostWithQuantity,
+
+          "PaintConsumptionCostComponent": item?.CostingPartDetails?.PaintConsumptionCostComponent,
+          "PaintConsumptionCostPerAssembly": item?.CostingPartDetails?.PaintConsumptionCostPerAssembly,
+          "PaintConsumptionCostPerSubAssembly": item?.CostingPartDetails?.PaintConsumptionCostPerSubAssembly,
+          "PaintConsumptionCostWithQuantity": item?.CostingPartDetails?.PaintConsumptionCostWithQuantity,
+
           "TapeCostComponent": item?.CostingPartDetails?.TapeCostComponent,
           "TapeCostPerAssembly": item?.CostingPartDetails?.TapeCostPerAssembly,
           "TapeCostPerSubAssembly": item?.CostingPartDetails?.TapeCostPerSubAssembly,
@@ -267,6 +275,13 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "PaintCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintCostPerAssembly,
       "PaintCostPerSubAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintCostPerSubAssembly,
       "PaintCostWithQuantity": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintCostWithQuantity,
+
+      "PaintConsumptionCost": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCost,
+      "PaintConsumptionCostComponent": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCostComponent,
+      "PaintConsumptionCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCostPerAssembly,
+      "PaintConsumptionCostPerSubAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCostPerSubAssembly,
+      "PaintConsumptionCostWithQuantity": surfaceTabData && surfaceTabData?.CostingPartDetails?.PaintConsumptionCostWithQuantity,
+
       "TapeCost": surfaceTabData && surfaceTabData?.CostingPartDetails?.TapeCost,
       "TapeCostComponent": surfaceTabData && surfaceTabData?.CostingPartDetails?.TapeCostComponent,
       "TapeCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.TapeCostPerAssembly,
@@ -564,10 +579,19 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetWeldingCostForProfit": tabData?.CostingPartDetails?.NetWeldingCostForProfit,
       "NetOperationCostForOverhead": tabData?.CostingPartDetails?.NetOperationCostForOverhead,
       "NetOperationCostForProfit": tabData?.CostingPartDetails?.NetOperationCostForProfit,
+      "PaintConsumptionCost": surfaceTabData?.CostingPartDetails?.PaintConsumptionCost,
+      "PaintCost": surfaceTabData?.CostingPartDetails?.PaintCost,
+      "TapeCost": surfaceTabData?.CostingPartDetails?.TapeCost,
+      "TotalPaintCost": surfaceTabData?.CostingPartDetails?.TotalPaintCost,
+      "HangerRate": surfaceTabData?.CostingPartDetails?.HangerRate,
+      "HangerCostPerPart": surfaceTabData?.CostingPartDetails?.HangerCostPerPart,
+      "NumberOfPartsPerHanger": surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger
+      // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,
     "LoggedInUserId": loggedInUserId()
   }
+
   return temp
 }
 
@@ -723,6 +747,14 @@ export const viewAddButtonIcon = (data, type, CostingViewMode) => {
     return className
   } else if (type === "title") {
     return title
+  }
+}
+export const handleRemarkPopup = (event, id) => {
+  if (event === "open") {
+    $('body').find('.MuiPaper-root.MuiDrawer-paper').css('overflow', 'hidden')
+    $('body').find(`[id="${id}"]`).focus()
+  } else {
+    $('body').find('.MuiPaper-root.MuiDrawer-paper').css('overflow', '')
   }
 }
 
