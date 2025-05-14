@@ -8,11 +8,11 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNu
 import { fetchApplicabilityList, fetchCostingHeadsAPI, fetchModelTypeAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
-import { getRejectionDataByModelType, isOverheadProfitDataChange, setOverheadProfitErrors, setRejectionRecoveryData } from '../../../actions/Costing';
+import { getRejectionDataByModelType, isOverheadProfitDataChange, setOverheadProfitErrors, setPlasticArray, setRejectionRecoveryData } from '../../../actions/Costing';
 import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
-import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNoDecimalMessage } from "../../../../../helper/validation";
+import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNoDecimalMessage, nonZero, decimalAndNumberValidation } from "../../../../../helper/validation";
 import { CBCTypeId, CRMHeads, EMPTY_DATA, EMPTY_GUID, NFRTypeId, REJECTIONMASTER, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Popup from 'reactjs-popup';
 import Toaster from '../../../../common/Toaster';
@@ -42,17 +42,22 @@ function Rejection(props) {
     const [storedApplicability, setStoredApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const { IsIncludedSurfaceInRejection, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
     const { SurfaceTabData, rejectionRecovery, RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-    const modelTypes = useSelector(state => state.comman.modelTypes)
     const { CostingPartDetails, PartType } = RMCCTabData[0]
     const [errorMessage, setErrorMessage] = useState('')
     const [isOpenRecoveryDrawer, setIsOpenRecoveryDrawer] = useState(false);
     const conditionTypeId = getCostingConditionTypes(REJECTIONMASTER);
     const [state, setState] = useState({
-        gridData: CostingRejectionDetail?.CostingRejectionApplicabilityDetails??[],
+        gridData: CostingRejectionDetail?.CostingRejectionApplicabilityDetails ?? [],
         isEdit: false,
         editIndex: null,
         modelType: (data?.CostingPartDetails && data?.CostingPartDetails.RejectionModelType !== null) ? { label: data?.CostingPartDetails?.RejectionModelType, value: data?.CostingPartDetails?.RejectionModelTypeId } : [],
-        modelTypeList: []
+        modelTypeList: [],
+        rejectionTotalCost: '',
+        netRejectionCost: '',
+        rejectionRecoveryCost: '',
+        rejectionCost: '',
+        rejectionRecoveryDetails: {},
+        isEditMode: false,
     })
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -67,7 +72,7 @@ function Rejection(props) {
     useEffect(() => {
         if (applicability && applicability.value !== undefined && !CostingViewMode) {
             setApplicability(applicability)
-            // checkRejectionApplicability(applicability.label)
+            // checkRejectionModelType(applicability.label)
         }
     }, [headerCosts && headerCosts.NetTotalRMBOPCC])
 
@@ -82,67 +87,56 @@ function Rejection(props) {
                     temp.push({ label: item.Text, value: item.Value });
                     return null;
                 });
-                setState({
-                    ...state,
+                setState(prev => ({
+                    ...prev,
                     modelTypeList: temp
-                });
+                }));
             }))
         }
-        setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === "Fixed" ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
         setValue('crmHeadRejection', rejectionObj && rejectionObj?.RejectionCRMHead && { label: rejectionObj?.RejectionCRMHead, value: 1 })
         setValue('rejectionRemark', rejectionObj && rejectionObj?.Remark ? rejectionObj?.Remark : '')
-        dispatch(setRejectionRecoveryData(CostingRejectionDetail?.CostingRejectionApplicabilityDetails?.CostingRejectionRecoveryDetails ?? rejectionRecovery))
+        const rmApplicability = CostingRejectionDetail?.CostingRejectionApplicabilityDetails?.find(item => item.Applicability === 'RM');
+        dispatch(setRejectionRecoveryData(rmApplicability?.CostingRejectionRecoveryDetails ?? rejectionRecovery));
     }, [])
     useEffect(() => {
         if (!CostingViewMode) {
-            // checkRejectionApplicability(applicability.label)
+            checkRejectionApplicability(applicability.label)
         }
     }, [rejectionFieldValues]);
 
     useEffect(() => {
         if (!CostingViewMode) {
-            // checkRejectionApplicability(applicability.label)
+            // checkRejectionModelType(applicability.label)
         }
     }, [IsIncludedSurfaceInRejection]);
 
 
-    useEffect(() => {
-        setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration?.NoOfDecimalForPrice))
-        setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice))
-        setState({
-            ...state,
-            gridData: rejectionObj?.CostingRejectionApplicabilityDetails
-        })
-    }, [rejectionObj, rejectionRecovery.RejectionRecoveryNetCost])
+    // useEffect(() => {
+    //     setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration?.NoOfDecimalForPrice))
+    //     setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice))
+    //     console.log(rejectionObj?.CostingRejectionApplicabilityDetails,'rejectionObj?.CostingRejectionApplicabilityDetails')
+    //     setState(prev => ({
+    //         ...prev,
+    //         gridData: rejectionObj?.CostingRejectionApplicabilityDetails
+    //     }))
+    // }, [rejectionObj, rejectionRecovery.RejectionRecoveryNetCost])
 
 
     useEffect(() => {
         setTimeout(() => {
-            let rejectionRecoveryObj = {}
-            if (rejectionRecovery.ApplicabilityType !== '') {
-                const { ApplicabilityIdRef, ApplicabilityType, Value, EffectiveRecoveryPercentage, ApplicabilityCost, RejectionRecoveryNetCost } = rejectionRecovery
-                rejectionRecoveryObj.BaseCostingIdRef = CostingPartDetails.CostingId
-                rejectionRecoveryObj.ApplicabilityIdRef = ApplicabilityIdRef ?? 0
-                rejectionRecoveryObj.ApplicabilityType = ApplicabilityType
-                rejectionRecoveryObj.Type = ""
-                rejectionRecoveryObj.Value = Value
-                rejectionRecoveryObj.EffectiveRecoveryPercentage = EffectiveRecoveryPercentage
-                rejectionRecoveryObj.ApplicabilityCost = ApplicabilityCost
-                rejectionRecoveryObj.RejectionRecoveryNetCost = RejectionRecoveryNetCost
-            }
             let tempObj = {
-                "RejectionId": rejectionObj?.RejectionId??null,
-                "RejectionDetailId": rejectionObj?.RejectionDetailId??null, 
+                "RejectionId": rejectionObj?.RejectionId ?? null,
+                "RejectionDetailId": rejectionObj?.RejectionDetailId ?? null,
                 "RejectionCRMHead": getValues('crmHeadRejection') ? getValues('crmHeadRejection').label : '',
                 "Remark": rejectionObj?.Remark ? rejectionObj?.Remark : '',
-                    "CostingRejectionApplicabilityDetails": state.gridData,
+                "CostingRejectionApplicabilityDetails": state.gridData,
             }
 
             if (!CostingViewMode) {
-                props.setRejectionDetail({RejectionObj:tempObj,modelType:state.modelType}, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+                props.setRejectionDetail({ RejectionObj: tempObj, modelType: state.modelType }, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
-    }, [rejectionObj, rejectionRecovery,state.gridData])
+    }, [rejectionObj, rejectionRecovery, state.gridData])
 
 
     /**
@@ -173,10 +167,10 @@ function Rejection(props) {
 
 
     /**
-      * @method checkRejectionApplicability
+      * @method checkRejectionModelType
       * @description REJECTION APPLICABILITY CALCULATION
       */
-    const checkRejectionApplicability = (data) => {
+    const checkRejectionModelType = (data) => {
         const RM = checkForNull(headerCosts.NetRawMaterialsCost);
         const BOP = checkForNull(headerCosts.NetBoughtOutPartCost);
         const CCForMachining = checkForNull(headerCosts.NetCCForOtherTechnologyCost)
@@ -194,8 +188,10 @@ function Rejection(props) {
         if (prevData && prevData?.CostingRejectionApplicabilityDetails && prevData?.CostingRejectionApplicabilityDetails.length > 0) {
             newData = prevData?.CostingRejectionApplicabilityDetails.map((item, index) => {
                 let totalCost;
-                switch (item.Applicability) {
+                switch (item?.Applicability) {
                     case 'RM':
+                        setValue('RejectionCost', RM)
+                        setValue('RejectionTotalCost', RM * calculatePercentage(item.Percentage))
                         totalCost = (RM * calculatePercentage(item.Percentage));
                         item.Cost = RM;
                         item.TotalCost = totalCost;
@@ -232,53 +228,78 @@ function Rejection(props) {
             dispatch(isOverheadProfitDataChange(true));
         }
 
-        //   let base = 0;
-        //   let cost = 0;
-        //   let totalCost = 0;
-
-        //   switch (item.Applicability) {
-        //     case 'RM':
-        //         debugger
-        //       base = RM;
-        //       break;
-        //     case 'BOP':
-        //       base = BOP;
-        //       break;
-        //     case 'CC':
-        //     case 'CCForMachining':
-        //       base = CC + SurfaceCost;
-        //       break;
-        //     case 'Fixed':
-        //       return {
-        //         ...item,
-        //         Cost: '-',
-        //         TotalCost: checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice)
-        //       };
-        //     default:
-        //       return item;
-        //   }
-
-        //   cost = checkForDecimalAndNull(base, initialConfiguration?.NoOfDecimalForPrice);
-        //   totalCost = checkForDecimalAndNull(base * calculatePercentage(item.Percentage), initialConfiguration?.NoOfDecimalForPrice);
-
-        //   // Optional: Set RejectionCost/TotalCost in form only for this type
-        //   setValue('RejectionCost', cost);
-        //   setValue('RejectionTotalCost', totalCost);
-
-        //   return {
-        //     ...item,
-        //     Cost: cost,
-        //     TotalCost: totalCost
-        //   };
-        // });
-
-        // setState(prev => ({
-        //   ...prev,
-        //   gridData: updatedGrid
-        // }));
 
     };
+    const checkRejectionApplicability = (applicability) => {
+        const RM = checkForNull(headerCosts.NetRawMaterialsCost);
+        const BOP = checkForNull(headerCosts.NetBoughtOutPartCost);
+        const CCForMachining = checkForNull(headerCosts.NetCCForOtherTechnologyCost)
+        const CC = partType
+            ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost)
+            : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly);
 
+        const SurfaceCost = IsIncludedSurfaceInRejection
+            ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
+            : 0;
+        let percentage = getValues('RejectionPercentage')
+        switch (applicability) {
+            case 'RM':
+                setValue('RejectionCost', checkForDecimalAndNull(RM, initialConfiguration?.NoOfDecimalForPrice))
+                setValue('RejectionTotalCost', checkForDecimalAndNull(RM * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setValue('NetRejectionCost', checkForDecimalAndNull(RM * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setState(prev => ({
+                    ...prev,
+                    rejectionCost: RM,
+                    rejectionTotalCost: RM * calculatePercentage(percentage),
+                    netRejectionCost: RM * calculatePercentage(percentage),
+                }))
+                break;
+            case 'BOP':
+                setValue('RejectionCost', checkForDecimalAndNull(BOP, initialConfiguration?.NoOfDecimalForPrice))
+                setValue('RejectionTotalCost', checkForDecimalAndNull(BOP * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setValue('NetRejectionCost', checkForDecimalAndNull(BOP * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setState(prev => ({
+                    ...prev,
+                    rejectionCost: BOP,
+                    rejectionTotalCost: BOP * calculatePercentage(percentage),
+                    netRejectionCost: BOP * calculatePercentage(percentage),
+                }))
+                break;
+            case 'CC':
+                setValue('RejectionCost', checkForDecimalAndNull(CC + SurfaceCost, initialConfiguration?.NoOfDecimalForPrice))
+                setValue('RejectionTotalCost', checkForDecimalAndNull((CC + SurfaceCost) * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setValue('NetRejectionCost', checkForDecimalAndNull((CC + SurfaceCost) * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setState(prev => ({
+                    ...prev,
+                    rejectionCost: CC + SurfaceCost,
+                    rejectionTotalCost: (CC + SurfaceCost) * calculatePercentage(percentage),
+                    netRejectionCost: (CC + SurfaceCost) * calculatePercentage(percentage),
+                }))
+                break;
+            case 'CCForMachining':
+                setValue('RejectionCost', checkForDecimalAndNull(CCForMachining + SurfaceCost, initialConfiguration?.NoOfDecimalForPrice))
+                setValue('RejectionTotalCost', checkForDecimalAndNull((CCForMachining + SurfaceCost) * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setValue('NetRejectionCost', checkForDecimalAndNull((CCForMachining + SurfaceCost) * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setState(prev => ({
+                    ...prev,
+                    rejectionCost: (CCForMachining + SurfaceCost),
+                    rejectionTotalCost: (CCForMachining + SurfaceCost) * calculatePercentage(percentage),
+                    netRejectionCost: (CCForMachining + SurfaceCost) * calculatePercentage(percentage),
+                }))
+                break;
+                case "Fixed":
+                    setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
+                    setValue('NetRejectionCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
+                    setState(prev => ({
+                        ...prev,
+                        rejectionTotalCost: checkForNull(getValues('RejectionPercentage')),
+                        netRejectionCost: checkForNull(getValues('RejectionPercentage')),
+                    }))
+                    break;
+            default:
+                break;
+        }
+    }
     const handleChangeRejectionPercentage = (event) => {
         let message = ''
         if (decimalAndNumberValidationBoolean(event.target.value)) {
@@ -316,7 +337,7 @@ function Rejection(props) {
             clearErrors()
         } else {
             setApplicability([])
-            checkRejectionApplicability('')
+            checkRejectionModelType('')
             dispatch(isOverheadProfitDataChange(true))
             setValue('RejectionPercentage', '')
             setValue('RejectionCost', '')
@@ -335,7 +356,8 @@ function Rejection(props) {
         const { ApplicabilityType } = rejectionRecovery
         if (newValue && !newValue.label.includes('RM') && ((ApplicabilityType && ApplicabilityType !== ''))) {
             setApplicability(newValue ?? {})
-            setShowRejectionPopup(true)
+            // setShowRejectionPopup(true)
+            checkRejectionApplicability(newValue.label)
         } else {
             handleRejectionPercentageChangeRef(newValue)
             if (newValue === null) {
@@ -396,39 +418,55 @@ function Rejection(props) {
         //     Toaster.warning('Applicability should be RM')
         //     return false
         // } else
-         if (!isFromMaster && PartType !== 'Assembly' && !getValues('RejectionPercentage')) {
+        if (!isFromMaster && PartType !== 'Assembly' && !getValues('RejectionPercentage')) {
             Toaster.warning('Enter the Rejection Percentage')
             return false
         } else {
             setIsOpenRecoveryDrawer(!isOpenRecoveryDrawer)
         }
     }
-    const closeDrawer = (type, cost) => {
+    const closeDrawer = (type, cost, rejectionRecoveryObj) => {
         if (type === 'cancel') {
-            setIsOpenRecoveryDrawer(false)
+            setIsOpenRecoveryDrawer(false);
         } else if (type === 'submit') {
-            setIsOpenRecoveryDrawer(false)
-            setValue('RejectionRecovery', checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice))
-            if(fetchRejectionDataFromMaster()){
-                const data=_.cloneDeep(state.gridData)
-                setState(prev=>({
+            setIsOpenRecoveryDrawer(false);
+            const isDataFetched = fetchRejectionDataFromMaster();
+
+            if (isDataFetched) {
+                // Clone to avoid mutation
+                const dataCopy = _.cloneDeep(state.gridData);
+
+                const updatedGridData = dataCopy.map(item => {
+                    if (item.Applicability === 'RM') {
+                        return {
+                            ...item,
+                            NetCost: Number(item.TotalCost) - Number(cost),
+                            IsRejectionRecoveryApplicable: true,
+                            CostingRejectionRecoveryDetails: rejectionRecoveryObj ?? {}
+                        };
+                    }
+                    return item;
+                });
+
+                setState(prev => ({
                     ...prev,
-                    gridData: data?.map(item => {
-                        if (item.Applicability === 'RM') {
-                            return {
-                                ...item,
-                                RejectionRecoveryCost: cost,
-                                NetCost: Number(item?.TotalCost) - Number(cost),
-                                IsRejectionRecoveryApplicable: true,
-                                CostingRejectionRecoveryDetails: rejectionRecovery
-                            }
-                        }
-                        return item;
-                    })
+                    gridData: updatedGridData,
+                    rejectionRecoveryDetails: rejectionRecoveryObj
+                }));
+            } else {
+                let netRejectionCost = checkForNull(state.rejectionTotalCost) - checkForNull(cost)
+                setValue('RejectionRecovery', checkForDecimalAndNull(cost, initialConfiguration?.NoOfDecimalForPrice));
+                setValue('NetRejectionCost', checkForDecimalAndNull(netRejectionCost, initialConfiguration?.NoOfDecimalForPrice))
+                setState(prev => ({
+                    ...prev,
+                    rejectionRecoveryCost: cost,
+                    netRejectionCost: netRejectionCost,
+                    rejectionRecoveryDetails: rejectionRecoveryObj
                 }))
             }
+            dispatch(setRejectionRecoveryData(rejectionRecoveryObj))
         }
-    }
+    };
 
     const viewAddButtonIcon = (data, type) => {
 
@@ -475,25 +513,112 @@ function Rejection(props) {
     //     </div>
     // }, [applicability, rejectionRecovery.rejectionRecoveryCost])
     const resetData = () => {
-        setValue('RejectionRecovery', '')
+        setValue('Applicability', '')
+        setValue('RejectionPercentage', '')
         setValue('RejectionCost', '')
         setValue('RejectionTotalCost', '')
-        setValue('RejectionPercentage', '')
+        setValue('RejectionRecovery', '')
+        setValue('NetRejectionCost', '')
+        setState(prev => ({
+            ...prev,
+            rejectionCost: '',
+            rejectionTotalCost: '',
+            netRejectionCost: '',
+            editIndex: null,
+            isEditMode: false,
+        }))
+        setApplicability([])
+        dispatch(setRejectionRecoveryData({}))
     }
-    const editItemDetails = (index) => {
-        console.log(index)
-    }
-    const deleteItem = (index) => {
-        console.log(index)
+    const editDeleteData = (indexValue, type) => {
+        if (type === 'delete') {
+            let temp = [] // Create an empty array to hold the updated data
+            state.gridData && state.gridData.map((item, index) => {
+                if (index !== indexValue) { // If the index being iterated over is not the same as the index to delete, add the item to the temp array
+                    temp.push(item)
+                }
+            })
+            setState(prev => ({
+                ...prev,
+                gridData: temp
+            }))
+            resetData()
+        }
+        if (type === 'edit') {
+            setState(prev => ({
+                ...prev,
+                isEditMode: true,
+                editIndex: indexValue
+            }))
+
+            // Retrieve the data at the specified index from the tableData array, and set the values of various form fields based on the data.
+            let Data = state.gridData[indexValue]
+            setValue('Applicability', { label: Data.Applicability, value: Data.Applicability })
+            setValue('RejectionPercentage', checkForDecimalAndNull(Data.Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RejectionCost', checkForDecimalAndNull(Data.Cost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RejectionTotalCost', checkForDecimalAndNull(Data.TotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('NetRejectionCost', checkForDecimalAndNull(Data.NetCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('RejectionRecovery', checkForDecimalAndNull(Data.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice))
+            setState(prevState => ({ ...prevState, ApplicabilityCost: Data?.ApplicabilityCost }));
+            setApplicability({ label: Data?.Applicability, value: Data?.ApplicabilityId })
+            dispatch(setRejectionRecoveryData({
+                ...rejectionRecovery,
+                ...Data?.CostingRejectionRecoveryDetails
+            }))
+        }
     }
     const addTableData = () => {
-        console.log('addTableData')
+        if (!applicability || !state.netRejectionCost) {
+            Toaster.warning("Please enter all details to add a row.");
+            return false;
+        }
+        let obj = {
+            "CostingRejectionRecoveryDetails": state.rejectionRecoveryDetails ?? null,
+            "ApplicabilityDetailsId": null,
+            "ApplicabilityId": applicability?.value,
+            "Applicability": applicability?.label,
+            "Percentage": getValues('RejectionPercentage') ?? null,
+            "Cost": state.rejectionCost ?? null,
+            "TotalCost": state.rejectionTotalCost,
+            "NetCost": state.netRejectionCost,
+            "IsRejectionRecoveryApplicable": state.rejectionRecoveryDetails?.RejectionRecoveryNetCost ? true : false
+        }
+
+        let isDuplicate = false;
+        state.gridData.map((item, index) => {
+            if (index !== state.editIndex) {
+                if (item?.Applicability === obj?.Applicability) {
+                    isDuplicate = true;
+                }
+            }
+            return null;
+        });
+
+        if (isDuplicate) {
+            Toaster.warning('Duplicate entry is not allowed.');
+            return false;
+        }
+
+        if (state.isEditMode) {
+            const updatedGridData = [...state.gridData];
+            updatedGridData[state.editIndex] = obj;
+            setState(prev => ({
+                ...prev,
+                gridData: updatedGridData
+            }));
+        } else {
+            setState(prev => ({
+                ...prev,
+                gridData: [...state.gridData, obj]
+            }));
+        }
+        resetData();
     }
     const handleModelTypeChange = (ModelTypeValues, IsDropdownClicked) => {
-        setState({
-            ...state,
+        setState(prev => ({
+            ...prev,
             modelType: ModelTypeValues
-        })
+        }))
         if (ModelTypeValues && ModelTypeValues !== '' && ModelTypeValues.value !== undefined) {
             const reqParams = {
                 ModelTypeId: ModelTypeValues.value,
@@ -509,15 +634,15 @@ function Rejection(props) {
                 let data = res?.data?.Data?.CostingRejectionDetail
                 setRejectionObj(data)
                 setTimeout(() => {
-                    checkRejectionApplicability(data)
+                    checkRejectionModelType(data)
                 }, 500);
             }))
         } else {
-            setState({
-                ...state,
+            setState(prev => ({
+                ...prev,
                 modelType: [],
                 gridData: []
-            })
+            }))
         }
     }
     return (
@@ -579,11 +704,11 @@ function Rejection(props) {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={applicability.length !== 0 ? applicability : ''}
                             options={renderListing('Applicability')}
-                            mandatory={true}
+                            mandatory={false}
                             disabled={CostingViewMode ? true : false}
                             handleChange={handleApplicabilityChange}
                             errors={errors.Applicability}
@@ -593,7 +718,7 @@ function Rejection(props) {
                     <Col md="1">
                         {applicability.label !== 'Fixed' ?
                             <TextFieldHookForm
-                                label={`${applicability.label !== 'Fixed' ? 'Rejection (%)' : 'Rejection'}`}
+                                label={`Rejection (%)`}
                                 name={'RejectionPercentage'}
                                 Controller={Controller}
                                 control={control}
@@ -621,12 +746,16 @@ function Rejection(props) {
                             //THIS FIELD WILL RENDER WHEN REJECTION TYPE FIXED
                             <div className='p-relative error-wrapper'>
                                 <TextFieldHookForm
-                                    label={'Rejection (%)'}
+                                    label={'Rejection'}
                                     name={'RejectionPercentage'}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
                                     mandatory={false}
+                                    rules={{
+                                        required: false,
+                                        validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
+                                    }}
                                     handleChange={(e) => handleChangeRejectionPercentage(e)}
                                     defaultValue={''}
                                     className=""
@@ -653,7 +782,7 @@ function Rejection(props) {
                                 disabled={true}
                             />
                         </Col>}
-                    <Col md="1">
+                        {applicability.label !== 'Fixed' &&<Col md="1">
                         <TextFieldHookForm
                             label={'Rejection'}
                             name={'RejectionTotalCost'}
@@ -668,8 +797,8 @@ function Rejection(props) {
                             errors={errors.RejectionTotalCost}
                             disabled={true}
                         />
-                    </Col>
-                    {getConfigurationKey().IsRejectionRecoveryApplicable && <Col md="2">
+                    </Col>}
+                    {getConfigurationKey().IsRejectionRecoveryApplicable && applicability.label === 'RM' && <Col md="2">
                         {/* {RejectionRecoveryUI} */}
                         <div className='d-flex align-items-center'>
                             <TextFieldHookForm
@@ -724,7 +853,7 @@ function Rejection(props) {
                         <button
                             type="button"
                             className={"reset-btn pull-left mt-1 ml5"}
-                            onClick={() => resetData("reset")}
+                            onClick={() => resetData()}
                             disabled={CostingViewMode}
                         >
                             RESET
@@ -750,11 +879,11 @@ function Rejection(props) {
                                 return (
                                     <tr key={index}>
                                         <td>{item?.Applicability ?? '-'}</td>
-                                        <td>{item?.Percentage ?? '-'}</td>
+                                        <td>{item?.Applicability !== 'Fixed' ? item?.Percentage : '-' }</td>
                                         <td>{checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
                                         <td>{checkForDecimalAndNull(item?.TotalCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
-                                        {getConfigurationKey().IsRejectionRecoveryApplicable && <td>{checkForDecimalAndNull(item?.RejectionRecoveryCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}
-                                            {item?.Applicability === 'RM' && <Button
+                                        {getConfigurationKey().IsRejectionRecoveryApplicable && <td>{checkForDecimalAndNull(item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}
+                                            {item?.Applicability === 'RM' && fetchRejectionDataFromMaster() && <Button
                                                 id="tabDiscount_otherCost"
                                                 onClick={() => handleRejectionRecovery(true)}
                                                 className={"right mb-4 ml-0"}
@@ -767,13 +896,13 @@ function Rejection(props) {
                                                 className="Edit"
                                                 title='Edit'
                                                 type={"button"}
-                                                onClick={() => editItemDetails(index)}
+                                                onClick={() => editDeleteData(index, 'edit')}
                                             />
                                             <button
                                                 className="Delete ml-1"
                                                 title='Delete'
                                                 type={"button"}
-                                                onClick={() => deleteItem(index)}
+                                                onClick={() => editDeleteData(index, 'delete')}
                                             />
                                         </td>}
                                     </tr>
@@ -828,7 +957,7 @@ function Rejection(props) {
                 rejectionPercentage={!fetchRejectionDataFromMaster() ? getValues('RejectionPercentage') : state.gridData?.find(item => item.Applicability === 'RM')?.Percentage || ''}
                 closeDrawer={closeDrawer}
                 calculateRecoveryCost={calculateRecoveryCost}
-                rejectionTotalCost={!fetchRejectionDataFromMaster() ? rejectionObj?.RejectionTotalCost : state.gridData?.find(item => item.Applicability === 'RM')?.TotalCost || ''}
+                rejectionTotalCost={!fetchRejectionDataFromMaster() ? getValues('RejectionTotalCost') : state.gridData?.find(item => item.Applicability === 'RM')?.TotalCost || ''}
             />}
 
 
