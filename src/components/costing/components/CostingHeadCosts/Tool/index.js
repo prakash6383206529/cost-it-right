@@ -305,9 +305,9 @@ function Tool(props) {
       setValue('ToolMaintenanceCost', 0)
       setValue('maintanencePercentage', 0)
       setValue('toolCostType', '')
-      setValue('ToolCost', 0)
-      setValue('Life', 0)
-      setValue('ToolAmortizationCost', 0)
+      // setValue('ToolCost', 0)
+      // setValue('Life', 0)
+      // setValue('ToolAmortizationCost', 0)
       setValue('NetToolCost', 0)
       setValue('crmHeadTool', '')
       setValue('ToolMaintenanceCostPerPc', 0);
