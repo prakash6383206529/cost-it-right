@@ -141,8 +141,12 @@ class AddAssemblyPart extends Component {
   handlePartFamilyChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ PartFamilySelected: newValue });
+      // Update the form value
+      this.props.change('PartFamily', newValue);
     } else {
       this.setState({ PartFamilySelected: null });
+      // Clear the form value
+      this.props.change('PartFamily', null);
     }
   }
 
@@ -776,6 +780,7 @@ class AddAssemblyPart extends Component {
   */
   onSubmit = debounce((values) => {
     this.setState({ showErrors: true });
+  const partPermissions = this.props?.initialConfiguration?.PartAdditionalMasterFields
   
     // Check for required fields
     let hasErrors = false;
@@ -834,8 +839,15 @@ class AddAssemblyPart extends Component {
         String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) &&
         String(DataToCheck?.DrawingNumber) === String(values?.DrawingNumber) &&
         String(DataToCheck?.Remark) === String(values?.Remark) &&
-        String(DataToCheck?.SAPCode) === String(values?.SAPCode)
-      if (noChanges) {
+        String(DataToCheck?.SAPCode) === String(values?.SAPCode) &&
+        (partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartModelId) === String(values?.Model?.value) : true) &&
+        (partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartsModelMaster) === String(values?.Model?.label) : true) &&
+        (partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamilyId) === String(values?.PartFamily?.value) : true) &&
+        (partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamily) === String(values?.PartFamily?.label) : true) &&
+        (partPermissions?.IsNepNumberMandatory ? String(DataToCheck?.NEPNumber) === String(values?.NEP) : true);
+
+       
+              if (noChanges) {
         Toaster.warning('Please change data to save Assembly Part Details');
         return false;
       }
@@ -897,7 +909,7 @@ class AddAssemblyPart extends Component {
         NEPNumber: values?.NEP || "",
         PartModelId: this?.state?.Model?.value || "",
         PartsModelMaster: this?.state?.Model?.label || "",
-        PartFamilyIdRef: this?.state?.PartFamilySelected?.value || "",
+        PartFamilyId: this?.state?.PartFamilySelected?.value || "",
         PartFamily: this?.state?.PartFamilySelected?.label || "",
       }
 
@@ -1071,42 +1083,21 @@ class AddAssemblyPart extends Component {
     });
   }
 
-  handleModelSubmit = (modelData) => {
-    if (this.state.isModelEditFlag) {
-      this.props.editModel({
-        PartModelId: modelData.Id || this.state.Model.value,
-        PartModelMasterName: modelData.ModelName
-      }, (res) => {
-        if (res && res.data && res.data.Result) {
-          // Set the edited model in the state
-          this.setState({
-            Model: {
-              label: modelData.ModelName,
-              value: modelData.Id || this.state.Model.value
-            },
-            isModelDrawerOpen: false
-          });
-          this.getModelList(); // Refresh the model list
+ 
+  handleDrawerClose = (modelData) => {
+    console.log("modelData", modelData)
+    this.setState({ isModelDrawerOpen: false });
+    if (modelData) {
+      // Set the new/edited model in state
+      this.setState({
+        Model: {
+          label: modelData.PartModelMasterName || modelData.ModelName, // adjust field as per your API
+          value: modelData.PartModelId || modelData.Id
         }
       });
-    } else {
-      this.props.addModel({
-        PartModelMasterName: modelData.ModelName
-      }, (res) => {
-        if (res && res.data && res.data.Result) {
-          // Set the newly added model in the state
-          this.setState({
-            Model: {
-              label: modelData.ModelName,
-              value: res.data.Data.Id || res.data.Data.PartModelId
-            },
-            isModelDrawerOpen: false
-          });
-          this.getModelList(); // Refresh the model list
-        }
-      });
+      this.getModelList(); // Optionally refresh the model list
     }
-  }
+  };
 
   /**
   * @method render
@@ -1702,8 +1693,7 @@ class AddAssemblyPart extends Component {
           {this?.state?.isModelDrawerOpen && (
             <AddModel
               isOpen={this?.state?.isModelDrawerOpen}
-              onClose={() => this.setState({ isModelDrawerOpen: false })}
-              onSubmit={this.handleModelSubmit}
+              onClose={this.handleDrawerClose}
               ID={this?.state?.Model?.value}
               isEditFlag={this?.state?.isModelEditFlag}
               refreshModelList={this.getModelList}
@@ -1722,7 +1712,7 @@ class AddAssemblyPart extends Component {
 */
 function mapStateToProps(state) {
   const fieldsObj = selector(state, 'BOMNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'ECNNumber', 'RevisionNumber',
-    'Description', 'DrawingNumber', 'GroupCode', 'Remark', 'TechnologyId', 'PartFamily')
+    'Description', 'DrawingNumber', 'GroupCode', 'Remark', 'TechnologyId', 'PartFamily', 'Model', 'NEP')
   const { comman, part, auth, costing } = state;
   const { plantSelectList, UOMSelectList } = comman;
   const { partData, actualBOMTreeData, productGroupSelectList, partFamilySelectList } = part;
@@ -1745,10 +1735,10 @@ function mapStateToProps(state) {
           label: partData?.PartsModelMaster || "",
           value: partData?.PartModelId || ""
       },
-      PartFamily: {
-        label: partData?.PartFamily || "",
-        value: partData?.PartFamilyId || ""
-      }
+      PartFamily: partData.PartFamilyId ? {
+        label: partData.PartFamily || "",
+        value: partData.PartFamilyId || ""
+      } : null,
     }
   }
 

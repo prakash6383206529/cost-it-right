@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
- const BASE_URL = `http://10.10.1.102:3002/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+//const BASE_URL = `http://10.10.1.102:2002/api/v1`;
 
 
 
@@ -1204,6 +1204,7 @@ export const API = {
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
+  createCustomerRfq: `${BASE_URL}/nfr/create-customer-rfq`,
   getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
@@ -3371,12 +3372,14 @@ export const RM = "RM"
 export const CC = "CC"
 export const RMCC = "RM + CC"
 
+export const DEFAULTRMPRESSURE = 500
+
 export const PAINTTECHNOLOGY = 31
 export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.34";
+export const VERSION = "V4.2.42";
 
 
 

@@ -46,6 +46,7 @@ const FreightListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    isImport: props.isImport ? true : false,
     totalRecordCount: 0,
     isImport: listToggle.Freight,
     globalTake: defaultPageSize,
@@ -60,7 +61,7 @@ const FreightListing = (props) => {
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
         setTimeout(() => {
-          getDataList()
+          getDataList(null, null, null, null, state.isImport)
         }, 500);
       }
     }, 300);
@@ -352,7 +353,7 @@ const FreightListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 {/* Add button */}
-                {permissions.Add && (
+                {permissions.Add && !state.isImport && (
                   <Button
                     id="freightListing_add"
                     className={"user-btn mr5"}

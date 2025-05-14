@@ -720,9 +720,9 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.bopHandlingPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage : 0
   obj.bopHandlingChargeType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType : ''
 
-  obj.netAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost: 0
-  obj.netToolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost: 0
-  obj.netToolInterestCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolInterestCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolInterestCost: 0
+  obj.netAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost : 0
+  obj.netToolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost : 0
+  obj.netToolInterestCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolInterestCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolInterestCost : 0
   obj.toolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost : 0
   obj.toolPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost : 0
   obj.amortizationQty = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life : 0
@@ -1782,7 +1782,7 @@ export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel = '', z
     return customerBasedLabel;
   } else if (cellValue === 'Vendor(Code)') {
     return vendorCodeLabel;
-  }else{
+  } else {
     return cellValue
   }
 }
@@ -2133,25 +2133,26 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
       }
     }
   });
+  // console.log(totals,'totals')
   return totals;
 };
 
 export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = []) => {
   const isAssembly = item?.PartType
   const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
-  
+
   let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
   let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex(costingItem => costingItem.PartNumber === item?.PartNumber && costingItem.AssemblyPartNumber === item?.AssemblyPartNumber)
   let objectToGetRMCCData = tempArrForCosting[indexForUpdate]
-  
+
   if (isAssembly === "Assembly" || isAssembly === "Sub Assembly") {
 
     if (isRequestForMultiTechnology) {//run for multi(Assembly) technology
       const assemblyCostingPartDetails = subAssemblyTechnologyArray[0]?.CostingPartDetails
-      
+
       return {
         netpartCost: checkForNull(assemblyCostingPartDetails?.NetChildPartsCost),
-        conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost)+checkForNull(assemblyCostingPartDetails?.NetProcessCost)
+        conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost) + checkForNull(assemblyCostingPartDetails?.NetProcessCost)
       };
     } else {
       return {

@@ -151,6 +151,7 @@ function CostingDetails(props) {
   const [partName, setpartName] = useState('')
   const [nfrListing, setNFRListing] = useState(false)
   const [partTypeList, setPartTypeList] = useState([])
+  const [isNFR, setIsNFR] = useState(false)
   const [partFamily, setPartFamily] = useState([])
 
   const dispatch = useDispatch()
@@ -188,6 +189,29 @@ function CostingDetails(props) {
       reactLocalStorage.setObject('PartData', [])
     }
   }, [])
+
+  useEffect(() => {
+    if (props?.nfrData?.isNFR) {
+      const partDetails = props?.nfrData?.partDetails
+      setIsNFR(true)
+      setPart({ label: partDetails?.PartNumber, value: partDetails?.PartId })
+      setPartType({ label: partDetails?.PartType, value: partDetails?.PartTypeId })
+      setTechnology({ label: partDetails?.Technology, value: partDetails?.TechnologyId })
+      
+      setValue('Part', { label: partDetails?.PartNumber, value: partDetails?.PartId })
+      setValue('PartType', { label: partDetails?.PartType, value: partDetails?.PartTypeId })
+      setValue('Technology', { label: partDetails?.Technology, value: partDetails?.TechnologyId })
+      setIsTechnologySelected(true)
+    }
+  }, [])
+
+  // Add a new useEffect that depends on IsTechnologySelected
+  useEffect(() => {
+    if (props?.nfrData?.isNFR && IsTechnologySelected) {
+      const partDetails = props?.nfrData?.partDetails
+      handlePartChange({ label: partDetails?.PartNumber, value: partDetails?.PartId })
+    }
+  }, [IsTechnologySelected])
 
   useEffect(() => {
     if (costingMode?.editMode === true && costingMode?.viewMode === false) {
@@ -2544,7 +2568,7 @@ function CostingDetails(props) {
                           )}
 
                           {/* ****************************************NCC UI HERE************************************************************* */}
-                          {IsOpenVendorSOBDetails && showCostingSection.NCC && !breakupBOP && (
+                          {IsOpenVendorSOBDetails && showCostingSection.NCC && !breakupBOP && !isNFR && (
                             <>
                               <Row className="align-items-center">
                                 <Col md={'6'} className={"mb-2 mt-3"}>
@@ -2651,7 +2675,7 @@ function CostingDetails(props) {
                           )}
 
 
-                          {IsOpenVendorSOBDetails && showCostingSection.VBC && (
+                          {IsOpenVendorSOBDetails && showCostingSection.VBC && !isNFR && (
                             <>
                               <Row className="align-items-center">
                                 <Col md={'6'} className={"mb-2 mt-3"}>

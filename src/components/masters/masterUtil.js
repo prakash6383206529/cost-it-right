@@ -170,7 +170,7 @@ export const ProcessGroup = (props) => {
         let temp = []
         if (label === 'process') {
             temp = props.processListing && props.processListing.map(item => {
-                return { label: item.processName, value: item.ProcessId }
+                return { label: item.ProcessName, value: item.ProcessId }
             })
         }
         return temp
@@ -487,3 +487,4 @@ export const divisionApplicableFilter = (columnsArray, valueToExclude) => {
 export const checkEffectiveDate = (effectiveDate, effectiveDateToChange) => {
     return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
 }
+
