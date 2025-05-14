@@ -7,7 +7,9 @@ import {
     GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
     GET_ICC_APPLICABILITY_SELECTLIST,
     GET_INTEREST_RATE_DATA_LIST,
-    config
+    config,
+    GET_WIP_COMPOSITION_METHOD_SELECTLIST,
+    GET_INVENTORYDAY_TYPE_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import axiosInstance from '../../../utils/axiosInstance';
@@ -43,7 +45,7 @@ export function getInterestRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
-            let queryParams = `loggedInUserId=${loggedInUserId()}&vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}`
+            let queryParams = `loggedInUserId=${loggedInUserId()}&vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}&isPaymentTermsRecord=${data?.isPaymentTermsRecord}`
             axios.get(`${API.getInterestRateDataList}?${queryParams}`, config())
                 .then((response) => {
                     if (response.data.Result || response.status === 204)
@@ -147,6 +149,54 @@ export function getPaymentTermsAppliSelectList(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getInventoryDayTypeSelectList
+ * @description GET INVENTORY DAY TYPE SELECTLIST
+ */
+export function getInventoryDayTypeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getInventoryDayTypeSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INVENTORYDAY_TYPE_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getWipCompositionMethodList
+ * @description GET INVENTORY DAY TYPE SELECTLIST
+ */
+export function getWipCompositionMethodList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getWipCompositionMethodList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_WIP_COMPOSITION_METHOD_SELECTLIST,
                     payload: response.data.SelectList,
                 });
                 callback(response);

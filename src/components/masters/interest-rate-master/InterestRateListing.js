@@ -32,6 +32,7 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
+
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -137,7 +138,7 @@ const InterestRateListing = (props) => {
     */
   const getTableListData = (vendor = '', icc_applicability = '', payment_term_applicability = '') => {
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
-    let filterData = { vendor: vendor, icc_applicability: icc_applicability, payment_term_applicability: payment_term_applicability, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc }
+    let filterData = { vendor: vendor, icc_applicability: icc_applicability, payment_term_applicability: payment_term_applicability, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc, isPaymentTermsRecord: false }
     dispatch(getInterestRateDataList(true, filterData, res => {
       if (res.status === 204 && res.data === '') {
         setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
@@ -478,11 +479,15 @@ const InterestRateListing = (props) => {
                 {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn>
-                <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {/* <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+                <AgGridColumn width={140} field="CreditBasedAnnualICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {/* <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>}
