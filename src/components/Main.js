@@ -84,7 +84,7 @@ import {
   COST_RATIO_REPORT,
   BUDGETING,
   NFR_LISTING,
-  NFR,
+  CUSTOMER_RFQ,
   MASTER_BENCHMARK_REPORT,
   COST_MOVEMENT_REPORT,
   SUPPLIER_CONTRIBUTION_REPORT,
@@ -676,8 +676,8 @@ class Main extends Component {
                       component={AuthMiddleware(RfqListing, RFQ)}
                     />
                     <Route
-                      path="/nfr"
-                      component={AuthMiddleware(NfrTabs, NFR)}
+                      path="/customer-rfq"
+                      component={AuthMiddleware(NfrTabs, CUSTOMER_RFQ)}
                     />
                     <Route
                       path="/budgeting"

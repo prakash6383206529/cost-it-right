@@ -459,7 +459,7 @@ function CreateManualNFR(props) {
 
     const onSubmit = () => {
         if (gridData?.length === 0) {
-            Toaster.warning("Please enter at least pone record to save NFR.")
+            Toaster.warning("Please enter at least pone record to save Customer RFQ.")
             return false
         }
 
@@ -476,7 +476,7 @@ function CreateManualNFR(props) {
         }
         dispatch(createNFRBOMDetails(requestObj, (res) => {
             if (res?.data?.Result) {
-                Toaster.success("NFR created successfully.")
+                Toaster.success("Customer RFQ created successfully.")
             }
             cancel(true)
         }))
@@ -591,7 +591,7 @@ function CreateManualNFR(props) {
                     <div className="row">
                         <div className="col-md-6">
                             <h1>
-                                Add NFR
+                                Add Customer RFQ
                                 <TourWrapper
                                     buttonSpecificProp={{ id: "Create_Manual_Nfr_Form" }}
                                     stepsSpecificProp={{
@@ -608,7 +608,7 @@ function CreateManualNFR(props) {
                                         <Row>
                                             <Col md="3">
                                                 <TextFieldHookForm
-                                                    label="NFR Version"
+                                                    label="Customer RFQ Version"
                                                     name={"NFRVersion"}
                                                     Controller={Controller}
                                                     placeholder={props?.isViewFlag ? '-' : "Enter"}

@@ -5,7 +5,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import {
     DASHBOARD_AND_AUDIT, MASTERS, ADDITIONAL_MASTERS, COSTING, SIMULATION, REPORTS_AND_ANALYTICS,
-    USERS, AUDIT, RFQ, NFR, VENDOR_MANAGEMENT_ROLE, AUCTION
+    USERS, AUDIT, RFQ, CUSTOMER_RFQ, VENDOR_MANAGEMENT_ROLE, AUCTION
 } from "../../../config/constants";
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
@@ -129,7 +129,7 @@ class PermissionsTabIndex extends Component {
         let usersObj = Data && Data.filter(el => el.ModuleName === USERS)
         let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
         let rfqObj = Data && Data.filter(el => el.ModuleName === RFQ)
-        let nfrObj = Data && Data.filter(el => el.ModuleName === NFR)
+        let nfrObj = Data && Data.filter(el => el.ModuleName === CUSTOMER_RFQ)
         let supperilerObj = Data && Data.filter(el => el.ModuleName === VENDOR_MANAGEMENT_ROLE)
         let auctionObj = Data && Data.filter(el => el.ModuleName === AUCTION)
 
@@ -159,7 +159,7 @@ class PermissionsTabIndex extends Component {
             this.permissionHandler(this.state.user, USERS)
             this.permissionHandler(this.state.audit, AUDIT)
             this.permissionHandler(this.state.rfq, RFQ)
-            this.permissionHandler(this.state.nfr, NFR)
+            this.permissionHandler(this.state.nfr, CUSTOMER_RFQ)
             this.permissionHandler(this.state.supplierManagement, VENDOR_MANAGEMENT_ROLE)
             this.permissionHandler(this.state.auction, AUCTION)
         })
@@ -326,7 +326,7 @@ class PermissionsTabIndex extends Component {
                                         this?.state?.nfr?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="NFR" className={classnames({ active: this.state.activeTab === '9' })} onClick={() => { this.toggle('9'); }}>
-                                                NFR
+                                                Customer RFQ
                                                 {this.state.activeTab === '9' && (
                                                     <TourWrapper
                                                         buttonSpecificProp={{ id: "Add_Nfr_Form" }}

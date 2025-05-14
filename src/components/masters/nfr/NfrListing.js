@@ -159,7 +159,7 @@ function NfrListing(props) {
         dispatch(deleteNFRDetailAPI(rowData?.NfrId, loggedInUserId(), (res) => {
             if (res?.data?.Result) {
                 getDataList()
-                Toaster.success("NFR deleted successfully.")
+                Toaster.success("Customer RFQ deleted successfully.")
             }
         }))
     }
@@ -431,9 +431,9 @@ function NfrListing(props) {
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                             >
                                                 {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
-                                                <AgGridColumn field="NfrNumber" headerName="NFR Id" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="NfrNumber" headerName="Customer RFQ Id" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="ProductCode" headerName='Product Code' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NfrRefNumber" headerName='Nfr Ref. Number' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="NfrRefNumber" headerName='Customer RFQ Ref. Number' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NfrVersion" headerName='Version/Revision' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NumberOfParts" headerName='No. of Parts' cellRenderer={hyphenFormatter}></AgGridColumn>
