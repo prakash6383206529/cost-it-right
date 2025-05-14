@@ -380,8 +380,8 @@ function AddOtherCostDrawer(props) {
                 Toaster.warning('Discount should not be equal to Basic rate')
                 return false
             }
-            newData.NetCost = `-${newData.NetCost}`;
-            newData.NetCostConversion = `-${newData.NetCostConversion}`;
+            newData.NetCost = `${newData.NetCost}`;
+            newData.NetCostConversion = `${newData.NetCostConversion}`;
         }
         // Assuming 'tableData' is an array of objects and you want to add MaterialCommodityStandardDetailsId separately,
         // you can structure your updated data as follows:
