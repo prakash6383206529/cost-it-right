@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
-import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
+import { getIccDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
@@ -16,6 +16,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import Popup from 'reactjs-popup';
 import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import Toaster from '../../../../common/Toaster';
+import { fetchModelTypeAPI } from '../../../../../actions/Common';
 
 let counter = 0;
 function Icc(props) {
@@ -44,6 +45,9 @@ function Icc(props) {
     const [IsShowRmcAndNetWeightToggleForIcc, setIsShowRmcAndNetWeightToggleForIcc] = useState(reactLocalStorage.getObject('InitialConfiguration')?.IsShowRmcAndNetWeightToggleForIcc)
     const [totalOverHeadAndProfit, setTotalOverHeadAndProfit] = useState((OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) ? (OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) : 0)
     const { CostingEffectiveDate } = useSelector(state => state.costing)
+    const [state,setState] = useState({
+        modelTypeList: []
+    })
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId)
@@ -60,6 +64,20 @@ function Icc(props) {
             setIsPartApplicability(true)
         }
     }, [ICCapplicability])
+    useEffect(() => {
+        dispatch(fetchModelTypeAPI('iccAndPaymentTerms', (res) => {
+            let temp = [];
+            res?.data?.SelectList?.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            setState(prev => ({
+                ...prev,
+                modelTypeList: temp
+            }));
+        }))
+    }, [])
 
 
     /**
@@ -70,7 +88,7 @@ function Icc(props) {
 
         setIsInventoryApplicable(!IsInventoryApplicable)
 
-        callInventoryAPI(value)
+        callInventoryAPIByModelType(value)
 
         dispatch(gridDataAdded(true))
         dispatch(isOverheadProfitDataChange(true))
@@ -85,10 +103,10 @@ function Icc(props) {
     }
 
     /**
-     * @method callInventoryAPI
+     * @method callInventoryAPIByModelType
      * @description When we toogle on ICC to call API
     */
-    const callInventoryAPI = (callAPI) => {
+    const callInventoryAPIByModelType = (callAPI) => {
         if (Object.keys(costData).length > 0 && callAPI && !CostingViewMode) {
             const reqParams = {
                 VendorId: (costData?.CostingTypeId === VBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData?.VendorId : EMPTY_GUID,
@@ -100,7 +118,7 @@ function Icc(props) {
                 rawMaterialChildId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
                 technologyId: null,
             }
-            dispatch(getInventoryDataByHeads(reqParams, res => {
+            dispatch(getIccDataByModelType(reqParams, res => {
                 if (res && res.data && res.data?.Result) {
                     let Data = res.data?.Data;
                     setValue('InterestRatePercentage', Data?.InterestRate)
@@ -389,7 +407,12 @@ function Icc(props) {
         }
         button.click()
     }
-
+    const handleModelTypeChange = (ModelTypeValues) => {
+        setState(prev => ({
+            ...prev,
+            modelType: ModelTypeValues
+        }))
+    }
     return (
         <>
             <Row className="mt-15 pt-15">
@@ -413,7 +436,26 @@ function Icc(props) {
                     </label>
                 </Col>
             </Row>
-
+            <Col md="3">
+                    <SearchableSelectHookForm
+                        label={'Model Type for Rejection'}
+                        name={'ModelTypeRejection'}
+                        placeholder={'Select'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        defaultValue={state.modelType?.length !== 0 ? state.modelType : ''}
+                        options={state.modelTypeList}
+                        mandatory={false}
+                        disabled={CostingViewMode ? true : false}
+                        handleChange={(ModelTypeValues) => {
+                            handleModelTypeChange(ModelTypeValues, true)
+                        }}
+                        errors={errors.ModelTypeRejection}
+                        isClearable={true}
+                    />
+                </Col>
             {IsInventoryApplicable &&
                 <>
                     {initialConfiguration?.IsShowCRMHead && <Col md="3">

@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `http://10.10.1.102:3002/api/v1`;
 
 
 
@@ -594,6 +594,7 @@ export const API = {
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
   getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
   getRejectionDataByModelType: `${BASE_URL}/costing/get-costing-rejection-details`,
+  getIccDataByModelType: `${BASE_URL}/costing/get-costing-icc-details`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
