@@ -694,7 +694,7 @@ const BOPImportListing = (props) => {
         ? props.valueFormatted
         : props?.value;
 
-      return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
+      return cellValue?.includes("T") ? DayTime(cellValue).format("DD/MM/YYYY") : cellValue;
     }
   };
   const viewAttachmentData = (index) => {
