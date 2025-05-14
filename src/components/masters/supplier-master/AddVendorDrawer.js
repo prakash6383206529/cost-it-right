@@ -4,7 +4,8 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Table, } from 'reactstrap';
 import {
     required, upper, email, minLength7, maxLength70, maxLength80, minLength10, maxLength71, maxLength5, maxLength12, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
-    postiveNumber, maxLength6, checkWhiteSpaces, checkSpacesInString, number, hashValidation, getNameBySplitting, getCodeBySplitting
+    postiveNumber, maxLength6, checkWhiteSpaces, checkSpacesInString, number, hashValidation, getNameBySplitting, getCodeBySplitting,
+    allowOnlySpecificSpecialChars
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, focusOnError, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
@@ -910,10 +911,9 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine1"}
                                             type="text"
                                             placeholder={isViewMode ? '-' : 'Enter'}
-                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation]}
+                                            validate={[maxLength80,allowOnlySpecificSpecialChars]}
                                             component={renderText}
-                                            //  required={true}
-                                            maxLength={26}
+                                            // maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
                                             disabled={isViewMode}
@@ -925,10 +925,9 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine2"}
                                             type="text"
                                             placeholder={isViewMode ? '-' : 'Enter'}
-                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation]}
+                                            validate={[maxLength80,allowOnlySpecificSpecialChars]}
                                             component={renderText}
-                                            //required={true}
-                                            maxLength={26}
+                                            // maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
                                             disabled={isViewMode}

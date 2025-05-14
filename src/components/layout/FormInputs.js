@@ -29,16 +29,15 @@ const handleInputChange = (input, field, e) => {
       return true;
     }
   } catch (error) {
-    console.error('Validation error:', error);
     return false;
   }
 };
 export const validateForm = values => {
-  
   const errors = {};
   Object.keys(values).forEach(fieldName => {
     const convertLowerCase = fieldName ? fieldName.toLowerCase() : '';
-    if (!convertLowerCase.includes('date')) {
+    // Skip validation for address and date fields
+    if (!convertLowerCase.includes('date') && fieldName !== 'AddressLine1' && fieldName !== 'AddressLine2') {
       const value = values[fieldName];
       const validationError = validateSpecialChars(value);
       if (validationError) {
@@ -632,7 +631,6 @@ export const focusOnError = (errors) => {
 export function renderText(field) {
   const {
     input,
-
     meta: { touched, error, form },
     children,
     ...others
@@ -643,6 +641,9 @@ export function renderText(field) {
   const InputClassName = `form-control ${field.className ? field.className : ""
     }`;
   const specificId = `${form}_${input.name}`;
+  // Skip validateSpecialChars for address fields
+  const isAddressField = input.name === "AddressLine1" || input.name === "AddressLine2";
+
   return (
     <div className={className}>
       <label>
@@ -662,17 +663,16 @@ export function renderText(field) {
           {...input}
           {...others}
           className={InputClassName}
-          onChange={(e) => handleInputChange(input, field, e)}
+          onChange={(e) => isAddressField ? input.onChange(e) : handleInputChange(input, field, e)}
           autoComplete={'off'}
         />
       </div>
       {children}
-      {(touched || error) && (                                                                               // Fixed required warning message issue
+      {(touched || error) && (
         <div className="text-help mb-2">
-          {touched ? (validateSpecialChars(input.value) || error) : ""}
+          {touched && error}
         </div>
       )}
-      {/* <div className="text-help mb-2">{touched ? (validateSpecialChars(input.value) || error) : ""}</div> */}
       {field?.warningMessage && (
         <WarningMessage dClass={field?.warningMessageClass} message={field?.warningMessage} />
       )}
