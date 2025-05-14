@@ -453,18 +453,27 @@ function AddTool(props) {
    * @method handleToolApplicabilityChange
    * @description This is for handling the tool applicability change
   */
-  const handleToolApplicabilityChange = (newValue) => {    
+  const handleToolApplicabilityChange = (newValue) => {        
     if(newValue?.label==='Tool Rate'){
-      setValue('MaintananceCostApplicability', getValues('ToolCost'))
+      setValue('MaintananceCostApplicability', checkForDecimalAndNull(getValues('ToolCost'), getConfigurationKey().NoOfDecimalForPrice))
     } else {
       setValue('MaintananceCostApplicability', 0)
     }
     setValue('ToolInterestRatePercent', 0)
     setValue('MaintenancePercentage', 0)
+    delete errors.MaintananceCostApplicability
+    delete errors.MaintenancePercentage
+    delete errors.ToolInterestRatePercent
     setState(prevState => {
       const newState = {...prevState, toolMaintenanceApplicability: newValue, toolMaintenanceCost: 0, toolMaintenanceCostPerPc: 0, toolInterestCost: 0, toolInterestCostPerPc:0 }
       return newState 
     })
+  }
+
+  const handleToolRateChange = (e) => {
+    if (state.toolMaintenanceApplicability?.label === "Tool Rate") {
+      setValue('MaintananceCostApplicability', checkForDecimalAndNull(e.target.value, getConfigurationKey().NoOfDecimalForPrice))
+    }
   }
   
   /**
@@ -726,7 +735,7 @@ function AddTool(props) {
                         required: true,
                         validate: { number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
                       }}
-                      handleChange={() => { }}
+                      handleChange={(e) => handleToolRateChange(e)}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
