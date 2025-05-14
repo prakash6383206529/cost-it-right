@@ -634,7 +634,7 @@ function Tool(props) {
                     />
                   </Col>
                   <Col md="3">
-                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = (Tool Cost / Amortization Quantity)"} />
+                    <TooltipCustom disabledIcon={true} id={"tool-amortization"} tooltipText={"Tool Amortization = (Tool Rate / Amortization Quantity)"} />
                     <TextFieldHookForm
                       label="Tool Amortization Cost"
                       name={`ToolAmortizationCost`}

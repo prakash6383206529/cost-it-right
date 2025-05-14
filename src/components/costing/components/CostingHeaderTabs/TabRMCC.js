@@ -70,6 +70,7 @@ function TabRMCC(props) {
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
+
       let TopHeaderValues = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0]?.CostingPartDetails !== undefined ? RMCCTabData[0]?.CostingPartDetails : null;
 
       let topHeaderData = {};
@@ -112,9 +113,14 @@ function TabRMCC(props) {
           NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
           NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
           NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
+          NetWeldingCostForOverhead:TopHeaderValues?.NetWeldingCostForOverhead??0,
+          NetWeldingCostForProfit:TopHeaderValues?.NetWeldingCostForProfit??0,
+          NetWeldingCost:TopHeaderValues?.NetWeldingCost??0,
+          NetCCForOtherTechnologyCost:TopHeaderValues?.NetCCForOtherTechnologyCost??0,
+          NetCCForOtherTechnologyCostForOverhead:TopHeaderValues?.NetCCForOtherTechnologyCostForOverhead??0,
+          NetCCForOtherTechnologyCostForProfit:TopHeaderValues?.NetCCForOtherTechnologyCostForProfit??0,
         }
       }
-
       props.setHeaderCost(topHeaderData)
     }
     else {
@@ -517,11 +523,16 @@ function TabRMCC(props) {
       case 'CC':
         partObj.CostingPartDetails.NetConversionCost = gridData?.NetConversionCost
         partObj.CostingPartDetails.NetProcessCost = gridData?.NetProcessCost
-        partObj.CostingPartDetails.NetProcessCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Overhead")?.overheadProcessCost;
-        partObj.CostingPartDetails.NetProcessCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Profit")?.profitProcessCost;
-        partObj.CostingPartDetails.NetOperationCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Overhead")?.overheadOperationCost;
-        partObj.CostingPartDetails.NetOperationCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Profit")?.profitOperationCost;
-
+        partObj.CostingPartDetails.NetProcessCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.overheadProcessCost;
+        partObj.CostingPartDetails.NetProcessCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.profitProcessCost;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.ccForOtherTechnologyCostForOverhead;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.ccForOtherTechnologyCostForProfit;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCost = checkForNull(getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.ccForOtherTechnologyCostForOverhead ) + checkForNull(getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse,obj?.TechnologyId)?.ccForOtherTechnologyCostForProfit);
+        partObj.CostingPartDetails.NetOperationCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.overheadOperationCost;
+        partObj.CostingPartDetails.NetOperationCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.profitOperationCost;
+        partObj.CostingPartDetails.NetWeldingCost = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.overheadWeldingCost + getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.profitWeldingCost
+        partObj.CostingPartDetails.NetWeldingCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.overheadWeldingCost;
+        partObj.CostingPartDetails.NetWeldingCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse,obj?.TechnologyId)?.profitWeldingCost;
         // partObj.CostingPartDetails.NetOperationCostForOverheadExcl = gridData?.NetOperationCostForOverheadExcl
         // partObj.CostingPartDetails.NetOperationCostForProfitExcl = gridData?.NetOperationCostForProfitExcl
         partObj.CostingPartDetails.NetOperationCost = gridData?.NetOperationCost
@@ -1854,13 +1865,13 @@ function TabRMCC(props) {
                 if (isOperation) {
                   subAssembObj.CostingPartDetails.CostingOperationCostResponse = gridData;
                   subAssembObj.CostingPartDetails.TotalOperationCostPerAssembly = GetOperationCostTotal(gridData);
-                  subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, 'Overhead')?.overheadOperationCost) ?? 0
-                  subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, 'Profit')?.profitOperationCost) ?? 0
+                  subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData,subAssembObj?.TechnologyId)?.overheadOperationCost) ?? 0
+                  subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, subAssembObj?.TechnologyId)?.profitOperationCost) ?? 0
                                   } else {
                   subAssembObj.CostingPartDetails.CostingProcessCostResponse = gridData;
                   subAssembObj.CostingPartDetails.TotalProcessCostPerAssembly = GetProcessCostTotal(gridData);
-                  subAssembObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(tempArr, 'Overhead')?.overheadProcessCost) ?? 0
-                  subAssembObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(tempArr, 'Profit')?.profitProcessCost) ?? 0
+                  subAssembObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(tempArr, subAssembObj?.TechnologyId)?.overheadProcessCost) ?? 0
+                  subAssembObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(tempArr,subAssembObj?.TechnologyId)?.profitProcessCost) ?? 0
                 }
 
                 if (checkIsAssemblyOpen.length !== 0) {
@@ -1998,13 +2009,13 @@ function TabRMCC(props) {
           if (isOperation) {
             assemblyObj.CostingPartDetails.CostingOperationCostResponse = params.BOMLevel === LEVEL0 ? gridData : assemblyObj?.CostingPartDetails?.CostingOperationCostResponse.length > 0 ? assemblyObj?.CostingPartDetails?.CostingOperationCostResponse : [];
             assemblyObj.CostingPartDetails.TotalOperationCostPerAssembly = params.BOMLevel === LEVEL0 ? GetOperationCostTotal(gridData) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssembly)
-            assemblyObj.CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, 'Overhead')?.overheadOperationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead)
-            assemblyObj.CostingPartDetails.TotalOperationCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, 'Profit')?.profitOperationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit)
+            assemblyObj.CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData,assemblyObj?.TechnologyId)?.overheadOperationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead)
+            assemblyObj.CostingPartDetails.TotalOperationCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, assemblyObj?.TechnologyId)?.profitOperationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit)
           } else {
             assemblyObj.CostingPartDetails.CostingProcessCostResponse = params.BOMLevel === LEVEL0 ? gridData : assemblyObj?.CostingPartDetails?.CostingProcessCostResponse.length > 0 ? assemblyObj?.CostingPartDetails?.CostingProcessCostResponse : [];
             assemblyObj.CostingPartDetails.TotalProcessCostPerAssembly = params.BOMLevel === LEVEL0 ? GetProcessCostTotal(gridData) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssembly)
-            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, 'Overhead')?.overheadProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead)
-            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, 'Profit')?.profitProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit)
+            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData,assemblyObj?.TechnologyId)?.overheadProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead)
+            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData,assemblyObj?.TechnologyId)?.profitProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit)
           }
 
 

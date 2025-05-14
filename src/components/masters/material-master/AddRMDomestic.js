@@ -1374,7 +1374,7 @@ class AddRMDomestic extends Component {
     this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
-    if (costingTypeId === VBCTypeId || this.props.initialConfiguration?.IsMultipleUserAllowForApproval) {
+    if (costingTypeId === VBCTypeId || this.props.initialConfiguration?.IsApprovalLevelFilterByPlant) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
     } else if (costingTypeId === ZBCTypeId) {
       selectedPlants && selectedPlants.map((item) => {
@@ -1832,7 +1832,7 @@ class AddRMDomestic extends Component {
                               valueDescription={this.state.rmCode}
                             />
                           </Col>
-                          {((costingTypeId === ZBCTypeId && !initialConfiguration?.IsMultipleUserAllowForApproval) && (
+                          {((costingTypeId === ZBCTypeId && !initialConfiguration?.IsApprovalLevelFilterByPlant) && (
                             <Col md="3">
                               <Field
                                 label="Plant (Code)"
@@ -1856,7 +1856,7 @@ class AddRMDomestic extends Component {
                             </Col>)
                           )}
                           {
-                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration?.IsMultipleUserAllowForApproval) &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration?.IsApprovalLevelFilterByPlant) &&
                             <Col md="3">
                               <Field
                                 label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}

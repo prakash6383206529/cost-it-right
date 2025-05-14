@@ -35,6 +35,7 @@ function TabOverheadProfit(props) {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
       }
+      
       dispatch(getOverheadProfitTabData(data, true, (res) => { }))
     }
   }, [costData]);
@@ -228,31 +229,38 @@ function TabOverheadProfit(props) {
   const dispatchOverheadDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj, modelType } = data;
+    // Extract and sum all TotalCost values from CostingApplicabilityDetails
+    let OverheadCost = 0;
+    overheadObj?.CostingApplicabilityDetails?.forEach(detail => {
+      OverheadCost += checkForNull(detail.TotalCost);
+    });
 
+    // let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
+    //   checkForNull(overheadObj.OverheadBOPTotalCost) +
+    //   checkForNull(overheadObj.OverheadCCTotalCost);
 
-    let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
-      checkForNull(overheadObj.OverheadBOPTotalCost) +
-      checkForNull(overheadObj.OverheadCCTotalCost);
+    // if (overheadObj.IsOverheadFixedApplicable === true) {
+    //   OverheadCost = overheadObj.OverheadFixedTotalCost;
+    // }
 
-    if (overheadObj.IsOverheadFixedApplicable === true) {
-      OverheadCost = overheadObj.OverheadFixedTotalCost;
-    }
+    // if (overheadObj.IsOverheadCombined === true) {
+    //   OverheadCost = overheadObj.OverheadCombinedTotalCost;
+    // }
+    let ProfitCost = 0;
+    profitObj?.CostingApplicabilityDetails?.forEach(detail => {
+      ProfitCost += checkForNull(detail.TotalCost);
+    });
+    // let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
+    //   checkForNull(profitObj.ProfitBOPTotalCost) +
+    //   checkForNull(profitObj.ProfitCCTotalCost);
 
-    if (overheadObj.IsOverheadCombined === true) {
-      OverheadCost = overheadObj.OverheadCombinedTotalCost;
-    }
+    // if (profitObj.IsProfitFixedApplicable === true) {
+    //   ProfitCost = profitObj.ProfitFixedTotalCost;
+    // }
 
-    let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
-      checkForNull(profitObj.ProfitBOPTotalCost) +
-      checkForNull(profitObj.ProfitCCTotalCost);
-
-    if (profitObj.IsProfitFixedApplicable === true) {
-      ProfitCost = profitObj.ProfitFixedTotalCost;
-    }
-
-    if (profitObj.IsProfitCombined === true) {
-      ProfitCost = profitObj.ProfitCombinedTotalCost;
-    }
+    // if (profitObj.IsProfitCombined === true) {
+    //   ProfitCost = profitObj.ProfitCombinedTotalCost;
+    // }
 
     let tempArr = [];
     try {
@@ -269,11 +277,10 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
-
+         
           formatData(data, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
           i.CostingPartDetails.CostingOverheadDetail = overheadObj;
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.OverheadCost = OverheadCost;
@@ -371,32 +378,35 @@ function TabOverheadProfit(props) {
   * @method dispatchRejectionDetail
   * @description SET REJECTION DETAIL 
   */
-  const dispatchRejectionDetail = (rejectionObj, params, arr) => {
+  const dispatchRejectionDetail = (data, params, arr) => {
     let tempArr = [];
+    const { RejectionObj, modelType } = data;
     try {
       tempArr = arr && arr.map(i => {
 
         if (i.IsAssemblyPart === true) {
-          i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
-          i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
+          i.CostingPartDetails.CostingRejectionDetail = RejectionObj;
+          i.CostingPartDetails.RejectionCost = RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0);
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +     // IF PROBLEM IN TOTAL COST OF OVERHEAD PROFIT TAB COMMENT THIS
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
-            checkForNull(rejectionObj.RejectionTotalCost) +
+            checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0)) +
             checkForNull(i?.CostingPartDetails?.ICCCost)
 
 
-          formatData(rejectionObj, params, i.CostingChildPartDetails)
+          formatData(RejectionObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-          i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
-          i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
+          i.CostingPartDetails.CostingRejectionDetail = RejectionObj;
+          i.CostingPartDetails.RejectionModelTypeId = modelType?.value
+          i.CostingPartDetails.RejectionModelType= modelType?.label
+          i.CostingPartDetails.RejectionCost = RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0);
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
-            checkForNull(rejectionObj.RejectionTotalCost) +
+            checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0)) +
             checkForNull(i?.CostingPartDetails?.ICCCost)
         } else {
           i.IsOpen = false;
-          formatData(rejectionObj, params, i.CostingChildPartDetails)
+          formatData(RejectionObj, params, i.CostingChildPartDetails)
         }
         return i;
 

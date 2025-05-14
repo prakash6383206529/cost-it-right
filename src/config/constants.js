@@ -18,7 +18,7 @@ export const config = () => {
 }
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//  const BASE_URL = `http://10.10.1.102:8002/api/v1`;
+//const BASE_URL = `http://10.10.1.102:2002/api/v1`;
 
 
 
@@ -206,7 +206,7 @@ export const API = {
   addModel: `${BASE_URL}/masters-part/create-part-model-master`,
   editModel: `${BASE_URL}/masters-part/update-part-model-master`,
   deleteModel: `${BASE_URL}/masters-part/delete-part-model-master`,
-  getModelById: `${BASE_URL}/masters-part/get-part-model-master-by-id`,
+  getModelById: `${BASE_URL}/masters-part/get-part-model-by-id`,
   //PART FAMILY
 
   getPartFamilyById: `${BASE_URL}/part-family/get-by-id`,
@@ -215,9 +215,8 @@ export const API = {
   updatePartFamily: `${BASE_URL}/part-family/update-part-family`,
   deletePartFamily: `${BASE_URL}/part-family/delete-part-family`,
   activePartFamily: `${BASE_URL}/part-family/active`,
-  bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-part-family-json`,
+  bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-partfamily-json`,
   getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
-
 
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -596,6 +595,7 @@ export const API = {
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
   getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
+  getRejectionDataByModelType: `${BASE_URL}/costing/get-costing-rejection-details`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -1206,6 +1206,7 @@ export const API = {
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
+  createCustomerRfq: `${BASE_URL}/nfr/create-customer-rfq`,
   getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
@@ -2536,35 +2537,10 @@ export const VIEW_COSTING_DATA = {
   sTreatment: 'Surface Treatment',
   tCost: 'Extra Surface Treatment Cost',
   netSurfaceTreatmentCost: 'Net Surface Treatment Cost',
-  //tCost: 'Transportation Cost',
-  //nConvCost: 'Net Conversion Cost',
-  modelType: 'Model Type For Overhead/Profit',
-  // aValue: '',
-  // overheadOn: 'Overhead On',
-  // profitOn: 'Profit On',
-  // rejectionOn: 'Rejection On',
-  // iccOn: 'ICC On',
-  // paymentTerms: 'Payment Terms',
-  overHeadApplicablity: 'Overhead Applicability',
-  overHeadPercent: 'Overhead %',
-  overHeadApplicablityValue: 'Overhead Value',
-  // OverheadRemark: 'Overhead Remark',
-  ProfitApplicablity: 'Profit Applicability',
-  profitPercent: 'Profit %',
-  ProfitApplicablityValue: 'Profit Value',
-  // ProfitRemark: 'Profit Remark',
-  rejectionApplicablity: 'Rejection Applicability',
-  rejectionPercent: 'Rejection %',
-  rejectionApplicablityValue: 'Rejection Value',
-  // RejectionRemark: 'Rejection Remark',
-  rejectionRecoveryApplicablity: 'Rejection Recovery Applicability',
-  rejectionRecoveryPercent: 'Rejection Recovery %',
-  rejectionRecoveryApplicablityValue: 'Rejection Recovery Value',
-  // rejectionRecoveryRemark: 'Rejection Recovery Remark',
-  iccApplicablity: 'ICC Applicability',
-  iccPercent: 'ICC %',
-  iccApplicablityValue: 'ICC Value',
-  // ICCRemark: 'Icc Remark',
+  netOverheadCost: 'Net Overhead Cost',
+  netProfitCost: 'Net Profit Cost',
+  netRejectionCost: 'Net Rejection Cost',
+  netICCCost: 'Net ICC Cost',
   nOverheadProfit: 'Net Overhead & Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
@@ -2740,76 +2716,23 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'netSurfaceTreatmentCost'
   },
   {
-    label: 'Model Type For Overhead/Profit',
-    value: 'modelType'
+    label: 'Net Overhead Cost',
+    value: 'netOverheadCost'
   },
   {
-    label: 'Overhead Applicability',
-    value: 'overHeadApplicablity'
+    label: 'Net Profit Cost',
+    value: 'netProfitCost'
   },
   {
-    label: 'Overhead %',
-    value: 'overHeadPercent'
+    label: 'Net Rejection Cost',
+    value: 'netRejectionCost'
   },
   {
-    label: 'Overhead Value',
-    value: 'overHeadApplicablityValue'
+    label: 'Net ICC Cost',
+    value: 'netICCCost'
   },
   {
-    label: 'Overhead Remark',
-    value: 'OverHeadRemark'
-  },
-  {
-    label: 'Profit Applicability',
-    value: 'ProfitApplicablity'
-  },
-  {
-    label: 'Profit %',
-    value: 'profitPercent'
-  },
-  {
-    label: 'Profit Value',
-    value: 'ProfitApplicablityValue'
-  },
-  {
-    label: 'Profit Remark',
-    value: 'ProfitRemark'
-  },
-  {
-    label: 'Rejection Applicability',
-    value: 'rejectionApplicablity'
-  },
-  {
-    label: 'Rejection %',
-    value: 'rejectionPercent'
-  },
-  {
-    label: 'Rejection Value',
-    value: 'rejectionApplicablityValue'
-  },
-  {
-    label: 'Rejection Remark',
-    value: 'RejectionRemark'
-  },
-  {
-    label: 'ICC Applicability',
-    value: 'iccApplicablity'
-  },
-  {
-    label: 'ICC %',
-    value: 'iccPercent'
-  },
-  {
-    label: 'ICC Value',
-    value: 'iccApplicablityValue'
-  },
-  {
-    label: 'ICC Remark',
-    value: 'ICCRemark'
-  },
-
-  {
-    label: 'Net Overhead Profits',
+    label: 'Net Overhead & Profits',
     value: 'nOverheadProfit'
   },
   {
@@ -3154,6 +3077,7 @@ export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " I
 export const INSERTIMPORTBULKUPLOAD = 'Insert Import';
 export const BOMBULKUPLOAD = 'BOM';
 export const PARTCOMPONENTBULKUPLOAD = 'Part Component';
+export const PARTFAMILYBULKUPLOAD = 'Part Family';
 export const PRODUCTCOMPONENTBULKUPLOAD = 'Product Component';
 export const MACHINEBULKUPLOAD = 'Machine';
 export const VENDORBULKUPLOAD = 'Vendor';
@@ -3471,12 +3395,14 @@ export const RM = "RM"
 export const CC = "CC"
 export const RMCC = "RM + CC"
 
+export const DEFAULTRMPRESSURE = 500
+
 export const PAINTTECHNOLOGY = 31
 export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.34";
+export const VERSION = "V4.2.42";
 
 
 

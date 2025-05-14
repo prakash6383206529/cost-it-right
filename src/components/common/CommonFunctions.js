@@ -360,7 +360,7 @@ export const getEffectiveDateMinDate = () => {
     // Get the value from initialConfiguration in Redux store
     const effectiveDateRangeDayPrevious = reactLocalStorage.getObject('InitialConfiguration')?.EffectiveDateRangeDayPrevious;
 
-    if (effectiveDateRangeDayPrevious === null) {
+    if (effectiveDateRangeDayPrevious === null || effectiveDateRangeDayPrevious === undefined) {
         return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
     }
     if (effectiveDateRangeDayPrevious === 0) {
@@ -564,9 +564,6 @@ export const updateCostValue = (isConditionCost, state, price, isSimulation = fa
         tableData: table
     };
 };
-export const checkEffectiveDate = (effectiveDate,effectiveDateToChange) => {
-    return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
-}
 
 export const compareRateCommon = (otherCostData, conditionCostData) => {
     if (otherCostData?.[0]?.Applicability === "Basic Rate" && conditionCostData?.[0]?.Applicability === "Basic Price") {
@@ -578,6 +575,9 @@ export const compareRateCommon = (otherCostData, conditionCostData) => {
     }
 };
 
+export const checkEffectiveDate = (effectiveDate, effectiveDateToChange) => {
+    return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
+}
 export const generateUnusedRMsMessage = (unusedRMs) => {
     const rmStrings = unusedRMs.map(rm => `${rm.RMName}-${rm.RMGrade}`);
     const rmList = rmStrings.join(', ');

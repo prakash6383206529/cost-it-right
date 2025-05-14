@@ -689,7 +689,10 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
   }
 
-
+  obj.netOverheadCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : 0
+  obj.netProfitCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : 0
+  obj.netRejectionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetRejectionCost !== null ? dataFromAPI?.CostingPartDetails?.NetRejectionCost : 0
+  obj.netICCCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetICCCost !== null ? dataFromAPI?.CostingPartDetails?.NetICCCost : 0
   const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
 
   obj.paymentTerms = {
@@ -717,9 +720,9 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.bopHandlingPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage : 0
   obj.bopHandlingChargeType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType : ''
 
-  obj.netAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost: 0
-  obj.netToolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost: 0
-  obj.netToolInterestCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolInterestCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolInterestCost: 0
+  obj.netAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost : 0
+  obj.netToolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost : 0
+  obj.netToolInterestCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolInterestCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolInterestCost : 0
   obj.toolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost : 0
   obj.toolPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost : 0
   obj.amortizationQty = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life : 0
@@ -1779,7 +1782,7 @@ export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel = '', z
     return customerBasedLabel;
   } else if (cellValue === 'Vendor(Code)') {
     return vendorCodeLabel;
-  }else{
+  } else {
     return cellValue
   }
 }
@@ -2028,55 +2031,128 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
 
   return result;
 };
-export const getOverheadAndProfitCostTotal = (arr = []) => {
-
+export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
   const totals = {
     overheadOperationCost: 0,
     overheadProcessCost: 0,
     profitOperationCost: 0,
-    profitProcessCost: 0
+    profitProcessCost: 0,
+    overheadWeldingCost: 0,
+    profitWeldingCost: 0,
+    NetCCForOtherTechnologyCostForOverhead:0,
+    NetCCForOtherTechnologyCostForProfit:0
   };
 
   arr.forEach(item => {
-    const { OperationCost, ProcessCost, ProcessCostWithOutInterestAndDepreciation, IsDetailed, UOMType, CostingConditionNumber: type } = item;
+    const {
+      OperationCost,
+      ProcessCost,
+      ProcessCostWithOutInterestAndDepreciation,
+      IsDetailed,
+      UOMType,
+      CostingConditionNumber: type,
+      ForType,
+      ProcessTechnologyId
+    } = item;
+
     const operation = checkForNull(OperationCost);
     const process = checkForNull(ProcessCost);
-    const processExcl = IsDetailed && UOMType === TIME ? checkForNull(ProcessCostWithOutInterestAndDepreciation) : checkForNull(process);
-    // Handle overhead calculations
-    if ([APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type)) {
-      totals.overheadOperationCost += operation;
-      // Use excluding rate for overhead when type contains "Overhead(Excluding Int. + Dep.)"
-      const useExcludingForOverhead = [APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type);
-      totals.overheadProcessCost += useExcludingForOverhead ? processExcl : process;
+    const processExcl =
+      IsDetailed && UOMType === TIME
+        ? checkForNull(ProcessCostWithOutInterestAndDepreciation)
+        : process;
+
+    const isOverhead = [
+      APPLICABILITY_OVERHEAD,
+      APPLICABILITY_OVERHEAD_PROFIT,
+      APPLICABILITY_OVERHEAD_EXCL,
+      APPLICABILITY_OVERHEAD_PROFIT_EXCL,
+      APPLICABILITY_OVERHEAD_EXCL_PROFIT,
+      APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
+    ].includes(type);
+
+    const isProfit = [
+      APPLICABILITY_PROFIT,
+      APPLICABILITY_OVERHEAD_PROFIT,
+      APPLICABILITY_PROFIT_EXCL,
+      APPLICABILITY_OVERHEAD_PROFIT_EXCL,
+      APPLICABILITY_OVERHEAD_EXCL_PROFIT,
+      APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
+    ].includes(type);
+
+    const useExclForOverhead = [
+      APPLICABILITY_OVERHEAD_EXCL,
+      APPLICABILITY_OVERHEAD_EXCL_PROFIT,
+      APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
+    ].includes(type);
+
+    const useExclForProfit = [
+      APPLICABILITY_PROFIT_EXCL,
+      APPLICABILITY_OVERHEAD_PROFIT_EXCL,
+      APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
+    ].includes(type);
+
+    if (isOverhead) {
+      if ("OperationCost" in item) {
+        if (ForType === "Welding") {
+          totals.overheadWeldingCost += operation;
+        } else {
+          totals.overheadOperationCost += operation;
+        }
+      }
+      if ("ProcessCost" in item) {
+        totals.overheadProcessCost += useExclForOverhead ? processExcl : process;
+        if(ProcessTechnologyId !== technologyId) {
+          // Initialize if undefined to prevent NaN
+          if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
+            totals.ccForOtherTechnologyCostForOverhead = 0;
+          }
+          const costToAdd = useExclForOverhead ? processExcl : process;
+          totals.ccForOtherTechnologyCostForOverhead += Number(costToAdd);
+        }
+      }
     }
 
-    // Handle profit calculations
-    if ([APPLICABILITY_PROFIT, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type)) {
-      totals.profitOperationCost += operation;
-      // Use excluding rate for profit when type contains "Profit(Excluding Int. + Dep.)"
-      const useExcludingForProfit = [APPLICABILITY_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL].includes(type);
-      totals.profitProcessCost += useExcludingForProfit ? processExcl : process;
+    if (isProfit) {
+      if ("OperationCost" in item) {
+        if (ForType === "Welding") {
+          totals.profitWeldingCost += operation;
+        } else {
+          totals.profitOperationCost += operation;
+        }
+      }
+      if ("ProcessCost" in item) {
+        totals.profitProcessCost += useExclForProfit ? processExcl : process;
+        if(ProcessTechnologyId !== technologyId){
+          if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
+            totals.ccForOtherTechnologyCostForOverhead = 0;
+          }
+          const costToAdd = useExclForProfit ? processExcl : process;
+          totals.ccForOtherTechnologyCostForProfit += Number(costToAdd);
+        }
+      }
     }
   });
-
+  // console.log(totals,'totals')
   return totals;
 };
+
 export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = []) => {
   const isAssembly = item?.PartType
   const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
-  
+
   let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
   let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex(costingItem => costingItem.PartNumber === item?.PartNumber && costingItem.AssemblyPartNumber === item?.AssemblyPartNumber)
   let objectToGetRMCCData = tempArrForCosting[indexForUpdate]
-  
+
   if (isAssembly === "Assembly" || isAssembly === "Sub Assembly") {
 
     if (isRequestForMultiTechnology) {//run for multi(Assembly) technology
       const assemblyCostingPartDetails = subAssemblyTechnologyArray[0]?.CostingPartDetails
-      
+
       return {
         netpartCost: checkForNull(assemblyCostingPartDetails?.NetChildPartsCost),
-        conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost)+checkForNull(assemblyCostingPartDetails?.NetProcessCost)
+        conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost) + checkForNull(assemblyCostingPartDetails?.NetProcessCost)
       };
     } else {
       return {

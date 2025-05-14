@@ -142,7 +142,7 @@ class AddIndivisualPart extends Component {
               Model: Data?.PartModelId ? {
                 label: Data?.PartsModelMaster || "",
                 value: Data?.PartModelId
-              } : [],
+              } : null,
               PartFamilySelected: Data?.PartFamilyId ? {
                 label: Data?.PartFamily || "",
                 value: Data?.PartFamilyId
@@ -439,8 +439,12 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
+    console.log(values,'values');
+    console.log(this?.state?.DataToCheck,'this?.state?.DataToCheck');
+    console.log(this?.state,'this?.state');
     const { PartId, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
+    const partPermissions = initialConfiguration?.PartAdditionalMasterFields;
     let isStructureChanges;
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item?.Text, ProductId: item?.Value })) : [{ GroupCode: values?.GroupCode }];
 
@@ -459,8 +463,15 @@ class AddIndivisualPart extends Component {
       if (DropdownChanged && String(DataToCheck.PartName) === String(values?.PartName) && String(DataToCheck.Description) === String(values?.Description) &&
         String(DataToCheck.ECNNumber) === String(values?.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
         String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values?.DrawingNumber)
-        && String(DataToCheck.Remark) === String(values?.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values?.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)) {
-        Toaster.warning('Please change data to save Part Details');
+        && String(DataToCheck.Remark) === String(values?.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values?.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)
+         && partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartModelId) === String(values?.Model?.value) : true &&
+         partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartsModelMaster) === String(values?.Model?.label) : true &&
+         partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamilyId) === String(values?.PartFamily?.value) : true &&
+         partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamily) === String(values?.PartFamily?.label) : true &&
+         partPermissions?.IsNepNumberMandatory ? String(DataToCheck?.NEPNumber) === String(values?.NEP) : true
+      ) {
+       
+          Toaster.warning('Please change data to save Part Details');
         return false;
       }
 
@@ -580,22 +591,14 @@ class AddIndivisualPart extends Component {
   modelToggler = (modelId = '') => {
     const { isEditFlag, Model } = this.state;
 
-
     if (isEditFlag && modelId !== '') {
-      // Fetch model data for edit
-      this.setState({ isLoader: true });
-      this.props.getModelById(modelId, (res) => {
-        this.setState({ isLoader: false });
-        if (res && res.data && res.data.Result) {
-          const modelData = res.data.Data;
-          this.props.change('ModelName', modelData.PartModelMasterName);
-          this.setState({
-            isModelDrawerOpen: true,
-            isModelEditFlag: true
-          });
-        }
+      // Just open the drawer with existing model data
+      this.setState({
+        isModelDrawerOpen: true,
+        isModelEditFlag: true,
+        Model: { value: modelId }
       });
-    }  else {
+    } else {
       // If in add mode, just open the drawer
       this.setState({
         isModelDrawerOpen: true,
@@ -634,46 +637,30 @@ class AddIndivisualPart extends Component {
   handlePartFamilyChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ PartFamilySelected: newValue });
+      // Update the form value
+      this.props.change('PartFamily', newValue);
     } else {
       this.setState({ PartFamilySelected: null });
+      // Clear the form value
+      this.props.change('PartFamily', null);
     }
   }
-  handleModelSubmit = (modelData) => {
-    if (this?.state?.isModelEditFlag) {
-      this?.props?.editModel({
-        PartModelId: modelData.Id,
-        PartModelMasterName: modelData.ModelName
-      }, (res) => {
-        if (res && res?.data && res?.data?.Result) {
-          this.getModelList(); // Refresh the model list
-          this.setState({ isModelDrawerOpen: false });
+
+  handleDrawerClose = (modelData) => {
+    console.log("modelData", modelData)
+    this.setState({ isModelDrawerOpen: false });
+    if (modelData) {
+      // Set the new/edited model in state
+      this.setState({
+        Model: {
+          label: modelData.PartModelMasterName || modelData.ModelName, // adjust field as per your API
+          value: modelData.PartModelId || modelData.Id
         }
       });
-    } else {
-      this?.props?.addModel({
-        PartModelMasterName: modelData.ModelName
-      }, (res) => {
-        if (res && res?.data && res?.data?.Result) {
-          // Set the newly added model in the state and form field
-          const newModel = {
-            label: modelData.ModelName,
-            value: res.data.Data.Id || res.data.Data.PartModelId
-          };
-          
-          // Update both state and form field
-          this.setState({
-            Model: newModel,
-            isModelDrawerOpen: false
-          });
-          
-          // Update the form field value
-          this.props.change('Model', newModel);
-          
-          this.getModelList(); // Refresh the model list
-        }
-      });
+      this.getModelList(); // Optionally refresh the model list
     }
-  }
+  };
+
 
 
   /**
@@ -818,8 +805,8 @@ class AddIndivisualPart extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleModelChange}
                                   valueDescription={this?.state?.Model}
-                                  disabled={isViewMode}
-                                />
+                                  disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)} // Add disabling logic
+                                  />
                               </div>
                               {!isViewMode && (
                                 isEditFlag && this?.state?.Model && this?.state?.Model.value ?
@@ -841,8 +828,7 @@ class AddIndivisualPart extends Component {
                             </div>
                           </Col>)}
                           {PartMasterConfigurable?.IsShowPartFamily && (<Col md="3">
-                          
-                              <Field
+                            <Field
                               name="partFamily"
                               type="text"
                               label="Part Family"
@@ -853,9 +839,8 @@ class AddIndivisualPart extends Component {
                               required={true}
                               handleChangeDescription={this.handlePartFamilyChange}
                               valueDescription={this?.state?.PartFamilySelected}
-                              disabled={false}
+                              disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)}
                             />
-                           
                           </Col>)}
                           {PartMasterConfigurable?.IsShowNepNumber && (<Col md="3">
                             <span>
@@ -869,7 +854,7 @@ class AddIndivisualPart extends Component {
                                 required={PartMasterConfigurable?.IsNepNumberMandatory  }
                                 className=""
                                 customClassName={"withBorder"}
-                                disabled={isViewMode}
+      disabled={isViewMode || (isEditFlag && !this?.state?.isBomEditable)} // Add disabling logic
                               />
                             </span>
                           </Col>)}
@@ -1127,16 +1112,15 @@ class AddIndivisualPart extends Component {
           {
             this?.state?.showPopup && <PopupMsgWrapper isOpen={this?.state?.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-          {this?.state?.isModelDrawerOpen && (
-            <AddModel
-              isOpen={this?.state?.isModelDrawerOpen}
-              onClose={() => this.setState({ isModelDrawerOpen: false })}
-              onSubmit={this.handleModelSubmit}
-              ID={this?.state?.Model?.value}
-              isEditFlag={this?.state?.isModelEditFlag}
-              refreshModelList={this.getModelList}
-            />
-          )}
+    {this?.state?.isModelDrawerOpen && (
+  <AddModel
+    isOpen={this?.state?.isModelDrawerOpen}
+    onClose={this.handleDrawerClose}
+    ID={this?.state?.Model?.value}
+    isEditFlag={this?.state?.isModelEditFlag}
+    refreshModelList={this.getModelList}
+  />
+)}
         </div>
       </>
     );
@@ -1172,10 +1156,10 @@ function mapStateToProps({ comman, part, auth, costing }) {
           label: partData?.PartsModelMaster || "",
           value: partData?.PartModelId || ""
       },
-      PartFamily: {
-        label: partData?.PartFamily || "",
-        value: partData?.PartFamilyId || ""
-      }
+      PartFamily: partData.PartFamilyId ? {
+      label: partData.PartFamily || "",
+      value: partData.PartFamilyId || ""
+    } : null,
     }
   }
 

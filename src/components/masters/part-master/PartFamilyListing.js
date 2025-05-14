@@ -57,7 +57,7 @@ const PartFamilyListing = (props) => {
     warningMessage: false,
     searchText: "",
     isFilterButtonClicked: false,
-    floatingFilterData: { PartFamilyCode: "", PartFamilyName: "" , description: "", effectiveDate: ""},
+    floatingFilterData: { PartFamilyCode: "", PartFamilyName: "", description: "", effectiveDate: "" },
     tableData: [],
     isBulkUpload: false,
     deletedId: "",
@@ -291,7 +291,8 @@ const PartFamilyListing = (props) => {
       ...prevState,
       isOpen: true,
       isEditFlag: true,
-      ID: Id
+      ID: Id,
+      isViewFlag: isViewMode
     }));
   };
 
@@ -312,6 +313,7 @@ const PartFamilyListing = (props) => {
         setState((prevState) => ({ ...prevState, dataCount: 0 }));
       }
     }));
+    getTableListData(0, defaultPageSize, state.floatingFilterData, true);
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
 
@@ -356,7 +358,7 @@ const PartFamilyListing = (props) => {
             title="View"
             className="View Tour_List_View mr-2"
             type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, rowData)}
+            onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
         )}
         {permissions.Edit && (
@@ -475,6 +477,7 @@ const PartFamilyListing = (props) => {
       gridApi: params.api,
       gridColumnApi: params.columnApi
     }));
+    params.api.sizeColumnsToFit();
     params.api.paginationGoToPage(0);
   };
 
@@ -591,7 +594,7 @@ const PartFamilyListing = (props) => {
   return (
     <>
       <div
-        className={`ag-grid-react custom-pagination p-relative  ${permissions.Download ? "show-table-btn" : ""}`}
+        className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`}
       >
         {state.isLoader && <LoaderCustom />}
         {state.disableDownload && (
@@ -674,7 +677,7 @@ const PartFamilyListing = (props) => {
           </Col>
         </Row>
         <div
-          className={`ag-grid-wrapper height-width-wrapper ${(partFamilyList && partFamilyList?.length <= 0) || state.noData
+          className={`ag-grid-wrapper  height-width-wrapper ${(partFamilyList && partFamilyList?.length <= 0) || state.noData
             ? "overlay-contain"
             : ""}`}
         >
@@ -709,7 +712,7 @@ const PartFamilyListing = (props) => {
             /> */}
           </div>
           <div
-            className={`ag-grid-wrapper height-width-wrapper ${(partFamilyList && partFamilyList?.length <= 0) || state?.noData
+            className={`ag-grid-wrapper overlay-contain height-width-wrapper ${(partFamilyList && partFamilyList?.length <= 0) || state?.noData
               ? "overlay-contain"
               : ""
               }`}
@@ -730,7 +733,7 @@ const PartFamilyListing = (props) => {
                   floatingFilter={true}
                   domLayout="autoHeight"
                   rowData={state.showExtraData && partFamilyList ? [...setLoremIpsum(partFamilyList[0]), ...partFamilyList] : partFamilyList}
-                  pagination={true}
+                  // pagination={true}
                   paginationPageSize={globalTakes}
                   onGridReady={onGridReady}
                   gridOptions={gridOptions}
@@ -747,7 +750,7 @@ const PartFamilyListing = (props) => {
                 >
                   <AgGridColumn field="PartFamilyCode" headerName="Part Family Code" cellRenderer={checkBoxRenderer} />
                   <AgGridColumn field="PartFamilyName" headerName="Part Family Name" />
-                  <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} />
+                  <AgGridColumn pinned="right" cellClass="ag-grid-action-container" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} />
                   <AgGridColumn
                     field="PartFamilyId"
                     pinned="right"

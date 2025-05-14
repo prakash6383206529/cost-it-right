@@ -171,7 +171,7 @@ class AddMoreDetails extends Component {
         processGroupTour: false
       },
       UniqueProcessId: [],
-      ExchangeSource: editDetails?.ExchangeSource || {},
+      ExchangeSource: editDetails?.ExchangeSource || "",
       entryType: editDetails?.entryType || null,
       powerIsImport: false,
       //plantCurrency: editDetails?.fieldsObj?.plantCurrency || "",

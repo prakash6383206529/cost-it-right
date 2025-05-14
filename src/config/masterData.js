@@ -4802,6 +4802,9 @@ export const PartComponent = [
     { label: 'ECNNumber', value: 'ECNNumber', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
+    { label: 'PartsModelMaster', value: 'PartsModelMaster', },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode' },
+    { label: 'NEPNumber', value: 'NEPNumber', },
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
@@ -4818,6 +4821,9 @@ export const PartComponentTempData = [
         'ECNNumber': '1',
         'RevisionNo': '1',
         'DrawingNo': '1',
+        'PartsModelMaster': 'PartModel123',
+        'PartFamilyCode': 'PartFamily123',
+        'NEPNumber': 'NEP123',
         'SAPCode': 'sap-1001',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'TechnologyName': 'Sheet Metal',
@@ -4826,7 +4832,24 @@ export const PartComponentTempData = [
     }
 ]
 
+//Part Family
+export const PartFamily = [
+    {label: 'PartFamilyName', value: 'PartFamilyName', },
+    { label: 'PartFamilyCode', value: 'PartFamilyCode', },
+    { label: 'Description', value: 'Description', },
+        { label: 'EffectiveDate', value: 'EffectiveDate', },
 
+
+]
+
+export const PartFamilyTempData = [
+    {
+        'PartFamilyName': 'PartFamilyName123',
+        'PartFamilyCode': '123',
+        'Description': 'Part Family Description',
+        'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+    }
+]
 // USED IN BULK UPLOAD FOR PRODUCT COMPONENT
 
 export const ProductComponent = [
@@ -4963,6 +4986,9 @@ export const BOMUpload = [
     { label: "ECNNumber", value: "ECNNumber" },
     { label: "RevisionNo", value: "RevisionNo" },
     { label: "DrawingNo", value: "DrawingNo" },
+    { label: "PartsModelMaster", value: "PartsModelMaster" },
+    { label: "PartFamilyCode", value: "PartFamilyCode" },
+    { label: "NEPNumber", value: "NEPNumber" },
     { label: "SAPCode", value: "SAPCode", },
     { label: "IsAssembly", value: "IsAssembly" }, //NOUI,*
     { label: "BOMLevel", value: "BOMLevel" }, //NOUI,*
@@ -4987,6 +5013,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1001",
         "IsAssembly": "YES",
         "BOMLevel": 0,
@@ -5011,6 +5040,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1002",
         "IsAssembly": "NO",
         "BOMLevel": 1,
@@ -5035,6 +5067,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1003",
         "IsAssembly": "NO",
         "BOMLevel": 1,
@@ -5059,6 +5094,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1004",
         "IsAssembly": "YES",
         "BOMLevel": 1,
@@ -5083,6 +5121,9 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "PartsModelMaster": "PartModel123",
+        "PartFamily": "PartFamily123",
+        "NEPNumber": "NEP123",
         "SAPCode": "sap-1005",
         "IsAssembly": "NO",
         "BOMLevel": 2,
@@ -6586,6 +6627,23 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Effective Date", value: "EffectiveDate", }
 ]
 
+export const NFR_LISTING_DOWNLOAD_EXCEL = [
+    { label: "Customer RFQ ID", value: "CustomerRfqId" },
+    { label: "Customer Name", value: "CustomerName" },
+    { label: "Customer Part No.", value: "CustomerPartNo" },
+    { label: "Product Code", value: "ProductCode" },
+    { label: "Customer RFQ No.", value: "CustomerRfqNo" },
+    { label: "Plant Name", value: "PlantName" },
+    { label: "Segment", value: "Segment" },
+    { label: "SOP Date", value: "SopDate" },
+    { label: "Last Submission Date", value: "LastSubmissionDate" },
+    { label: "Attachment Present", value: "AttachmentPresent" },
+    { label: "Created By", value: "CreatedBy" },
+    { label: "Created Date", value: "CreatedDate" },
+    { label: "Status", value: "Status" }
+  ];
+
+
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
@@ -6942,6 +7000,9 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
+    { label: "Part Model (Code)", value: "PartsModelMaster", },
+    { label: "Part Family (Code)", value: "PartFamily", },
+    { label: "NEP Number", value: "NEPNumber", },
     { label: "Division", value: "Division", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
@@ -6957,6 +7018,9 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
+    { label: "Part Model (Code)", value: "PartsModelMaster", },
+    { label: "Part Family (Code)", value: "PartFamily", },
+    { label: "NEP Number", value: "NEPNumber", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Status", value: "IsActive", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', },

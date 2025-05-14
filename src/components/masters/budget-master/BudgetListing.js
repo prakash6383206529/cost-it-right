@@ -83,14 +83,14 @@ function BudgetListing(props) {
     const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
     const { globalTakes } = useSelector(state => state.pagination)
     const { selectedRowForPagination } = useSelector((state => state.simulation))
-    const [isImport, setIsImport] = useState(false)
+    const [isImport, setIsImport] = useState(props?.isImport ? props?.isImport : false)
     const dispatch = useDispatch();
     const { t } = useTranslation("common")
     const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
         if (!props?.isMasterSummaryDrawer) {
-            getTableListData(0, defaultPageSize, true)
+            getTableListData(0, defaultPageSize, true, isImport)
 
             dispatch(getPartCostingHead((res) => {
                 reactLocalStorage.setObject("budgetCostingHeads", res?.data?.SelectList); //FOR SHOWING DYNAMIC HEADERS IN BUDGET BULK UPLOAD EXCEL DOWNLOAD
@@ -236,7 +236,7 @@ function BudgetListing(props) {
                 if (gridApi) {
                     gridApi.deselectAll();
                 }
-                getTableListData(pageRecord, globalTakes, true);
+                getTableListData(pageRecord, globalTakes, true, isImport);
                 setDataCount(0);
             }
         }));
@@ -343,7 +343,7 @@ function BudgetListing(props) {
 
 
         } else {
-            getTableListData(0, defaultPageSize, false)
+            getTableListData(0, defaultPageSize, false, isImport)
         }
 
     }
@@ -371,7 +371,7 @@ function BudgetListing(props) {
         setData({ isEditFlag: false, ID: '' })
         setTimeout(() => {
             if (type === 'submit')
-                getTableListData(0, globalTakes, true)
+                getTableListData(0, globalTakes, true, isImport)
         }, 200);
     }
 
@@ -392,7 +392,7 @@ function BudgetListing(props) {
         // setPageNoNew(1)
         // setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
-        getTableListData(0, globalTakes, true)
+        getTableListData(0, globalTakes, true, isImport)
     }
 
     const onFloatingFilterChanged = (value) => {
@@ -540,7 +540,7 @@ function BudgetListing(props) {
 
     const closeActualBulkUploadDrawer = () => {
         setBulkUploadBtn(false)
-        getTableListData(0, defaultPageSize, true)
+        getTableListData(0, defaultPageSize, true, isImport)
     }
 
     const frameworkComponents = {
@@ -553,7 +553,7 @@ function BudgetListing(props) {
     };
 
     if (showBudgetForm) {
-        props?.formToggle(data)
+        props?.formToggle(data, isImport)
 
     }
 
@@ -597,7 +597,7 @@ function BudgetListing(props) {
                                             ""
                                         )}
 
-                                        {addAccessibility && !props?.isMasterSummaryDrawer && (
+                                        {addAccessibility && !props?.isMasterSummaryDrawer && !isImport && (
                                             <Button id="budgetListing_add" className={"user-btn mr5 Tour_List_Add "} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 
                                         )}
