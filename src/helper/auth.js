@@ -111,5 +111,5 @@ export function showApprovalDropdown() {
 }
 export function fetchRejectionDataFromMaster() {
   const configurationKey = getConfigurationKey()?.IsFetchRejectionDataFromMaster
-  return true
+  return configurationKey
 }

@@ -198,6 +198,7 @@ function ViewOverheadProfit(props) {
                 <th>{`Rejection ${rejectData?.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                 <th><div className='w-fit'>Cost (Applicability){isIncludeSurfaceTreatmentWithRejection && rejectData.RejectionApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="rejection-table" tooltipText={'Surface Treatment Cost Included'} />}</div></th>
                 <th>{`Rejection`}</th>
+                {getConfigurationKey().IsRejectionRecoveryApplicable && <th>{`Rejection Recovery Cost`}</th>}
                 <th>{`Net Rejection`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
@@ -205,21 +206,37 @@ function ViewOverheadProfit(props) {
             </thead>
             <tbody>
               {
-                (rejectData.RejectionApplicability === null) ?
+                ((!rejectData?.CostingRejectionApplicabilityDetails?.length)) ?
                   <tr>
                     <td colSpan={8}>
                       <NoContentFound title={EMPTY_DATA} />
                     </td>
                   </tr> :
-                  <tr>
-                    <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
-                    <td>{rejectData.RejectionApplicability === "Fixed" ? rejectData.RejectionCost : rejectData.RejectionPercentage ? checkForDecimalAndNull(rejectData.RejectionPercentage, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{rejectData.RejectionApplicability === "Fixed" ? '-' : rejectData.RejectionCost ? checkForDecimalAndNull(rejectData.RejectionCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{rejectData.NetCost ? checkForDecimalAndNull(rejectData.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{rejectData.RejectionTotalCost ? checkForDecimalAndNull(rejectData.RejectionTotalCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                    {initialConfiguration?.IsShowCRMHead && <td>{rejectData.RejectionCRMHead}</td>}
-                    <td>{rejectData.Remark ? rejectData.Remark : "-"}</td>
-                  </tr>
+                  rejectData.CostingRejectionApplicabilityDetails.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.Applicability || '-'}</td>
+                      <td> {item?.Applicability !== 'Fixed'
+                          ?  item?.Percentage: '-'}
+                      </td>
+                      <td>
+                        {item?.Applicability === 'Fixed' ? '-':  checkForDecimalAndNull(item?.Cost, initialConfiguration?.NoOfDecimalForPrice)??'-'}
+                      </td>
+                      <td>
+                        {item?.TotalCost !== null && item?.TotalCost !== undefined
+                          ? checkForDecimalAndNull(item.TotalCost, initialConfiguration?.NoOfDecimalForPrice)
+                          : '-'}
+                      </td>
+                      <td> {item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost !== null && item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost !== undefined
+                          ? checkForDecimalAndNull(item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice)
+                          : '-'}</td>
+                      <td> {item?.NetCost !== null && item?.NetCost !== undefined ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice): '-'}
+                      </td>
+                      {initialConfiguration?.IsShowCRMHead && (
+                        <td>{rejectData?.RejectionCRMHead || '-'}</td>
+                      )}
+                      <td>{rejectData?.Remark || '-'}</td>
+                    </tr>
+                  ))
               }
             </tbody>
           </Table>
