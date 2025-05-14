@@ -36,7 +36,7 @@ function NfrTabs(props) {
                                     toggle("1");
                                 }}
                             >
-                                NFR Listing
+                                Customer RFQ Listing
                             </NavLink>
                         </NavItem>
                         <NavItem>
@@ -46,7 +46,7 @@ function NfrTabs(props) {
                                     toggle("2");
                                 }}
                             >
-                                NFR Approval
+                                Customer RFQ Approval
                             </NavLink>
                         </NavItem>
 
