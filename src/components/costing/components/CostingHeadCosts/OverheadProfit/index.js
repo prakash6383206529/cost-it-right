@@ -182,38 +182,38 @@ function OverheadProfit(props) {
 
 
       let tempObj = {
-        "OverheadId": overheadObj && overheadObj.OverheadId,
-        "OverheadApplicabilityId": overheadObj && overheadObj.OverheadApplicabilityId,
-        "OverheadApplicability": overheadObj && overheadObj.OverheadApplicability,
+        "OverheadId": overheadObj && overheadObj?.OverheadId,
+        "OverheadApplicabilityId": overheadObj && overheadObj?.OverheadApplicabilityId,
+        "OverheadApplicability": overheadObj && overheadObj?.OverheadApplicability,
 
-        "IsOverheadCombined": overheadObj && overheadObj.IsOverheadCombined,
-        "OverheadPercentage": overheadObj && overheadObj.IsOverheadCombined ? getValues('OverheadPercentage') : '',
-        "OverheadCombinedCost": overheadObj && overheadObj.IsOverheadCombined ? overheadObj.OverheadCombinedCost : '',
-        "OverheadCombinedTotalCost": overheadObj && overheadObj.IsOverheadCombined ? overheadObj.OverheadCombinedTotalCost : '',
+        "IsOverheadCombined": overheadObj && overheadObj?.IsOverheadCombined,
+        "OverheadPercentage": overheadObj && overheadObj?.IsOverheadCombined ? getValues('OverheadPercentage') : '',
+        "OverheadCombinedCost": overheadObj && overheadObj?.IsOverheadCombined ? overheadObj?.OverheadCombinedCost : '',
+        "OverheadCombinedTotalCost": overheadObj && overheadObj?.IsOverheadCombined ? overheadObj?.OverheadCombinedTotalCost : '',
 
-        "IsOverheadCCApplicable": overheadObj && overheadObj.IsOverheadCCApplicable,
-        "OverheadCCPercentage": overheadObj && overheadObj.IsOverheadCCApplicable ? tempOverheadObj.OverheadCCPercentage : '',
-        "OverheadCCCost": overheadObj && overheadObj.IsOverheadCCApplicable ? tempOverheadObj.OverheadCCCost : '',
-        "OverheadCCTotalCost": overheadObj && overheadObj.IsOverheadCCApplicable ? tempOverheadObj.OverheadCCTotalCost : '',
+        "IsOverheadCCApplicable": overheadObj && overheadObj?.IsOverheadCCApplicable,
+        "OverheadCCPercentage": overheadObj && overheadObj?.IsOverheadCCApplicable ? tempOverheadObj.OverheadCCPercentage : '',
+        "OverheadCCCost": overheadObj && overheadObj?.IsOverheadCCApplicable ? tempOverheadObj.OverheadCCCost : '',
+        "OverheadCCTotalCost": overheadObj && overheadObj?.IsOverheadCCApplicable ? tempOverheadObj.OverheadCCTotalCost : '',
 
-        "IsOverheadBOPApplicable": overheadObj && overheadObj.IsOverheadBOPApplicable,
-        "OverheadBOPPercentage": overheadObj && overheadObj.IsOverheadBOPApplicable ? tempOverheadObj.OverheadBOPPercentage : '',
-        "OverheadBOPCost": overheadObj && overheadObj.IsOverheadBOPApplicable ? tempOverheadObj.OverheadBOPCost : '',
-        "OverheadBOPTotalCost": overheadObj && overheadObj.IsOverheadBOPApplicable ? tempOverheadObj.OverheadBOPTotalCost : '',
+        "IsOverheadBOPApplicable": overheadObj && overheadObj?.IsOverheadBOPApplicable,
+        "OverheadBOPPercentage": overheadObj && overheadObj?.IsOverheadBOPApplicable ? tempOverheadObj.OverheadBOPPercentage : '',
+        "OverheadBOPCost": overheadObj && overheadObj?.IsOverheadBOPApplicable ? tempOverheadObj.OverheadBOPCost : '',
+        "OverheadBOPTotalCost": overheadObj && overheadObj?.IsOverheadBOPApplicable ? tempOverheadObj.OverheadBOPTotalCost : '',
 
-        "IsOverheadRMApplicable": overheadObj && overheadObj.IsOverheadRMApplicable,
-        "OverheadRMPercentage": overheadObj && overheadObj.IsOverheadRMApplicable ? tempOverheadObj.OverheadRMPercentage : '',
-        "OverheadRMCost": overheadObj && overheadObj.IsOverheadRMApplicable ? tempOverheadObj.OverheadRMCost : '',
-        "OverheadRMTotalCost": overheadObj && overheadObj.IsOverheadRMApplicable ? tempOverheadObj.OverheadRMTotalCost : '',
+        "IsOverheadRMApplicable": overheadObj && overheadObj?.IsOverheadRMApplicable,
+        "OverheadRMPercentage": overheadObj && overheadObj?.IsOverheadRMApplicable ? tempOverheadObj.OverheadRMPercentage : '',
+        "OverheadRMCost": overheadObj && overheadObj?.IsOverheadRMApplicable ? tempOverheadObj.OverheadRMCost : '',
+        "OverheadRMTotalCost": overheadObj && overheadObj?.IsOverheadRMApplicable ? tempOverheadObj.OverheadRMTotalCost : '',
 
-        "IsOverheadFixedApplicable": overheadObj && overheadObj.IsOverheadFixedApplicable,
-        "OverheadFixedPercentage": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedPercentage : '',
-        "OverheadFixedCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedCost : '',
-        "OverheadFixedTotalCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedPercentage : '',
+        "IsOverheadFixedApplicable": overheadObj && overheadObj?.IsOverheadFixedApplicable,
+        "OverheadFixedPercentage": overheadObj && overheadObj?.IsOverheadFixedApplicable ? overheadObj?.OverheadFixedPercentage : '',
+        "OverheadFixedCost": overheadObj && overheadObj?.IsOverheadFixedApplicable ? overheadObj?.OverheadFixedCost : '',
+        "OverheadFixedTotalCost": overheadObj && overheadObj?.IsOverheadFixedApplicable ? overheadObj?.OverheadFixedPercentage : '',
 
         "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
-        "OverheadCRMHead": overheadObj.OverheadCRMHead ? overheadObj.OverheadCRMHead : '',
-        "Remark": overheadObj.Remark ? overheadObj.Remark : ''
+        "OverheadCRMHead": overheadObj?.OverheadCRMHead ? overheadObj?.OverheadCRMHead : '',
+        "Remark": overheadObj?.Remark ? overheadObj?.Remark : ''
       }
 
       let profitTempObj = {
@@ -280,7 +280,7 @@ function OverheadProfit(props) {
   */
   const calculateOverheadFixedTotalCost = () => {
     if (!CostingViewMode) {
-      if (headerCosts !== undefined && overheadFixedFieldValues !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
+      if (headerCosts !== undefined && overheadFixedFieldValues !== undefined && overheadObj && overheadObj?.IsOverheadFixedApplicable) {
         setValue('OverheadFixedCost', '-')
         setValue('OverheadFixedTotalCost', checkForDecimalAndNull(overheadFixedFieldValues, initialConfiguration?.NoOfDecimalForPrice))
         setOverheadObj({
@@ -1368,7 +1368,7 @@ function OverheadProfit(props) {
 
   const onRemarkPopUpCloseOverHead = () => {
     let button = document.getElementById(`popUpTriggerOverHead`)
-    setValue(`overHeadRemark`, overheadObj.Remark)
+    setValue(`overHeadRemark`, overheadObj?.Remark)
     if (errors.overHeadRemark) {
       delete errors.overHeadRemark;
     }
@@ -1474,7 +1474,7 @@ function OverheadProfit(props) {
 
               <Col md="12" className="">
                 <div className="left-border">
-                  {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
+                  {`Overheads ${overheadObj && overheadObj?.OverheadApplicability ? '(' + overheadObj?.OverheadApplicability + ')' : '-'}`}
                 </div>
               </Col>
 
@@ -1509,7 +1509,7 @@ function OverheadProfit(props) {
                   </Col>
                   <Col md="3">
                     <span className="head-text">
-                      {`${overheadObj && overheadObj.IsOverheadFixedApplicable ? 'Fixed Cost' : 'Percentage (%)'}`}
+                      {`${overheadObj && overheadObj?.IsOverheadFixedApplicable ? 'Fixed Cost' : 'Percentage (%)'}`}
                     </span>
                   </Col>
                   <Col md="3">
@@ -1525,11 +1525,11 @@ function OverheadProfit(props) {
 
 
                   {
-                    overheadObj && overheadObj.IsOverheadFixedApplicable &&
+                    overheadObj && overheadObj?.IsOverheadFixedApplicable &&
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? overheadObj.OverheadApplicability : '-'}`}
+                          {`${overheadObj && overheadObj?.OverheadApplicability ? overheadObj?.OverheadApplicability : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1545,7 +1545,7 @@ function OverheadProfit(props) {
                             validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                           }}
                           handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                          defaultValue={overheadObj.OverheadFixedPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadFixedPercentage !== null ? checkForDecimalAndNull(overheadObj?.OverheadFixedPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedPercentage}
@@ -1561,7 +1561,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                          defaultValue={overheadObj.OverheadFixedCost !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadFixedCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadFixedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedCost}
@@ -1577,7 +1577,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadFixedTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadFixedTotalCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadFixedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedTotalCost}
@@ -1589,11 +1589,11 @@ function OverheadProfit(props) {
                   }
 
                   {
-                    overheadObj && overheadObj.IsOverheadCombined &&
+                    overheadObj && overheadObj?.IsOverheadCombined &&
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
+                          {`${overheadObj && overheadObj?.OverheadApplicability ? '(' + overheadObj?.OverheadApplicability + ')' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1605,7 +1605,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadPercentage !== null ? checkForDecimalAndNull(overheadObj?.OverheadPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadPercentage}
@@ -1622,7 +1622,7 @@ function OverheadProfit(props) {
                             register={register}
                             mandatory={false}
                             handleChange={() => { }}
-                            defaultValue={overheadObj.OverheadCombinedCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCombinedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                            defaultValue={overheadObj?.OverheadCombinedCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadCombinedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.OverheadCombinedCost}
@@ -1642,7 +1642,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCombinedTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCombinedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadCombinedTotalCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadCombinedTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCombinedTotalCost}
@@ -1654,13 +1654,13 @@ function OverheadProfit(props) {
                   }
 
                   {
-                    overheadObj && overheadObj.IsOverheadRMApplicable &&
+                    overheadObj && overheadObj?.IsOverheadRMApplicable &&
 
                     <>
 
                       <Col md="3">
                         <label className="col-label">
-                          {`${(overheadObj && overheadObj.OverheadApplicability.includes(PART_COST)) ? PART_COST : 'RM'}`}
+                          {`${(overheadObj && overheadObj?.OverheadApplicability.includes(PART_COST)) ? PART_COST : 'RM'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1672,7 +1672,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadRMPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadRMPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadRMPercentage !== null ? checkForDecimalAndNull(overheadObj?.OverheadRMPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadRMPercentage}
@@ -1689,7 +1689,7 @@ function OverheadProfit(props) {
                             register={register}
                             mandatory={false}
                             handleChange={() => { }}
-                            defaultValue={overheadObj.OverheadRMCost !== null ? checkForDecimalAndNull(overheadObj.OverheadRMCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                            defaultValue={overheadObj?.OverheadRMCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadRMCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.OverheadRMCost}
@@ -1709,7 +1709,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadRMTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadRMTotalCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadRMTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadRMTotalCost}
@@ -1721,11 +1721,11 @@ function OverheadProfit(props) {
                   }
 
                   {
-                    overheadObj && overheadObj.IsOverheadBOPApplicable &&
+                    overheadObj && overheadObj?.IsOverheadBOPApplicable &&
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? 'BOP' : '-'}`}
+                          {`${overheadObj && overheadObj?.OverheadApplicability ? 'BOP' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1737,7 +1737,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadBOPPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadBOPPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadBOPPercentage !== null ? checkForDecimalAndNull(overheadObj?.OverheadBOPPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadBOPPercentage}
@@ -1753,7 +1753,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadBOPCost !== null ? checkForDecimalAndNull(overheadObj.OverheadBOPCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadBOPCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadBOPCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadBOPCost}
@@ -1770,7 +1770,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadBOPTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadBOPTotalCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadBOPTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadBOPTotalCost}
@@ -1781,11 +1781,11 @@ function OverheadProfit(props) {
                   }
 
                   {
-                    overheadObj && overheadObj.IsOverheadCCApplicable &&
+                    overheadObj && overheadObj?.IsOverheadCCApplicable &&
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? 'CC' : '-'}`}
+                          {`${overheadObj && overheadObj?.OverheadApplicability ? 'CC' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1797,7 +1797,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCCPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadCCPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadCCPercentage !== null ? checkForDecimalAndNull(overheadObj?.OverheadCCPercentage, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCCPercentage}
@@ -1813,7 +1813,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCCCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCCCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadCCCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadCCCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCCCost}
@@ -1829,7 +1829,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCCTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                          defaultValue={overheadObj?.OverheadCCTotalCost !== null ? checkForDecimalAndNull(overheadObj?.OverheadCCTotalCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCCTotalCost}
@@ -1841,7 +1841,7 @@ function OverheadProfit(props) {
                 </Row>
               </Col>
               {
-                overheadObj && overheadObj.OverheadApplicability &&
+                overheadObj && overheadObj?.OverheadApplicability &&
                 <Col md="1" className='second-section'>
                   <div className='costing-border-inner-section'>
                     <Col md="12" className='text-center'>Remark</Col>
