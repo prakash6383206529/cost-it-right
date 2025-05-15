@@ -217,7 +217,7 @@ function PackagingCalculator(props) {
                 if (item.Value === '--0--') return false;
                 // Hide Maintenance option if not Annual Volume Basis
                 if (item.Text === 'Maintenance(Total cost of crate/trolley)' &&
-                    state.calculationCriteria?.label !== 'Annual Volume Basis') {
+                    state.calculationCriteria?.label !== 'Annual Volume Basis' && state.calculationCriteria?.label !== 'Returnable Packaging Cost') {
                     return false;
                 }
                 temp.push({ label: item?.Text, value: item?.Value });
@@ -448,10 +448,18 @@ function PackagingCalculator(props) {
         const totalCostOfCrate = (state.isVolumeAutoCalculate ? noOfCratesRequired : NoOfCratesRequiredPerDay) * stockNormDays * costOfCrate;
 
         // Calculate spacer costs
+        const noOfPartsPerCover = checkForNull(NoOfPartsPerCover);
         const spacerCost = checkForNull(SpacerPackingInsertCost);
         const noOfSpacers = checkForNull(NoOfSpacerPackingInsert);
-        const costOfSpacerPackingInsert = (spacerCost * noOfSpacers) - state.spacerPackingInsertRecoveryCostPerKg;
-
+        
+        const costOfSpacerPackingInsertDefault  = (spacerCost * noOfSpacers) - state?.spacerPackingInsertRecoveryCostPerKg;
+        let costOfSpacerPackingInsert;
+        if(state.IsPerPart){
+            costOfSpacerPackingInsert = costOfSpacerPackingInsertDefault / noOfPartsPerCover;
+        }
+        else{
+            costOfSpacerPackingInsert = costOfSpacerPackingInsertDefault;
+        }
         // Calculate packaging cost based on criteria
         const amortizedYears = checkForNull(AmortizedNoOfYears);
         const weightOfCoverKg = checkForNull(WeightOfCover);

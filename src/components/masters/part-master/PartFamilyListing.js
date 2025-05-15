@@ -350,7 +350,7 @@ const PartFamilyListing = (props) => {
   const buttonFormatter = (props) => {
     const cellValue = props?.value;
     const rowData = props?.data;
-
+    const isAssociated = rowData?.IsAssociated;
     return (
       <>
         {permissions.View && (
@@ -361,21 +361,25 @@ const PartFamilyListing = (props) => {
             onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
         )}
-        {permissions.Edit && (
-          <button
-            title="Edit"
-            className="Edit mr-2 Tour_List_Edit"
-            type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, false)}
-          />
-        )}
-        {permissions.Delete && (
-          <button
-            title="Delete"
-            className="Delete Tour_List_Delete"
-            type={"button"}
-            onClick={() => deleteItem(rowData.PartFamilyId)}
-          />
+        {isAssociated && (
+          <>
+            {permissions.Edit && (
+              <button
+                title="Edit"
+                className="Edit mr-2 Tour_List_Edit"
+                type={"button"}
+                onClick={() => viewOrEditItemDetails(cellValue, false)}
+              />
+            )}
+            {permissions.Delete && (
+              <button
+                title="Delete"
+                className="Delete Tour_List_Delete"
+                type={"button"}
+                onClick={() => deleteItem(rowData.PartFamilyId)}
+              />
+            )}
+          </>
         )}
       </>
     );
