@@ -2187,7 +2187,7 @@ class AddMachineRate extends Component {
                         {this.state?.isImport && <Col md="3">
                           <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
-                            name="Currency"
+                            name="currency"
                             type="text"
                             label="Currency"
                             id="currency"
