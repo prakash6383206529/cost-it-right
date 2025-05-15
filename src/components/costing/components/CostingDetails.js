@@ -295,6 +295,8 @@ function CostingDetails(props) {
       setTimeout(() => {
         setTechnology({ label: partNumber.technologyName, value: partNumber.technologyId })
         setValue('Part', { label: partNumber.partNumber, value: partNumber.partId })
+        setPartFamily({ label: partNumber.partFamily, value: partNumber.partFamilyId })
+        setValue('PartFamily', { label: partNumber.partFamily, value: partNumber.partFamilyId })
         setIsTechnologySelected(true)
         setShowNextBtn(true)
 
@@ -2238,7 +2240,7 @@ function CostingDetails(props) {
                         />
 
                       </Col>
-                      <Col className="col-md-15">
+                     { getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&<Col className="col-md-15">
                         <SearchableSelectHookForm
                           label={`Part Family (Code)`}
                           name={'PartFamily'}
@@ -2256,7 +2258,7 @@ function CostingDetails(props) {
                           errors={errors.PartFamily}
                           disabled={(technology.length === 0) ? true : false}
                         />
-                      </Col>
+                      </Col>}
 
                       <Col className="col-md-15">
 

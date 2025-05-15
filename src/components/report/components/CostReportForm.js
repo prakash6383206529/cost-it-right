@@ -383,7 +383,7 @@ function CostReportForm(props) {
                     return partDataAPI
                 }
             } else {
-                const res = await getPartSelectListByTechnology(technology.value, resultInput, partType?.value);
+                const res = await getPartSelectListByTechnology(technology.value, resultInput, partType?.value,null);
                 setpartName(resultInput)
                 let partDataAPI = res?.data?.SelectList
                 if (inputValue) {
