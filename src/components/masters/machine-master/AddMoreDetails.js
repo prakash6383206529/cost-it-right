@@ -2441,7 +2441,6 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
   }
 
   onSubmit = (values) => {
-    debugger
     const {
       isEditFlag, MachineID, processGrid, IsFinancialDataChanged,
       files, DataToChange, machineType, isDateChange, isFinalApprovar
