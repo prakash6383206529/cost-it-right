@@ -170,7 +170,7 @@ function NFRInsightsReport(props) {
         let excelData = data
         return (
 
-            <ExcelSheet data={TempData} name={'NFR Insight Report'}>
+            <ExcelSheet data={TempData} name={'Customer RFQ Insight Report'}>
                 {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Company") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -198,7 +198,7 @@ function NFRInsightsReport(props) {
                                 <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
-                                <ExcelFile filename={'NFR Insight Report'} fileExtension={'.xls'} element={
+                                <ExcelFile filename={'Customer RFQ Insight Report'} fileExtension={'.xls'} element={
                                     <button id={'Excel-Downloads-nfr'} className=" ml-1 user-btn Tour_List_Download" type="button"><div className="download mr-1" ></div>
                                     </button>}>
                                     {onBtExport()}
