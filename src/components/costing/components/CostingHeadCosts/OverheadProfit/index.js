@@ -170,15 +170,15 @@ function OverheadProfit(props) {
   useEffect(() => {
     setTimeout(() => {
       let tempObj = {
-        "OverheadDetailId": overheadObj?.OverheadDetailId || "00000000-0000-0000-0000-000000000000",
-        "OverheadId": overheadObj?.OverheadId || "00000000-0000-0000-0000-000000000000",
+        "OverheadDetailId": overheadObj?.OverheadDetailId || null,
+        "OverheadId": overheadObj?.OverheadId || null,
         "OverheadCRMHead": overheadObj?.OverheadCRMHead || "",
         "Remark": overheadObj?.Remark || "",
         "CostingApplicabilityDetails": overheadObj?.CostingApplicabilityDetails || []
       }
       let profitTempObj = {
-        "ProfitDetailId": profitObj?.ProfitDetailId || "00000000-0000-0000-0000-000000000000",
-        "ProfitId": profitObj?.ProfitId || "00000000-0000-0000-0000-000000000000",
+        "ProfitDetailId": profitObj?.ProfitDetailId || null,
+        "ProfitId": profitObj?.ProfitId || null,
         "ProfitCRMHead": profitObj?.ProfitCRMHead || "",
         "Remark": profitObj?.Remark || "",
         "CostingApplicabilityDetails": profitObj?.CostingApplicabilityDetails || []
