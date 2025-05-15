@@ -243,7 +243,7 @@ class SideBar extends Component {
         return this.renderUser(module, LandingPageURL);
       case "Audit":
         return this.renderAudit(module, LandingPageURL);
-      case "NFR":
+      case "Customer RFQ":
         return this.renderNFR(module, LandingPageURL);
       case "Vendor Management":
         return this.renderVendorManagement(module, LandingPageURL);
@@ -880,7 +880,7 @@ class SideBar extends Component {
                   pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "NFR",
+                    PageName: "Customer RFQ",
                     PageURL: el.LandingPageURL,
                   },
                 }}
