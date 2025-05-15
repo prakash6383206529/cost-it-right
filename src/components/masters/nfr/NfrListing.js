@@ -16,7 +16,7 @@ import { checkPermission, loggedInUserId, searchNocontentFilter } from '../../..
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import NfrPartsListing from './NfrPartsListing';
-import { deleteNFRDetailAPI, fetchNfrDetailFromSap, getAllNfrList, getCustomerRfqListing, nfrDetailsForDiscountAction } from './actions/nfr';
+import { deleteCustomerRfq,  fetchNfrDetailFromSap, getCustomerRfqListing, nfrDetailsForDiscountAction } from './actions/nfr';
 import { StatusTooltip, hyphenFormatter } from '../masterUtil';
 import Toaster from '../../common/Toaster';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
@@ -123,6 +123,33 @@ function NfrListing(props) {
         reactLocalStorage.remove('selectedRow');
     }, [])
 
+    const transformApiResponse = (apiData) => {
+        return {
+            CustomerRFQNumber: apiData.CustomerRFQNumber || '-',
+            CustomerName: apiData.NfrPartwiseDetailResponse?.[0]?.CustomerName || '-',
+            CustomerPartNo: apiData.NfrPartwiseDetailResponse?.[0]?.PartNumber || '-',
+            GroupCode: apiData.GroupCodeId || '-',
+            PlantNameDescription: apiData.NfrPartwiseDetailResponse?.[0]?.PartName || '-',
+            UOM: apiData.NfrPartwiseDetailResponse?.[0]?.UOM || '-',
+            Segment: apiData.Segment || '-',
+            PlantName: apiData.PlantName ||'-',
+            ZBCLastSubmissionDate: apiData.ZBCLastSubmissionDate || '-',
+            QuotationLastSubmissionDate: apiData.QuotationLastSubmissionDate || '-',
+            SopDate: apiData.NfrPartwiseDetailResponse?.[0]?.SOPDate || '-',
+            CreatedByName: apiData.CreatedByName || '-',
+            CreatedDate: apiData.CreatedDate || '-',
+            Status: determineStatus(apiData), 
+             NfrId: apiData.NfrId,
+            NumberOfParts: apiData.NfrPartwiseDetailResponse?.length || 0
+        };
+    };
+    
+    const determineStatus = (apiData) => {
+        // Implement your status determination logic here
+        return 'Draft'; // Example
+    };
+    
+
     /**
       * @method applyPermission
       * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -148,7 +175,9 @@ function NfrListing(props) {
         const requestOBj = { skip, take, isPagination, dataObj, isReset }
         dispatch(getCustomerRfqListing(requestOBj, (res) => {
             if (res?.data?.Data?.length > 0) {
-                setRowData(StatusTooltip(res?.data?.Data));
+                // Transform the API response data
+                const transformedData = res.data.Data.map(item => transformApiResponse(item));
+                setRowData(StatusTooltip(transformedData));
                 setTotalRecordCount(res?.data?.Data?.length);
             } else {
                 setRowData([]);
@@ -230,7 +259,7 @@ function NfrListing(props) {
     }
 
     const onPopupConfirm = () => {
-        dispatch(deleteNFRDetailAPI(selectedRowData?.NfrId, loggedInUserId(), (res) => {
+        dispatch(deleteCustomerRfq(selectedRowData?.NfrId, loggedInUserId(), (res) => {
             if (res?.data?.Result) {
                 getDataList()
                 Toaster.success("Customer RFQ deleted successfully.")
@@ -255,7 +284,7 @@ function NfrListing(props) {
             <>
                 {/* <button className="Add-file mr-1" id="nfr_AddCosting" type={"button"} title={`Add Costing`} /> */}
                 {<button title='View' className="View mr-1" id="viewNfr_list" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                <button className="Edit mr-1" id="nfr_EditCosting" type={"button"} title={"Edit Details"} />
+                {/* <button className="Edit mr-1" id="nfr_EditCosting" type={"button"} title={"Edit Details"} /> */}
                 {<button title='Delete' className="Delete mr-1" id="deleteNfr_list" type={'button'} onClick={() => deleteItemDetails(rowData)} />}
             </>
         )
@@ -702,7 +731,7 @@ function NfrListing(props) {
                                                 <AgGridColumn field="SopDate" headerName="SOP Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 {/* <AgGridColumn field="LastSubmissionDate" headerName="Last Submission Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn> */}
                                                 {/* <AgGridColumn field="AttachmentPresent" headerName="Attachment Present" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
-                                                <AgGridColumn field="CreatedBy" headerName="Created By" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="CreatedByName" headerName="Created By" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CreatedDate" headerName="Created Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" cellClass="text-center" headerName="Status" headerClass="justify-content-center" minWidth={170} cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
                                                 {<AgGridColumn field="Status" minWidth={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

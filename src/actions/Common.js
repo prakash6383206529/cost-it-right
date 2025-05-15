@@ -77,7 +77,8 @@ import {
   IS_RESET_COSTING_HEAD,
   SET_LIST_TOGGLE,
   GET_APPLICABILITY_LIST_SUCCESS,
-  GET_SEGMENT_SELECTLIST
+  GET_SEGMENT_SELECTLIST,
+  GET_GROUP_CODE_SELECTLIST
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1428,6 +1429,30 @@ export function getSegmentSelectList(callback) {
       if (response.data.Result) {
         dispatch({
           type: GET_SEGMENT_SELECTLIST,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getGroupCodeSelectList
+ * @description GET GROUP CODE SELECT LIST
+ */
+export function getGroupCodeSelectList(callback) {
+
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getGroupCodeSelectList}?loggedInUserId=${loggedInUserId()}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_GROUP_CODE_SELECTLIST,
           payload: response.data.SelectList,
         });
         callback(response);

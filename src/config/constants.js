@@ -41,6 +41,7 @@ export const API = {
   getTechnologySelectList: `${BASE_URL}/configuration/select-list-get-technology`,
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
   getSegmentSelectList: `${BASE_URL}/nfr/get-selected-segment-list`,
+  getGroupCodeSelectList: `${BASE_URL}/nfr/get-selected-groupcode-list`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
   getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
 
@@ -1248,7 +1249,8 @@ export const API = {
   getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
   // pushNfrRmBopOnSap: `${BASE_URL}/nfr/push-nfr-rm-bop-on-sap`,
   deleteNFRDetailAPI: `${BASE_URL}/nfr/delete-nfr`,
-
+  deleteCustomerRfq: `${BASE_URL}/nfr/delete-customer-rfq`,
+  getCustomerRfqDetails: `${BASE_URL}/nfr/get-customer-rfq-details`,
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
   getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
   getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
@@ -1366,6 +1368,7 @@ export const GET_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_TECHNOLOGY_SELECTLIST_SUCC
 export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_BY_TYPE = 'GET_PLANT_SELECTLIST_BY_TYPE'
 export const GET_SEGMENT_SELECTLIST = 'GET_SEGMENT_SELECTLIST'
+export const GET_GROUP_CODE_SELECTLIST = 'GET_GROUP_CODE_SELECTLIST'
 export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST'
 export const GET_USERS_MASTER_LEVEL_API = 'GET_USERS_MASTER_LEVEL_API'
 

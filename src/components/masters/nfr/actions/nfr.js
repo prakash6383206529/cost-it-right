@@ -413,3 +413,42 @@ export function deleteNFRDetailAPI(nfrId, loggedInUserId, callback) {
             });
     };
 }
+
+
+/**
+ * @method deleteCustomerRfq
+ * @description delete Customer RFQ
+ */
+export function deleteCustomerRfq(customerRfqId, loggedInUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `customerRfqId=${customerRfqId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteCustomerRfq}?${queryParams}`, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/**
+ * @method getCustomerRfqDetails
+ * @description get Customer RFQ Details
+ */
+export function getCustomerRfqDetails(customerRfqId, loggedInUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `customerRfqId=${customerRfqId}&loggedInUserId=${loggedInUserId}`
+        axios.get(`${API.getCustomerRfqDetails}?${queryParams}`, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+

@@ -17,7 +17,7 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import NoContentFound from '../../common/NoContentFound';
 
 // Actions
-import { getPlantSelectListByType, getSegmentSelectList, getUOMSelectList } from '../../../actions/Common';
+import { getGroupCodeSelectList, getPlantSelectListByType, getSegmentSelectList, getUOMSelectList } from '../../../actions/Common';
 import { getSelectListPartType } from '../actions/Part';
 import { getPartInfo } from '../../costing/actions/Costing';
 import { getRMSpecificationDataList, getRawMaterialNameChild } from '../../masters/actions/Material';
@@ -39,7 +39,7 @@ import AddForecast from './AddForecast';
 import redcrossImg from '../../../assests/images/red-cross.png';
 import BOMViewer from '../part-master/BOMViewer';
 import { loggedInUserId } from '../../../helper';
-import { createCustomerRfq, createNFRBOMDetails } from './actions/nfr';
+import { createCustomerRfq, getCustomerRfqDetails } from './actions/nfr';
 
 function CreateManualNFR(props) {
     const { t } = useTranslation("Nfr")
@@ -77,6 +77,7 @@ function CreateManualNFR(props) {
         files: [],
         partTypeList: [],
         segmentList: [],
+        groupCodeList: [],
         rmDetailsGridIndex: '',
         apiCallCounter: 0,
         attachmentLoader: false,
@@ -100,6 +101,9 @@ function CreateManualNFR(props) {
             dispatch(getSegmentSelectList((res) => {
                 setState(prevState => ({ ...prevState, segmentList: res?.data?.SelectList }));
             }))
+            dispatch(getGroupCodeSelectList((res) => {
+                setState(prevState => ({ ...prevState, groupCodeList: res?.data?.SelectList }));
+            }))
             setState(prevState => ({ ...prevState, VendorInputLoader: true }));
             dispatch(getClientSelectList((res) => {
                 setState(prevState => ({ ...prevState, VendorInputLoader: false }));
@@ -112,6 +116,11 @@ function CreateManualNFR(props) {
                 return null;
             })
             initialConfiguration?.IsDestinationPlantConfigure === false && setValue('Customer', tempArr);
+        } else {
+            dispatch(getCustomerRfqDetails(props?.nfrIdsList?.NfrMasterId, loggedInUserId(), (res) => {
+                console.log("res", res)
+            }))
+
         }
     }, [])
 
@@ -172,6 +181,14 @@ function CreateManualNFR(props) {
                     return null;
                 });
                 break;
+            case 'GroupCode':
+                state.groupCodeList && state.groupCodeList?.map(item => {
+                    if (item.Value === '0') return false;
+                    temp.push({ label: item.Text, value: item.Value })
+                    return null;
+                });
+                break;
+
             default:
                 return null;
         }
@@ -305,6 +322,9 @@ function CreateManualNFR(props) {
     const handleChangeSegment = (newValue) => {
         setValue("Segment", newValue);
     }
+    const handleGroupCodeChange = (newValue) => {
+        setValue("GroupCode", newValue);
+    }
 
     const handleSOPDateChange = (date) => {
         const newDate = DayTime(date).isValid() ? DayTime(date) : '';
@@ -354,8 +374,8 @@ function CreateManualNFR(props) {
             CustomerName: getValues("Customer")?.label || '',
             PartName: getValues("PartName"),
             Description: getValues("Description"),
-            UnitOfMeasurement: getValues("UnitOfMeasurement"),
-            GroupCode: getValues("GroupCode"),
+            UnitOfMeasurement: getValues("UnitOfMeasurement")?.label || '',
+            GroupCode: getValues("GroupCode")?.label || '',
             Plant: getValues("Plant")?.label || '',
             ZBCLastSubmissionDate: state.zbcDate ? DayTime(state.zbcDate).format('DD/MM/YYYY') : '',
             QuotationLastSubmissionDate: state.cbcDate ? DayTime(state.cbcDate).format('DD/MM/YYYY') : '',
@@ -428,8 +448,8 @@ function CreateManualNFR(props) {
             CustomerName: getValues("Customer")?.label || '',
             PartName: getValues("PartName"),
             Description: getValues("Description"),
-            UnitOfMeasurement: getValues("UnitOfMeasurement"),
-            GroupCode: getValues("GroupCode"),
+            UnitOfMeasurement: getValues("UnitOfMeasurement")?.label || '',
+            GroupCode: getValues("GroupCode")?.label || '',
             Plant: getValues("Plant")?.label || '',
             ZBCLastSubmissionDate: state.zbcDate ? DayTime(state.zbcDate).format('DD/MM/YYYY') : '',
             QuotationLastSubmissionDate: state.cbcDate ? DayTime(state.cbcDate).format('DD/MM/YYYY') : '',
@@ -670,40 +690,43 @@ function CreateManualNFR(props) {
             "PlantId": getValues("Plant")?.value,
             "LoggedInUserId": loggedInUserId(),
             "Remarks": state.remarks,
-            "GroupCodeId": getValues("GroupCode"),
+            "GroupCodeId": getValues("GroupCode")?.value,
             "SegmentId": getValues("Segment")?.value,
+            "IsSent": true,
             "NfrPartwiseDetailRequest": [
-              {
-                "NfrMasterId": "00000000-0000-0000-0000-000000000000",
-                "PartId": getValues("Part")?.value,
-                "PartTypeId": getValues("PartType")?.value,
-                "PartType": getValues("PartType")?.label,
-                "PartNumber": getValues("Part")?.label,
-                "RevisionNumber": "string",
-                "PartName": getValues("PartName"),
-                "PlantId": getValues("Plant")?.value,
-                "UOMId": getValues("UnitOfMeasurement")?.value,
-                "CustomerName": getValues("Customer")?.label,
-                "PartDetailResponses": [
-                  {
+                {
+                    "NfrMasterId": "00000000-0000-0000-0000-000000000000",
+                    "TechnologyId": 7,
                     "PartId": getValues("Part")?.value,
                     "PartTypeId": getValues("PartType")?.value,
-                    "NfrRawMaterialList":state.rmDetails,
-                    "ForecastQuantities": [
-                      {
-                        "PartId": getValues("Part")?.value,
-                        "LoggedInUserId": loggedInUserId(),
-                        "PartNumber": getValues("Part")?.label,
-                        "SOPDate": state.sopDate,
-                        "NfrPartYoyDetails": state.sopQuantityList
-                      }
-                    ]
-                  }
-                ]
-              }
+                    "NfrPartStatusId": 1,
+                    "NfrNumber": getValues("CustomerRFQNo"),
+                    "PartType": getValues("PartType")?.label,
+                    "PartNumber": getValues("Part")?.label,
+                    "RevisionNumber": "string",
+                    "PartName": getValues("PartName"),
+                    "Technology": "Rubber",
+                    "PlantId": getValues("Plant")?.value,
+                    "UOMId": getValues("UnitOfMeasurement")?.value,
+                    "CustomerName": getValues("Customer")?.label,
+                    "SOPDate": state.sopDate,
+                    "PartDetailResponses": [
+                        {
+                            "PartId": getValues("Part")?.value,
+                            "PartTypeId": getValues("PartType")?.value,
+                            "PartNumber": getValues("Part")?.label,
+                            "PartName": getValues("PartName"),
+                            "UOM": getValues("UnitOfMeasurement")?.label,
+                            "PartType": getValues("PartType")?.label,
+                            "CustomerName": getValues("Customer")?.label,
+                            "NfrRawMaterialList": state.rmDetails
+                        }
+                    ],
+                    "ForecastQuantities": state.sopQuantityList
+                }
             ],
             "NfrAttachments": state.files
-          }
+        }
 
         setState(prevState => ({ ...prevState, loader: true }));
         dispatch(createCustomerRfq(obj, (res) => {
@@ -736,9 +759,9 @@ function CreateManualNFR(props) {
                     <div className="row">
                         <div className="col-md-12">
                             <div className="shadow-lgg login-formg">
-                                        <Row>
-                                            <Col md="12">
-                                                <div className="left-border">
+                                <Row>
+                                    <Col md="12">
+                                        <div className="left-border">
                                             {"Customer RFQ Details:"}
                                         </div>
                                     </Col>
@@ -908,20 +931,19 @@ function CreateManualNFR(props) {
                                         />
                                     </Col>
                                     <Col md="3">
-                                        <TextFieldHookForm
-                                            label="Group Code"
-                                            name={"GroupCode"}
-                                            id="AddNFR_Product_Code"
+                                        <SearchableSelectHookForm
+                                            label={"Group Code"}
+                                            name={`GroupCode`}
+                                            id="AddNFR_Group_Code"
+                                            placeholder={"Select"}
                                             Controller={Controller}
-                                            placeholder={isViewFlag ? '-' : "Select"}
                                             control={control}
+                                            handleChange={(newValue) => handleGroupCodeChange(newValue)}
                                             register={register}
-                                            handleChange={(e) => { }}
-                                            defaultValue={""}
-                                            className=""
-                                            customClassName={"withBorder"}
+                                            customClassName="costing-version"
+                                            options={renderListing("GroupCode")}
                                             errors={errors?.GroupCode}
-                                            disabled={true}
+                                            disabled={isViewFlag || state.fieldDisabled}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -1073,18 +1095,18 @@ function CreateManualNFR(props) {
                                                 {state.rfqData && state.rfqData?.map((item, index) => {
                                                     return (
                                                         <tr key={index}>
-                                                            <td>{item.PartType ? item.PartType : '-'}</td>
-                                                            <td>{item.PartNumber ? item.PartNumber : '-'}</td>
-                                                            <td>{item.PartName ? item.PartName : '-'}</td>
-                                                            <td>{item.CustomerRFQNo ? item.CustomerRFQNo : '-'}</td>
-                                                            <td>{item.CustomerName ? item.CustomerName : '-'}</td>
-                                                            <td>{item.Description ? item.Description : '-'}</td>
-                                                            <td>{item.Plant ? item.Plant : '-'}</td>
-                                                            <td>{item.UnitOfMeasurement ? item.UnitOfMeasurement : '-'}</td>
-                                                            <td>{item.GroupCode ? item.GroupCode : '-'}</td>
-                                                            <td>{item.Segment ? item.Segment : '-'}</td>
-                                                            <td>{item.ZBCLastSubmissionDate ? item.ZBCLastSubmissionDate : '-'}</td>
-                                                            <td>{item.QuotationLastSubmissionDate ? item.QuotationLastSubmissionDate : '-'}</td>
+                                                            <td>{item?.PartType ? item.PartType : '-'}</td>
+                                                            <td>{item?.PartNumber ? item.PartNumber : '-'}</td>
+                                                            <td>{item?.PartName ? item.PartName : '-'}</td>
+                                                            <td>{item?.CustomerRFQNo ? item.CustomerRFQNo : '-'}</td>
+                                                            <td>{item?.CustomerName ? item.CustomerName : '-'}</td>
+                                                            <td>{item?.Description ? item.Description : '-'}</td>
+                                                            <td>{item?.Plant ? item.Plant : '-'}</td>
+                                                            <td>{item?.UnitOfMeasurement ? item.UnitOfMeasurement : '-'}</td>
+                                                            <td>{item?.GroupCode ? item.GroupCode : '-'}</td>
+                                                            <td>{item?.Segment ? item.Segment : '-'}</td>
+                                                            <td>{item?.ZBCLastSubmissionDate ? item.ZBCLastSubmissionDate : '-'}</td>
+                                                            <td>{item?.QuotationLastSubmissionDate ? item.QuotationLastSubmissionDate : '-'}</td>
                                                             <td>
                                                                 <button
                                                                     className="Edit mr-2"
