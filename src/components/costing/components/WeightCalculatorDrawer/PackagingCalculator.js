@@ -217,7 +217,7 @@ function PackagingCalculator(props) {
                 if (item.Value === '--0--') return false;
                 // Hide Maintenance option if not Annual Volume Basis
                 if (item.Text === 'Maintenance(Total cost of crate/trolley)' &&
-                    state.calculationCriteria?.label !== 'Annual Volume Basis') {
+                    state.calculationCriteria?.label !== 'Annual Volume Basis' && state.calculationCriteria?.label !== 'Returnable Packaging Cost') {
                     return false;
                 }
                 temp.push({ label: item?.Text, value: item?.Value });
