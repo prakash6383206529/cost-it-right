@@ -139,6 +139,7 @@ class Login extends Component {
 
   forgotConfirm = () => {
     const { fieldsObj } = this.props;
+    console.log(fieldsObj,'fieldsObj')
     if (!this.state.forgetIsCalled) {
       this.setState({ forgetIsCalled: true });
       this.props.forgetPassword(fieldsObj, (res) => {

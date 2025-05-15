@@ -60,7 +60,7 @@ function TabRMCC(props) {
         let tempArr = [];
         tempArr.push(res?.data?.DataList[0]);
         tempArr.push(...res?.data?.DataList[0]?.CostingChildPartDetails);
-          sessionStorage.setItem('costingArray', JSON.stringify(tempArr));
+        sessionStorage.setItem('costingArray', JSON.stringify(tempArr));
 
       }))
     }
@@ -117,9 +117,12 @@ function TabRMCC(props) {
           NetProcessCostForProfit: TopHeaderValues?.NetProcessCostForProfit ? TopHeaderValues?.NetProcessCostForProfit : 0,
           NetOperationCostForOverhead: TopHeaderValues?.NetOperationCostForOverhead ? TopHeaderValues?.NetOperationCostForOverhead : 0,
           NetOperationCostForProfit: TopHeaderValues?.NetOperationCostForProfit ? TopHeaderValues?.NetOperationCostForProfit : 0,
-          NetWeldingCostForOverhead: TopHeaderValues?.NetWeldingCostForOverhead ? TopHeaderValues?.NetWeldingCostForOverhead : 0,
-          NetWeldingCostForProfit: TopHeaderValues?.NetWeldingCostForProfit ? TopHeaderValues?.NetWeldingCostForProfit : 0,
-
+          NetWeldingCostForOverhead: TopHeaderValues?.NetWeldingCostForOverhead ?? 0,
+          NetWeldingCostForProfit: TopHeaderValues?.NetWeldingCostForProfit ?? 0,
+          NetWeldingCost: TopHeaderValues?.NetWeldingCost ?? 0,
+          NetCCForOtherTechnologyCost: TopHeaderValues?.NetCCForOtherTechnologyCost ?? 0,
+          NetCCForOtherTechnologyCostForOverhead: TopHeaderValues?.NetCCForOtherTechnologyCostForOverhead ?? 0,
+          NetCCForOtherTechnologyCostForProfit: TopHeaderValues?.NetCCForOtherTechnologyCostForProfit ?? 0,
         }
       }
       props.setHeaderCost(topHeaderData)
@@ -152,7 +155,7 @@ function TabRMCC(props) {
   */
   const getOperationTotalCostForAssembly = (tempArr, ForType = "") => {
     let NetCost = 0;
-NetCost = tempArr.reduce((accumulator, el) => {
+    NetCost = tempArr.reduce((accumulator, el) => {
       if (el.PartType === 'Part') {
         if (el?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length > 0) {
           const operations = el?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
@@ -499,13 +502,16 @@ NetCost = tempArr.reduce((accumulator, el) => {
       case 'CC':
         partObj.CostingPartDetails.NetConversionCost = gridData?.NetConversionCost
         partObj.CostingPartDetails.NetProcessCost = gridData?.NetProcessCost
-        partObj.CostingPartDetails.NetProcessCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Overhead")?.overheadProcessCost;
-        partObj.CostingPartDetails.NetProcessCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, "Profit")?.profitProcessCost;
-        partObj.CostingPartDetails.NetOperationCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Overhead")?.overheadOperationCost;
-        partObj.CostingPartDetails.NetOperationCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Profit")?.profitOperationCost;
-        partObj.CostingPartDetails.NetWeldingCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Overhead")?.overheadWeldingCost;
-        partObj.CostingPartDetails.NetWeldingCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, "Profit")?.profitWeldingCost;
-
+        partObj.CostingPartDetails.NetProcessCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, obj?.TechnologyId)?.overheadProcessCost;
+        partObj.CostingPartDetails.NetProcessCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, obj?.TechnologyId)?.profitProcessCost;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, obj?.TechnologyId)?.ccForOtherTechnologyCostForOverhead;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, obj?.TechnologyId)?.ccForOtherTechnologyCostForProfit;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCost = checkForNull(getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, obj?.TechnologyId)?.ccForOtherTechnologyCostForOverhead) + checkForNull(getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, obj?.TechnologyId)?.ccForOtherTechnologyCostForProfit);
+        partObj.CostingPartDetails.NetOperationCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, obj?.TechnologyId)?.overheadOperationCost;
+        partObj.CostingPartDetails.NetOperationCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, obj?.TechnologyId)?.profitOperationCost;
+        partObj.CostingPartDetails.NetWeldingCost = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, obj?.TechnologyId)?.overheadWeldingCost + getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, obj?.TechnologyId)?.profitWeldingCost
+        partObj.CostingPartDetails.NetWeldingCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, obj?.TechnologyId)?.overheadWeldingCost;
+        partObj.CostingPartDetails.NetWeldingCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, obj?.TechnologyId)?.profitWeldingCost;
         // partObj.CostingPartDetails.NetOperationCostForOverheadExcl = gridData?.NetOperationCostForOverheadExcl
         // partObj.CostingPartDetails.NetOperationCostForProfitExcl = gridData?.NetOperationCostForProfitExcl
         partObj.CostingPartDetails.NetOperationCost = gridData?.NetOperationCost
@@ -592,7 +598,7 @@ NetCost = tempArr.reduce((accumulator, el) => {
 
         subAssemObj.CostingPartDetails.TotalProcessCostComponent = checkForNull(getProcessTotalCostForAssembly(tempArr))
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssembly = setProcessCostForAssembly(tempArr)
-        
+
         subAssemObj.CostingPartDetails.TotalProcessCostComponentForOverhead = checkForNull(getOverheadAndProfitTotalCostForAssembly(tempArr, 'Overhead', 'Process'))
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Overhead', 'Process'))
 
@@ -1059,7 +1065,7 @@ NetCost = tempArr.reduce((accumulator, el) => {
             if (objectToUpdate.PartType === 'Sub Assembly') {
               let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
               initialPartNo = objectToUpdate.AssemblyPartNumber
-              
+
               let subAssemObj = calculationForSubAssembly(objectToUpdate, quant, 'CC', tempArr)
               quant = objectToUpdate?.CostingPartDetails?.Quantity
               tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
@@ -1129,9 +1135,9 @@ NetCost = tempArr.reduce((accumulator, el) => {
           assemblyObj.CostingPartDetails.TotalConversionCostPerSubAssembly = checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostSubAssembly)
           assemblyObj.CostingPartDetails.TotalConversionCostPerAssembly = checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostPerAssembly)
 
-          assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostPerSubAssembly)+checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostPerAssembly)+checkForNull(assemblyObj?.CostingPartDetails?.IndirectLaborCost) + checkForNull(assemblyObj?.CostingPartDetails?.NetLabourCost) + checkForNull(assemblyObj?.CostingPartDetails?.StaffCost)
+          assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostPerSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.IndirectLaborCost) + checkForNull(assemblyObj?.CostingPartDetails?.NetLabourCost) + checkForNull(assemblyObj?.CostingPartDetails?.StaffCost)
           // assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(subAssemblyArray) + checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalProcessCostComponent) + checkForNull(setOtherOperationForSubAssembly([...subAssemblyArray, ...partAssemblyArray]))
-          
+
 
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostWithQuantity)
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
@@ -1139,7 +1145,7 @@ NetCost = tempArr.reduce((accumulator, el) => {
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
         sessionStorage.setItem('costingArray', JSON.stringify([]))
-        
+
         sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
 
         return i;
@@ -1356,8 +1362,8 @@ NetCost = tempArr.reduce((accumulator, el) => {
         assemblyObj.CostingPartDetails.TotalConversionCostComponent = checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalOtherOperationCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostComponent)
         assemblyObj.CostingPartDetails.TotalConversionCostPerAssembly = checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostPerAssembly)
         assemblyObj.CostingPartDetails.TotalConversionCostPerSubAssembly = checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostSubAssembly)
-        assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostPerAssembly)+checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostPerSubAssembly)+ checkForNull(assemblyObj?.CostingPartDetails?.IndirectLaborCost) + checkForNull(assemblyObj?.CostingPartDetails?.NetLabourCost) + checkForNull(assemblyObj?.CostingPartDetails?.StaffCost)
-        
+        assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostPerSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.IndirectLaborCost) + checkForNull(assemblyObj?.CostingPartDetails?.NetLabourCost) + checkForNull(assemblyObj?.CostingPartDetails?.StaffCost)
+
 
         assemblyObj.CostingPartDetails.IsOpen = params.BOMLevel !== LEVEL0 ? true : !assemblyObj?.CostingPartDetails?.IsOpen
         assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostWithQuantity)
@@ -1562,8 +1568,8 @@ NetCost = tempArr.reduce((accumulator, el) => {
     tempArrForCosting[0].CostingPartDetails.StaffCost = data.StaffCost
     tempArrForCosting[0].CostingPartDetails.StaffCostPercentage = data.StaffCostPercentage
     tempArrForCosting[0].CostingPartDetails.NetLabourCost = data.NetLabourCost
-tempArrForCosting[0].CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(tempArrForCosting[0]?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(tempArrForCosting[0]?.CostingPartDetails?.TotalConversionCostPerAssembly) + checkForNull(tempArrForCosting[0]?.CostingPartDetails?.TotalConversionCostPerSubAssembly) + checkForNull(data?.IndirectLaborCost) + checkForNull(data?.StaffCost) + checkForNull(data?.NetLabourCost)
-  
+    tempArrForCosting[0].CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(tempArrForCosting[0]?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(tempArrForCosting[0]?.CostingPartDetails?.TotalConversionCostPerAssembly) + checkForNull(tempArrForCosting[0]?.CostingPartDetails?.TotalConversionCostPerSubAssembly) + checkForNull(data?.IndirectLaborCost) + checkForNull(data?.StaffCost) + checkForNull(data?.NetLabourCost)
+
 
     // tempArrForCosting[0].CostingChildPartDetails.oldTotalLabourCost = Number(data.NetLabourCost) + Number(data.StaffCost) + Number(data.IndirectLaborCost)
     sessionStorage.setItem('costingArray', JSON.stringify([]))
@@ -1592,7 +1598,7 @@ tempArrForCosting[0].CostingPartDetails.TotalConversionCostWithQuantity = checkF
         newItem.CostingPartDetails.TotalConversionCostComponent = obj?.CostingPartDetails?.TotalConversionCostComponent
 
         newItem.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalConversionCostWithQuantity)
-         newItem.CostingPartDetails.NetTotalRMBOPCC = checkForNull(obj?.CostingPartDetails?.NetTotalRMBOPCC)
+        newItem.CostingPartDetails.NetTotalRMBOPCC = checkForNull(obj?.CostingPartDetails?.NetTotalRMBOPCC)
         newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
         newItem.CostingPartDetails.IsRMCutOffApplicable = obj?.CostingPartDetails?.IsRMCutOffApplicable
         newItem.CostingPartDetails.TotalOtherOperationCostComponent = obj?.CostingPartDetails?.TotalOtherOperationCostComponent
@@ -1988,7 +1994,7 @@ tempArrForCosting[0].CostingPartDetails.TotalConversionCostWithQuantity = checkF
                 subAssembObj.CostingPartDetails.TotalConversionCostPerSubAssembly = checkForNull(subAssembObj?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(subAssembObj?.CostingPartDetails?.TotalWeldingCostSubAssembly) + checkForNull(subAssembObj?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(subAssembObj?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly)
                 subAssembObj.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostPerSubAssembly) + checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostPerAssembly)
                 subAssembObj.CostingPartDetails.NetConversionCost = checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostWithQuantity)
-                
+
                 subAssembObj.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostComponent) + checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostPerAssembly) + checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCostSubAssembly)
 
                 // Calculating Grand Total Cost
@@ -2006,7 +2012,7 @@ tempArrForCosting[0].CostingPartDetails.TotalConversionCostWithQuantity = checkF
                 if (objectToUpdate.PartType === 'Sub Assembly') {
                   let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
                   initialPartNo = objectToUpdate.AssemblyPartNumber;
-                  
+
                   let subAssemObj = {}
                   if (isOperation) {
                     subAssemObj = calculationForSubAssembly(objectToUpdate, quant, 'Sub Assembly Operation', tempArr)
@@ -2114,8 +2120,8 @@ tempArrForCosting[0].CostingPartDetails.TotalConversionCostWithQuantity = checkF
           } else {
             assemblyObj.CostingPartDetails.CostingProcessCostResponse = params.BOMLevel === LEVEL0 ? gridData : assemblyObj?.CostingPartDetails?.CostingProcessCostResponse.length > 0 ? assemblyObj?.CostingPartDetails?.CostingProcessCostResponse : [];
             assemblyObj.CostingPartDetails.TotalProcessCostPerAssembly = params.BOMLevel === LEVEL0 ? GetProcessCostTotal(gridData) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssembly)
-            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, 'Overhead')?.overheadProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead)
-            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, 'Profit')?.profitProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit)
+            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, assemblyObj?.TechnologyId)?.overheadProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead)
+            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, assemblyObj?.TechnologyId)?.profitProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit)
           }
 
 

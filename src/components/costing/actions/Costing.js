@@ -1954,8 +1954,8 @@ export function getPartCostingVendorSelectList(partNumber, callback) {
   }
 }
 
-export function getPartSelectListByTechnology(technologyId, partNumber, partTypeId, callback) {
-  return axios.get(`${API.getPartByTechnologyId}?loggedInUserId=${loggedInUserId()}&technologyId=${technologyId}&partNumber=${partNumber}&partTypeId=${partTypeId}`, config()).catch(error => {
+export function getPartSelectListByTechnology(technologyId, partNumber, partTypeId,partFamilyId, callback) {
+  return axios.get(`${API.getPartByTechnologyId}?loggedInUserId=${loggedInUserId()}&technologyId=${technologyId}&partNumber=${partNumber}&partTypeId=${partTypeId}&partFamilyId=${partFamilyId}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
@@ -3304,3 +3304,27 @@ export function setBopRemark(remark, bopCostingId) {
     });
   };
 }
+
+/**
+ * @method getRejectionDataByModelType
+ * @description GET REJECTION DATA BY MODEL TYPE
+ */
+export function getRejectionDataByModelType(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}`
+    const request = axios.get(`${API.getRejectionDataByModelType}?${queryParams}`, config(),)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        callback(error)
+        apiErrors(error)
+      })
+  }
+}
+

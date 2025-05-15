@@ -103,7 +103,7 @@ function OverheadProfit(props) {
       setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
         label: CostingProfitDetail.ProfitCRMHead, value: 1
       })
-      setValue('profitRemark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
+      setValue('profitremark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
     }
   }, []);
 
@@ -597,28 +597,28 @@ function OverheadProfit(props) {
 
   const onRemarkPopUpClickOverHead = () => {
 
-    if (errors.overHeadRemark !== undefined) {
+    if (errors.overheadRemark !== undefined) {
       return false
     }
 
     setOverheadObj({
       ...overheadObj,
-      Remark: getValues('overHeadRemark')
+      Remark: getValues('overheadRemark')
     })
 
-    if (getValues(`overHeadRemark`)) {
+    if (getValues(`overheadRemark`)) {
       Toaster.success('Remark saved successfully')
     }
-    var button = document.getElementById(`popUpTriggerOverHead`)
+    var button = document.getElementById(`popUpTriggerOverhead`)
     button.click()
   }
 
 
   const onRemarkPopUpCloseOverHead = () => {
-    let button = document.getElementById(`popUpTriggerOverHead`)
-    setValue(`overHeadRemark`, overheadObj?.Remark)
-    if (errors.overHeadRemark) {
-      delete errors.overHeadRemark;
+    let button = document.getElementById(`popUpTriggerOverhead`)
+    setValue(`overheadRemark`, overheadObj.Remark)
+    if (errors.overheadRemark) {
+      delete errors.overheadRemark;
     }
     button.click()
   }
@@ -631,10 +631,10 @@ function OverheadProfit(props) {
 
     setProfitObj({
       ...profitObj,
-      Remark: getValues('profitRemark')
+      Remark: getValues('profitremark')
     })
 
-    if (getValues(`profitRemark`)) {
+    if (getValues(`profitremark`)) {
       Toaster.success('Remark saved successfully')
     }
     var button = document.getElementById(`popUpTriggerProfit`)
@@ -643,9 +643,9 @@ function OverheadProfit(props) {
 
   const onRemarkPopUpCloseProfit = () => {
     let button = document.getElementById(`popUpTriggerProfit`)
-    setValue(`profitRemark`, profitObj.Remark)
-    if (errors.profitRemark) {
-      delete errors.profitRemark;
+    setValue(`profitremark`, profitObj.Remark)
+    if (errors.profitremark) {
+      delete errors.profitremark;
     }
     button.click()
   }
@@ -762,26 +762,8 @@ function OverheadProfit(props) {
                 />
               </Col>}
 
-
-              <Col md={overheadObj?.OverheadApplicability ? "11" : "12"} className='first-section'>
-                <OverheadProfitTable
-                  data={overheadObj}
-                  type="Overhead"
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  setValue={setValue}
-                  getValues={getValues}
-                  errors={errors}
-                  CostingViewMode={CostingViewMode}
-                  initialConfiguration={initialConfiguration}
-                  onCostChange={(e, item) => handleCostChange(e, item, 'Overhead')}
-                  isFixedApplicable={overheadObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
-                />
-              </Col>
-
-              {
-                overheadObj && overheadObj?.OverheadApplicability &&
+              {/* {
+                overheadObj  &&
                 <Col md="1" className='second-section'>
                   <div className='costing-border-inner-section'>
                     <Col md="12" className='text-center'>Remark</Col>
@@ -813,7 +795,25 @@ function OverheadProfit(props) {
                     </Popup></Col>
                   </div>
                 </Col>
-              }
+              } */}
+
+              <OverheadProfitTable
+                data={overheadObj}
+                type="Overhead"
+                Controller={Controller}
+                control={control}
+                register={register}
+                setValue={setValue}
+                getValues={getValues}
+                errors={errors}
+                CostingViewMode={CostingViewMode}
+                initialConfiguration={initialConfiguration}
+                onCostChange={(e, item) => handleCostChange(e, item, 'Overhead')}
+                isFixedApplicable={overheadObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
+                onRemarkPopUpClick={onRemarkPopUpClickOverHead}
+                onRemarkPopUpClose={onRemarkPopUpCloseOverHead}
+              />
+
 
               {/* new section from below with heasing */}
               <Col md={"12"} className="pt-3">
@@ -841,23 +841,23 @@ function OverheadProfit(props) {
                   disabled={CostingViewMode}
                 />
               </Col>}
-              <Col md={profitObj?.ProfitApplicability ? "11" : "12"} className='first-section'>
-                <OverheadProfitTable
-                  data={profitObj}
-                  type="Profit"
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  setValue={setValue}
-                  getValues={getValues}
-                  errors={errors}
-                  CostingViewMode={CostingViewMode}
-                  initialConfiguration={initialConfiguration}
-                  onCostChange={(e, item) => handleCostChange(e, item, 'Profit')}
-                  isFixedApplicable={profitObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
-                />
-              </Col>
-              {
+              <OverheadProfitTable
+                data={profitObj}
+                type="Profit"
+                Controller={Controller}
+                control={control}
+                register={register}
+                setValue={setValue}
+                getValues={getValues}
+                errors={errors}
+                CostingViewMode={CostingViewMode}
+                initialConfiguration={initialConfiguration}
+                onCostChange={(e, item) => handleCostChange(e, item, 'Profit')}
+                isFixedApplicable={profitObj?.CostingApplicabilityDetails?.some(detail => detail.Applicability === 'Fixed')}
+                onRemarkPopUpClick={onRemarkPopUpClickProfit}
+                onRemarkPopUpClose={onRemarkPopUpCloseProfit}
+              />
+              {/* {
                 profitObj && profitObj.ProfitApplicability &&
                 <Col md="1" className='second-section profit'>
                   <div className='costing-border-inner-section'>
@@ -890,7 +890,7 @@ function OverheadProfit(props) {
                     </Popup></Col>
                   </div>
                 </Col>
-              }
+              } */}
 
             </Row>
 

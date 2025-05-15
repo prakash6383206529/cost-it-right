@@ -689,7 +689,10 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail?.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail?.Remark : '-',
   }
 
-
+  obj.netOverheadCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : 0
+  obj.netProfitCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : 0
+  obj.netRejectionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetRejectionCost !== null ? dataFromAPI?.CostingPartDetails?.NetRejectionCost : 0
+  obj.netICCCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetICCCost !== null ? dataFromAPI?.CostingPartDetails?.NetICCCost : 0
   const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
 
   obj.paymentTerms = {
@@ -2029,14 +2032,16 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
 
   return result;
 };
-export const getOverheadAndProfitCostTotal = (arr = []) => {
+export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
   const totals = {
     overheadOperationCost: 0,
     overheadProcessCost: 0,
     profitOperationCost: 0,
     profitProcessCost: 0,
     overheadWeldingCost: 0,
-    profitWeldingCost: 0
+    profitWeldingCost: 0,
+    NetCCForOtherTechnologyCostForOverhead:0,
+    NetCCForOtherTechnologyCostForProfit:0
   };
 
   arr.forEach(item => {
@@ -2047,7 +2052,8 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
       IsDetailed,
       UOMType,
       CostingConditionNumber: type,
-      ForType
+      ForType,
+      ProcessTechnologyId
     } = item;
 
     const operation = checkForNull(OperationCost);
@@ -2097,6 +2103,14 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
       }
       if ("ProcessCost" in item) {
         totals.overheadProcessCost += useExclForOverhead ? processExcl : process;
+        if(ProcessTechnologyId !== technologyId) {
+          // Initialize if undefined to prevent NaN
+          if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
+            totals.ccForOtherTechnologyCostForOverhead = 0;
+          }
+          const costToAdd = useExclForOverhead ? processExcl : process;
+          totals.ccForOtherTechnologyCostForOverhead += Number(costToAdd);
+        }
       }
     }
 
@@ -2110,6 +2124,13 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
       }
       if ("ProcessCost" in item) {
         totals.profitProcessCost += useExclForProfit ? processExcl : process;
+        if(ProcessTechnologyId !== technologyId){
+          if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
+            totals.ccForOtherTechnologyCostForOverhead = 0;
+          }
+          const costToAdd = useExclForProfit ? processExcl : process;
+          totals.ccForOtherTechnologyCostForProfit += Number(costToAdd);
+        }
       }
     }
   });

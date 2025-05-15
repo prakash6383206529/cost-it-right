@@ -3151,105 +3151,41 @@ const iccToolTipText = `
 
 
                           {
-                            !drawerDetailPDF ? <tr>
+                             !drawerDetailPDF ? (
+                              <tr>
                               <td>
-                                <span className="d-block small-grey-text">
-                                  Model Type For Overhead/Profit
-                                </span>
-                                <span className="d-block small-grey-text"></span>
-                                <span className={highlighter(["overheadOn", "overheadValue"], "multiple-key")}>Overhead On</span>
-                                <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Profit On</span>
-                                <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Rejection Recovery</span>
-                                <span className={highlighter(["rejectionOn", "rejectionValue"], "multiple-key")}>Rejection On</span>
-                                <span className={highlighter(["iccOn", "iccValue"], "multiple-key")}>ICC On</span>
-                                {showDynamicKeys && <>
-                                  {renderOtherCostDetailsOverhead(otherCostDetailsOverhead)}
-                                </>}
+                                <span className={highlighter("sTreatment")}>Net Overhead Cost</span>
+                                <span className={highlighter("tCost")}> Net Profit Cost</span>
+                                <span className={highlighter("HangerCostPerPart")}> Net Rejection Cost </span>
+                                <span className={highlighter("TotalPaintCost")}> Net ICC Cost </span>
                               </td>
-
                               {viewCostingData &&
-                                viewCostingData?.map((data, indexInside) => {
-                                  const { ApplicabilityType, EffectiveRecoveryPercentage, RejectionRecoveryNetCost } = data?.CostingRejectionRecoveryDetails || {}
+                                viewCostingData?.map((data) => {
                                   return (
-
                                     <td className={tableDataClass(data)}>
-                                      <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.modelType : '')}</span>
-                                      <div className={`d-flex`}>
-                                        <span className="d-inline-block w-50">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.applicability : '')}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '')}
-                                        </span>
-                                        <span className="d-inline-block w-50">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.value : '')}
-                                        </span>
-                                      </div>
-                                      <div style={pdfHead ? { marginTop: '-4px' } : {}} className={`d-flex ${highlighter(["overheadOn", "overheadValue"], "multiple-key")}`}>
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn?.overheadTitle : '')}
-                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText && data?.CostingHeading !== VARIANCE && data?.overheadOn?.overheadValue) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
-
-                                        </span>
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {getOverheadPercentage(data)}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.overheadOn?.overheadValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.overheadOn?.overheadValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}                                        </span>
-                                      </div>
-                                      <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn?.profitTitle : '')}
-                                          {(!pdfHead && !drawerDetailPDF && overheadAndProfitTooltipText && data?.CostingHeading !== VARIANCE && data?.profitOn?.profitValue) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="profit-toolcost-include" tooltipText={overheadAndProfitTooltipText} />}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {getProfitPercentage(data)}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn?.profitValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn?.profitValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}                                        </span>
-                                      </div>
-                                      <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? ApplicabilityType ?? '-' : '')}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? EffectiveRecoveryPercentage ?? '-' : '')}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
-                                        </span>
-                                      </div>
-                                      <div style={pdfHead ? { marginTop: '-2px' } : {}} className={`d-flex ${highlighter(["rejectionOn", "rejectionValue"], "multiple-key")}`}>
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle : '')}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : data?.rejectionOn.rejectionPercentage : '')}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration?.NoOfDecimalForPrice)} {!pdfHead && !drawerDetailPDF && RejectionRecoveryNetCost && data?.rejectionOn?.rejectionValue && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="rejection-recovery" width="280px" tooltipText={"Rejection Cost = Net Rejection Cost - Rejection Recovery Cost"} />}
-                                          </span> : '')}
-                                        </span>
-                                      </div>
-                                      <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex  ${highlighter(["iccOn", "iccValue"], "multiple-key")}`}>
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          <span>
-                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle : '')}
-                                            {(!pdfHead && !drawerDetailPDF && iccToolTipText && data?.CostingHeading !== VARIANCE && data?.iccOn?.iccValue) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="icc-toolcost-include" tooltipText={iccToolTipText} />}                                          </span></span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle === 'Fixed' ? '-' : data?.iccOn.iccPercentage : '')}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
-                                        </span>
-                                      </div>
-                                      {showDynamicKeys && <>
-                                        {renderDataForOtherCostDetailsOverhead(otherCostDetailsOverhead, indexInside, false, data)}
-                                      </>}
+                                      <span className={highlighter("sTreatment")}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?  <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
+                                      </span>
+                                      <span className={highlighter("tCost")}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                          (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                          : '')}
+                                      </span>
+                                      <span className={highlighter("HangerCostPerPart")}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                          (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                          : '')}
+                                      </span>
+                                      <span className={highlighter("TotalPaintCost")}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                          (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                          : '')}
+                                      </span>
                                     </td>
                                   )
                                 })}
-                            </tr> : <tr><td colSpan={2} className='pb-0'><ViewOverheadProfit
+                            </tr>
+                              ) : <tr><td colSpan={2} className='pb-0'><ViewOverheadProfit
                               isOpen={isViewOverheadProfit}
                               overheadData={viewOverheadData}
                               profitData={viewProfitData}
