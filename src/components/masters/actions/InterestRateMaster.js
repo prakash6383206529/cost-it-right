@@ -9,7 +9,8 @@ import {
     GET_INTEREST_RATE_DATA_LIST,
     config,
     GET_WIP_COMPOSITION_METHOD_SELECTLIST,
-    GET_INVENTORYDAY_TYPE_SELECTLIST
+    GET_INVENTORYDAY_TYPE_SELECTLIST,
+    GET_ICC_METHOD_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import axiosInstance from '../../../utils/axiosInstance';
@@ -234,6 +235,30 @@ export function getICCAppliSelectList(callback) {
 }
 
 /**
+ * @method getICCMethodSelectList
+ * @description GET ICC METHOD SELECTLIST
+ */
+export function getICCMethodSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getICCMethodSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ICC_METHOD_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method bulkUploadInterestRateZBC
  * @description BULK UPLOAD FOR INTEREST RATE ZBC
  */
@@ -277,6 +302,26 @@ export function bulkUploadInterestRateVBC(data, callback) {
 export function bulkUploadInterestRateCBC(data, callback) {
     return (dispatch) => {
         const request = axiosInstance.post(API.bulkUploadInterestRateCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+
+/**
+ * @method bulkUploadInterestRate
+ * @description BULK UPLOAD FOR INTEREST RATE CBC
+ */
+export function bulkUploadInterestRate(data, callback) {
+    return (dispatch) => {
+        const request = axiosInstance.post(API.bulkUploadInterestRate, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

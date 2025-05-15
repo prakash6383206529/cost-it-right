@@ -540,9 +540,12 @@ export const API = {
   getInventoryDayTypeSelectList: `${BASE_URL}/vendor/select-list-get-inventory-day-type`,
   getWipCompositionMethodList: `${BASE_URL}/vendor/select-list-get-wip-composition-method`,
   getICCAppliSelectList: `${BASE_URL}/configuration/get-icc-applicability-list`,
+  getICCMethodSelectList: `${BASE_URL}/vendor/select-list-get-icc-method`,
   bulkUploadInterestRateZBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-zbc-json`,
   bulkUploadInterestRateVBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-vbc-json`,
   bulkUploadInterestRateCBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-cbc-json`,
+
+  bulkUploadInterestRate: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-json`,
 
 
   //COSTING API
@@ -1753,6 +1756,7 @@ export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APP
 export const GET_INVENTORYDAY_TYPE_SELECTLIST = 'GET_INVENTORYDAY_TYPE_SELECTLIST'
 export const GET_WIP_COMPOSITION_METHOD_SELECTLIST = 'GET_WIP_COMPOSITION_METHOD_SELECTLIST'
 export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST'
+export const GET_ICC_METHOD_SELECTLIST = 'GET_ICC_METHOD_SELECTLIST'
 export const GET_LAST_SIMULATION_DATA = 'GET_LAST_SIMULATION_DATA'
 
 //AUDIT
@@ -3188,10 +3192,10 @@ export const CRMHeads = [
 
 ]
 
-export const ICCMethods = [
-  { label: "Applicability Based", value: "Applicability Based" },
-  { label: "Credit Based", value: "Credit Based" }
-]
+export const ICC_METHODS = {
+  ApplicabilityBased: "1",
+  CreditBased: "2"
+}
 
 export const InventoryDayTypeList = [
   { label: "General", value: "General" },

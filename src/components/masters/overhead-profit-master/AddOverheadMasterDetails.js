@@ -8,7 +8,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../../common/DayTimeWrapper';
 import { useTranslation } from 'react-i18next';
-import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull } from "../../../helper";
+import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull, maxLength7 } from "../../../helper";
 import { CBCTypeId, EMPTY_DATA, OVERHEADMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { fetchApplicabilityList, getVendorNameByVendorSelectList, fetchSpecificationDataAPI } from '../../../actions/Common';
@@ -82,12 +82,7 @@ const AddOverheadMasterDetails = (props) => {
         if (label === 'ModelType') {
             modelTypes && modelTypes.map(item => {
                 if (item.Value === '0') return false;
-                if(props?.applicabilityLabel === "ICC"){
-                    temp.push({ label: item.Text, value: item.Text })
-                }else{
-                    temp.push({ label: item.Text, value: item.Value })
-                }
-                
+                temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
             return temp;
@@ -163,6 +158,8 @@ const AddOverheadMasterDetails = (props) => {
         const isApplicabilityValid = await trigger("OverheadApplicability");
         if (!applicability?.label || !isApplicabilityValid) return;
         const percentage = getValues("OverheadPercentage");
+
+        const repaymentPeriod = getValues("RepaymentPeriod");
         
         if (applicability?.label !== "Fixed") {
             const isPercentageValid = await trigger("OverheadPercentage");
@@ -177,7 +174,8 @@ const AddOverheadMasterDetails = (props) => {
             let obj = {
                 "ApplicabilityId": applicability.value,
                 "Applicability" : applicability.label,
-                "Percentage": percentage
+                "Percentage": percentage,
+                ...(state?.IsPaymentTermsRecord && { RepaymentPeriod: repaymentPeriod })
             }
             if(editItemId){
                 prevApplicability = [...state.ApplicabilityDetails]
@@ -212,9 +210,12 @@ const AddOverheadMasterDetails = (props) => {
             "label": editItem?.Applicability,
             "value": editItem?.ApplicabilityId
         }
-        setState(prev => ({ ...prev, OverheadApplicability: obj, OverheadPercentage: editItem?.Percentage }));
+        setState(prev => ({ ...prev, OverheadApplicability: obj, OverheadPercentage: editItem?.Percentage,  ...(state?.IsPaymentTermsRecord && { RepaymentPeriod: editItem?.RepaymentPeriod }) }));
         setValue("OverheadPercentage", editItem?.Percentage);
         setValue("OverheadApplicability", obj);
+        if(state?.IsPaymentTermsRecord){
+            setValue("RepaymentPeriod", editItem?.RepaymentPeriod);
+        }
     }
 
     const onPressAssemblyCheckbox = () => {
@@ -310,6 +311,11 @@ const AddOverheadMasterDetails = (props) => {
         setState(prev => ({...prev, EffectiveDate: value, IsFinancialDataChanged: true}));
         setValue("EffectiveDate", value);
     }
+
+    const handleChangeRepaymentPeriod = (value) => {
+        setValue("RepaymentPeriod", value);
+        setState(prev => ({...prev, RepaymentPeriod: value, IsFinancialDataChanged: true}));
+    };
 
 
     return (
@@ -573,33 +579,59 @@ const AddOverheadMasterDetails = (props) => {
                                 disabled={state?.isViewMode}
                             />
                         </Col>
+
+
+                        {(state?.OverheadApplicability?.label !== 'Fixed' && state?.IsPaymentTermsRecord) && (
+                            <>
+                                <Col md="3">
+                                        <TextFieldHookForm
+                                            name="RepaymentPeriod"
+                                            label="Repayment Period (Days)"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            type="text"
+                                            placeholder={state.isViewMode ? '-' : "Enter"}
+                                            value={state.RepaymentPeriod}
+                                            handleChange={(e) => handleChangeRepaymentPeriod(e.target.value)}
+                                            disabled={state.isViewMode}
+                                            rules={{
+                                                validate: { number, checkWhiteSpaces, maxLength7 }
+                                            }}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.RepaymentPeriod}
+                                        />
+                                </Col>
+                            </>
+                        )}
                         
                         {state?.OverheadApplicability?.label != "Fixed" &&
-                        <Col md="3">
-                            <TextFieldHookForm
-                                label={`${props?.applicabilityLabel ?? ''} (%)`}
-                                name={'OverheadPercentage'}
-                                Controller={Controller}
-                                id={'overhead-percentage'}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: !!state?.OverheadApplicability && (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed",
-                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                    max: {
-                                        value: 100,
-                                        message: 'Percentage cannot be greater than 100'
-                                    },
-                                }}
-                                mandatory={!!state?.OverheadApplicability && (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed"}
-                                handleChange={handleOverheadPercentageChange}
-                                defaultValue={''}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.OverheadPercentage}
-                                disabled={ !!state?.OverheadApplicability && !(Object.keys(state?.OverheadApplicability).length > 0) || state?.isViewMode}
-                            />
-                        </Col>
+                            <Col md="3">
+                                <TextFieldHookForm
+                                    label={`${props?.applicabilityLabel ?? ''} (%)`}
+                                    name={'OverheadPercentage'}
+                                    Controller={Controller}
+                                    id={'overhead-percentage'}
+                                    control={control}
+                                    register={register}
+                                    rules={{
+                                        required: !!state?.OverheadApplicability && (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed",
+                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                        max: {
+                                            value: 100,
+                                            message: 'Percentage cannot be greater than 100'
+                                        },
+                                    }}
+                                    mandatory={!!state?.OverheadApplicability && (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed"}
+                                    handleChange={handleOverheadPercentageChange}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.OverheadPercentage}
+                                    disabled={ !!state?.OverheadApplicability && !(Object.keys(state?.OverheadApplicability).length > 0) || state?.isViewMode}
+                                />
+                            </Col>
                         }
 
                         <Col md="3">
@@ -650,6 +682,9 @@ const AddOverheadMasterDetails = (props) => {
                         <thead>
                             <tr>
                                 <th>{`Applicability`}</th>
+                                {state?.IsPaymentTermsRecord &&
+                                    <th>{`Repayment Period`}</th>
+                                }
                                 <th>{`Percentage`}</th>
                                 <th>{`Action`}</th>
                             </tr>
@@ -660,6 +695,9 @@ const AddOverheadMasterDetails = (props) => {
                             return (
                                 <tr key={index}>
                                     <td>{item?.Applicability}</td>
+                                    {state?.IsPaymentTermsRecord && 
+                                        <td>{item?.RepaymentPeriod}</td>
+                                    }
                                     <td>{item?.Percentage}</td>
                                     <td>
                                         <button

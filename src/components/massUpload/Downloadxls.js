@@ -112,6 +112,9 @@ export const checkInterestRateConfigure = (excelData) => {
             if (el.value === 'RawMaterialName') return false;
             if (el.value === 'RawMaterialGrade') return false;
         }
+        if (!(getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily)) {
+            if (el.value === 'PartFamilyCode') return false;
+        }
         return true;
     })
 }

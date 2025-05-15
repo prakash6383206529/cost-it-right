@@ -14,7 +14,7 @@ import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncS
 import { fetchApplicabilityList, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material';
-import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, getWipCompositionMethodList, getInventoryDayTypeSelectList, getInterestRateDataList } from '../actions/InterestRateMaster';
+import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, getWipCompositionMethodList, getInventoryDayTypeSelectList, getInterestRateDataList, getICCMethodSelectList } from '../actions/InterestRateMaster';
 import { getClientSelectList } from '../actions/Client';
 import { getPartFamilySelectList } from '../actions/Part';
 import { fetchCostingHeadsAPI, fetchModelTypeAPI, getPlantSelectListByType } from '../../../actions/Common';
@@ -26,7 +26,8 @@ import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import { checkEffectiveDate } from '../masterUtil';
-import { ICCMethods } from '../../../config/constants';
+// import { ICCMethods } from '../../../config/constants';
+import { ICC_METHODS } from '../../../config/constants';
 import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, checkForNull, maxLength7 } from "../../../helper/validation";
 import { fetchSpecificationDataAPI } from '../../../actions/Common';
 import AddOverheadMasterDetails from '../overhead-profit-master/AddOverheadMasterDetails';
@@ -107,10 +108,7 @@ const AddInterestRate = (props) => {
         selectedInventoryDayType: [],
         selectedWIPMethods: [],
         WIPMethod: [],
-        ICCMethods: [
-            { label: "Applicability Based", value: "Applicability Based" },
-            { label: "Credit Based", value: "Credit Based" }
-        ],
+        ICCMethods: [],
         isShowApplicabilitySection: true,
         CreditBasedAnnualICCPercent: 0
     });
@@ -122,7 +120,7 @@ const AddInterestRate = (props) => {
     const modelTypes = useSelector((state) => state.comman.modelTypes);
     const costingHead = useSelector((state) => state.comman.costingHead);
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
-    const { iccApplicabilitySelectList, interestRateData, inventoryDayTypeSelectList, wipCompositionMethodSelectList } = useSelector((state) => state.interestRate);
+    const { iccApplicabilitySelectList, interestRateData, iccMethodSelectList, inventoryDayTypeSelectList, wipCompositionMethodSelectList } = useSelector((state) => state.interestRate);
     const { applicabilityList } = useSelector((state) => state.comman);
     const vendorSelectList = useSelector((state) => state.comman.vendorSelectList);
 
@@ -188,6 +186,7 @@ const AddInterestRate = (props) => {
         }
         dispatch(getWipCompositionMethodList(() => {}));
         dispatch(getInventoryDayTypeSelectList(() => {}));
+        dispatch(getICCMethodSelectList(() => {}));
 
         // const isRequestForMultiTechnology = !state.isAssemblyCheckboxIcc ? true : false;
         const isRequestForMultiTechnology = state.isAssemblyCheckbox;
@@ -300,8 +299,9 @@ const AddInterestRate = (props) => {
             return temp;
         }
         if (label === 'ICCMethod') {
-            ICCMethods && ICCMethods.map((item) => {
-                temp.push({ label: item.label, value: item.value });
+            iccMethodSelectList && iccMethodSelectList.map((item) => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value });
                 return null;
             });
             return temp;
@@ -562,10 +562,10 @@ const AddInterestRate = (props) => {
                 ...prev,
                 isLoader: true,
                 isEditFlag: true,
-                InterestRateId: data.ID,
+                InterestRateId: data.Id,
             }));
 
-            dispatch(getInterestRateData(data.ID, (res) => {
+            dispatch(getInterestRateData(data.Id, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     setState(prev => ({
@@ -585,8 +585,8 @@ const AddInterestRate = (props) => {
                     setValue("EffectiveDate", DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '')
                     setState(prev => ({ ...prev, minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' }));
 
-                    setValue("ModelType", { label: Data.ICCModelType, value: Data.ICCModelType })
-                    setValue("costingTypeId", Data.CostingTypeId)
+                    setValue("ModelType", Data.ICCModelType !== undefined ? { label: Data?.ICCModelType, value: Data?.ICCModelTypeId } : [])
+                    setValue("costingTypeId", Data?.CostingTypeId)
                     setValue("clientName", Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [])
                     setValue("vendorName", Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [])
                     setValue("PartFamily", Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : []);
@@ -624,13 +624,14 @@ const AddInterestRate = (props) => {
                             ApplicabilityDetails: Data?.ICCApplicabilityDetails !== undefined ? Data.ICCApplicabilityDetails : [],
                             selectedInventoryDayType: Data?.InterestRateInventoryTypeDetails ? Data?.InterestRateInventoryTypeDetails : [],
                             selectedWIPMethods: Data?.InterestRateWIPCompositionMethodDetails ? Data?.InterestRateWIPCompositionMethodDetails : [],
-                            IsPaymentTermsRecord: Data?.IsPaymentTermsRecord,
-                            ModelType: Data.ICCModelType !== undefined ? { label: Data?.ICCModelType, value: Data?.ICCModelType } : [],
+                            // IsPaymentTermsRecord: Data?.IsPaymentTermsRecord,
+                            ModelType: Data.ICCModelType !== undefined ? { label: Data?.ICCModelType, value: Data?.ICCModelTypeId } : [],
                             ApplicabilityBasedInventoryDayType: Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : [],
                             CreditBasedAnnualICCPercent: Data?.CreditBasedAnnualICCPercent,
-                            selectedICCMethod: Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethod } : [],
+                            selectedICCMethod: Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethodId } : [],
                             isApplyInventoryDays: Data.IsApplyInventoryDay,
-                            isShowApplicabilitySection: Data.ICCMethod === "Credit Based" ? false : true,
+                            // isShowApplicabilitySection: Data.ICCMethod === "Credit Based" ? false : true,
+                            isShowApplicabilitySection: Data?.ICCMethodId == ICC_METHODS.CreditBased ? false : true,
 
                             isLoader: false
                         }));
@@ -740,7 +741,9 @@ const AddInterestRate = (props) => {
             "PaymentTermsApplicabilityDetails": null,
             "IsPaymentTermsRecord": false,
             "ICCModelType": state?.ModelType?.label,
-            "ICCMethod": state?.selectedICCMethod?.value,
+            "ICCModelTypeId": state?.ModelType?.value,
+            "ICCMethod": state?.selectedICCMethod?.label,
+            "ICCMethodId": state?.selectedICCMethod?.value,
             "ApplicabilityBasedInventoryDayType": state?.ApplicabilityBasedInventoryDayType?.value,
             "CreditBasedAnnualICCPercent": state?.CreditBasedAnnualICCPercent,
             "IsApplyInventoryDay": state?.isApplyInventoryDays,
@@ -801,13 +804,13 @@ const AddInterestRate = (props) => {
             isShowApplicabilitySection: false,
             isApplyInventoryDays: false
         };
-        if (newValue?.value === "Credit Based") {
+        if (newValue?.value === ICC_METHODS.CreditBased) {
             updatedState.isApplyInventoryDays = true;
-        } else if (newValue?.value === "Applicability Based") {
+        } else if (newValue?.value === ICC_METHODS.ApplicabilityBased) {
             updatedState.isShowApplicabilitySection = true;
             if (state?.isApplyInventoryDays) {
                 // If inventory days already applying, set default InventoryDayType
-                const obj = inventoryDayTypeSelectList?.find(item => item.Value === 'General');
+                const obj = inventoryDayTypeSelectList?.find(item => item.Value === "5");
                 if (obj) {
                     updatedState.ApplicabilityBasedInventoryDayType = { label: obj.Text, value: obj.Value };
                     updatedState.isApplyInventoryDays = true;
@@ -837,9 +840,10 @@ const AddInterestRate = (props) => {
     };
 
     function handleInventoryDayChange(e, data, ind, col){
+        let val = Number(e.target.value);
         const updatedInventoryDayType = state.selectedInventoryDayType.map(item => {
             if (item.InventoryType === data?.InventoryType) {
-                return { ...item, NumberOfDays: e.target.value };
+                return { ...item, NumberOfDays: val };
             }
             return item;
         });
@@ -862,6 +866,7 @@ const AddInterestRate = (props) => {
         }
         const newInventoryDayType = state.InventoryDayType.map(item => ({
             InventoryType: item.label,
+            InventoryTypeId: item.value,
             NumberOfDays: '',
         }));
 
@@ -883,12 +888,13 @@ const AddInterestRate = (props) => {
     };
 
     const onPressInventoryDays = () => {
-        const isApplicabilityBased = state?.selectedICCMethod?.label === "Applicability Based";
+        // const isApplicabilityBased = state?.selectedICCMethod?.label === ICC_METHODS.ApplicabilityBased;
+        const isApplicabilityBased = state?.selectedICCMethod?.value === ICC_METHODS.ApplicabilityBased;
         const isInventoryChecked = !state.isApplyInventoryDays;
         let newInventoryDayType = [];
         if (isApplicabilityBased) {
             if(isInventoryChecked){
-                const obj = inventoryDayTypeSelectList?.find(item => item.Value === 'General');
+                const obj = inventoryDayTypeSelectList?.find(item => item.Value === "5");
                 if (obj) {
                     newInventoryDayType = { label: obj.Text, value: obj.Value };
                     setValue("ApplicabilityBasedInventoryDayType", { label: obj.Text, value: obj.Value })
@@ -924,7 +930,7 @@ const AddInterestRate = (props) => {
     const handleAddWipMethod = () => {
         let arr = [];
         state.WIPMethod.forEach((item) => {
-            let obj = { InventoryType: item.label, NumberOfDays: 0, CreditDays: 0, InterestDays: 0 };
+            let obj = { InventoryType: item.label, InventoryTypeId: item?.value, NumberOfDays: 0, CreditDays: 0, InterestDays: 0 };
             arr.push(obj);
         });
         setState(prev => ({
@@ -945,21 +951,23 @@ const AddInterestRate = (props) => {
     //     setState(prev => ({ ...prev, selectedWIPMethods: prevArray }));
     // };
     function handleWipInventoryDayChange(e, data, ind, col) {
+        let val = Number(e.target.value)
         let prevArray = [...state.selectedWIPMethods];
         let obj = prevArray.find((item) => item.InventoryType === data?.InventoryType);
         let index = prevArray.findIndex((item) => item.InventoryType === data?.InventoryType);
-        obj.NumberOfDays = e.target.value;
-        obj.InterestDays = checkForNull(e.target.value) - checkForNull(obj.CreditDays);
+        obj.NumberOfDays = val;
+        obj.InterestDays = checkForNull(val) - checkForNull(obj.CreditDays);
         prevArray[index] = obj;
         setState(prev => ({ ...prev, selectedWIPMethods: prevArray }));
     };
 
     function handleSupplierDayChange(e, data, ind, col) {
+        let val = Number(e.target.value)
         let prevArray = [...state.selectedWIPMethods];
         let obj = prevArray.find((item) => item.InventoryType === data?.InventoryType);
         let index = prevArray.findIndex((item) => item.InventoryType === data?.InventoryType);
-        obj.CreditDays = e.target.value;
-        obj.InterestDays = checkForNull(obj.NumberOfDays) - checkForNull(e.target.value);
+        obj.CreditDays = val;
+        obj.InterestDays = checkForNull(obj.NumberOfDays) - checkForNull(val);
         prevArray[index] = obj;
         setState(prev => ({ ...prev, selectedWIPMethods: prevArray }));
     };
@@ -1076,20 +1084,22 @@ const AddInterestRate = (props) => {
 
                                             <Col md="2" className="st-operation mt-4 pt-2">
                                                 <label id="AddInterestRate_ApplyPartCheckbox"
-                                                    className={`custom-checkbox ${(state.isEditFlag || state?.selectedICCMethod?.label === "Credit Based") ? "disabled" : ""}`}
+                                                    // className={`custom-checkbox ${(state.isEditFlag || state?.selectedICCMethod?.label === "Credit Based") ? "disabled" : ""}`}
+                                                    className={`custom-checkbox ${(state.isEditFlag || state?.selectedICCMethod?.value === ICC_METHODS.CreditBased) ? "disabled" : ""}`}
                                                     onChange={onPressInventoryDays}
                                                 >
                                                     Apply Inventory Days
                                                     <input
                                                         type="checkbox"
                                                         checked={state.isApplyInventoryDays}
-                                                        disabled={(state.isEditFlag || state?.selectedICCMethod?.label === "Credit Based")}
+                                                        // disabled={(state.isEditFlag || state?.selectedICCMethod?.label === "Credit Based")}
+                                                        disabled={(state.isEditFlag || state?.selectedICCMethod?.value === ICC_METHODS.CreditBased)}
                                                     />
                                                     <span className="before-box" checked={state.isApplyInventoryDays} />
                                                 </label>
                                             </Col>
 
-                                            {state.selectedICCMethod?.value === "Credit Based" &&
+                                            {state.selectedICCMethod?.value === ICC_METHODS.CreditBased &&
                                                 <Col md="3">
                                                     <TextFieldHookForm
                                                         label={`Credit Based Annual ICC (%)`}
@@ -1099,14 +1109,14 @@ const AddInterestRate = (props) => {
                                                         control={control}
                                                         register={register}
                                                         rules={{
-                                                            required: state.selectedICCMethod?.value === "Credit Based",
+                                                            required: state.selectedICCMethod?.value === ICC_METHODS.CreditBased,
                                                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                             max: {
                                                                 value: 100,
                                                                 message: 'Percentage cannot be greater than 100'
                                                             },
                                                         }}
-                                                        mandatory={state.selectedICCMethod?.value === "Credit Based"}
+                                                        mandatory={state.selectedICCMethod?.value === ICC_METHODS.CreditBased}
                                                         handleChange={handleChangeCreditBasePercentage}
                                                         defaultValue={''}
                                                         className=""
@@ -1117,7 +1127,7 @@ const AddInterestRate = (props) => {
                                                 </Col>
                                             }
 
-                                            {state.selectedICCMethod?.value === "Applicability Based" && state.isApplyInventoryDays && (
+                                            {state.selectedICCMethod?.value == ICC_METHODS.ApplicabilityBased && state.isApplyInventoryDays && (
                                                 <Col md="3">
                                                     <SearchableSelectHookForm
                                                         name="ApplicabilityBasedInventoryDayType"
@@ -1129,14 +1139,14 @@ const AddInterestRate = (props) => {
                                                         options={renderListing("ApplicabilityBasedInventoryDayType")}
                                                         handleChange={applicabilityInventoryDayTypeChange}
                                                         errors={errors.ApplicabilityBasedInventoryDayType}
-                                                        disabled={state.isEditFlag || state.isViewMode || (state?.selectedICCMethod?.value === "Applicability Based" && state?.isApplyInventoryDays)}
+                                                        disabled={state.isEditFlag || state.isViewMode || (state?.selectedICCMethod?.value === ICC_METHODS.ApplicabilityBased && state?.isApplyInventoryDays)}
                                                         value={state.ApplicabilityBasedInventoryDayType}
                                                     />
                                                 </Col>
                                             )}
                                         </Row>
 
-                                        {state?.selectedICCMethod?.label === "Credit Based" && (
+                                        {state?.selectedICCMethod?.value == ICC_METHODS.CreditBased && (
                                             <>
                                                 <Row>
                                                     <Col md="12" className="filter-block">

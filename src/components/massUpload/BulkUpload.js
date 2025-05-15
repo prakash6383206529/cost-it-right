@@ -18,7 +18,7 @@ import { partComponentBulkUpload, partFamilyBulkUpload, productComponentBulkUplo
 import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
 import { volumeBulkUpload } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
-import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
+import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC, bulkUploadInterestRate } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showBopLabel, userDetails } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
@@ -1142,17 +1142,12 @@ class BulkUpload extends Component {
                     this.responseHandler(res)
                 });
 
-            } else if (fileName === 'Interest Rate' && costingTypeId === VBCTypeId) {
-                this.props.bulkUploadInterestRateVBC(uploadData, (res) => {
+            } else if (fileName === 'Interest Rate' && costingTypeId === VBCTypeId || costingTypeId === CBCTypeId) {
+                uploadData.CostingTypeId = costingTypeId
+                this.props.bulkUploadInterestRate(uploadData, (res) => {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
                 });
-            } else if (fileName === 'Interest Rate' && costingTypeId === CBCTypeId) {
-                this.props.bulkUploadInterestRateCBC(uploadData, (res) => {
-                    this.setState({ setDisable: false })
-                    this.responseHandler(res)
-                });
-
             } else if (fileName === 'Product Component') {
                 this.props.productComponentBulkUpload(uploadData, (res) => {
                     this.setState({ setDisable: false })
@@ -1659,6 +1654,7 @@ export default connect(mapStateToProps, {
     volumeBulkUpload,
     bulkUploadInterestRateZBC,
     bulkUploadInterestRateVBC,
+    bulkUploadInterestRate,
     bulkUploadInterestRateCBC,
     bulkUploadBudgetMaster,
     checkRFQBulkUpload,
