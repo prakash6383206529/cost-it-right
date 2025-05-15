@@ -85,6 +85,11 @@ function PackagingCalculator(props) {
     useEffect(() => {
         if (!CostingViewMode && calclulationFieldValues.some(value => value !== undefined)) {
             calculateAllValues();
+            
+            // After calculating all values, also update totalCostOfCrateWithAddedCost
+            setTimeout(() => {
+                updateTotalCostOfCrateWithAddedCost();
+            }, 100);
         }
     }, [calclulationFieldValues, state?.spacerPackingInsertRecoveryCostPerKg, state?.volumePerDay, state?.volumePerAnnum, state?.totalCostOfCrate, state?.totalAddedCost, state?.totalCostOfCrateWithAddedCost, state.isVolumeAutoCalculate, state.IsPerPart]);
     useEffect(() => {
@@ -132,25 +137,8 @@ function PackagingCalculator(props) {
         }
     }, [calclulationFieldValues]);
     useEffect(() => {
-        const totalAddedCost = state.gridTable?.reduce((sum, item) => {
-            return sum + Number(item.NetCost || 0);
-
-        }, 0);
-        let totalCostOfCrateWithAddedCost = 0
-        let cost = state.calculationCriteria?.label === "Annual Volume Basis" || state.calculationCriteria?.label === "Returnable Packaging Cost" ? state.totalCostOfCrate : checkForNull(getValuesPackaging('CostOfCrate'))
-        if (state?.calculationCriteria?.label === 'Bin/Trolley Life Basis' || state?.calculationCriteria?.label === 'Non-returnable packaging') {
-            totalCostOfCrateWithAddedCost = (cost + totalAddedCost) * checkForNull(getValuesPackaging('StockNormDays'))
-        } else if (state.calculationCriteria?.label === 'Annual Volume Basis' || state.calculationCriteria?.label === "Returnable Packaging Cost") {
-            totalCostOfCrateWithAddedCost = cost + totalAddedCost
-        } else {
-            totalCostOfCrateWithAddedCost = totalAddedCost
-        }
-        setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice))
-        setState(prev => ({
-            ...prev,
-            totalAddedCost,
-            totalCostOfCrateWithAddedCost
-        }));
+        updateTotalCostOfCrateWithAddedCost();
+        
         if (state?.gridTable && state?.gridTable?.length > 0) {
             setState(prev => ({
                 ...prev,
@@ -506,6 +494,11 @@ function PackagingCalculator(props) {
         setValuePackaging('TotalCostOfCrate', checkForDecimalAndNull(totalCostOfCrate, NoOfDecimalForPrice));
         setValuePackaging('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(costOfSpacerPackingInsert, NoOfDecimalForPrice));
         setValuePackaging('PackingCost', checkForDecimalAndNull(packagingCost, NoOfDecimalForPrice));
+        
+        // Call updateTotalCostOfCrateWithAddedCost after updating totalCostOfCrate
+        setTimeout(() => {
+            updateTotalCostOfCrateWithAddedCost();
+        }, 0);
     }
     const handleSpacerPackingInsertCost = (value) => {
         calculateSpacerPackingInsertRecoveryCost(value, getValuesPackaging('NoOfSpacerPackingInsert'), getValuesPackaging('SpacerPackingInsertRecovery'))
@@ -728,6 +721,7 @@ const calculateAllValuesWithMode = (IsPerPart) => {
 
     switch (calculationCriteria?.label) {
         case "Bin/Trolley Life Basis":
+            case "Non-returnable packaging":
             packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (amortizedYears * noOfComponentsPerCrate))
                 + coverCost
                 + spacerCostChecked;
@@ -761,6 +755,33 @@ const calculateAllValuesWithMode = (IsPerPart) => {
     setValuePackaging('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(costOfSpacerPackingInsert, NoOfDecimalForPrice));
     setValuePackaging('PackingCost', checkForDecimalAndNull(packagingCost, NoOfDecimalForPrice));
 };
+
+// Create a separate function to update totalCostOfCrateWithAddedCost
+const updateTotalCostOfCrateWithAddedCost = () => {
+    const totalAddedCost = state.gridTable?.reduce((sum, item) => {
+        return sum + Number(item.NetCost || 0);
+    }, 0);
+    
+    let totalCostOfCrateWithAddedCost = 0;
+    let cost = state.calculationCriteria?.label === "Annual Volume Basis" || state.calculationCriteria?.label === "Returnable Packaging Cost" 
+        ? state.totalCostOfCrate 
+        : checkForNull(getValuesPackaging('CostOfCrate'));
+    
+    if (state?.calculationCriteria?.label === 'Bin/Trolley Life Basis' || state?.calculationCriteria?.label === 'Non-returnable packaging') {
+        totalCostOfCrateWithAddedCost = (cost + totalAddedCost) * checkForNull(getValuesPackaging('StockNormDays'));
+    } else if (state.calculationCriteria?.label === 'Annual Volume Basis' || state.calculationCriteria?.label === "Returnable Packaging Cost") {
+        totalCostOfCrateWithAddedCost = cost + totalAddedCost;
+    } else {
+        totalCostOfCrateWithAddedCost = totalAddedCost;
+    }
+    
+    setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice));
+    setState(prev => ({
+        ...prev,
+        totalCostOfCrateWithAddedCost
+    }));
+};
+
     const onSubmit = debounce((value) => {
         setState((prevState) => ({ ...prevState, disableSubmit: true }))
         let formData = {
