@@ -1,4 +1,4 @@
-import { loggedInUserId } from "../../helper"
+import { checkForNull, loggedInUserId } from "../../helper"
 
 
 export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicRate, netPOPrice) => {
@@ -33,6 +33,10 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
         "NetOperationCostForProfit": rmccData?.CostingPartDetails?.NetOperationCostForProfit || null,
         "NetWeldingCostForOverhead": rmccData?.CostingPartDetails?.NetWeldingCostForOverhead || null,
         "NetWeldingCostForProfit": rmccData?.CostingPartDetails?.NetWeldingCostForProfit || null,
+        "NetWeldingCost": rmccData?.CostingPartDetails?.NetWeldingCost || null,
+        "NetCCForOtherTechnologyCost": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCost || null,
+        "NetCCForOtherTechnologyCostForOverhead": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCostForOverhead || null,
+        "NetCCForOtherTechnologyCostForProfit": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCostForProfit || null,
         CostingPartDetails: { ...rmccData?.CostingPartDetails, BasicRate: basicRate, NetPOPrice: netPOPrice },
     }
     return requestObj;
@@ -49,10 +53,11 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "SubAssemblyCostingId": item?.SubAssemblyCostingId,
         "NetRawMaterialsCost": 0,
         "NetBoughtOutPartCost": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-        "NetConversionCost": item?.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "NetOperationCost": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
+        "NetConversionCost": checkForNull(item?.CostingPartDetails?.NetOperationCost) + checkForNull(item?.CostingPartDetails?.NetProcessCost) + checkForNull(item?.NetLabourCost) + checkForNull(item?.IndirectLaborCost) + checkForNull(item?.StaffCost) + checkForNull(item?.CostingPartDetails?.NetWeldingCost),
+        "NetOperationCost": item?.CostingPartDetails?.NetOperationCost,
+        "NetWeldingCost": item?.CostingPartDetails?.NetWeldingCost,
         "NetOtherOperationCost": 0,
-        "NetProcessCost": item?.CostingPartDetails?.TotalProcessCostPerAssembly,
+        "NetProcessCost": item?.CostingPartDetails?.NetProcessCost,
         "NetTotalRMBOPCC": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
         "BasicRate": basicRate,
         "LoggedInUserId": loggedInUserId(),
@@ -66,12 +71,12 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "StaffCRMHead": "string",                                       // ASK MR
         "NetPOPrice": totalCostSaveAPI,
         "NetChildPartsCost": 0,
-        "NetProcessCostForOverhead": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead,
-        "NetProcessCostForProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit,
-        "NetOperationCostForOverhead": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead,
-        "NetOperationCostForProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit,
-        "NetWeldingCostForOverhead": item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead,
-        "NetWeldingCostForProfit": item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForProfit,
+        "NetProcessCostForOverhead": item?.CostingPartDetails?.NetWeldingCostForOverhead,
+        "NetProcessCostForProfit": item?.CostingPartDetails?.NetProcessCostForProfit,
+        "NetOperationCostForOverhead": item?.CostingPartDetails?.NetOperationCostForOverhead,
+        "NetOperationCostForProfit": item?.CostingPartDetails?.NetOperationCostForProfit,
+        "NetWeldingCostForOverhead": item?.CostingPartDetails?.NetWeldingCostForOverhead,
+        "NetWeldingCostForProfit": item?.CostingPartDetails?.NetWeldingCostForProfit,
     }
     return requestObj;
 }

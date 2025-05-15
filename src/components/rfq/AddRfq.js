@@ -3592,7 +3592,7 @@ function AddRfq(props) {
                                             </Col>}
                                         {initialConfiguration?.RFQManditField?.IsShowNFRNo && <Col md="3" className={initialConfiguration?.RFQManditField?.IsShowNFRNo ? 'd-none' : ''}>
                                             <SearchableSelectHookForm
-                                                label={"NFR No."}
+                                                label={"Customer RFQ No."}
                                                 name={"nfrId"}
                                                 isClearable={true}
                                                 placeholder={"Select"}

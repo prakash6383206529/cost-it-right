@@ -77,7 +77,7 @@ const SimulationLevelListing = (props) => {
                    });
 
                 setState((prevState) => ({
-                    ...prevState, tableData: Data,
+                    ...prevState, tableData: Data, noData: false,
                 }))
             }
         }));
@@ -157,7 +157,7 @@ const SimulationLevelListing = (props) => {
 
                 <Row className="levellisting-page">
                     <Col className="level-table" md="12 ">
-                        <div className={`ag-grid-wrapper height-width-wrapper ${state.tableData && state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0) || state.noData || !state.tableData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header mt-3 mb-2 d-flex">
                                 <input ref={simulationFilter} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => simulationFilterHandler(e)} />
                             </div>

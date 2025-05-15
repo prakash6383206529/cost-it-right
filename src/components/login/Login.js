@@ -139,6 +139,7 @@ class Login extends Component {
 
   forgotConfirm = () => {
     const { fieldsObj } = this.props;
+    console.log(fieldsObj,'fieldsObj')
     if (!this.state.forgetIsCalled) {
       this.setState({ forgetIsCalled: true });
       this.props.forgetPassword(fieldsObj, (res) => {
@@ -290,7 +291,7 @@ const validate = values => {
  * @return object{}
  */
 function mapStateToProps(state) {
-  const fieldsObj = selector(state, 'UserName');
+  const fieldsObj = selector(state, 'username');
   const { menusData, leftMenuData, initialConfiguration } = state.auth;
   return { menusData, leftMenuData, initialConfiguration, fieldsObj };
 }

@@ -306,7 +306,7 @@ function NfrSummaryDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`NFR Summary (Token No.${nfrData?.ApprovalToken ?? ''})`}</h3>
+                                    <h3>{`Customer RFQ Summary (Token No.${nfrData?.ApprovalToken ?? ''})`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
