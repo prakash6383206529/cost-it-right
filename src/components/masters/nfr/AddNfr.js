@@ -205,7 +205,7 @@ function AddNfr(props) {
                 if (res?.data?.Data?.IsFinalApprover) {
                     setIsFinalLevelApprover(res?.data?.Data?.IsFinalApprover)
                     setEditWarning(true)
-                    setFilterStatus('This user is final level user cannot send NFR for approval')
+                    setFilterStatus('This user is final level user cannot send Customer RFQ for approval')
                 } else {
                     setIsFinalLevelApprover(false)
                     setEditWarning(false)
@@ -313,7 +313,7 @@ function AddNfr(props) {
         dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), nfrData?.TechnologyId,null, (res) => {
             levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
             if (levelDetailsTemp?.length === 0) {
-                setFilterStatus("You don't have permission to send NFR for approval.")
+                setFilterStatus("You don't have permission to send Customer RFQ for approval.")
                 setEditWarning(true)
                 setSendForApprovalButtonDisable(true)
                 getDetails(false)
@@ -881,7 +881,7 @@ function AddNfr(props) {
                         <Table className='border cr-brdr-main sub-table' responsive>
                             <thead>
                                 <tr>
-                                    <th>NFR Ref. Number</th>
+                                    <th>Customer RFQ Ref. Number</th>
                                     <th>Part Number</th>
                                     <th>Part Name</th>
                                     <th>Plant (Code)</th>

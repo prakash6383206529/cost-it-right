@@ -615,10 +615,12 @@ function AddRMFinancialDetails(props) {
         };
         setValue("scrapRatePercentageOfRMRate", '')
         setValue("ScrapRateUOM", '')
+        setValue("ScrapRate", "");
         setValue("ConversionRatio", '')
         setValue("CalculatedFactor", '')
         // Set state once with all updates
         setState(updatedState);
+        delete errors.ScrapRate
         // Update the raw material details
         dispatch(setRawMaterialDetails({
             ...rawMaterailDetailsRefFinancial.current,
@@ -1788,11 +1790,11 @@ function AddRMFinancialDetails(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            rules={{
-                                                required: !state.IsCalculateScrapRate,
+                                            rules={!state.IsApplyHasDifferentUOM ? {
+                                                    required: !state.IsCalculateScrapRate,
                                                 validate: { positiveAndDecimalNumber, decimalLengthsix, number },
-                                            }}
-                                            mandatory={!state.IsCalculateScrapRate}
+                                            }:{}}
+                                            mandatory={!state.IsApplyHasDifferentUOM ? !state.IsCalculateScrapRate : false}
                                             className=""
                                             maxLength="15"
                                             customClassName=" withBorder"

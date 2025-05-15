@@ -5,7 +5,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA, NFR } from "../../../config/constants";
+import { CUSTOMER_RFQ, EMPTY_DATA, } from "../../../config/constants";
 import { renderActionCommon } from "../userUtil"
 
 class NfrTab extends Component {
@@ -66,7 +66,7 @@ class NfrTab extends Component {
     */
     renderActionHeads = (actionHeads) => {
         const { actionData } = this.state;
-        let actionNames = actionData && actionData.find(el => el.ModuleName === NFR)
+        let actionNames = actionData && actionData.find(el => el.ModuleName === CUSTOMER_RFQ)
         if (actionNames !== undefined) {
             return actionHeads && actionHeads.map((item, index) => {
                 if (item.Value === 0) return false;
@@ -173,7 +173,7 @@ class NfrTab extends Component {
     */
     renderAction = (actions, parentIndex) => {
 
-        return renderActionCommon(actions, parentIndex, this, NFR)
+        return renderActionCommon(actions, parentIndex, this, CUSTOMER_RFQ)
     }
 
     /**
@@ -209,7 +209,7 @@ class NfrTab extends Component {
 
     updateModules = () => {
         const { Modules } = this.state;
-        this.props.permissions(Modules, NFR)
+        this.props.permissions(Modules, CUSTOMER_RFQ)
     }
 
     /**

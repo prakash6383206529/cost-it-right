@@ -336,6 +336,10 @@ a:hover {
   }
 }
 
+.user-btn.tool-btn {
+  height: 33px !important;
+}
+
 .secondary-btn {
   @extend .user-btn;
   background-color: $secondaryBtn !important;

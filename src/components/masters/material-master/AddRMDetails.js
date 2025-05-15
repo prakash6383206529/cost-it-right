@@ -529,10 +529,10 @@ function AddRMDetails(props) {
             if (Object.keys(data).length > 0) {
                 dispatch(getRMGradeSelectListByRawMaterial(data.RawMaterialId, false, (res) => {
                     dispatch(fetchSpecificationDataAPI(data.GradeId, (res) => {
-                        const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === data.RawMaterialId,)
-                        const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === data.GradeId)
-                        const specObj = res.data.DataList && res.data.DataList.find((item) => {
-                            return item.Text === data.Specification;
+                        const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item?.Value === data?.RawMaterialId,)
+                        const gradeObj = gradeSelectList && gradeSelectList.find((item) => item?.Value === data?.GradeId)
+                        const specObj = res?.data?.DataList && res?.data?.DataList.find((item) => {
+                            return item.Text === data?.Specification;
                         });
                         delete errors?.RawMaterialCode
                         setState(prevState => ({

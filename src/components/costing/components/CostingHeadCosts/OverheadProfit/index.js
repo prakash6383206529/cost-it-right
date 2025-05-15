@@ -616,7 +616,7 @@ function OverheadProfit(props) {
 
   const onRemarkPopUpCloseOverHead = () => {
     let button = document.getElementById(`popUpTriggerOverHead`)
-    setValue(`overHeadRemark`, overheadObj.Remark)
+    setValue(`overHeadRemark`, overheadObj?.Remark)
     if (errors.overHeadRemark) {
       delete errors.overHeadRemark;
     }
@@ -737,7 +737,7 @@ function OverheadProfit(props) {
 
               <Col md="12" className="">
                 <div className="left-border">
-                  {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
+                  {`Overheads ${overheadObj && overheadObj?.OverheadApplicability ? '(' + overheadObj?.OverheadApplicability + ')' : '-'}`}
                 </div>
               </Col>
 
@@ -781,7 +781,7 @@ function OverheadProfit(props) {
               </Col>
 
               {
-                overheadObj && overheadObj.OverheadApplicability &&
+                overheadObj && overheadObj?.OverheadApplicability &&
                 <Col md="1" className='second-section'>
                   <div className='costing-border-inner-section'>
                     <Col md="12" className='text-center'>Remark</Col>
