@@ -183,7 +183,7 @@ function CostingDetailStepTwo(props) {
       let tempData = CostingDataList && CostingDataList[headerIndex];
       if (tempData === undefined) return false
       const { totalCost, basicRate } = calculateCostAndRate(data, tempData, "RMCCTab")
-
+      
 
 
       tempData = {

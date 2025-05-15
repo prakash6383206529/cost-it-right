@@ -1627,7 +1627,7 @@ function RfqListing(props) {
 
                                             <AgGridColumn cellClass={cellClass} field="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             <AgGridColumn field="PartTypes" cellClass={cellClass} headerName={`${partType === 'Tooling' ? 'Tool' : 'Part'} Type`} width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
-                                            {initialConfiguration?.RFQManditField?.IsShowNFRNo && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
+                                            {initialConfiguration?.RFQManditField?.IsShowNFRNo && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='Customer RFQ No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
                                             {partType !== 'Bought Out Part' && <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>}
                                             {initialConfiguration?.RFQManditField?.IsShowPRNumber && partType === 'Bought Out Part' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
 

@@ -1289,6 +1289,10 @@ const CostingSummaryTable = (props) => {
                     }
                   }))
                 }
+                else{
+                  sendForApprovalData(multipleCostings)
+                  setShowApproval(true)
+                }
               })
 
 
@@ -1396,51 +1400,6 @@ const CostingSummaryTable = (props) => {
   }
 
   const sendForApprovalDown = (data) => {
-    //MINDA
-    // if (initialConfiguration?.IsReleaseStrategyConfigured) {
-    //   let returnValue = true
-    //   let dataList = costingIdObj(data)
-    //   let requestObject = {
-    //     "RequestFor": "COSTING",
-    //     "TechnologyId": technologyId,
-    //     "LoggedInUserId": loggedInUserId(),
-    //     "ReleaseStrategyApprovalDetails": dataList
-    //   }
-    //   dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-    //     setReleaseStrategyDetails(res?.data?.Data)
-    //     if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
-    //       let temp = moduleHandler(data[0]?.costingId, 'down', data)
-    //       if (!temp) {
-    //         sendForApprovalData([data[0]?.costingId], index)
-    //         setShowApproval(true)
-    //       } else {
-    //         Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
-    //       }
-    //     } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-    //       if (data && !isFinalCommonApproval) {
-    //         let temp = moduleHandler(data[0]?.costingId, 'down', data)
-    //         if (!temp) {
-    //           sendForApprovalData([data[0]?.costingId], index)
-    //           setShowApproval(true)
-    //         } else {
-    //           Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
-    //         }
-    //       } else {
-    //         Toaster.warning('This is final level user')
-    //         return false
-    //       }
-    //     } else if (res?.data?.Data?.IsFinalApprover === true) {
-    //       returnValue = false
-    //       Toaster.warning('This is final level user')
-    //       return false
-    //     } else {
-    //       returnValue = false
-    //       Toaster.warning('This user is not in approval cycle')
-    //       return false
-    //     }
-    //   }))
-    //   return returnValue
-    // } else {
     if (data) {
       let temp = moduleHandler(data[0]?.costingId, 'down', data)
       if (!temp) {
@@ -2745,6 +2704,8 @@ const iccToolTipText = `
                               </td>
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
+                                  
+                                  
                                   return (
                                     <td className={tableDataClass(data)}>
                                       {data?.bestCost !== true && <>
@@ -2760,7 +2721,7 @@ const iccToolTipText = `
                                           <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netProcessCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                         <span className={highlighter("", "rm-reducer")}>
-                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netOperationCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(checkForNull(data?.netOperationCost)+checkForNull(data?.netWeldingCost), initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                         <span className={highlighter("LabourCost")}>
                                           <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('labour', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.NetLabourCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>

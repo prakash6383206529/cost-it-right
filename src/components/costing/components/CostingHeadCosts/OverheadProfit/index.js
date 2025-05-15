@@ -92,13 +92,13 @@ function OverheadProfit(props) {
       handleModelTypeChange({ label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId }, false)
     }
 
-    // GET FIXED VALUE IN GET API
-    if (CostingOverheadDetail && (CostingOverheadDetail)?.length > 0) {
+    //GET FIXED VALUE IN GET API
+    if (CostingOverheadDetail && Object?.keys(CostingOverheadDetail)?.length > 0) {
       setOverheadValues(CostingOverheadDetail, false)
     }
 
     //GET FIXED VALUE IN GET API
-    if (CostingProfitDetail && (CostingProfitDetail)?.length > 0) {
+    if (CostingProfitDetail && Object?.keys(CostingProfitDetail)?.length > 0) {
       setProfitValues(CostingProfitDetail, false)
       setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
         label: CostingProfitDetail.ProfitCRMHead, value: 1
@@ -112,7 +112,7 @@ function OverheadProfit(props) {
     setOverheadValues(overheadObj, false)
     setProfitValues(profitObj, false)
     setIsSurfaceTreatmentAdded(false)
-  }, [IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost,SurfaceTreatmentCost.NetSurfaceTreatmentCost])
+  }, [IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, SurfaceTreatmentCost.NetSurfaceTreatmentCost])
 
   // useEffect(() => {
   //   IncludeSurfaceTreatmentCall()
@@ -174,7 +174,7 @@ function OverheadProfit(props) {
     setTimeout(() => {
       let tempObj = {
         "OverheadDetailId": overheadObj?.OverheadDetailId || "00000000-0000-0000-0000-000000000000",
-        "OverheadId": overheadObj?.OverheadId || "00000000-0000-0000-0000-000000000000", 
+        "OverheadId": overheadObj?.OverheadId || "00000000-0000-0000-0000-000000000000",
         "OverheadCRMHead": overheadObj?.OverheadCRMHead || "",
         "Remark": overheadObj?.Remark || "",
         "CostingApplicabilityDetails": tempOverheadObj?.CostingApplicabilityDetails || []
@@ -358,7 +358,7 @@ function OverheadProfit(props) {
 
       // Process each applicability type
       dataObj?.CostingApplicabilityDetails?.forEach(detail => {
-        const { Applicability, Percentage} = detail;
+        const { Applicability, Percentage } = detail;
 
         switch (Applicability) {
           case 'Fixed':
@@ -426,7 +426,7 @@ function OverheadProfit(props) {
           TotalCost: totalCost
         };
       });
-      
+
       setTempOverheadObj({
         ...tempOverheadObj,
         CostingApplicabilityDetails: costingApplicabilityDetails
@@ -530,15 +530,15 @@ function OverheadProfit(props) {
     const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost?.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost?.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost);
     const NetToolCost = IsIncludedToolCost ? checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) : 0;
     if (type === 'overhead') {
-      return checkForNull(headerCosts?.NetProcessCostForOverhead) + 
-             checkForNull(headerCosts?.NetOperationCostForOverhead) + 
-             (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) + 
-             (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
+      return checkForNull(headerCosts?.NetProcessCostForOverhead) +
+        checkForNull(headerCosts?.NetOperationCostForOverhead) +
+        (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) +
+        (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
     } else if (type === 'profit') {
-      return checkForNull(headerCosts?.NetProcessCostForProfit) + 
-      checkForNull(headerCosts?.NetOperationCostForProfit) + 
-      (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) + 
-      (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
+      return checkForNull(headerCosts?.NetProcessCostForProfit) +
+        checkForNull(headerCosts?.NetOperationCostForProfit) +
+        (IsIncludedToolCost ? checkForNull(NetToolCost) : 0) +
+        (IsIncludedSurfaceInOverheadProfit ? checkForNull(NetSurfaceTreatmentCost) : 0);
     }
   }
 
@@ -737,7 +737,7 @@ function OverheadProfit(props) {
 
               <Col md="12" className="">
                 <div className="left-border">
-                  {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
+                  {`Overheads ${overheadObj && overheadObj?.OverheadApplicability ? '(' + overheadObj?.OverheadApplicability + ')' : '-'}`}
                 </div>
               </Col>
 

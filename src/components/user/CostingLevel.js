@@ -78,6 +78,7 @@ const CostingLevelListing = (props) => {
                 setState((prevState) => ({
                     ...prevState, 
                     tableData: Data,
+                    noData: false
                 }));
                 if (state.gridApi) {
                     state.gridApi.paginationSetPageSize(defaultPageSize);

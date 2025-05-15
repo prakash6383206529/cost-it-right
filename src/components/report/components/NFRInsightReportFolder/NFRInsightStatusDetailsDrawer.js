@@ -123,7 +123,7 @@ function NFRInsightStatusDetailsDrawer(props) {
                     <Row className="drawer-heading">
                         <Col>
                             <div className={'header-wrapper left mt-2'}>
-                                <h3>NFR Insight Status Details</h3>
+                                <h3>Customer RFQ Insight Status Details</h3>
                             </div>
                             <div
                                 onClick={(e) => toggleDrawer(e)}
@@ -166,9 +166,9 @@ function NFRInsightStatusDetailsDrawer(props) {
                                     onFilterModified={onFloatingFilterChanged}
                                     enableBrowserTooltips={true}
                                 >
-                                    <AgGridColumn field="NfrNumber" headerName="NFR Number"></AgGridColumn>
-                                    <AgGridColumn field="NfrRefNumber" headerName="NFR Ref Number"></AgGridColumn>
-                                    <AgGridColumn field="NfrVersion" headerName="NFR Version"></AgGridColumn>
+                                    <AgGridColumn field="NfrNumber" headerName="Customer RFQ Number"></AgGridColumn>
+                                    <AgGridColumn field="NfrRefNumber" headerName="Customer RFQ Ref Number"></AgGridColumn>
+                                    <AgGridColumn field="NfrVersion" headerName="Customer RFQ Version"></AgGridColumn>
                                     <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
                                     <AgGridColumn field="Status" headerName="Status" cellRenderer='statusFormatter' ></AgGridColumn>
                                 </AgGridReact>

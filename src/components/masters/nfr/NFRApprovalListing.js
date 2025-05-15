@@ -280,7 +280,7 @@ function NFRApprovalListing(props) {
                                             ref={agGridRef}
                                         >
                                             <AgGridColumn cellClass="has-checkbox" field="ApprovalToken" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
-                                            <AgGridColumn field="NfrNumber" headerName="NFR Number" cellRenderer='hyphenFormatter' ></AgGridColumn>
+                                            <AgGridColumn field="NfrNumber" headerName="Customer RFQ Number" cellRenderer='hyphenFormatter' ></AgGridColumn>
                                             <AgGridColumn field="GroupName" headerName="Group Name"  ></AgGridColumn>
                                             <AgGridColumn field="PartNumber" headerName='Part No. (Revision No.)'></AgGridColumn>
                                             <AgGridColumn field="ProductCode" headerName="Product Code" cellRenderer='hyphenFormatter'></AgGridColumn>
