@@ -76,6 +76,7 @@ function CommonApproval(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
     const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+    const [selectedMachineIds, setSelectedMachineIds] = useState(new Set());
     useEffect(() => {
         dispatch(agGridStatus("", ""))
         dispatch(setSelectedRowForPagination([]))
@@ -168,6 +169,22 @@ function CommonApproval(props) {
         dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, props?.OnboardingApprovalId, props?.delegation, (res) => {
             setLoader(false)
             dispatch(dashboardTabLock(false))
+            if (res?.data?.Data && props?.MasterId === MACHINE_MASTER_ID && selectedMachineIds.size > 0) {
+                // Immediately check new data for matches and select them
+                const newData = res?.data?.Data?.MachineApprovalList;
+                newData?.forEach(row => {
+                    if (selectedMachineIds.has(row.MachineId)) {
+                        // Add to Redux state if not already there
+                        const currentSelected = selectedCostingListSimulation || [];
+                        if (!currentSelected.some(item => item.MachineId === row.MachineId)) {
+                            const updatedSelection = _.uniqBy([...currentSelected, row], "MachineId");
+                            dispatch(setSelectedRowForPagination(updatedSelection));
+                            setSelectedRowData(updatedSelection);
+                        }
+                    }
+                });
+            }
+
             let obj = { ...floatingFilterData }
             if (res) {
                 if (res && res.status === 204) {
@@ -186,13 +203,18 @@ function CommonApproval(props) {
 
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
-                    setTimeout(() => {
-
-                        dispatch(isResetClick(false, "status"))
-                        dispatch(setResetCostingHead(false, "costingHead"))
-                        setWarningMessage(false)
-                        setFloatingFilterData(obj)
-                    }, 23);
+                    // Apply selections to grid after data is loaded
+                    if (props?.MasterId === MACHINE_MASTER_ID && selectedMachineIds?.size > 0 && gridApi) {
+                        gridApi.forEachNode(node => {
+                            if (selectedMachineIds?.has(node?.data?.MachineId)) {
+                                node.setSelected(true);
+                            }
+                        });
+                    }
+                    dispatch(isResetClick(false, "status"))
+                    dispatch(setResetCostingHead(false, "costingHead"))
+                    setWarningMessage(false)
+                    setFloatingFilterData(obj)
                 }, 300);
                 setTimeout(() => {
                     setIsFilterButtonClicked(false)
@@ -296,8 +318,7 @@ function CommonApproval(props) {
         getTableData(0, 10, true, floatingFilterData)
         dispatch(setSelectedRowForPagination([]))
         setSelectedRowData([])
-        // setGlobalTake(10)
-        // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        setSelectedMachineIds(new Set());
         if (searchRef.current) {
             searchRef.current.value = '';
         }
@@ -556,6 +577,7 @@ function CommonApproval(props) {
         setApprovalDrawer(false)
         if (type === 'submit') {
             setSelectedRowData([])
+            setSelectedMachineIds(new Set())
             setLoader(true)
             getTableData(0, 10, true, floatingFilterData)
         }
@@ -563,84 +585,119 @@ function CommonApproval(props) {
 
 
     const onRowSelect = (event) => {
-
-        var selectedRows = gridApi && gridApi?.getSelectedRows();
-        if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
-            selectedRows = selectedCostingListSimulation
-        } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
-
-            let finalData = []
-            if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
-
-                for (let i = 0; i < selectedCostingListSimulation.length; i++) {
-
-                    switch (props?.MasterId) {
-                        case 1:
-                            if (selectedCostingListSimulation[i]?.RawMaterialId === event?.data?.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-                                continue;
-                            }
-                            break;
-                        case 2:
-                            if (selectedCostingListSimulation[i]?.BoughtOutPartId === event?.data?.BoughtOutPartId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-                                continue;
-                            }
-                            break;
-                        case 3:
-                            if (selectedCostingListSimulation[i]?.OperationId === event?.data?.OperationId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-                                continue;
-                            }
-                            break;
-                        case 4:
-                            if (selectedCostingListSimulation[i]?.MachineId === event?.data?.MachineId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-                                continue;
-                            }
-                            break;
-                        default:
-                            // code block
-                            if (selectedCostingListSimulation[i]?.ApprovalProcessId === event?.data?.ApprovalProcessId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-                                continue;
-                            }
+        if (props?.MasterId === MACHINE_MASTER_ID) {
+            const selectedMachineId = event?.data?.MachineId;
+            if (event?.node?.isSelected()) {
+                // Add to Set
+                setSelectedMachineIds(prev => new Set([...prev, selectedMachineId]));
+                // Select all matching rows
+                gridApi.forEachNode(node => {
+                    if (node.data.MachineId === selectedMachineId) {
+                        node.setSelected(true);
                     }
-                    finalData.push(selectedCostingListSimulation[i])
-                }
-
+                });
             } else {
-                finalData = selectedCostingListSimulation
+                // Remove from Set
+                setSelectedMachineIds(prev => {
+                    const newSet = new Set(prev);
+                    newSet?.delete(selectedMachineId);
+                    return newSet;
+                });
+
+                // Deselect all matching rows
+                gridApi?.forEachNode(node => {
+                    if (node?.data?.MachineId === selectedMachineId) {
+                        node?.setSelected(false);
+                    }
+                });
             }
-            selectedRows = [...selectedRows, ...finalData]
-        }
 
+            // Update Redux only once with all selected rows
+            const selectedRows = gridApi?.getSelectedRows();
+            dispatch(setSelectedRowForPagination(selectedRows));
+            setSelectedRowData(selectedRows);
+        } else {
+            // Original logic for other master types
+            var selectedRows = gridApi && gridApi?.getSelectedRows();
+            if (selectedRows === undefined || selectedRows === null) {
+                selectedRows = selectedCostingListSimulation
+            } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {
+                let finalData = []
+                if (event?.node?.isSelected() === false) {
+                    for (let i = 0; i < selectedCostingListSimulation?.length; i++) {
+                        switch (props?.MasterId) {
+                            case 1:
+                                if (selectedCostingListSimulation[i]?.RawMaterialId === event?.data?.RawMaterialId) {
+                                    continue;
+                                }
+                                break;
+                            case 2:
+                                if (selectedCostingListSimulation[i]?.BoughtOutPartId === event?.data?.BoughtOutPartId) {
+                                    continue;
+                                }
+                                break;
+                            case 3:
+                                if (selectedCostingListSimulation[i]?.OperationId === event?.data?.OperationId) {
+                                    continue;
+                                }
+                                break;
+                            default:
+                                if (selectedCostingListSimulation[i]?.ApprovalProcessId === event?.data?.ApprovalProcessId) {
+                                    continue;
+                                }
+                        }
+                        finalData.push(selectedCostingListSimulation[i])
+                    }
+                } else {
+                    finalData = selectedCostingListSimulation
+                }
+                selectedRows = [...selectedRows, ...finalData]
+            }
 
-        let uniqeArray = []
-        switch (props?.MasterId) {
-            case 1:
+            let uniqeArray = []
+            switch (props?.MasterId) {
+                case 1:
                 uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
                 dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-                setSelectedRowData(uniqeArray)
-                break;
-            case 2:
+                    setSelectedRowData(uniqeArray)
+                    break;
+                case 2:
                 uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
                 dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-                setSelectedRowData(uniqeArray)
-                break;
-            case 3:
-                uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                    setSelectedRowData(uniqeArray)
+                    break;
+                case 3:
+                    uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
                 dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
                 setSelectedRowData(uniqeArray)
-                break;
-            case 4:
-                uniqeArray = _.uniqBy(selectedRows, "MachineId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-                dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-                setSelectedRowData(uniqeArray)
-                break;
-            default:
+                    setSelectedRowData(uniqeArray)
+                    break;
+                default:
                 // code block
                 uniqeArray = _.uniqBy(selectedRows, "ApprovalProcessId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
                 dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-                setSelectedRowData(uniqeArray)
+                    setSelectedRowData(uniqeArray)
+            }
         }
     }
 
+    useEffect(() => {
+        if (approvalList?.length > 0) {
+            setTotalRecordCount(approvalList[0]?.TotalRecordCount)
+
+            // Auto-select based on stored machine IDs
+            if (props?.MasterId === MACHINE_MASTER_ID && selectedMachineIds?.size > 0 && gridApi) {
+                gridApi.forEachNode(node => {
+                    if (selectedMachineIds.has(node?.data?.MachineId)) {
+                        node.setSelected(true);
+                    }
+                });
+            }
+        } else {
+            setNoData(false)
+        }
+        dispatch(getGridHeight({ value: approvalList?.length, component: "common" }))
+    }, [approvalList, selectedMachineIds]);
 
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -652,17 +709,33 @@ function CommonApproval(props) {
 
     const sendForApproval = () => {
         if (selectedRowData?.length > 0) {
+            // First deduplicate the selectedRowData based on MachineId
+            let uniqueSelectedData = [];
+            if (props?.MasterId === MACHINE_MASTER_ID) {
+                // Use Set to track unique machine IDs
+                const seenMachineIds = new Set();
+                uniqueSelectedData = selectedRowData.filter(item => {
+                    if (!seenMachineIds.has(item?.MachineId)) {
+                        seenMachineIds.add(item?.MachineId);
+                        return true;
+                    }
+                    return false;
+                });
+            } else {
+                uniqueSelectedData = selectedRowData;
+            }
+
             let levelDetailsTemp = []
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, selectedRowData[0]?.ReceiverId, (res) => {
-                levelDetailsTemp = userTechnologyDetailByMasterId(selectedRowData[0]?.CostingTypeId, props?.MasterId, res?.data?.Data?.MasterLevels)
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, uniqueSelectedData[0]?.ReceiverId, (res) => {
+                levelDetailsTemp = userTechnologyDetailByMasterId(uniqueSelectedData[0]?.CostingTypeId, props?.MasterId, res?.data?.Data?.MasterLevels)
                 setLevelDetails(levelDetailsTemp)
             }))
 
-            let costingHead = selectedRowData[0]?.CostingHead;
-            let plantId = selectedRowData[0]?.MasterApprovalPlantId
+            let costingHead = uniqueSelectedData[0]?.CostingHead;
+            let plantId = uniqueSelectedData[0]?.MasterApprovalPlantId
             let checkPlantIdSame = true;
             let checkCostingHeadSame = true
-            selectedRowData.map((item) => {
+            uniqueSelectedData.map((item) => {
                 if (item.CostingHead !== costingHead) {
                     checkCostingHeadSame = false
                     return false
@@ -674,17 +747,16 @@ function CommonApproval(props) {
                 return null
             })
             let checkApprovalTypeOfSupplier = true
-            if (props?.OnboardingApprovalId !== ONBOARDINGID) {
-
-                dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, selectedRowData[0]?.ReceiverId, (res) => {
-                    levelDetailsTemp = userTechnologyDetailByMasterId(selectedRowData[0]?.CostingTypeId, props?.MasterId, res?.data?.Data?.MasterLevels)
+            if (props?.OnboardingApprovalId !== ONBOARDINGID) 
+                {dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, uniqueSelectedData[0]?.ReceiverId, (res) => {
+                    levelDetailsTemp = userTechnologyDetailByMasterId(uniqueSelectedData[0]?.CostingTypeId, props?.MasterId, res?.data?.Data?.MasterLevels)
                     setLevelDetails(levelDetailsTemp)
                 }))
 
-                let costingHead = selectedRowData[0]?.CostingHead;
-                let plantId = selectedRowData[0]?.MasterApprovalPlantId
+                let costingHead = uniqueSelectedData[0]?.CostingHead;
+                let plantId = uniqueSelectedData[0]?.MasterApprovalPlantId
 
-                selectedRowData.map((item) => {
+                uniqueSelectedData.map((item) => {
                     if (item.CostingHead !== costingHead) {
                         checkCostingHeadSame = false
                         return false
@@ -696,15 +768,13 @@ function CommonApproval(props) {
                     return null
                 })
             } else {
-                dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), selectedRowData[0]?.ReceiverId, (res) => {
-
-                    levelDetailsTemp = userTechnologyLevelDetailsWithoutCostingToApproval(selectedRowData[0]?.ApprovalTypeId, res?.data?.Data?.OnboardingApprovalLevels)
-
+                dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), uniqueSelectedData[0]?.ReceiverId, (res) => {
+                    levelDetailsTemp = userTechnologyLevelDetailsWithoutCostingToApproval(uniqueSelectedData[0]?.ApprovalTypeId, res?.data?.Data?.OnboardingApprovalLevels)
                 }))
-                let approvalTypeId = selectedRowData[0]?.ApprovalTypeId;
-                let plantId = selectedRowData[0]?.PlantId
+                let approvalTypeId = uniqueSelectedData[0]?.ApprovalTypeId;
+                let plantId = uniqueSelectedData[0]?.PlantId
 
-                selectedRowData.map((item) => {
+                uniqueSelectedData.map((item) => {
                     if (item.ApprovalTypeId !== approvalTypeId) {
                         checkApprovalTypeOfSupplier = false
                         return false
@@ -726,13 +796,12 @@ function CommonApproval(props) {
             } else if (!checkApprovalTypeOfSupplier && props?.OnboardingApprovalId === ONBOARDINGID) {
                 Toaster.warning('Please select token with same plant.')
                 return;
-            }
-
-            else {
+            } else {
+                // Pass the deduplicated data to the drawer
+                setSelectedRowData(uniqueSelectedData); // Update selectedRowData with unique entries
                 setApprovalDrawer(true)
             }
-        }
-        else {
+        } else {
             Toaster.warning('Please select draft token to send for approval.')
         }
     }
@@ -748,13 +817,20 @@ function CommonApproval(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+
+        // Apply selections when grid is ready
+        if (props?.MasterId === MACHINE_MASTER_ID && selectedCostingListSimulation?.length > 0) {
+            const selectedMachineIds = selectedCostingListSimulation.map(item => item.MachineId);
+            params.api.forEachNode(node => {
+                if (selectedMachineIds?.includes(node?.data?.MachineId)) {
+                    node.setSelected(true);
+                }
+            });
+        }
+
         if (props?.OnboardingApprovalId === ONBOARDINGID) {
             //params.api.sizeColumnsToFit();
-
         }
-        // window.screen.width > 1920
-        //  && 
-        // params.api.sizeColumnsToFit();
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -991,6 +1067,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="RawMaterialName" headerName='Raw Material'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="150" field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="150" field="RawMaterialCode" headerName='Code'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="Category" headerName='Category'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="MaterialType"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>}

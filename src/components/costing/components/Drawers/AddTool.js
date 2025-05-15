@@ -404,6 +404,18 @@ function AddTool(props) {
           item.Life = getValues('Life')
           item.NetToolCost = totalToolCost
           item.ToolCRMHead = getValues('crmHead')?.label
+          item.ToolLife = getValues('Life')
+          item.ProcessOrOperationQuantity = getValues('Quantity')
+          item.ToolMaintenancePercentage = getValues('MaintenancePercentage')
+          item.ToolApplicabilityCost = getValues('MaintananceCostApplicability')
+          item.ToolInterestRatePercent = getValues('ToolInterestRatePercent')
+          item.ToolAmortizationCost = state.toolAmortizationCost
+          item.ToolApplicabilityTypeId= state.toolMaintenanceApplicability?.value
+          item.ToolCostType= state.toolMaintenanceApplicability?.label
+          item.ToolMaintenanceCost = state.toolMaintenanceCost
+          item.ToolMaintenanceCostPerPiece = state.toolMaintenanceCostPerPc
+          item.ToolInterestCost = state.toolInterestCost
+          item.ToolInterestCostPerPiece = state.toolInterestCostPerPc
           // Here you can add any other property updates as needed
         } else if (rowObjData?.ProcessOrOperationType === 'Process' && item.ProcessIdRef === ProcessIdRef && item.ToolName === ToolName) {
 
@@ -417,6 +429,18 @@ function AddTool(props) {
           item.Life = getValues('Life')
           item.NetToolCost = totalToolCost
           item.ToolCRMHead = getValues('crmHead')?.label
+          item.ToolLife = getValues('Life')
+          item.ProcessOrOperationQuantity = getValues('Quantity')
+          item.ToolMaintenancePercentage = getValues('MaintenancePercentage')
+          item.ToolApplicabilityCost = getValues('MaintananceCostApplicability')
+          item.ToolInterestRatePercent = getValues('ToolInterestRatePercent')
+          item.ToolAmortizationCost = state.toolAmortizationCost
+          item.ToolApplicabilityTypeId= state.toolMaintenanceApplicability?.value
+          item.ToolCostType= state.toolMaintenanceApplicability?.label
+          item.ToolMaintenanceCost = state.toolMaintenanceCost
+          item.ToolMaintenanceCostPerPiece = state.toolMaintenanceCostPerPc
+          item.ToolInterestCost = state.toolInterestCost
+          item.ToolInterestCostPerPiece = state.toolInterestCostPerPc
           // Here you can add any other property updates as needed
         }
       }
@@ -429,13 +453,29 @@ function AddTool(props) {
    * @method handleToolApplicabilityChange
    * @description This is for handling the tool applicability change
   */
-  const handleToolApplicabilityChange = (newValue) => {
-    setState(prevState => ({ ...prevState, toolMaintenanceApplicability: newValue }))
+  const handleToolApplicabilityChange = (newValue) => {        
     if(newValue?.label==='Tool Rate'){
-      setValue('MaintananceCostApplicability', getValues('ToolCost'))
+      setValue('MaintananceCostApplicability', checkForDecimalAndNull(getValues('ToolCost'), getConfigurationKey().NoOfDecimalForPrice))
+    } else {
+      setValue('MaintananceCostApplicability', 0)
     }
+    setValue('ToolInterestRatePercent', 0)
+    setValue('MaintenancePercentage', 0)
+    delete errors.MaintananceCostApplicability
+    delete errors.MaintenancePercentage
+    delete errors.ToolInterestRatePercent
+    setState(prevState => {
+      const newState = {...prevState, toolMaintenanceApplicability: newValue, toolMaintenanceCost: 0, toolMaintenanceCostPerPc: 0, toolInterestCost: 0, toolInterestCostPerPc:0 }
+      return newState 
+    })
   }
 
+  const handleToolRateChange = (e) => {
+    if (state.toolMaintenanceApplicability?.label === "Tool Rate") {
+      setValue('MaintananceCostApplicability', checkForDecimalAndNull(e.target.value, getConfigurationKey().NoOfDecimalForPrice))
+    }
+  }
+  
   /**
   * @method render
   * @description Renders the component
@@ -695,7 +735,7 @@ function AddTool(props) {
                         required: true,
                         validate: { number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
                       }}
-                      handleChange={() => { }}
+                      handleChange={(e) => handleToolRateChange(e)}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}

@@ -1486,7 +1486,9 @@ function ProcessCost(props) {
               <div className='action-btn-wrapper'>
                 {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
                 <Popup trigger={<button id={`popUpTriggers${index}.${parentIndex}`} title="Remark" className="Comment-box" type={'button'} />}
-                  position="top right">
+                  position="top right"
+                  onOpen={() => handleRemarkPopup("open", `${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`)}
+                  onClose={() => handleRemarkPopup()}>
                   <TextAreaHookForm
                     label="Remark:"
                     name={`${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`}

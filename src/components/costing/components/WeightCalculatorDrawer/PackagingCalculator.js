@@ -246,6 +246,7 @@ function PackagingCalculator(props) {
         setValuePackaging('PackingCost', data?.PackingCost ? checkForDecimalAndNull(data?.PackingCost, NoOfDecimalForPrice) : '')
         setValuePackaging('TotalCostOfCrateWithAddedCost', data?.TotalCostOfCrateWithAddedCost ? checkForDecimalAndNull(data?.TotalCostOfCrateWithAddedCost, NoOfDecimalForPrice) : '')
         setValuePackaging('CalculationCriteria', data?.CalculationCriteria ? { label: data?.CalculationCriteria, value: data?.CalculationCriteria } : '')
+        setValuePackaging('workingDays', '300')
         setState((prevState) => ({
             ...prevState,
             noOfCratesRequiredPerDay: data?.NoOfCratesRequiredPerDay,
@@ -374,7 +375,7 @@ function PackagingCalculator(props) {
             ((${t('weightOfCover', { defaultValue: 'Weight of cover (kg)' })} * ${t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' })}) / ${t('noOfPartsPerCover', { defaultValue: 'No. of parts per cover' })}) + 
             ${t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' })}`
         }else if(state.calculationCriteria?.label === 'Polymer Trolley Calculation'){
-            return `(${t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with additional costs)' })} / (${t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' })} / ${t('stockNormDays', { defaultValue: 'Stock Norm days' })}) * 300) + 
+            return `(${t('totalCostOfCrateWithAddedCost', { defaultValue: 'Total cost of crate/trolley (with additional costs)' })} / (${t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' })} / ${t('stockNormDays', { defaultValue: 'Stock Norm days' })}) * (Working Days)) + 
             ((${t('weightOfCover', { defaultValue: 'Weight of cover (kg)' })} * ${t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' })}) / ${t('noOfPartsPerCover', { defaultValue: 'No. of parts per cover' })}) + 
             ${t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' })}`
         }else{
@@ -403,6 +404,7 @@ function PackagingCalculator(props) {
         { label: t('spacerPackingInsertRecovery', { defaultValue: 'Spacer/packing/insert recovery %' }), name: 'SpacerPackingInsertRecovery', handleChange: (e) => { handleSpacerPackingInsertRecovery(e?.target?.value) }, mandatory: false, percentageLimit: true, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('spacerPackingInsertRecoveryCostPerKg', { defaultValue: 'Spacer/packing/insert recovery cost per kg' }), name: 'SpacerPackingInsertRecoveryCostPerKg', mandatory: false, disabled: true, tooltip: { text: `${t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' })} * ${t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' })} * (${t('spacerPackingInsertRecovery', { defaultValue: 'Spacer/packing/insert recovery %' })} / 100)`, width: '250px', disabledIcon: true } },
         { label: t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' }), name: 'TotalCostOfSpacerPackingInsert', mandatory: false, disabled: true, tooltip: { text: `${t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' })} * ${t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' })} - ${t('spacerPackingInsertRecoveryCostPerKg', { defaultValue: 'Spacer/packing/insert recovery cost per kg' })}`, width: '250px', disabledIcon: true } },
+        { label: t('workingDays', { defaultValue: 'Working Days' }), name: 'workingDays', mandatory: false, disabled: true },
         {label: t('packagingCost', { defaultValue: 'Packaging Cost' }), name: 'PackingCost', mandatory: false, disabled: true, tooltip: { text: packagingCostText(), width: '250px', disabledIcon: true } }
         
     ]
@@ -853,7 +855,27 @@ function PackagingCalculator(props) {
                             <Row className="packaging-cost-calculator-warpper">
                                 {packagingCalculatorSection2.map(item => {
                                     const { tooltip, name, label } = item ?? {};
-                                    return <Col md="3">
+                                    console.log(name, "name", state.calculationCriteria?.label);
+                                    if (name === "workingDays") {
+                                        if(state.calculationCriteria?.label === "Polymer Trolley Calculation") {
+                                            return <Col md="3">
+											<TextFieldHookForm
+												label={label}
+												id={tooltip?.disabledIcon ? item?.name : `nonTarget${item?.name}`}
+												name={name}
+												Controller={Controller}
+												control={controlPackaging}
+												register={registerPackaging}
+												mandatory={item.mandatory}
+												defaultValue={item.disabled ? 0 : ''}
+												className=""
+												customClassName={'withBorder'}
+												disabled={true}
+											/>
+                                        </Col>
+                                    } 
+                                    } else {
+                                        return <Col md="3">
                                         {item.tooltip && <TooltipCustom
                                             customClass={tooltip.customClass ?? ''}
                                             width={tooltip.width}
@@ -891,6 +913,7 @@ function PackagingCalculator(props) {
                                                         name === 'CostOfCrate'))
                                             } />
                                     </Col>
+                                    }
                                 })}
                             </Row>
                             <Row className={"sticky-footer pr-0"}>
