@@ -71,7 +71,7 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "StaffCRMHead": "string",                                       // ASK MR
         "NetPOPrice": totalCostSaveAPI,
         "NetChildPartsCost": 0,
-        "NetProcessCostForOverhead": item?.CostingPartDetails?.NetWeldingCostForOverhead,
+        "NetProcessCostForOverhead": item?.CostingPartDetails?.NetProcessCostForOverhead,
         "NetProcessCostForProfit": item?.CostingPartDetails?.NetProcessCostForProfit,
         "NetOperationCostForOverhead": item?.CostingPartDetails?.NetOperationCostForOverhead,
         "NetOperationCostForProfit": item?.CostingPartDetails?.NetOperationCostForProfit,

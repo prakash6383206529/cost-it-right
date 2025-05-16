@@ -17,7 +17,7 @@ import { useLabels } from '../../../../../helper/core';
 
 function AddRejectionRecovery(props) {
 
-    const { rejectionPercentage, isOpen, closeDrawer, rejectionTotalCost } = props;
+    const { rejectionPercentage, isOpen, closeDrawer, rejectionTotalCost, isViewRejectionRecovery } = props;
 
     const defaultValues = {
 
@@ -216,7 +216,7 @@ function AddRejectionRecovery(props) {
                                             mandatory={true}
                                             handleChange={HandleRejectionRecovery}
                                             errors={errors.RejectionRecoveryApplicability}
-                                            disabled={CostingViewMode ? true : false}
+                                            disabled={(CostingViewMode || isViewRejectionRecovery) ? true : false}
                                         />
                                     </Col>
                                     <Col md="12">
@@ -240,7 +240,7 @@ function AddRejectionRecovery(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.RejectionRecoveryPercentage}
-                                            disabled={(state.rejectionApplicabilityType === 'Fixed' || CostingViewMode) ? true : false}
+                                            disabled={(state.rejectionApplicabilityType === 'Fixed' || CostingViewMode || isViewRejectionRecovery) ? true : false}
                                         />
                                     </Col>
 
@@ -305,7 +305,7 @@ function AddRejectionRecovery(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.NetRejectionRecovery}
-                                            disabled={(state.rejectionApplicabilityType !== 'Fixed' || CostingViewMode) ? true : false}
+                                            disabled={(state.rejectionApplicabilityType !== 'Fixed' || CostingViewMode || isViewRejectionRecovery) ? true : false}
                                         />
                                     </Col>
 
@@ -318,7 +318,7 @@ function AddRejectionRecovery(props) {
                                             type={'button'}
                                             className="undo cancel-btn"
                                             onClick={ResetAndSave}
-                                            disabled={CostingViewMode || !isReset} >
+                                            disabled={CostingViewMode || !isReset || isViewRejectionRecovery} >
                                             <div className={"undo-icon"}></div> {'Reset & Save'}
                                         </button>
 
@@ -336,7 +336,7 @@ function AddRejectionRecovery(props) {
                                                 id="AddRejectionRecovery_Save"
                                                 type={'submit'}
                                                 className="submit-button save-btn"
-                                                disabled={CostingViewMode} >
+                                                disabled={CostingViewMode || isViewRejectionRecovery} >
                                                 <div className={"save-icon"}></div>
                                                 {'Save'}
                                             </button>
