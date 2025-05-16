@@ -30,6 +30,7 @@ import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels } from '../../../helper/core';
 import { useHistory } from 'react-router-dom';
+import CreateManualNFR from './CreateManualNFR';
 const gridOptions = {};
 
 
@@ -138,6 +139,7 @@ function NfrPartsListing(props) {
             Toaster.warning("Please update the technology of this part to create costing of this part.")
             return false
         }
+        
         setEditNfr(true)
         setIsViewMode(viewMode)
         setEstimationData(rowData)
@@ -156,6 +158,12 @@ function NfrPartsListing(props) {
         }
         dispatch(nfrDetailsForDiscountAction(obj))
     }
+
+    const closeDrawer  = ()=>{
+        setEditPart(false)
+        setEditNfr(false)
+    }
+
     const toggleExtraData = (showTour) => {
 
         setRender(true)
@@ -247,9 +255,9 @@ function NfrPartsListing(props) {
                 {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >}
                 {showOutsourcing && < button type="button" className={"pushed-action-btn mr-1"} onClick={() => { pushToSap(rowData) }} disabled={!showPush} title={`Please add RM/${showBopLabel()} price in master, to add outsourcing cost and push the price on SAP`}></button >}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title={`Add Costing`} className="create-rfq mr-1" id="nfr_AddCosting" type={"button"} onClick={() => addCosting(rowData)} />}
-                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
-                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
-                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />}
+                {/* {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />} */}
+                {/* {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />} */}
                 {/* {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />} */}
 
             </>
@@ -503,7 +511,7 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="PlantName" headerName='Plant Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="Status" width={250} cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                {<AgGridColumn field="Status" width={150} cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                             </AgGridReact>}
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div>
@@ -543,7 +551,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrRefNumber} showNfrPartListing={showNfrPartListing} activeTab={activeTab} editNfr={editNfr} showExtraData={showExtraData} />}
+            {/* {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrRefNumber} showNfrPartListing={showNfrPartListing} activeTab={activeTab} editNfr={editNfr} showExtraData={showExtraData} />} */}
             {showDrawer &&
                 <DrawerTechnologyUpdate
                     isOpen={showDrawer}
@@ -560,6 +568,8 @@ function NfrPartsListing(props) {
                     NfrPartWiseDetailId={nfrIdsList?.NfrPartWiseDetailId}
                 />
             }
+            {editPart && <CreateManualNFR nfrIdsList={nfrIdsList} closeDrawer={closeDrawer} isViewFlag={true}/>}
+            
 
         </>
     );
