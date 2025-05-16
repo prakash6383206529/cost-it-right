@@ -54,10 +54,11 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "NetRawMaterialsCost": 0,
         "NetBoughtOutPartCost": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
         "NetConversionCost": checkForNull(item?.CostingPartDetails?.NetOperationCost) + checkForNull(item?.CostingPartDetails?.NetProcessCost) + checkForNull(item?.NetLabourCost) + checkForNull(item?.IndirectLaborCost) + checkForNull(item?.StaffCost) + checkForNull(item?.CostingPartDetails?.NetWeldingCost),
-        "NetOperationCost": item?.CostingPartDetails?.NetOperationCost,
-        "NetWeldingCost": item?.CostingPartDetails?.NetWeldingCost,
+        "NetOperationCost": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
+        "NetWeldingCost": item?.CostingPartDetails?.TotalWeldingCostPerAssembly,
         "NetOtherOperationCost": 0,
-        "NetProcessCost": item?.CostingPartDetails?.NetProcessCost,
+        "NetProcessCost": item?.CostingPartDetails?.TotalProcessCostPerAssembly,
+        "NetCCForOtherTechnologyCost": item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssembly,
         "NetTotalRMBOPCC": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
         "BasicRate": basicRate,
         "LoggedInUserId": loggedInUserId(),
@@ -77,6 +78,8 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "NetOperationCostForProfit": item?.CostingPartDetails?.NetOperationCostForProfit,
         "NetWeldingCostForOverhead": item?.CostingPartDetails?.NetWeldingCostForOverhead,
         "NetWeldingCostForProfit": item?.CostingPartDetails?.NetWeldingCostForProfit,
+       "NetCCForOtherTechnologyCostForOverhead": item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead,
+        "NetCCForOtherTechnologyCostForProfit": item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit,
     }
     return requestObj;
 }

@@ -480,7 +480,7 @@ function AddRMMaster(props) {
             "RMSpec": values?.RawMaterialSpecification?.value,
             "RawMaterial": values?.RawMaterialName?.value,
             "RawMaterialCategoryName": values?.RawMaterialCategory?.label,
-            "RawMaterialCode": values?.RawMaterialCode?.value,
+            "RawMaterialCode": values?.RawMaterialCode?.label,
             "RawMaterialConditionsDetails": rawMaterailDetails?.ConditionTableData,
             "RawMaterialEntryType": state?.isImport ? checkForNull(ENTRY_TYPE_IMPORT) : checkForNull(ENTRY_TYPE_DOMESTIC),
             "RawMaterialGradeName": values?.RawMaterialGrade?.label,
