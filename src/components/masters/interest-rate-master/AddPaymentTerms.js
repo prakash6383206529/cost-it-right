@@ -81,7 +81,6 @@ const AddPaymentTerms = (props) => {
         // isWarningVisible: true,
         isWarningVisible: false,
         IsFinancialDataChanged: true,
-        isAssemblyCheckboxIcc: false,
         isAssemblyCheckbox: false,
         isApplyInventoryDays: false,
         iccApplicability: [],
@@ -100,7 +99,8 @@ const AddPaymentTerms = (props) => {
         isShowApplicabilitySection: true,
         CreditBasedAnnualICCPercent: 0,
         IsPaymentTermsRecord: true,
-        RepaymentPeriod: ""
+        RepaymentPeriod: "",
+        isHideModelType: true
     });
 
     // Selectors
@@ -122,7 +122,6 @@ const AddPaymentTerms = (props) => {
         dispatch(getInventoryDayTypeSelectList(() => {}));
         dispatch(getICCMethodSelectList(() => {}));
 
-        // const isRequestForMultiTechnology = !state.isAssemblyCheckboxIcc ? true : false;
         const isRequestForMultiTechnology = state.isAssemblyCheckbox;
         dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, () => {}));
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => {}));
@@ -196,16 +195,17 @@ const AddPaymentTerms = (props) => {
                             vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
                             selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [],
                             singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {},
-                            ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
+                            ApplicabilityDetails: Data?.PaymentTermsApplicabilityDetails !== undefined ? Data.PaymentTermsApplicabilityDetails : [],
+
+                            // ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
                             PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
                             EffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
                             RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
-                            isAssemblyCheckboxIcc: Data?.TechnologyId === ASSEMBLY ? true : false,
-                            isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false ,
-                            selectedPartFamily: Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : [],
-                            ApplicabilityDetails: Data?.PaymentTermsApplicabilityDetails !== undefined ? Data.PaymentTermsApplicabilityDetails : [],
-                            ModelType: Data.ICCModelType !== undefined ? { label: Data?.ICCModelType, value: Data?.ICCModelTypeId } : [],
+                            isAssemblyCheckbox: Data?.TechnologyId === ASSEMBLY ? true : false ,
+                            selectedPartFamily: Data?.PartFamily !== undefined ? { label: Data?.PartFamily, value: Data?.PartFamilyId } : [],
+                            // ApplicabilityDetails: Data?.PaymentTermsApplicabilityDetails !== undefined ? Data.PaymentTermsApplicabilityDetails : [],
+                            // ModelType: Data.ICCModelType !== undefined ? { label: Data?.ICCModelType, value: Data?.ICCModelTypeId } : [],
                             isLoader: false
                         }));
                     }, 500);
@@ -310,8 +310,8 @@ const AddPaymentTerms = (props) => {
             "InterestRateWIPCompositionMethodDetails": null,
             "PaymentTermsApplicabilityDetails": state?.ApplicabilityDetails,
             "IsPaymentTermsRecord": true,
-            "ICCModelType": state?.ModelType?.label,
-            "ICCModelTypeId": state?.ModelType?.value,
+            "ICCModelType": "",
+            "ICCModelTypeId": 0,
             "ICCMethod": "",
             "ICCMethodId": 0,
             "ApplicabilityBasedInventoryDayType": "",
@@ -445,6 +445,7 @@ const AddPaymentTerms = (props) => {
                                     <AddOverheadMasterDetails 
                                         // costingTypeId={costingTypeId}
                                         costingTypeId={state.costingTypeId}
+                                        conditionTypeId={conditionTypeId}
                                         state={state}
                                         setState={setState}
                                         setValue={setValue}

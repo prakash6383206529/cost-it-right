@@ -13,7 +13,7 @@ import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../conf
 import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
-import { INTERESTRATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { INTERESTRATE_DOWNLOAD_EXCEl, PAYMENTTERMS_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -316,15 +316,12 @@ const PaymentTermsListing = (props) => {
     }
   }
 
-
-
-
   const onGridReady = (params) => {
       setGridApi(params.api)
       state.gridColumnApi = params.columnApi
       setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }));
       params.api.paginationGoToPage(0);
-      params.api.sizeColumnsToFit();
+      // params.api.sizeColumnsToFit();
   };
 
   const onPageSizeChanged = (newPageSize) => {
@@ -336,12 +333,13 @@ const PaymentTermsListing = (props) => {
     const selectedRows = gridApi?.getSelectedRows()
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
   }
-  const INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(INTERESTRATE_DOWNLOAD_EXCEl, "MasterLabels")
+  const PAYMENTTERMS_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(PAYMENTTERMS_DOWNLOAD_EXCEl, "MasterLabels")
+  
   const onBtExport = () => {
     let tempArr = []
     tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (interestRateDataList ? interestRateDataList : [])
-    return returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+    return returnExcelColumn(PAYMENTTERMS_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -442,11 +440,11 @@ const PaymentTermsListing = (props) => {
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
                     {AddAccessibility && (<Button id="interestRateListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
-                    {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+                    {BulkUploadAccessibility && (<Button id="paymentTermsListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
                         <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                          <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
+                          <Button id={"Excel-Downloads-paymentTermsListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
                           {state?.totalRecordCount !== 0 ? onBtExport() : null}
                         </ExcelFile>
                       </>
@@ -499,10 +497,11 @@ const PaymentTermsListing = (props) => {
                 {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {/* <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                 {/* <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
-                <AgGridColumn field="PaymentTermApplicability" headerName="Payment Term Applicability"></AgGridColumn>
-                {/* <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+
+                <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+                <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>}
@@ -510,7 +509,7 @@ const PaymentTermsListing = (props) => {
             </div>
           </div>
 
-          {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Interest Rate'} isZBCVBCTemplate={true} messageLabel={'Interest Rate'} anchor={'right'} />}
+          {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Payment Terms'} isZBCVBCTemplate={true} messageLabel={'Payment Terms'} anchor={'right'} />}
           {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />}
         </div >
       </div >

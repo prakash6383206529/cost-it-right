@@ -69,6 +69,7 @@ export function getInterestRateDataList(isAPICall, data, callback) {
     };
 }
 
+
 /**
  * @method getInterestRateData
  * @description GET INTEREST RATE DATA
@@ -322,6 +323,25 @@ export function bulkUploadInterestRateCBC(data, callback) {
 export function bulkUploadInterestRate(data, callback) {
     return (dispatch) => {
         const request = axiosInstance.post(API.bulkUploadInterestRate, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadPaymentTerms
+ * @description BULK UPLOAD FOR PAYMENT TERMS
+ */
+export function bulkUploadPaymentTerms(data, callback) {
+    return (dispatch) => {
+        const request = axiosInstance.post(API.bulkUploadPaymentTerms, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

@@ -629,7 +629,7 @@ const AddInterestRate = (props) => {
                             ApplicabilityBasedInventoryDayType: Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : [],
                             CreditBasedAnnualICCPercent: Data?.CreditBasedAnnualICCPercent,
                             selectedICCMethod: Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethodId } : [],
-                            isApplyInventoryDays: Data.IsApplyInventoryDay,
+                            isApplyInventoryDays: Data?.IsApplyInventoryDay,
                             // isShowApplicabilitySection: Data.ICCMethod === "Credit Based" ? false : true,
                             isShowApplicabilitySection: Data?.ICCMethodId == ICC_METHODS.CreditBased ? false : true,
 
@@ -1045,6 +1045,7 @@ const AddInterestRate = (props) => {
                                     <AddOverheadMasterDetails 
                                         // costingTypeId={costingTypeId}
                                         costingTypeId={state.costingTypeId}
+                                        conditionTypeId={conditionTypeId}
                                         state={state}
                                         setState={setState}
                                         setValue={setValue}

@@ -20,7 +20,7 @@ import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../a
 const AddOverheadMasterDetails = (props) => {
     const dispatch = useDispatch();
     const { t } = useTranslation("MasterLabels");
-    const { costingTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors, trigger, clearErrors, isShowApplicabilitySection = true} = props
+    const { costingTypeId, conditionTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors, trigger, clearErrors, isShowApplicabilitySection = true} = props
     const [isEditIndex, setIsEditIndex] = useState(false)
     const [editItemId, setEditItemId] = useState("")
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
@@ -29,8 +29,14 @@ const AddOverheadMasterDetails = (props) => {
     const modelTypes = useSelector((state) => state.comman.modelTypes)
     const costingHead = useSelector((state) => state.comman.applicabilityList)
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
-    const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
+    // const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
+    useEffect(() => {
+        // let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
+        dispatch(fetchApplicabilityList(null, conditionTypeId, state.isAssemblyCheckbox, res => { }));
+        // setState(prev => ({ ...prev, isAssemblyCheckbox: !state.isAssemblyCheckbox, ApplicabilityDetails: [], OverheadApplicability: {}, OverheadPercentage: "" }));
+    }, [state.isAssemblyCheckbox])
 
     const renderListing = (label) => {
         const temp = [];
@@ -219,8 +225,8 @@ const AddOverheadMasterDetails = (props) => {
     }
 
     const onPressAssemblyCheckbox = () => {
-        let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
-        dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, res => { }));
+        // let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
+        // dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, res => { }));
         setState(prev => ({ ...prev, isAssemblyCheckbox: !state.isAssemblyCheckbox, ApplicabilityDetails: [], OverheadApplicability: {}, OverheadPercentage: "" }));
         setValue("OverheadApplicability", {});
         setValue("OverheadPercentage", "");
@@ -363,25 +369,27 @@ const AddOverheadMasterDetails = (props) => {
                         </>
                     }
 
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={`Model Type`}
-                            name={'ModelType'}
-                            placeholder={'Select'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={true}
-                            rules={{ required: true }}
-                            options={renderListing("ModelType")}
-                            handleChange={handleModelTypeChange}
-                            defaultValue={''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.ModelType}
-                            disabled={state?.isEditFlag || state?.isViewMode}
-                        />
-                    </Col>
+                    {!state.isHideModelType && 
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={`Model Type`}
+                                name={'ModelType'}
+                                placeholder={'Select'}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={!state.isHideModelType}
+                                rules={{ required: !state.isHideModelType }}
+                                options={renderListing("ModelType")}
+                                handleChange={handleModelTypeChange}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.ModelType}
+                                disabled={state?.isEditFlag || state?.isViewMode}
+                            />
+                        </Col>
+                    }
 
                     {costingTypeId === VBCTypeId && (
                         <Col md="3">
@@ -568,10 +576,10 @@ const AddOverheadMasterDetails = (props) => {
                                 placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: !(state.ApplicabilityDetails.length > 0) && true }}
+                                rules={{ required: !(state?.ApplicabilityDetails?.length > 0) && true }}
                                 register={register}
                                 defaultValue={""}
-                                mandatory={!(state.ApplicabilityDetails.length > 0) && true}
+                                mandatory={!(state?.ApplicabilityDetails?.length > 0) && true}
                                 options={renderListing('OverheadApplicability')}
                                 isMulti={false}
                                 handleChange={handleApplicabilityChange}

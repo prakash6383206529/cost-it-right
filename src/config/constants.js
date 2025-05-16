@@ -533,6 +533,7 @@ export const API = {
   //INTEREST MASTER
   createInterestRate: `${BASE_URL}/vendor/create-vendor-interest-rate`,
   getInterestRateDataList: `${BASE_URL}/vendor/get-all-vendor-interest-rate`,
+  getInterestRateDataCheck: `${BASE_URL}/vendor/get-vendor-interest-rate-data`,
   getInterestRateData: `${BASE_URL}/vendor/get-vendor-interest-rate`,
   updateInterestRate: `${BASE_URL}/vendor/update-vendor-interest-rate`,
   deleteInterestRate: `${BASE_URL}/vendor/delete-vendor-interest-rate`,
@@ -544,8 +545,8 @@ export const API = {
   bulkUploadInterestRateZBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-zbc-json`,
   bulkUploadInterestRateVBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-vbc-json`,
   bulkUploadInterestRateCBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-cbc-json`,
-
   bulkUploadInterestRate: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-json`,
+  bulkUploadPaymentTerms: `${BASE_URL}/vendor/bulk-upload-for-payment-terms-json`,
 
 
   //COSTING API
@@ -3089,6 +3090,7 @@ export const LABOURBULKUPLOAD = 'Labour'
 export const OPERAIONBULKUPLOAD = 'Operation';
 export const FUELBULKUPLOAD = 'Fuel';
 export const INTERESTRATEBULKUPLOAD = 'Interest Rate'
+export const PAYMENTTERMSBULKUPLOAD = 'Payment Terms'
 export const ACTUALVOLUMEBULKUPLOAD = 'Actual Volume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'Budgeted Volume'
 export const ADDRFQ = 'ADD RFQ'
