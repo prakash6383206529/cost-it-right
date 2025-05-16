@@ -26,7 +26,7 @@ import { fileUploadQuotation } from '../../rfq/actions/rfq';
 import { getPartSelectListWtihRevNo } from '../actions/Volume';
 
 // Constants and Config
-import { FILE_URL, ZBC, searchCount, PRODUCT_ID, EMPTY_DATA } from '../../../config/constants';
+import { FILE_URL, ZBC, searchCount, PRODUCT_ID, EMPTY_DATA, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableRMUOM, NFR_COMPONENT_CUSTOMIZED_ID, NFR_RAW_MATERIAL_ID } from '../../../config/masterData';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { Steps } from './TourMessages';
@@ -39,11 +39,11 @@ import AddForecast from './AddForecast';
 import redcrossImg from '../../../assests/images/red-cross.png';
 import BOMViewer from '../part-master/BOMViewer';
 import { loggedInUserId } from '../../../helper';
-import { createCustomerRfq, getCustomerRfqDetails } from './actions/nfr';
+import { createCustomerRfq, getCustomerRfqDetails, updateCustomerRfq } from './actions/nfr';
 
 function CreateManualNFR(props) {
     const { t } = useTranslation("Nfr")
-    const { isViewFlag, partListData, cbcGrid } = props;
+    const { isViewFlag, partListData, cbcGrid, isEditFlag } = props;
     const dropzone = useRef(null);
     const { handleSubmit: handleSubmitTableForm, formState: { errors }, register, control, getValues, setValue } = useForm({
         mode: 'onChange',
@@ -109,20 +109,53 @@ function CreateManualNFR(props) {
                 setState(prevState => ({ ...prevState, VendorInputLoader: false }));
             }))
             dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
-
             let tempArr = [];
             cbcGrid && cbcGrid.map(el => {
                 tempArr.push(el.CustomerId)
                 return null;
             })
             initialConfiguration?.IsDestinationPlantConfigure === false && setValue('Customer', tempArr);
-        } else {
-            dispatch(getCustomerRfqDetails(props?.nfrIdsList?.NfrMasterId, loggedInUserId(), (res) => {
-                console.log("res", res)
-            }))
-
         }
     }, [])
+
+    useEffect(() => {
+        if (isEditFlag || isViewFlag) {
+            setState(prevState => ({
+                ...prevState,
+                loader: true
+            }));
+            dispatch(getCustomerRfqDetails(props?.data?.NfrId, loggedInUserId(), (res) => {
+                const Data = res?.data?.Data?.[0];
+                const partwiseDetail = res?.data?.Data?.[0]?.NfrPartwiseDetailResponse?.[0];
+                const partDetail = partwiseDetail?.PartDetailResponses?.[0];
+                setState(prevState => ({
+                    ...prevState,
+                    files: Data?.NfrAttachments || [],
+                    sopQuantityList: partwiseDetail?.ForecastQuantities || [],
+                    remarks: Data?.Remarks || '',
+                    zbcDate: Data?.ZBCLastSubmissionDate || '',
+                    cbcDate: Data?.QuotationLastSubmissionDate || '',
+                    sopDate: partwiseDetail?.SOPDate || null,
+                    rmDetails: partDetail?.NfrRawMaterialList,
+                    loader: false
+                }));
+                // Set form values with label and value objects
+                setValue('PartType', { label: partwiseDetail?.PartType, value: partwiseDetail?.PartTypeId });
+                setValue('Part', { label: partwiseDetail?.PartNumber, value: partwiseDetail?.PartId });
+                setValue('CustomerRFQNo', Data?.CustomerRFQNumber || '');
+                setValue('Plant', { label: Data?.PlantName, value: Data?.PlantId });
+                setValue('Customer', { label: Data?.CustomerName, value: Data?.CustomerId });
+                setValue('PartName', partDetail?.PartName || '');
+                setValue('SOPDate', partwiseDetail?.SOPDate || null);
+                setValue('Segment', { label: Data?.Segment, value: Data?.SegmentId });
+                setValue('UnitOfMeasurement', { label: partDetail?.UOM, value: partDetail?.UOMId });
+                setValue('GroupCode', { label: partDetail?.GroupCode, value: partDetail?.GroupCodeId });
+                setValue('Description', partDetail?.Description || '');
+                setValue('Remarks', Data?.Remarks || '');
+                addTableHandler();
+            }))
+        }
+    }, [isEditFlag, isViewFlag])
 
     const renderListing = (value) => {
         const temp = [];
@@ -270,7 +303,7 @@ function CreateManualNFR(props) {
 
                 setValue('PartName', Data?.PartName ? Data.PartName : '');
                 setValue('Description', Data?.Description ? Data.Description : '');
-                setValue('UnitOfMeasurement', Data?.UnitOfMeasurement ? Data.UnitOfMeasurement : '');
+                setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurement, value: Data?.UnitOfMeasurementId });
 
                 if (state.sopDate) {
                     const newSopQuantityList = state.fiveyearList.map(yearItem => ({
@@ -373,13 +406,13 @@ function CreateManualNFR(props) {
             CustomerId: getValues("Customer")?.value,
             CustomerName: getValues("Customer")?.label || '',
             PartName: getValues("PartName"),
+            Segment: getValues("Segment")?.label || '',
             Description: getValues("Description"),
             UnitOfMeasurement: getValues("UnitOfMeasurement")?.label || '',
             GroupCode: getValues("GroupCode")?.label || '',
             Plant: getValues("Plant")?.label || '',
-            ZBCLastSubmissionDate: state.zbcDate ? DayTime(state.zbcDate).format('DD/MM/YYYY') : '',
-            QuotationLastSubmissionDate: state.cbcDate ? DayTime(state.cbcDate).format('DD/MM/YYYY') : '',
-            Remarks: getValues("Remarks")
+            ZBCLastSubmissionDate: state?.zbcDate ? DayTime(state?.zbcDate).format('DD/MM/YYYY') : '',
+            QuotationLastSubmissionDate: state?.cbcDate ? DayTime(state?.cbcDate).format('DD/MM/YYYY') : '',
         }
 
         switch (getValues("PartType")?.value) {
@@ -409,7 +442,10 @@ function CreateManualNFR(props) {
             editIndex: ''
         }));
 
-        Toaster.success("Item added successfully")
+        if (!isViewFlag || isEditFlag) {
+            Toaster.success("Item added successfully")
+        }
+
     }, 500)
 
     const updateRateGrid = () => {
@@ -447,6 +483,7 @@ function CreateManualNFR(props) {
             CustomerId: getValues("Customer")?.value,
             CustomerName: getValues("Customer")?.label || '',
             PartName: getValues("PartName"),
+            Segment: getValues("Segment")?.label || '',
             Description: getValues("Description"),
             UnitOfMeasurement: getValues("UnitOfMeasurement")?.label || '',
             GroupCode: getValues("GroupCode")?.label || '',
@@ -676,7 +713,7 @@ function CreateManualNFR(props) {
     }
 
     // Form submission function
-    const onSubmit = (values) => {
+    const onSubmit = (type = false) => {
         if (state.rfqData?.length === 0) {
             Toaster.warning("Please add at least one part to the table.")
             return false
@@ -692,10 +729,10 @@ function CreateManualNFR(props) {
             "Remarks": state.remarks,
             "GroupCodeId": getValues("GroupCode")?.value,
             "SegmentId": getValues("Segment")?.value,
-            "IsSent": true,
+            "IsSent": type,
             "NfrPartwiseDetailRequest": [
                 {
-                    "NfrMasterId": "00000000-0000-0000-0000-000000000000",
+                    "NfrMasterId": props?.data?.NfrId ? props?.data?.NfrId : EMPTY_GUID,
                     "TechnologyId": 7,
                     "PartId": getValues("Part")?.value,
                     "PartTypeId": getValues("PartType")?.value,
@@ -727,15 +764,24 @@ function CreateManualNFR(props) {
             ],
             "NfrAttachments": state.files
         }
-
         setState(prevState => ({ ...prevState, loader: true }));
-        dispatch(createCustomerRfq(obj, (res) => {
-            if (res?.data?.Result) {
-                Toaster.success("Customer RFQ created successfully.");
-            }
-            setState(prevState => ({ ...prevState, loader: false }));
-            cancel(true);
-        }));
+        if (!isEditFlag) {
+            dispatch(createCustomerRfq(obj, (res) => {
+                if (res?.data?.Result) {
+                    Toaster.success("Customer RFQ created successfully.");
+                }
+                setState(prevState => ({ ...prevState, loader: false }));
+                cancel(true);
+            }));
+        } else {
+            dispatch(updateCustomerRfq(obj, (res) => {
+                if (res?.data?.Result) {
+                    Toaster.success("Customer RFQ updated successfully.");
+                }
+                setState(prevState => ({ ...prevState, loader: false }));
+                cancel(true);
+            }));
+        }
     }
 
     const loaderObj = { isLoader: state.inputLoader }
@@ -806,7 +852,60 @@ function CreateManualNFR(props) {
                                             isLoading={VendorLoaderObj}
                                             disabled={isViewFlag || state.fieldDisabled}
                                         />
-
+                                    </Col>
+                                    <Col md="3">
+                                        <div className="form-group">
+                                            <label>ZBC Last Submission Date</label>
+                                            <div className="inputbox date-section">
+                                                <DatePicker
+                                                    name="ZBC Last Submission Date"
+                                                    id="AddNFR_ZBC_Date"
+                                                    selected={DayTime(state.zbcDate).isValid() ? new Date(state.zbcDate) : ''}
+                                                    onChange={handleZBCDateChange}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dropdownMode='select'
+                                                    dateFormat="dd/MM/yyyy"
+                                                    minDate={new Date()}
+                                                    maxDate={state.sopDate ? new Date(state.sopDate) : null}
+                                                    placeholderText="Select Date"
+                                                    className="withBorder"
+                                                    mandatory={true}
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    yearDropdownItemNumber={100}
+                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                    disabled={isViewFlag || state.fieldDisabled}
+                                                />
+                                            </div>
+                                        </div>
+                                    </Col>
+                                    <Col md="3">
+                                        <div className="form-group">
+                                            <label>Quotation Last Submission Date</label>
+                                            <div className="inputbox date-section">
+                                                <DatePicker
+                                                    name="Quotation Last Submission Date"
+                                                    id="AddNFR_CBC_Date"
+                                                    selected={DayTime(state.cbcDate).isValid() ? new Date(state.cbcDate) : ''}
+                                                    onChange={handleCBCDateChange}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dropdownMode='select'
+                                                    dateFormat="dd/MM/yyyy"
+                                                    minDate={new Date(state.zbcDate)}
+                                                    maxDate={state.sopDate ? new Date(state.sopDate) : null}
+                                                    placeholderText="Select Date"
+                                                    className="withBorder"
+                                                    mandatory={true}
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    yearDropdownItemNumber={100}
+                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                    disabled={isViewFlag || state.fieldDisabled}
+                                                />
+                                            </div>
+                                        </div>
                                     </Col>
                                 </Row>
                                 <Row>
@@ -913,7 +1012,7 @@ function CreateManualNFR(props) {
                                         />
                                     </Col>
                                     <Col md="3" className="input-container">
-                                        <TextFieldHookForm
+                                        {/* <TextFieldHookForm
                                             label={'UOM'}
                                             name={'UnitOfMeasurement'}
                                             id="AddNFR_UOM"
@@ -927,6 +1026,21 @@ function CreateManualNFR(props) {
                                             className=""
                                             customClassName={"withBorder"}
                                             errors={errors.Uom}
+                                            disabled={true}
+                                        /> */}
+                                        <SearchableSelectHookForm
+                                            label={"UOM"}
+                                            name={`UnitOfMeasurement`}
+                                            placeholder={"Select"}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: true }}
+                                            register={register}
+                                            mandatory={true}
+                                            customClassName="costing-version"
+                                            options={renderListing("UOM")}
+                                            handleChange={(e) => { }}
+                                            errors={errors?.UOM}
                                             disabled={true}
                                         />
                                     </Col>
@@ -980,60 +1094,7 @@ function CreateManualNFR(props) {
                                             disabled={isViewFlag || state.fieldDisabled}
                                         />
                                     </Col>
-                                    <Col md="3">
-                                        <div className="form-group">
-                                            <label>ZBC Last Submission Date</label>
-                                            <div className="inputbox date-section">
-                                                <DatePicker
-                                                    name="ZBC Last Submission Date"
-                                                    id="AddNFR_ZBC_Date"
-                                                    selected={DayTime(state.zbcDate).isValid() ? new Date(state.zbcDate) : ''}
-                                                    onChange={handleZBCDateChange}
-                                                    showMonthDropdown
-                                                    showYearDropdown
-                                                    dropdownMode='select'
-                                                    dateFormat="dd/MM/yyyy"
-                                                    minDate={new Date()}
-                                                    maxDate={state.sopDate ? new Date(state.sopDate) : null}
-                                                    placeholderText="Select Date"
-                                                    className="withBorder"
-                                                    mandatory={true}
-                                                    autoComplete={"off"}
-                                                    disabledKeyboardNavigation
-                                                    yearDropdownItemNumber={100}
-                                                    onChangeRaw={(e) => e.preventDefault()}
-                                                    disabled={isViewFlag || state.fieldDisabled}
-                                                />
-                                            </div>
-                                        </div>
-                                    </Col>
-                                    <Col md="3">
-                                        <div className="form-group">
-                                            <label>Quotation Last Submission Date</label>
-                                            <div className="inputbox date-section">
-                                                <DatePicker
-                                                    name="Quotation Last Submission Date"
-                                                    id="AddNFR_CBC_Date"
-                                                    selected={DayTime(state.cbcDate).isValid() ? new Date(state.cbcDate) : ''}
-                                                    onChange={handleCBCDateChange}
-                                                    showMonthDropdown
-                                                    showYearDropdown
-                                                    dropdownMode='select'
-                                                    dateFormat="dd/MM/yyyy"
-                                                    minDate={new Date(state.zbcDate)}
-                                                    maxDate={state.sopDate ? new Date(state.sopDate) : null}
-                                                    placeholderText="Select Date"
-                                                    className="withBorder"
-                                                    mandatory={true}
-                                                    autoComplete={"off"}
-                                                    disabledKeyboardNavigation
-                                                    yearDropdownItemNumber={100}
-                                                    onChangeRaw={(e) => e.preventDefault()}
-                                                    disabled={isViewFlag || state.fieldDisabled}
-                                                />
-                                            </div>
-                                        </div>
-                                    </Col>
+                                    
                                     <Col md="3">
                                         <div className='mt30'>
                                             {state.editIndex !== '' ? (
@@ -1073,7 +1134,7 @@ function CreateManualNFR(props) {
                                 </Row>
                                 <Row>
                                     <Col md="12">
-                                        <Table className="table border" size="sm">
+                                        <Table className="table border mt-2" size="sm">
                                             <thead>
                                                 <tr>
                                                     <th>{`Part Type`}</th>
@@ -1249,7 +1310,7 @@ function CreateManualNFR(props) {
                                         <button
                                             id="SaveNFR_SubmitData"
                                             type={'submit'}
-                                            onClick={onSubmit}
+                                            onClick={() => onSubmit(false)}
                                             className="submit-button save-btn mr-2"
                                             disabled={isViewFlag}
                                         >
@@ -1258,7 +1319,7 @@ function CreateManualNFR(props) {
                                         <button
                                             id="AddNFR_SubmitData"
                                             type={'submit'}
-                                            onClick={onSubmit}
+                                            onClick={() => onSubmit(true)}
                                             disabled={isViewFlag}
                                             className="submit-button save-btn"
                                             value="send"
