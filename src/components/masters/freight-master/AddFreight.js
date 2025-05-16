@@ -144,8 +144,9 @@ const AddFreight = (props) => {
     setState(prev => ({ ...prev, costingTypeId: getCostingTypeIdByCostingPermission() }));
 
     if (!state.isViewMode) {
+      const plantId = state?.Plant?.value
       dispatch(getFreigtFullTruckCapacitySelectList((res) => { }));
-      dispatch(getFreigtRateCriteriaSelectList((res) => { }));
+      dispatch(getFreigtRateCriteriaSelectList(plantId, (res) => { }));
       dispatch(getTruckDimensionsSelectList((res) => { }));
       dispatch(getCurrencySelectList(() => { }))
     }
@@ -488,6 +489,7 @@ const AddFreight = (props) => {
             }));
             setState(prev => ({ ...prev, isLoader: false }));
           }, 200);
+          dispatch(getFreigtRateCriteriaSelectList(Data?.PlantId, (res) => { }));
         }
       }));
     } else {
@@ -1161,11 +1163,12 @@ const AddFreight = (props) => {
     const plantCurrencyRate = plantCurrency ?? '0';
 
     // Generate tooltip text based on the condition
-    return <>
-      {!state?.hidePlantCurrency
-        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
-        : ''}
-    </>;
+    return `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
+    // return <>
+    //   {!state?.hidePlantCurrency
+    //     ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
+    //     : ''}
+    // </>;
   };
 
 
