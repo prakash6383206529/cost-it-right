@@ -560,7 +560,7 @@ function CostingSummary(props) {
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(partType.length === 0) ? true : false || disabled}
+                          disabled={(partType.length === 0 || (getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && partFamily.length === 0)) ? true : false || disabled}
                           NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN }
                         />
 
