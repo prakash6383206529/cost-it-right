@@ -81,11 +81,11 @@ function PackagingCalculator(props) {
         name: ['NoOfComponentsPerCrate', 'StockNormDays', 'WeightOfCover', 'CostOfCrate', 'CostOfCoverPerKg', 'AmortizedNoOfYears', 'NoOfPartsPerCover', 'SpacerPackingInsertCost', 'NoOfSpacerPackingInsert', 'SpacerPackingInsertRecovery'],
         defaultValue: []
     })
-   
+
     useEffect(() => {
         if (!CostingViewMode && calclulationFieldValues.some(value => value !== undefined)) {
             calculateAllValues();
-            
+
             // After calculating all values, also update totalCostOfCrateWithAddedCost
             setTimeout(() => {
                 updateTotalCostOfCrateWithAddedCost();
@@ -138,7 +138,7 @@ function PackagingCalculator(props) {
     }, [calclulationFieldValues]);
     useEffect(() => {
         updateTotalCostOfCrateWithAddedCost();
-        
+
         if (state?.gridTable && state?.gridTable?.length > 0) {
             setState(prev => ({
                 ...prev,
@@ -195,7 +195,7 @@ function PackagingCalculator(props) {
         setValuePackaging('VolumePerDay', checkForDecimalAndNull(volumePerDay, NoOfDecimalForInputOutput))
         setState((prevState) => ({ ...prevState, volumePerDay: volumePerDay, volumePerAnnum: getValuesPackaging('VolumePerAnnum') }))
     }
-   
+
 
     const renderListing = (label) => {
         const temp = [];
@@ -254,16 +254,16 @@ function PackagingCalculator(props) {
             calculationCriteria: data?.CalculationCriteria ? { label: data?.CalculationCriteria, value: data?.CalculationCriteria } : '',
             isVolumeAutoCalculate: data?.IsFetchVolumeFromMaster
         }))
-        if (CostingViewMode||!data?.IsFetchVolumeFromMaster) {
+        if (CostingViewMode || !data?.IsFetchVolumeFromMaster) {
             setTimeout(() => {
-            setValuePackaging('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
-            setValuePackaging('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
-            setState((prevState) => ({
-                ...prevState,
-                volumePerDay: data?.VolumePerDay,
-                volumePerAnnum: data?.VolumePerAnnum,
-            }))
-        }, 0)
+                setValuePackaging('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
+                setValuePackaging('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
+                setState((prevState) => ({
+                    ...prevState,
+                    volumePerDay: data?.VolumePerDay,
+                    volumePerAnnum: data?.VolumePerAnnum,
+                }))
+            }, 0)
         }
     }
     const handleTypeOfCostChange = (value) => {
@@ -273,7 +273,7 @@ function PackagingCalculator(props) {
 
     }
     const handleCalculationCriteriaChange = (value) => {
-        setState((prevState) => ({ ...prevState, calculationCriteria: value,disableSubmit:false }))
+        setState((prevState) => ({ ...prevState, calculationCriteria: value, disableSubmit: false }))
         resetValues()
     }
     const handleCostPercentageChange = (value) => {
@@ -307,7 +307,7 @@ function PackagingCalculator(props) {
             calculateAllValues();
         }
     };
-    
+
     const packagingCalculatorSection1 = [
         ...(state.calculationCriteria?.label === "Annual Volume Basis" || state.calculationCriteria?.label === "Returnable Packaging Cost" ? [
             ...(state.isVolumeAutoCalculate ? [{ label: t('volumePerDay', { defaultValue: 'Volume per day' }), name: 'VolumePerDay', mandatory: false, disabled: true, tooltip: { text: `Coming from the volume master, budgeted for the specified effective date (Budgeted Quantity / ${DaysInMonthForVolumePerDay})`, width: '250px', customClass: "mt-4", disabledIcon: false } }] : []),
@@ -349,14 +349,14 @@ function PackagingCalculator(props) {
                 handleChange: (e) => { handleCostPercentageChange(e?.target?.value) },
                 mandatory: true,
                 percentageLimit: true,
-                validate: { number,maxLength3 },
+                validate: { number, maxLength3 },
                 disabled: state.disableCost || CostingViewMode
             }
         ] : []),
         {
             label: t('cost', { defaultValue: 'Cost' }),
             name: 'cost',
-            validate: {number, maxLength7 },
+            validate: { number, maxLength7 },
             disabled: state.typeOfCost?.label !== 'Fixed' || CostingViewMode,
             tooltip: state.typeOfCost?.label !== 'Fixed' ?
                 { text: `${addedCostText()}`, width: '250px', disabledIcon: true }
@@ -409,10 +409,10 @@ function PackagingCalculator(props) {
         { label: t('spacerPackingInsertRecovery', { defaultValue: 'Spacer/packing/insert recovery %' }), name: 'SpacerPackingInsertRecovery', handleChange: (e) => { handleSpacerPackingInsertRecovery(e?.target?.value) }, mandatory: false, percentageLimit: true, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('spacerPackingInsertRecoveryCostPerKg', { defaultValue: 'Spacer/packing/insert recovery cost per kg' }), name: 'SpacerPackingInsertRecoveryCostPerKg', mandatory: false, disabled: true, tooltip: { text: `${t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' })} * ${t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' })} * (${t('spacerPackingInsertRecovery', { defaultValue: 'Spacer/packing/insert recovery %' })} / 100)`, width: '250px', disabledIcon: true } },
         { label: t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' }), name: 'TotalCostOfSpacerPackingInsert', mandatory: false, disabled: true, tooltip: { text: spacerPackingInsertTooltipText(), width: '350px', disabledIcon: true } },
-        {label: t('packagingCost', { defaultValue: 'Packaging Cost' }), name: 'PackingCost', mandatory: false, disabled: true, tooltip: { text: packagingCostText(), width: '250px', disabledIcon: true } }
-        
+        { label: t('packagingCost', { defaultValue: 'Packaging Cost' }), name: 'PackingCost', mandatory: false, disabled: true, tooltip: { text: packagingCostText(), width: '250px', disabledIcon: true } }
+
     ]
-    const calculateAllValues = () => {
+    const calculateAllValues = (explicitIsPerPart = null) => {
         // Get form values
         const {
             NoOfComponentsPerCrate,
@@ -426,43 +426,45 @@ function PackagingCalculator(props) {
             NoOfPartsPerCover,
             NoOfCratesRequiredPerDay
         } = getValuesPackaging();
-
+    
         // Calculate crates and costs
         const noOfComponentsPerCrate = checkForNull(NoOfComponentsPerCrate);
         const noOfCratesRequired = Math.ceil(state.volumePerDay / noOfComponentsPerCrate);
         const stockNormDays = checkForNull(StockNormDays);
         const costOfCrate = checkForNull(CostOfCrate);
-
+    
         const totalCostOfCrate = (state.isVolumeAutoCalculate ? noOfCratesRequired : NoOfCratesRequiredPerDay) * stockNormDays * costOfCrate;
-
-        // Calculate spacer costs
-        const noOfPartsPerCover = checkForNull(NoOfPartsPerCover);
+    
+        // Calculate spacer costs - use explicitIsPerPart if provided, otherwise use state value
         const spacerCost = checkForNull(SpacerPackingInsertCost);
         const noOfSpacers = checkForNull(NoOfSpacerPackingInsert);
         
-        const costOfSpacerPackingInsertDefault  = (spacerCost * noOfSpacers) - state?.spacerPackingInsertRecoveryCostPerKg;
-        let costOfSpacerPackingInsert;
-        if(state.IsPerPart){
-            costOfSpacerPackingInsert = costOfSpacerPackingInsertDefault / noOfPartsPerCover;
+        // Recalculate spacer cost based on mode
+        let costOfSpacerPackingInsert = (spacerCost * noOfSpacers) - state.spacerPackingInsertRecoveryCostPerKg;
+        const partsPerCover = checkForNull(NoOfPartsPerCover);
+        
+        // Apply per-part mode division if applicable
+        const isPerPartMode = explicitIsPerPart !== null ? explicitIsPerPart : state.IsPerPart;
+        if (isPerPartMode && 
+            state.calculationCriteria?.label === 'Non-returnable packaging' && 
+            partsPerCover > 0) {
+            costOfSpacerPackingInsert = costOfSpacerPackingInsert / partsPerCover;
         }
-        else{
-            costOfSpacerPackingInsert = costOfSpacerPackingInsertDefault;
-        }
+    
         // Calculate packaging cost based on criteria
         const amortizedYears = checkForNull(AmortizedNoOfYears);
         const weightOfCoverKg = checkForNull(WeightOfCover);
         const coverCostPerKg = checkForNull(CostOfCoverPerKg);
-        const partsPerCover = checkForNull(NoOfPartsPerCover);
-
+    
         const coverCost = checkForNull((weightOfCoverKg * coverCostPerKg) / partsPerCover);
         const spacerCostChecked = checkForNull(costOfSpacerPackingInsert);
-
+    
         let packagingCost;
         const { calculationCriteria, totalCostOfCrateWithAddedCost, volumePerAnnum } = state;
-
+    
         switch (calculationCriteria?.label) {
             case "Bin/Trolley Life Basis":
-                case "Non-returnable packaging":
+            case "Non-returnable packaging":
                 packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (amortizedYears * noOfComponentsPerCrate))
                     + coverCost
                     + spacerCostChecked;
@@ -477,29 +479,73 @@ function PackagingCalculator(props) {
                     + coverCost
                     + spacerCostChecked;
         }
+    
+        // Add safety check for table updates
+        const updatedGridTable = state.gridTable?.map(item => {
+            // Skip update if item is invalid
+            if (!item || typeof item !== 'object') return item;
 
-        // Update state
+            let newNetCost = item.NetCost;
+            
+            // Only update percentage-based costs
+            if (item.TypeOfCost && item.TypeOfCost !== 'Fixed' && item.CostPercentage) {
+                try {
+                    const isBinOrPolymerCalculation = ['Bin/Trolley Life Basis', 'Polymer Trolley Calculation', 'Non-returnable packaging']?.includes(state.calculationCriteria?.label);
+                    const isAnnualVolumeBasis = state.calculationCriteria?.label === 'Annual Volume Basis' || state.calculationCriteria?.label === 'Returnable Packaging Cost';
+                    const isMaintenanceCost = item.TypeOfCost === 'Maintenance(Cost of crate/trolley)';
+
+                    let costApplicable = 0;
+                    if (isBinOrPolymerCalculation) {
+                        costApplicable = costOfCrate;
+                    } else if (isAnnualVolumeBasis) {
+                        costApplicable = isMaintenanceCost ? costOfCrate : totalCostOfCrate;
+                    }
+
+                    // Only update if we have valid numbers
+                    if (!isNaN(costApplicable) && !isNaN(item.CostPercentage)) {
+                        newNetCost = costApplicable * (parseFloat(item.CostPercentage) / 100);
+                        newNetCost = checkForDecimalAndNull(newNetCost, NoOfDecimalForPrice);
+                    }
+                } catch (error) {
+                    console.error('Error updating table item:', error);
+                    // Keep original value if calculation fails
+                    return item;
+                }
+            }
+
+            return {
+                ...item,
+                NetCost: newNetCost
+            };
+        }) || [];
+    
+        // Update state with safety check
         setState(prevState => ({
             ...prevState,
-            noOfCratesRequiredPerDay: noOfCratesRequired,
+            IsPerPart: explicitIsPerPart !== null ? explicitIsPerPart : prevState.IsPerPart,
             totalCostOfCrate,
             totalCostOfSpacerPackingInsert: costOfSpacerPackingInsert,
-            packingCost: packagingCost
+            packingCost: packagingCost,
+            gridTable: updatedGridTable || prevState.gridTable // Fallback to previous table if update fails
         }));
-
+    
         // Update form values
         if (state.isVolumeAutoCalculate) {
             setValuePackaging('NoOfCratesRequiredPerDay', checkForDecimalAndNull(noOfCratesRequired, NoOfDecimalForInputOutput));
+            setState(prev => ({
+                ...prev,
+                noOfCratesRequiredPerDay: noOfCratesRequired
+            }));
         }
         setValuePackaging('TotalCostOfCrate', checkForDecimalAndNull(totalCostOfCrate, NoOfDecimalForPrice));
         setValuePackaging('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(costOfSpacerPackingInsert, NoOfDecimalForPrice));
         setValuePackaging('PackingCost', checkForDecimalAndNull(packagingCost, NoOfDecimalForPrice));
-        
+    
         // Call updateTotalCostOfCrateWithAddedCost after updating totalCostOfCrate
         setTimeout(() => {
             updateTotalCostOfCrateWithAddedCost();
         }, 0);
-    }
+    };
     const handleSpacerPackingInsertCost = (value) => {
         calculateSpacerPackingInsertRecoveryCost(value, getValuesPackaging('NoOfSpacerPackingInsert'), getValuesPackaging('SpacerPackingInsertRecovery'))
     }
@@ -509,278 +555,110 @@ function PackagingCalculator(props) {
     const handleSpacerPackingInsertRecovery = (value) => {
         calculateSpacerPackingInsertRecoveryCost(getValuesPackaging('SpacerPackingInsertCost'), getValuesPackaging('NoOfSpacerPackingInsert'), value)
     }
-// Fix the handleNoOfPartsPerCoverChange function to properly update the calculation
-const handleNoOfPartsPerCoverChange = (value) => {
-    // First check if we have all necessary values to perform calculation
-    const spacerCost = getValuesPackaging('SpacerPackingInsertCost');
-    const noOfSpacerInsert = getValuesPackaging('NoOfSpacerPackingInsert');
-    const spacerRecovery = getValuesPackaging('SpacerPackingInsertRecovery');
-    
-    // If we have the necessary values and we're in Per Part Mode, recalculate
-    if (spacerCost && noOfSpacerInsert && state.IsPerPart) {
-        calculateSpacerPackingInsertRecoveryCost(spacerCost, noOfSpacerInsert, spacerRecovery, value);
-    }
-    
-    // Always recalculate all values after updating NoOfPartsPerCover
-    // This is important for the final packaging cost calculation
-    setTimeout(() => {
-        calculateAllValues();
-    }, 0);
-}
+    // Fix the handleNoOfPartsPerCoverChange function to properly update the calculation
+    const handleNoOfPartsPerCoverChange = (value) => {
+        // First check if we have all necessary values to perform calculation
+        const spacerCost = getValuesPackaging('SpacerPackingInsertCost');
+        const noOfSpacerInsert = getValuesPackaging('NoOfSpacerPackingInsert');
+        const spacerRecovery = getValuesPackaging('SpacerPackingInsertRecovery');
 
-// Fix the calculateSpacerPackingInsertRecoveryCost function to properly handle partsPerCover
-const calculateSpacerPackingInsertRecoveryCost = (spacerCost, noOfSpacerInsert, spacerRecovery, partsPerCover) => {
-    
-    // Convert input values to numbers
-    spacerCost = checkForNull(spacerCost);
-    noOfSpacerInsert = checkForNull(noOfSpacerInsert);
-    spacerRecovery = checkForNull(spacerRecovery || 0);
-    
-    // Calculate recovery cost
-    const recoveryCost = spacerCost * noOfSpacerInsert * (spacerRecovery / 100);
-    
-    // Update the recovery cost in the form
-    setValuePackaging('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(recoveryCost, NoOfDecimalForPrice));
-    
-    // Get the number of parts per cover - prioritize the passed parameter value
-    const noOfPartsPerCover = checkForNull(partsPerCover || getValuesPackaging('NoOfPartsPerCover'));
-    
-    // Base calculation without recovery cost
-    const baseCalculation = spacerCost * noOfSpacerInsert - recoveryCost;
-    
-    // Calculate total cost differently based on IsPerPart
-    let totalCost;
-  
-    
-    // Check if we're in Per Part Mode AND the calculation criteria is either Bin/Trolley or Non Returnable
-    if (state.IsPerPart && 
-        ( state.calculationCriteria?.label === 'Non-returnable packaging') && 
-        noOfPartsPerCover > 0) {
-                                // In per-part mode, divide by NoOfPartsPerCover
-        totalCost = baseCalculation / noOfPartsPerCover;
-                
-    } else {
-                // In default mode, just use the standard calculation
-        totalCost = baseCalculation;
-    }
-    setTimeout(() => {
-                        // Update the total cost in the form
-        setValuePackaging('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(totalCost, NoOfDecimalForPrice));
-    }, 200);
-
-    
-    // Update state
-    setState((prevState) => ({ 
-        ...prevState, 
-        spacerPackingInsertRecoveryCostPerKg: recoveryCost,
-        totalCostOfSpacerPackingInsert: totalCost
-    }));
-    
-    // Return the calculated values for potential further use
-    return { recoveryCost, totalCost };
-}
-
-// Fix the handlePerPartModeToggle function to properly update calculations after toggle
-const handlePerPartModeToggle = () => {
-    // First capture the current values we need
-    const spacerCost = getValuesPackaging('SpacerPackingInsertCost');
-    const noOfSpacerInsert = getValuesPackaging('NoOfSpacerPackingInsert');
-    const spacerRecovery = getValuesPackaging('SpacerPackingInsertRecovery');
-    const noOfPartsPerCover = getValuesPackaging('NoOfPartsPerCover');
-    
-    // Toggle the mode immediately but capture the new value
-    const newPerPartMode = !state.IsPerPart;
-    
-    setState(prev => ({
-        ...prev,
-        IsPerPart: newPerPartMode
-    }));
-    
-    // Wait for state update to complete before recalculating
-    setTimeout(() => {
-        // Recalculate with explicit new mode value instead of depending on state
-        if (spacerCost && noOfSpacerInsert) {
-            // Explicitly pass the new mode to ensure it's used correctly
-            // Modify calculateSpacerPackingInsertRecoveryCost to accept the mode parameter
-            calculateSpacerPackingInsertRecoveryCostWithMode(
-                spacerCost, 
-                noOfSpacerInsert, 
-                spacerRecovery, 
-                noOfPartsPerCover,
-                newPerPartMode
-            );
+        // If we have the necessary values and we're in Per Part Mode, recalculate
+        if (spacerCost && noOfSpacerInsert && state.IsPerPart) {
+            calculateSpacerPackingInsertRecoveryCost(spacerCost, noOfSpacerInsert, spacerRecovery, value);
         }
-        
-        // Also recalculate all values with the new mode
-        calculateAllValuesWithMode(newPerPartMode);
-    }, 100);
-};
 
-// Create a helper function that explicitly uses the mode parameter
-const calculateSpacerPackingInsertRecoveryCostWithMode = (
-    spacerCost, 
-    noOfSpacerInsert, 
-    spacerRecovery, 
-    partsPerCover,
-    IsPerPart
-) => {
-    // Convert input values to numbers
-    spacerCost = checkForNull(spacerCost);
-    noOfSpacerInsert = checkForNull(noOfSpacerInsert);
-    spacerRecovery = checkForNull(spacerRecovery || 0);
-    
-    // Calculate recovery cost
-    const recoveryCost = spacerCost * noOfSpacerInsert * (spacerRecovery / 100);
-    
-    // Update the recovery cost in the form
-    setValuePackaging('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(recoveryCost, NoOfDecimalForPrice));
-    
-    // Get the number of parts per cover - prioritize the passed parameter value
-    const noOfPartsPerCover = checkForNull(partsPerCover || getValuesPackaging('NoOfPartsPerCover'));
-    
-    // Base calculation without recovery cost
-    const baseCalculation = spacerCost * noOfSpacerInsert - recoveryCost;
-    
-    // Calculate total cost differently based on explicit IsPerPart
-    let totalCost;
-    
-    // Check if we're in Per Part Mode AND the calculation criteria is either Bin/Trolley or Non Returnable
-    if (IsPerPart && 
-        (state.calculationCriteria?.label === 'Non-returnable packaging') && 
-        noOfPartsPerCover > 0) {
-        // In per-part mode, divide by NoOfPartsPerCover
-        totalCost = baseCalculation / noOfPartsPerCover;
-    } else {
-        // In default mode, just use the standard calculation
-        totalCost = baseCalculation;
-    }
-    
-    // Update the total cost in the form immediately
-    setValuePackaging('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(totalCost, NoOfDecimalForPrice));
-    
-    // Update state
-    setState((prevState) => ({ 
-        ...prevState, 
-        spacerPackingInsertRecoveryCostPerKg: recoveryCost,
-        totalCostOfSpacerPackingInsert: totalCost
-    }));
-    
-    // Return the calculated values for potential further use
-    return { recoveryCost, totalCost };
-};
-
-// Create a helper function for calculateAllValues that takes an explicit mode parameter
-const calculateAllValuesWithMode = (IsPerPart) => {
-    // Get form values
-    const {
-        NoOfComponentsPerCrate,
-        StockNormDays,
-        CostOfCrate,
-        SpacerPackingInsertCost,
-        NoOfSpacerPackingInsert,
-        AmortizedNoOfYears,
-        WeightOfCover,
-        CostOfCoverPerKg,
-        NoOfPartsPerCover,
-        NoOfCratesRequiredPerDay
-    } = getValuesPackaging();
-
-    // Calculate crates and costs
-    const noOfComponentsPerCrate = checkForNull(NoOfComponentsPerCrate);
-    const noOfCratesRequired = Math.ceil(state.volumePerDay / noOfComponentsPerCrate);
-    const stockNormDays = checkForNull(StockNormDays);
-    const costOfCrate = checkForNull(CostOfCrate);
-
-    const totalCostOfCrate = (state.isVolumeAutoCalculate ? noOfCratesRequired : NoOfCratesRequiredPerDay) * stockNormDays * costOfCrate;
-
-    // Calculate spacer costs - use IsPerPart from parameter, not state
-    const spacerCost = checkForNull(SpacerPackingInsertCost);
-    const noOfSpacers = checkForNull(NoOfSpacerPackingInsert);
-    
-    // Recalculate spacer cost based on explicit mode
-    let costOfSpacerPackingInsert = (spacerCost * noOfSpacers) - state.spacerPackingInsertRecoveryCostPerKg;
-    const partsPerCover = checkForNull(NoOfPartsPerCover);
-    
-    // Apply per-part mode division if applicable
-    if (IsPerPart && 
-        state.calculationCriteria?.label === 'Non-returnable packaging' && 
-        partsPerCover > 0) {
-        costOfSpacerPackingInsert = costOfSpacerPackingInsert / partsPerCover;
+        // Always recalculate all values after updating NoOfPartsPerCover
+        // This is important for the final packaging cost calculation
+        setTimeout(() => {
+            calculateAllValues();
+        }, 0);
     }
 
-    // Calculate packaging cost based on criteria
-    const amortizedYears = checkForNull(AmortizedNoOfYears);
-    const weightOfCoverKg = checkForNull(WeightOfCover);
-    const coverCostPerKg = checkForNull(CostOfCoverPerKg);
+    // Fix the calculateSpacerPackingInsertRecoveryCost function to properly handle partsPerCover
+    const calculateSpacerPackingInsertRecoveryCost = (spacerCost, noOfSpacerInsert, spacerRecovery, partsPerCover) => {
 
-    const coverCost = checkForNull((weightOfCoverKg * coverCostPerKg) / partsPerCover);
-    const spacerCostChecked = checkForNull(costOfSpacerPackingInsert);
+        // Convert input values to numbers
+        spacerCost = checkForNull(spacerCost);
+        noOfSpacerInsert = checkForNull(noOfSpacerInsert);
+        spacerRecovery = checkForNull(spacerRecovery || 0);
 
-    let packagingCost;
-    const { calculationCriteria, totalCostOfCrateWithAddedCost, volumePerAnnum } = state;
+        // Calculate recovery cost
+        const recoveryCost = spacerCost * noOfSpacerInsert * (spacerRecovery / 100);
 
-    switch (calculationCriteria?.label) {
-        case "Bin/Trolley Life Basis":
-            case "Non-returnable packaging":
-            packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (amortizedYears * noOfComponentsPerCrate))
-                + coverCost
-                + spacerCostChecked;
-            break;
-        case "Polymer Trolley Calculation":
-            packagingCost = checkForNull(totalCostOfCrateWithAddedCost / ((noOfComponentsPerCrate / stockNormDays) * 300))
-                + coverCost
-                + spacerCostChecked;
-            break;
-        default:
-            packagingCost = checkForNull(totalCostOfCrateWithAddedCost / (volumePerAnnum * amortizedYears))
-                + coverCost
-                + spacerCostChecked;
+        // Update the recovery cost in the form
+        setValuePackaging('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(recoveryCost, NoOfDecimalForPrice));
+
+        // Get the number of parts per cover - prioritize the passed parameter value
+        const noOfPartsPerCover = checkForNull(partsPerCover || getValuesPackaging('NoOfPartsPerCover'));
+
+        // Base calculation without recovery cost
+        const baseCalculation = spacerCost * noOfSpacerInsert - recoveryCost;
+
+        // Calculate total cost differently based on IsPerPart
+        let totalCost;
+
+
+        // Check if we're in Per Part Mode AND the calculation criteria is either Bin/Trolley or Non Returnable
+        if (state.IsPerPart &&
+            (state.calculationCriteria?.label === 'Non-returnable packaging') &&
+            noOfPartsPerCover > 0) {
+            // In per-part mode, divide by NoOfPartsPerCover
+            totalCost = baseCalculation / noOfPartsPerCover;
+
+        } else {
+            // In default mode, just use the standard calculation
+            totalCost = baseCalculation;
+        }
+        setTimeout(() => {
+            // Update the total cost in the form
+            setValuePackaging('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(totalCost, NoOfDecimalForPrice));
+        }, 200);
+
+
+        // Update state
+        setState((prevState) => ({
+            ...prevState,
+            spacerPackingInsertRecoveryCostPerKg: recoveryCost,
+            totalCostOfSpacerPackingInsert: totalCost
+        }));
+
+        // Return the calculated values for potential further use
+        return { recoveryCost, totalCost };
     }
 
-    // Update state with the explicit mode value
-    setState(prevState => ({
-        ...prevState,
-        IsPerPart: IsPerPart,
-        noOfCratesRequiredPerDay: noOfCratesRequired,
-        totalCostOfCrate,
-        totalCostOfSpacerPackingInsert: costOfSpacerPackingInsert,
-        packingCost: packagingCost
-    }));
+    const handlePerPartModeToggle = () => {
+        const newPerPartMode = !state.IsPerPart;
+        calculateAllValues(newPerPartMode);
+    };
 
-    // Update form values
-    if (state.isVolumeAutoCalculate) {
-        setValuePackaging('NoOfCratesRequiredPerDay', checkForDecimalAndNull(noOfCratesRequired, NoOfDecimalForInputOutput));
-    }
-    setValuePackaging('TotalCostOfCrate', checkForDecimalAndNull(totalCostOfCrate, NoOfDecimalForPrice));
-    setValuePackaging('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(costOfSpacerPackingInsert, NoOfDecimalForPrice));
-    setValuePackaging('PackingCost', checkForDecimalAndNull(packagingCost, NoOfDecimalForPrice));
-};
+   
 
-// Create a separate function to update totalCostOfCrateWithAddedCost
-const updateTotalCostOfCrateWithAddedCost = () => {
-    const totalAddedCost = state.gridTable?.reduce((sum, item) => {
-        return sum + Number(item.NetCost || 0);
-    }, 0);
-    
-    let totalCostOfCrateWithAddedCost = 0;
-    let cost = state.calculationCriteria?.label === "Annual Volume Basis" || state.calculationCriteria?.label === "Returnable Packaging Cost" 
-        ? state.totalCostOfCrate 
-        : checkForNull(getValuesPackaging('CostOfCrate'));
-    
-    if (state?.calculationCriteria?.label === 'Bin/Trolley Life Basis' || state?.calculationCriteria?.label === 'Non-returnable packaging') {
-        totalCostOfCrateWithAddedCost = (cost + totalAddedCost) * checkForNull(getValuesPackaging('StockNormDays'));
-    } else if (state.calculationCriteria?.label === 'Annual Volume Basis' || state.calculationCriteria?.label === "Returnable Packaging Cost") {
-        totalCostOfCrateWithAddedCost = cost + totalAddedCost;
-    } else {
-        totalCostOfCrateWithAddedCost = totalAddedCost;
-    }
-    
-    setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice));
-    setState(prev => ({
-        ...prev,
-        totalCostOfCrateWithAddedCost
-    }));
-};
+    // Create a separate function to update totalCostOfCrateWithAddedCost
+    const updateTotalCostOfCrateWithAddedCost = () => {
+        const totalAddedCost = state.gridTable?.reduce((sum, item) => {
+            return sum + Number(item.NetCost || 0);
+        }, 0);
+
+        let totalCostOfCrateWithAddedCost = 0;
+        let cost = state.calculationCriteria?.label === "Annual Volume Basis" || state.calculationCriteria?.label === "Returnable Packaging Cost"
+            ? state.totalCostOfCrate
+            : checkForNull(getValuesPackaging('CostOfCrate'));
+
+        if (state?.calculationCriteria?.label === 'Bin/Trolley Life Basis' || state?.calculationCriteria?.label === 'Non-returnable packaging') {
+            totalCostOfCrateWithAddedCost = (cost + totalAddedCost) * checkForNull(getValuesPackaging('StockNormDays'));
+        } else if (state.calculationCriteria?.label === 'Annual Volume Basis' || state.calculationCriteria?.label === "Returnable Packaging Cost") {
+            totalCostOfCrateWithAddedCost = cost + totalAddedCost;
+        } else {
+            totalCostOfCrateWithAddedCost = totalAddedCost;
+        }
+
+        setValuePackaging('TotalCostOfCrateWithAddedCost', checkForDecimalAndNull(totalCostOfCrateWithAddedCost, NoOfDecimalForPrice));
+        setState(prev => ({
+            ...prev,
+            totalCostOfCrateWithAddedCost,
+            totalAddedCost: totalAddedCost
+        }));
+    };
 
     const onSubmit = debounce((value) => {
         setState((prevState) => ({ ...prevState, disableSubmit: true }))
@@ -985,7 +863,7 @@ const updateTotalCostOfCrateWithAddedCost = () => {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errorsPackaging.CalculationCriteria}
-                                        disabled={state.disableFields || CostingViewMode }
+                                        disabled={state.disableFields || CostingViewMode}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -997,7 +875,7 @@ const updateTotalCostOfCrateWithAddedCost = () => {
                                         register={registerPackaging}
                                         rules={{
                                             required: true,
-                                            validate: { number,decimalNumberLimit8And7 },
+                                            validate: { number, decimalNumberLimit8And7 },
                                         }}
                                         mandatory={true}
                                         handleChange={() => { }}
@@ -1032,7 +910,7 @@ const updateTotalCostOfCrateWithAddedCost = () => {
                                 </Col>}
                                 {packagingCalculatorSection1.map(item => {
                                     const { tooltip, name, label } = item ?? {};
-                                    return <Col md="3">
+                                    return <Col md="3" key={name}>
                                         {item.tooltip && item.disabled === true && <TooltipCustom
                                             customClass={tooltip.customClass ?? ''}
                                             width={tooltip.width}
@@ -1188,7 +1066,7 @@ const updateTotalCostOfCrateWithAddedCost = () => {
                                             </Col>
 
                                             {/* Insert toggle switch after TotalCostOfSpacerPackingInsert field */}
-                                            {insertToggleAfter && (state.calculationCriteria?.label === "Non-returnable packaging" ) && (
+                                            {insertToggleAfter && (state.calculationCriteria?.label === "Non-returnable packaging") && (
                                                 <Col md="12" className="switch mb15 mt-3">
                                                     <label className="switch-level">
                                                         <div className="left-title">Default</div>
