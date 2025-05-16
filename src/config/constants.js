@@ -1208,6 +1208,7 @@ export const API = {
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
   createCustomerRfq: `${BASE_URL}/nfr/create-customer-rfq`,
+  updateCustomerRfq: `${BASE_URL}/nfr/update-customer-rfq`,
   getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,

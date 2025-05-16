@@ -376,6 +376,28 @@ export function createCustomerRfq(requestData, callback) {
 }
 
 /**
+ * @method createCustomerRfq
+ * @description create Customer RFQ
+ */
+export function updateCustomerRfq(requestData, callback) {
+    const requestedData = {
+        loggedInUserId: loggedInUserId(),
+        ...requestData
+    }
+    return (dispatch) => {
+        axiosInstance.post(API.updateCustomerRfq, requestedData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
  * @method getCustomerRfqListing
  * @description get Customer RFQ Listing
  */
