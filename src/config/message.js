@@ -227,6 +227,7 @@ export const MESSAGES = {
   UPDATE_MACHINE_SUCCESS: 'Machine updated successfully',
   COPY_MACHINE_POPUP: "Are you sure you want to copy this Machine?",
   COPY_MACHINE_SUCCESS: 'Machine copied successfully',
+  MACHINE_DELETE_SUCCESS: 'Token deleted successfully',
 
   //MACHINE TYPE
   MACHINE_TYPE_ADD_SUCCESS: 'Machine type added successfully',
