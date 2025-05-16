@@ -63,7 +63,7 @@ function RMDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col >
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`NFR RM`}</h3>
+                                    <h3>{`Customer RFQ RM`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => closeDrawer('close')}

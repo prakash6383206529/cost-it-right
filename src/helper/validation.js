@@ -624,3 +624,26 @@ export const innerVsOuterValidation = (getValues) => (value) => {
     }
     return true
 };
+
+export const blockInvalidNumberKeys = (e) => {
+    if (['e', 'E', '+', '-'].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+export const allowOnlySpecificSpecialChars = value => {
+    if (!value) return undefined;
+    
+    // Pattern allows /, \, and - at start, middle, and end positions
+    // Example: "-test-" or "/path/to/file" or "\server\path\" are all valid
+    const pattern = /^[-/\\a-zA-Z0-9]*$/;
+    
+    // Check if string contains any characters other than allowed ones
+    const hasInvalidChars = !pattern.test(value);
+    
+    if (hasInvalidChars) {
+        return 'Only letters, numbers, and special characters (/, \\, -) are allowed. These special characters can be used anywhere, including start and end of text.';
+    }
+    
+    return undefined;
+}

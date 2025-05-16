@@ -87,7 +87,7 @@ const ApprovalDrawer = (props) => {
                     if (res?.data?.Data?.IsFinalApprover) {
                         setIsDisable(true)
                         setEditWarning(true)
-                        setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                        setFilterStatus("You are a final level user and cannot send Customer RFQ for approval.")
                         //MINDA
                         // if (res?.data?.Data?.IsUserInApprovalFlow === false) {
                         //     setIsDisable(true)
@@ -203,7 +203,7 @@ const ApprovalDrawer = (props) => {
                         if (res?.data?.Data?.IsFinalApprover) {
                             setIsDisable(true)
                             setEditWarning(true)
-                            setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                            setFilterStatus("You are a final level user and cannot send Customer RFQ for approval.")
                             //MINDA
                             // if (res?.data?.Data?.IsUserInApprovalFlow === false) {
                             //     setIsDisable(true)
