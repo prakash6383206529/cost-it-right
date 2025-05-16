@@ -86,7 +86,7 @@ const handleHTTPStatus = (response) => {
       const errMsg400 = response?.data?.Message ? response.data.Message : 'Bad Request. Please contact your IT Team.'
       return toast.error(errMsg400)
     case 401:
-      toast.error('Authentication error. Please contact your IT Team.')
+      // toast.error('Authentication errors here. Please contact your IT Team.')
       // reactLocalStorage.setObject("isUserLoggedIn", false);
       // reactLocalStorage.setObject("userDetail", {});
       // reactLocalStorage.set('ModuleId', '');
@@ -2157,7 +2157,7 @@ export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArr
       };
     } else {
       return {
-        rawMaterialsCost: checkForNull(objectToGetRMCCData?.CosingPartDetails?.TotalRawMaterialsCostWithQuantity),
+        rawMaterialsCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
         conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalConversionCostWithQuantity)
       };
     }

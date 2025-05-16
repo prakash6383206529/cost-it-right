@@ -71,7 +71,7 @@ function CopyCosting(props) {
 
     /* For CBC drop down*/
     cbcGrid && cbcGrid.map((item) => {
-      CbcTemp.push({ label: item.Customer, value: item.CustomerId })
+      CbcTemp.push({ label: item.Customer ? item.Customer : item.CustomerName, value: item.CustomerId })
       tempPlantCbc.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
       return null
     })
@@ -457,11 +457,11 @@ function CopyCosting(props) {
                         placeholder={"Select"}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: false }}
+                        rules={{ required: true }}
                         register={register}
                         // defaultValue={customer.length !== 0 ? customer : ""}
                         options={customer}
-                        mandatory={false}
+                        mandatory={true}
                         handleChange={handleCustomerChange}
                         errors={errors.toCustomer}
                       />
