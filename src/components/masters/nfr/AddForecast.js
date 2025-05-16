@@ -51,7 +51,7 @@ function AddForecast(props) {
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList);
 
     useEffect(() => {
-        if (partType.label === "Component") {
+        if (partType?.label === "Component") {
             if (!isViewFlag) {
                 dispatch(getRawMaterialNameChild(() => { }))
                 dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
@@ -134,6 +134,10 @@ function AddForecast(props) {
     const handleSave = (isSave) => {
         if (tableData.length === 0) {
             Toaster.warning("Please fill the RM Details.");
+            return;
+        }
+        if (sopDate && sopQuantityList[0].Quantity === 0) {
+            Toaster.warning("Please enter at least one quantity in the forecast.");
             return;
         }
         if (isSave) {
