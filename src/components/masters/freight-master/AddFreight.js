@@ -1161,11 +1161,12 @@ const AddFreight = (props) => {
     const plantCurrencyRate = plantCurrency ?? '0';
 
     // Generate tooltip text based on the condition
-    return <>
-      {!state?.hidePlantCurrency
-        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
-        : ''}
-    </>;
+    return `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
+    // return <>
+    //   {!state?.hidePlantCurrency
+    //     ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
+    //     : ''}
+    // </>;
   };
 
 
