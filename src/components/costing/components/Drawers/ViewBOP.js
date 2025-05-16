@@ -76,7 +76,7 @@ function ViewBOP(props) {
                       </td>
                       {initialConfiguration?.IsShowCRMHead && <td>{item.BoughtOutPartCRMHead}</td>}
                       <td>{item.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-'}</td>
-                      <td>{item?.Remark}</td>
+                      <td>{item?.Remark || '-'}</td>
                     </tr>
                   )
                 })}

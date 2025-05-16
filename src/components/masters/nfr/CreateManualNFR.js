@@ -17,7 +17,7 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import NoContentFound from '../../common/NoContentFound';
 
 // Actions
-import { getPlantSelectListByType, getUOMSelectList } from '../../../actions/Common';
+import { getGroupCodeSelectList, getPlantSelectListByType, getSegmentSelectList, getUOMSelectList } from '../../../actions/Common';
 import { getSelectListPartType } from '../actions/Part';
 import { getPartInfo } from '../../costing/actions/Costing';
 import { getRMSpecificationDataList, getRawMaterialNameChild } from '../../masters/actions/Material';
@@ -39,13 +39,13 @@ import AddForecast from './AddForecast';
 import redcrossImg from '../../../assests/images/red-cross.png';
 import BOMViewer from '../part-master/BOMViewer';
 import { loggedInUserId } from '../../../helper';
-import { createCustomerRfq, createNFRBOMDetails } from './actions/nfr';
+import { createCustomerRfq, getCustomerRfqDetails } from './actions/nfr';
 
 function CreateManualNFR(props) {
     const { t } = useTranslation("Nfr")
     const { isViewFlag, partListData, cbcGrid } = props;
     const dropzone = useRef(null);
-    const { handleSubmit:handleSubmitTableForm, formState: { errors }, register, control, getValues, setValue } = useForm({
+    const { handleSubmit: handleSubmitTableForm, formState: { errors }, register, control, getValues, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange'
     })
@@ -76,6 +76,8 @@ function CreateManualNFR(props) {
         selectedRMList: [],
         files: [],
         partTypeList: [],
+        segmentList: [],
+        groupCodeList: [],
         rmDetailsGridIndex: '',
         apiCallCounter: 0,
         attachmentLoader: false,
@@ -96,6 +98,12 @@ function CreateManualNFR(props) {
             }))
             dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
             dispatch(getRawMaterialNameChild(() => { }))
+            dispatch(getSegmentSelectList((res) => {
+                setState(prevState => ({ ...prevState, segmentList: res?.data?.SelectList }));
+            }))
+            dispatch(getGroupCodeSelectList((res) => {
+                setState(prevState => ({ ...prevState, groupCodeList: res?.data?.SelectList }));
+            }))
             setState(prevState => ({ ...prevState, VendorInputLoader: true }));
             dispatch(getClientSelectList((res) => {
                 setState(prevState => ({ ...prevState, VendorInputLoader: false }));
@@ -108,6 +116,11 @@ function CreateManualNFR(props) {
                 return null;
             })
             initialConfiguration?.IsDestinationPlantConfigure === false && setValue('Customer', tempArr);
+        } else {
+            dispatch(getCustomerRfqDetails(props?.nfrIdsList?.NfrMasterId, loggedInUserId(), (res) => {
+                console.log("res", res)
+            }))
+
         }
     }, [])
 
@@ -161,6 +174,21 @@ function CreateManualNFR(props) {
                     return null;
                 });
                 break;
+            case 'Segment':
+                state.segmentList && state.segmentList?.map(item => {
+                    if (item.Value === '0') return false;
+                    temp.push({ label: item.Text, value: item.Value })
+                    return null;
+                });
+                break;
+            case 'GroupCode':
+                state.groupCodeList && state.groupCodeList?.map(item => {
+                    if (item.Value === '0') return false;
+                    temp.push({ label: item.Text, value: item.Value })
+                    return null;
+                });
+                break;
+
             default:
                 return null;
         }
@@ -233,7 +261,7 @@ function CreateManualNFR(props) {
     const handlePartChange = (newValue) => {
         if (getValues("Part")?.value !== newValue?.value) {
             setState(prevState => ({ ...prevState, rmDetails: [], sopQuantityList: [] }));
-          }
+        }
         setValue("Part", newValue);
 
         if (newValue && newValue !== '') {
@@ -291,6 +319,13 @@ function CreateManualNFR(props) {
         }));
     };
 
+    const handleChangeSegment = (newValue) => {
+        setValue("Segment", newValue);
+    }
+    const handleGroupCodeChange = (newValue) => {
+        setValue("GroupCode", newValue);
+    }
+
     const handleSOPDateChange = (date) => {
         const newDate = DayTime(date).isValid() ? DayTime(date) : '';
 
@@ -330,7 +365,6 @@ function CreateManualNFR(props) {
             return false
         }
         let obj = {
-            HeaderMaterial: getValues("HeaderMaterial"),
             PartType: getValues("PartType")?.label,
             PartTypeId: getValues("PartType")?.value,
             PartId: getValues("Part")?.value,
@@ -340,8 +374,8 @@ function CreateManualNFR(props) {
             CustomerName: getValues("Customer")?.label || '',
             PartName: getValues("PartName"),
             Description: getValues("Description"),
-            UnitOfMeasurement: getValues("UnitOfMeasurement"),
-            GroupCode: getValues("GroupCode"),
+            UnitOfMeasurement: getValues("UnitOfMeasurement")?.label || '',
+            GroupCode: getValues("GroupCode")?.label || '',
             Plant: getValues("Plant")?.label || '',
             ZBCLastSubmissionDate: state.zbcDate ? DayTime(state.zbcDate).format('DD/MM/YYYY') : '',
             QuotationLastSubmissionDate: state.cbcDate ? DayTime(state.cbcDate).format('DD/MM/YYYY') : '',
@@ -371,7 +405,8 @@ function CreateManualNFR(props) {
             ...prevState,
             gridData: tempData,
             rfqData: tempData,
-            fieldDisabled: true
+            fieldDisabled: true,
+            editIndex: ''
         }));
 
         Toaster.success("Item added successfully")
@@ -379,6 +414,7 @@ function CreateManualNFR(props) {
 
     const updateRateGrid = () => {
         let tempData = state.gridData[state.editIndex];
+        let hasChanges = false;
 
         switch (getValues("PartType")?.value) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
@@ -401,29 +437,39 @@ function CreateManualNFR(props) {
                 break;
         }
 
-        tempData = {
+        const newData = {
             ...tempData,
             PartType: getValues("PartType")?.label,
             PartTypeId: getValues("PartType")?.value,
-            PartId: getValues("PartType")?.value === NFR_COMPONENT_CUSTOMIZED_ID ? getValues("Part")?.value : '',
+            PartId: getValues("Part")?.value,
             PartNumber: getValues("Part")?.label,
-            RawMaterialCode: getValues("PartType")?.value === NFR_RAW_MATERIAL_ID ? getValues("RawMaterial")?.label : '',
-            NFRPartRawMaterialDetails: getValues("PartType")?.value === NFR_COMPONENT_CUSTOMIZED_ID ? getValues("rmDetails") : [],
-            SOPQuantityDetails: getValues("sopQuantityList"),
             CustomerRFQNo: getValues("CustomerRFQNo"),
+            CustomerId: getValues("Customer")?.value,
             CustomerName: getValues("Customer")?.label || '',
             PartName: getValues("PartName"),
             Description: getValues("Description"),
-            UnitOfMeasurement: getValues("UnitOfMeasurement"),
-            GroupCode: getValues("GroupCode"),
+            UnitOfMeasurement: getValues("UnitOfMeasurement")?.label || '',
+            GroupCode: getValues("GroupCode")?.label || '',
             Plant: getValues("Plant")?.label || '',
-            ZBCLastSubmissionDate: getValues("ZBCDate") ? DayTime(getValues("ZBCDate")).format('DD/MM/YYYY') : '',
-            QuotationLastSubmissionDate: getValues("CBCDate") ? DayTime(getValues("CBCDate")).format('DD/MM/YYYY') : '',
+            ZBCLastSubmissionDate: state.zbcDate ? DayTime(state.zbcDate).format('DD/MM/YYYY') : '',
+            QuotationLastSubmissionDate: state.cbcDate ? DayTime(state.cbcDate).format('DD/MM/YYYY') : '',
             Remarks: getValues("Remarks")
         }
 
+        // Check if any field has been updated
+        Object.keys(newData).forEach(key => {
+            if (JSON.stringify(tempData[key]) !== JSON.stringify(newData[key])) {
+                hasChanges = true;
+            }
+        });
+
+        if (!hasChanges) {
+            Toaster.warning("No changes were made to update.")
+            return;
+        }
+
         // Update the grid data
-        let tempArray = Object.assign([...state.gridData], { [state.editIndex]: tempData })
+        let tempArray = Object.assign([...state.gridData], { [state.editIndex]: newData })
 
         // Update the selected lists
         const partIdArray = [];
@@ -444,32 +490,24 @@ function CreateManualNFR(props) {
             default:
                 break;
         }
-
-        // Update both gridData and rfqData
-        setState(prevState => ({ ...prevState, gridData: tempArray, rfqData: tempArray }));
-        // resetData()
-        setState(prevState => ({ ...prevState, fieldDisabled: true }));
-
-        // Show success message
+        setState(prevState => ({ ...prevState, gridData: tempArray, rfqData: tempArray, fieldDisabled: true, editIndex: '' }));
         Toaster.success("Item updated successfully")
     }
 
     const cancelEdit = () => {
-        setState(prevState => ({ ...prevState, fieldDisabled: true }));
+        setState(prevState => ({ ...prevState, fieldDisabled: true, editIndex: '' }));
     }
 
     const editItemDetails = (index) => {
         let tempObj = state.rfqData[index]
         setState(prevState => ({ ...prevState, editIndex: index, fieldDisabled: false, errors: {} }));
-
-        setValue('HeaderMaterial', tempObj?.HeaderMaterial);
         setValue('CustomerRFQNo', tempObj?.CustomerRFQNo);
         setValue('Customer', { label: tempObj?.CustomerName, value: tempObj?.CustomerId });
         setValue('PartName', tempObj?.PartName);
         setValue('PartNumber', tempObj?.PartNumber);
         setValue('Description', tempObj?.Description);
         setValue('Plant', { label: tempObj?.Plant, value: tempObj?.Plant });
-        setValue('UnitOfMeasurement', tempObj?.UnitOfMeasurement);
+        setValue('UnitOfMeasurement', { label: tempObj?.UnitOfMeasurement, value: tempObj?.UOMId });
         setValue('GroupCode', tempObj?.GroupCode);
         setValue('PartType', { label: tempObj?.PartType, value: tempObj?.PartTypeId });
         setValue('Customer', { label: tempObj?.CustomerName, value: tempObj?.CustomerId });
@@ -506,7 +544,7 @@ function CreateManualNFR(props) {
     }
 
     const viewItemDetails = () => {
-        setState(prevState => ({ ...prevState, openAddForecast: true }));
+        setState(prevState => ({ ...prevState, openAddForecast: true, fieldDisabled: true }));
     }
 
     const toggleBOMViewer = () => {
@@ -643,37 +681,53 @@ function CreateManualNFR(props) {
             Toaster.warning("Please add at least one part to the table.")
             return false
         }
-        // Prepare the request object with all the necessary data
+
         const obj = {
+            "CustomerRFQNumber": getValues("CustomerRFQNo"),
             "CustomerId": getValues("Customer")?.value,
-            "CustomerNumber": getValues("CustomerRFQNo"),
-            "CustomerName": getValues("Customer")?.label,
-            "PartDetails": [
-                {
-                    "PartIdRef": getValues("Part")?.value,
-                    "PartTypeIdRef": getValues("PartType")?.value,
-                    "PartName": getValues("PartName"),
-                    "PartNumber": getValues("Part")?.label,
-                    "PartDescription": getValues("Description"),
-                    "Uom": getValues("UnitOfMeasurement"),
-                    "PlantIdRef": getValues("Plant")?.value,
-                    "Attachments": state.files,
-                    "RMDetails": state.rmDetails,
-                    "ForecastQuantities": state.sopQuantityList,
-                    "Plant": [
-                        {
-                            "PlantName": getValues("Plant")?.label,
-                            "PlantId": getValues("Plant")?.value,
-                            "PlantCode": getValues("Plant")?.plantCode
-                        }
-                    ]
-                }
-            ],
             "QuotationLastSubmissionDate": state.cbcDate,
             "ZBCLastSubmissionDate": state.zbcDate,
+            "PlantId": getValues("Plant")?.value,
             "LoggedInUserId": loggedInUserId(),
-            "Remarks": getValues("Remarks")
+            "Remarks": state.remarks,
+            "GroupCodeId": getValues("GroupCode")?.value,
+            "SegmentId": getValues("Segment")?.value,
+            "IsSent": true,
+            "NfrPartwiseDetailRequest": [
+                {
+                    "NfrMasterId": "00000000-0000-0000-0000-000000000000",
+                    "TechnologyId": 7,
+                    "PartId": getValues("Part")?.value,
+                    "PartTypeId": getValues("PartType")?.value,
+                    "NfrPartStatusId": 1,
+                    "NfrNumber": getValues("CustomerRFQNo"),
+                    "PartType": getValues("PartType")?.label,
+                    "PartNumber": getValues("Part")?.label,
+                    "RevisionNumber": "string",
+                    "PartName": getValues("PartName"),
+                    "Technology": "Rubber",
+                    "PlantId": getValues("Plant")?.value,
+                    "UOMId": getValues("UnitOfMeasurement")?.value,
+                    "CustomerName": getValues("Customer")?.label,
+                    "SOPDate": state.sopDate,
+                    "PartDetailResponses": [
+                        {
+                            "PartId": getValues("Part")?.value,
+                            "PartTypeId": getValues("PartType")?.value,
+                            "PartNumber": getValues("Part")?.label,
+                            "PartName": getValues("PartName"),
+                            "UOM": getValues("UnitOfMeasurement")?.label,
+                            "PartType": getValues("PartType")?.label,
+                            "CustomerName": getValues("Customer")?.label,
+                            "NfrRawMaterialList": state.rmDetails
+                        }
+                    ],
+                    "ForecastQuantities": state.sopQuantityList
+                }
+            ],
+            "NfrAttachments": state.files
         }
+
         setState(prevState => ({ ...prevState, loader: true }));
         dispatch(createCustomerRfq(obj, (res) => {
             if (res?.data?.Result) {
@@ -705,510 +759,514 @@ function CreateManualNFR(props) {
                     <div className="row">
                         <div className="col-md-12">
                             <div className="shadow-lgg login-formg">
-                                        <Row>
-                                            <Col md="12">
-                                                <div className="left-border">
-                                                    {"Customer RFQ Details:"}
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    label="Customer RFQ No."
-                                                    name={"CustomerRFQNo"}
-                                                    id="AddNFR_Customer_RFQ_No"
-                                                    Controller={Controller}
-                                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{
-                                                        required: true,
-                                                        validate: { maxLength20, minLength3 },
-                                                    }}
+                                <Row>
+                                    <Col md="12">
+                                        <div className="left-border">
+                                            {"Customer RFQ Details:"}
+                                        </div>
+                                    </Col>
+                                    <Col md="3">
+                                        <TextFieldHookForm
+                                            label="Customer RFQ No."
+                                            name={"CustomerRFQNo"}
+                                            id="AddNFR_Customer_RFQ_No"
+                                            Controller={Controller}
+                                            placeholder={isViewFlag ? '-' : "Enter"}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: true,
+                                                validate: { maxLength20, minLength3 },
+                                            }}
+                                            mandatory={true}
+                                            handleChange={(e) => { }}
+                                            defaultValue={""}
+                                            className=""
+                                            customClassName={"withBorder"}
+                                            errors={errors?.CustomerRFQNo}
+                                            disabled={isViewFlag || state.fieldDisabled}
+                                        />
+                                    </Col>
+
+                                    <Col md="3">
+                                        <SearchableSelectHookForm
+                                            label={"Customer Name"}
+                                            name={"Customer"}
+                                            id="AddNFR_Customer_Name"
+                                            placeholder={"Select"}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: true }}
+                                            register={register}
+                                            defaultValue={getValues("Customer")?.length !== 0 ? getValues("Customer") : ""}
+                                            options={renderListing("Customer")}
+                                            mandatory={true}
+                                            handleChange={handleCustomerChange}
+                                            errors={errors.Customer}
+                                            isLoading={VendorLoaderObj}
+                                            disabled={isViewFlag || state.fieldDisabled}
+                                        />
+
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md="12">
+                                        <div className="left-border">
+                                            {"Part Details:"}
+                                        </div>
+                                    </Col>
+                                    <Col md="3">
+                                        <SearchableSelectHookForm
+                                            label={"Part Type"}
+                                            name={`PartType`}
+                                            placeholder={"Select"}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: true }}
+                                            register={register}
+                                            mandatory={true}
+                                            customClassName="costing-version"
+                                            options={renderListing("PartType")}
+                                            handleChange={(newValue) => handleChangePartType(newValue)}
+                                            errors={errors?.PartType}
+                                            disabled={isViewFlag || state.fieldDisabled}
+                                        />
+
+                                    </Col>
+
+                                    <Col md="3" className="input-container">
+                                        <div id="AddNFR_Customer_Part_No" className="d-flex">
+                                            <AsyncSearchableSelectHookForm
+                                                label={"Part No."}
+                                                name={"Part"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                defaultValue={getValues("Part")?.length !== 0 ? getValues("Part") : ""}
+                                                asyncOptions={filterList}
+                                                mandatory={true}
+                                                isLoading={loaderObj}
+                                                handleChange={handlePartChange}
+                                                errors={errors?.Part}
+                                                disabled={isViewFlag || state.fieldDisabled}
+                                                NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                            />
+                                            {getValues("PartType")?.label === "Assembly" && getValues("Part")?.value && <button
+                                                id="AssemblyPart_Add_BOM"
+                                                type="button"
+                                                disabled={!getValues("Part")?.value || state.fieldDisabled}
+                                                onClick={toggleBOMViewer}
+                                                className={"user-btn pull-left mt30 mb-4 ml-2"}>
+                                                <div className={'fa fa-eye pr-1'}></div> BOM
+                                            </button>}
+
+                                            <button
+                                                id="AddNFR_AddForecast"
+                                                className="user-btn mt-30 ml-3"
+                                                title="Add RM & Forecast"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setState(prevState => ({ ...prevState, openAddForecast: true }));
+                                                }}
+                                                type="button"
+                                                disabled={!getValues("Part")?.value || state.fieldDisabled}
+                                            >
+                                                {state.rmDetails?.length > 0 ? <div className="view mr-2"></div> : <div className="plus"></div>}
+                                            </button>
+                                        </div>
+                                    </Col>
+                                    <Col md="3" className="input-container">
+                                        <TextFieldHookForm
+                                            label="Part Name"
+                                            name={"PartName"}
+                                            id="AddNFR_Part_Name"
+                                            Controller={Controller}
+                                            placeholder={isViewFlag ? '-' : "Enter"}
+                                            control={control}
+                                            register={register}
+                                            handleChange={(e) => { }}
+                                            defaultValue={""}
+                                            className=""
+                                            customClassName={"withBorder"}
+                                            errors={errors?.CustomerPartName}
+                                            disabled={true}
+                                        />
+                                    </Col>
+
+                                    <Col md="3" className="input-container">
+                                        <TextFieldHookForm
+                                            label="Part Description"
+                                            name={"Description"}
+                                            id="AddNFR_Part_Description"
+                                            Controller={Controller}
+                                            placeholder={isViewFlag ? '-' : "Enter"}
+                                            control={control}
+                                            register={register}
+                                            handleChange={(e) => { }}
+                                            defaultValue={""}
+                                            className=""
+                                            customClassName={"withBorder"}
+                                            errors={errors?.CustomerPartDescription}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                    <Col md="3" className="input-container">
+                                        <TextFieldHookForm
+                                            label={'UOM'}
+                                            name={'UnitOfMeasurement'}
+                                            id="AddNFR_UOM"
+                                            Controller={Controller}
+                                            placeholder={isViewFlag ? '-' : "Enter"}
+                                            control={control}
+                                            register={register}
+                                            rules={{ required: true }}
+                                            handleChange={(e) => { }}
+                                            defaultValue={""}
+                                            className=""
+                                            customClassName={"withBorder"}
+                                            errors={errors.Uom}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                    <Col md="3">
+                                        <SearchableSelectHookForm
+                                            label={"Group Code"}
+                                            name={`GroupCode`}
+                                            id="AddNFR_Group_Code"
+                                            placeholder={"Select"}
+                                            Controller={Controller}
+                                            control={control}
+                                            handleChange={(newValue) => handleGroupCodeChange(newValue)}
+                                            register={register}
+                                            customClassName="costing-version"
+                                            options={renderListing("GroupCode")}
+                                            errors={errors?.GroupCode}
+                                            disabled={isViewFlag || state.fieldDisabled}
+                                        />
+                                    </Col>
+                                    <Col md="3">
+                                        <SearchableSelectHookForm
+                                            label={"Segment"}
+                                            name={`Segment`}
+                                            id="AddNFR_Segment"
+                                            placeholder={"Select"}
+                                            Controller={Controller}
+                                            control={control}
+                                            handleChange={(newValue) => handleChangeSegment(newValue)}
+                                            register={register}
+                                            customClassName="costing-version"
+                                            options={renderListing("Segment")}
+                                            errors={errors?.Segment}
+                                            disabled={isViewFlag || state.fieldDisabled}
+                                        />
+                                    </Col>
+                                    <Col md="3" className="input-container">
+                                        <SearchableSelectHookForm
+                                            label={"Plant"}
+                                            name={`Plant`}
+                                            id="AddNFR_Plant"
+                                            placeholder={"Select"}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: true }}
+                                            mandatory={true}
+                                            register={register}
+                                            customClassName="costing-version"
+                                            options={renderListing("Plant")}
+                                            handleChange={(newValue) => handleChangePlant(newValue)}
+                                            errors={errors?.Plant}
+                                            disabled={isViewFlag || state.fieldDisabled}
+                                        />
+                                    </Col>
+                                    <Col md="3">
+                                        <div className="form-group">
+                                            <label>ZBC Last Submission Date</label>
+                                            <div className="inputbox date-section">
+                                                <DatePicker
+                                                    name="ZBC Last Submission Date"
+                                                    id="AddNFR_ZBC_Date"
+                                                    selected={DayTime(state.zbcDate).isValid() ? new Date(state.zbcDate) : ''}
+                                                    onChange={handleZBCDateChange}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dropdownMode='select'
+                                                    dateFormat="dd/MM/yyyy"
+                                                    minDate={new Date()}
+                                                    maxDate={state.sopDate ? new Date(state.sopDate) : null}
+                                                    placeholderText="Select Date"
+                                                    className="withBorder"
                                                     mandatory={true}
-                                                    handleChange={(e) => { }}
-                                                    defaultValue={""}
-                                                    className=""
-                                                    customClassName={"withBorder"}
-                                                    errors={errors?.CustomerRFQNo}
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    yearDropdownItemNumber={100}
+                                                    onChangeRaw={(e) => e.preventDefault()}
                                                     disabled={isViewFlag || state.fieldDisabled}
                                                 />
-                                            </Col>
-
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label={"Customer Name"}
-                                                    name={"Customer"}
-                                                    id="AddNFR_Customer_Name"
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: true }}
-                                                    register={register}
-                                                    defaultValue={getValues("Customer")?.length !== 0 ? getValues("Customer") : ""}
-                                                    options={renderListing("Customer")}
+                                            </div>
+                                        </div>
+                                    </Col>
+                                    <Col md="3">
+                                        <div className="form-group">
+                                            <label>Quotation Last Submission Date</label>
+                                            <div className="inputbox date-section">
+                                                <DatePicker
+                                                    name="Quotation Last Submission Date"
+                                                    id="AddNFR_CBC_Date"
+                                                    selected={DayTime(state.cbcDate).isValid() ? new Date(state.cbcDate) : ''}
+                                                    onChange={handleCBCDateChange}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dropdownMode='select'
+                                                    dateFormat="dd/MM/yyyy"
+                                                    minDate={new Date(state.zbcDate)}
+                                                    maxDate={state.sopDate ? new Date(state.sopDate) : null}
+                                                    placeholderText="Select Date"
+                                                    className="withBorder"
                                                     mandatory={true}
-                                                    handleChange={handleCustomerChange}
-                                                    errors={errors.Customer}
-                                                    isLoading={VendorLoaderObj}
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    yearDropdownItemNumber={100}
+                                                    onChangeRaw={(e) => e.preventDefault()}
                                                     disabled={isViewFlag || state.fieldDisabled}
                                                 />
-                                              
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md="12">
-                                                <div className="left-border">
-                                                    {"Part Details:"}
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label={"Part Type"}
-                                                    name={`PartType`}
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: true }}
-                                                    register={register}
-                                                    mandatory={true}
-                                                    customClassName="costing-version"
-                                                    options={renderListing("PartType")}
-                                                    handleChange={(newValue) => handleChangePartType(newValue)}
-                                                    errors={errors?.PartType}
-                                                    disabled={isViewFlag || state.fieldDisabled}
-                                                />
-                                               
-                                            </Col>
-
-                                            <Col md="3" className="input-container">
-                                                <div id="AddNFR_Customer_Part_No" className="d-flex">
-                                                    <AsyncSearchableSelectHookForm
-                                                        label={"Part No."}
-                                                        name={"Part"}
-                                                        placeholder={"Select"}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: true }}
-                                                        register={register}
-                                                        defaultValue={getValues("Part")?.length !== 0 ? getValues("Part") : ""}
-                                                        asyncOptions={filterList}
-                                                        mandatory={true}
-                                                        isLoading={loaderObj}
-                                                        handleChange={handlePartChange}
-                                                        errors={errors?.Part}
-                                                        disabled={isViewFlag || state.fieldDisabled}
-                                                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
-                                                    />
-                                                    {getValues("PartType")?.label === "Assembly" && getValues("Part")?.value && <button
-                                                        id="AssemblyPart_Add_BOM"
-                                                        type="button"
-                                                        disabled={!getValues("Part")?.value || state.fieldDisabled}
-                                                        onClick={toggleBOMViewer}
-                                                        className={"user-btn pull-left mt30 mb-4 ml-2"}>
-                                                        <div className={'fa fa-eye pr-1'}></div> BOM
-                                                    </button>}
-
+                                            </div>
+                                        </div>
+                                    </Col>
+                                    <Col md="3">
+                                        <div className='mt30'>
+                                            {state.editIndex !== '' ? (
+                                                <>
+                                                    <button type="button" className={"btn btn-primary pull-left mt-2 mr5"} onClick={handleSubmitTableForm(updateRateGrid)}>Update</button>
                                                     <button
-                                                        id="AddNFR_AddForecast"
-                                                        className="user-btn mt-30 ml-3"
-                                                        title="Add RM & Forecast"
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            setState(prevState => ({ ...prevState, openAddForecast: true }));
-                                                        }}
                                                         type="button"
-                                                        disabled={!getValues("Part")?.value || state.fieldDisabled}
+                                                        className={"mr15 ml-2 add-cancel-btn cancel-btn"}
+                                                        onClick={() => cancelEdit()}
                                                     >
-                                                        {state.rmDetails?.length > 0 ? <div className="view mr-2"></div> : <div className="plus"></div>}
+                                                        <div className={"cancel-icon"}></div>Cancel
                                                     </button>
-                                            </div>
-                                            </Col>
-                                            <Col md="3" className="input-container">
-                                                <TextFieldHookForm
-                                                    label="Part Name"
-                                                    name={"PartName"}
-                                                    id="AddNFR_Part_Name"
-                                                    Controller={Controller}
-                                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                                    control={control}
-                                                    register={register}
-                                                    handleChange={(e) => { }}
-                                                    defaultValue={""}
-                                                    className=""
-                                                    customClassName={"withBorder"}
-                                                    errors={errors?.CustomerPartName}
-                                                    disabled={true}
-                                                />
-                                            </Col>
-
-                                            <Col md="3" className="input-container">
-                                                <TextFieldHookForm
-                                                    label="Part Description"
-                                                    name={"Description"}
-                                                    id="AddNFR_Part_Description"
-                                                    Controller={Controller}
-                                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                                    control={control}
-                                                    register={register}
-                                                    handleChange={(e) => { }}
-                                                    defaultValue={""}
-                                                    className=""
-                                                    customClassName={"withBorder"}
-                                                    errors={errors?.CustomerPartDescription}
-                                                    disabled={true}
-                                                />
-                                            </Col>
-                                            <Col md="3" className="input-container">
-                                                <TextFieldHookForm
-                                                    label={'UOM'}
-                                                    name={'UnitOfMeasurement'}
-                                                    id="AddNFR_UOM"
-                                                    Controller={Controller}
-                                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: true }}
-                                                    handleChange={(e) => { }}
-                                                    defaultValue={""}
-                                                    className=""
-                                                    customClassName={"withBorder"}
-                                                    errors={errors.Uom}
-                                                    disabled={true}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    label="Group Code"
-                                                    name={"GroupCode"}
-                                                    id="AddNFR_Product_Code"
-                                                    Controller={Controller}
-                                                    placeholder={isViewFlag ? '-' : "Select"}
-                                                    control={control}
-                                                    register={register}
-                                                    handleChange={(e) => { }}
-                                                    defaultValue={""}
-                                                    className=""
-                                                    customClassName={"withBorder"}
-                                                    errors={errors?.GroupCode}
-                                                    disabled={true}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label={"Segment"}
-                                                    name={`Segment`}
-                                                    id="AddNFR_Segment"
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    customClassName="costing-version"
-                                                    options={renderListing("Segment")}
-                                                    errors={errors?.Segment}
-                                                    disabled={isViewFlag || state.fieldDisabled}
-                                                />
-                                            </Col>
-                                            <Col md="3" className="input-container">
-                                                <SearchableSelectHookForm
-                                                    label={"Plant"}
-                                                    name={`Plant`}
-                                                    id="AddNFR_Plant"
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: true }}
-                                                    mandatory={true}
-                                                    register={register}
-                                                    customClassName="costing-version"
-                                                    options={renderListing("Plant")}
-                                                    handleChange={(newValue) => handleChangePlant(newValue)}
-                                                    errors={errors?.Plant}
-                                                    disabled={isViewFlag || state.fieldDisabled}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <div className="form-group">
-                                                    <label>ZBC Last Submission Date</label>
-                                                    <div className="inputbox date-section">
-                                                        <DatePicker
-                                                            name="ZBC Last Submission Date"
-                                                            id="AddNFR_ZBC_Date"
-                                                            selected={DayTime(state.zbcDate).isValid() ? new Date(state.zbcDate) : ''}
-                                                            onChange={handleZBCDateChange}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dropdownMode='select'
-                                                            dateFormat="dd/MM/yyyy"
-                                                            minDate={new Date()}
-                                                            maxDate={state.sopDate ? new Date(state.sopDate) : null}
-                                                            placeholderText="Select Date"
-                                                            className="withBorder"
-                                                            mandatory={true}
-                                                            autoComplete={"off"}
-                                                            disabledKeyboardNavigation
-                                                            yearDropdownItemNumber={100}
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isViewFlag || state.fieldDisabled}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <div className="form-group">
-                                                    <label>Quotation Last Submission Date</label>
-                                                    <div className="inputbox date-section">
-                                                        <DatePicker
-                                                            name="Quotation Last Submission Date"
-                                                            id="AddNFR_CBC_Date"
-                                                            selected={DayTime(state.cbcDate).isValid() ? new Date(state.cbcDate) : ''}
-                                                            onChange={handleCBCDateChange}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dropdownMode='select'
-                                                            dateFormat="dd/MM/yyyy"
-                                                            minDate={new Date(state.zbcDate)}
-                                                            maxDate={state.sopDate ? new Date(state.sopDate) : null}
-                                                            placeholderText="Select Date"
-                                                            className="withBorder"
-                                                            mandatory={true}
-                                                            autoComplete={"off"}
-                                                            disabledKeyboardNavigation
-                                                            yearDropdownItemNumber={100}
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isViewFlag || state.fieldDisabled}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <div className='mt30'>
-                                                    {state.editIndex !== '' ? (
-                                                        <>
-                                                            <button type="button" className={"btn btn-primary pull-left mt-2 mr5"} onClick={updateRateGrid}>Update</button>
-                                                            <button
-                                                                type="button"
-                                                                className={"mr15 ml-2 add-cancel-btn cancel-btn"}
-                                                                onClick={() => cancelEdit()}
-                                                            >
-                                                                <div className={"cancel-icon"}></div>Cancel
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <button id="AddNFR_AddData"
-                                                                type="button"
-                                                                className={"user-btn pull-left"}
-                                                                onClick={handleSubmitTableForm(addTableHandler)}
-                                                                disabled={state.fieldDisabled}
-                                                            >
-                                                                <div className={"plus"}></div>ADD
-                                                            </button>
-                                                            <button
-                                                                id="AddNFR_ResetData"
-                                                                type="button"
-                                                                className={"mr15 ml-2  reset-btn"}
-                                                                onClick={() => resetData()}
-                                                                disabled={state.fieldDisabled}
-                                                            >
-                                                                Reset
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md="12">
-                                                <Table className="table border" size="sm">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>{`Part Type`}</th>
-                                                            <th>{`Part Number`}</th>
-                                                            <th>{`Part Name`}</th>
-                                                            <th>{`Customer RFQ No.`}</th>
-                                                            <th>{`Customer Name`}</th>
-                                                            <th>{`Description`}</th>
-                                                            <th>{`Plant`}</th>
-                                                            <th>{`UOM`}</th>
-                                                            <th>{`Group Code`}</th>
-                                                            <th>{`Segment`}</th>
-                                                            <th>{`Action`}</th>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button id="AddNFR_AddData"
+                                                        type="button"
+                                                        className={"user-btn pull-left"}
+                                                        onClick={handleSubmitTableForm(addTableHandler)}
+                                                        disabled={state.fieldDisabled}
+                                                    >
+                                                        <div className={"plus"}></div>ADD
+                                                    </button>
+                                                    <button
+                                                        id="AddNFR_ResetData"
+                                                        type="button"
+                                                        className={"mr15 ml-2  reset-btn"}
+                                                        onClick={() => resetData()}
+                                                        disabled={state.fieldDisabled}
+                                                    >
+                                                        Reset
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md="12">
+                                        <Table className="table border" size="sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>{`Part Type`}</th>
+                                                    <th>{`Part Number`}</th>
+                                                    <th>{`Part Name`}</th>
+                                                    <th>{`Customer RFQ No.`}</th>
+                                                    <th>{`Customer Name`}</th>
+                                                    <th>{`Description`}</th>
+                                                    <th>{`Plant`}</th>
+                                                    <th>{`UOM`}</th>
+                                                    <th>{`Group Code`}</th>
+                                                    <th>{`Segment`}</th>
+                                                    <th>{`ZBC Last Submission Date`}</th>
+                                                    <th>{`Quotation Last Submission Date`}</th>
+                                                    <th>{`Action`}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {state.rfqData && state.rfqData?.map((item, index) => {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td>{item?.PartType ? item.PartType : '-'}</td>
+                                                            <td>{item?.PartNumber ? item.PartNumber : '-'}</td>
+                                                            <td>{item?.PartName ? item.PartName : '-'}</td>
+                                                            <td>{item?.CustomerRFQNo ? item.CustomerRFQNo : '-'}</td>
+                                                            <td>{item?.CustomerName ? item.CustomerName : '-'}</td>
+                                                            <td>{item?.Description ? item.Description : '-'}</td>
+                                                            <td>{item?.Plant ? item.Plant : '-'}</td>
+                                                            <td>{item?.UnitOfMeasurement ? item.UnitOfMeasurement : '-'}</td>
+                                                            <td>{item?.GroupCode ? item.GroupCode : '-'}</td>
+                                                            <td>{item?.Segment ? item.Segment : '-'}</td>
+                                                            <td>{item?.ZBCLastSubmissionDate ? item.ZBCLastSubmissionDate : '-'}</td>
+                                                            <td>{item?.QuotationLastSubmissionDate ? item.QuotationLastSubmissionDate : '-'}</td>
+                                                            <td>
+                                                                <button
+                                                                    className="Edit mr-2"
+                                                                    title='Edit'
+                                                                    type={"button"}
+                                                                    disabled={item?.IsAssociated}
+                                                                    onClick={() => editItemDetails(index)}
+                                                                />
+                                                                <button
+                                                                    className="View mr-2"
+                                                                    title='View'
+                                                                    type={"button"}
+                                                                    disabled={item?.IsAssociated}
+                                                                    onClick={viewItemDetails}
+                                                                />
+                                                                <button
+                                                                    className="Delete "
+                                                                    title='Delete'
+                                                                    type={"button"}
+                                                                    disabled={item?.IsAssociated}
+                                                                    onClick={() => deleteItem(index)}
+                                                                />
+                                                            </td>
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {state.rfqData && state.rfqData?.map((item, index) => {
-                                                            return (
-                                                                <tr key={index}>
-                                                                    <td>{item.PartType ? item.PartType : '-'}</td>
-                                                                    <td>{item.PartNumber ? item.PartNumber : '-'}</td>
-                                                                    <td>{item.PartName ? item.PartName : '-'}</td>
-                                                                    <td>{item.CustomerRFQNo ? item.CustomerRFQNo : '-'}</td>
-                                                                    <td>{item.CustomerName ? item.CustomerName : '-'}</td>
-                                                                    <td>{item.Description ? item.Description : '-'}</td>
-                                                                    <td>{item.Plant ? item.Plant : '-'}</td>
-                                                                    <td>{item.UnitOfMeasurement ? item.UnitOfMeasurement : '-'}</td>
-                                                                    <td>{item.GroupCode ? item.GroupCode : '-'}</td>
-                                                                    <td>{item.Segment ? item.Segment : '-'}</td>
-                                                                    <td>
-                                                                        <button
-                                                                            className="Edit mr-2"
-                                                                            title='Edit'
-                                                                            type={"button"}
-                                                                            disabled={item?.IsAssociated}
-                                                                            onClick={() => editItemDetails(index)}
-                                                                        />
-                                                                        <button
-                                                                            className="View mr-2"
-                                                                            title='View'
-                                                                            type={"button"}
-                                                                            disabled={item?.IsAssociated}
-                                                                            onClick={viewItemDetails}
-                                                                        />
-                                                                        <button
-                                                                            className="Delete "
-                                                                            title='Delete'
-                                                                            type={"button"}
-                                                                            disabled={item?.IsAssociated}
-                                                                            onClick={() => deleteItem(index)}
-                                                                        />
-                                                                    </td>
-                                                                </tr>
-                                                            );
-                                                        })}
-                                                    </tbody>
+                                                    );
+                                                })}
+                                            </tbody>
 
-                                                    {state.rfqData?.length === 0 && (
-                                                        <tbody className='border'>
-                                                            <tr>
-                                                                <td colSpan={"12"}> <NoContentFound title={EMPTY_DATA} /></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    )}
-                                                </Table>
-                                            </Col>
-                                        </Row>
+                                            {state.rfqData?.length === 0 && (
+                                                <tbody className='border'>
+                                                    <tr>
+                                                        <td colSpan={"12"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                                    </tr>
+                                                </tbody>
+                                            )}
+                                        </Table>
+                                    </Col>
+                                </Row>
 
-                                        <Row>
-                                            <Col md="12">
-                                                <div className="left-border">
-                                                    {"Remarks & Attachments:"}
-                                                </div>
-                                            </Col>
-                                            <Col md="6">
-                                                <TextAreaHookForm
-                                                    label={"Remarks"}
-                                                    name={"remark"}
-                                                    placeholder={"Type here..."}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    value={state.remarks}
-                                                    customClassName={"withBorder"}
-                                                    handleChange={(e) => { handleRemarkChange(e.target.value) }}
-                                                    errors={errors.remark}
-                                                    rowHeight={6}
-                                                    disabled={isViewFlag}
-                                                />
-                                            </Col>
-                                            <Col md="3" className="height152-label">
-                                                <label>Upload Attachment (upload up to 4 files) <AttachmentValidationInfo /> </label>
-                                                <div className={`alert alert-danger mt-2 ${state.files?.length === 4 ? '' : 'd-none'}`} role="alert">
-                                                    Maximum file upload limit has been reached.
-                                                </div>
-                                                <div id="AddNFR_uploadFile" className={`${state.files?.length >= 4 ? 'd-none' : ''}`}>
-                                                    <Dropzone
-                                                        ref={dropzone}
-                                                        onChangeStatus={handleChangeStatus}
-                                                        PreviewComponent={Preview}
-                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx,.zip, .docx,.pptx"
-                                                        initialFiles={[]}
-                                                        maxFiles={4}
-                                                        maxSizeBytes={20000000}  // 20 MB in bytes
-                                                        inputContent={(files, extra) =>
-                                                            extra.reject ? (
-                                                                "Image, audio and video files only"
-                                                            ) : (
-                                                                <div className="text-center">
-                                                                    <i className="text-primary fa fa-cloud-upload"></i>
-                                                                    <span className="d-block">
-                                                                        Drag and Drop or{" "}
-                                                                        <span className="text-primary">Browse </span>
-                                                                        file to upload
-                                                                    </span>
-                                                                </div>
-                                                            )
-                                                        }
-                                                        styles={{
-                                                            dropzoneReject: {
-                                                                borderColor: "red",
-                                                                backgroundColor: "#DAA",
-                                                            },
-                                                            inputLabel: (files, extra) =>
-                                                                extra.reject ? { color: "red" } : {},
-                                                        }}
-                                                        classNames="draper-drop"
-                                                        disabled={isViewFlag}
-                                                    />
-                                                </div>
-                                            </Col>
-                                            <Col md="3" className=' p-relative'>
-                                                <div className={"attachment-wrapper"}>
-                                                    {state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                                                    {state.files &&
-                                                        state.files.map((f) => {
-                                                            const withOutTild = f.FileURL?.replace("~", "");
-                                                            const fileURL = `${FILE_URL}${withOutTild}`;
-                                                            return (
-                                                                <div className={"attachment images"}>
-                                                                    <a href={fileURL} target="_blank" rel="noreferrer">
-                                                                        {f.OriginalFileName}
-                                                                    </a>
-                                                                    {
-                                                                        <img
-                                                                            alt={""}
-                                                                            className="float-right"
-                                                                            onClick={() => deleteFile(f.FileId, f.FileName)}
-                                                                            src={redcrossImg}
-                                                                        ></img>
-                                                                    }
-                                                                </div>
-                                                            );
-                                                        })}
-                                                </div>
-                                            </Col>
-                                        </Row>
+                                <Row>
+                                    <Col md="12">
+                                        <div className="left-border">
+                                            {"Remarks & Attachments:"}
+                                        </div>
+                                    </Col>
+                                    <Col md="6">
+                                        <TextAreaHookForm
+                                            label={"Remarks"}
+                                            name={"remark"}
+                                            placeholder={"Type here..."}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            value={state.remarks}
+                                            customClassName={"withBorder"}
+                                            handleChange={(e) => { handleRemarkChange(e.target.value) }}
+                                            errors={errors.remark}
+                                            rowHeight={6}
+                                            disabled={isViewFlag}
+                                        />
+                                    </Col>
+                                    <Col md="3" className="height152-label">
+                                        <label>Upload Attachment (upload up to 4 files) <AttachmentValidationInfo /> </label>
+                                        <div className={`alert alert-danger mt-2 ${state.files?.length === 4 ? '' : 'd-none'}`} role="alert">
+                                            Maximum file upload limit has been reached.
+                                        </div>
+                                        <div id="AddNFR_uploadFile" className={`${state.files?.length >= 4 ? 'd-none' : ''}`}>
+                                            <Dropzone
+                                                ref={dropzone}
+                                                onChangeStatus={handleChangeStatus}
+                                                PreviewComponent={Preview}
+                                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx,.zip, .docx,.pptx"
+                                                initialFiles={[]}
+                                                maxFiles={4}
+                                                maxSizeBytes={20000000}  // 20 MB in bytes
+                                                inputContent={(files, extra) =>
+                                                    extra.reject ? (
+                                                        "Image, audio and video files only"
+                                                    ) : (
+                                                        <div className="text-center">
+                                                            <i className="text-primary fa fa-cloud-upload"></i>
+                                                            <span className="d-block">
+                                                                Drag and Drop or{" "}
+                                                                <span className="text-primary">Browse </span>
+                                                                file to upload
+                                                            </span>
+                                                        </div>
+                                                    )
+                                                }
+                                                styles={{
+                                                    dropzoneReject: {
+                                                        borderColor: "red",
+                                                        backgroundColor: "#DAA",
+                                                    },
+                                                    inputLabel: (files, extra) =>
+                                                        extra.reject ? { color: "red" } : {},
+                                                }}
+                                                classNames="draper-drop"
+                                                disabled={isViewFlag}
+                                            />
+                                        </div>
+                                    </Col>
+                                    <Col md="3" className=' p-relative'>
+                                        <div className={"attachment-wrapper"}>
+                                            {state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                                            {state.files &&
+                                                state.files.map((f) => {
+                                                    const withOutTild = f.FileURL?.replace("~", "");
+                                                    const fileURL = `${FILE_URL}${withOutTild}`;
+                                                    return (
+                                                        <div className={"attachment images"}>
+                                                            <a href={fileURL} target="_blank" rel="noreferrer">
+                                                                {f.OriginalFileName}
+                                                            </a>
+                                                            {
+                                                                <img
+                                                                    alt={""}
+                                                                    className="float-right"
+                                                                    onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                                    src={redcrossImg}
+                                                                ></img>
+                                                            }
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
+                                    </Col>
+                                </Row>
 
-                                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
-                                            <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
-                                                <button
-                                                    id="AddNFR_CancelData"
-                                                    type={'button'}
-                                                    className="reset cancel-btn mr-2"
-                                                    onClick={cancel}
-                                                >
-                                                    <div className={'cancel-icon'}></div> {'Cancel'}
-                                                </button>
-                                                <button
-                                                    id="SaveNFR_SubmitData"
-                                                    type={'submit'}
-                                                    onClick={onSubmit}
-                                                    className="submit-button save-btn mr-2"
-                                                    disabled={isViewFlag}
-                                                >
-                                                    <div className={"save-icon"}></div> {'Save'}
-                                                </button>
-                                                <button
-                                                    id="AddNFR_SubmitData"
-                                                    type={'submit'}
-                                                    onClick={onSubmit}
-                                                    disabled={isViewFlag}
-                                                    className="submit-button save-btn"
-                                                    value="send"
-                                                >
-                                                    <div className="send-for-approval mr-1"></div>Submit
-                                                </button>
-                                            </div>
-                                        </Row>
+                                <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
+                                    <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                                        <button
+                                            id="AddNFR_CancelData"
+                                            type={'button'}
+                                            className="reset cancel-btn mr-2"
+                                            onClick={cancel}
+                                        >
+                                            <div className={'cancel-icon'}></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            id="SaveNFR_SubmitData"
+                                            type={'submit'}
+                                            onClick={onSubmit}
+                                            className="submit-button save-btn mr-2"
+                                            disabled={isViewFlag}
+                                        >
+                                            <div className={"save-icon"}></div> {'Save'}
+                                        </button>
+                                        <button
+                                            id="AddNFR_SubmitData"
+                                            type={'submit'}
+                                            onClick={onSubmit}
+                                            disabled={isViewFlag}
+                                            className="submit-button save-btn"
+                                            value="send"
+                                        >
+                                            <div className="send-for-approval mr-1"></div>Submit
+                                        </button>
+                                    </div>
+                                </Row>
                             </div>
                         </div>
                     </div>
@@ -1222,6 +1280,7 @@ function CreateManualNFR(props) {
                     closeDrawer={openAndCloseDrawer}
                     anchor={'right'}
                     isViewFlag={isViewFlag || state.fieldDisabled}
+
                     partListData={partListData}
                     rmDetails={state.rmDetails}
                     setRMDetails={(details) => setState(prevState => ({ ...prevState, rmDetails: details }))}

@@ -319,7 +319,7 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item?.ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                   {viewCostingData[0]?.technologyId === SHEETMETAL &&
                     <>
-                      <td>{DayTime(item?.EffectiveDate).isValid() ? DayTime(item?.EffectiveDate) : '-'}</td>
+                      <td>{DayTime(item?.EffectiveDate).isValid() ? DayTime(item?.EffectiveDate).format('YYYY-MM-DD') : '-'}</td>
                       <td>{checkForDecimalAndNull(item?.YieldPercentage, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                     </>
                   }

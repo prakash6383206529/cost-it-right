@@ -916,7 +916,7 @@ function RfqListing(props) {
                                                     enableBrowserTooltips={true}
                                                 >
                                                     <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                                    {initialConfiguration?.RFQManditField?.IsShowNFRNo && <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn>}
+                                                    {initialConfiguration?.RFQManditField?.IsShowNFRNo && <AgGridColumn field="NfrId" headerName='Customer RFQ Id' width={150}></AgGridColumn>}
                                                     <AgGridColumn field="PartType" headerName="Part Type" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                     <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRendererFramework={CustomCellRenderer} />
                                                     {RFQ_KEYS?.SHOW_RM && <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material Name-Grade-Specification" width={230} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}

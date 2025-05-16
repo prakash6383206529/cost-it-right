@@ -35,6 +35,7 @@ function TabOverheadProfit(props) {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
       }
+      
       dispatch(getOverheadProfitTabData(data, true, (res) => { }))
     }
   }, [costData]);
@@ -276,7 +277,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
-
+         
           formatData(data, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
@@ -377,32 +378,35 @@ function TabOverheadProfit(props) {
   * @method dispatchRejectionDetail
   * @description SET REJECTION DETAIL 
   */
-  const dispatchRejectionDetail = (rejectionObj, params, arr) => {
+  const dispatchRejectionDetail = (data, params, arr) => {
     let tempArr = [];
+    const { RejectionObj, modelType } = data;
     try {
       tempArr = arr && arr.map(i => {
 
         if (i.IsAssemblyPart === true) {
-          i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
-          i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
+          i.CostingPartDetails.CostingRejectionDetail = RejectionObj;
+          i.CostingPartDetails.RejectionCost = RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0);
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +     // IF PROBLEM IN TOTAL COST OF OVERHEAD PROFIT TAB COMMENT THIS
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
-            checkForNull(rejectionObj.RejectionTotalCost) +
+            checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0)) +
             checkForNull(i?.CostingPartDetails?.ICCCost)
 
 
-          formatData(rejectionObj, params, i.CostingChildPartDetails)
+          formatData(RejectionObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-          i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
-          i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
+          i.CostingPartDetails.CostingRejectionDetail = RejectionObj;
+          i.CostingPartDetails.RejectionModelTypeId = modelType?.value
+          i.CostingPartDetails.RejectionModelType= modelType?.label
+          i.CostingPartDetails.RejectionCost = RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0);
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
-            checkForNull(rejectionObj.RejectionTotalCost) +
+            checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0)) +
             checkForNull(i?.CostingPartDetails?.ICCCost)
         } else {
           i.IsOpen = false;
-          formatData(rejectionObj, params, i.CostingChildPartDetails)
+          formatData(RejectionObj, params, i.CostingChildPartDetails)
         }
         return i;
 

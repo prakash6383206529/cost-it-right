@@ -92,10 +92,7 @@ function PopupMsgWrapper(props) {
       {props.isInputField || props.isInputFieldResponse ? (
         <ModalBody>
           <form>
-            <div className="mb-3">
-              <label className="asterisk-sign text-left">
-                Add Remark{/* <span className="asterisk-required">*</span> */}
-              </label>
+            <div>
               <Controller
                 control={control}
                 name="remark"

@@ -291,7 +291,8 @@ const PartFamilyListing = (props) => {
       ...prevState,
       isOpen: true,
       isEditFlag: true,
-      ID: Id
+      ID: Id,
+      isViewFlag: isViewMode
     }));
   };
 
@@ -312,6 +313,7 @@ const PartFamilyListing = (props) => {
         setState((prevState) => ({ ...prevState, dataCount: 0 }));
       }
     }));
+    getTableListData(0, defaultPageSize, state.floatingFilterData, true);
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
 
@@ -356,7 +358,7 @@ const PartFamilyListing = (props) => {
             title="View"
             className="View Tour_List_View mr-2"
             type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, rowData)}
+            onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
         )}
         {permissions.Edit && (
@@ -731,7 +733,7 @@ const PartFamilyListing = (props) => {
                   floatingFilter={true}
                   domLayout="autoHeight"
                   rowData={state.showExtraData && partFamilyList ? [...setLoremIpsum(partFamilyList[0]), ...partFamilyList] : partFamilyList}
-                  pagination={true}
+                  // pagination={true}
                   paginationPageSize={globalTakes}
                   onGridReady={onGridReady}
                   gridOptions={gridOptions}
