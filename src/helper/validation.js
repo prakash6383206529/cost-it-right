@@ -647,3 +647,30 @@ export const allowOnlySpecificSpecialChars = value => {
     }   
     return undefined;
 }
+
+export const parseConfigurationString = () => {
+    const localStorageConfig = reactLocalStorage.getObject('InitialConfiguration');
+    const configString = localStorageConfig?.RubberTechnologyCalculatorsList || false
+    const defaultConfig = {
+      RubberCompound: true,
+      Standard: true,
+      isDataFromWebConfig: false
+    }
+  
+    if (!configString) return defaultConfig;
+  
+    const parsedConfig = configString.split(',').reduce((acc, item) => {
+      const [key, value] = item.split('=').map(s => s.trim());
+      if (key && value !== undefined) {
+        const normalizedKey = key.replace(/\s+/g, '');
+        acc[normalizedKey] = value.toLowerCase() === 'true';
+      }
+      return acc;
+    }, {});
+  
+    return {
+      RubberCompound: parsedConfig.RubberCompound ?? defaultConfig.RubberCompound,
+      Standard: parsedConfig.STANDARD ?? defaultConfig.Standard,
+      isDataFromWebConfig: true
+    };
+} 
