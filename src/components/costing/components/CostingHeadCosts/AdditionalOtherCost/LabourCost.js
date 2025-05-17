@@ -42,9 +42,7 @@ function LabourCost(props) {
                         </thead>
                         <tbody>
                             {props?.tableData &&
-                                props?.tableData.map((item, index) => {
-                                    console.log(item, "item");
-                                    
+                                props?.tableData.map((item, index) => {                                    
                                     return (
                                         <Fragment>
                                             <tr key={index}>
