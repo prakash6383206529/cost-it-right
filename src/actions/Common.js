@@ -1444,11 +1444,11 @@ export function getSegmentSelectList(callback) {
  * @method getGroupCodeSelectList
  * @description GET GROUP CODE SELECT LIST
  */
-export function getGroupCodeSelectList(callback) {
+export function getGroupCodeSelectList(partId,callback) {
 
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getGroupCodeSelectList}?loggedInUserId=${loggedInUserId()}`, config());
+    const request = axios.get(`${API.getGroupCodeSelectList}?loggedInUserId=${loggedInUserId()}&partId=${partId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({

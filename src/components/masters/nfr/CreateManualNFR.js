@@ -18,7 +18,7 @@ import NoContentFound from '../../common/NoContentFound';
 
 // Actions
 import { getGroupCodeSelectList, getPlantSelectListByType, getSegmentSelectList, getUOMSelectList } from '../../../actions/Common';
-import { getSelectListPartType } from '../actions/Part';
+import { getProductGroupSelectList, getSelectListPartType } from '../actions/Part';
 import { getPartInfo } from '../../costing/actions/Costing';
 import { getRMSpecificationDataList, getRawMaterialNameChild } from '../../masters/actions/Material';
 import { getClientSelectList } from '../actions/Client';
@@ -78,6 +78,7 @@ function CreateManualNFR(props) {
         partTypeList: [],
         segmentList: [],
         groupCodeList: [],
+        partDetails: [],
         rmDetailsGridIndex: '',
         apiCallCounter: 0,
         attachmentLoader: false,
@@ -87,6 +88,7 @@ function CreateManualNFR(props) {
         loader: false,
         VendorInputLoader: false,
         openAddForecast: false,
+        isViewMode: false,
     });
 
     useEffect(() => {
@@ -100,9 +102,6 @@ function CreateManualNFR(props) {
             dispatch(getRawMaterialNameChild(() => { }))
             dispatch(getSegmentSelectList((res) => {
                 setState(prevState => ({ ...prevState, segmentList: res?.data?.SelectList }));
-            }))
-            dispatch(getGroupCodeSelectList((res) => {
-                setState(prevState => ({ ...prevState, groupCodeList: res?.data?.SelectList }));
             }))
             setState(prevState => ({ ...prevState, VendorInputLoader: true }));
             dispatch(getClientSelectList((res) => {
@@ -139,20 +138,24 @@ function CreateManualNFR(props) {
                     rmDetails: partDetail?.NfrRawMaterialList,
                     loader: false
                 }));
-                // Set form values with label and value objects
-                setValue('PartType', { label: partwiseDetail?.PartType, value: partwiseDetail?.PartTypeId });
-                setValue('Part', { label: partwiseDetail?.PartNumber, value: partwiseDetail?.PartId });
+
                 setValue('CustomerRFQNo', Data?.CustomerRFQNumber || '');
                 setValue('Plant', { label: Data?.PlantName, value: Data?.PlantId });
                 setValue('Customer', { label: Data?.CustomerName, value: Data?.CustomerId });
-                setValue('PartName', partDetail?.PartName || '');
-                setValue('SOPDate', partwiseDetail?.SOPDate || null);
-                setValue('Segment', { label: Data?.Segment, value: Data?.SegmentId });
-                setValue('UnitOfMeasurement', { label: partDetail?.UOM, value: partDetail?.UOMId });
-                setValue('GroupCode', { label: partDetail?.GroupCode, value: partDetail?.GroupCodeId });
-                setValue('Description', partDetail?.Description || '');
-                setValue('Remarks', Data?.Remarks || '');
-                addTableHandler();
+                const formValues = [{
+                    PartType: { label: partwiseDetail?.PartType, value: partwiseDetail?.PartTypeId },
+                    Part: { label: partwiseDetail?.PartNumber, value: partwiseDetail?.PartId },
+                    PartName: partwiseDetail?.PartName || '',
+                    PartNumber: partwiseDetail?.PartNumber || '',
+                    Description: partwiseDetail?.PartDescription || '',
+                    UnitOfMeasurement: { label: partwiseDetail?.UOM, value: partwiseDetail?.UOMId },
+                    GroupCode: { label: partwiseDetail?.GroupCode, value: partwiseDetail?.GroupCodeId },
+                    Segment: { label: Data?.Segment, value: Data?.SegmentId },
+                    ZBCLastSubmissionDate: Data?.ZBCLastSubmissionDate ? DayTime(Data?.ZBCLastSubmissionDate).format('DD/MM/YYYY') : "-" || '',
+                    QuotationLastSubmissionDate: Data?.QuotationLastSubmissionDate ? DayTime(Data?.QuotationLastSubmissionDate).format('DD/MM/YYYY') : "-" || '',
+                }];
+                setState(prevState => ({ ...prevState, rfqData: formValues }));
+                // addTableHandler();
             }))
         }
     }, [isEditFlag, isViewFlag])
@@ -276,9 +279,8 @@ function CreateManualNFR(props) {
         setValue("PartType", '');
         setValue("Part", '');
         setValue("PartNumber", '');
-        setValue("Plant", '');
-        setValue("CustomerRFQNo", '');
-        setValue("Customer", '');
+        setValue("GroupCode", '');
+        setValue("Segment", '');
         setValue("PartName", '');
         setValue("Description", '');
         setValue("UnitOfMeasurement", '');
@@ -293,18 +295,21 @@ function CreateManualNFR(props) {
 
     const handlePartChange = (newValue) => {
         if (getValues("Part")?.value !== newValue?.value) {
-            setState(prevState => ({ ...prevState, rmDetails: [], sopQuantityList: [] }));
+            setState(prevState => ({ ...prevState, rmDetails: [], sopQuantityList: [], groupCodeList: [] }));
         }
         setValue("Part", newValue);
 
         if (newValue && newValue !== '') {
             dispatch(getPartInfo(newValue.value, (res) => {
                 let Data = res.data.Data;
+                setState(prevState => ({ ...prevState, isViewFlag: true }));
 
                 setValue('PartName', Data?.PartName ? Data.PartName : '');
                 setValue('Description', Data?.Description ? Data.Description : '');
                 setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurement, value: Data?.UnitOfMeasurementId });
-
+                dispatch(getGroupCodeSelectList(newValue.value, (res) => {
+                    setState(prevState => ({ ...prevState, groupCodeList: res?.data?.SelectList }));
+                }))
                 if (state.sopDate) {
                     const newSopQuantityList = state.fiveyearList.map(yearItem => ({
                         PartNumber: newValue?.label || '',
@@ -398,19 +403,14 @@ function CreateManualNFR(props) {
             return false
         }
         let obj = {
-            PartType: getValues("PartType")?.label,
-            PartTypeId: getValues("PartType")?.value,
-            PartId: getValues("Part")?.value,
+            PartType: getValues("PartType"),
+            Part: getValues("Part"),
             PartNumber: getValues("Part")?.label,
-            CustomerRFQNo: getValues("CustomerRFQNo"),
-            CustomerId: getValues("Customer")?.value,
-            CustomerName: getValues("Customer")?.label || '',
             PartName: getValues("PartName"),
-            Segment: getValues("Segment")?.label || '',
+            Segment: getValues("Segment"),
             Description: getValues("Description"),
-            UnitOfMeasurement: getValues("UnitOfMeasurement")?.label || '',
-            GroupCode: getValues("GroupCode")?.label || '',
-            Plant: getValues("Plant")?.label || '',
+            UnitOfMeasurement: getValues("UnitOfMeasurement"),
+            GroupCode: getValues("GroupCode"),
             ZBCLastSubmissionDate: state?.zbcDate ? DayTime(state?.zbcDate).format('DD/MM/YYYY') : '',
             QuotationLastSubmissionDate: state?.cbcDate ? DayTime(state?.cbcDate).format('DD/MM/YYYY') : '',
         }
@@ -441,17 +441,16 @@ function CreateManualNFR(props) {
             fieldDisabled: true,
             editIndex: ''
         }));
-
-        if (!isViewFlag || isEditFlag) {
-            Toaster.success("Item added successfully")
-        }
+        resetData();
 
     }, 500)
 
     const updateRateGrid = () => {
-        let tempData = state.gridData[state.editIndex];
+        // let tempData = state.gridData[state.editIndex];
+        let tempData = state.rfqData[state.editIndex];
         let hasChanges = false;
 
+        // First check for duplicate parts/raw materials
         switch (getValues("PartType")?.value) {
             case NFR_COMPONENT_CUSTOMIZED_ID:
                 if (state.gridData?.findIndex(item => item?.PartId === getValues("Part")?.value) !== state.editIndex) {
@@ -475,27 +474,21 @@ function CreateManualNFR(props) {
 
         const newData = {
             ...tempData,
-            PartType: getValues("PartType")?.label,
-            PartTypeId: getValues("PartType")?.value,
-            PartId: getValues("Part")?.value,
-            PartNumber: getValues("Part")?.label,
-            CustomerRFQNo: getValues("CustomerRFQNo"),
-            CustomerId: getValues("Customer")?.value,
-            CustomerName: getValues("Customer")?.label || '',
-            PartName: getValues("PartName"),
-            Segment: getValues("Segment")?.label || '',
-            Description: getValues("Description"),
-            UnitOfMeasurement: getValues("UnitOfMeasurement")?.label || '',
-            GroupCode: getValues("GroupCode")?.label || '',
-            Plant: getValues("Plant")?.label || '',
+            PartType: getValues("PartType") || '',
+            PartNumber: getValues("Part")?.label || '',
+            Part: getValues("Part"),
+            PartName: getValues("PartName") || '',
+            Segment: getValues("Segment") || '',
+            Description: getValues("Description") || '',
+            UnitOfMeasurement: getValues("UnitOfMeasurement") || '',
+            GroupCode: getValues("GroupCode") || '',
             ZBCLastSubmissionDate: state.zbcDate ? DayTime(state.zbcDate).format('DD/MM/YYYY') : '',
             QuotationLastSubmissionDate: state.cbcDate ? DayTime(state.cbcDate).format('DD/MM/YYYY') : '',
-            Remarks: getValues("Remarks")
         }
 
         // Check if any field has been updated
         Object.keys(newData).forEach(key => {
-            if (JSON.stringify(tempData[key]) !== JSON.stringify(newData[key])) {
+            if (tempData && JSON.stringify(tempData[key]) !== JSON.stringify(newData[key])) {
                 hasChanges = true;
             }
         });
@@ -513,8 +506,8 @@ function CreateManualNFR(props) {
         const rawMaterialCodeArray = [];
 
         tempArray?.forEach(item => {
-            partIdArray?.push(item?.PartId);
-            rawMaterialCodeArray?.push(item?.RawMaterialCode);
+            if (item?.PartId) partIdArray.push(item.PartId);
+            if (item?.RawMaterialCode) rawMaterialCodeArray.push(item.RawMaterialCode);
         });
 
         switch (getValues("PartType")?.value) {
@@ -528,6 +521,7 @@ function CreateManualNFR(props) {
                 break;
         }
         setState(prevState => ({ ...prevState, gridData: tempArray, rfqData: tempArray, fieldDisabled: true, editIndex: '' }));
+        resetData();
         Toaster.success("Item updated successfully")
     }
 
@@ -535,22 +529,19 @@ function CreateManualNFR(props) {
         setState(prevState => ({ ...prevState, fieldDisabled: true, editIndex: '' }));
     }
 
-    const editItemDetails = (index) => {
+    const editItemDetails = (isView, index) => {
         let tempObj = state.rfqData[index]
-        setState(prevState => ({ ...prevState, editIndex: index, fieldDisabled: false, errors: {} }));
-        setValue('CustomerRFQNo', tempObj?.CustomerRFQNo);
-        setValue('Customer', { label: tempObj?.CustomerName, value: tempObj?.CustomerId });
+
+        setState(prevState => ({ ...prevState, editIndex: index, fieldDisabled: false, isViewMode: isView, errors: {} }));
+        setValue('PartType', tempObj?.PartType);
+        setValue('Part', tempObj?.Part);
         setValue('PartName', tempObj?.PartName);
-        setValue('PartNumber', tempObj?.PartNumber);
         setValue('Description', tempObj?.Description);
-        setValue('Plant', { label: tempObj?.Plant, value: tempObj?.Plant });
-        setValue('UnitOfMeasurement', { label: tempObj?.UnitOfMeasurement, value: tempObj?.UOMId });
+        setValue('PartNumber', tempObj?.Part?.label);
+        setValue('UnitOfMeasurement', tempObj?.UnitOfMeasurement);
         setValue('GroupCode', tempObj?.GroupCode);
-        setValue('PartType', { label: tempObj?.PartType, value: tempObj?.PartTypeId });
-        setValue('Customer', { label: tempObj?.CustomerName, value: tempObj?.CustomerId });
-        setValue('Plant', { label: tempObj?.Plant, value: tempObj?.Plant });
-        setValue('UOM', { label: tempObj?.Uom, value: tempObj?.Uom });
-        setValue('Part', { label: tempObj?.PartNumber, value: tempObj?.PartId });
+        setValue('UnitOfMeasurement', tempObj?.UnitOfMeasurement);
+        setValue('Segment', tempObj?.Segment)
 
         // Set Raw Material if exists
         if (tempObj?.RawMaterialCode) {
@@ -581,7 +572,7 @@ function CreateManualNFR(props) {
     }
 
     const viewItemDetails = () => {
-        setState(prevState => ({ ...prevState, openAddForecast: true, fieldDisabled: true }));
+        setState(prevState => ({ ...prevState, isViewFlag: true, fieldDisabled: true }));
     }
 
     const toggleBOMViewer = () => {
@@ -720,6 +711,7 @@ function CreateManualNFR(props) {
         }
 
         const obj = {
+            "NfrId": props?.data?.NfrId ? props?.data?.NfrId : EMPTY_GUID,
             "CustomerRFQNumber": getValues("CustomerRFQNo"),
             "CustomerId": getValues("Customer")?.value,
             "QuotationLastSubmissionDate": state.cbcDate,
@@ -732,30 +724,17 @@ function CreateManualNFR(props) {
             "IsSent": type,
             "NfrPartwiseDetailRequest": [
                 {
-                    "NfrMasterId": props?.data?.NfrId ? props?.data?.NfrId : EMPTY_GUID,
                     "TechnologyId": 7,
                     "PartId": getValues("Part")?.value,
+                    "GroupCodeId": getValues("GroupCode")?.value,
                     "PartTypeId": getValues("PartType")?.value,
-                    "NfrPartStatusId": 1,
-                    "NfrNumber": getValues("CustomerRFQNo"),
-                    "PartType": getValues("PartType")?.label,
-                    "PartNumber": getValues("Part")?.label,
-                    "RevisionNumber": "string",
-                    "PartName": getValues("PartName"),
-                    "Technology": "Rubber",
-                    "PlantId": getValues("Plant")?.value,
+                    "SegmentId": getValues("Segment")?.value,
                     "UOMId": getValues("UnitOfMeasurement")?.value,
-                    "CustomerName": getValues("Customer")?.label,
                     "SOPDate": state.sopDate,
                     "PartDetailResponses": [
                         {
                             "PartId": getValues("Part")?.value,
                             "PartTypeId": getValues("PartType")?.value,
-                            "PartNumber": getValues("Part")?.label,
-                            "PartName": getValues("PartName"),
-                            "UOM": getValues("UnitOfMeasurement")?.label,
-                            "PartType": getValues("PartType")?.label,
-                            "CustomerName": getValues("Customer")?.label,
                             "NfrRawMaterialList": state.rmDetails
                         }
                     ],
@@ -830,7 +809,7 @@ function CreateManualNFR(props) {
                                             className=""
                                             customClassName={"withBorder"}
                                             errors={errors?.CustomerRFQNo}
-                                            disabled={isViewFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
                                         />
                                     </Col>
 
@@ -850,7 +829,25 @@ function CreateManualNFR(props) {
                                             handleChange={handleCustomerChange}
                                             errors={errors.Customer}
                                             isLoading={VendorLoaderObj}
-                                            disabled={isViewFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
+                                        />
+                                    </Col>
+                                    <Col md="3" className="input-container">
+                                        <SearchableSelectHookForm
+                                            label={"Plant"}
+                                            name={`Plant`}
+                                            id="AddNFR_Plant"
+                                            placeholder={"Select"}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: true }}
+                                            mandatory={true}
+                                            register={register}
+                                            customClassName="costing-version"
+                                            options={renderListing("Plant")}
+                                            handleChange={(newValue) => handleChangePlant(newValue)}
+                                            errors={errors?.Plant}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -875,7 +872,7 @@ function CreateManualNFR(props) {
                                                     disabledKeyboardNavigation
                                                     yearDropdownItemNumber={100}
                                                     onChangeRaw={(e) => e.preventDefault()}
-                                                    disabled={isViewFlag || state.fieldDisabled}
+                                                    disabled={state.fieldDisabled || (state.editIndex === '' && isEditFlag) || isViewFlag || state.isViewMode}
                                                 />
                                             </div>
                                         </div>
@@ -902,7 +899,7 @@ function CreateManualNFR(props) {
                                                     disabledKeyboardNavigation
                                                     yearDropdownItemNumber={100}
                                                     onChangeRaw={(e) => e.preventDefault()}
-                                                    disabled={isViewFlag || state.fieldDisabled}
+                                                    disabled={state.fieldDisabled || (state.editIndex === '' && isEditFlag) || isViewFlag || state.isViewMode}
                                                 />
                                             </div>
                                         </div>
@@ -928,7 +925,7 @@ function CreateManualNFR(props) {
                                             options={renderListing("PartType")}
                                             handleChange={(newValue) => handleChangePartType(newValue)}
                                             errors={errors?.PartType}
-                                            disabled={isViewFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
                                         />
 
                                     </Col>
@@ -949,18 +946,17 @@ function CreateManualNFR(props) {
                                                 isLoading={loaderObj}
                                                 handleChange={handlePartChange}
                                                 errors={errors?.Part}
-                                                disabled={isViewFlag || state.fieldDisabled}
+                                                disabled={isViewFlag || !getValues("PartType")?.value || isEditFlag || state.fieldDisabled}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                             {getValues("PartType")?.label === "Assembly" && getValues("Part")?.value && <button
                                                 id="AssemblyPart_Add_BOM"
                                                 type="button"
-                                                disabled={!getValues("Part")?.value || state.fieldDisabled}
+                                                disabled={!getValues("Part")?.value}
                                                 onClick={toggleBOMViewer}
                                                 className={"user-btn pull-left mt30 mb-4 ml-2"}>
                                                 <div className={'fa fa-eye pr-1'}></div> BOM
                                             </button>}
-
                                             <button
                                                 id="AddNFR_AddForecast"
                                                 className="user-btn mt-30 ml-3"
@@ -970,7 +966,7 @@ function CreateManualNFR(props) {
                                                     setState(prevState => ({ ...prevState, openAddForecast: true }));
                                                 }}
                                                 type="button"
-                                                disabled={!getValues("Part")?.value || state.fieldDisabled}
+                                                disabled={!getValues("Part")?.value}
                                             >
                                                 {state.rmDetails?.length > 0 ? <div className="view mr-2"></div> : <div className="plus"></div>}
                                             </button>
@@ -1057,7 +1053,7 @@ function CreateManualNFR(props) {
                                             customClassName="costing-version"
                                             options={renderListing("GroupCode")}
                                             errors={errors?.GroupCode}
-                                            disabled={isViewFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -1073,35 +1069,18 @@ function CreateManualNFR(props) {
                                             customClassName="costing-version"
                                             options={renderListing("Segment")}
                                             errors={errors?.Segment}
-                                            disabled={isViewFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || state.fieldDisabled || (state.editIndex === '' && isEditFlag) || state.isViewMode}
                                         />
                                     </Col>
-                                    <Col md="3" className="input-container">
-                                        <SearchableSelectHookForm
-                                            label={"Plant"}
-                                            name={`Plant`}
-                                            id="AddNFR_Plant"
-                                            placeholder={"Select"}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: true }}
-                                            mandatory={true}
-                                            register={register}
-                                            customClassName="costing-version"
-                                            options={renderListing("Plant")}
-                                            handleChange={(newValue) => handleChangePlant(newValue)}
-                                            errors={errors?.Plant}
-                                            disabled={isViewFlag || state.fieldDisabled}
-                                        />
-                                    </Col>
-                                    
+
                                     <Col md="3">
                                         <div className='mt30'>
                                             {state.editIndex !== '' ? (
                                                 <>
-                                                    <button type="button" className={"btn btn-primary pull-left mt-2 mr5"} onClick={handleSubmitTableForm(updateRateGrid)}>Update</button>
+                                                    <button type="button" className={"btn btn-primary pull-left mt-2 mr5"} onClick={handleSubmitTableForm(updateRateGrid)} disabled={state.fieldDisabled || state.isViewMode || isViewFlag}>Update</button>
                                                     <button
                                                         type="button"
+                                                        disabled={state.fieldDisabled || state.isViewMode || isViewFlag}
                                                         className={"mr15 ml-2 add-cancel-btn cancel-btn"}
                                                         onClick={() => cancelEdit()}
                                                     >
@@ -1114,7 +1093,7 @@ function CreateManualNFR(props) {
                                                         type="button"
                                                         className={"user-btn pull-left"}
                                                         onClick={handleSubmitTableForm(addTableHandler)}
-                                                        disabled={state.fieldDisabled}
+                                                        disabled={state.fieldDisabled || state.isViewMode || isViewFlag || (state.editIndex === '' && isEditFlag)}
                                                     >
                                                         <div className={"plus"}></div>ADD
                                                     </button>
@@ -1123,7 +1102,7 @@ function CreateManualNFR(props) {
                                                         type="button"
                                                         className={"mr15 ml-2  reset-btn"}
                                                         onClick={() => resetData()}
-                                                        disabled={state.fieldDisabled}
+                                                        disabled={state.fieldDisabled || state.isViewMode || isViewFlag || (state.editIndex === '' && isEditFlag)}
                                                     >
                                                         Reset
                                                     </button>
@@ -1140,10 +1119,7 @@ function CreateManualNFR(props) {
                                                     <th>{`Part Type`}</th>
                                                     <th>{`Part Number`}</th>
                                                     <th>{`Part Name`}</th>
-                                                    <th>{`Customer RFQ No.`}</th>
-                                                    <th>{`Customer Name`}</th>
                                                     <th>{`Description`}</th>
-                                                    <th>{`Plant`}</th>
                                                     <th>{`UOM`}</th>
                                                     <th>{`Group Code`}</th>
                                                     <th>{`Segment`}</th>
@@ -1156,40 +1132,37 @@ function CreateManualNFR(props) {
                                                 {state.rfqData && state.rfqData?.map((item, index) => {
                                                     return (
                                                         <tr key={index}>
-                                                            <td>{item?.PartType ? item.PartType : '-'}</td>
-                                                            <td>{item?.PartNumber ? item.PartNumber : '-'}</td>
+                                                            <td>{item?.PartType?.label ? item.PartType.label : '-'}</td>
+                                                            <td>{item?.Part?.label ? item.Part.label : '-'}</td>
                                                             <td>{item?.PartName ? item.PartName : '-'}</td>
-                                                            <td>{item?.CustomerRFQNo ? item.CustomerRFQNo : '-'}</td>
-                                                            <td>{item?.CustomerName ? item.CustomerName : '-'}</td>
                                                             <td>{item?.Description ? item.Description : '-'}</td>
-                                                            <td>{item?.Plant ? item.Plant : '-'}</td>
-                                                            <td>{item?.UnitOfMeasurement ? item.UnitOfMeasurement : '-'}</td>
-                                                            <td>{item?.GroupCode ? item.GroupCode : '-'}</td>
-                                                            <td>{item?.Segment ? item.Segment : '-'}</td>
+                                                            <td>{item?.UnitOfMeasurement?.label ? item.UnitOfMeasurement.label : '-'}</td>
+                                                            <td>{item?.GroupCode?.label ? item.GroupCode.label : '-'}</td>
+                                                            <td>{item?.Segment?.label ? item.Segment.label : '-'}</td>
                                                             <td>{item?.ZBCLastSubmissionDate ? item.ZBCLastSubmissionDate : '-'}</td>
                                                             <td>{item?.QuotationLastSubmissionDate ? item.QuotationLastSubmissionDate : '-'}</td>
                                                             <td>
-                                                                <button
+                                                                {!isViewFlag && <button
                                                                     className="Edit mr-2"
                                                                     title='Edit'
                                                                     type={"button"}
                                                                     disabled={item?.IsAssociated}
-                                                                    onClick={() => editItemDetails(index)}
-                                                                />
+                                                                    onClick={() => editItemDetails(false, index)}
+                                                                />}
                                                                 <button
                                                                     className="View mr-2"
                                                                     title='View'
                                                                     type={"button"}
                                                                     disabled={item?.IsAssociated}
-                                                                    onClick={viewItemDetails}
+                                                                    onClick={() => editItemDetails(true, index)}
                                                                 />
-                                                                <button
+                                                                {!isViewFlag && <button
                                                                     className="Delete "
                                                                     title='Delete'
                                                                     type={"button"}
                                                                     disabled={item?.IsAssociated}
                                                                     onClick={() => deleteItem(index)}
-                                                                />
+                                                                />}
                                                             </td>
                                                         </tr>
                                                     );
@@ -1282,13 +1255,12 @@ function CreateManualNFR(props) {
                                                             <a href={fileURL} target="_blank" rel="noreferrer">
                                                                 {f.OriginalFileName}
                                                             </a>
-                                                            {
-                                                                <img
-                                                                    alt={""}
-                                                                    className="float-right"
-                                                                    onClick={() => deleteFile(f.FileId, f.FileName)}
-                                                                    src={redcrossImg}
-                                                                ></img>
+                                                            {!isViewFlag && <img
+                                                                alt={""}
+                                                                className="float-right"
+                                                                onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                                src={redcrossImg}
+                                                            ></img>
                                                             }
                                                         </div>
                                                     );
@@ -1341,7 +1313,6 @@ function CreateManualNFR(props) {
                     closeDrawer={openAndCloseDrawer}
                     anchor={'right'}
                     isViewFlag={isViewFlag || state.fieldDisabled}
-
                     partListData={partListData}
                     rmDetails={state.rmDetails}
                     setRMDetails={(details) => setState(prevState => ({ ...prevState, rmDetails: details }))}
@@ -1349,7 +1320,6 @@ function CreateManualNFR(props) {
                     handleSOPDateChange={handleSOPDateChange}
                     zbcDate={state.zbcDate}
                     errors={errors}
-                    // gridOptionsPart={gridOptionsPart}
                     onGridReady={onGridReady}
                     EditableCallback={!isViewFlag}
                     partType={getValues("PartType")}
