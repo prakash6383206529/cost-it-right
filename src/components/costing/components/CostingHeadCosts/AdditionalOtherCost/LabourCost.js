@@ -43,6 +43,8 @@ function LabourCost(props) {
                         <tbody>
                             {props?.tableData &&
                                 props?.tableData.map((item, index) => {
+                                    console.log(item, "item");
+                                    
                                     return (
                                         <Fragment>
                                             <tr key={index}>
@@ -51,7 +53,7 @@ function LabourCost(props) {
                                                 <td> {checkForDecimalAndNull(item.AbsentismPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                                                 <td>{item.LabourRate} </td>
                                                 {<td>{checkForDecimalAndNull(item.WorkingTime, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.Efficiency)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.Efficiency, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.LabourCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
