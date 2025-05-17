@@ -47,7 +47,7 @@ const refreshToken = async () => {
         }
     } catch (error) {
         console.error("Refresh token failed", error);
-        toast.error("Authentication error. Please log in again.");
+        toast.error('Authentication error. Please contact your IT Team.')
         reactLocalStorage.setObject("isUserLoggedIn", false);
         reactLocalStorage.setObject("userDetail", {});
         reactLocalStorage.set("ModuleId", "");

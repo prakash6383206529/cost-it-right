@@ -75,7 +75,7 @@ export function getFreightDataList(filterData, callback) {
  * @method getFreightData
  * @description GET FREIGHT DATA
  */
-export function getFreightData(data, callback) {
+export function getFreightData(data, callback) {   
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
@@ -180,9 +180,10 @@ export function getFreigtFullTruckCapacitySelectList() {
  * @method getFreigtRateCriteriaSelectList
  * @description GET FREIGHT RATE CRITERIA SELECTLIST
  */
-export function getFreigtRateCriteriaSelectList() {
+export function getFreigtRateCriteriaSelectList(plantId) {
     return (dispatch) => {
-        const request = axios.get(API.getFreigtRateCriteriaSelectList, config());
+        const queryParams = `?plantId=${plantId}`
+        const request = axios.get(`${API.getFreigtRateCriteriaSelectList}${queryParams}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_FREIGHT_RATE_CRITERIA_SELECTLIST,

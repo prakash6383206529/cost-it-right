@@ -412,12 +412,12 @@ function OtherCostDrawer(props) {
                 setApplicabilityCost(ToolTabData?.[0]?.CostingPartDetails?.NetToolAmortizationCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(ToolTabData?.[0]?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
-            case 'Net Tool Interest Cost':
+            case 'Net Tool Interest Cost (per pcs)':
                 totalCost = (ToolTabData?.[0]?.CostingPartDetails?.NetToolInterestCost) * calculatePercentage(percent)
                 setApplicabilityCost(ToolTabData?.[0]?.CostingPartDetails?.NetToolInterestCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(ToolTabData?.[0]?.CostingPartDetails?.NetToolInterestCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
-            case 'Net Tool Maintenance Cost':
+            case 'Net Tool Maintenance Cost (per pcs)':
                 totalCost = (ToolTabData?.[0]?.CostingPartDetails?.NetToolMaintenanceCost) * calculatePercentage(percent)
                 setApplicabilityCost(ToolTabData?.[0]?.CostingPartDetails?.NetToolMaintenanceCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(ToolTabData?.[0]?.CostingPartDetails?.NetToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice))

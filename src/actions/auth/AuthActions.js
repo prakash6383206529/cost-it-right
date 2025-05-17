@@ -1981,7 +1981,7 @@ export function updatePassword(requestData, callback) {
 export function forgetPassword(UserName, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.forgetPassword}/${UserName}/${loggedInUserId()}`, config());
+        const request = axios.get(`${API.forgetPassword}?userName=${UserName}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response) {
