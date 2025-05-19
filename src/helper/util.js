@@ -717,9 +717,9 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.bopHandlingPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage : 0
   obj.bopHandlingChargeType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType : ''
 
-  obj.netAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost: 0
-  obj.netToolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost: 0
-  obj.netToolInterestCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolInterestCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolInterestCost: 0
+  obj.netAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost : 0
+  obj.netToolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost : 0
+  obj.netToolInterestCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolInterestCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolInterestCost : 0
   obj.toolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost : 0
   obj.toolPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost : 0
   obj.amortizationQty = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life : 0
@@ -770,6 +770,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.netTransportationCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.ChildPartTransportationDetails ?? [] : []
   obj.HangerCostDetails = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.ChildPartHangerDetails : dataFromAPI?.CostingPartDetails?.HangerDetails ?? []
   obj.PaintAndTapeDetails = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.ChildPartPaintAndTapeDetails : dataFromAPI?.CostingPartDetails?.PaintAndTapeDetails ?? []
+  obj.CostingLabourResponse = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.CostingLabourResponse : []
   obj.surfaceTreatmentDetails = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentDetails : []
   // //OverheadCost and Profit
   obj.netOverheadCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail : '-'
@@ -1779,7 +1780,7 @@ export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel = '', z
     return customerBasedLabel;
   } else if (cellValue === 'Vendor(Code)') {
     return vendorCodeLabel;
-  }else{
+  } else {
     return cellValue
   }
 }
@@ -2064,21 +2065,24 @@ export const getOverheadAndProfitCostTotal = (arr = []) => {
 export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = []) => {
   const isAssembly = item?.PartType
   const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
-  
+
   let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
   let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex(costingItem => costingItem.PartNumber === item?.PartNumber && costingItem.AssemblyPartNumber === item?.AssemblyPartNumber)
   let objectToGetRMCCData = tempArrForCosting[indexForUpdate]
-  
+  console.log("objectToGetRMCCData", objectToGetRMCCData)
+
   if (isAssembly === "Assembly" || isAssembly === "Sub Assembly") {
+    console.log(isRequestForMultiTechnology, "isAssembly", isAssembly)
 
     if (isRequestForMultiTechnology) {//run for multi(Assembly) technology
       const assemblyCostingPartDetails = subAssemblyTechnologyArray[0]?.CostingPartDetails
-      
+
       return {
         netpartCost: checkForNull(assemblyCostingPartDetails?.NetChildPartsCost),
-        conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost)+checkForNull(assemblyCostingPartDetails?.NetProcessCost)
+        conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost) + checkForNull(assemblyCostingPartDetails?.NetProcessCost)
       };
     } else {
+      console.log("objectToGetRMCCData?.CosingPartDetails?.TotalRawMaterialsCostWithQuantity", objectToGetRMCCData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity)
       return {
         rawMaterialsCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
         conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalConversionCostWithQuantity)

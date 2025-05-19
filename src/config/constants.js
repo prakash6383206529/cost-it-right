@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//const BASE_URL = `http://10.10.1.102:2002/api/v1`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `http://10.10.1.100:10511/api/v1`;
 
 
 
