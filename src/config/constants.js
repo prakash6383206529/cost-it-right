@@ -2491,6 +2491,7 @@ export const lOGIN_AUDITS = '/login-audit'
 export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
 export const IMPACTED_DATA_LIST = '/impacted-data-list'
+export const CUSTOMER_RFQ_LISTING = '/customer-rfq'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"

@@ -1444,11 +1444,11 @@ export function getSegmentSelectList(callback) {
  * @method getGroupCodeSelectList
  * @description GET GROUP CODE SELECT LIST
  */
-export function getGroupCodeSelectList(callback) {
+export function getGroupCodeSelectList(partId,callback) {
 
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getGroupCodeSelectList}?loggedInUserId=${loggedInUserId()}`, config());
+    const request = axios.get(`${API.getGroupCodeSelectList}?loggedInUserId=${loggedInUserId()}&partId=${partId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1459,7 +1459,8 @@ export function getGroupCodeSelectList(callback) {
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
-      apiErrors(error);
+      // apiErrors(error);
+      
     });
   };
 }

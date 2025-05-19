@@ -367,9 +367,9 @@ function AddForecast(props) {
     }
 
     const resetFormAndDropdowns = () => {
-        if (partType.value !== Component) {
-            setValue('partNumber', '');
-        }
+        // if (partType.value !== Component) {
+        //     setValue('partNumber', '');
+        // }
 
         setValue('RMName', '');
         setValue('RMGrade', '');
@@ -397,9 +397,7 @@ function AddForecast(props) {
                         });
                     }
                 });
-
-                const selectedValues = tableData.map(data => data?.PartId);
-                return getFilteredDropdownOptions(options, selectedValues);
+                return options; // Return all options without filtering
             }
             return [];
         }

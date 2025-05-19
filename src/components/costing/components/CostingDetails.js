@@ -2276,7 +2276,7 @@ function CostingDetails(props) {
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(partType.length === 0 || partFamily.length === 0) ? true : false}
+                          disabled={(partType.length === 0 || (getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && partFamily.length === 0)) ? true : false}
                           NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
                       </Col>

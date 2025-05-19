@@ -2331,7 +2331,7 @@ function TabDiscountOther(props) {
                       tableData={npvTableData}
                       closeDrawer={openAndCloseAddNpvDrawer}
                       anchor={'right'}
-                      netPOPrice={netPOPrice - totalNpvCost}
+                      netPOPrice={initialConfiguration?.IsAddNPVInNetCost ? netPOPrice - totalNpvCost : netPOPrice}
                       costingId={costData?.CostingId}
                       totalCostFromSummary={false}
                       CostingViewMode={CostingViewMode}

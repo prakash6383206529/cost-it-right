@@ -129,7 +129,8 @@ function NfrListing(props) {
             CustomerName: apiData.CustomerName || '-',
             CustomerPartNo: apiData.NfrPartwiseDetailResponse?.[0]?.PartNumber || '-',
             GroupCode: apiData.GroupCodeId || '-',
-            PlantNameDescription: apiData.NfrPartwiseDetailResponse?.[0]?.PartName || '-',
+            PartType:apiData.NfrPartwiseDetailResponse?.[0]?.PartType || "-",
+            PartName: apiData.NfrPartwiseDetailResponse?.[0]?.PartName || '-',
             UOM: apiData.NfrPartwiseDetailResponse?.[0]?.UOM || '-',
             Segment: apiData.Segment || '-',
             PlantName: apiData.PlantName || '-',
@@ -296,13 +297,13 @@ function NfrListing(props) {
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        const Status = rowData?.Status
         return (
             <>
                 {/* <button className="Add-file mr-1" id="nfr_AddCosting" type={"button"} title={`Add Costing`} /> */}
-                {<button title='View' className="View mr-1" id="viewNfr_list" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                <button className="Edit mr-1" id="nfr_EditCosting" type={"button"} title={"Edit Details"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />
-                {<button title='Delete' className="Delete mr-1" id="deleteNfr_list" type={'button'} onClick={() => deleteItemDetails(rowData)} />}
+                { <button title='View' className="View mr-1" id="viewNfr_list" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {Status === "Draft" && <button className="Edit mr-1" id="nfr_EditCosting" type={"button"} title={"Edit Details"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {Status === "Draft" && <button title='Delete' className="Delete mr-1" id="deleteNfr_list" type={'button'} onClick={() => deleteItemDetails(rowData)} />}
             </>
         )
     };
@@ -379,32 +380,36 @@ function NfrListing(props) {
     }
 
     const customerRfqFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        const cell = props?.valueFormatted || props?.value;
+        const row = props?.data || {};
+        const Status = row?.Status;
+    
+        const isClickable = Status === 'ZBC Created';
+    
         return (
             <div
-                onClick={() => viewPartDetails(row)}
-                className={'link'}
-                style={{ cursor: 'pointer' }}
+                onClick={isClickable ? () => viewPartDetails(row) : undefined}
+                className={isClickable ? 'link' : ''}
+                style={{ cursor: isClickable ? 'pointer' : 'default' }}
             >
                 {cell || '-'}
             </div>
-        )
-    }
+        );
+    };
 
     const statusFormatter = (props) => {
         dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'NFR' }))
         //MINDA
         // dispatch(getGridHeight({ value: props.rowIndex, component: 'NFR' }))
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = cell==="ZBC Created" ? "Approved" : cell==="ZBC Pending" ? "Pending" : cell==="Draft" ? "Draft" : cell
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
         tempStatus = row?.Status
         // let displayCount = `${row?.ApprovalPartCount}/${row?.NumberOfParts}`
         let displayCount = ' (' + row?.ApprovalPartCount + '/' + row?.NumberOfParts + ')'
 
-        return <div className={cell}>{`${tempStatus}`}</div>
+        return <div className={cellValue}>{`${tempStatus}`}</div>
     }
 
     const dateFormater = (props) => {
@@ -510,7 +515,7 @@ function NfrListing(props) {
             return "Lorem Ipsum";
         } else {
             const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-            return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+            return cellValue?.includes('T') ?  DayTime(cellValue).format('DD/MM/YYYY'): '-';
         }
     }
 
@@ -666,6 +671,7 @@ function NfrListing(props) {
 
     const addNFRFunction = () => {
         setIsViewMode(false)
+        setIsEdit(false)
         props.openAddNFRDrawer(true)
         setShowAddNFRDrawer(true)
     }
@@ -750,28 +756,23 @@ function NfrListing(props) {
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 onRowSelected={onRowSelect}
                                             >
-                                                {/* <AgGridColumn field="NfrRefNumber" headerName='Nfr Ref. Number' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
-                                                {/* <AgGridColumn field="CustomerRfqId" headerName="Customer RFQ ID" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
                                                 <AgGridColumn field="CustomerRFQNumber" headerName="Customer RFQ No." minWidth={160} cellRenderer="customerRfqFormatter"></AgGridColumn>
                                                 <AgGridColumn field="CustomerName" headerName="Customer Name" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="CustomerPartNo" headerName="Customer Part No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="PartType" headerName="Part Type" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="CustomerPartNo" headerName="Part No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                               
+                                                <AgGridColumn field="PartName" headerName="Part Name" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="GroupCode" headerName='Group Code' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="PlantNameDescription" headerName="Part Description" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="UOM" headerName='UOM' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                {/* <AgGridColumn field="PartDescription" headerName="Part Description" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
                                                 <AgGridColumn field="Segment" headerName="Segment" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant Name' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="ZBCLastSubmissionDate" headerName="ZBC Submission Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridColumn field="ZBCLastSubmissionDate" headerName="ZBC Last Submission Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="QuotationLastSubmissionDate" headerName="Quotation Submission Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="SopDate" headerName="SOP Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                                {/* <AgGridColumn field="LastSubmissionDate" headerName="Last Submission Date" minWidth={150} cellRenderer={dateFormater}></AgGridColumn> */}
-                                                {/* <AgGridColumn field="AttachmentPresent" headerName="Attachment Present" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
                                                 <AgGridColumn field="CreatedByName" headerName="Created By" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CreatedDate" headerName="Created Date" minWidth={150} cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" cellClass="text-center" headerName="Status" headerClass="justify-content-center" minWidth={170} cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
-                                                {<AgGridColumn field="Status" minWidth={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-
-                                                {/* <AgGridColumn field="NumberOfParts" headerName='No. of Parts' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="ApprovedOn" headerName='Approved On' minWidth={150} cellRenderer={dateFormater}></AgGridColumn> */}
+                                                <AgGridColumn field="Status" minWidth={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                             </AgGridReact >
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div >
