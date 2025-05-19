@@ -354,7 +354,7 @@ function AddTool(props) {
         PartType: item?.Type,
         PartQuantity: item?.Quantity,
         ProcessOrOperationType: getValues('type'),
-        ProcessOrOperationQuantity: 1,
+        ProcessOrOperationQuantity: getValues('Quantity'),
         BOMLevel: item?.Level,
         PartNumber: costData?.PartNumber,
         PartId: costData?.PartId,
