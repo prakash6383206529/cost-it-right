@@ -306,7 +306,7 @@ function CreateManualNFR(props) {
 
                 setValue('PartName', Data?.PartName ? Data.PartName : '');
                 setValue('Description', Data?.Description ? Data.Description : '');
-                setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurement, value: Data?.UnitOfMeasurementId });
+                setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId });
                 dispatch(getGroupCodeSelectList(newValue.value, (res) => {
                     setState(prevState => ({ ...prevState, groupCodeList: res?.data?.SelectList }));
                 }))
