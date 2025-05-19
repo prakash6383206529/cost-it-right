@@ -99,9 +99,9 @@ function TabRMCC(props) {
           NetOperationCostForProfit: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalOperationCostPerAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalOperationCostSubAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalOperationCostComponentForProfit) : 0,
           NetWeldingCostForOverhead: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalWeldingCostPerAssemblyForOverhead) + checkForNull(TopHeaderValues?.TotalWeldingCostSubAssemblyForOverhead) + checkForNull(TopHeaderValues?.TotalWeldingCostComponentForOverhead) : 0,
           NetWeldingCostForProfit: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalWeldingCostPerAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalWeldingCostSubAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalWeldingCostComponentForProfit) : 0,
-          NetCCForOtherTechnologyCost: TopHeaderValues?.NetCCForOtherTechnologyCost ?? 0,
-          NetCCForOtherTechnologyCostForOverhead: TopHeaderValues?.NetCCForOtherTechnologyCostForOverhead ?? 0,
-          NetCCForOtherTechnologyCostForProfit: TopHeaderValues?.NetCCForOtherTechnologyCostForProfit ?? 0,
+          NetCCForOtherTechnologyCost: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostComponent) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostSubAssembly) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostPerAssembly): 0,
+          NetCCForOtherTechnologyCostForOverhead: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostComponentForOverhead) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead): 0,
+          NetCCForOtherTechnologyCostForProfit: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostComponentForProfit) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostSubAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostPerAssemblyForProfit): 0,
         }
       } else {
 
@@ -616,8 +616,8 @@ function TabRMCC(props) {
         subAssemObj.CostingPartDetails.TotalProcessCostComponent = checkForNull(getProcessTotalCostForAssembly(tempArr))
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssembly = setProcessCostForAssembly(tempArr)
 
-        subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostComponent = checkForNull(getProcessTotalCostForAssembly(tempArr, subAssemObj?.TechnologyId, "CCForOtherTechnology"))
-        subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(tempArr, subAssemObj?.TechnologyId, "CCForOtherTechnology")
+        subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostComponent = checkForNull(getProcessTotalCostForAssembly(tempArr, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology"))
+        subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(tempArr, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology")
 
         subAssemObj.CostingPartDetails.TotalProcessCostComponentForOverhead = checkForNull(getOverheadAndProfitTotalCostForAssembly(tempArr, 'Overhead', 'Process'))
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Overhead', 'Process'))
@@ -1560,7 +1560,6 @@ function TabRMCC(props) {
           return newItem
         })
         const updatedArr1 = mapArray(RMCCTabData)
-
         dispatch(setRMCCData(updatedArr1, () => { }))
         return i;
       });
@@ -1768,14 +1767,14 @@ function TabRMCC(props) {
   }
 
   const GetProcessCostTotal = (item, TechnologyId, technologyType = "") => {
-
+    
     if (technologyType === "CCForOtherTechnology") {
       return item.reduce((acc, el) =>
-        el.ProcessTechnologyId !== TechnologyId ? acc + checkForNull(el.ProcessCost) : acc
+        el.ProcessTechnologyId !== TechnologyId ? acc + checkForNull(el?.ProcessCost) : acc
         , 0);
     }
 
-    return item.reduce((acc, el) => acc + checkForNull(el.ProcessCost), 0);
+    return item.reduce((acc, el) => acc + checkForNull(el?.ProcessCost), 0);
   }
 
 
@@ -2050,35 +2049,31 @@ function TabRMCC(props) {
                 if (isOperation) {
                   subAssembObj.CostingPartDetails.CostingOperationCostResponse = gridData;
                   subAssembObj.CostingPartDetails.TotalOperationCostPerAssembly = GetOperationCostTotal(gridData);
-                  subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, subAssembObj?.TechnologyId)?.overheadOperationCost) ?? 0
-                  subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, subAssembObj?.TechnologyId)?.profitOperationCost) ?? 0
+                  subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.overheadOperationCost) ?? 0
+                  subAssembObj.CostingPartDetails.TotalOperationCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.profitOperationCost) ?? 0
 
                   subAssembObj.CostingPartDetails.TotalWeldingCostPerAssembly = GetOperationCostTotal(gridData, "Welding");
-                  subAssembObj.CostingPartDetails.TotalWeldingCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, 'Overhead')?.overheadWeldingCost) ?? 0
-                  subAssembObj.CostingPartDetails.TotalWeldingCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, 'Profit')?.profitWeldingCost) ?? 0
+                  subAssembObj.CostingPartDetails.TotalWeldingCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.overheadWeldingCost) ?? 0
+                  subAssembObj.CostingPartDetails.TotalWeldingCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.profitWeldingCost) ?? 0
                 } else {
 
 
                   subAssembObj.CostingPartDetails.CostingProcessCostResponse = gridData;
                   subAssembObj.CostingPartDetails.TotalProcessCostPerAssembly = GetProcessCostTotal(gridData);
-                  subAssembObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, subAssembObj?.TechnologyId)?.overheadProcessCost) ?? 0
-                  subAssembObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, subAssembObj?.TechnologyId)?.profitProcessCost) ?? 0
-
-                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssembly = GetProcessCostTotal(gridData, subAssembObj?.TechnologyId, "CCForOtherTechnologyCost");
-                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, subAssembObj?.TechnologyId)?.ccForOtherTechnologyCostForOverhead) ?? 0
-                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, subAssembObj?.TechnologyId)?.ccForOtherTechnologyCostForProfit) ?? 0
+                  subAssembObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.overheadProcessCost) ?? 0
+                  subAssembObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.profitProcessCost) ?? 0
+                  
+                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssembly = GetProcessCostTotal(gridData, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology");
+                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForOverhead = checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.ccForOtherTechnologyCostForOverhead) ?? 0
+                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForProfit = checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.ccForOtherTechnologyCostForProfit) ?? 0
                 }
 
                 if (checkIsAssemblyOpen.length !== 0) {
-                  console.log(tempArrForCosting, 'tempArrForCosting');
-                  let subAssemblyArray = tempArrForCosting?.filter((x) => {
-                    console.log(params.PartNumber, 'params.PartNumber');
+let subAssemblyArray = tempArrForCosting?.filter((x) => {
 
-                    console.log("x:", x);
-                    console.log("x.AssemblyPartNumber:", x);
-                    return x.AssemblyPartNumber === params.PartNumber && x.PartType === 'Sub Assembly';
+return x.AssemblyPartNumber === params.PartNumber && x.PartType === 'Sub Assembly';
                   });
-                  // console.log("subAssemblyArray", subAssemblyArray)
+                  // 
                   // Calculating and Assigning Costs
                   subAssembObj.CostingPartDetails.TotalOperationCostComponent = getOperationTotalCostForAssembly(tempArr);
                   subAssembObj.CostingPartDetails.TotalOperationCostComponentForOverhead = getOverheadAndProfitTotalCostForAssembly(tempArr, 'Overhead', 'Operation')
@@ -2111,11 +2106,11 @@ function TabRMCC(props) {
                   subAssembObj.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'Process')
 
 
-                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostComponent = getProcessTotalCostForAssembly(tempArr, subAssembObj?.TechnologyId, "CCForOtherTechnology");
+                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostComponent = getProcessTotalCostForAssembly(tempArr, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology");
                   subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostComponentForOverhead = getOverheadAndProfitTotalCostForAssembly(tempArr, 'Overhead', 'CCForOtherTechnology')
                   subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostComponentForProfit = getOverheadAndProfitTotalCostForAssembly(tempArr, 'Profit', 'CCForOtherTechnology')
 
-                  console.log("subAssemblyArray", subAssemblyArray);
+                  
 
 
 
@@ -2240,8 +2235,8 @@ function TabRMCC(props) {
             assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'Process'))
 
             assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = checkForNull(setProcessCostForAssembly(subAssemblyArray, assemblyObj?.TechnologyId, "CCForOtherTechnology"))
-            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Overhead', 'Process'))
-            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForProfit = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'Process'))
+            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Overhead', 'CCForOtherTechnology'))
+            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForProfit = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'CCForOtherTechnology'))
 
             assemblyObj.CostingPartDetails.TotalProcessCostComponent = checkForNull(getProcessTotalCostForAssembly(componentArray))
             assemblyObj.CostingPartDetails.TotalProcessCostComponentForOverhead = checkForNull(getOverheadAndProfitTotalCostForAssembly(componentArray, 'Overhead', 'Process'))
@@ -2254,22 +2249,22 @@ function TabRMCC(props) {
           if (isOperation) {
             assemblyObj.CostingPartDetails.CostingOperationCostResponse = params.BOMLevel === LEVEL0 ? gridData : assemblyObj?.CostingPartDetails?.CostingOperationCostResponse.length > 0 ? assemblyObj?.CostingPartDetails?.CostingOperationCostResponse : [];
             assemblyObj.CostingPartDetails.TotalOperationCostPerAssembly = params.BOMLevel === LEVEL0 ? GetOperationCostTotal(gridData) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssembly)
-            assemblyObj.CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, assemblyObj?.TechnologyId)?.overheadOperationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead)
-            assemblyObj.CostingPartDetails.TotalOperationCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, assemblyObj?.TechnologyId)?.profitOperationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit)
+            assemblyObj.CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.overheadOperationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead)
+            assemblyObj.CostingPartDetails.TotalOperationCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.profitOperationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit)
 
             assemblyObj.CostingPartDetails.CostingWeldingCostResponse = params.BOMLevel === LEVEL0 ? gridData : assemblyObj?.CostingPartDetails?.CostingOperationCostResponse.length > 0 ? assemblyObj?.CostingPartDetails?.CostingOperationCostResponse : [];
             assemblyObj.CostingPartDetails.TotalWeldingCostPerAssembly = params.BOMLevel === LEVEL0 ? GetOperationCostTotal(gridData, "Welding") : checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostPerAssembly)
-            assemblyObj.CostingPartDetails.TotalWeldingCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, 'Overhead')?.overheadWeldingCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead)
-            assemblyObj.CostingPartDetails.TotalWeldingCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, 'Profit')?.profitWeldingCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostPerAssemblyForProfit)
+            assemblyObj.CostingPartDetails.TotalWeldingCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.overheadWeldingCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead)
+            assemblyObj.CostingPartDetails.TotalWeldingCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.profitWeldingCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalWeldingCostPerAssemblyForProfit)
           } else {
             assemblyObj.CostingPartDetails.CostingProcessCostResponse = params.BOMLevel === LEVEL0 ? gridData : assemblyObj?.CostingPartDetails?.CostingProcessCostResponse.length > 0 ? assemblyObj?.CostingPartDetails?.CostingProcessCostResponse : [];
             assemblyObj.CostingPartDetails.TotalProcessCostPerAssembly = params.BOMLevel === LEVEL0 ? GetProcessCostTotal(gridData) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssembly)
-            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, assemblyObj?.TechnologyId)?.overheadProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead)
-            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, assemblyObj?.TechnologyId)?.profitProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit)
-
-            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssembly = params.BOMLevel === LEVEL0 ? GetProcessCostTotal(gridData, assemblyObj?.TechnologyId, "CCForOtherTechnology") : checkForNull(assemblyObj?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssembly)
-            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, assemblyObj?.TechnologyId)?.ccForOtherTechnologyCostForOverhead) : checkForNull(assemblyObj?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead)
-            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, assemblyObj?.TechnologyId)?.ccForOtherTechnologyCostForProfit) : checkForNull(assemblyObj?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit)
+            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.overheadProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead)
+            assemblyObj.CostingPartDetails.TotalProcessCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.profitProcessCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit)
+            
+            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssembly = params.BOMLevel === LEVEL0 ? GetProcessCostTotal(gridData, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology") : checkForNull(assemblyObj?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssembly)
+            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForOverhead = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.ccForOtherTechnologyCostForOverhead) : checkForNull(assemblyObj?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead)
+            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForProfit = params.BOMLevel === LEVEL0 ? checkForNull(getOverheadAndProfitCostTotal(gridData, RMCCTabData[0]?.TechnologyId)?.ccForOtherTechnologyCostForProfit) : checkForNull(assemblyObj?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit)
           }
 
 
