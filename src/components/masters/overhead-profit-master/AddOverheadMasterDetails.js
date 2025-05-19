@@ -8,7 +8,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../../common/DayTimeWrapper';
 import { useTranslation } from 'react-i18next';
-import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull } from "../../../helper";
+import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull, maxLength7 } from "../../../helper";
 import { CBCTypeId, EMPTY_DATA, OVERHEADMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { fetchApplicabilityList, getVendorNameByVendorSelectList, fetchSpecificationDataAPI } from '../../../actions/Common';
@@ -20,7 +20,7 @@ import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../a
 const AddOverheadMasterDetails = (props) => {
     const dispatch = useDispatch();
     const { t } = useTranslation("MasterLabels");
-    const { costingTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors, trigger, clearErrors} = props
+    const { costingTypeId, conditionTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors, trigger, clearErrors, isShowApplicabilitySection = true} = props
     const [isEditIndex, setIsEditIndex] = useState(false)
     const [editItemId, setEditItemId] = useState("")
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
@@ -29,8 +29,14 @@ const AddOverheadMasterDetails = (props) => {
     const modelTypes = useSelector((state) => state.comman.modelTypes)
     const costingHead = useSelector((state) => state.comman.applicabilityList)
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
-    const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
+    // const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
+    useEffect(() => {
+        // let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
+        dispatch(fetchApplicabilityList(null, conditionTypeId, state.isAssemblyCheckbox, res => { }));
+        // setState(prev => ({ ...prev, isAssemblyCheckbox: !state.isAssemblyCheckbox, ApplicabilityDetails: [], OverheadApplicability: {}, OverheadPercentage: "" }));
+    }, [state.isAssemblyCheckbox])
 
     const renderListing = (label) => {
         const temp = [];
@@ -136,7 +142,8 @@ const AddOverheadMasterDetails = (props) => {
         } else {
           setState(prev => ({ ...prev, ModelType: [] }));
         }
-        if (state.ModelType.value === Number(newValue.value)) {
+        let modelTypeValue = (props?.applicabilityLabel === "ICC") ? newValue.value : Number(newValue.value)
+        if (state.ModelType.value === modelTypeValue) {
           setState(prev => ({ ...prev, DropdownNotChanged: true, IsFinancialDataChanged: false }));
         } else {
           setState(prev => ({ ...prev, DropdownNotChanged: false, IsFinancialDataChanged: true }));
@@ -157,6 +164,8 @@ const AddOverheadMasterDetails = (props) => {
         const isApplicabilityValid = await trigger("OverheadApplicability");
         if (!applicability?.label || !isApplicabilityValid) return;
         const percentage = getValues("OverheadPercentage");
+
+        const repaymentPeriod = getValues("RepaymentPeriod");
         
         if (applicability?.label !== "Fixed") {
             const isPercentageValid = await trigger("OverheadPercentage");
@@ -171,7 +180,8 @@ const AddOverheadMasterDetails = (props) => {
             let obj = {
                 "ApplicabilityId": applicability.value,
                 "Applicability" : applicability.label,
-                "Percentage": percentage
+                "Percentage": percentage,
+                ...(state?.IsPaymentTermsRecord && { RepaymentPeriod: repaymentPeriod })
             }
             if(editItemId){
                 prevApplicability = [...state.ApplicabilityDetails]
@@ -206,14 +216,17 @@ const AddOverheadMasterDetails = (props) => {
             "label": editItem?.Applicability,
             "value": editItem?.ApplicabilityId
         }
-        setState(prev => ({ ...prev, OverheadApplicability: obj, OverheadPercentage: editItem?.Percentage }));
+        setState(prev => ({ ...prev, OverheadApplicability: obj, OverheadPercentage: editItem?.Percentage,  ...(state?.IsPaymentTermsRecord && { RepaymentPeriod: editItem?.RepaymentPeriod }) }));
         setValue("OverheadPercentage", editItem?.Percentage);
         setValue("OverheadApplicability", obj);
+        if(state?.IsPaymentTermsRecord){
+            setValue("RepaymentPeriod", editItem?.RepaymentPeriod);
+        }
     }
 
     const onPressAssemblyCheckbox = () => {
-        let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
-        dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, res => { }));
+        // let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
+        // dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, res => { }));
         setState(prev => ({ ...prev, isAssemblyCheckbox: !state.isAssemblyCheckbox, ApplicabilityDetails: [], OverheadApplicability: {}, OverheadPercentage: "" }));
         setValue("OverheadApplicability", {});
         setValue("OverheadPercentage", "");
@@ -305,6 +318,11 @@ const AddOverheadMasterDetails = (props) => {
         setValue("EffectiveDate", value);
     }
 
+    const handleChangeRepaymentPeriod = (value) => {
+        setValue("RepaymentPeriod", value);
+        setState(prev => ({...prev, RepaymentPeriod: value, IsFinancialDataChanged: true}));
+    };
+
 
     return (
         <Row>
@@ -351,25 +369,27 @@ const AddOverheadMasterDetails = (props) => {
                         </>
                     }
 
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={`Model Type`}
-                            name={'ModelType'}
-                            placeholder={'Select'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={true}
-                            rules={{ required: true }}
-                            options={renderListing("ModelType")}
-                            handleChange={handleModelTypeChange}
-                            defaultValue={''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.ModelType}
-                            disabled={state?.isEditFlag || state?.isViewMode}
-                        />
-                    </Col>
+                    {!state.isHideModelType && 
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={`Model Type`}
+                                name={'ModelType'}
+                                placeholder={'Select'}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={!state.isHideModelType}
+                                rules={{ required: !state.isHideModelType }}
+                                options={renderListing("ModelType")}
+                                handleChange={handleModelTypeChange}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.ModelType}
+                                disabled={state?.isEditFlag || state?.isViewMode}
+                            />
+                        </Col>
+                    }
 
                     {costingTypeId === VBCTypeId && (
                         <Col md="3">
@@ -491,7 +511,7 @@ const AddOverheadMasterDetails = (props) => {
                             className={`custom-checkbox ${state?.isEditFlag ? "disabled" : ""}`}
                             onChange={onPressAssemblyCheckbox}
                         >
-                        Apply for Part Type
+                        Manage Applicabilities For Multi Technology Assembly
                         <input
                             type="checkbox"
                             readOnly
@@ -536,153 +556,192 @@ const AddOverheadMasterDetails = (props) => {
                         </div>
                     </Col>
                 </Row>
-                <Row>
-                    <Col md="12" className="filter-block">
-                        <div className=" flex-fills mb-2 pl-0">
-                            <h5>{"Applicability:"}</h5>
-                        </div>
-                    </Col>
 
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            // label={`${props?.isOverHeadMaster ? "Overhead" : "Profit"} Applicability`}
-                            label={`${props?.applicabilityLabel ?? ''} Applicability`}
-                            name={"OverheadApplicability"}
-                            tooltipId={"RawMaterial"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: !(state.ApplicabilityDetails.length > 0) && true }}
-                            register={register}
-                            defaultValue={""}
-                            mandatory={!(state.ApplicabilityDetails.length > 0) && true}
-                            options={renderListing('OverheadApplicability')}
-                            isMulti={false}
-                            handleChange={handleApplicabilityChange}
-                            errors={errors.OverheadApplicability}
-                            disabled={state?.isViewMode}
-                        />
-                    </Col>
-                    
-                    {state?.OverheadApplicability?.label != "Fixed" &&
-                    <Col md="3">
-                        <TextFieldHookForm
-                            label={`${props?.applicabilityLabel ?? ''} (%)`}
-                            name={'OverheadPercentage'}
-                            Controller={Controller}
-                            id={'overhead-percentage'}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed",
-                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                max: {
-                                    value: 100,
-                                    message: 'Percentage cannot be greater than 100'
-                                },
-                            }}
-                            mandatory={(Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed"}
-                            handleChange={handleOverheadPercentageChange}
-                            defaultValue={''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.OverheadPercentage}
-                            disabled={!(Object.keys(state?.OverheadApplicability).length > 0) || state?.isViewMode}
-                        />
-                    </Col>
-                    }
+                {props?.children}
 
-                    <Col md="3">
-                        <div className={`pt-2 mt-4 pr-0 mb-3`}>
-                            {editItemId ? (
+                {isShowApplicabilitySection &&
+                    <Row>
+                        <Col md="12" className="filter-block">
+                            <div className=" flex-fills mb-2 pl-0">
+                                <h5>{"Applicability:"}</h5>
+                            </div>
+                        </Col>
+
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                // label={`${props?.isOverHeadMaster ? "Overhead" : "Profit"} Applicability`}
+                                label={`${props?.applicabilityLabel ?? ''} Applicability`}
+                                name={"OverheadApplicability"}
+                                tooltipId={"RawMaterial"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: !(state?.ApplicabilityDetails?.length > 0) && true }}
+                                register={register}
+                                defaultValue={""}
+                                mandatory={!(state?.ApplicabilityDetails?.length > 0) && true}
+                                options={renderListing('OverheadApplicability')}
+                                isMulti={false}
+                                handleChange={handleApplicabilityChange}
+                                errors={errors.OverheadApplicability}
+                                disabled={state?.isViewMode}
+                            />
+                        </Col>
+
+
+                        {(state?.OverheadApplicability?.label !== 'Fixed' && state?.IsPaymentTermsRecord) && (
                             <>
-                                <button type="button" className={"btn btn-primary pull-left mr5"} 
-                                    onClick={handleAddApplicability}
-                                >Update</button>
-                                <button
-                                    type="button"
-                                    className={"mr15 ml-1 add-cancel-btn cancel-btn my-0"}
-                                    disabled={state?.isViewMode}
-                                    onClick={handleResetApplicability}
-                                >
-                                <div className={"cancel-icon"}></div>Cancel
-                                </button>
+                                <Col md="3">
+                                        <TextFieldHookForm
+                                            name="RepaymentPeriod"
+                                            label="Repayment Period (Days)"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            type="text"
+                                            placeholder={state.isViewMode ? '-' : "Enter"}
+                                            value={state.RepaymentPeriod}
+                                            handleChange={(e) => handleChangeRepaymentPeriod(e.target.value)}
+                                            disabled={state.isViewMode}
+                                            rules={{
+                                                validate: { number, checkWhiteSpaces, maxLength7 }
+                                            }}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.RepaymentPeriod}
+                                        />
+                                </Col>
                             </>
-                            ) : (
-                            <>
-                                <button id="AddFuel_AddData"
-                                    type="button"
-                                    className={"user-btn pull-left mr10"}
-                                    disabled={state?.isViewMode}
-                                    onClick={handleAddApplicability}
+                        )}
+                        
+                        {state?.OverheadApplicability?.label != "Fixed" &&
+                            <Col md="3">
+                                <TextFieldHookForm
+                                    label={`${props?.applicabilityLabel ?? ''} (%)`}
+                                    name={'OverheadPercentage'}
+                                    Controller={Controller}
+                                    id={'overhead-percentage'}
+                                    control={control}
+                                    register={register}
+                                    rules={{
+                                        required: !!state?.OverheadApplicability && (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed",
+                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                        max: {
+                                            value: 100,
+                                            message: 'Percentage cannot be greater than 100'
+                                        },
+                                    }}
+                                    mandatory={!!state?.OverheadApplicability && (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed"}
+                                    handleChange={handleOverheadPercentageChange}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.OverheadPercentage}
+                                    disabled={ !!state?.OverheadApplicability && !(Object.keys(state?.OverheadApplicability).length > 0) || state?.isViewMode}
+                                />
+                            </Col>
+                        }
+
+                        <Col md="3">
+                            <div className={`pt-2 mt-4 pr-0 mb-3`}>
+                                {editItemId ? (
+                                <>
+                                    <button type="button" className={"btn btn-primary pull-left mr5"} 
+                                        onClick={handleAddApplicability}
+                                    >Update</button>
+                                    <button
+                                        type="button"
+                                        className={"mr15 ml-1 add-cancel-btn cancel-btn my-0"}
+                                        disabled={state?.isViewMode}
+                                        onClick={handleResetApplicability}
                                     >
-                                    <div className={"plus"}></div>ADD
-                                </button>
-                                <button
-                                    type="button"
-                                    className={"mr15 ml-1 reset-btn"}
-                                    disabled={state?.isViewMode}
-                                    onClick={handleResetApplicability}
-                                >
-                                Reset
-                                </button>
-                            </>
-                            )}
-                        </div>
-                    </Col>
-                </Row>
+                                    <div className={"cancel-icon"}></div>Cancel
+                                    </button>
+                                </>
+                                ) : (
+                                <>
+                                    <button id="AddFuel_AddData"
+                                        type="button"
+                                        className={"user-btn pull-left mr10"}
+                                        disabled={state?.isViewMode}
+                                        onClick={handleAddApplicability}
+                                        >
+                                        <div className={"plus"}></div>ADD
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={"mr15 ml-1 reset-btn"}
+                                        disabled={state?.isViewMode}
+                                        onClick={handleResetApplicability}
+                                    >
+                                    Reset
+                                    </button>
+                                </>
+                                )}
+                            </div>
+                        </Col>
+                    </Row>
+                }
             </Col>
 
-            <Col md="12">
-                <Table className="table border" size="sm">
-                    <thead>
-                        <tr>
-                            <th>{`Applicability`}</th>
-                            <th>{`Percentage`}</th>
-                            <th>{`Action`}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {state?.ApplicabilityDetails && state?.ApplicabilityDetails.length > 0 &&
-                        state.ApplicabilityDetails.map((item, index) => {
-                        return (
-                            <tr key={index}>
-                                <td>{item?.Applicability}</td>
-                                <td>{item?.Percentage}</td>
-                                <td>
-                                    <button
-                                        className="Edit mr-2"
-                                        title='Edit'
-                                        type={"button"}
-                                        disabled={state?.isViewMode || item?.IsAssociated}
-                                        onClick={() =>
-                                            editApplicability(item)
-                                        }
-                                    />
-                                    <button
-                                        className="Delete"
-                                        title='Delete'
-                                        type={"button"}
-                                        disabled={state?.isViewMode || item?.IsAssociated}
-                                        onClick={() =>
-                                            deleteApplicability(item?.ApplicabilityId)
-                                        }
-                                    />
-                                </td>
-                            </tr>
-                        );
-                        })}
-                    </tbody>
-
-                    {state?.ApplicabilityDetails?.length === 0 && (
-                        <tbody className='border'>
+            {isShowApplicabilitySection &&
+                <Col md="12">
+                    <Table className="table border" size="sm">
+                        <thead>
                             <tr>
-                                <td colSpan={"10"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                <th>{`Applicability`}</th>
+                                {state?.IsPaymentTermsRecord &&
+                                    <th>{`Repayment Period`}</th>
+                                }
+                                <th>{`Percentage`}</th>
+                                <th>{`Action`}</th>
                             </tr>
+                        </thead>
+                        <tbody>
+                        {state?.ApplicabilityDetails && state?.ApplicabilityDetails.length > 0 &&
+                            state.ApplicabilityDetails.map((item, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{item?.Applicability}</td>
+                                    {state?.IsPaymentTermsRecord && 
+                                        <td>{item?.RepaymentPeriod}</td>
+                                    }
+                                    <td>{item?.Percentage}</td>
+                                    <td>
+                                        <button
+                                            className="Edit mr-2"
+                                            title='Edit'
+                                            type={"button"}
+                                            disabled={state?.isViewMode || item?.IsAssociated}
+                                            onClick={() =>
+                                                editApplicability(item)
+                                            }
+                                        />
+                                        <button
+                                            className="Delete"
+                                            title='Delete'
+                                            type={"button"}
+                                            disabled={state?.isViewMode || item?.IsAssociated}
+                                            onClick={() =>
+                                                deleteApplicability(item?.ApplicabilityId)
+                                            }
+                                        />
+                                    </td>
+                                </tr>
+                            );
+                            })}
                         </tbody>
-                    )}
-                </Table>
-            </Col>
+
+                        {state?.ApplicabilityDetails?.length === 0 && (
+                            <tbody className='border'>
+                                <tr>
+                                    <td colSpan={"10"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                </tr>
+                            </tbody>
+                        )}
+                    </Table>
+                </Col>
+            }
         </Row >
     );
 }

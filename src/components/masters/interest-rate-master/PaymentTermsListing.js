@@ -13,7 +13,7 @@ import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../conf
 import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
-import { INTERESTRATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { INTERESTRATE_DOWNLOAD_EXCEl, PAYMENTTERMS_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -37,7 +37,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
-const InterestRateListing = (props) => {
+const PaymentTermsListing = (props) => {
   const dispatch = useDispatch();
   const [state, setState] = useState({
     tableData: [],
@@ -138,7 +138,7 @@ const InterestRateListing = (props) => {
     */
   const getTableListData = (vendor = '', icc_applicability = '', payment_term_applicability = '') => {
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
-    let filterData = { vendor: vendor, icc_applicability: icc_applicability, payment_term_applicability: payment_term_applicability, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc, isPaymentTermsRecord: false }
+    let filterData = { vendor: vendor, icc_applicability: icc_applicability, payment_term_applicability: payment_term_applicability, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc, isPaymentTermsRecord: true }
     dispatch(getInterestRateDataList(true, filterData, res => {
       if (res.status === 204 && res.data === '') {
         setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
@@ -316,15 +316,12 @@ const InterestRateListing = (props) => {
     }
   }
 
-
-
-
   const onGridReady = (params) => {
-    setGridApi(params.api)
-    state.gridColumnApi = params.columnApi
-    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }));
-    params.api.paginationGoToPage(0);
-
+      setGridApi(params.api)
+      state.gridColumnApi = params.columnApi
+      setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }));
+      params.api.paginationGoToPage(0);
+      // params.api.sizeColumnsToFit();
   };
 
   const onPageSizeChanged = (newPageSize) => {
@@ -336,12 +333,13 @@ const InterestRateListing = (props) => {
     const selectedRows = gridApi?.getSelectedRows()
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
   }
-  const INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(INTERESTRATE_DOWNLOAD_EXCEl, "MasterLabels")
+  const PAYMENTTERMS_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(PAYMENTTERMS_DOWNLOAD_EXCEl, "MasterLabels")
+  
   const onBtExport = () => {
     let tempArr = []
     tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (interestRateDataList ? interestRateDataList : [])
-    return returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+    return returnExcelColumn(PAYMENTTERMS_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -394,11 +392,6 @@ const InterestRateListing = (props) => {
   const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, dataCount } = state;
   const ExcelFile = ReactExport.ExcelFile;
 
-  // if (toggleForm) {
-  //   const IsAssociatedData = data?.IsAssociatedData
-  //   return (<AddInterestRate hideForm={hideForm} data={data} IsAssociatedData = {IsAssociatedData}/>)
-  // }
-
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -447,11 +440,11 @@ const InterestRateListing = (props) => {
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
                     {AddAccessibility && (<Button id="interestRateListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
-                    {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+                    {BulkUploadAccessibility && (<Button id="paymentTermsListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
                         <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                          <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
+                          <Button id={"Excel-Downloads-paymentTermsListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
                           {state?.totalRecordCount !== 0 ? onBtExport() : null}
                         </ExcelFile>
                       </>
@@ -502,14 +495,13 @@ const InterestRateListing = (props) => {
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn>
-                {/* <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
-                <AgGridColumn width={140} field="CreditBasedAnnualICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                {/* <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {/* <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+                {/* <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+
+                <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+                <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>}
@@ -517,7 +509,7 @@ const InterestRateListing = (props) => {
             </div>
           </div>
 
-          {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Interest Rate'} isZBCVBCTemplate={true} messageLabel={'Interest Rate'} anchor={'right'} />}
+          {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Payment Terms'} isZBCVBCTemplate={true} messageLabel={'Payment Terms'} anchor={'right'} />}
           {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />}
         </div >
       </div >
@@ -526,4 +518,4 @@ const InterestRateListing = (props) => {
 }
 
 
-export default InterestRateListing
+export default PaymentTermsListing

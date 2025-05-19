@@ -580,6 +580,7 @@ const AddOverheadMaster = (props) => {
 
                   <AddOverheadMasterDetails 
                       costingTypeId={costingTypeId}
+                      conditionTypeId={conditionTypeId}
                       state={state}
                       setState={setState}
                       setValue={setValue}

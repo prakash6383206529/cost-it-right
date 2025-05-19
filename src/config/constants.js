@@ -533,14 +533,20 @@ export const API = {
   //INTEREST MASTER
   createInterestRate: `${BASE_URL}/vendor/create-vendor-interest-rate`,
   getInterestRateDataList: `${BASE_URL}/vendor/get-all-vendor-interest-rate`,
+  getInterestRateDataCheck: `${BASE_URL}/vendor/get-vendor-interest-rate-data`,
   getInterestRateData: `${BASE_URL}/vendor/get-vendor-interest-rate`,
   updateInterestRate: `${BASE_URL}/vendor/update-vendor-interest-rate`,
   deleteInterestRate: `${BASE_URL}/vendor/delete-vendor-interest-rate`,
   getPaymentTermsAppliSelectList: `${BASE_URL}/configuration/get-payment-terms-applicability-list`,
+  getInventoryDayTypeSelectList: `${BASE_URL}/vendor/select-list-get-inventory-day-type`,
+  getWipCompositionMethodList: `${BASE_URL}/vendor/select-list-get-wip-composition-method`,
   getICCAppliSelectList: `${BASE_URL}/configuration/get-icc-applicability-list`,
+  getICCMethodSelectList: `${BASE_URL}/vendor/select-list-get-icc-method`,
   bulkUploadInterestRateZBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-zbc-json`,
   bulkUploadInterestRateVBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-vbc-json`,
   bulkUploadInterestRateCBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-cbc-json`,
+  bulkUploadInterestRate: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-json`,
+  bulkUploadPaymentTerms: `${BASE_URL}/vendor/bulk-upload-for-payment-terms-json`,
 
 
   //COSTING API
@@ -1749,7 +1755,10 @@ export const GET_INTEREST_RATE_SUCCESS = 'GET_INTEREST_RATE_SUCCESS'
 export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DATA_SUCCESS'
 export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS'
 export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST'
+export const GET_INVENTORYDAY_TYPE_SELECTLIST = 'GET_INVENTORYDAY_TYPE_SELECTLIST'
+export const GET_WIP_COMPOSITION_METHOD_SELECTLIST = 'GET_WIP_COMPOSITION_METHOD_SELECTLIST'
 export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST'
+export const GET_ICC_METHOD_SELECTLIST = 'GET_ICC_METHOD_SELECTLIST'
 export const GET_LAST_SIMULATION_DATA = 'GET_LAST_SIMULATION_DATA'
 
 //AUDIT
@@ -3082,6 +3091,7 @@ export const LABOURBULKUPLOAD = 'Labour'
 export const OPERAIONBULKUPLOAD = 'Operation';
 export const FUELBULKUPLOAD = 'Fuel';
 export const INTERESTRATEBULKUPLOAD = 'Interest Rate'
+export const PAYMENTTERMSBULKUPLOAD = 'Payment Terms'
 export const ACTUALVOLUMEBULKUPLOAD = 'Actual Volume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'Budgeted Volume'
 export const ADDRFQ = 'ADD RFQ'
@@ -3183,6 +3193,24 @@ export const CRMHeads = [
   { label: "PBT", value: 13 },
   { label: "Amortization", value: 14 },
 
+]
+
+export const ICC_METHODS = {
+  ApplicabilityBased: "1",
+  CreditBased: "2"
+}
+
+export const InventoryDayTypeList = [
+  { label: "General", value: "General" },
+  { label: "General1", value: "General1" },
+  { label: "General2", value: "General2" },
+]
+
+export const WIPCompositionList = [
+  { label: "RM", value: "RM" },
+  { label: "Paint", value: "Paint" },
+  { label: "BOP", value: "BOP" },
+  { label: "Packaging", value: "Packaging" },
 ]
 
 export const CostData = [
@@ -3363,6 +3391,7 @@ export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra
 export const OVERHEADMASTER = "Overhead Master"
 export const PROFITMASTER = "Profit Master"
 export const REJECTIONMASTER = "Rejection Master"
+export const ICCANDPAYMENTMASTER = "ICC And Payment Master"
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
