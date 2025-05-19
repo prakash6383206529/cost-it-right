@@ -3683,7 +3683,7 @@ const iccToolTipText = `
                                   // For regular columns
                                   <>
                                     {`${viewCostingData?.[0]?.CostingCurrency || initialConfiguration?.BaseCurrency}: `}
-                                    {displayValueWithSign(data, "NetPOPriceConversion")}
+                                    {displayValueWithSign(data, "nPOPrice")}
                                   </>
                                 )}
                                 {(data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
