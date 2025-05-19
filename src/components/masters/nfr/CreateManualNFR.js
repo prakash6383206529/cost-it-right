@@ -441,7 +441,7 @@ function CreateManualNFR(props) {
             fieldDisabled: true,
             editIndex: ''
         }));
-        resetData();
+        // resetData();
 
     }, 500)
 
@@ -521,7 +521,7 @@ function CreateManualNFR(props) {
                 break;
         }
         setState(prevState => ({ ...prevState, gridData: tempArray, rfqData: tempArray, fieldDisabled: true, editIndex: '' }));
-        resetData();
+        // resetData();
         Toaster.success("Item updated successfully")
     }
 
@@ -567,7 +567,7 @@ function CreateManualNFR(props) {
 
     const deleteItem = (index) => {
         const updatedData = state.gridData.filter((_, i) => i !== index);
-        setState(prevState => ({ ...prevState, gridData: updatedData, rfqData: updatedData, fieldDisabled: false }));
+        setState(prevState => ({ ...prevState, gridData: updatedData, rfqData: updatedData, fieldDisabled: false, isViewMode: false }));
         resetData();
     }
 
@@ -742,7 +742,7 @@ function CreateManualNFR(props) {
                 }
             ],
             "NfrAttachments": state.files
-        }
+        }   
         setState(prevState => ({ ...prevState, loader: true }));
         if (!isEditFlag) {
             dispatch(createCustomerRfq(obj, (res) => {
@@ -809,7 +809,7 @@ function CreateManualNFR(props) {
                                             className=""
                                             customClassName={"withBorder"}
                                             errors={errors?.CustomerRFQNo}
-                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled || state.isViewMode}
                                         />
                                     </Col>
 
@@ -829,7 +829,7 @@ function CreateManualNFR(props) {
                                             handleChange={handleCustomerChange}
                                             errors={errors.Customer}
                                             isLoading={VendorLoaderObj}
-                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled || state.isViewMode}
                                         />
                                     </Col>
                                     <Col md="3" className="input-container">
@@ -847,7 +847,7 @@ function CreateManualNFR(props) {
                                             options={renderListing("Plant")}
                                             handleChange={(newValue) => handleChangePlant(newValue)}
                                             errors={errors?.Plant}
-                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled || state.isViewMode}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -925,7 +925,7 @@ function CreateManualNFR(props) {
                                             options={renderListing("PartType")}
                                             handleChange={(newValue) => handleChangePartType(newValue)}
                                             errors={errors?.PartType}
-                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled || state.isViewMode}
                                         />
 
                                     </Col>
@@ -946,7 +946,7 @@ function CreateManualNFR(props) {
                                                 isLoading={loaderObj}
                                                 handleChange={handlePartChange}
                                                 errors={errors?.Part}
-                                                disabled={isViewFlag || !getValues("PartType")?.value || isEditFlag || state.fieldDisabled}
+                                                disabled={isViewFlag || !getValues("PartType")?.value || isEditFlag || state.fieldDisabled || state.isViewMode}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                             {getValues("PartType")?.label === "Assembly" && getValues("Part")?.value && <button
@@ -1053,7 +1053,7 @@ function CreateManualNFR(props) {
                                             customClassName="costing-version"
                                             options={renderListing("GroupCode")}
                                             errors={errors?.GroupCode}
-                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled}
+                                            disabled={isViewFlag || isEditFlag || state.fieldDisabled || state.isViewMode}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -1345,3 +1345,4 @@ function CreateManualNFR(props) {
 }
 
 export default CreateManualNFR;
+

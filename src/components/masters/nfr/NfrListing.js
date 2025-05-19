@@ -129,9 +129,8 @@ function NfrListing(props) {
             CustomerName: apiData.CustomerName || '-',
             CustomerPartNo: apiData.NfrPartwiseDetailResponse?.[0]?.PartNumber || '-',
             GroupCode: apiData.GroupCodeId || '-',
-            PartName:apiData.PartName || "-",
             PartType:apiData.NfrPartwiseDetailResponse?.[0]?.PartType || "-",
-            PartDescription: apiData.NfrPartwiseDetailResponse?.[0]?.PartName || '-',
+            PartName: apiData.NfrPartwiseDetailResponse?.[0]?.PartName || '-',
             UOM: apiData.NfrPartwiseDetailResponse?.[0]?.UOM || '-',
             Segment: apiData.Segment || '-',
             PlantName: apiData.PlantName || '-',
@@ -385,7 +384,7 @@ function NfrListing(props) {
         const row = props?.data || {};
         const Status = row?.Status;
     
-        const isClickable = Status === 'ZBCCreated';
+        const isClickable = Status === 'ZBC Created';
     
         return (
             <div
@@ -762,7 +761,7 @@ function NfrListing(props) {
                                                 <AgGridColumn field="PartType" headerName="Part Type" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CustomerPartNo" headerName="Part No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                
-                                                <AgGridColumn field="PlantName" headerName="Part Name" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="PartName" headerName="Part Name" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="GroupCode" headerName='Group Code' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 {/* <AgGridColumn field="PartDescription" headerName="Part Description" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
                                                 <AgGridColumn field="Segment" headerName="Segment" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
