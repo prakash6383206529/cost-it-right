@@ -72,7 +72,7 @@ function OverheadListing(props) {
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
     const [state, setState] = useState({ isBulkUpload: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "", PartFamily: "", Applicability: "" })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
     const { selectedRowForPagination } = useSelector((state => state.simulation))

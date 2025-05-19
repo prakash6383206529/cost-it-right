@@ -104,6 +104,31 @@ const AddOverheadMaster = (props) => {
         getDetails();
     }, [])
 
+    function getPlants() {
+      const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'));
+
+      let plantArray = [];
+      if (state?.costingTypeId === VBCTypeId) {
+          plantArray.push({ PlantName: state?.singlePlantSelected?.label, PlantId: state?.singlePlantSelected?.value });
+      } else {
+          state?.selectedPlants && state?.selectedPlants?.map((item) => {
+              plantArray.push({ PlantName: item.label, PlantId: item.value });
+              return plantArray;
+          });
+      }
+
+      let cbcPlantArray = [];
+      if (state?.costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) {
+          cbcPlantArray.push({ PlantName: state?.singlePlantSelected.label, PlantId: state?.singlePlantSelected?.value });
+      } else {
+          userDetailsInterest?.Plants.map((item) => {
+              cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode });
+              return cbcPlantArray;
+          });
+      }
+      return {plantArray, cbcPlantArray}
+  }
+
     useEffect(() => {
         if (!(props?.data?.isEditFlag || state.isViewMode)) {
           const hasRequiredFields = (
@@ -112,11 +137,13 @@ const AddOverheadMaster = (props) => {
             (state.costingTypeId === VBCTypeId && state?.vendorName)
           );
           if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
+            const { plantArray, cbcPlantArray } = getPlants();
             let data = {
               overheadId: state?.OverheadID ?? null,
               modelTypeId: state?.ModelType?.value,
               costingHeadId: state?.costingTypeId,
-              plantId: state?.selectedPlants[0]?.value ?? null,
+              // plantId: state?.selectedPlants[0]?.value ?? null,
+              plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
               vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
               customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
               effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -258,12 +285,25 @@ const AddOverheadMaster = (props) => {
       }
       setState(prev => ({ ...prev, isVendorNameNotSelected: false }));
       if (isEditFlag) {
-        if (
-          (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged 
-            && (JSON.stringify(ApplicabilityDetails) === JSON.stringify(DataToChange.ApplicabilityDetails))
-          && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
-          Toaster.warning('Please change the data to save Overhead Details')
-          return false
+        // if (
+        //   (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged 
+        //     && (JSON.stringify(ApplicabilityDetails) === JSON.stringify(DataToChange.ApplicabilityDetails))
+        //   && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
+        //   Toaster.warning('Please change the data to save Overhead Details')
+        //   return false
+        // }
+
+        if (JSON.stringify(DataToChange?.ApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails) && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) &&
+            DropdownNotChanged) {
+            Toaster.warning('Please change the data to save Interest Rate Details');
+            return false;
+        }
+
+        let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
+        if (financialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props?.IsOverheadAssociated) {
+            setState(prev => ({ ...prev, setDisable: false }));
+            Toaster.warning('Please update the Effective date.');
+            return false;
         }
 
         setState(prev => ({ ...prev, setDisable: true }));
@@ -294,16 +334,17 @@ const AddOverheadMaster = (props) => {
           RawMaterialGradeId: RMGrade?.value,
           RawMaterialGrade: RMGrade?.label,
           IsFinancialDataChanged: IsFinancialDataChanged,
+          TechnologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
           ApplicabilityDetails: ApplicabilityDetails,
           PartFamilyId: selectedPartFamily?.value,
           PartFamily: selectedPartFamily?.label
         }
 
-        if (IsFinancialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props.IsOverheadAssociated) {
-          Toaster.warning('Please update the Effective date.') ;
-          setState(prev => ({ ...prev, setDisable: false }));  
-          return false
-        }
+        // if (IsFinancialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props.IsOverheadAssociated) {
+        //   Toaster.warning('Please update the Effective date.') ;
+        //   setState(prev => ({ ...prev, setDisable: false }));  
+        //   return false
+        // }
 
         dispatch(updateOverhead(requestData, (res) => {
           setState(prev => ({ ...prev, setDisable: false }));
@@ -321,6 +362,7 @@ const AddOverheadMaster = (props) => {
           VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
           VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
           CustomerId: costingTypeId === CBCTypeId ? client.value : '',
+          ModelType: ModelType.label,
           ModelTypeId: ModelType.value,
           IsActive: true,
           CreatedDate: '',

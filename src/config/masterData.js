@@ -1586,6 +1586,7 @@ export const Overhead = [
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -1597,23 +1598,26 @@ export const OverheadTempData = [
         'OverheadPercentage': '',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
@@ -1627,6 +1631,7 @@ export const OverheadVBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -1639,25 +1644,28 @@ export const OverheadVBC_TempData = [
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
@@ -1670,6 +1678,7 @@ export const OverheadCBC = [
     { label: "CustomerCode", value: "CustomerCode" },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -1682,25 +1691,28 @@ export const OverheadCBC_TempData = [
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 
@@ -2546,6 +2558,7 @@ export const Profit = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -2557,23 +2570,26 @@ export const ProfitTempData = [
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
@@ -2587,6 +2603,7 @@ export const ProfitVBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', }
 ]
 
@@ -2599,25 +2616,28 @@ export const ProfitTempDataVBC = [
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 ]
@@ -2630,6 +2650,7 @@ export const ProfitCBC = [
     { label: 'CustomerCode', value: 'CustomerCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', }
 ]
 
@@ -2642,25 +2663,28 @@ export const ProfitTempDataCBC = [
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 ]
