@@ -2032,7 +2032,7 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
 
   return result;
 };
-export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
+export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
   const totals = {
     overheadOperationCost: 0,
     overheadProcessCost: 0,
@@ -2040,8 +2040,10 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
     profitProcessCost: 0,
     overheadWeldingCost: 0,
     profitWeldingCost: 0,
-    NetCCForOtherTechnologyCostForOverhead:0,
-    NetCCForOtherTechnologyCostForProfit:0
+    ccForOtherTechnologyCostForOverhead: 0,
+    ccForOtherTechnologyCostForProfit: 0,
+    ccForOtherTechnologyCost: 0,
+    weldingCost: 0
   };
 
   arr.forEach(item => {
@@ -2103,8 +2105,8 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
       }
       if ("ProcessCost" in item) {
         totals.overheadProcessCost += useExclForOverhead ? processExcl : process;
-        if(ProcessTechnologyId !== technologyId) {
-          // Initialize if undefined to prevent NaN
+        if (ProcessTechnologyId !== technologyId) {
+// Initialize if undefined to prevent NaN
           if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
             totals.ccForOtherTechnologyCostForOverhead = 0;
           }
@@ -2124,7 +2126,7 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
       }
       if ("ProcessCost" in item) {
         totals.profitProcessCost += useExclForProfit ? processExcl : process;
-        if(ProcessTechnologyId !== technologyId){
+        if (ProcessTechnologyId !== technologyId) {
           if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
             totals.ccForOtherTechnologyCostForOverhead = 0;
           }
@@ -2133,8 +2135,18 @@ export const getOverheadAndProfitCostTotal = (arr = [],technologyId = '') => {
         }
       }
     }
+    if ("OperationCost" in item) {
+      if (ForType === "Welding") {
+        totals.weldingCost += operation;
+      }
+    }
+    if ("ProcessCost" in item) {
+      if (ProcessTechnologyId !== technologyId) {
+        totals.ccForOtherTechnologyCost += process;
+      }
+    }
   });
-  // console.log(totals,'totals')
+  // 
   return totals;
 };
 

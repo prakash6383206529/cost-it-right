@@ -73,9 +73,6 @@ function OverheadProfit(props) {
 
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
 
-
-  const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
-  const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
   const [showWarning, setShowWarning] = useState('')
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
@@ -173,25 +170,25 @@ function OverheadProfit(props) {
   useEffect(() => {
     setTimeout(() => {
       let tempObj = {
-        "OverheadDetailId": overheadObj?.OverheadDetailId || "00000000-0000-0000-0000-000000000000",
-        "OverheadId": overheadObj?.OverheadId || "00000000-0000-0000-0000-000000000000",
+        "OverheadDetailId": overheadObj?.OverheadDetailId || null,
+        "OverheadId": overheadObj?.OverheadId || null,
         "OverheadCRMHead": overheadObj?.OverheadCRMHead || "",
         "Remark": overheadObj?.Remark || "",
-        "CostingApplicabilityDetails": tempOverheadObj?.CostingApplicabilityDetails || []
+        "CostingApplicabilityDetails": overheadObj?.CostingApplicabilityDetails || []
       }
       let profitTempObj = {
-        "ProfitDetailId": profitObj?.ProfitDetailId || "00000000-0000-0000-0000-000000000000",
-        "ProfitId": profitObj?.ProfitId || "00000000-0000-0000-0000-000000000000",
+        "ProfitDetailId": profitObj?.ProfitDetailId || null,
+        "ProfitId": profitObj?.ProfitId || null,
         "ProfitCRMHead": profitObj?.ProfitCRMHead || "",
         "Remark": profitObj?.Remark || "",
-        "CostingApplicabilityDetails": tempProfitObj?.CostingApplicabilityDetails || []
+        "CostingApplicabilityDetails": profitObj?.CostingApplicabilityDetails || []
       }
       if (!CostingViewMode) {
         props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj, modelType: modelType }, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
       }
     }, 500)
 
-  }, [overheadObj, profitObj, tempOverheadObj, tempProfitObj]);
+  }, [overheadObj, profitObj]);
 
   useEffect(() => {
     if (!CostingViewMode) {
@@ -236,9 +233,6 @@ function OverheadProfit(props) {
         setValue('ProfitFixedTotalCost', checkForDecimalAndNull(profitFixedFieldValues, initialConfiguration?.NoOfDecimalForPrice))
         setProfitObj({
           ...profitObj,
-          ProfitFixedPercentage: profitFixedFieldValues,
-          ProfitFixedCost: getValues('ProfitFixedCost'),
-          ProfitFixedTotalCost: profitFixedFieldValues,
         })
       }
     }
@@ -427,8 +421,8 @@ function OverheadProfit(props) {
         };
       });
 
-      setTempOverheadObj({
-        ...tempOverheadObj,
+      setOverheadObj({
+        ...overheadObj,
         CostingApplicabilityDetails: costingApplicabilityDetails
       });
     }
@@ -516,8 +510,8 @@ function OverheadProfit(props) {
         };
       });
 
-      setTempProfitObj({
-        ...tempProfitObj,
+      setProfitObj({
+        ...profitObj,
         CostingApplicabilityDetails: costingApplicabilityDetails
       });
     }
@@ -681,7 +675,7 @@ function OverheadProfit(props) {
         ...prev,
         CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail =>
           detail.ApplicabilityDetailsId === item.ApplicabilityDetailsId
-            ? { ...detail, Cost: value }
+            ? { ...detail, Cost: Number(value) , TotalCost: Number(value)}
             : detail
         )
       }));

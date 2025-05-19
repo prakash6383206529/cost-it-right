@@ -105,7 +105,7 @@ const AssociateHierarchy = (props) => {
                     if (response && response.data && response.data.DataList) {
                         const Data = response.data.DataList[state.levelData?.ProductHierarchyId - 1]
                         const filteredData = Data && Data?.ProductHierarchyValueDetail && Data?.ProductHierarchyValueDetail?.filter(item => item?.ProductHierarchyValue === data[state?.labelName])
-                        const setData = { label: filteredData[0]?.ProductHierarchyValue, value: filteredData[0]?.ProductHierarchyValueDetailsId, ProductHierarchyId: filteredData[0]?.ProductHierarchyId }
+                        const setData = { label: filteredData[0]?.ProductHierarchyValueCode, value: filteredData[0]?.ProductHierarchyValueDetailsId, ProductHierarchyId: filteredData[0]?.ProductHierarchyId }
                         setValue(`ProductHierarchyName${state.levelData?.ProductHierarchyId}`, setData)
                         setState((prevState) => ({ ...prevState, [`ProductHierarchyName${state.levelData?.ProductHierarchyId}`]: setData, selectedDropdownValue: setData }));
                         cancelDrawer()
