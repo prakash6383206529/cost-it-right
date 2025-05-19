@@ -1459,7 +1459,8 @@ export function getGroupCodeSelectList(partId,callback) {
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
-      apiErrors(error);
+      // apiErrors(error);
+      
     });
   };
 }
