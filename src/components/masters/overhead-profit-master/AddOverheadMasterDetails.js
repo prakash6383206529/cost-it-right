@@ -191,9 +191,10 @@ const AddOverheadMasterDetails = (props) => {
             }else{
                 prevApplicability = [...state.ApplicabilityDetails, obj]
             }           
-            setState(prev => ({ ...prev, ApplicabilityDetails: prevApplicability, OverheadApplicability: {}, OverheadPercentage: "" }));
+            setState(prev => ({ ...prev, ApplicabilityDetails: prevApplicability, OverheadApplicability: {}, OverheadPercentage: "", RepaymentPeriod: "" }));
             setValue("OverheadPercentage", "");
             setValue("OverheadApplicability", "");
+            setValue("RepaymentPeriod", "");
             clearErrors(["OverheadApplicability", "OverheadPercentage"]);
         }
     }
@@ -202,6 +203,7 @@ const AddOverheadMasterDetails = (props) => {
         setState(prev => ({ ...prev, OverheadApplicability: {}, OverheadPercentage: "" }));
         setValue("OverheadPercentage", "");
         setValue("OverheadApplicability", "");
+        setValue("RepaymentPeriod", "");
         clearErrors(["OverheadApplicability", "OverheadPercentage"]);
     }
 
@@ -747,4 +749,4 @@ const AddOverheadMasterDetails = (props) => {
 }
 
 
-export default AddOverheadMasterDetails;
+export default React.memo(AddOverheadMasterDetails);

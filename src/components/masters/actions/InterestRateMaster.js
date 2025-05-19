@@ -10,7 +10,8 @@ import {
     config,
     GET_WIP_COMPOSITION_METHOD_SELECTLIST,
     GET_INVENTORYDAY_TYPE_SELECTLIST,
-    GET_ICC_METHOD_SELECTLIST
+    GET_ICC_METHOD_SELECTLIST,
+    GET_OVERHEAD_PROFIT_DATA_SUCCESS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import axiosInstance from '../../../utils/axiosInstance';
@@ -99,6 +100,30 @@ export function getInterestRateData(ID, callback) {
             });
             callback({});
         }
+    };
+}
+
+/**
+ * @method getInterestRateDataCheck
+ * @description Get Interest Rate data check
+ */
+export function getInterestRateDataCheck(data, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    return (dispatch) => {
+        // axios.get(`${API.getInterestRateDataCheck}?overheadId=${data?.overheadId??null}&modelTypeId=${data?.modelTypeId??null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId??null}&isRejection=${data?.isRejection ?? false}`, config())
+        axios.get(`${API.getInterestRateDataCheck}?loggedInUserId=${loggedInUser?.loggedInUserId}&vendorIntrestRateId=${data?.vendorInterestRateId ?? null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&isPaymentTermsRecord=${data?.isPaymentTermsRecord}&partFamilyId=${data?.partFamilyId??null}&iccModelTypeId=${data?.modelTypeId}&iccMethodId=${data?.iccMethodId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&technologyId=${data?.technologyId??null}&rawMaterialGradeId=${data?.rawMaterialGradeId??null}&rawMaterialChildId=${data?.rawMaterialChildId??null}`, config())
+            .then((response) => {
+                if (response.data.Result === true || response.status === 204) {
+                    dispatch({
+                        type: GET_INTEREST_RATE_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 
