@@ -38,8 +38,10 @@ function ViewConversionCost(props) {
   const { isPDFShow, stCostShow } = props
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { viewConversionCostData } = props
-  const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting, viewCostingDataObj, HangerCostDetails, PaintAndTapeDetails } = viewConversionCostData
+
+  const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting, viewCostingDataObj, HangerCostDetails, PaintAndTapeDetails, LabourCostDetails } = viewConversionCostData
   const { CostingOperationCostResponse, CostingProcessCostResponse, CostingOtherOperationCostResponse } = conversionData
+
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [hangerCostDetails, setHangerCostDetails] = useState([])
   const [paintAndTapeDetails, setPaintAndTapeDetails] = useState([])
@@ -74,13 +76,14 @@ function ViewConversionCost(props) {
     if (IsAssemblyCosting === true && isPDFShow === false) {
       let temp = [];
 
-      CostingProcessCostResponse?.forEach(item => temp.push(item.PartNumber));
-      CostingOperationCostResponse?.forEach(item => temp.push(item.PartNumber));
-      CostingOtherOperationCostResponse?.forEach(item => temp.push(item.PartNumber));
-      netTransportationCostView?.forEach(item => temp.push(item.PartNumber));
-      surfaceTreatmentDetails?.forEach(item => temp.push(item.PartNumber));
-      PaintAndTapeDetails?.forEach(item => temp.push(item.PartNumber));
-      HangerCostDetails?.forEach(item => temp.push(item.PartNumber));
+      CostingProcessCostResponse?.forEach(item => temp.push(item?.PartNumber));
+      CostingOperationCostResponse?.forEach(item => temp.push(item?.PartNumber));
+      CostingOtherOperationCostResponse?.forEach(item => temp.push(item?.PartNumber));
+      netTransportationCostView?.forEach(item => temp.push(item?.PartNumber));
+      surfaceTreatmentDetails?.forEach(item => temp.push(item?.PartNumber));
+      PaintAndTapeDetails?.forEach(item => temp.push(item?.PartNumber));
+      HangerCostDetails?.forEach(item => temp.push(item?.PartNumber));
+      LabourCostDetails?.forEach(item => temp.push(item?.PartNumber));
 
 
       const uniqueTemp = Array.from(new Set(temp));
@@ -95,6 +98,7 @@ function ViewConversionCost(props) {
       const HangerCostDetailsTemp = HangerCostDetails?.filter(item => item.PartNumber === partNo);
       const PaintAndTapeDetailsTemp = PaintAndTapeDetails?.filter(item => item.PartNumber === partNo);
       const surfaceCost = surfaceTreatmentDetails?.filter(item => item.PartNumber === partNo);
+      const labourCost = LabourCostDetails?.filter(item => item.PartNumber === partNo);
 
       setCostingProcessCost(processCost);
       setHangerCostDetails(HangerCostDetailsTemp?.[0] || []);
@@ -103,6 +107,7 @@ function ViewConversionCost(props) {
       setOtherCostingOperationCostResponse(otherOperationCost);
       setTransportCost(transportCost?.[0] || []);
       setSurfaceTreatmentCost(surfaceCost); // ✅ Full list, not just first item
+      setLabourTable(labourCost || []);
     }
 
     else if (IsAssemblyCosting === true && isPDFShow === true) {
@@ -113,6 +118,7 @@ function ViewConversionCost(props) {
       setHangerCostDetails(HangerCostDetails || []);
       setPaintAndTapeDetails(PaintAndTapeDetails || []);
       setSurfaceTreatmentCost(surfaceTreatmentDetails || []);
+      setLabourTable(LabourCostDetails || []);
     }
 
     else {
@@ -123,19 +129,20 @@ function ViewConversionCost(props) {
       setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse || []);
       setTransportCost(netTransportationCostView?.[0] || []);
       setSurfaceTreatmentCost(surfaceTreatmentDetails || []);
+      setLabourTable(LabourCostDetails || []);
     }
 
-    if (showLabourData) {
-      dispatch(getCostingLabourDetails(
-        viewCostingData[0]?.costingId || "00000000-0000-0000-0000-000000000000",
-        (res) => {
-          if (res) {
-            const Data = res?.data?.Data;
-            setLabourTable(Data?.CostingLabourDetailList);
-          }
-        }
-      ));
-    }
+    // if (showLabourData) {
+    //   dispatch(getCostingLabourDetails(
+    //     viewCostingData[0]?.costingId || "00000000-0000-0000-0000-000000000000",
+    //     (res) => {
+    //       if (res) {
+    //         const Data = res?.data?.Data;
+    //         setLabourTable(Data?.CostingLabourDetailList);
+    //       }
+    //     }
+    //   ));
+    // }
   }, [isPDFShow, conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting, viewCostingDataObj, HangerCostDetails, PaintAndTapeDetails]);
 
   const setCalculatorData = (data, list, id, parentId) => {
@@ -246,6 +253,7 @@ function ViewConversionCost(props) {
 
     // ✅ FIX: return all matching surfaceCost entries (not just the first one)
     const surfaceCost = surfaceTreatmentDetails?.filter(item => item.PartNumber === partNo);
+    const labourCost = LabourCostDetails?.filter(item => item.PartNumber === partNo);
 
     setCostingProcessCost(processCost);
     setCostingOperationCostResponse(operationCost);
@@ -254,6 +262,7 @@ function ViewConversionCost(props) {
     setHangerCostDetails(HangerCostDetailsTemp?.[0] || []);
     setPaintAndTapeDetails(PaintAndTapeDetailsTemp?.[0] || []);
     setSurfaceTreatmentCost(surfaceCost);
+    setLabourTable(labourCost || []);
   };
   useEffect(() => {
     setLoader(false)
@@ -481,8 +490,14 @@ function ViewConversionCost(props) {
           <Table className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
+                <th>{`Labour Type`}</th>
                 <th>{`Description`}</th>
-                <th>{`Labour Rate (Rs/Shift)`}</th>
+                <th>{`No. of Labour`}</th>
+                <th>{`Absentism Percentage`}</th>
+                <th>{`No. of Days`}</th>
+                <th>{`Rate per Person/Month`}</th>
+                <th>{`Rate per Person/Annum`}</th>
+                <th>{`Rate per Person/Shift`}</th>
                 <th>{`Working Time`}</th>
                 <th>{`Efficiency`}</th>
                 <th>{`Cycle Time`}</th>
@@ -495,15 +510,33 @@ function ViewConversionCost(props) {
                   return (
                     <tr key={index}>
                       <td>
-                        {item.Description ? item.Description : '-'}
+                        {item?.LabourType ? item?.LabourType : '-'}
                       </td>
                       <td>
-                        {item.LabourRate ? item.LabourRate : '-'}
+                        {item?.Description ? item?.Description : '-'}
                       </td>
-                      <td>{item.WorkingTime ? item.WorkingTime : '-'}</td>
-                      <td>{item.Efficiency ? item.Efficiency : '-'}</td>
-                      <td>{item.CycleTime ? item.CycleTime : '-'}</td>
-                      <td>{item.LabourCost ? checkForDecimalAndNull(item.LabourCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                      <td>
+                        {item.NumberOfLabour ? checkForDecimalAndNull(item.NumberOfLabour, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}
+                      </td>
+                      <td>
+                        {item?.AbsentismPercentage ? checkForDecimalAndNull(item?.AbsentismPercentage, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}
+                      </td>
+                      <td>
+                        {item?.NoOfDays ? checkForDecimalAndNull(item?.NoOfDays, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}
+                      </td>
+                      <td>
+                        {item?.LabourRatePerMonth ? checkForDecimalAndNull(item?.LabourRatePerMonth, initialConfiguration?.NoOfDecimalForPrice) : '-'}
+                      </td>
+                      <td>
+                        {item?.LabourRate ? checkForDecimalAndNull(item?.LabourRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}
+                      </td>
+                      <td>
+                        {item?.LabourRatePerShift ? checkForDecimalAndNull(item?.LabourRatePerShift, initialConfiguration?.NoOfDecimalForPrice) : '-'}
+                      </td>
+                      <td>{item?.WorkingTime ? item?.WorkingTime : '-'}</td>
+                      <td>{item?.Efficiency ? checkForDecimalAndNull(item?.Efficiency, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
+                      <td>{item?.CycleTime ? checkForDecimalAndNull(item?.CycleTime, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
+                      <td>{item?.LabourCost ? checkForDecimalAndNull(item?.LabourCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                     </tr>
                   )
                 })}
@@ -1045,7 +1078,7 @@ function ViewConversionCost(props) {
                   }
 
 
-                  {!props.viewConversionCostData.isSurfaceTreatmentCost && !props.viewConversionCostData.processHide && showLabourData &&  // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
+                  {showLabourData && !props.viewConversionCostData.labourHide && // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
                     <>
                       {labourTableData()}
                     </>

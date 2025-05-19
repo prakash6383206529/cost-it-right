@@ -59,6 +59,7 @@ function ExtraCost(props) {
         let tempData = [...tableData]
         const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
         const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
+        console.log("costValues", costValues)
         tempData.map(item => {
             if (item?.CostingConditionMasterId) {
                 // Get cost values once for all cases that need them
@@ -89,6 +90,7 @@ function ExtraCost(props) {
                         item.TransportationCost = calculatePercentageValue((checkForNull(rawMaterialsCost) + checkForNull(conversionCost)), item?.Rate);
                         break;
                     case RM:
+                        console.log("rawMaterialsCost", rawMaterialsCost)
                         item.ApplicabiltyCost = checkForNull(rawMaterialsCost);
                         item.TransportationCost = calculatePercentageValue(checkForNull(rawMaterialsCost), item?.Rate);
                         break;
@@ -219,6 +221,7 @@ function ExtraCost(props) {
         // Get cost values once for all cases that need them
         const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
         const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
+        console.log("costValuesAPPLICABILITY", costValues)
 
         // Handle Basic Rate separately
         switch (e?.label) {
@@ -243,6 +246,7 @@ function ExtraCost(props) {
                 setState(prevState => ({ ...prevState, ApplicabilityCost: hangerCostDetails?.HangerCostPerPart }));
                 break;
             case RM:
+                console.log("rawMaterialsCostAPPLICABILITY22", rawMaterialsCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(rawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
                 setState(prevState => ({ ...prevState, ApplicabilityCost: rawMaterialsCost }));
                 break;
@@ -315,8 +319,8 @@ function ExtraCost(props) {
 
         // Check if Applicability already exists in tableData (regardless of description)
         // During edit mode, exclude the current row being edited from duplicate check
-        const existingCondition = tableData?.find((item, index) => 
-            item.CostingConditionMasterId === data?.Applicability?.value && 
+        const existingCondition = tableData?.find((item, index) =>
+            item.CostingConditionMasterId === data?.Applicability?.value &&
             (isEditMode ? index !== editIndex : true)
         );
 
