@@ -29,7 +29,7 @@ function AddTool(props) {
     ProcessOrOperation: rowObjData?.ProcessOrOperation ? { label: rowObjData.ProcessOrOperation, value: rowObjData.ProcessOrOperation } : [],
     ToolCategory: rowObjData?.ToolCategory ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : [],
     ToolName: rowObjData?.ToolName ? rowObjData.ToolName : '',
-    Quantity: rowObjData?.Quantity ? rowObjData.Quantity : '',
+    Quantity: rowObjData?.ProcessRunCount ? rowObjData.ProcessRunCount : '',
     ToolCost: rowObjData?.ToolCost ? rowObjData.ToolCost : '',
     Life: rowObjData?.Life ? rowObjData.Life : '',
     TotalToolCost: rowObjData?.TotalToolCost ? rowObjData.TotalToolCost : '',
@@ -354,7 +354,7 @@ function AddTool(props) {
         PartType: item?.Type,
         PartQuantity: item?.Quantity,
         ProcessOrOperationType: getValues('type'),
-        ProcessOrOperationQuantity: 1,
+        ProcessOrOperationQuantity: getValues('Quantity'),
         BOMLevel: item?.Level,
         PartNumber: costData?.PartNumber,
         PartId: costData?.PartId,
@@ -378,7 +378,8 @@ function AddTool(props) {
         ToolMaintenanceCostPerPiece:state.toolMaintenanceCostPerPc,
         ToolInterestRatePercent:getValues('ToolInterestRatePercent'),
         ToolInterestCost:state.toolInterestCost,
-        ToolInterestCostPerPiece:state.toolInterestCostPerPc
+        ToolInterestCostPerPiece:state.toolInterestCostPerPc,
+        ProcessRunCount: getValues('Quantity')
       };
     });
 
@@ -416,6 +417,7 @@ function AddTool(props) {
           item.ToolMaintenanceCostPerPiece = state.toolMaintenanceCostPerPc
           item.ToolInterestCost = state.toolInterestCost
           item.ToolInterestCostPerPiece = state.toolInterestCostPerPc
+          item.ProcessRunCount = getValues('Quantity')
           // Here you can add any other property updates as needed
         } else if (rowObjData?.ProcessOrOperationType === 'Process' && item.ProcessIdRef === ProcessIdRef && item.ToolName === ToolName) {
 
@@ -441,6 +443,7 @@ function AddTool(props) {
           item.ToolMaintenanceCostPerPiece = state.toolMaintenanceCostPerPc
           item.ToolInterestCost = state.toolInterestCost
           item.ToolInterestCostPerPiece = state.toolInterestCostPerPc
+          item.ProcessRunCount = getValues('Quantity')
           // Here you can add any other property updates as needed
         }
       }
@@ -863,7 +866,7 @@ function AddTool(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="4">{state.toolMaintenanceApplicability !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence-per-pc"} tooltipText={`${toolMaintenanceCostPerPcLabel}= (${toolMaintenanceCostLabel} / Amortization Quantity (Tool Life) `} />}
+                  <Col md="4">{state.toolMaintenanceApplicability !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence-per-pc"} tooltipText={`${toolMaintenanceCostPerPcLabel}= (${toolMaintenanceCostLabel}  * Process Run Count/ Amortization Quantity (Tool Life) `} />}
                     <TextFieldHookForm
                       label={toolMaintenanceCostPerPcLabel}
                       name={`ToolMaintenanceCostPerPc`}
