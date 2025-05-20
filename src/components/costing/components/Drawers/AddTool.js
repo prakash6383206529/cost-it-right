@@ -21,7 +21,7 @@ function AddTool(props) {
   const { rowObjData, isEditFlag, gridData, CostingViewMode } = props;
 
   const costData = useContext(costingInfoContext)
-  const { RMCCTabData } = useSelector(state => state.costing)
+  const { RMCCTabData, IsIncludedToolCost, includeToolCostIcc } = useSelector(state => state.costing)
   const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel } = useLabels();
 
   const defaultValues = {
@@ -206,9 +206,15 @@ function AddTool(props) {
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
+        if (IsIncludedToolCost || includeToolCostIcc) {
+          if (item.Text === 'Fixed') {
+            temp.push({ label: item.Text, value: item.Value })
+          }
+        } else {
+          temp.push({ label: item.Text, value: item.Value })
+        }
+        return null
+      })
       return temp
     }
   }
