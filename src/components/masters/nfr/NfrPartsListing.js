@@ -254,7 +254,7 @@ function NfrPartsListing(props) {
                 {showOutsourcing && !rowData?.IsRmAndBopActionEditable && < button type="button" id="viewNfrPart_list" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >}
                 {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >}
                 {showOutsourcing && < button type="button" className={"pushed-action-btn mr-1"} onClick={() => { pushToSap(rowData) }} disabled={!showPush} title={`Please add RM/${showBopLabel()} price in master, to add outsourcing cost and push the price on SAP`}></button >}
-                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title={`Add Costing`} className="create-rfq mr-1" id="nfr_AddCosting" type={"button"} onClick={() => addCosting(rowData)} />}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title={`Add Quotation`} className="create-rfq mr-1" id="nfr_AddCosting" type={"button"} onClick={() => addCosting(rowData)} />}
                 {/* {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />} */}
                 {/* {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />} */}
@@ -267,9 +267,9 @@ function NfrPartsListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        window.screen.width >= 1921 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
     };
 
 
@@ -504,14 +504,14 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="PartType" headerName='Part Type' width={150} cellRenderer={partTypeFormater}></AgGridColumn>
                                                 <AgGridColumn field="PartNumber" headerName='Part No.' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartName" headerName='Part Name' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="ComponentQty" headerName='Component Quantity' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NetLandedCost" headerName='Cost (Currency/UOM)' cellRenderer={netLandedFormatter}></AgGridColumn>
-                                                <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={costFormatter}></AgGridColumn>
-                                                <AgGridColumn field="CreatedOn" headerName='Created On' cellRenderer={dateFormater}></AgGridColumn>
+                                                {/* <AgGridColumn field="ComponentQty" headerName='Component Quantity' cellRenderer={hyphenFormatter}></AgGridColumn> */}
+                                                {/* <AgGridColumn field="NetLandedCost" headerName='Cost (Currency/UOM)' cellRenderer={netLandedFormatter}></AgGridColumn> */}
+                                                {/* <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={costFormatter}></AgGridColumn> */}
                                                 <AgGridColumn field="PlantName" headerName='Plant Name' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
-                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="Status" width={150} cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                <AgGridColumn field="CreatedOn" headerName='Created On' cellRenderer={dateFormater}></AgGridColumn>
+                                                {/* <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn> */}
+                                                {/* <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn> */}
+                                                 {<AgGridColumn field="Status" width={150} cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                             </AgGridReact>}
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div>
