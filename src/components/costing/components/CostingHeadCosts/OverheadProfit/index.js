@@ -665,17 +665,17 @@ function OverheadProfit(props) {
       setOverheadObj(prev => ({
         ...prev,
         CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail =>
-          detail.ApplicabilityDetailsId === item.ApplicabilityDetailsId
-            ? { ...detail, Cost: value }
+          detail.ApplicabilityDetailsId === item?.ApplicabilityDetailsId
+            ? { ...detail, Cost: checkForNull(value), TotalCost: checkForNull(value)}
             : detail
         )
       }));
     } else {
       setProfitObj(prev => ({
         ...prev,
-        CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail =>
-          detail.ApplicabilityDetailsId === item.ApplicabilityDetailsId
-            ? { ...detail, Cost: Number(value) , TotalCost: Number(value)}
+        CostingApplicabilityDetails: prev?.CostingApplicabilityDetails.map(detail =>
+          detail.ApplicabilityDetailsId === item?.ApplicabilityDetailsId
+            ? { ...detail, Cost: checkForNull(value) , TotalCost: checkForNull(value)}
             : detail
         )
       }));
