@@ -248,10 +248,11 @@ export function getOverheadDataList(data, skip, take, isPagination, obj, isRejec
             loggedInUserId: loggedInUserId(),
             costing_head: obj.costing_head, vendor_id: obj.vendor_id, overhead_applicability_type_id: obj.overhead_applicability_type_id, model_type_id: obj.model_type_id,
             CostingHead: obj.CostingHead, VendorName: obj.VendorName, ClientName: obj.ClientName, ModelType: obj.ModelType,
-            OverheadApplicability: obj.OverheadApplicabilityType, OverheadApplicabilityPercentage: obj.OverheadPercentage, OverheadOnRMPercentage: obj.OverheadRMPercentage, OverheadOnBOPPercentage: obj.OverheadBOPPercentage,
+             OverheadApplicabilityPercentage: obj.OverheadPercentage, OverheadOnRMPercentage: obj.OverheadRMPercentage, OverheadOnBOPPercentage: obj.OverheadBOPPercentage,
             OverheadOnCCPercentage: obj.OverheadMachiningCCPercentage, EffectiveDate: obj.EffectiveDateNew, Plant: obj.PlantName, applyPagination: isPagination,
             skip: skip, take: take, CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '', RawMaterialName: obj.RawMaterialName !== undefined ? obj.RawMaterialName : '',
             RawMaterialGrade: obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : '', TechnologyName: obj.TechnologyName !== undefined ? obj.TechnologyName : '',
+            PartFamily: obj?.PartFamily, OverheadApplicability: obj?.Applicability, 
             IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
             IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc, IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
             IsRejection: isRejection
@@ -297,6 +298,7 @@ export function getProfitDataList(data, skip, take, isPagination, obj, callback)
             ProfitOnCCPercentage: obj.ProfitMachiningCCPercentage, EffectiveDate: obj.EffectiveDateNew, Plant: obj.PlantName, applyPagination: isPagination,
             skip: skip, take: take, CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '', RawMaterialName: obj.RawMaterialName !== undefined ? obj.RawMaterialName : '',
             RawMaterialGrade: obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : '', TechnologyName: obj.TechnologyName !== undefined ? obj.TechnologyName : '',
+            PartFamily: obj?.PartFamily, ProfitApplicability: obj?.Applicability, 
             IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
             IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc, IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc
         });
