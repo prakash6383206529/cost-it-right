@@ -203,7 +203,7 @@ function AddForecast(props) {
     // Edit row in table
     const editRow = (index) => {
         const row = tableData[index];
-        
+
         setValue('childPart', { label: row.PartNumber, value: row.PartId });
         setValue('rmName', { label: row.RawMaterialName, value: row.RawMaterialId });
         setValue('rmgrade', { label: row.RawMaterialGrade, value: row.RawMaterialGradeId });
@@ -469,344 +469,346 @@ function AddForecast(props) {
         <div className='p-relative'>
             <Drawer anchor={anchor} open={isOpen}>
                 <div className={`ag-grid-react hidepage-size`}>
-                    <Container className="add-bop-drawer">
-                        <div className={'drawer-wrapper layout-min-width-960px'}>
-                            <Row className="drawer-heading sticky-top-0">
-                                <Col>
-                                    <div className={'header-wrapper left'}>
-                                        <h3>Add RM & Forecast</h3>
-                                    </div>
-                                    <div
-                                        onClick={(e) => toggleDrawer(e)}
-                                        className={'close-button right'}
-                                    ></div>
-                                </Col>
-                            </Row>
+                    <div className={`ag-grid-react hidepage-size`}>
+                        <Container className="add-bop-drawer">
+                            <div className={'drawer-wrapper layout-min-width-960px'}>
+                                <Row className="drawer-heading sticky-top-0">
+                                    <Col>
+                                        <div className={'header-wrapper left'}>
+                                            <h3>Add RM & Forecast</h3>
+                                        </div>
+                                        <div
+                                            onClick={(e) => toggleDrawer(e)}
+                                            className={'close-button right'}
+                                        ></div>
+                                    </Col>
+                                </Row>
 
-                            <Nav tabs className="subtabs cr-subtabs-head">
-                                <NavItem>
-                                    <NavLink
-                                        className={classnames({ active: activeTab === "1" })}
-                                        onClick={() => handleTabChange("1")}
-                                    >
-                                        Add RM
-                                    </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink
-                                        className={classnames({ active: activeTab === "2" })}
-                                        onClick={() => handleTabChange("2")}
-                                    >
-                                        Add Forecast
-                                    </NavLink>
-                                </NavItem>
-                            </Nav>
+                                <Nav tabs className="subtabs cr-subtabs-head">
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: activeTab === "1" })}
+                                            onClick={() => handleTabChange("1")}
+                                        >
+                                            Add RM
+                                        </NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: activeTab === "2" })}
+                                            onClick={() => handleTabChange("2")}
+                                        >
+                                            Add Forecast
+                                        </NavLink>
+                                    </NavItem>
+                                </Nav>
 
-                            <TabContent activeTab={activeTab}>
-                                {Number(activeTab) === 1 && (
-                                    <TabPane tabId="1">
-                                        {partType !== 'Tooling' && (
-                                            <>
-                                                <HeaderTitle title={'Add RM'} customClass="mt-3" />
-                                                <Row className="mt-1 part-detail-wrapper">
-                                                    <Col md="3">
-                                                        <div className='mt5 flex-grow-1'>
-                                                            <TooltipCustom id="RMDetail_Info" tooltipText="Select RM Name, RM Grade & specification to get the Part code, or directly input the RM Code to fetch the previously mentioned information and click on the Add button." />
+                                <TabContent activeTab={activeTab}>
+                                    {Number(activeTab) === 1 && (
+                                        <TabPane tabId="1">
+                                            {partType !== 'Tooling' && (
+                                                <>
+                                                    <HeaderTitle title={'Add RM'} customClass="mt-3" />
+                                                    <Row className="mt-1 part-detail-wrapper">
+                                                        <Col md="3">
+                                                            <div className='mt5 flex-grow-1'>
+                                                                <TooltipCustom id="RMDetail_Info" tooltipText="Select RM Name, RM Grade & specification to get the Part code, or directly input the RM Code to fetch the previously mentioned information and click on the Add button." />
+                                                                <SearchableSelectHookForm
+                                                                    label={"Part No"}
+                                                                    name={"partNumber"}
+                                                                    placeholder={"Select"}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    rules={{ required: true }}
+                                                                    register={register}
+                                                                    mandatory={true}
+                                                                    handleChange={(newValue) => handleChildPart(newValue)}
+                                                                    errors={errors.partNumber}
+                                                                    disabled={(isViewFlag || (partType && partType.label === 'Component')) ? true : false}
+                                                                    options={renderListingRM('childPartName')}
+                                                                    selected={getValues('childPart')}
+                                                                />
+                                                            </div>
+                                                        </Col>
+
+                                                        <Col md="3">
                                                             <SearchableSelectHookForm
-                                                                label={"Part No"}
-                                                                name={"partNumber"}
+                                                                label="RM Name"
+                                                                name={"RMName"}
                                                                 placeholder={"Select"}
                                                                 Controller={Controller}
                                                                 control={control}
+                                                                selected={getValues('rmName') ? getValues('rmName') : ''}
                                                                 rules={{ required: true }}
                                                                 register={register}
+                                                                customClassName="costing-version"
+                                                                options={renderListingRM('rmname')}
                                                                 mandatory={true}
-                                                                handleChange={(newValue) => handleChildPart(newValue)}
-                                                                errors={errors.partNumber}
-                                                                disabled={(isViewFlag || (partType && partType.label === 'Component')) ? true : false}
-                                                                options={renderListingRM('childPartName')}
-                                                                selected={getValues('childPart')}
+                                                                handleChange={(newValue) => handleRMName(newValue)}
+                                                                disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                             />
-                                                        </div>
-                                                    </Col>
+                                                        </Col>
 
-                                                    <Col md="3">
-                                                        <SearchableSelectHookForm
-                                                            label="RM Name"
-                                                            name={"RMName"}
-                                                            placeholder={"Select"}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            selected={getValues('rmName') ? getValues('rmName') : ''}
-                                                            rules={{ required: true }}
-                                                            register={register}
-                                                            customClassName="costing-version"
-                                                            options={renderListingRM('rmname')}
-                                                            mandatory={true}
-                                                            handleChange={(newValue) => handleRMName(newValue)}
-                                                            disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
-                                                        />
-                                                    </Col>
+                                                        <Col md="3">
+                                                            <SearchableSelectHookForm
+                                                                label="RM Grade"
+                                                                name={"RMGrade"}
+                                                                placeholder={"Select"}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                selected={getValues('rmgrade') ? getValues('rmgrade') : ''}
+                                                                rules={{ required: getValues('RMName') ? true : false }}
+                                                                register={register}
+                                                                customClassName="costing-version"
+                                                                options={renderListingRM('rmgrade')}
+                                                                mandatory={getValues('RMName') ? true : false}
+                                                                handleChange={(newValue) => handleRMGrade(newValue)}
+                                                                disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            />
+                                                        </Col>
 
-                                                    <Col md="3">
-                                                        <SearchableSelectHookForm
-                                                            label="RM Grade"
-                                                            name={"RMGrade"}
-                                                            placeholder={"Select"}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            selected={getValues('rmgrade') ? getValues('rmgrade') : ''}
-                                                            rules={{ required: getValues('RMName') ? true : false }}
-                                                            register={register}
-                                                            customClassName="costing-version"
-                                                            options={renderListingRM('rmgrade')}
-                                                            mandatory={getValues('RMName') ? true : false}
-                                                            handleChange={(newValue) => handleRMGrade(newValue)}
-                                                            disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
-                                                        />
-                                                    </Col>
+                                                        <Col md="3">
+                                                            <SearchableSelectHookForm
+                                                                label="RM Specification"
+                                                                name={"RMSpecification"}
+                                                                placeholder={"Select"}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                selected={getValues('rmspecification') ? getValues('rmspecification') : ''}
+                                                                rules={{ required: getValues('RMName') ? true : false }}
+                                                                register={register}
+                                                                customClassName="costing-version"
+                                                                options={renderListingRM('rmspecification')}
+                                                                mandatory={getValues('RMName') ? true : false}
+                                                                handleChange={(newValue) => handleRMSpecification(newValue)}
+                                                                disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            />
+                                                        </Col>
 
-                                                    <Col md="3">
-                                                        <SearchableSelectHookForm
-                                                            label="RM Specification"
-                                                            name={"RMSpecification"}
-                                                            placeholder={"Select"}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            selected={getValues('rmspecification') ? getValues('rmspecification') : ''}
-                                                            rules={{ required: getValues('RMName') ? true : false }}
-                                                            register={register}
-                                                            customClassName="costing-version"
-                                                            options={renderListingRM('rmspecification')}
-                                                            mandatory={getValues('RMName') ? true : false}
-                                                            handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                            disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
-                                                        />
-                                                    </Col>
+                                                        <Col md="3" className='d-flex align-items-center'>
+                                                            <SearchableSelectHookForm
+                                                                label={"Code"}
+                                                                name={"rmcode"}
+                                                                placeholder={'Select'}
+                                                                options={renderListingRM("rmcode")}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: getValues('RMName') ? true : false }}
+                                                                mandatory={getValues('RMName') ? true : false}
+                                                                handleChange={handleCode}
+                                                                isClearable={true}
+                                                                errors={errors.Code}
+                                                                disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
+                                                            />
+                                                        </Col>
+                                                        <Col md="3">
+                                                            <div className="d-flex justify-content-start mb-2">
+                                                                {getValues('isEdit') ? (
+                                                                    <>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="user-btn mt30 pull-left"
+                                                                            onClick={updateRow}
+                                                                        >
+                                                                            <div className="plus"></div>Update
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="mt30 cancel-btn ml-2"
+                                                                            onClick={resetForm}
+                                                                        >
+                                                                            <div className="cancel-icon"></div>Cancel
+                                                                        </button>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="user-btn mt30 pull-left"
+                                                                            onClick={() => addRow(0)}
+                                                                            disabled={isViewFlag || (!isEditFlag ? (type === Component && getValues('activeTab') === "1" ? false : false) : false)}
+                                                                        >
+                                                                            <div className="plus"></div>ADD
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="mr15 ml-2 mt30 reset-btn"
+                                                                            disabled={isViewFlag || (!isEditFlag ? (type === Component && getValues('activeTab') === "1" ? false : false) : false)}
+                                                                            onClick={resetFormAndDropdowns}
+                                                                        >
+                                                                            Reset
+                                                                        </button>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
 
-                                                    <Col md="3" className='d-flex align-items-center'>
-                                                        <SearchableSelectHookForm
-                                                            label={"Code"}
-                                                            name={"rmcode"}
-                                                            placeholder={'Select'}
-                                                            options={renderListingRM("rmcode")}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            rules={{ required: getValues('RMName') ? true : false }}
-                                                            mandatory={getValues('RMName') ? true : false}
-                                                            handleChange={handleCode}
-                                                            isClearable={true}
-                                                            errors={errors.Code}
-                                                            disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
-                                                        />
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-content-start mb-2">
-                                                            {getValues('isEdit') ? (
-                                                                <>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="user-btn mt30 pull-left"
-                                                                        onClick={updateRow}
-                                                                    >
-                                                                        <div className="plus"></div>Update
-                                                                    </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="mt30 cancel-btn ml-2"
-                                                                        onClick={resetForm}
-                                                                    >
-                                                                        <div className="cancel-icon"></div>Cancel
-                                                                    </button>
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="user-btn mt30 pull-left"
-                                                                        onClick={() => addRow(0)}
-                                                                        disabled={isViewFlag || (!isEditFlag ? (type === Component && getValues('activeTab') === "1" ? false : false) : false)}
-                                                                    >
-                                                                        <div className="plus"></div>ADD
-                                                                    </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="mr15 ml-2 mt30 reset-btn"
-                                                                        disabled={isViewFlag || (!isEditFlag ? (type === Component && getValues('activeTab') === "1" ? false : false) : false)}
-                                                                        onClick={resetFormAndDropdowns}
-                                                                    >
-                                                                        Reset
-                                                                    </button>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    </Col>
-                                                </Row>
-
-                                                {/* RM Table and Buttons */}
-                                                <Row className="mt-3">
-                                                    <Col md="12">
-                                                        <div className="table-responsive">
-                                                            <table className="table table-bordered">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Part No</th>
-                                                                        <th>RM Name</th>
-                                                                        <th>RM Grade</th>
-                                                                        <th>RM Specification</th>
-                                                                        <th>Code</th>
-                                                                        <th>Action</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {tableData.length === 0 ? (
+                                                    {/* RM Table and Buttons */}
+                                                    <Row className="mt-3">
+                                                        <Col md="12">
+                                                            <div className="table-responsive">
+                                                                <table className="table table-bordered">
+                                                                    <thead>
                                                                         <tr>
-                                                                            <td colspan="15">
-                                                                                <NoContentFound title={EMPTY_DATA} />
-                                                                            </td>
+                                                                            <th>Part No</th>
+                                                                            <th>RM Name</th>
+                                                                            <th>RM Grade</th>
+                                                                            <th>RM Specification</th>
+                                                                            <th>Code</th>
+                                                                            <th>Action</th>
                                                                         </tr>
-                                                                    ) : (
-                                                                        tableData.map((item, index) => (
-                                                                            <tr key={index}>
-                                                                                <td>{item.PartNumber !== null ? item.PartNumber : '-'}</td>
-                                                                                <td>{item.RawMaterialName !== null ? item.RawMaterialName : '-'}</td>
-                                                                                <td>{item.RawMaterialGrade !== null ? item.RawMaterialGrade : '-'}</td>
-                                                                                <td>{item.RawMaterialSpecification !== null ? item.RawMaterialSpecification : '-'}</td>
-                                                                                <td>{item.RawMaterialCode !== null ? item.RawMaterialCode : '-'}</td>
-                                                                                <td>
-                                                                                    <button
-                                                                                        className="Edit mr-2"
-                                                                                        type="button"
-                                                                                        title="Edit"
-                                                                                        onClick={() => editRow(index)}
-                                                                                        disabled={isViewFlag}
-                                                                                    />
-                                                                                    <button
-                                                                                        className="Delete"
-                                                                                        type="button"
-                                                                                        title="Delete"
-                                                                                        onClick={() => deleteRow(index)}
-                                                                                        disabled={isViewFlag}
-                                                                                    />
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {tableData.length === 0 ? (
+                                                                            <tr>
+                                                                                <td colspan="15">
+                                                                                    <NoContentFound title={EMPTY_DATA} />
                                                                                 </td>
                                                                             </tr>
-                                                                        ))
-                                                                    )}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </Col>
-                                                </Row>
-                                            </>
-                                        )}
-                                    </TabPane>
-                                )}
+                                                                        ) : (
+                                                                            tableData.map((item, index) => (
+                                                                                <tr key={index}>
+                                                                                    <td>{item.PartNumber !== null ? item.PartNumber : '-'}</td>
+                                                                                    <td>{item.RawMaterialName !== null ? item.RawMaterialName : '-'}</td>
+                                                                                    <td>{item.RawMaterialGrade !== null ? item.RawMaterialGrade : '-'}</td>
+                                                                                    <td>{item.RawMaterialSpecification !== null ? item.RawMaterialSpecification : '-'}</td>
+                                                                                    <td>{item.RawMaterialCode !== null ? item.RawMaterialCode : '-'}</td>
+                                                                                    <td>
+                                                                                        <button
+                                                                                            className="Edit mr-2"
+                                                                                            type="button"
+                                                                                            title="Edit"
+                                                                                            onClick={() => editRow(index)}
+                                                                                            disabled={isViewFlag}
+                                                                                        />
+                                                                                        <button
+                                                                                            className="Delete"
+                                                                                            type="button"
+                                                                                            title="Delete"
+                                                                                            onClick={() => deleteRow(index)}
+                                                                                            disabled={isViewFlag}
+                                                                                        />
+                                                                                    </td>
+                                                                                </tr>
+                                                                            ))
+                                                                        )}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+                                                </>
+                                            )}
+                                        </TabPane>
+                                    )}
 
-                                {Number(activeTab) === 2 && (
-                                    <TabPane tabId="2">
-                                        <HeaderTitle title={'Add Forecast'} customClass="mt-3" />
-                                        <Row className='mt-3 mb-1'>
-                                            <Col md="3">
-                                                <div className="form-group">
-                                                    <label>SOP Date<span className="asterisk-required">*</span></label>
-                                                    <div id="addRFQDate_container" className="inputbox date-section">
-                                                        <DatePicker
-                                                            name={'SOPDate'}
-                                                            placeholder={'Select'}
-                                                            selected={DayTime(sopDate).isValid() ? new Date(sopDate) : ''}
-                                                            onChange={handleSOPDateChange}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dropdownMode='select'
-                                                            minDate={new Date()}
-                                                            dateFormat="dd/MM/yyyy"
-                                                            placeholderText="Select date"
-                                                            className="withBorder"
-                                                            autoComplete={"off"}
-                                                            mandatory={true}
-                                                            errors={errors.SOPDate}
-                                                            disabledKeyboardNavigation
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isViewFlag}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                        <div className="tab-pane fade active show" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                                            <Row>
-                                                <Col md="12" className='ag-grid-react'>
-                                                    <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${sopQuantityList && sopQuantityList.length === 0 ? "overlay-contain" : ""} `}>
-                                                        <div className={`ag-theme-material`}>
-                                                            <AgGridReact
-                                                                // defaultColDef={state.gridOptions.defaultColDef}
-                                                                floatingFilter={false}
-                                                                domLayout='autoHeight'
-                                                                rowData={sopQuantityList}
-                                                                onGridReady={onGridReady}
-                                                                gridOptions={gridOptionsPart}
-                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                                noRowsOverlayComponentParams={{
-                                                                    title: EMPTY_DATA,
-                                                                    imagClass: 'imagClass'
-                                                                }}
-                                                                frameworkComponents={frameworkComponents}
-                                                            >
-                                                                <AgGridColumn
-                                                                    width={"230px"}
-                                                                    field="PartNumber"
-                                                                    headerName="Part No"
-                                                                    tooltipField="PartNumber"
-                                                                    cellClass={"colorWhite"}
-                                                                    cellRenderer={'partNumberFormatter'}
-                                                                />
-                                                                <AgGridColumn
-                                                                    width={"230px"}
-                                                                    field="YearName"
-                                                                    headerName="Production Year"
-                                                                    cellRenderer={'sopFormatter'}
-                                                                />
-                                                                <AgGridColumn
-                                                                    width={"230px"}
-                                                                    field="Quantity"
-                                                                    headerName="Annual Forecast Quantity"
-                                                                    cellRenderer={'afcFormatter'}
-                                                                    editable={EditableCallback}
-                                                                    colId="Quantity"
-                                                                />
-                                                            </AgGridReact>
+                                    {Number(activeTab) === 2 && (
+                                        <TabPane tabId="2">
+                                            <HeaderTitle title={'Add Forecast'} customClass="mt-3" />
+                                            <Row className='mt-3 mb-1'>
+                                                <Col md="3">
+                                                    <div className="form-group">
+                                                        <label>SOP Date<span className="asterisk-required">*</span></label>
+                                                        <div id="addRFQDate_container" className="inputbox date-section">
+                                                            <DatePicker
+                                                                name={'SOPDate'}
+                                                                placeholder={'Select'}
+                                                                selected={DayTime(sopDate).isValid() ? new Date(sopDate) : ''}
+                                                                onChange={handleSOPDateChange}
+                                                                showMonthDropdown
+                                                                showYearDropdown
+                                                                dropdownMode='select'
+                                                                minDate={new Date()}
+                                                                dateFormat="dd/MM/yyyy"
+                                                                placeholderText="Select date"
+                                                                className="withBorder"
+                                                                autoComplete={"off"}
+                                                                mandatory={true}
+                                                                errors={errors.SOPDate}
+                                                                disabledKeyboardNavigation
+                                                                onChangeRaw={(e) => e.preventDefault()}
+                                                                disabled={isViewFlag}
+                                                            />
                                                         </div>
                                                     </div>
                                                 </Col>
                                             </Row>
-                                        </div>
-                                    </TabPane>
-                                )}
-                            </TabContent>
-                        </div>
-                    </Container>
-                </div>
-                <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer drawer-sticky-btn">
-                    <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
-                        <button
-                            type={'button'}
-                            className="reset cancel-btn mr15"
-                            onClick={toggleDrawer}
-                        >
-                            <div className={'cancel-icon'}></div> {'Cancel'}
-                        </button>
-                        <button
-                            type={'button'}
-                            className="submit-button save-btn mr-2"
-                            onClick={() => handleSave(true)}
-                            disabled={isViewFlag || getValues('disabled')}
-                        >
-                            <div className={"save-icon"}></div>
-                            {'Save'}
-                        </button>
+                                            <div className="tab-pane fade active show" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                                <Row>
+                                                    <Col md="12" className='ag-grid-react'>
+                                                        <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${sopQuantityList && sopQuantityList.length === 0 ? "overlay-contain" : ""} `}>
+                                                            <div className={`ag-theme-material`}>
+                                                                <AgGridReact
+                                                                    // defaultColDef={state.gridOptions.defaultColDef}
+                                                                    floatingFilter={false}
+                                                                    domLayout='autoHeight'
+                                                                    rowData={sopQuantityList}
+                                                                    onGridReady={onGridReady}
+                                                                    gridOptions={gridOptionsPart}
+                                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                    noRowsOverlayComponentParams={{
+                                                                        title: EMPTY_DATA,
+                                                                        imagClass: 'imagClass'
+                                                                    }}
+                                                                    frameworkComponents={frameworkComponents}
+                                                                >
+                                                                    <AgGridColumn
+                                                                        width={"230px"}
+                                                                        field="PartNumber"
+                                                                        headerName="Part No"
+                                                                        tooltipField="PartNumber"
+                                                                        cellClass={"colorWhite"}
+                                                                        cellRenderer={'partNumberFormatter'}
+                                                                    />
+                                                                    <AgGridColumn
+                                                                        width={"230px"}
+                                                                        field="YearName"
+                                                                        headerName="Production Year"
+                                                                        cellRenderer={'sopFormatter'}
+                                                                    />
+                                                                    <AgGridColumn
+                                                                        width={"230px"}
+                                                                        field="Quantity"
+                                                                        headerName="Annual Forecast Quantity"
+                                                                        cellRenderer={'afcFormatter'}
+                                                                        editable={EditableCallback}
+                                                                        colId="Quantity"
+                                                                    />
+                                                                </AgGridReact>
+                                                            </div>
+                                                        </div>
+                                                    </Col>
+                                                </Row>
+                                            </div>
+                                        </TabPane>
+                                    )}
+                                </TabContent>
+                            </div>
+                        </Container>
                     </div>
-                </Row>
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer drawer-sticky-btn">
+                        <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                            <button
+                                type={'button'}
+                                className="reset cancel-btn mr15"
+                                onClick={toggleDrawer}
+                            >
+                                <div className={'cancel-icon'}></div> {'Cancel'}
+                            </button>
+                            <button
+                                type={'button'}
+                                className="submit-button save-btn mr-2"
+                                onClick={() => handleSave(true)}
+                                disabled={isViewFlag || getValues('disabled')}
+                            >
+                                <div className={"save-icon"}></div>
+                                {'Save'}
+                            </button>
+                        </div>
+                    </Row>
+                </div>
             </Drawer>
         </div>
     );

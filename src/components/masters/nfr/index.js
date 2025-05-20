@@ -68,9 +68,9 @@ function NfrTabs(props) {
                             />}
                         </TabPane>
 
-                        <TabPane tabId="2">
+                        {/* <TabPane tabId="2">
                             {activeTab === '2' && <NFRApprovalListing activeTab={activeTab} />}
-                        </TabPane>
+                        </TabPane> */}
                     </TabContent>
                 </div>
             </div>
