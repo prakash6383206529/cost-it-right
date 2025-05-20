@@ -849,7 +849,7 @@ function AddTool(props) {
                         disabled={state.toolMaintenanceApplicability?.label === "Tool Rate" ? true : CostingViewMode}
                       />
                     </Col>
-                    <Col md="4">{ <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel} = ${state.toolMaintenanceApplicability?.label==='Fixed'? 'Cost (Applicability) * Process Run Count * Part Quantity':'(Maintenance Cost (%) * Cost(Applicability) / 100)'} `} />}
+                    <Col md="4">{ <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel} = ${state.toolMaintenanceApplicability?.label==='Fixed'? 'Cost (Applicability) * Process Run Count * Part Quantity':'(Maintenance Cost (%) * Cost(Applicability) * Process Run Count / 100)'} `} />}
                     <TextFieldHookForm
                       label={toolMaintenanceCostLabel}
                       name={`ToolMaintenanceCost`}
