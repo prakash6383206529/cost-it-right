@@ -400,6 +400,7 @@ function TabRMCC(props) {
         return checkForNull(accummlator)
       }
     }, 0)
+    
     return total
   }
 
@@ -690,7 +691,7 @@ function TabRMCC(props) {
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Overhead', 'Process'))
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Profit', 'Process'))
 
-        subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(tempArr, "CCForOtherTechnology")
+        subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(tempArr, RMCCTabData[0]?.TechnolohyId,"CCForOtherTechnology")
         subAssemObj.CostingPartDetails.TotatCCForOtherTechnologyCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Overhead', 'CCForOtherTechnology'))
         subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForProfit = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Profit', 'CCForOtherTechnology'))
 
@@ -1177,7 +1178,7 @@ function TabRMCC(props) {
           assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostComponentForOverhead = getOverheadAndProfitTotalCostForAssembly(partAssemblyArray, 'Overhead', 'CCForOtherTechnology')
           assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostComponentForProfit = getOverheadAndProfitTotalCostForAssembly(partAssemblyArray, 'Profit', 'CCForOtherTechnology')
 
-          assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(subAssemblyArray, assemblyObj?.TechnologyId, "CCForOtherTechnology")
+          assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(subAssemblyArray, RMCCTabData[0]?.TechnologyId?.TechnologyId, "CCForOtherTechnology")
           assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForOverhead = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Overhead', 'CCForOtherTechnology')
           assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'CCForOtherTechnology')
 
@@ -1321,7 +1322,7 @@ function TabRMCC(props) {
             subAssemblyToUpdate.CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForProfit = checkForNull(subAssemblyToUpdate?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit)
             // FOR SUB ASSEMBLY (OTHER TECHNOLOGY PROCESS)
 
-            subAssemblyToUpdate.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(ccSubAssemblyArray, subAssemblyToUpdate?.TechnologyId, "CCForOtherTechnology")
+            subAssemblyToUpdate.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(ccSubAssemblyArray, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology")
             subAssemblyToUpdate.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForOverhead = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Overhead', 'CCForOtherTechnology')
             subAssemblyToUpdate.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Profit', 'CCForOtherTechnology')
             // FOR COMPONENT (OTHER TECHNOLOGY PROCESS)
@@ -1424,7 +1425,7 @@ function TabRMCC(props) {
         assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Profit', 'Process')
 
         // FOR SUB ASSEMBLY ( Other Technology Process)
-        assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(ccSubAssemblyArray, assemblyObj?.TechnologyId, "CCForOtherTechnology")
+        assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(ccSubAssemblyArray, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology")
         assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForOverhead = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Overhead', 'CCForOtherTechnology')
         assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Profit', 'CCForOtherTechnology')
 
@@ -2114,7 +2115,7 @@ return x.AssemblyPartNumber === params.PartNumber && x.PartType === 'Sub Assembl
 
 
 
-                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(subAssemblyArray, subAssembObj?.TechnolohyId, "CCForOtherTechnology");
+                  subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = setProcessCostForAssembly(subAssemblyArray, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology");
                   subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForOverhead = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Overhead', 'CCForOtherTechnology')
                   subAssembObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'CCForOtherTechnology')
 
@@ -2234,7 +2235,7 @@ return x.AssemblyPartNumber === params.PartNumber && x.PartType === 'Sub Assembl
             assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Overhead', 'Process'))
             assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'Process'))
 
-            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = checkForNull(setProcessCostForAssembly(subAssemblyArray, assemblyObj?.TechnologyId, "CCForOtherTechnology"))
+            assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = checkForNull(setProcessCostForAssembly(subAssemblyArray, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology"))
             assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Overhead', 'CCForOtherTechnology'))
             assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForProfit = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'CCForOtherTechnology'))
 
