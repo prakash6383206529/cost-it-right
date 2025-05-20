@@ -67,7 +67,7 @@ function TabAssemblyTechnology(props) {
       topHeaderData = {
         NetRawMaterialsCost: TopHeaderValues?.NetChildPartsCost ? TopHeaderValues.NetChildPartsCost : 0,
         NetBoughtOutPartCost: TopHeaderValues?.NetBoughtOutPartCost ? TopHeaderValues.NetBoughtOutPartCost : 0,
-        NetConversionCost: (TopHeaderValues?.NetOperationCost || TopHeaderValues?.NetProcessCost || TotalLabourCost) ? (checkForNull(TopHeaderValues?.NetProcessCost) + checkForNull(TopHeaderValues?.NetOperationCost)+ checkForNull(TopHeaderValues?.NetWeldingCost) + checkForNull(TotalLabourCost)) : 0,
+        NetConversionCost: (TopHeaderValues?.NetOperationCost || TopHeaderValues?.NetProcessCost || TotalLabourCost) ? (checkForNull(TopHeaderValues?.NetProcessCost) + checkForNull(TopHeaderValues?.NetOperationCost) + checkForNull(TopHeaderValues?.NetWeldingCost) + checkForNull(TotalLabourCost)) : 0,
         NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
         NetTotalRMBOPCC: (TopHeaderValues?.NetTotalRMBOPCC) ? TopHeaderValues.NetTotalRMBOPCC : 0,
         OtherOperationCost: TopHeaderValues?.CostingConversionCost?.NetOtherOperationCost ? TopHeaderValues.CostingConversionCost.NetOtherOperationCost : 0,   //HELP
@@ -83,7 +83,7 @@ function TabAssemblyTechnology(props) {
         TotalOperationCostPerAssembly: TopHeaderValues?.TotalOperationCostPerAssembly ? TopHeaderValues.TotalOperationCostPerAssembly : 0,
         TotalWeldingCostPerAssembly: TopHeaderValues?.TotalWeldingCostPerAssembly ? TopHeaderValues.TotalWeldingCostPerAssembly : 0,
         TotalOperationCostSubAssembly: TopHeaderValues?.TotalOperationCostSubAssembly ? TopHeaderValues.TotalOperationCostSubAssembly : 0,
-         TotalWeldingCostSubAssembly: TopHeaderValues?.TotalWeldingCostSubAssembly ? TopHeaderValues.TotalWeldingCostSubAssembly : 0,
+        TotalWeldingCostSubAssembly: TopHeaderValues?.TotalWeldingCostSubAssembly ? TopHeaderValues.TotalWeldingCostSubAssembly : 0,
         TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0
       }
 
@@ -250,7 +250,7 @@ function TabAssemblyTechnology(props) {
   const setBOPCostWithAsssembly = (obj, item) => {
     let totalBOPCost = checkForNull(obj?.BOPHandlingChargeApplicability) + checkForNull(obj?.BOPHandlingCharges)
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetPOPrice) + checkForNull(totalBOPCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)+checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost))
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetPOPrice) + checkForNull(totalBOPCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost))
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost = checkForNull(totalBOPCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges = checkForNull(obj?.BOPHandlingCharges)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingPercentage = checkForNull(obj?.BOPHandlingPercentage)

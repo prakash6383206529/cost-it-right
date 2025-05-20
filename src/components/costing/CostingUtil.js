@@ -74,18 +74,35 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalProcessCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly),
           "TotalProcessCostSubAssembly": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssembly),
           "TotalProcessCostComponent": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponent),
-          "TotalProcessCostWithQuantity": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly),
+          "TotalProcessCostWithQuantity": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponent),
+          //Process Cost for Other Technology
+          "TotalCCForOtherTechnologyCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssembly),
+          "TotalCCForOtherTechnologyCostSubAssembly": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCosttSubAssembly),
+          "TotalCCForOtherTechnologyCostComponent": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponent),
+          "TotalCCForOtherTechnologyCostWithQuantity": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponent),
+
 
           "TotalProcessCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead),
           "TotalProcessCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead),
           "TotalProcessCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
           "TotalProcessCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
 
+          //Process Cost for Other Technology
+          "TotalCCForOtherTechnologyCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead),
+          "TotalCCForOtherTechnologyCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead),
+          "TotalCCForOtherTechnologyCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForOverhead),
+          "TotalCCForOtherTechnologyCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForOverhead),
+
           "TotalProcessCostPerAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
           "TotalProcessCostSubAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit),
           "TotalProcessCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForProfit),
           "TotalProcessCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForProfit),
 
+          //Process Cost for Other Technology
+          "TotalCCForOtherTechnologyCostPerAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit),
+          "TotalCCForOtherTechnologyCostSubAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForProfit),
+          "TotalCCForOtherTechnologyCostComponentForProfit": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForProfit),
+          "TotalCCForOtherTechnologyCostWithQuantityForProfit": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForProfit) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForProfit),
 
 
           "SurfaceTreatmentCostPerAssembly": surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost,
@@ -178,7 +195,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
       checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(discountAndOtherTabData?.AnyOtherCost) - checkForNull(discountAndOtherTabData?.HundiOrDiscountValue)
   }
-
+  
   let assemblyRequestedData = {
 
     "TopRow": {
@@ -250,16 +267,34 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalProcessCostComponent": tabData?.CostingPartDetails?.TotalProcessCostComponent,
       "TotalProcessCostWithQuantity": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssembly) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponent),
 
+      //OTHER PROCESS TECHNOLOGY
+      "TotalCCForOtherTechnologyCostPerAssembly": tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssembly,
+      "TotalCCForOtherTechnologyCostSubAssembly": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssembly),
+      "TotalCCForOtherTechnologyCostComponent": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponent),
+      "TotalCCForOtherTechnologyCostWithQuantity": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssembly) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssembly) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponent),
+
+
       "TotalProcessCostPerAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead),
       "TotalProcessCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead),
       "TotalProcessCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
       "TotalProcessCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
+
+      //OTHER PROCESS TECHNOLOGY
+      "TotalCCForOtherTechnologyCostPerAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead),
+      "TotalCCForOtherTechnologyCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead),
+      "TotalCCForOtherTechnologyCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForOverhead),
+      "TotalCCForOtherTechnologyCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForOverhead),
 
       "TotalProcessCostPerAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
       "TotalProcessCostSubAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit),
       "TotalProcessCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForProfit),
       "TotalProcessCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForProfit),
 
+      //OTHER PROCESS TECHNOLOGY
+      "TotalCCForOtherTechnologyCostPerAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit),
+      "TotalCCForOtherTechnologyCostSubAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForProfit),
+      "TotalCCForOtherTechnologyCostComponentForProfit": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForProfit),
+      "TotalCCForOtherTechnologyCostWithQuantityForProfit": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForProfit) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForProfit),
 
 
       "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly,
@@ -499,9 +534,9 @@ export const clearCosting = (dispatch) => {
 }
 
 export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date(), IsAddPaymentTermInNetCost = false, remark = "", bopCostingId = "") => {
-  console.log("totalCost-formatMultiTechnologyUpdate-NetPOPrice",totalCost)
+
   let Arr = tabData
-  
+
   let assemblyWorkingRow = []
 
   Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
