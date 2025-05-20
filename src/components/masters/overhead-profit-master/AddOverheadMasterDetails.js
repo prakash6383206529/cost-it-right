@@ -470,7 +470,7 @@ const AddOverheadMasterDetails = (props) => {
                         </Col>
                     ) }
 
-                    {props?.isShowPartFamily && getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&
+                    {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&
                         <Col md="3">
                             <SearchableSelectHookForm
                                 label={`Part Family (Code)`}
@@ -497,7 +497,7 @@ const AddOverheadMasterDetails = (props) => {
                             className={`custom-checkbox ${state?.isEditFlag ? "disabled" : ""}`}
                             onChange={onPressAssemblyCheckbox}
                         >
-                        Apply for Part Type
+                        Manage Applicabilities For Multi Technology Assembly
                         <input
                             type="checkbox"
                             readOnly
