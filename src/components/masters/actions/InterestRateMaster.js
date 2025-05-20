@@ -13,9 +13,10 @@ import {
     GET_ICC_METHOD_SELECTLIST,
     GET_OVERHEAD_PROFIT_DATA_SUCCESS
 } from '../../../config/constants';
-import { apiErrors } from '../../../helper/util';
+import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import axiosInstance from '../../../utils/axiosInstance';
 import { loggedInUserId } from '../../../helper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 // const config() = config
 
@@ -43,30 +44,39 @@ export function createInterestRate(data, callback) {
  * @method getInterestRateDataList
  * @description GET INTEREST RATE DATALIST
  */
-export function getInterestRateDataList(isAPICall, data, callback) {
+export function getInterestRateDataList(data, skip, take, isPagination, obj, isPaymentTermsRecord=false, callback) {
     return (dispatch) => {
-        if (isAPICall) {
-            dispatch({ type: API_REQUEST });
-            let queryParams = `loggedInUserId=${loggedInUserId()}&vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}&isPaymentTermsRecord=${data?.isPaymentTermsRecord}`
-            axios.get(`${API.getInterestRateDataList}?${queryParams}`, config())
-                .then((response) => {
-                    if (response.data.Result || response.status === 204)
-                        dispatch({
-                            type: GET_INTEREST_RATE_DATA_LIST,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    callback(response);
-                }).catch((error) => {
-                    dispatch({ type: API_FAILURE });
-                    callback(error);
-                    apiErrors(error);
-                });
-        } else {
-            dispatch({
-                type: GET_INTEREST_RATE_DATA_LIST,
-                payload: []
-            })
-        }
+        dispatch({ type: API_REQUEST });
+        // let queryParams = `loggedInUserId=${loggedInUserId()}&vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}&isPaymentTermsRecord=${data?.isPaymentTermsRecord}`
+        const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
+            // costing_head: obj.costing_head, vendorId: obj.vendor_id, iccApplicability: obj.overhead_applicability_type_id, model_type_id: obj.model_type_id,
+            vendorId: obj.vendor_id, creditBasedAnnualICCPercent: obj?.creditBasedAnnualICCPercent, applicabilityBasedInventoryDayType: obj?.applicabilityBasedInventoryDayType,
+            costingHead: obj.CostingHead, vendorName: obj.VendorName, ClientName: obj.ClientName, iccModelType: obj.ICCModelType,
+            paymentTermsApplicability: obj.paymentTermsApplicability, OverheadOnRMPercentage: obj.OverheadRMPercentage, OverheadOnBOPPercentage: obj.OverheadBOPPercentage,
+            EffectiveDate: obj.EffectiveDateNew, Plant: obj.PlantName, applyPagination: isPagination, paymentTermsApplicability: obj?.PaymentTermApplicability,
+            PartFamily: obj?.PartFamily, iccApplicability: obj?.ICCApplicability, iccMethod: obj?.ICCMethod,
+            skip: skip, take: take, CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '', RawMaterialName: obj.RawMaterialName !== undefined ? obj.RawMaterialName : '',
+            RawMaterialGrade: obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : '', TechnologyName: obj.TechnologyName !== undefined ? obj.TechnologyName : '',
+            IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
+            IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc, IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
+            isPaymentTermsRecord: isPaymentTermsRecord
+        });
+
+        // let queryParams = `loggedInUserId=${loggedInUserId()}&vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}&isPaymentTermsRecord=${data?.isPaymentTermsRecord}`
+        axios.get(`${API.getInterestRateDataList}?${queryParams}`, config())
+            .then((response) => {
+                if (response.data.Result || response.status === 204)
+                    dispatch({
+                        type: GET_INTEREST_RATE_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                callback(response);
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
     };
 }
 
