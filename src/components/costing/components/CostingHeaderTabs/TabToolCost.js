@@ -38,6 +38,7 @@ function TabToolCost(props) {
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(ToolTabData?.[0]?.CostingPartDetails?.IsToolCostProcessWise ?? false)
   const [IsApplicableOverall, setIsApplicableOverall] = useState(false);
+  const [netToolCostOverallApplicability, setNetToolCostOverallApplicability] = useState(0);
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState([])
   const [editIndex, setEditIndex] = useState('')
@@ -290,7 +291,7 @@ function TabToolCost(props) {
       const discountAndOtherTabData = DiscountCostData
       const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
       const toolTabData = ToolTabData && ToolTabData[0]
- 
+      
       const data = {
         "IsToolCostProcessWise": IsApplicableProcessWise,
         "CostingId": costData.CostingId,
@@ -305,6 +306,7 @@ function TabToolCost(props) {
       }
       if (!IsApplicableProcessWise) {
         setIsApplicableOverall(true)
+        setNetToolCostOverallApplicability(ToolTabData?.[0]?.CostingPartDetails?.TotalToolCost)
       }
       if (partType) {
  
@@ -567,7 +569,11 @@ function TabToolCost(props) {
                     </div> </>}
                   <div>
                     {"Net Tool Cost:"}
-                    <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(IsApplicableProcessWise ? state?.netToolCost : gridData?.[0]?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                    {/* When Tool Cost Applicability is Overall.
+                        ToolTabData?.[0]?.CostingPartDetails?.TotalToolCost used for Initial Page load.
+                        netToolCostOverallApplicability is used when we save tool cost. 
+                    */}
+                    <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(IsApplicableProcessWise ? state?.netToolCost : netToolCostOverallApplicability ? netToolCostOverallApplicability : ToolTabData?.[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
                   </div>
                   {IsApplicableProcessWise &&
                     <>

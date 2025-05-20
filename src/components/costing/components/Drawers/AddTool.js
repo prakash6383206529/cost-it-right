@@ -980,7 +980,7 @@ function AddTool(props) {
                       disabled={CostingViewMode}
                     >
                       <div className={'save-icon'}></div>
-                      {'Save'}
+                      {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>
                 </Row>
