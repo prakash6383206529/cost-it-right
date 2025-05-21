@@ -556,12 +556,12 @@ function AddForecast(props) {
                                                                 placeholder={"Select"}
                                                                 Controller={Controller}
                                                                 control={control}
-                                                                selected={getValues('rmgrade') ? getValues('rmgrade') : ''}
-                                                                rules={{ required: getValues('RMName') ? true : false }}
+                                                                rules={{ required: true }}
                                                                 register={register}
+                                                                mandatory={true}
+                                                                selected={getValues('rmgrade') ? getValues('rmgrade') : ''}
                                                                 customClassName="costing-version"
                                                                 options={renderListingRM('rmgrade')}
-                                                                mandatory={getValues('RMName') ? true : false}
                                                                 handleChange={(newValue) => handleRMGrade(newValue)}
                                                                 disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                             />
@@ -575,11 +575,11 @@ function AddForecast(props) {
                                                                 Controller={Controller}
                                                                 control={control}
                                                                 selected={getValues('rmspecification') ? getValues('rmspecification') : ''}
-                                                                rules={{ required: getValues('RMName') ? true : false }}
+                                                                rules={{ required: true}}
                                                                 register={register}
                                                                 customClassName="costing-version"
                                                                 options={renderListingRM('rmspecification')}
-                                                                mandatory={getValues('RMName') ? true : false}
+                                                                mandatory={true}
                                                                 handleChange={(newValue) => handleRMSpecification(newValue)}
                                                                 disabled={getValues('disabled') || isViewFlag || (getValues('editIndex') !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : false))}
                                                             />
@@ -594,8 +594,8 @@ function AddForecast(props) {
                                                                 Controller={Controller}
                                                                 control={control}
                                                                 register={register}
-                                                                rules={{ required: getValues('RMName') ? true : false }}
-                                                                mandatory={getValues('RMName') ? true : false}
+                                                                rules={{ required: true }}
+                                                                mandatory={true}
                                                                 handleChange={handleCode}
                                                                 isClearable={true}
                                                                 errors={errors.Code}
