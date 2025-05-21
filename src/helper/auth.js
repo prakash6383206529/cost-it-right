@@ -110,6 +110,6 @@ export function showApprovalDropdown() {
   return configurationKey?.IsSelectApproverFromList
 }
 export function fetchRejectionDataFromMaster() {
-  const configurationKey = getConfigurationKey()?.IsFetchRejectionDataFromMaster
+  const configurationKey = getConfigurationKey()?.IsShowRejectionMaster
   return configurationKey
 }

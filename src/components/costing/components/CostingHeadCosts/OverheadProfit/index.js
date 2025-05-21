@@ -67,7 +67,7 @@ function OverheadProfit(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const SurfaceTreatmentCost = useContext(SurfaceCostContext);
   const costingHead = useSelector(state => state.comman.costingHead)
-
+  
   const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
 
@@ -289,14 +289,15 @@ function OverheadProfit(props) {
           customerId: costData.CustomerId,
           rawMaterialGradeId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
           rawMaterialChildId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
-          technologyId: null,
+          technologyId: IdForMultiTechnology.includes(String(costData?.TechnologyId)) ? costData?.TechnologyId : null,
+          partFamilyId: costData?.PartFamilyId ? costData?.PartFamilyId : EMPTY_GUID,
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
           if (res && res.data && res.data.Data) {
             let Data = res.data.Data;
             let showWarning = false
-            if (Data?.CostingOverheadDetail?.CostingApplicabilityDetails?.some(detail => applicabilityList.includes(detail.Applicability))) {
+
               if (isBreakupBoughtOutPartCostingFromAPI) {
                 showWarning = true
               } else {
@@ -309,8 +310,7 @@ function OverheadProfit(props) {
                 }, 200)
               }
               dispatch(gridDataAdded(true))
-            }
-            if (Data?.CostingProfitDetail?.CostingApplicabilityDetails?.some(detail => applicabilityList.includes(detail.Applicability))) {
+           
               setProfitObj(Data.CostingProfitDetail)
               if (Data.CostingProfitDetail) {
                 setTimeout(() => {
@@ -318,7 +318,7 @@ function OverheadProfit(props) {
                 }, 200)
               }
               dispatch(gridDataAdded(true))
-            }
+         
             if (showWarning) {
               setShowWarning(true)
             } else {
@@ -353,7 +353,7 @@ function OverheadProfit(props) {
       // Process each applicability type
       dataObj?.CostingApplicabilityDetails?.forEach(detail => {
         const { Applicability, Percentage } = detail;
-
+        
         switch (Applicability) {
           case 'Fixed':
             if (IsAPIResponse === false) {
@@ -363,11 +363,12 @@ function OverheadProfit(props) {
             }
             break;
           case 'RM':
+          case 'Part Cost':
             const rmCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
             const rmTotalCost = rmCost * calculatePercentage(Percentage)
-            setValue('OverheadRMPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('OverheadRMCost', checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('OverheadRMTotalCost', checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
             break;
 
           case 'BOP':
@@ -404,7 +405,7 @@ function OverheadProfit(props) {
       // Update tempOverheadObj with CostingApplicabilityDetails
       const costingApplicabilityDetails = dataObj?.CostingApplicabilityDetails?.map(detail => {
         const { Applicability, Percentage, ApplicabilityDetailsId, ApplicabilityId } = detail;
-        const baseCost = Applicability === 'RM' ?
+        const baseCost = Applicability === 'RM' || Applicability === 'Part Cost' ?
           (IsCutOffApplicable ? CutOffCost : headerCosts?.NetRawMaterialsCost) :
           Applicability === 'BOP' ? headerCosts?.NetBoughtOutPartCost :
             Applicability === 'CC' ? getCCCost('overhead') :
@@ -451,12 +452,13 @@ function OverheadProfit(props) {
             }
             break;
           case 'RM':
+          case 'Part Cost':
             const rmCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
             const rmTotalCost = rmCost * calculatePercentage(Percentage)
 
-            setValue('ProfitRMPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('ProfitRMCost', checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('ProfitRMTotalCost', checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
             break;
 
           case 'BOP':
@@ -493,7 +495,7 @@ function OverheadProfit(props) {
       // Update tempProfitObj with CostingApplicabilityDetails
       const costingApplicabilityDetails = dataObj?.CostingApplicabilityDetails?.map(detail => {
         const { Applicability, Percentage, ApplicabilityDetailsId, ApplicabilityId } = detail;
-        const baseCost = Applicability === 'RM' ?
+        const baseCost = Applicability === 'RM' || Applicability === 'Part Cost' ?
           (IsCutOffApplicable ? CutOffCost : headerCosts?.NetRawMaterialsCost) :
           Applicability === 'BOP' ? headerCosts?.NetBoughtOutPartCost :
             Applicability === 'CC' ? getCCCost('profit') : 0;
