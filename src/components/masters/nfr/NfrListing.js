@@ -128,7 +128,7 @@ function NfrListing(props) {
             CustomerRFQNumber: apiData.CustomerRFQNumber || '-',
             CustomerName: apiData.CustomerName || '-',
             CustomerPartNo: apiData.NfrPartwiseDetailResponse?.[0]?.PartNumber || '-',
-            GroupCode: apiData.GroupCodeId || '-',
+            GroupCode: apiData.NfrPartwiseDetailResponse?.[0]?.GroupCode || '-',
             PartType:apiData.NfrPartwiseDetailResponse?.[0]?.PartType || "-",
             PartName: apiData.NfrPartwiseDetailResponse?.[0]?.PartName || '-',
             UOM: apiData.NfrPartwiseDetailResponse?.[0]?.UOM || '-',
