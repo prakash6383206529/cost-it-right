@@ -40,7 +40,7 @@ function AddLabourCost(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costData = useContext(costingInfoContext)
     const CostingViewMode = useContext(ViewCostingContext);
-    const isDisable = useContext(IsNFRContext)
+    const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
 
     useEffect(() => {
         let labourObj = false
@@ -568,7 +568,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.description}
-                                            disabled={CostingViewMode||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
 
@@ -589,7 +589,7 @@ function AddLabourCost(props) {
                                             customClassName={'withBorder'}
                                             errors={errors.noOfLabour}
                                             handleChange={handleNoOfLabour}
-                                            disabled={CostingViewMode||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
 
@@ -610,7 +610,7 @@ function AddLabourCost(props) {
                                             customClassName={'withBorder'}
                                             handleChange={handleAbsentismChange}
                                             errors={errors.absentism}
-                                            disabled={CostingViewMode||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -755,7 +755,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.cycleTime}
-                                            disabled={CostingViewMode||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
 
@@ -778,12 +778,12 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.labourCost}
-                                            disabled={CostingViewMode || disableTotalCost||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode || disableTotalCost||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
                                     <Col md="3" className="mt-1 pt-2 mb-3">
 
-                                        {!CostingViewMode && !isDisable && < button
+                                        {!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ && < button
                                             type="button"
                                             className={"user-btn  pull-left mt-1"}
                                             onClick={addData}
@@ -791,7 +791,7 @@ function AddLabourCost(props) {
                                         >
                                             <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
                                         </button>}
-                                        {!CostingViewMode && !isDisable && <button
+                                        {!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ && <button
                                             type="button"
                                             className={"reset-btn pull-left mt-1 ml5"}
                                             onClick={resetData}
@@ -803,7 +803,7 @@ function AddLabourCost(props) {
                                         }
                                     </Col>
                                 </Row>
-                                {<LabourCost hideAction={CostingViewMode||props?.isCostingSummary || isDisable} tableData={tableData} editData={editData} />}
+                                {<LabourCost hideAction={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ} tableData={tableData} editData={editData} />}
                                 <Row className='mt-4'>
 
                                     {initialConfiguration?.IsShowCRMHead && <Col md="3" className='pr-1'>
@@ -823,7 +823,7 @@ function AddLabourCost(props) {
                                             options={CRMHeads}
                                             required={false}
                                             handleChange={handleCrmHeadChangeNetLabour}
-                                            disabled={CostingViewMode||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>}
 
@@ -844,7 +844,7 @@ function AddLabourCost(props) {
                                             options={CRMHeads}
                                             required={false}
                                             handleChange={handleCrmHeadChangeIndirectLabour}
-                                            disabled={CostingViewMode||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>}
 
@@ -869,7 +869,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.indirectLabourCostPercent}
-                                            disabled={CostingViewMode||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -912,7 +912,7 @@ function AddLabourCost(props) {
                                             options={CRMHeads}
                                             required={false}
                                             handleChange={handleCrmHeadChangeStaff}
-                                            disabled={CostingViewMode||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>}
 
@@ -937,7 +937,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.staffCostPercent}
-                                            disabled={CostingViewMode||props?.isCostingSummary || isDisable}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
                                     <Col md="3" className='pl-1'>
@@ -976,7 +976,7 @@ function AddLabourCost(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
-                                        disabled={CostingViewMode || props?.isCostingSummary || isDisable}
+                                        disabled={CostingViewMode || props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         onClick={() => { props.closeDrawer('save', tableData) }} >
                                         <div className={"save-icon"}></div>
                                         {'Save'}

@@ -23,7 +23,7 @@ function SurfaceTreatmentCost(props) {
   let surfaceData = tempArray && tempArray.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
   const CostingViewMode = useContext(ViewCostingContext);
-  const isDisable = useContext(IsNFRContext)
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const { register, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -296,7 +296,7 @@ function SurfaceTreatmentCost(props) {
             <Col md="4">
               <Button
                 id="Costing_addST"
-                disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
+                disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                 onClick={DrawerToggle}
                 icon={"plus"}
                 buttonName={"SURFACE T."}
@@ -331,7 +331,7 @@ function SurfaceTreatmentCost(props) {
                         editIndex === index ?
                           <tr key={index}>
                             {initialConfiguration?.IsShowDetailedOperationBreakup && <td>{item.EntryType}</td>}
-                            <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || isDisable) ? false : true}>{item.OperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.OperationName}</span> </td>
                             <td style={{ width: 200 }}>
                               {
                                 <TextFieldHookForm
@@ -352,7 +352,7 @@ function SurfaceTreatmentCost(props) {
                                     handleSurfaceAreaChange(e, index)
                                   }}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].SurfaceArea : ''}
-                                  disabled={(CostingViewMode || isDisable) ? true : false}
+                                  disabled={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 />
                               }
                             </td>
@@ -382,7 +382,7 @@ function SurfaceTreatmentCost(props) {
                                         handleLabourQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                      disabled={(CostingViewMode || isDisable) ? true : false}
+                                      disabled={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     />
                                     :
                                     '-'
@@ -409,12 +409,12 @@ function SurfaceTreatmentCost(props) {
                                 className="st-crm-head"
                                 required={false}
                                 handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                disabled={(CostingViewMode || isDisable)}
+                                disabled={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ)}
                               />
                             </td>}
                             <td>
                               <div className='action-btn-wrapper'>
-                                <button title='Save' className="SaveIcon" type={'button'} disabled={(CostingViewMode|| isDisable) ? true : false} onClick={() => SaveItem(index)} />
+                                <button title='Save' className="SaveIcon" type={'button'} disabled={(CostingViewMode|| IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => SaveItem(index)} />
                                 <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />
                               </div>
                             </td>
@@ -422,7 +422,7 @@ function SurfaceTreatmentCost(props) {
                           :
                           <tr key={index}>
                             {initialConfiguration?.IsShowDetailedOperationBreakup && <td>{item.EntryType}</td>}
-                            <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || isDisable) ? false : true}>{item.OperationName}</span></td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.OperationName}</span></td>
                             <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>
@@ -450,13 +450,13 @@ function SurfaceTreatmentCost(props) {
                                 options={CRMHeads}
                                 required={false}
                                 handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                disabled={(CostingViewMode|| isDisable)}
+                                disabled={(CostingViewMode|| IsLockTabInCBCCostingForCustomerRFQ)}
                               />
                             </td>}
                             <td>
                               <div className='action-btn-wrapper'>
-                                <button title='Edit' className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked || isDisable) ? true : false} onClick={() => editItem(index)} />
-                                <button title='Delete' className="Delete" type={'button'} disabled={(CostingViewMode || IsLocked || isDisable) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
+                                <button title='Edit' className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => editItem(index)} />
+                                <button title='Delete' className="Delete" type={'button'} disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
                               </div>
                             </td>
                           </tr>

@@ -29,7 +29,7 @@ function ToolCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const CostingViewMode = useContext(ViewCostingContext);
-  const isDisable = useContext(IsNFRContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
 
   useEffect(() => {
     const Params = {
@@ -119,7 +119,7 @@ function ToolCost(props) {
               </div>
             </Col>
             <Col col={'2'}>
-              {(!CostingViewMode && !isDisable) && <button
+              {(!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
@@ -158,8 +158,8 @@ function ToolCost(props) {
                           <td>{item.Life}</td>
                           <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 4) : 0}</td>
                           <td>
-                            {(!CostingViewMode && !isDisable) && <button title='Edit' className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />}
-                            {(!CostingViewMode && !isDisable) && <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
+                            {(!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Edit' className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />}
+                            {(!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                           </td>
                         </tr>
                       )

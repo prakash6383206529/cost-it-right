@@ -17,7 +17,7 @@ function PartSurfaceTreatment(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-  const isDisable = useContext(IsNFRContext)
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
   const dispatch = useDispatch()
 
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
@@ -96,7 +96,7 @@ function PartSurfaceTreatment(props) {
         </div>
         <td width={"0"}>
           <div className='d-flex justify-content-end align-items-center'>
-            {!CostingViewMode && !isDisable && (item?.CostingPartDetails?.NetSurfaceTreatmentCost !== 0) ?
+            {!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ && (item?.CostingPartDetails?.NetSurfaceTreatmentCost !== 0) ?
 
               <button
                 type="button"
@@ -114,7 +114,7 @@ function PartSurfaceTreatment(props) {
                 //onClick={DrawerToggle}
                 onClick={() => toggle(item.BOMLevel, item.PartNumber)}
               >
-                <div className={`${(CostingViewMode || IsLocked || isDisable) ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
+                <div className={`${(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
             }
             <div /* id="lock_icon"  */ className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing" : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div>
           </div>

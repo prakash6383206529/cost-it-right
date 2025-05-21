@@ -64,7 +64,7 @@ function BOPCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
-  const isDisable = useContext(IsNFRContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const { t } = useTranslation("Costing")
   const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
 
@@ -529,7 +529,7 @@ function BOPCost(props) {
               </div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && !IsLocked && !isDisable &&
+              {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ &&
                 <Button
                   id="Costing_addBOP"
                   onClick={DrawerToggle}
@@ -589,7 +589,7 @@ function BOPCost(props) {
                                           handleQuantityChange(e, index)
                                         }}
                                         errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
-                                        disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
+                                        disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                       />
                                     </>
                                     :
@@ -611,7 +611,7 @@ function BOPCost(props) {
                                         handleQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
-                                      disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
+                                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     />
                                 }
                               </td>
@@ -635,13 +635,13 @@ function BOPCost(props) {
                                   options={CRMHeads}
                                   required={false}
                                   handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                  disabled={CostingViewMode || isDisable}
+                                  disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                 />
                               </td>}
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && !isDisable && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
-                                  {!CostingViewMode && !IsLocked && !isDisable && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
                                   <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
                                 </div>
                               </td>
@@ -673,13 +673,13 @@ function BOPCost(props) {
                                   options={CRMHeads}
                                   required={false}
                                   handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                  disabled={CostingViewMode || isDisable}
+                                  disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                 />
                               </td>}
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && !isDisable && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} />}
-                                   {!CostingViewMode && !IsLocked && !isDisable && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} />} 
+                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} />}
+                                   {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} />} 
                                   <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
                                 </div>
                               </td>
@@ -710,7 +710,7 @@ function BOPCost(props) {
                     <input
                       type="checkbox"
                       checked={IsApplyBOPHandlingCharges}
-                      disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -735,7 +735,7 @@ function BOPCost(props) {
                     mandatory={false}
                     handleChange={handleBOPHandlingType}
                     errors={errors.BOPHandlingType}
-                    disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
+                    disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                     isClearable={true}
                   />
                 </Col>}
@@ -765,7 +765,7 @@ function BOPCost(props) {
                         className=""
                         customClassName={"withBorder"}
                         // errors={errors.BOPHandlingPercentage}
-                        disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
+                        disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                       />
                       {fixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                     </div>
@@ -794,7 +794,7 @@ function BOPCost(props) {
                       className=""
                       customClassName={"withBorder"}
                       errors={errors.BOPHandlingPercentage}
-                      disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                     />}
                 </Col>
               }
@@ -833,7 +833,7 @@ function BOPCost(props) {
           header={"Remark"}
           isInputField={true}
           defaultValue={remark}
-          isDisabled={IsLocked || CostingViewMode || isDisable}
+          isDisabled={IsLocked || CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
         />
       }
       {isDrawerOpen && <AddBOP

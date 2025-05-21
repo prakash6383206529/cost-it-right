@@ -43,7 +43,7 @@ function SurfaceTreatment(props) {
   const costData = useContext(costingInfoContext);
   let surfaceTabData = SurfaceTabData && SurfaceTabData[0]
   const CostingViewMode = useContext(ViewCostingContext);
-  const isDisable = useContext(IsNFRContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [callDiscountApi, setCallDiscountApi] = useState(false)
   const [viewPaintAndMasking, setViewPaintAndMasking] = useState(false)
@@ -197,7 +197,7 @@ function SurfaceTreatment(props) {
         },
       }
       // IN COSTING VIEW MODE
-      if (!CostingViewMode && !isDisable ) {
+      if (!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ ) {
         // WHEN PARTTYPE IS ASSEMBLY AND NOT ASSEMBLY TECHNOLOGY
         if (IsAssemblyCalculation && !partType) {
 
@@ -349,7 +349,7 @@ function SurfaceTreatment(props) {
     // if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
     //   return false
     // }
-    if ((IsLocked === false || (!CostingViewMode && !isDisable)) && partType === false) {
+    if ((IsLocked === false || (!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ)) && partType === false) {
       if (props.IsAssemblyCalculation) {
 
         props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
@@ -523,20 +523,20 @@ function SurfaceTreatment(props) {
                         {
                           (item.PartType !== 'Part' && item.PartType !== 'Component') ?
                             <>
-                              <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || isDisable) ? item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="2" className="cr-costlabel">{`Other Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || isDisable) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="2" className="cr-costlabel">{`Hanger Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || isDisable) ? checkForNull(item?.CostingPartDetails?.HangerCostPerPartWithQuantity) : checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="3" className="cr-costlabel">{`Paint and Masking Cost : ${checkForDecimalAndNull((CostingViewMode || IsLocked || isDisable) ? checkForNull(item?.CostingPartDetails?.TotalPaintCostWithQuantity) : checkForNull(paintAndMaskingDetails?.TotalPaintCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="3" className="cr-costlabel">{`Net ST. Cost:  ${(CostingViewMode || IsLocked || isDisable) ? checkForDecimalAndNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost) + checkForNull(extraCostDetails?.TransportationCost) + checkForNull(paintAndMaskingDetails?.TotalPaintCost) + checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Other Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Hanger Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? checkForNull(item?.CostingPartDetails?.HangerCostPerPartWithQuantity) : checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="3" className="cr-costlabel">{`Paint and Masking Cost : ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? checkForNull(item?.CostingPartDetails?.TotalPaintCostWithQuantity) : checkForNull(paintAndMaskingDetails?.TotalPaintCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="3" className="cr-costlabel">{`Net ST. Cost:  ${(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? checkForDecimalAndNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost) + checkForNull(extraCostDetails?.TransportationCost) + checkForNull(paintAndMaskingDetails?.TotalPaintCost) + checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
 
                             </>
                             :
                             <>
-                              <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || isDisable) ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="2" className="cr-costlabel">{`Other Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || isDisable) ? checkForNull(item?.CostingPartDetails?.TransportationCost) : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="2" className="cr-costlabel">{`Hanger Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || isDisable) ? checkForNull(item?.CostingPartDetails?.HangerCostPerPart) : checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="3" className="cr-costlabel">{`Paint and Masking Cost : ${checkForDecimalAndNull((CostingViewMode || IsLocked || isDisable) ? checkForNull(item?.CostingPartDetails?.TotalPaintCost) : checkForNull(paintAndMaskingDetails?.TotalPaintCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="3" className="cr-costlabel">{`Net ST. Cost: ${(CostingViewMode || IsLocked || isDisable) ?
+                              <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Other Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? checkForNull(item?.CostingPartDetails?.TransportationCost) : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="2" className="cr-costlabel">{`Hanger Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? checkForNull(item?.CostingPartDetails?.HangerCostPerPart) : checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="3" className="cr-costlabel">{`Paint and Masking Cost : ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? checkForNull(item?.CostingPartDetails?.TotalPaintCost) : checkForNull(paintAndMaskingDetails?.TotalPaintCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="3" className="cr-costlabel">{`Net ST. Cost: ${(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ?
                                 checkForDecimalAndNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) :
                                 checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData?.gridData)) + checkForNull(extraCostDetails?.TransportationCost) + checkForNull(paintAndMaskingDetails?.TotalPaintCost) + checkForNull(hangerCostDetails?.HangerCostPerPart), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                             </>
@@ -587,13 +587,13 @@ function SurfaceTreatment(props) {
                                 id="surfaceTreatment_paintAndMasking"
                                 onClick={() => setViewPaintAndMasking(true)}
                                 className={"right mt-0 mb-2"}
-                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "className", (CostingViewMode || IsLocked || isDisable))}
-                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "title", (CostingViewMode || IsLocked || isDisable))}
+                                variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "className", (CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ))}
+                                title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TotalPaintCost && surfaceTabData?.CostingPartDetails?.TotalPaintCost !== 0 ? ['1'] : [], "title", (CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ))}
                               />
                             </Col>
                           </Row>
                           <Hanger
-                            ViewMode={CostingViewMode || isDisable}
+                            ViewMode={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                             index={props?.index}
                             data={surfaceData}
                             item={props?.item}
@@ -620,8 +620,8 @@ function SurfaceTreatment(props) {
                                   id="surfaceTreatment_extraCost"
                                   onClick={() => setViewExtraCost(true)}
                                   className={"right mt-0 mb-2"}
-                                  variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TransportationDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "className", (CostingViewMode || IsLocked || isDisable))}
-                                  title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TransportationDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "title", (CostingViewMode || IsLocked || isDisable))}
+                                  variant={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TransportationDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "className", (CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ))}
+                                  title={viewAddButtonIcon(surfaceTabData?.CostingPartDetails && surfaceTabData?.CostingPartDetails?.TransportationDetails ? surfaceTabData?.CostingPartDetails?.TransportationDetails : [], "title", (CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ))}
                                 />
                                 <TooltipCustom
                                   id={`surfaceTreatment_refresh`}
@@ -656,7 +656,7 @@ function SurfaceTreatment(props) {
                   <button
                     type={'button'}
                     className="submit-button mr15 save-btn"
-                    disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
+                    disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                     onClick={saveData} >
                     <div className={'save-icon'}></div>
                     {'SAVE'}
