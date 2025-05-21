@@ -358,7 +358,7 @@ function Tool(props) {
       setValue('MaintananceCostApplicability', checkForDecimalAndNull(baseCost, noOfDecimal));
       setValue('ToolMaintenanceCost', checkForDecimalAndNull(toolCost, noOfDecimal));
       setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, noOfDecimal));
-  
+      
       setToolObj({
         ...toolObj,
         ToolApplicabilityId: applicability.value,
@@ -452,19 +452,22 @@ function Tool(props) {
 
   const calculateNetToolCost = () => {
 
-    const ToolMaintenanceCostPerPiece = checkForNull(toolObj?.ToolMaintenanceCostPerPiece)
     const ToolCost = checkForNull(getValues('ToolCost'));
     const Life = checkForNull(getValues('Life'))
+    const costPerPc = ToolCost / Life;
+    const ToolMaintenanceCostPerPiece = checkForNull(costPerPc)   
     const ToolAmortizationCost = ToolCost / Life
     const toolInterestRatePercent = checkForNull(getValues('ToolInterestRatePercent'))
     const toolInterestCost= ToolCost * toolInterestRatePercent / 100
     const toolInterestCostPerPc = toolInterestCost / checkForNull(getValues('Life'))
     setValue('ToolInterestCost', checkForDecimalAndNull(toolInterestCost, initialConfiguration?.NoOfDecimalForPrice))
     setValue('ToolInterestCostPerPc', checkForDecimalAndNull(toolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice))
+    setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, initialConfiguration?.NoOfDecimalForPrice));
     setState(prevState => ({
       ...prevState,
       ToolInterestCost: toolInterestCost,
-      ToolInterestCostPerPc: toolInterestCostPerPc
+      ToolInterestCostPerPc: toolInterestCostPerPc,
+      ToolMaintenanceCostPerPiece: costPerPc
     }))
     const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(toolInterestCostPerPc)    
     if (netToolValue) {
@@ -492,8 +495,9 @@ function Tool(props) {
         "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
         "ToolInterestCost": toolInterestCost,
         "ToolInterestCostPerPiece": toolInterestCostPerPc,
-        "ToolMaintenanceCostPerPiece": toolObj?.ToolMaintenanceCost / Life,
+        "ToolMaintenanceCostPerPiece": ToolMaintenanceCostPerPiece
       }
+      
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       dispatch(isToolDataChange(true))
       setTimeout(() => {
