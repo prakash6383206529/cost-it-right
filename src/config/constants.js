@@ -1058,7 +1058,6 @@ export const API = {
   getPoamStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
 
   //PART FAMILY
-  getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
 
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
