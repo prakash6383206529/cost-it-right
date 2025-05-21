@@ -136,8 +136,8 @@ function CreateManualNFR(props) {
                     PartId: partwiseDetail?.PartId,
                     GroupCode: { label: partwiseDetail?.GroupCode, value: partwiseDetail?.GroupCodeId },
                     GroupCodeId: partwiseDetail?.GroupCodeId,
-                    Segment: { label: Data?.Segment, value: Data?.SegmentId },
-                    SegmentId: Data?.SegmentId,
+                    Segment: { label: partwiseDetail?.Segment, value: partwiseDetail?.SegmentId },
+                    SegmentId: partwiseDetail?.SegmentId,
                     UOMId: partwiseDetail?.UOMId,
                     SOPDate: partwiseDetail.SOPDate,
                     PartType: { label: partwiseDetail?.PartType, value: partwiseDetail?.PartTypeId },
@@ -226,7 +226,7 @@ function CreateManualNFR(props) {
             case 'GroupCode':
                 state.groupCodeList && state.groupCodeList?.map(item => {
                     if (item.Value === '0') return false;
-                    temp.push({ label: item.Text, value: item.Value })
+                    temp.push({ label: item.GroupCode, value: item.ProductAndPartId })
                     return null;
                 });
                 break;
@@ -314,7 +314,7 @@ function CreateManualNFR(props) {
                 setValue('Description', Data?.Description ? Data.Description : '');
                 setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId });
                 dispatch(getGroupCodeSelectList(newValue.value, (res) => {
-                    setState(prevState => ({ ...prevState, groupCodeList: res?.data?.SelectList }));
+                    setState(prevState => ({ ...prevState, groupCodeList: res?.data?.Data }));
                 }))
                 if (state.sopDate) {
                     const newSopQuantityList = state.fiveyearList.map(yearItem => ({
@@ -375,8 +375,14 @@ function CreateManualNFR(props) {
         const newDate = DayTime(date).isValid() ? DayTime(date) : '';
 
         // Validate that SOP date is not before ZBC date
-        if (state.zbcDate && newDate && new Date(newDate) < new Date(state.cbcDate)) {
-            Toaster.warning("SOP Date cannot be before ZBC Last Submission Date");
+        if (state.zbcDate && newDate && new Date(newDate) <= new Date(state.zbcDate)) {
+            Toaster.warning("SOP Date cannot be before or equal to ZBC Last Submission Date");
+            return;
+        }
+
+        // Validate that SOP date is not before CBC date
+        if (state.cbcDate && newDate && new Date(newDate) <= new Date(state.cbcDate)) {
+            Toaster.warning("SOP Date cannot be before or equal to Quotation Last Submission Date");
             return;
         }
 
@@ -1233,7 +1239,7 @@ function CreateManualNFR(props) {
                                             value={state.remarks}
                                             customClassName={"withBorder"}
                                             handleChange={(e) => { handleRemarkChange(e.target.value) }}
-                                            errors={errors.remark}
+                                            errors={errors?.Remarks}
                                             rowHeight={6}
                                             disabled={isViewFlag}
                                         />
@@ -1357,7 +1363,7 @@ function CreateManualNFR(props) {
                     zbcDate={state.zbcDate}
                     errors={errors}
                     onGridReady={onGridReady}
-                    EditableCallback={!isViewFlag}
+                    EditableCallback={ !state.isViewMode}
                     partType={getValues("PartType")}
                     AssemblyPartNumber={getValues("Part")}
                     sopQuantityList={state.sopQuantityList}

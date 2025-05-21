@@ -2920,7 +2920,7 @@ function CostingDetails(props) {
                           )}
 
 
-                          {IsOpenVendorSOBDetails && showCostingSection.WAC && partInfo?.PartType === ASSEMBLYNAME && !breakupBOP && (
+                          {IsOpenVendorSOBDetails && showCostingSection.WAC && partInfo?.PartType === ASSEMBLYNAME && !breakupBOP && !isNFR && (
                             <>
                               <Row className="align-items-center">
                                 <Col md="6" className={"mb-2 mt-3"}>
