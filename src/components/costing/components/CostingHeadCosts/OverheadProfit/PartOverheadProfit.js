@@ -47,7 +47,6 @@ function PartOverheadProfit(props) {
         dispatch(getOverheadProfitTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0]?.CostingPartDetails;
-            console.log(Data,'Data')
             props.setPartDetails(Params, Data)
           }
         }))
@@ -103,7 +102,6 @@ function PartOverheadProfit(props) {
           dispatch(isOverheadProfitDataChange(false))
           let arrTemp = [...OverheadProfitTabData]
           arrTemp[0].IsOpen = false
-          console.log(arrTemp,'arrTemp')
           dispatch(setOverheadProfitData(arrTemp, () => { }))
         }
       }))

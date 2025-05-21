@@ -12,7 +12,7 @@ import {
   setExchangeRateSourceValue,
   exchangeRateReducer
 } from '../actions/Costing';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, showBopLabel } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, showBopLabel } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -32,7 +32,7 @@ export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
 export const SurfaceCostContext = React.createContext()
 export const NetPOPriceContext = React.createContext()
-
+export const IsNFRContext = React.createContext()
 
 function CostingDetailStepTwo(props) {
   const { vendorLabel } = useLabels()
@@ -67,6 +67,7 @@ function CostingDetailStepTwo(props) {
 
   const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId))
   const isNFR = useContext(IsNFR);
+  const IsLockTabInCBCCosting = getConfigurationKey('IsLockTabInCBCCosting') ? true : false;
   const { currencySource } = useSelector((state) => state?.costing);
 
   useEffect(() => {
@@ -202,12 +203,12 @@ function CostingDetailStepTwo(props) {
         NetProcessCostForProfit: data?.NetProcessCostForProfit,
         NetOperationCostForOverhead: data?.NetOperationCostForOverhead,
         NetOperationCostForProfit: data?.NetOperationCostForProfit,
-        NetWeldingCostForOverhead:data?.NetWeldingCostForOverhead,
-        NetWeldingCostForProfit:data?.NetWeldingCostForProfit,
-        NetWeldingCost:data?.NetWeldingCost,
-        NetCCForOtherTechnologyCost:data?.NetCCForOtherTechnologyCost,
-        NetCCForOtherTechnologyCostForOverhead:data?.NetCCForOtherTechnologyCostForOverhead,
-        NetCCForOtherTechnologyCostForProfit:data?.NetCCForOtherTechnologyCostForProfit,
+        NetWeldingCostForOverhead: data?.NetWeldingCostForOverhead,
+        NetWeldingCostForProfit: data?.NetWeldingCostForProfit,
+        NetWeldingCost: data?.NetWeldingCost,
+        NetCCForOtherTechnologyCost: data?.NetCCForOtherTechnologyCost,
+        NetCCForOtherTechnologyCostForOverhead: data?.NetCCForOtherTechnologyCostForOverhead,
+        NetCCForOtherTechnologyCostForProfit: data?.NetCCForOtherTechnologyCostForProfit,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
@@ -534,7 +535,7 @@ function CostingDetailStepTwo(props) {
 
     return <Redirect
       to={{
-        pathname: "/nfr",
+        pathname: "/customer-rfq",
         state: {
         }
 
@@ -665,21 +666,23 @@ function CostingDetailStepTwo(props) {
                     <netHeadCostContext.Provider value={RMCCBOPCost} >
                       <SurfaceCostContext.Provider value={SurfaceCostData} >
                         <NetPOPriceContext.Provider value={NetPOPrice} >
-                          <CostingHeadTabs
-                            netPOPrice={NetPOPrice}
-                            setHeaderCost={setHeaderCostRMCCTab}
-                            setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
-                            setHeaderOverheadProfitCostTab={setHeaderOverheadProfitCostTab}
-                            setHeaderPackageFreightTab={setHeaderPackageFreightTab}
-                            setHeaderCostToolTab={setHeaderCostToolTab}
-                            setHeaderDiscountTab={setHeaderDiscountTab}
-                            DiscountTabData={DiscountCostData}
-                            headCostRMCCBOPData={RMCCBOPCost}
-                            headCostSurfaceData={SurfaceCostData}
-                            headCostOverheadProfitData={OverheadProfitCostData}
-                            backBtn={props.backBtn}
-                            toggle={props.toggle}
-                          />
+                          <IsNFRContext.Provider value={(IsLockTabInCBCCosting && props.IsCopyCostingMode && costingData?.CostingTypeId === CBCTypeId) ? true : false} >
+                            <CostingHeadTabs
+                              netPOPrice={NetPOPrice}
+                              setHeaderCost={setHeaderCostRMCCTab}
+                              setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
+                              setHeaderOverheadProfitCostTab={setHeaderOverheadProfitCostTab}
+                              setHeaderPackageFreightTab={setHeaderPackageFreightTab}
+                              setHeaderCostToolTab={setHeaderCostToolTab}
+                              setHeaderDiscountTab={setHeaderDiscountTab}
+                              DiscountTabData={DiscountCostData}
+                              headCostRMCCBOPData={RMCCBOPCost}
+                              headCostSurfaceData={SurfaceCostData}
+                              headCostOverheadProfitData={OverheadProfitCostData}
+                              backBtn={props.backBtn}
+                              toggle={props.toggle}
+                            />
+                          </IsNFRContext.Provider>
                         </NetPOPriceContext.Provider>
                       </SurfaceCostContext.Provider>
                     </netHeadCostContext.Provider>
